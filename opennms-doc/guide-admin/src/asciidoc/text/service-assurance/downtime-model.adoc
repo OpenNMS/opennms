@@ -1,0 +1,46 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-service-assurance-downtime-model]]
+=== Downtime Model
+
+By default the monitoring interval for a service is 5 minutes.
+To detect also short services outages, caused for example by automatic network rerouting, the downtime model can be used.
+On a detected service outage, the interval is reduced to 30 seconds for 5 minutes.
+If the service comes back within 5 minutes, a shorter outage is documented and the impact on service availability can be less than 5 minutes.
+This behavior is called _Downtime Model_ and is configurable.
+
+.Downtime model with resolved and ongoing outage
+image::service-assurance/01_downtime-model.png[]
+
+In figure <<ga-service-assurance-downtime-model, Outages and Downtime Model>> there are two outages.
+The first outage shows a short outage which was detected as _up_ after 90 seconds.
+The second outage is not resolved now and the monitor has not detected an available service and was not available in the first 5 minutes (10 times 30 second polling).
+The scheduler changed the polling interval back to 5 minutes.
+
+.Example default configuration of the Downtime Model
+[source, xml]
+----
+<downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m --><1>
+<downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h --><2>
+<downtime interval="600000" begin="43200000" end="432000000" /><!-- 10m, 12h, 5d --><3>
+<downtime interval="3600000" begin="432000000" delete="never"/><!-- 1h, 5d --><4>
+----
+<1> from 0 seconds after an outage is detected until 5 minutes, the polling interval will be set to 30 seconds
+<2> after 5 minutes of an ongoing outage until 12 hours, the polling interval will be set to 5 minutes
+<3> after 12 hours of an ongoing outage until 5 days, the polling interval will be set to 10 minutes
+<4> after 5 days of an ongoing outage the service will be polled only once a hour and we do not delete services
+
+The last downtime interval can have an attribute `delete` and allows you to influence the service lifecycle. 
+It defines the behavior that happens if a service doesn't come back online after 5 days.
+The following downtime attributes for `delete` can be used:
+
+[options="header, autowidth"]
+|===
+| Value     | description
+| `never`   | services will never be deleted automatically
+| `managed` | only managed services will be deleted
+| `always`  | managed and unmanaged services will be deleted
+| _not set_ | if `delete` is not configured it is similar to `delete="never"` and is the default
+|===

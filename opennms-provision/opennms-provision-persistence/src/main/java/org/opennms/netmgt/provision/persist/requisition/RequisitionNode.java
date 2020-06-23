@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,8 +32,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.TreeSet;
 
+import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -41,6 +43,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+
+import org.opennms.netmgt.model.PrimaryType;
 
 
 /**
@@ -50,17 +54,23 @@ import javax.xml.bind.annotation.XmlType;
  * @version $Id: $
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "m_interfaces", "m_categories", "m_assets" })
+@XmlType(name = "", propOrder = { "m_interfaces", "m_categories", "m_assets", "m_metaData" })
 @XmlRootElement(name = "node")
 public class RequisitionNode {
 
+    @XmlAttribute(name = "location")
+    protected String m_location;
+
     @XmlElement(name = "interface")
-    protected List<RequisitionInterface> m_interfaces = new ArrayList<RequisitionInterface>();
+    protected List<RequisitionInterface> m_interfaces = new ArrayList<>();
     @XmlElement(name="category")
-    protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();
+    protected List<RequisitionCategory> m_categories = new ArrayList<>();
     @XmlElement(name="asset")
-    protected List<RequisitionAsset> m_assets = new ArrayList<RequisitionAsset>();
+    protected List<RequisitionAsset> m_assets = new ArrayList<>();
     
+    @XmlElement(name="meta-data")
+    protected List<RequisitionMetaData> m_metaData = new ArrayList<>();
+
     @XmlAttribute(name = "building")
     protected String m_building;
 
@@ -119,7 +129,7 @@ public class RequisitionNode {
      */
     public void setInterfaces(Collection<RequisitionInterface> interfaces) {
         if (interfaces == null) {
-            interfaces = new TreeSet<RequisitionInterface>();
+            interfaces = new TreeSet<>();
         }
         if (m_interfaces == interfaces) return;
         m_interfaces.clear();
@@ -214,7 +224,7 @@ public class RequisitionNode {
      */
     public void setCategories(Collection<RequisitionCategory> categories) {
         if (categories == null) {
-            categories = new TreeSet<RequisitionCategory>();
+            categories = new TreeSet<>();
         }
         if (m_categories == categories) return;
         m_categories.clear();
@@ -311,7 +321,7 @@ public class RequisitionNode {
      */
     public void setAssets(Collection<RequisitionAsset> assets) {
         if (assets == null) {
-            assets = new TreeSet<RequisitionAsset>();
+            assets = new TreeSet<>();
         }
         if (m_assets == assets) return;
         m_assets.clear();
@@ -367,6 +377,32 @@ public class RequisitionNode {
     public void putAsset(RequisitionAsset asset) {
         deleteAsset(asset.getName());
         m_assets.add(0, asset);
+    }
+
+    public List<RequisitionMetaData> getMetaData() {
+        return m_metaData;
+    }
+
+    public void setMetaData(List<RequisitionMetaData> metaData) {
+        m_metaData = metaData;
+    }
+
+    /**
+     * <p>Getter for the field <code>location</code>.</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getLocation() {
+        return m_location;
+    }
+
+    /**
+     * <p>Setter for the field <code>location</code>.</p>
+     *
+     * @param value a {@link java.lang.String} object.
+     */
+    public void setLocation(String value) {
+        m_location = value;
     }
 
     /**
@@ -456,7 +492,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setParentForeignSource(String value) {
-        m_parentForeignSource = value;
+        m_parentForeignSource = value != null && "".equals(value.trim()) ? null : value;
     }
 
     /**
@@ -474,7 +510,7 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setParentForeignId(String value) {
-        m_parentForeignId = value;
+        m_parentForeignId = value != null && "".equals(value.trim()) ? null : value;
     }
 
     /**
@@ -492,24 +528,46 @@ public class RequisitionNode {
      * @param value a {@link java.lang.String} object.
      */
     public void setParentNodeLabel(String value) {
-        m_parentNodeLabel = value;
+        m_parentNodeLabel = value != null && "".equals(value.trim()) ? null : value;
+    }
+
+    public void validate() throws ValidationException {
+        if (m_nodeLabel == null) {
+            throw new ValidationException("Requisition node 'node-label' is a required attribute!");
+        }
+        if (m_foreignId == null) {
+            throw new ValidationException("Requisition node 'foreign-id' is a required attribute!");
+        }
+        if (m_foreignId.contains("/")) {
+            throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains invalid characters. ('/' is forbidden.)");
+        }
+        if (m_interfaces != null) {
+            for (final RequisitionInterface iface : m_interfaces) {
+                iface.validate();
+            }
+            // there can be only one primary interface per node
+            if(m_interfaces.stream().filter(iface -> PrimaryType.PRIMARY == iface.m_snmpPrimary).count() > 1) {
+                throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains multiple primary interfaces. Maximum one is allowed.");
+            }
+        }
+        if (m_categories != null) {
+            for (final RequisitionCategory cat : m_categories) {
+                cat.validate();
+            }
+        }
+        if (m_assets != null) {
+            for (final RequisitionAsset asset : m_assets) {
+                asset.validate();
+            }
+        }
     }
 
     @Override
     public int hashCode() {
-        final int prime = 17;
-        int result = 1;
-        result = prime * result + ((m_building == null) ? 0 : m_building.hashCode());
-        result = prime * result + ((m_city == null) ? 0 : m_city.hashCode());
-        result = prime * result + ((m_foreignId == null) ? 0 : m_foreignId.hashCode());
-        result = prime * result + ((m_assets == null) ? 0 : m_assets.hashCode());
-        result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
-        result = prime * result + ((m_interfaces == null) ? 0 : m_interfaces.hashCode());
-        result = prime * result + ((m_nodeLabel == null) ? 0 : m_nodeLabel.hashCode());
-        result = prime * result + ((m_parentForeignId == null) ? 0 : m_parentForeignId.hashCode());
-        result = prime * result + ((m_parentForeignSource == null) ? 0 : m_parentForeignSource.hashCode());
-        result = prime * result + ((m_parentNodeLabel == null) ? 0 : m_parentNodeLabel.hashCode());
-        return result;
+        return Objects.hash(m_building, m_city, m_foreignId, m_assets,
+                m_categories, m_interfaces, m_nodeLabel, m_nodeLabel,
+                m_parentForeignId, m_parentForeignSource, m_parentNodeLabel, m_location,
+                m_metaData);
     }
 
     @Override
@@ -518,68 +576,30 @@ public class RequisitionNode {
         if (obj == null) return false;
         if (!(obj instanceof RequisitionNode)) return false;
         final RequisitionNode other = (RequisitionNode) obj;
-        if (m_building == null) {
-            if (other.m_building != null) return false;
-        } else if (!m_building.equals(other.m_building)) {
-            return false;
-        }
-        if (m_city == null) {
-            if (other.m_city != null) return false;
-        } else if (!m_city.equals(other.m_city)) {
-            return false;
-        }
-        if (m_foreignId == null) {
-            if (other.m_foreignId != null) return false;
-        } else if (!m_foreignId.equals(other.m_foreignId)) {
-            return false;
-        }
-        if (m_assets == null) {
-            if (other.m_assets != null) return false;
-        } else if (!m_assets.equals(other.m_assets)) {
-            return false;
-        }
-        if (m_categories == null) {
-            if (other.m_categories != null) return false;
-        } else if (!m_categories.equals(other.m_categories)) {
-            return false;
-        }
-        if (m_interfaces == null) {
-            if (other.m_interfaces != null) return false;
-        } else if (!m_interfaces.equals(other.m_interfaces)) {
-            return false;
-        }
-        if (m_nodeLabel == null) {
-            if (other.m_nodeLabel != null) return false;
-        } else if (!m_nodeLabel.equals(other.m_nodeLabel)) {
-            return false;
-        }
-        if (m_parentForeignId == null) {
-            if (other.m_parentForeignId != null) return false;
-        } else if (!m_parentForeignId.equals(other.m_parentForeignId)) {
-            return false;
-        }
-        if (m_parentForeignSource == null) {
-            if (other.m_parentForeignSource != null) return false;
-        } else if (!m_parentForeignSource.equals(other.m_parentForeignSource)) {
-            return false;
-        }
-        if (m_parentNodeLabel == null) {
-            if (other.m_parentNodeLabel != null) return false;
-        } else if (!m_parentNodeLabel.equals(other.m_parentNodeLabel)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.m_building, other.m_building) &&
+                Objects.equals(this.m_city, other.m_city) &&
+                Objects.equals(this.m_foreignId, other.m_foreignId) &&
+                Objects.equals(this.m_assets, other.m_assets) &&
+                Objects.equals(this.m_categories, other.m_categories) &&
+                Objects.equals(this.m_interfaces, other.m_interfaces) &&
+                Objects.equals(this.m_nodeLabel, other.m_nodeLabel) &&
+                Objects.equals(this.m_parentForeignId, other.m_parentForeignId) &&
+                Objects.equals(this.m_parentForeignSource, other.m_parentForeignSource) &&
+                Objects.equals(this.m_parentNodeLabel, other.m_parentNodeLabel) &&
+                Objects.equals(this.m_location, other.m_location) &&
+                Objects.equals(this.m_metaData, other.m_metaData);
     }
 
     @Override
     public String toString() {
         return "RequisitionNode [interfaces=" + m_interfaces
-                + ", categories=" + m_categories + ", assets=" + m_assets
+                + ", categories=" + m_categories + ", assets=" + m_assets + ", meta-data=" + m_metaData
                 + ", building=" + m_building + ", city=" + m_city
                 + ", foreignId=" + m_foreignId + ", nodeLabel=" + m_nodeLabel
                 + ", parentForeignSource=" + m_parentForeignSource
                 + ", parentForeignId=" + m_parentForeignId
-                + ", parentNodeLabel=" + m_parentNodeLabel + "]";
+                + ", parentNodeLabel=" + m_parentNodeLabel
+                + ", location=" + m_location + "]";
     }
 
 }

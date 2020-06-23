@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,11 +34,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,8 +77,9 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     
     private static final String MESSAGE_PREFIX = "Dynamic DNS provisioning failed: ";
     private static final String ADAPTER_NAME="DNS Provisioning Adapter";
+    private Integer m_level = 0;
     
-    private volatile static ConcurrentMap<Integer, DnsRecord> m_nodeDnsRecordMap;
+    private static volatile ConcurrentMap<Integer, DnsRecord> m_nodeDnsRecordMap;
 
     /**
      * <p>afterPropertiesSet</p>
@@ -96,6 +98,12 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             }
         });
 
+        String levelString = System.getProperty("importer.adapter.dns.level");
+        if (levelString != null) {
+        	Integer level = SystemProperties.getInteger(levelString);
+        	if (level != null && level.intValue() > 0)
+        		m_level = level;
+        }
         String dnsServer = System.getProperty("importer.adapter.dns.server");
         if (!StringUtils.isBlank(dnsServer)) {
             LOG.info("DNS property found: {}", dnsServer);
@@ -124,7 +132,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         m_nodeDnsRecordMap = new ConcurrentHashMap<Integer, DnsRecord>(nodes.size());
         
         for (OnmsNode onmsNode : nodes) {
-            m_nodeDnsRecordMap.putIfAbsent(onmsNode.getId(), new DnsRecord(onmsNode));
+            m_nodeDnsRecordMap.putIfAbsent(onmsNode.getId(), new DnsRecord(onmsNode,m_level));
         }
         
     }
@@ -149,7 +157,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
@@ -158,7 +166,7 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
@@ -213,7 +221,11 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
         LOG.debug("doUpdate: operation: {}", op.getType().name());
         try {
             node = m_nodeDao.get(op.getNodeId());
-            DnsRecord record = new DnsRecord(node);
+            if (node == null) {
+            	doDelete(op);
+            	return;
+            }
+            DnsRecord record = new DnsRecord(node,m_level);
             LOG.debug("doUpdate: DnsRecord: hostname: {} zone: {} ip address {}", record.getIp().getHostAddress(), record.getHostname(), record.getZone());
             DnsRecord oldRecord = m_nodeDnsRecordMap.get(Integer.valueOf(node.getId()));
 
@@ -276,14 +288,4 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
     public void setTemplate(TransactionTemplate template) {
         m_template = template;
     }
-
-    /**
-     * <p>getTemplate</p>
-     *
-     * @return a {@link org.springframework.transaction.support.TransactionTemplate} object.
-     */
-    public TransactionTemplate getTemplate() {
-        return m_template;
-    }
-
 }

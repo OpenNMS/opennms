@@ -1,0 +1,55 @@
+<div class="card-body">
+    <div class="pull-right mb-2">
+        <button id="action.addGrafanaEndpoint" class="btn btn-sm btn-primary" title="Add new endpoint" ng-click="addNewEndpoint()"><i class="fa fa-plus"></i></button>
+        <button id="action.refreshGrafanaEndpoints" class="btn btn-sm btn-primary" title="Reload Page" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
+    </div>
+    <div>
+        <span ng-if="endpoints.length == 0" class="ml-2 text-muted">No data available</span>
+        <table ng-if="endpoints.length > 0" class="table table-sm table-striped">
+            <thead>
+            <tr>
+                <th>Grafana ID</th>
+                <th>URL</th>
+                <th>API Key</th>
+                <th>Description</th>
+                <th>Connect Timeout</th>
+                <th>Read Timeout</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="endpoint in endpoints" data-id="{{endpoint.id}}">
+                <td>{{endpoint.uid}}</td>
+                <td>{{endpoint.url}}</td>
+                <td>
+                    <span ng-show="endpoint.revealApiKey === true">{{endpoint.apiKey}}</span>
+                    <span ng-show="endpoint.revealApiKey === false">**********</span>
+                    <button id="action.revealApiKey.{{endpoint.id}}" class="btn btn-link" ng-click="endpoint.revealApiKey = !endpoint.revealApiKey">
+                        <i ng-class="{'fa-eye': endpoint.revealApiKey === false, 'fa-eye-slash': endpoint.revealApiKey === true}" class="fa"></i>
+                    </button>
+                </td>
+                <td>{{endpoint.description}}</td>
+                <td>{{endpoint.connectTimeout}}</td>
+                <td>{{endpoint.readTimeout}}</td>
+                <td>
+                    <button id="action.delete.{{endpoint.id}}"
+                            class="btn btn-danger btn-sm"
+                            mwl-confirm
+                            title="Delete Endpoint"
+                            message="Do you want to delete the Grafana Endpoint with url '{{endpoint.url}}' and UID '{{endpoint.uid}}'?"
+                            on-confirm="deleteEndpoint(endpoint)"
+                            placement="left"
+                            confirm-button-type="danger"
+                            cancel-button-type="secondary"
+                            confirm-text="Yes"
+                            cancel-text="No"><i class="fa fa-trash-o"></i></button>
+                    <button id="action.edit.{{endpoint.id}}"   class="btn btn-secondary btn-sm" ng-click="editEndpoint(endpoint)"   title="Edit Endpoint"   ><i class="fa fa-pencil"></i></button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="mt-2">
+            <span ng-if="endpoints.length > 0" class="text-muted">{{endpoints.length}} Grafana Endpoint(s)</span>
+        </div>
+    </div>
+</div>

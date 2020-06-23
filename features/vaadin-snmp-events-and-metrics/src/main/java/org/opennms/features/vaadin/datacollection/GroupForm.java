@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,19 +25,19 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.Group;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * The Class Event Form.
@@ -49,29 +49,27 @@ import com.vaadin.ui.TextField;
 public class GroupForm extends CustomComponent {
 
     /** The name. */
-    @PropertyId("name")
     final TextField name = new TextField("Group Name");
 
-    /** The if type. */
-    @PropertyId("ifType")
+    /** The ifType. */
     final ComboBox ifType = new ComboBox("ifType Filter");
 
-    /** The mib objs. */
-    @PropertyId("mibObjCollection")
+    /** The MIB Objects. */
     final MibObjField mibObjs; 
 
     /** The Event editor. */
-    private final FieldGroup groupEditor = new FieldGroup();
+    final BeanFieldGroup<Group> groupEditor = new BeanFieldGroup<Group>(Group.class);
 
     /** The event layout. */
-    private final FormLayout groupLayout = new FormLayout();
+    final FormLayout groupLayout = new FormLayout();
 
     /**
      * Instantiates a new group form.
      *
      * @param resourceTypes the resource types
+     * @param mibGroupEditable true, if the MIB group can be modified
      */
-    public GroupForm(final List<String> resourceTypes) {
+    public GroupForm(final List<String> resourceTypes, boolean mibGroupEditable) {
         setCaption("MIB Group Detail");
         groupLayout.setMargin(true);
 
@@ -87,7 +85,7 @@ public class GroupForm extends CustomComponent {
         ifType.setNewItemsAllowed(true);
         groupLayout.addComponent(ifType);
 
-        mibObjs = new MibObjField(resourceTypes);
+        mibObjs = new MibObjField(resourceTypes, mibGroupEditable);
         mibObjs.setCaption("MIB Objects");
         mibObjs.setRequired(true);
         mibObjs.setImmediate(true);
@@ -95,7 +93,10 @@ public class GroupForm extends CustomComponent {
         groupLayout.addComponent(mibObjs);
 
         setGroup(createBasicGroup());
-        groupEditor.bindMemberFields(this);
+
+        groupEditor.bind(name, "name");
+        groupEditor.bind(ifType, "ifType");
+        groupEditor.bind(mibObjs, "mibObjs");
 
         setCompositionRoot(groupLayout);
     }
@@ -105,9 +106,8 @@ public class GroupForm extends CustomComponent {
      *
      * @return the group
      */
-    @SuppressWarnings("unchecked")
     public Group getGroup() {
-        return ((BeanItem<Group>) groupEditor.getItemDataSource()).getBean();
+        return groupEditor.getItemDataSource().getBean();
     }
 
     /**
@@ -116,7 +116,7 @@ public class GroupForm extends CustomComponent {
      * @param group the new group
      */
     public void setGroup(Group group) {
-        groupEditor.setItemDataSource(new BeanItem<Group>(group));
+        groupEditor.setItemDataSource(group);
     }
 
     /**
@@ -132,12 +132,19 @@ public class GroupForm extends CustomComponent {
     }
 
     /**
-     * Gets the field group.
-     *
-     * @return the field group
+     * Discard.
      */
-    public FieldGroup getFieldGroup() {
-        return groupEditor;
+    public void discard() {
+        groupEditor.discard();
+    }
+
+    /**
+     * Commit.
+     *
+     * @throws CommitException the commit exception
+     */
+    public void commit() throws CommitException {
+        groupEditor.commit();
     }
 
     /* (non-Javadoc)
@@ -145,7 +152,6 @@ public class GroupForm extends CustomComponent {
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         groupEditor.setReadOnly(readOnly);
     }
 
@@ -154,6 +160,15 @@ public class GroupForm extends CustomComponent {
      */
     @Override
     public boolean isReadOnly() {
-        return super.isReadOnly() && groupEditor.isReadOnly();
+        return groupEditor.isReadOnly();
+    }
+
+    /**
+     * Gets the group name.
+     *
+     * @return the group name
+     */
+    public String getGroupName() {
+        return name.getValue();
     }
 }

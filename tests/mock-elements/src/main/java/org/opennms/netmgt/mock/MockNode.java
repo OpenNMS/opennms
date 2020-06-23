@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,8 +30,9 @@ package org.opennms.netmgt.mock;
 
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.NodeLabelChangedEventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -43,13 +44,14 @@ import org.opennms.netmgt.xml.event.Event;
  * Preferences - Java - Code Style - Code Templates
  * @version $Id: $
  */
-public class MockNode extends MockContainer<MockNetwork,MockInterface> {
+public class MockNode extends MockContainer<MockNetwork, MockElement> {
 
     String m_label;
+    String m_location;
 
     int m_nodeid;
     int m_nextIfIndex = 1;
-
+    
     /**
      * <p>Constructor for MockNode.</p>
      *
@@ -59,6 +61,8 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
      */
     public MockNode(MockNetwork network, int nodeid, String label) {
         super(network);
+        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
+        m_location = "Default";
         m_nodeid = nodeid;
         m_label = label;
     }
@@ -88,7 +92,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
     // impl
     @Override
     Object getKey() {
-        return new Integer(m_nodeid);
+        return Integer.valueOf(m_nodeid);
     }
 
     // model
@@ -108,6 +112,24 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
      */
     public void setLabel(String label) {
         m_label = label;
+    }
+
+    /**
+     * <p>getLocation</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getLocation() {
+        return m_location;
+    }
+
+    /**
+     * <p>setLocation</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     */
+    public void setLocation(String location) {
+        m_location = location;
     }
 
     // model
@@ -161,6 +183,7 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
     	return new ToStringBuilder(this)
     		.append("id", m_nodeid)
     		.append("label", m_label)
+    		.append("location", m_location)
     		.append("members", getMembers()).toString();
     }
 
@@ -229,9 +252,11 @@ public class MockNode extends MockContainer<MockNetwork,MockInterface> {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event createNodeLabelChangedEvent(String newLabel) {
-        EventBuilder event = MockEventUtil.createEventBuilder("Test", EventConstants.NODE_LABEL_CHANGED_EVENT_UEI);
+        NodeLabelChangedEventBuilder event = new NodeLabelChangedEventBuilder("Test");
         event.setNodeid(m_nodeid);
-        event.addParam(EventConstants.PARM_NODE_LABEL, newLabel);
+        event.setNewNodeLabel(newLabel);
+        event.setOldNodeLabel("oldLabel");
         return event.getEvent();
     }
+    
 }

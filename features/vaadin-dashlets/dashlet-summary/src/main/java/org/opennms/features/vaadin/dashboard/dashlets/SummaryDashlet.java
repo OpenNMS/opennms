@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,45 +25,50 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.server.Page;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.*;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsSeverity;
+
+import com.vaadin.server.Sizeable;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.UI;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * This class implements a {@link Dashlet} for testing purposes.
  *
  * @author Christian Pape
  */
-public class SummaryDashlet extends HorizontalLayout implements Dashlet {
-    /**
-     * the dashlet's name
-     */
-    private String m_name;
+public class SummaryDashlet extends AbstractDashlet {
 
     /**
      * The {@link AlarmDao} used
      */
     private AlarmDao m_alarmDao;
     /**
-     * The {@link DashletSpec} for this instance
-     */
-    private DashletSpec m_dashletSpec;
-    /**
      * Timeslot to use
      */
-    private long timeslot = 3600;
+    private long m_timeslot = 3600;
     /**
      * boosted value
      */
-    private boolean boosted = false;
+    private boolean m_boosted = false;
     /**
      * Trend identifiers
      */
@@ -73,26 +78,20 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
     private static int TREND_SOUTHEAST = 1;
     private static int TREND_SOUTH = 0;
 
+    private DashletComponent m_dashboardComponent;
+    private DashletComponent m_wallboardComponent;
+
     /**
      * Constructor for instantiating new objects.
      *
      * @param dashletSpec the {@link DashletSpec} to be used
      */
     public SummaryDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao) {
+        super(name, dashletSpec);
         /**
          * Setting the member fields
          */
-        m_name = name;
-        m_dashletSpec = dashletSpec;
         m_alarmDao = alarmDao;
-
-        /**
-         * Setting up the layout
-         */
-        setCaption(getName());
-        setWidth("100%");
-
-        update();
     }
 
     /**
@@ -191,13 +190,13 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
         labelx.addStyleName("summary-font-legend");
 
         Image ackdImage = new Image(null, new ThemeResource("img/acknowledged.png"));
-        ackdImage.setWidth(16, Unit.PIXELS);
+        ackdImage.setWidth(16, Sizeable.Unit.PIXELS);
 
         Image unackdImage = new Image(null, new ThemeResource("img/unacknowledged.png"));
-        unackdImage.setWidth(16, Unit.PIXELS);
+        unackdImage.setWidth(16, Sizeable.Unit.PIXELS);
 
         Label dummyLabel = new Label();
-        dummyLabel.setWidth(32, Unit.PIXELS);
+        dummyLabel.setWidth(32, Sizeable.Unit.PIXELS);
 
         horizontalLayout.addComponent(labelx);
         horizontalLayout.addComponent(ackdImage);
@@ -212,7 +211,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
         horizontalLayout.setExpandRatio(unackdImage, 1.0f);
         horizontalLayout.setExpandRatio(dummyLabel, 1.0f);
 
-        horizontalLayout.setWidth(375, Unit.PIXELS);
+        horizontalLayout.setWidth(375, Sizeable.Unit.PIXELS);
 
         return horizontalLayout;
     }
@@ -222,7 +221,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
      *
      * @return the {@link Component}
      */
-    private Component getComponentSeverity() {
+    private Component getComponentSeverity(int width) {
         VerticalLayout verticalLayout = new VerticalLayout();
 
         int overallSum = 0;
@@ -236,8 +235,8 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
             horizontalLayout.addStyleName("summary");
             horizontalLayout.addStyleName(onmsSeverity.name().toLowerCase());
 
-            int acknowledged = countBySeverity(true, timeslot, onmsSeverity);
-            int notAcknowledged = countBySeverity(false, timeslot, onmsSeverity);
+            int acknowledged = countBySeverity(true, m_timeslot, onmsSeverity);
+            int notAcknowledged = countBySeverity(false, m_timeslot, onmsSeverity);
 
             Label labelSeverity = new Label(onmsSeverity.getLabel());
             labelSeverity.addStyleName("summary-font");
@@ -256,7 +255,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
             overallSum += onmsSeverity.getId() * status;
 
             Image image = new Image(null, new ThemeResource("img/a" + status + ".png"));
-            image.setWidth(32, Unit.PIXELS);
+            image.setWidth(width, Sizeable.Unit.PIXELS);
             horizontalLayout.addComponent(image);
 
             horizontalLayout.setExpandRatio(labelSeverity, 4.0f);
@@ -266,14 +265,14 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
 
             horizontalLayout.setComponentAlignment(image, Alignment.TOP_CENTER);
 
-            horizontalLayout.setWidth(375, Unit.PIXELS);
+            horizontalLayout.setWidth(375, Sizeable.Unit.PIXELS);
             verticalLayout.addComponent(horizontalLayout);
         }
 
         int globalTrend = (int) Math.max(0, Math.min(4, Math.round(((double) overallSum) / ((double) severitySum))));
 
         Image image = new Image(null, new ThemeResource("img/a" + globalTrend + ".png"));
-        image.setWidth(256, Unit.PIXELS);
+        image.setWidth(width * 8f, Sizeable.Unit.PIXELS);
 
         VerticalLayout globalTrendLayout = new VerticalLayout();
         globalTrendLayout.setSpacing(true);
@@ -285,7 +284,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
         labelTitle.addStyleName("summary-font");
         labelTitle.setSizeUndefined();
 
-        Label labelTimeslot = new Label("(" + getHumanReadableFormat(timeslot) + ")");
+        Label labelTimeslot = new Label("(" + getHumanReadableFormat(m_timeslot) + ")");
         labelTimeslot.addStyleName("summary-font");
         labelTimeslot.setSizeUndefined();
 
@@ -293,7 +292,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
         globalTrendLayout.addComponent(labelTimeslot);
         globalTrendLayout.addComponent(image);
 
-        globalTrendLayout.setWidth(375, Unit.PIXELS);
+        globalTrendLayout.setWidth(375, Sizeable.Unit.PIXELS);
 
         globalTrendLayout.setComponentAlignment(labelTitle, Alignment.MIDDLE_CENTER);
         globalTrendLayout.setComponentAlignment(labelTimeslot, Alignment.MIDDLE_CENTER);
@@ -303,7 +302,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
 
         verticalLayout.addComponent(globalTrendLayout, 0);
 
-        boosted = (globalTrend > 2);
+        m_boosted = (globalTrend > 2);
 
         return verticalLayout;
     }
@@ -313,7 +312,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
      *
      * @return the {@link Component}
      */
-    private Component getComponentUei() {
+    private Component getComponentUei(int width) {
         VerticalLayout verticalLayout = new VerticalLayout();
 
         int overallSum = 0;
@@ -339,8 +338,8 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
                 }
             }
 
-            int acknowledged = countByUei(true, timeslot, uei);
-            int notAcknowledged = countByUei(false, timeslot, uei);
+            int acknowledged = countByUei(true, m_timeslot, uei);
+            int notAcknowledged = countByUei(false, m_timeslot, uei);
 
             Label labelSeverity = new Label(uei.replace("uei.opennms.org/nodes/", ""));
             labelSeverity.addStyleName("summary-font");
@@ -359,7 +358,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
             overallSum += i * status;
 
             Image image = new Image(null, new ThemeResource("img/a" + status + ".png"));
-            image.setWidth(32, Unit.PIXELS);
+            image.setWidth(width, Sizeable.Unit.PIXELS);
             horizontalLayout.addComponent(image);
 
             horizontalLayout.setExpandRatio(labelSeverity, 4.0f);
@@ -369,14 +368,14 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
 
             horizontalLayout.setComponentAlignment(image, Alignment.TOP_CENTER);
 
-            horizontalLayout.setWidth(375, Unit.PIXELS);
+            horizontalLayout.setWidth(375, Sizeable.Unit.PIXELS);
             verticalLayout.addComponent(horizontalLayout);
         }
 
         int globalTrend = (int) Math.max(0, Math.min(4, Math.round(((double) overallSum) / ((double) severitySum))));
 
         Image image = new Image(null, new ThemeResource("img/a" + globalTrend + ".png"));
-        image.setWidth(256, Unit.PIXELS);
+        image.setWidth(width * 8f, Sizeable.Unit.PIXELS);
 
         VerticalLayout globalTrendLayout = new VerticalLayout();
         globalTrendLayout.setSpacing(true);
@@ -388,7 +387,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
         labelTitle.addStyleName("summary-font");
         labelTitle.setSizeUndefined();
 
-        Label labelTimeslot = new Label("(" + getHumanReadableFormat(timeslot) + ")");
+        Label labelTimeslot = new Label("(" + getHumanReadableFormat(m_timeslot) + ")");
         labelTimeslot.addStyleName("summary-font");
         labelTimeslot.setSizeUndefined();
 
@@ -396,7 +395,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
         globalTrendLayout.addComponent(labelTimeslot);
         globalTrendLayout.addComponent(image);
 
-        globalTrendLayout.setWidth(375, Unit.PIXELS);
+        globalTrendLayout.setWidth(375, Sizeable.Unit.PIXELS);
 
         globalTrendLayout.setComponentAlignment(labelTitle, Alignment.MIDDLE_CENTER);
         globalTrendLayout.setComponentAlignment(labelTimeslot, Alignment.MIDDLE_CENTER);
@@ -406,56 +405,9 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
 
         verticalLayout.addComponent(globalTrendLayout, 0);
 
-        boosted = (globalTrend > 2);
+        m_boosted = (globalTrend > 2);
 
         return verticalLayout;
-    }
-
-    /**
-     * Updates the data and checks whether this dashlet is boosted.
-     */
-    @Override
-    public void update() {
-        timeslot = 3600;
-
-        try {
-            timeslot = Math.max(1, Integer.parseInt(m_dashletSpec.getParameters().get("timeslot")));
-        } catch (NumberFormatException numberFormatException) {
-            /**
-             * Just ignore
-             */
-        }
-
-        removeAllComponents();
-
-        injectStyles();
-
-        Component severity = getComponentSeverity();
-        Component uei = getComponentUei();
-
-        addComponent(severity);
-        addComponent(uei);
-
-        setSizeFull();
-        setComponentAlignment(severity, Alignment.TOP_CENTER);
-        setComponentAlignment(uei, Alignment.TOP_CENTER);
-    }
-
-    /**
-     * Injects CSS styles in the current page
-     */
-    private void injectStyles() {
-        Page.getCurrent().getStyles().add(".summary.cleared { background: #000000; border-left: 15px solid #858585; }");
-        Page.getCurrent().getStyles().add(".summary.normal { background: #000000; border-left: 15px solid #336600; }");
-        Page.getCurrent().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 15px solid #999; }");
-        Page.getCurrent().getStyles().add(".summary.warning { background: #000000; border-left: 15px solid #FFCC00; }");
-        Page.getCurrent().getStyles().add(".summary.minor { background: #000000;  border-left: 15px solid #FF9900; }");
-        Page.getCurrent().getStyles().add(".summary.major { background: #000000; border-left: 15px solid #FF3300; }");
-        Page.getCurrent().getStyles().add(".summary.critical { background: #000000; border-left: 15px solid #CC0000; }");
-        Page.getCurrent().getStyles().add(".summary.global { background: #000000; border-left: 15px solid #000000; }");
-        Page.getCurrent().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
-        Page.getCurrent().getStyles().add(".summary-font { font-size: 24px; line-height: normal; text-align: right; }");
-        Page.getCurrent().getStyles().add(".summary-font-legend { font-size: 16px; line-height: normal; text-align: right; }");
     }
 
     /**
@@ -477,7 +429,7 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
 
         criteriaBuilder.eq("severity", onmsSeverity);
 
-        criteriaBuilder.sql("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lastEventTime) < " + age);
+        criteriaBuilder.sql("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lastEventTime) < ?", age, Type.LONG);
 
         return m_alarmDao.countMatching(criteriaBuilder.toCriteria());
     }
@@ -501,19 +453,156 @@ public class SummaryDashlet extends HorizontalLayout implements Dashlet {
 
         criteriaBuilder.eq("uei", uei);
 
-        criteriaBuilder.sql("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lastEventTime) < " + age);
+        criteriaBuilder.sql("EXTRACT(EPOCH FROM CURRENT_TIMESTAMP - lastEventTime) < ?", age, Type.LONG);
 
         return m_alarmDao.countMatching(criteriaBuilder.toCriteria());
     }
 
     @Override
-    public String getName() {
-        return m_name;
+    public DashletComponent getWallboardComponent(final UI ui) {
+        if (m_wallboardComponent == null) {
+            m_wallboardComponent = new AbstractDashletComponent() {
+                private HorizontalLayout m_horizontalLayout = new HorizontalLayout();
+
+                {
+                    m_horizontalLayout.setCaption(getName());
+                    m_horizontalLayout.setSizeFull();
+                    injectWallboardStyles();
+                }
+
+                /**
+                 * Injects CSS styles in the current page
+                 */
+                private void injectWallboardStyles() {
+                    ui.getPage().getStyles().add(".summary.cleared { background: #000000; border-left: 15px solid #858585; }");
+                    ui.getPage().getStyles().add(".summary.normal { background: #000000; border-left: 15px solid #336600; }");
+                    ui.getPage().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 15px solid #999; }");
+                    ui.getPage().getStyles().add(".summary.warning { background: #000000; border-left: 15px solid #FFCC00; }");
+                    ui.getPage().getStyles().add(".summary.minor { background: #000000;  border-left: 15px solid #FF9900; }");
+                    ui.getPage().getStyles().add(".summary.major { background: #000000; border-left: 15px solid #FF3300; }");
+                    ui.getPage().getStyles().add(".summary.critical { background: #000000; border-left: 15px solid #CC0000; }");
+                    ui.getPage().getStyles().add(".summary.global { background: #000000; border-left: 15px solid #000000; }");
+                    ui.getPage().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
+                    ui.getPage().getStyles().add(".summary-font { font-size: 24px; line-height: normal; text-align: right; color: #3ba300; }");
+                    ui.getPage().getStyles().add(".summary-font-legend { font-size: 16px; line-height: normal; text-align: right; color: #3ba300; }");
+                }
+
+                @Override
+                public void refresh() {
+                    m_timeslot = 3600;
+
+                    try {
+                        m_timeslot = Math.max(1, Integer.parseInt(getDashletSpec().getParameters().get("timeslot")));
+                    } catch (NumberFormatException numberFormatException) {
+                        /**
+                         * Just ignore
+                         */
+                    }
+
+                    m_horizontalLayout.removeAllComponents();
+
+                    Component severity = getComponentSeverity(32);
+                    Component uei = getComponentUei(32);
+
+                    m_horizontalLayout.addComponent(severity);
+                    m_horizontalLayout.addComponent(uei);
+
+                    m_horizontalLayout.setSizeFull();
+                    m_horizontalLayout.setComponentAlignment(severity, Alignment.TOP_CENTER);
+                    m_horizontalLayout.setComponentAlignment(uei, Alignment.TOP_CENTER);
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_horizontalLayout;
+                }
+
+                @Override
+                public boolean isBoosted() {
+                    return SummaryDashlet.this.m_boosted;
+                }
+            };
+        }
+
+        return m_wallboardComponent;
     }
 
     @Override
-    public boolean isBoosted() {
-        return boosted;
-    }
+    public DashletComponent getDashboardComponent(final UI ui) {
+        if (m_dashboardComponent == null) {
+            m_dashboardComponent = new AbstractDashletComponent() {
+                private HorizontalLayout m_horizontalLayout = new HorizontalLayout();
 
+                {
+                    m_horizontalLayout.setCaption(getName());
+                    m_horizontalLayout.setSizeFull();
+                    injectDashboardStyles();
+                }
+
+                /**
+                 * Injects CSS styles in the current page
+                 */
+                private void injectDashboardStyles() {
+                    ui.getPage().getStyles().add(".summary.cleared { background: #000000; border-left: 8px solid #858585; }");
+                    ui.getPage().getStyles().add(".summary.normal { background: #000000; border-left: 8px solid #336600; }");
+                    ui.getPage().getStyles().add(".summary.indeterminate {  background: #000000; border-left: 8px solid #999; }");
+                    ui.getPage().getStyles().add(".summary.warning { background: #000000; border-left: 8px solid #FFCC00; }");
+                    ui.getPage().getStyles().add(".summary.minor { background: #000000;  border-left: 8px solid #FF9900; }");
+                    ui.getPage().getStyles().add(".summary.major { background: #000000; border-left: 8px solid #FF3300; }");
+                    ui.getPage().getStyles().add(".summary.critical { background: #000000; border-left: 8px solid #CC0000; }");
+                    ui.getPage().getStyles().add(".summary.global { background: #000000; border-left: 8px solid #000000; }");
+                    ui.getPage().getStyles().add(".summary { padding: 5px 5px; margin: 1px; }");
+                    ui.getPage().getStyles().add(".summary-font { font-size: 17px; line-height: normal; text-align: right; color: #3ba300; }");
+                    ui.getPage().getStyles().add(".summary-font-legend { font-size: 9px; line-height: normal; text-align: right; color: #3ba300; }");
+                }
+
+                @Override
+                public void refresh() {
+                    m_timeslot = 3600;
+
+                    try {
+                        m_timeslot = Math.max(1, Integer.parseInt(getDashletSpec().getParameters().get("timeslot")));
+                    } catch (NumberFormatException numberFormatException) {
+                        /**
+                         * Just ignore
+                         */
+                    }
+
+                    m_horizontalLayout.removeAllComponents();
+
+                    Accordion accordion = new Accordion();
+                    accordion.setSizeFull();
+
+                    Component severity = getComponentSeverity(16);
+                    Component uei = getComponentUei(16);
+
+                    VerticalLayout v1 = new VerticalLayout(severity);
+                    v1.setSizeFull();
+                    v1.setComponentAlignment(severity, Alignment.MIDDLE_CENTER);
+                    v1.setMargin(true);
+                    accordion.addTab(v1, "by Severity");
+
+                    VerticalLayout v2 = new VerticalLayout(uei);
+                    v2.setSizeFull();
+                    v2.setComponentAlignment(uei, Alignment.MIDDLE_CENTER);
+                    v2.setMargin(true);
+                    accordion.addTab(v2, "by Uei");
+
+                    m_horizontalLayout.addComponent(accordion);
+                }
+
+                @Override
+                public Component getComponent() {
+                    return m_horizontalLayout;
+                }
+
+                @Override
+                public boolean isBoosted() {
+                    return SummaryDashlet.this.m_boosted;
+                }
+            };
+        }
+
+        return m_dashboardComponent;
+    }
 }

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,6 +32,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,15 +41,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.snmpAsset.adapter.AssetField;
 import org.opennms.netmgt.config.snmpAsset.adapter.SnmpAssetAdapterConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract RancidAdapterConfigManager class.</p>
@@ -82,12 +82,10 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 	 * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
 	 * @param reader a {@link java.io.InputStream} object.
 	 * @param verifyServer a boolean.
-	 * @throws org.exolab.castor.xml.MarshalException if any.
-	 * @throws org.exolab.castor.xml.ValidationException if any.
 	 * @throws java.io.IOException if any.
 	 * @param serverName a {@link java.lang.String} object.
 	 */
-	public SnmpAssetAdapterConfigManager(final long lastModified, final InputStream reader) throws MarshalException, ValidationException, IOException {
+	public SnmpAssetAdapterConfigManager(final long lastModified, final InputStream reader) throws IOException {
 		reloadXML(lastModified, reader);
 	}
 
@@ -106,14 +104,12 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 	 * simultaneously.
 	 *
 	 * @param reader a {@link java.io.InputStream} object.
-	 * @throws org.exolab.castor.xml.MarshalException if any.
-	 * @throws org.exolab.castor.xml.ValidationException if any.
 	 * @throws java.io.IOException if any.
 	 */
-	protected void reloadXML(final long lastModified, final InputStream reader) throws MarshalException, ValidationException, IOException {
+	protected void reloadXML(final long lastModified, final InputStream stream) throws IOException {
 	    getWriteLock().lock();
-	    try {
-    		m_config = CastorUtils.unmarshal(SnmpAssetAdapterConfiguration.class, reader);
+	    try(final Reader reader = new InputStreamReader(stream)) {
+    		m_config = JaxbUtils.unmarshal(SnmpAssetAdapterConfiguration.class, reader);
     		m_lastModified = lastModified;
 	    } finally {
 	        getWriteLock().unlock();
@@ -124,11 +120,9 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
 	 * <p>Update</p>
 	 *
 	 * @throws java.io.IOException if any.
-	 * @throws org.exolab.castor.xml.MarshalException if any.
-	 * @throws org.exolab.castor.xml.ValidationException if any.
 	 */
     @Override
-	public void update() throws IOException, MarshalException, ValidationException {
+	public void update() throws IOException {
 	    getWriteLock().lock();
 	    try {
     	    final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME);
@@ -176,17 +170,17 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
     			return new AssetField[0];
     		}
     
-    		final List<AssetField> retval = new ArrayList<AssetField>();
-    		for (final org.opennms.netmgt.config.snmpAsset.adapter.Package pkg : m_config.getPackageCollection()) {
-    		    final String pkgSysoid = pkg.getPackageChoice().getSysoid();
-    			final String pkgSysoidMask = pkg.getPackageChoice().getSysoidMask();
+    		final List<AssetField> retval = new ArrayList<>();
+    		for (final org.opennms.netmgt.config.snmpAsset.adapter.Package pkg : m_config.getPackages()) {
+    		    final String pkgSysoid = pkg.getSysoid();
+    			final String pkgSysoidMask = pkg.getSysoidMask();
     			if (pkgSysoid != null) {
     				if (pkgSysoid.equals(sysoid)) {
-    					retval.addAll(pkg.getAssetFieldCollection());
+    					retval.addAll(pkg.getAssetFields());
     				}
     			} else if (pkgSysoidMask != null) {
     				if (sysoid.startsWith(pkgSysoidMask)) {
-    					retval.addAll(pkg.getAssetFieldCollection());
+    					retval.addAll(pkg.getAssetFields());
     				}
     			} else {
     			    LOG.warn("getAssetFieldsForAddress: Unexpected condition: both sysoid and sysoidMask are null on package {}", pkg.getName());

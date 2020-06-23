@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,14 +25,19 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
-import com.vaadin.server.Page;
-import com.vaadin.ui.*;
+package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Alignment;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.AbstractField;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.NativeSelect;
 
 /**
  * This class represents a component for editing a single restriction of a criteria.
@@ -47,7 +52,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
     /**
      * the list of components
      */
-    private final List<AbstractField> m_componentList = new ArrayList<AbstractField>();
+    private final List<AbstractField<?>> m_componentList = new ArrayList<AbstractField<?>>();
     /**
      * left layout
      */
@@ -84,7 +89,12 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
         setSpacing(true);
         setMargin(true);
 
-        Page.getCurrent().getStyles().add(".criteriaBackground { background:#dddddd; }");
+        addAttachListener(new AttachListener() {
+            @Override
+            public void attach(AttachEvent attachEvent) {
+                getUI().getPage().getStyles().add(".criteriaBackground { background:#dddddd; }");
+            }
+        });
 
         addStyleName("criteriaBackground");
 
@@ -97,6 +107,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
         m_restrictionSelect.setMultiSelect(false);
         m_restrictionSelect.setNewItemsAllowed(false);
         m_restrictionSelect.setImmediate(true);
+        m_restrictionSelect.setDescription("Restriction selection");
 
         for (CriteriaRestriction criteriaRestriction : CriteriaRestriction.values()) {
             m_restrictionSelect.addItem(criteriaRestriction.name());
@@ -105,18 +116,15 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
         /**
          * Parsing the criteria
          */
-        final String arr[] = restriction.split("[(),]+");
+        final String[] arr = restriction.split("[(),]+");
 
         CriteriaRestriction criteriaRestriction = CriteriaRestriction.valueOf(arr[0]);
 
         m_restrictionSelect.select(criteriaRestriction.toString());
 
-        m_restrictionSelect.addValueChangeListener(new com.vaadin.data.Property.ValueChangeListener() {
-            @Override
-            public void valueChange(com.vaadin.data.Property.ValueChangeEvent valueChangeEvent) {
-                CriteriaRestriction newCriteriaRestriction = CriteriaRestriction.valueOf(String.valueOf(valueChangeEvent.getProperty().getValue()));
-                refreshComponents(newCriteriaRestriction); //, Arrays.copyOfRange(arr, 1, arr.length));
-            }
+        m_restrictionSelect.addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> {
+            CriteriaRestriction newCriteriaRestriction = CriteriaRestriction.valueOf(String.valueOf(valueChangeEvent.getProperty().getValue()));
+            refreshComponents(newCriteriaRestriction); //, Arrays.copyOfRange(arr, 1, arr.length));
         });
 
         setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
@@ -162,7 +170,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
      * @param criteriaRestriction the new {@link CriteriaRestriction}
      * @param arr                 the values to be set
      */
-    private void refreshComponents(CriteriaRestriction criteriaRestriction, String arr[]) {
+    private void refreshComponents(CriteriaRestriction criteriaRestriction, String[] arr) {
         for (AbstractComponent abstractComponent : m_componentList) {
             m_leftLayout.removeComponent(abstractComponent);
         }
@@ -175,7 +183,7 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
             AbstractField abstractField = criteriaEntry.getComponent(m_criteriaBuilderHelper);
 
             if (arr != null && arr.length > i) {
-                abstractField.setValue(arr[i]);
+                abstractField.setValue(CriteriaBuilderHelper.decode(arr[i]));
             }
 
             m_leftLayout.addComponent(abstractField);
@@ -197,12 +205,12 @@ public class CriteriaRestrictionComponent extends HorizontalLayout {
 
         boolean first = true;
 
-        for (AbstractField abstractField : m_componentList) {
+        for (AbstractField<?> abstractField : m_componentList) {
             if (!first) {
                 criteria += ",";
             }
 
-            criteria += abstractField.getValue();
+            criteria += CriteriaBuilderHelper.encode(abstractField.getValue().toString());
 
             first = false;
         }

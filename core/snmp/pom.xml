@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.snmp</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Core SNMP</name>
+  <name>OpenNMS :: Core :: SNMP</name>
   <modules>
     <module>joesnmp</module>
     <module>api</module>
@@ -18,5 +18,9 @@
     <module>impl-mock</module>
     <module>integration-tests</module>
     <module>commands</module>
+
+    <module>proxy-rpc-impl</module>
+    <module>proxy-rpc-tests</module>
+    <module>profile-mapper</module>
   </modules>
 </project>

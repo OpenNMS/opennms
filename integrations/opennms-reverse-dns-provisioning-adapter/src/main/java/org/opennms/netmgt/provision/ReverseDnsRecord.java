@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
@@ -15,7 +43,7 @@ public class ReverseDnsRecord {
     String m_zone;
     InetAddress m_ip;
     
-    public ReverseDnsRecord(OnmsIpInterface ipInterface) {
+    public ReverseDnsRecord(OnmsIpInterface ipInterface, int level) {
 
         OnmsSnmpInterface snmpInterface = ipInterface.getSnmpInterface();
 
@@ -37,7 +65,12 @@ public class ReverseDnsRecord {
         m_ip = ipInterface.getIpAddress();
         LOG.debug("Constructor: set ip address: {}", m_ip);
 
-        m_zone=ReverseDnsRecord.thirdLevelZonefromInet4Address(m_ip.getAddress());
+        if (level == 1)
+        	m_zone = ReverseDnsRecord.firstLevelZonefromInet4Address(m_ip.getAddress());
+        else if (level == 2)
+        	m_zone = ReverseDnsRecord.secondLevelZonefromInet4Address(m_ip.getAddress());
+    	else
+    		m_zone=ReverseDnsRecord.thirdLevelZonefromInet4Address(m_ip.getAddress());
         LOG.debug("Constructor: set zone: {}", m_zone);
     }
 
@@ -58,7 +91,7 @@ public class ReverseDnsRecord {
             throw new IllegalArgumentException("array must contain " +
                                          "4 or 16 elements");
               
-      StringBuffer sb = new StringBuffer();
+      final StringBuilder sb = new StringBuilder();
       if (addr.length == 4) {
           for (int i = addr.length - 2; i >= 0; i--) {
               sb.append(addr[i] & 0xFF);
@@ -69,4 +102,40 @@ public class ReverseDnsRecord {
       sb.append(".in-addr.arpa.");
       return sb.toString();
     }
+    
+    public static String secondLevelZonefromInet4Address(byte[] addr ) {
+        if (addr.length != 4 && addr.length != 16)
+            throw new IllegalArgumentException("array must contain " +
+                                         "4 or 16 elements");
+              
+      final StringBuilder sb = new StringBuilder();
+      if (addr.length == 4) {
+          for (int i = addr.length - 3; i >= 0; i--) {
+              sb.append(addr[i] & 0xFF);
+              if (i > 0)
+                  sb.append(".");
+              }
+          }
+      sb.append(".in-addr.arpa.");
+      return sb.toString();
+    }
+    
+    public static String firstLevelZonefromInet4Address(byte[] addr ) {
+        if (addr.length != 4 && addr.length != 16)
+            throw new IllegalArgumentException("array must contain " +
+                                         "4 or 16 elements");
+              
+      final StringBuilder sb = new StringBuilder();
+      if (addr.length == 4) {
+          for (int i = addr.length - 4; i >= 0; i--) {
+              sb.append(addr[i] & 0xFF);
+              if (i > 0)
+                  sb.append(".");
+              }
+          }
+      sb.append(".in-addr.arpa.");
+      return sb.toString();
+    }
+
+
 }

@@ -1,0 +1,148 @@
+# testing mixture of strings and expressions
+abc
+${ 3}
+a${
+a${ 5 }
+${ 3 }b
+${ 1 }${ 2 }
+abc ${ 1} ${ 2} def
+
+# testing values that end with or contain "$"
+$
+\$
+  $  
+test$
+$test
+test$test
+test$$$
+test$$${ 34 }
+test$$${ 34 }$$
+test$${ 34 }
+$${ 34 }
+$$
+test$$
+test$$test
+${ 34 }$${ 34 }
+
+# literals
+${1}
+${-12}
+${true}
+${false}
+${null}
+${4.2}
+${-21.3}
+${4.}
+${.21}
+${3e-1}
+${.2222222222}
+
+# string literals with "
+${"abc"}
+${""}
+${"a"}
+${"         "}
+${" some string ''' "}
+${" with escaping \\"}
+${" with escaping \""}
+${" with escaping \"\\\""}
+${" bad \ escaping"}
+${" bad \' escaping"}
+
+# string literals with '
+${'abc'}
+${''}
+${'a'}
+${'         '}
+${' some string """ '}
+${' with escaping \\'}
+${' with escaping \''}
+${' with escaping \'\\\''}
+${' bad \ escaping'}
+${' bad \" escaping'}
+
+# identifiers
+${abc}
+${abc123}
+${abc_123}
+${bad*identifier}
+
+# property accessors
+${a .b .c}
+${ abc . 'def.ghi' . ghi . "jkl \"" }
+
+# array accessors
+${ a[14] }
+${ abc [def]}
+${ def ["yesthisisallowed"]}
+
+# mixed property/array accessors
+${ a.b.c[d. e.  f]}
+${ a[14].b[32].c[24][ 261] [24]}
+${ a[b[c[d[e[f]]]].g] }
+
+# mixed operators
+${ 1 + 3 - 2 * 1 == 4}
+${ 1 + 3 - 2 * 1 == 4 / 1.2}
+${ 1 + 3 - 2 * 1 == 4 / 1.2 and abc}
+${ 1 + 3 - 2 * 1 == 4 / 1.2 and abc or def or ghi and true}
+
+# unary operators
+${ --not abc.def }
+
+# array accessors of non-integer types
+${  a ["hello"]."12" [17.5] }
+
+# making sure unicode escapes are not recognized
+\u0040
+"\u0040"
+
+# relational operators
+${ a > b }
+${ a gt b }
+${ a < b }
+${ a lt b }
+${ a >= b }
+${ a ge b }
+${ a <= b }
+${ a le b }
+${ a == b }
+${ a eq b }
+${ a != b }
+${ a ne b }
+
+# logical operators
+${ a and b}
+${ a && b}
+${ a or b}
+${ a || b}
+${ !a }
+${ not a }
+
+# empty operator
+${ empty "A"}
+${ empty "" }
+${ empty null }
+${ empty false}
+${ empty 0}
+${ not empty 0}
+${ not empty empty 0}
+${ empty }
+
+# functions
+#${a()}
+#${ a() }
+#${a(b)}
+#${ a(b) }
+#${a(b,c)}
+#${a(b,c,d)}
+#${a:b(c)}
+#${a:b(c,d)}
+#${a:b(c,d,e)}
+#${a(b).c}
+#${a(b)[c]}
+#${a[b()]}
+
+# non-ascii input - the parser automatically translates the @@non-ascii
+# into a UNICODE string with value \u1111
+@@non-ascii

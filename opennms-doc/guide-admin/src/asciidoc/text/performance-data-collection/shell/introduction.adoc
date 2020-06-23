@@ -1,0 +1,17 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+A number of _Karaf Shell_ commands are made available to help administer and diagnose issues related to performance data collection.
+
+To use the commands, log into the _Karaf Shell_ on your system using:
+
+[source]
+----
+ssh -p 8101 admin@localhost
+----
+
+NOTE: The Karaf shell uses the same credential as the web interface.
+      Users must be associated with the `ADMIN` role to access the shell.
+
+IMPORTANT: In order to keep the session open while executing long-running tasks without any user input add `-o ServerAliveInterval=10` to your ssh command.

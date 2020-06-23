@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -37,8 +37,9 @@
                 java.lang.StackTraceElement,
                 java.lang.StringBuilder"
  %>
+<%@ page import="org.opennms.web.utils.ExceptionUtils" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
   <jsp:param name="headTitle" value="Unexpected Error" />
   <jsp:param name="headTitle" value="Error" />
@@ -64,8 +65,11 @@ function toggleDiv(divName) {
 }
 </script>
 
-<h3>The OpenNMS Web User Interface Has Experienced an Error</h3>
-<br/>
+<div class="card">
+<div class="card-header">
+  <span>The OpenNMS Web User Interface Has Experienced an Error</span>
+</div>
+<div class="card-body">
 
 <p>
   The OpenNMS web UI has encountered an error that it does
@@ -86,32 +90,12 @@ function toggleDiv(divName) {
 </p>
 
 <%
-StringBuilder stBuilder = new StringBuilder();
-
-if (exception != null) {
-  if (exception instanceof ServletException && ((ServletException)exception).getRootCause() != null) {
-    exception = ((ServletException) exception).getRootCause();
-  } else if (exception.getCause() != null) {
-    exception = exception.getCause();
-  }
-  stBuilder.append(exception.getClass().getName());
-  /*
-  NOTE: While this may look like a good idea, we want to omit the message
-  to avoid transmitting sensitive information like file paths and other internal
-  information on the error page. If the user needs more precise information,
-  they can look at the webapp logs for the complete stack trace.
-
-  String message = exception.getMessage();
-  if (message != null && message.length() > 0) {
-    stBuilder.append(": ").append(exception.getMessage());
-  }
-  */
-  stBuilder.append("\n");
-  for (StackTraceElement ste : exception.getStackTrace()) {
-    stBuilder.append("\tat ").append(ste.toString()).append("\n");
-  }
+final StringBuilder stBuilder = new StringBuilder();
+boolean showStrackTrace = Boolean.getBoolean("org.opennms.ui.show_stacktrace");
+if(showStrackTrace) {
+  stBuilder.append(ExceptionUtils.getFullStackTrace(exception));
 } else {
-  stBuilder.append("No exception to see here, please move along.");
+  stBuilder.append("Print of stack trace is disabled");
 }
 
 String errorDetails = 
@@ -152,138 +136,167 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   <strong><a href="javascript:toggleDiv('errorDetails')">here</a></strong>.
 </p>
 
+</div> <!-- card-body -->
+</div> <!-- panel -->
+
 <div id="errorDetails" style="display: none;">
-<h3>Error Details</h3>
 
-<p>
-Please include the information below when reporting problems.
-</p>
+<div class="card">
+  <div class="card-header">
+    <span>Error Details</span>
+  </div>
+  <div class="card-body">
+    <p>
+    Please include the information below when reporting problems.
+    </p>
+  </div> <!-- card-body -->
+</div> <!-- panel -->
+<% if(showStrackTrace){ %>
+  <div class="card">
+    <div class="card-header">
+      <span>Exception Trace</span>
+  </div>
+  <div class="card-body">
+    <pre id="exceptionTrace"><%=stBuilder.toString()%></pre>
+  </div> <!-- card-body -->
+</div> <!-- panel -->
+<% } %>
 
-<h3>Exception Trace</h3>
-  <pre id="exceptionTrace">
-<%=stBuilder.toString()%>
-  </pre>
-  
-<h3>Request Details</h3>
-<table class="standard">
-  <tr>
-    <td class="standardheader">Locale</td>
-    <td class="standard"><%=request.getLocale()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Method</td>
-    <td class="standard"><%=request.getMethod()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Path Info</td>
-    <td class="standard"><%=request.getPathInfo()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Path Info (translated)</td>
-    <td class="standard"><%=request.getPathTranslated()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Protocol</td>
-    <td class="standard"><%=request.getProtocol()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">URI</td>
-    <td class="standard"><%=request.getRequestURI()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">URL</td>
-    <td class="standard"><%=request.getRequestURL()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Scheme</td>
-    <td class="standard"><%=request.getScheme()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Server Name</td>
-    <td class="standard"><%=request.getServerName()%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Server Port</td>
-    <td class="standard"><%=request.getServerPort()%></td>
-  </tr>
-  
-</table>
+<div class="card">
+  <div class="card-header">
+    <span>Request Details</span>
+  </div>
+  <table class="table table-sm table-bordered">
+    <tr>
+      <th>Locale</th>
+      <td><%=request.getLocale()%></td>
+    </tr>
+    <tr>
+      <th>Method</th>
+      <td><%=request.getMethod()%></td>
+    </tr>
+    <tr>
+      <th>Path Info</th>
+      <td><%=request.getPathInfo()%></td>
+    </tr>
+    <tr>
+      <th>Path Info (translated)</th>
+      <td><%=request.getPathTranslated()%></td>
+    </tr>
+    <tr>
+      <th>Protocol</th>
+      <td><%=request.getProtocol()%></td>
+    </tr>
+    <tr>
+      <th>URI</th>
+      <td><%=request.getRequestURI()%></td>
+    </tr>
+    <tr>
+      <th>URL</th>
+      <td><%=request.getRequestURL()%></td>
+    </tr>
+    <tr>
+      <th>Scheme</th>
+      <td><%=request.getScheme()%></td>
+    </tr>
+    <tr>
+      <th>Server Name</th>
+      <td><%=request.getServerName()%></td>
+    </tr>
+    <tr>
+      <th>Server Port</th>
+      <td><%=request.getServerPort()%></td>
+    </tr>
+  </table>
+</div> <!-- panel -->
 
-<h3>System Details</h3>
-<table class="standard">
-  <tr>
-    <td class="standardheader">OpenNMS Version:</td>
-    <td class="standard"><%=Vault.getProperty("version.display")%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Java Version:</td>
-    <td class="standard"><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
-  </tr>  
-  <tr>
-    <td class="standardheader">Java Virtual Machine:</td>
-    <td class="standard"><%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%></td>
-  </tr>
-  <tr>
-    <td class="standardheader">Operating System:</td>
-    <td class="standard"><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
-  </tr>
-  <tr>
-    <td class="standardheader">Servlet Container:</td>
-    <td class="standard"><%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)</td>
-  </tr>
-  <tr>
-    <td class="standardheader">User Agent:</td>
-    <td class="standard"><%=request.getHeader( "User-Agent" )%></td>
-  </tr>
-</table>
+<div class="card">
+  <div class="card-header">
+    <span>System Details</span>
+  </div>
+  <table class="table table-sm table-bordered">
+    <tr>
+      <th>OpenNMS Version:</th>
+      <td><%=Vault.getProperty("version.display")%></td>
+    </tr>
+    <tr>
+      <th>Java Version:</th>
+      <td><%=System.getProperty( "java.version" )%> <%=System.getProperty( "java.vendor" )%></td>
+    </tr>
+    <tr>
+      <th>Java Virtual Machine:</th>
+      <td><%=System.getProperty( "java.vm.version" )%> <%=System.getProperty( "java.vm.vendor" )%></td>
+    </tr>
+    <tr>
+      <th>Operating System:</th>
+      <td><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
+    </tr>
+    <tr>
+      <th>Servlet Container:</th>
+      <td><%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)</td>
+    </tr>
+    <tr>
+      <th>User Agent:</th>
+      <td><%=request.getHeader( "User-Agent" )%></td>
+    </tr>
+  </table>
+</div> <!-- panel -->
 
-<h3>Options for Reporting This Problem</h3>
-<p>
-There are two options for reporting this problem outside your own organization.
-</p>
+<div class="card">
+  <div class="card-header">
+    <span>Options for Reporting This Problem</span>
+  </div>
+  <div class="card-body">
+    <p>
+    There are two options for reporting this problem outside your own organization.
+    </p>
 
-<h5>OpenNMS Bug Tracker</h5>
-<p>
-If you have an account on the <a href="http://issues.opennms.org/">OpenNMS issue tracker</a>,
-please consider reporting this problem. Bug reports help us make OpenNMS better, and are
-often the only way we become aware of problems. Please do search the tracker first to check
-that others have not already reported the problem that you have encountered.
-</p>
+    <strong>OpenNMS Bug Tracker</strong>
+    <p>
+    If you have an account on the <a href="http://issues.opennms.org/">OpenNMS issue tracker</a>,
+    please consider reporting this problem. Bug reports help us make OpenNMS better, and are
+    often the only way we become aware of problems. Please do search the tracker first to check
+    that others have not already reported the problem that you have encountered.
+    </p>
 
-<h5>OpenNMS Commercial Support</h5>
-<p>
-If you have a commercial support agreement with <a href="http://www.opennms.com/">The
-OpenNMS Group</a>, please consider opening a support ticket about this problem at
-<strong><a href="https://support.opennms.com/">support.opennms.com</a></strong> or via
-e-mail. Tickets from our customers receive priority treatment from our support staff.
-If you create a support ticket and the support engineer handling the ticket determines
-that you have found a bug, he or she will create a record in the bug tracker.
-</p>
+    <strong>OpenNMS Commercial Support</strong>
+    <p>
+    If you have a commercial support agreement with <a href="http://www.opennms.com/">The
+    OpenNMS Group</a>, please consider opening a support ticket about this problem at
+    <strong><a href="https://support.opennms.com/">support.opennms.com</a></strong> or via
+    e-mail. Tickets from our customers receive priority treatment from our support staff.
+    If you create a support ticket and the support engineer handling the ticket determines
+    that you have found a bug, he or she will create a record in the bug tracker.
+    </p>
 
-<p>
-For a plain-text version of the information above suitable for pasting into a bug report
-or support ticket, click
-<strong><a href="javascript:toggleDiv('plainTextErrorDetails');">here</a></strong>.
-</p>
+    <p>
+    For a plain-text version of the information above suitable for pasting into a bug report
+    or support ticket, click
+    <strong><a href="javascript:toggleDiv('plainTextErrorDetails');">here</a></strong>.
+    </p>
+  </div> <!-- card-body -->
+</div> <!-- panel -->
+
+</div> <!-- errorDetails -->
 
 <div id="plainTextErrorDetails" style="display: none;">
-<h3>Plain Text Error Details</h3>
-<div class="boxWrapper">
 
-<textarea id="plainTextArea" style="width: 100%; height: 300px;">
-Please take a few moments to include a description of what you were doing when you encountered this problem. Without knowing the context of the error, it's often difficult for the person looking at the problem to narrow the range of possible causes. Bug reports that do not include any information on the context in which the problem occurred will receive a lower priority and may even be closed as invalid. 
+<div class="card">
+  <div class="card-header">
+    <span>Plain Text Error Details</span>
+  </div>
+  <div class="card-body">
+    <textarea id="plainTextArea" style="width: 100%; height: 300px;">Please take a few moments to include a description of what you were doing when you encountered this problem. Without knowing the context of the error, it's often difficult for the person looking at the problem to narrow the range of possible causes. Bug reports that do not include any information on the context in which the problem occurred will receive a lower priority and may even be closed as invalid. 
 
 <%= errorDetails %>
+    </textarea>
+  </div> <!-- card-body -->
+</div> <!-- panel -->
 
-</textarea>
-
-</div>
-
-</div>
+</div> <!-- plainTextErrorDetails -->
 
 <script type="text/javascript">
 var reportArea = document.getElementById("plainTextArea");
 </script>
 
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,15 +28,18 @@
 
 package org.opennms.features.topology.app.internal;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionContext;
+import org.opennms.features.topology.api.TopologyServiceClient;
 import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.osgi.OnmsServiceManager;
 import org.opennms.osgi.VaadinApplicationContext;
-import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 /**
  * A OSGI-variant of the {@link VerticesUpdateManager}
@@ -79,7 +82,7 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
             }
         }
 
-        fireVertexRefsUpdated(getVerticesInFocus());
+        fireVertexRefsUpdated(getVerticesInFocus(), graphContainer.getTopologyServiceClient());
 
     }
 
@@ -93,7 +96,7 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
                 m_selectedVertices.addAll(selectedVertexRefs);
             }
         }
-        fireVertexRefsUpdated(getVerticesInFocus());
+        fireVertexRefsUpdated(getVerticesInFocus(), selectionContext.getGraphContainer().getTopologyServiceClient());
 
     }
 
@@ -102,22 +105,29 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
         return m_selectedVertices;
     }
 
+    private boolean hasChanged(Collection<VertexRef> newVertexRefs, Collection<VertexRef> verticesInFocus) {
+        // if newVertexRefs and verticesInFocus are empty, we assume that they have changed
+        // this is usually only the case when the UI is initialized, because
+        // then both lists are empty, but we need them to be different.
+        if (newVertexRefs.isEmpty() && verticesInFocus.isEmpty()) {
+            return true;
+        }
+        // otherwise, we do a full equals-check
+        return !newVertexRefs.equals(m_verticesInFocus);
+    }
+
     /**
      * Notifies all listeners that the focus of the vertices has changed.
      * @param newVertexRefs
      */
-    synchronized private void fireVertexRefsUpdated(Collection<? extends VertexRef> newVertexRefs) {
-        if(newVertexRefs.equals(m_verticesInFocus)) return;
-        synchronized (m_verticesInFocus){
-            m_verticesInFocus.clear();
-            m_verticesInFocus.addAll(newVertexRefs);
+    private synchronized void fireVertexRefsUpdated(Collection<VertexRef> newVertexRefs, TopologyServiceClient source) {
+        if (!hasChanged(newVertexRefs, m_verticesInFocus)) {
+            return;
         }
-        boolean displayedSelected = false;
-        if (m_displayableVertexRefs.size() == m_verticesInFocus.size()) {
-            displayedSelected = true;
-        }
-
-        final VerticesUpdateEvent updateEvent = new VerticesUpdateEvent(Collections.unmodifiableSet(m_verticesInFocus), displayedSelected);
+        m_verticesInFocus.clear();
+        m_verticesInFocus.addAll(newVertexRefs);
+        final boolean displayedSelected = m_displayableVertexRefs.size() == m_verticesInFocus.size();
+        final VerticesUpdateEvent updateEvent = new VerticesUpdateEvent(Collections.unmodifiableSet(m_verticesInFocus), source, displayedSelected);
         m_applicationContext.getEventProxy(m_serviceManager).fireEvent(updateEvent);
     }
 }

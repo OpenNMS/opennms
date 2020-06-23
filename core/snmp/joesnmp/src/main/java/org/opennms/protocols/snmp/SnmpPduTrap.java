@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,6 +29,7 @@
 package org.opennms.protocols.snmp;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.protocols.snmp.asn1.ASN1;
 import org.opennms.protocols.snmp.asn1.AsnDecodingException;
@@ -76,47 +77,47 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
     /**
      * The list of variable bindings for the trap.
      */
-    private ArrayList<SnmpVarBind> m_variables;
+    private List<SnmpVarBind> m_variables = new ArrayList<>();
 
     /**
      * The ASN.1 type for the SNMPv1 Trap.
      */
-    public final static int TRAP = (int) (ASN1.CONTEXT | ASN1.CONSTRUCTOR | 4) + 256;
+    public static final int TRAP = (int) (ASN1.CONTEXT | ASN1.CONSTRUCTOR | 4) + 256;
 
     /**
      * Generic trap type: cold start.
      */
-    public final static int GenericColdStart = 0;
+    public static final int GenericColdStart = 0;
 
     /**
      * Generic trap type: warm start.
      */
-    public final static int GenericWarmStart = 1;
+    public static final int GenericWarmStart = 1;
 
     /**
      * Generic trap type: link down.
      */
-    public final static int GenericLinkDown = 2;
+    public static final int GenericLinkDown = 2;
 
     /**
      * Generic trap type: link up.
      */
-    public final static int GenericLinkUp = 3;
+    public static final int GenericLinkUp = 3;
 
     /**
      * Generic trap type: authentication-failure.
      */
-    public final static int GenericAuthenticationFailure = 4;
+    public static final int GenericAuthenticationFailure = 4;
 
     /**
      * Generic trap type: EGP Neighbor Loss.
      */
-    public final static int GenericEgpNeighborLoss = 5;
+    public static final int GenericEgpNeighborLoss = 5;
 
     /**
      * Generic trap type: Enterprise Specific.
      */
-    public final static int GenericEnterpriseSpecific = 6;
+    public static final int GenericEnterpriseSpecific = 6;
 
     /**
      * Constructs a new SnmpPduTrap with the default values.
@@ -128,7 +129,7 @@ public class SnmpPduTrap extends Object implements SnmpSyntax, Cloneable {
         m_generic = 0;
         m_specific = 0;
         m_tstamp = 0L;
-        m_variables = new ArrayList<SnmpVarBind>();
+        m_variables = new ArrayList<>();
     }
 
     /**

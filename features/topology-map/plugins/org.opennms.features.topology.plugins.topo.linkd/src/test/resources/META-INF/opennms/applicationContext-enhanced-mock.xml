@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+	<bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="platformTransactionManager">
+        <constructor-arg value="org.springframework.transaction.PlatformTransactionManager"/>
+    </bean>
+
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="nodeDao">
+        <constructor-arg value="org.opennms.netmgt.dao.api.NodeDao"/>
+    </bean>
+
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="ospfElementDao">
+        <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao"/>
+    </bean>
+
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="topologyEntityCache">
+        <constructor-arg value="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache"/>
+    </bean>
+
+	<bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
+      <property name="nodeDao" ref="nodeDao" />
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
+    </bean>
+
+   <bean id="lldpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.LldpTopologyServiceImpl">
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
+   </bean>
+
+   <bean id="ospfTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.OspfTopologyServiceImpl">
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
+      <property name="ospfElementDao" ref="ospfElementDao" />
+   </bean>
+
+	<bean id ="nodesOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.NodesOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="lldpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.LldpOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="lldpTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+	<bean id ="ospfOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.OspfOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="ospfTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
+    <bean id="databasePopulator" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdMockDataPopulator">
+    </bean>
+
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
+    <bean id="onmsTopologyDao" class="org.opennms.netmgt.topologies.service.impl.OnmsTopologyDaoInMemoryImpl"/>
+
+    <bean id="enLinkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+        <constructor-arg ref="metricRegistry"/>
+        <property name="onmsTopologyDao" ref="onmsTopologyDao" />
+    </bean>
+</beans>
+

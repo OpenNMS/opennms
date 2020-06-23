@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,7 +29,7 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="false" import="java.util.*,org.opennms.core.utils.WebSecurityUtils,org.opennms.web.servlet.MissingParameterException" %>
+<%@page language="java" contentType="text/html" session="false" import="org.opennms.core.utils.WebSecurityUtils,org.opennms.web.servlet.MissingParameterException" %>
 
 <%!
     protected static final String DEFAULT_LIMIT_PARAM_NAME    = "limit";
@@ -65,12 +65,16 @@
     String limitName = request.getParameter("limitname");
     if(limitName == null) {
         limitName = DEFAULT_LIMIT_PARAM_NAME;
+    } else {
+        limitName = WebSecurityUtils.sanitizeString(limitName);
     }
 
     //optional parameter, multiplename
     String multipleName = request.getParameter("multiplename");
     if(multipleName == null) {
         multipleName = DEFAULT_MULTIPLE_PARAM_NAME;
+    } else {
+        multipleName = WebSecurityUtils.sanitizeString(multipleName);
     }
 
     //get the count    
@@ -107,35 +111,28 @@
     int endIndex = multiple+UPPER_OFFSET;
     endIndex = (endIndex > highestPossibleIndex) ? highestPossibleIndex : endIndex;    
 %>
-
-<p class="pager">
+<div class="my-2">
  <% if (limit > 0 ) { %> 
-  Results: (<%=startResult%>-<%=endResult%> of <%=count%>)
+  <strong>Results <%=startResult%>-<%=endResult%> of <%=count%></strong>
  <% } else { %>
-  All Results
- <% } %> 
-	
-  <% if( count > limit ) { %>  
-    <span>
-<% if( multiple > 0 ) { %>
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=0&amp;<%=limitName%>=<%=limit%>">First</a>&nbsp;  
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>&amp;<%=limitName%>=<%=limit%>">Previous</a>&nbsp;  
-    <% } %>
-    
+  <strong>All Results</strong>
+ <% } %>
+</div>
+<% if( count > limit ) { %>  
+  <nav>
+    <ul class="pagination pagination-sm">
+    <li class="page-item <%=multiple > 0 ? "" : "disabled"%>"><a class="page-link" href="<%=baseUrl%>&amp;<%=multipleName%>=0&amp;<%=limitName%>=<%=limit%>">First</a></li>
+    <li class="page-item <%=multiple > 0 ? "" : "disabled"%>"><a class="page-link" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>&amp;<%=limitName%>=<%=limit%>">Previous</a></li>
+
     <% for( int i=startIndex; i <= endIndex; i++ ) { %>
       <% if( multiple == i ) { %>
-         <strong><%=i+1%></strong>
+         <li class="page-item active"><a class="page-link" href=""><%=i+1%> <span class="sr-only">(current)</span></a></li>
       <% } else { %>
-        <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=i%>&amp;<%=limitName%>=<%=limit%>"><%=i+1%></a>
+        <li class="page-item"><a class="page-link" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=i%>&amp;<%=limitName%>=<%=limit%>"><%=i+1%></a></li>
       <% } %>
-      &nbsp;
     <% } %>
-      
-    <% if( multiple < highestPossibleIndex ) { %>
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>&amp;<%=limitName%>=<%=limit%>">Next</a>&nbsp;
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=highestPossibleIndex%>&amp;<%=limitName%>=<%=limit%>">Last</a>
-    <% } %>
-		</span>
-   <% } %>      
-</p>
-
+      <li class="page-item <%=multiple < highestPossibleIndex ? "" : "disabled"%>"><a class="page-link" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>&amp;<%=limitName%>=<%=limit%>">Next</a></li>
+      <li class="page-item <%=multiple < highestPossibleIndex ? "" : "disabled"%>"><a class="page-link" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=highestPossibleIndex%>&amp;<%=limitName%>=<%=limit%>">Last</a></li>
+    </ul>
+  </nav>
+<% } %>

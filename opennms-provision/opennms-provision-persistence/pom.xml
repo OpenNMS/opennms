@@ -3,11 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-provision</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-provision-persistence</artifactId>
-  <name>OpenNMS Provision Persistence</name>
+  <name>OpenNMS :: Provisioning :: Persistence</name>
+  <packaging>bundle</packaging>
   <build>
     <plugins>
       <plugin>
@@ -21,33 +22,35 @@
           </execution>
         </executions>
       </plugin>
+<!-- // skip schemagen, just include a pre-generated version of the schema
       <plugin>
-        <groupId>com.sun.tools.jxc.maven2</groupId>
-        <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-        <version>1.2</version>
-        <configuration>
-          <destdir>${project.build.directory}/xsds</destdir>
-          <srcdir>${basedir}/src/main/java</srcdir>
-          <verbose>false</verbose>
-          <includes>
-            <include>org/opennms/netmgt/provision/persist/foreignsource/*.java</include>
-          </includes>
-          <schemas>
-            <schema>
-              <namespace>http://xmlns.opennms.org/xsd/config/foreign-source</namespace>
-              <file>foreign-sources.xsd</file>
-            </schema>
-          </schemas>
-        </configuration>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jaxb2-maven-plugin</artifactId>
+        <version>1.6</version>
         <executions>
           <execution>
-            <phase>process-sources</phase>
+            <id>schemagen</id>
             <goals>
-              <goal>generate</goal>
+              <goal>schemagen</goal>
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <transformSchemas>
+            <transformSchema>
+              <uri>http://xmlns.opennms.org/xsd/config/foreign-source</uri>
+              <toFile>foreign-sources.xsd</toFile>
+            </transformSchema>
+          </transformSchemas>
+          <outputDirectory>${project.build.directory}/xsds</outputDirectory>
+          <workDirectory>${project.build.directory}/jaxb2-work</workDirectory>
+          <includes>
+            <include>**/*.java</include>
+          </includes>
+          <verbose>true</verbose>
+        </configuration>
       </plugin>
+-->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <extensions>true</extensions>
@@ -55,6 +58,9 @@
           <descriptors>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>
@@ -65,25 +71,24 @@
           </execution>
         </executions>
       </plugin>
-      <!--
       <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>xjc</goal>
-            </goals>
-          </execution>
-        </executions>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
+        </configuration>
       </plugin>
-      -->
     </plugins>
   </build>
   <dependencies>
     <dependency>
       <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils-core</artifactId>
+      <artifactId>commons-beanutils</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -91,12 +96,17 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.sysprops</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -111,13 +121,13 @@
       <artifactId>opennms-provision-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.xml</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-detector-registry</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jersey-dependencies</artifactId>
-      <type>pom</type>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.xml</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -129,24 +139,11 @@
       <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-    <!-- runtime only dependencies -->
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>runtime</scope>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
     </dependency>
     <!-- test dependencies -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao-mock</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config-model</artifactId>
@@ -164,23 +161,29 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.test-api</groupId>
-      <artifactId>org.opennms.core.test-api.snmp</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.daemon</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
       <scope>test</scope>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

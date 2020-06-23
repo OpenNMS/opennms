@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -18,6 +18,9 @@
           <descriptors>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>
@@ -50,6 +53,18 @@
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.rest.api</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-jaxb</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config-model</artifactId>
       <version>${project.version}</version>
@@ -62,44 +77,14 @@
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-model</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.reporting</groupId>
       <artifactId>org.opennms.features.reporting.availability</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.sms-reflector</groupId>
-      <artifactId>sms-monitor</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>jasper-extensions</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-link-provisioning-adapter</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>drools-correlation-engine</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-import</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>
@@ -117,12 +102,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-qosdaemon</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-reporting</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
@@ -130,12 +109,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-webapp</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.protocols</groupId>
-      <artifactId>org.opennms.protocols.dhcp</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>
@@ -154,6 +127,54 @@
     <dependency>
       <groupId>org.opennms.protocols</groupId>
       <artifactId>org.opennms.protocols.xmp</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.config</groupId>
+      <artifactId>org.opennms.features.telemetry.config.jaxb</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.config</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-api</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-northbounder-email</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-northbounder-syslog</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-northbounder-snmptrap</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-northbounder-jms</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.wsman</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>

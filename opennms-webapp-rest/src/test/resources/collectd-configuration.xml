@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<collectd-configuration threads="50">
+
+	<package name="example1">
+		<filter>IPADDR IPLIKE *.*.*.*</filter>
+		<specific>0.0.0.0</specific>
+		<include-range begin="1.1.1.1" end="254.254.254.254" />
+		<!-- <include-url>file:${install.etc.dir}/include</include-url> -->
+
+		<service name="SNMP" interval="300000" user-defined="false" status="on">
+			<parameter key="collection" value="default" />
+			<parameter key="port" value="161" />
+			<parameter key="retry" value="3" />
+			<parameter key="timeout" value="3000" />
+		</service>
+
+		<service name="JVM" interval="300000" user-defined="false" status="on">
+			<parameter key="port" value="9003" />
+			<parameter key="retry" value="2" />
+			<parameter key="timeout" value="3000" />
+			<parameter key="protocol" value="rmi" />
+			<parameter key="urlPath" value="/jmxrmi" />
+			<parameter key="ds-name" value="jmx" />
+			<parameter key="friendly-name" value="jvm" />
+		</service>
+		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+	</package>
+
+
+	<package name="example2">
+		<filter>IPADDR IPLIKE 1.1.1.1</filter>
+		<specific>0.0.0.0</specific>
+		<include-range begin="1.1.1.1" end="1.1.1.1" />
+		<!-- <include-url>file:${install.etc.dir}/include2</include-url> -->
+		<storeByIfAlias>true</storeByIfAlias>
+		<storeByNodeID>normal</storeByNodeID>
+		<ifAliasDomain>my_domain</ifAliasDomain>
+		<storFlagOverride>true</storFlagOverride>
+		<ifAliasComment>#</ifAliasComment>
+
+		<service name="SNMP" interval="300000" user-defined="false" status="on">
+			<parameter key="collection" value="default" />
+			<parameter key="port" value="161" />
+			<parameter key="retry" value="3" />
+			<parameter key="timeout" value="3000" />
+		</service>
+		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+	</package>
+
+	<collector service="JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
+	<collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector" />
+
+</collectd-configuration>
+

@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,11 +35,26 @@
 %>
 <%@page import="java.util.*"%>
 <%@page import="java.text.*"%>
+<%@page import="java.time.ZoneId"%>
 <%@page import="org.opennms.netmgt.config.*"%>
 <%@page import="org.opennms.netmgt.config.users.*"%>
-<%@page import="org.opennms.web.api.Util" %>
-<%
+<%@page import="org.opennms.web.api.Util"%>
+<%@page import="org.opennms.web.api.Authentication"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<%!
+    private String createSelectList(String name, List<String> elements) {
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control\" multiple=\"multiple\" name=\""+name+"\" size=\"10\">");
+        for(String element : elements){
+            buffer.append("<option>" + element + "</option>");
+        }
+        buffer.append("</select>");
+
+        return buffer.toString();
+    }
+%>
+
+<%
         final HttpSession userSession = request.getSession(false);
         User user = null;
         String userid = "";
@@ -55,11 +70,10 @@
             user = (User) userSession.getAttribute("user.modifyUser.jsp");
             userid = user.getUserId();
         }
+%>
+<c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
-        final String baseHref = Util.calculateUrlBase(request);
-        %>
-
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Modify User" />
   <jsp:param name="headTitle" value="Modify" />
   <jsp:param name="headTitle" value="Users" />
@@ -71,7 +85,63 @@
 </jsp:include>
 
 <script type="text/javascript" >
+
+    function addRoles() 
+    {
+        m1len = m1.length ;
+        for ( i=0; i<m1len ; i++)
+        {
+            if (m1.options[i].selected == true ) 
+            {
+                m2len = m2.length;
+                m2.options[m2len]= new Option(m1.options[i].text);
+            }
+        }
+        for ( i = (m1len -1); i>=0; i--)
+        {
+            if (m1.options[i].selected == true ) 
+            {
+                m1.options[i] = null;
+            }
+        }
+    }
+
+    function removeRoles() 
+    {
+        m2len = m2.length ;
+        for ( i=0; i<m2len ; i++)
+        {
+            if (m2.options[i].selected == true ) 
+            {
+                m1len = m1.length;
+                m1.options[m1len]= new Option(m2.options[i].text);
+            }
+        }
+        for ( i=(m2len-1); i>=0; i--) 
+        {
+            if (m2.options[i].selected == true ) 
+            {
+                m2.options[i] = null;
+            }
+        }
+    }
+
+    function selectAllAvailable()
+    {
+        for (i=0; i < m1.length; i++) 
+        {
+            m1.options[i].selected = true;
+        }
+    }
     
+    function selectAllSelected()
+    {
+        for (i=0; i < m2.length; i++) 
+        {
+            m2.options[i].selected = true;
+        }
+    }
+
     function validate()
     {
         var minDurationMinsWarning = 5;
@@ -85,7 +155,8 @@
             var beginValue = new Number(document.modifyUser.elements[beginName].value);
             var endValue = new Number(document.modifyUser.elements[endName].value);
 
-            var beginHour = Math.floor(beginValue / 100), endHour = Math.floor(endValue / 100);
+            var beginHour = Math.floor(beginValue / 100);
+            var endHour = Math.floor(endValue / 100);
             var beginMin = beginValue % 100, endMin = endValue % 100
             var duration = ((endHour * 60) + endMin) - ((beginHour * 60) + beginMin);
 
@@ -130,7 +201,7 @@
 
     function resetPassword()
     {
-        newUserWin = window.open("<%= Util.calculateUrlBase(request, "admin/userGroupView/users/newPassword.jsp") %>", "", "fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no,width=500,height=300");
+        newUserWin = window.open("<%= Util.calculateUrlBase(request, "admin/userGroupView/users/newPassword.jsp") %>", "", "fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no,width=500,height=450");
     }
 
     function addDutySchedules()
@@ -139,6 +210,7 @@
 
         if(ok)
         {
+          selectAllSelected();
           document.modifyUser.redirect.value="/admin/userGroupView/users/addDutySchedules";
           document.modifyUser.action="<%= Util.calculateUrlBase(request, "admin/userGroupView/users/updateUser") %>";
           document.modifyUser.submit();
@@ -151,6 +223,7 @@
         
         if(ok)
         {
+          selectAllSelected();
           document.modifyUser.redirect.value="/admin/userGroupView/users/modifyUser.jsp";
           document.modifyUser.action="<%= Util.calculateUrlBase(request, "admin/userGroupView/users/updateUser") %>";
           document.modifyUser.submit();
@@ -163,6 +236,7 @@
 
         if(ok)
         {
+          selectAllSelected();
           document.modifyUser.redirect.value="/admin/userGroupView/users/saveUser";
           document.modifyUser.action="<%= Util.calculateUrlBase(request, "admin/userGroupView/users/updateUser") %>";
           document.modifyUser.submit();
@@ -176,32 +250,28 @@
         document.modifyUser.action="<%= Util.calculateUrlBase(request, "admin/userGroupView/users/list.jsp") %>";
         document.modifyUser.submit();
     }
-    
 </script>
 
-
-<form id="modifyUser" method="post" name="modifyUser">
+<form role="form" class="form-horizontal" id="modifyUser" method="post" name="modifyUser">
 <input id="userID" type="hidden" name="userID" value="<%=user.getUserId()%>"/>
 <input id="password" type="hidden" name="password"/>
 <input id="redirect" type="hidden" name="redirect"/>
 
-<h3>Modify User: <%=userid%></h3>
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <span>Modify User: <%=userid%></span>
+      </div>
+      <div class="card-body">
+        <h3>User Password</h3>
+          <div class="form-group">
+            <button type="button" class="btn btn-secondary" onClick="resetPassword()">Reset Password</button>
+          </div>
 
-<div id="contentleft">
-<%--
-  <p>
-    <input type="button" value="Reset Password" onClick="resetPassword()" />
-  </p>
---%>
-    <table width="100%" border="0" cellspacing="0" cellpadding="2">
-            <tr>
-              <td colspan="2">
-                <p><b>User Information</b></p>
-              </td>
-            </tr>
-	    <%
-	    String tuiPin = null;
-	    String email = null;
+        <h3>User Information</h3>
+	<%
+        String email = null;
         String pagerEmail = null;
         String xmppAddress = null;
         String numericPage = null;
@@ -214,8 +284,11 @@
         String microblog = null;
         String fullName = null;
         String comments = null;
-        Boolean isReadOnly = false;
-        try {
+        String tuiPin = null;
+        ZoneId timeZoneId = null;
+        List<String> availableRoles = new ArrayList<String>(Authentication.getAvailableRoles());
+        Collections.sort(availableRoles);
+        List<String> configuredRoles = new ArrayList<>();
             User usertemp = userFactory.getUser(userid);
             if (usertemp != null) {
                     email = userFactory.getEmail(userid);
@@ -230,255 +303,275 @@
                     homePhone = userFactory.getHomePhone(userid);
                     microblog = userFactory.getMicroblogName(userid);
             } else {
-                    Contact[] contact = user.getContact();
-                    for (int i = 0; i < contact.length; i++) {
-                            Contact tempContact = contact[i];
-                            if (contact[i].getType().equals("email")) {
-                                    email = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("pagerEmail")) {
-                                    pagerEmail = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("xmppAddress")) {
-                                    xmppAddress = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("numericPage")) {
-                                    numericPage = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("textPage")) {
-                                    textPage = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("workPhone")) {
-                                    workPhone = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("mobilePhone")) {
-                                    mobilePhone = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("homePhone")) {
-                                    homePhone = contact[i].getInfo();
-                            } else if (contact[i].getType().equals("microblog")) {
-                            		microblog = contact[i].getInfo();
+                    List<Contact> contacts = user.getContacts();
+                    for (int i = 0; i < contacts.size(); i++) {
+                            if (contacts.get(i).getType().equals("email")) {
+                                    email = contacts.get(i).getInfo().orElse(null);
+                            } else if (contacts.get(i).getType().equals("pagerEmail")) {
+                                    pagerEmail = contacts.get(i).getInfo().orElse(null);
+                            } else if (contacts.get(i).getType().equals("xmppAddress")) {
+                                    xmppAddress = contacts.get(i).getInfo().orElse(null);
+                            } else if (contacts.get(i).getType().equals("numericPage")) {
+                                    numericPage = contacts.get(i).getInfo().orElse(null);
+                            } else if (contacts.get(i).getType().equals("textPage")) {
+                                    textPage = contacts.get(i).getInfo().orElse(null);
+                            } else if (contacts.get(i).getType().equals("workPhone")) {
+                                    workPhone = contacts.get(i).getInfo().orElse(null);
+                            } else if (contacts.get(i).getType().equals("mobilePhone")) {
+                                    mobilePhone = contacts.get(i).getInfo().orElse(null);
+                            } else if (contacts.get(i).getType().equals("homePhone")) {
+                                    homePhone = contacts.get(i).getInfo().orElse(null);
+                            } else if (contacts.get(i).getType().equals("microblog")) {
+                            		microblog = contacts.get(i).getInfo().orElse(null);
                             }
                     }
             }
-            fullName = user.getFullName();
-            comments = user.getUserComments();
-            tuiPin = user.getTuiPin();
-            isReadOnly = user.isReadOnly();
-        } catch (org.exolab.castor.xml.MarshalException e) {
-            throw new ServletException("An Error occurred reading the users file", e);
-        } catch (org.exolab.castor.xml.ValidationException e) {
-            throw new ServletException("An Error occurred reading the users file", e);
-        }
+            fullName = user.getFullName().orElse(null);
+            comments = user.getUserComments().orElse(null);
+            tuiPin = user.getTuiPin().orElse(null);
+            timeZoneId = user.getTimeZoneId().orElse(null);
+
+            configuredRoles = user.getRoles();
+            for (String role : configuredRoles) {
+                if (availableRoles.contains(role)) {
+                    availableRoles.remove(role);
+                }
+            }
 
         %>
-            <!--
-            <tr>
-              <td valign="top">
-                <label id="readOnlyLabel" for="readOnly">Read-Only:</label>
-              </td>
-              <td align="left" valign="top">
-                <input id="readOnly" type="checkbox" name="readOnly"<%=  isReadOnly? " checked=\"true\"":"" %> />
-              </td>
-            </tr>
-				-->
-            <tr>
-              <td valign="top">
-                <label id="fullNameLabel" for="fullName">Full Name:</label>
-              </td>
-              <td align="left" valign="top">
-                <input id="fullName" type="text" size="35" name="fullName" value="<%=(fullName == null ? "":fullName) %>" />
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="userCommentsLabel" for="userComments">Comments:</label>
-              </td>
-              <td align="left" valign="top">
-                <textarea rows="5" cols="33" id="userComments" name="userComments"><%=(comments == null ? "" : comments)%></textarea>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="tuiPinLabel" for="tuiPin">Telephone PIN:</label>
-              </td>
-              <td align="left" valign="top">
-                <input id="tuiPin" type="text" size="8" name="tuiPin" value="<%=(tuiPin == null ? "" : tuiPin)%>" />
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                &nbsp;
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                <p><b>Notification Information</b></p>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="emailLabel" for="email">Email:</label>
-              </td>
-              <td valign="top">
-                <input id="email" type="text" size="35" name="email" value='<%= (email == null ? "":email) %>'/>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="pemailLabel" for="pemail">Pager Email:</label>
-              </td>
-              <td valign="top">
-                <input type="text" size="35" id="pemail" name="pemail" value='<%=(pagerEmail == null ? "":pagerEmail)%>'/>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="xmppAddressLabel" for="xmppAddress">XMPP Address:</label>
-              </td>
-              <td valign="top">
-                <input id="xmppAddress" type="text" size="35" name="xmppAddress" value='<%=(xmppAddress == null ? "":xmppAddress)%>'/>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="microblogLabel" for="microblog">Microblog Username:</label>
-              </td>
-              <td valign="top">
-                <input type="text" size="35" id="microblog" name="microblog" value='<%=(microblog == null ? "":microblog)%>'/>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="numericalServiceLabel" for="numericalService">Numeric Service:</label>
-              </td>
-              <td valign="top">
-                <input type="text" size="35" id="numericalService" name="numericalService" value='<%=(numericPage == null ? "":numericPage) %>'/>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="numericalPinLabel" for="numericalPin">Numeric PIN:</label>
-              </td>
-              <td valign="top">
-                <input type="text" size="35" id="numericalPin" name="numericalPin" value='<%= (numericPin == null ? "":numericPin)%>'/>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="textServiceLabel" for="textService">Text Service:</label>
-              </td>
-              <td valign="top">
-                <input type="text" size="35" id="textService" name="textService" value='<%= (textPage == null ? "":textPage)%>'/>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="textPinLabel" for="textPin">Text PIN:</label>
-              </td>
-              <td valign="top">
-                <input type="text" size="35" id="textPin" name="textPin" value='<%=(textPin == null ? "":textPin)%>'/>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="workPhoneLabel" for="workPhone">Work Phone:</label>
-              </td>
-              <td valign="top">
-                <input type="text" size="16" id="workPhone" name="workPhone" value='<%=(workPhone == null ? "":workPhone)%>'/>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="mobilePhoneLabel" for="mobilePhone">Mobile Phone:</label>
-              </td>
-              <td valign="top">
-                <input type="text" size="16" id="mobilePhone" name="mobilePhone" value='<%=(mobilePhone == null ? "":mobilePhone)%>'/>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">
-                <label id="homePhoneLabel" for="homePhone">Home Phone:</label>
-              </td>
-              <td valign="top">
-                <input type="text" size="16" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>'/>
-              </td>
-            </tr>
-          </table>
-</div>
 
-<div id="contentright">
-  <p>
-    This panel allows you to modify information for each user, including
-    their name, notification information, and duty schedules.
-  </p>
+	<div class="form-row form-group">
+          <label for="fullName" class="col-sm-2 col-form-label">Full Name</label>
+          <div class="col-sm-10">
+            <input id="fullName" type="text" class="form-control" size="35" name="fullName" value="<%= (fullName == null? "" : fullName) %>" />
+          </div>
+        </div>
 
-  <p>
-    <b>Notification Information</b> provides the ability for you to configure
-    contact information for each user, including any of <em>email</em>
-    address, <em>pager email</em> (in the case that the pager can be reached
-    as an email destination), <em>XMPP address</em> (for instant messages
-    using the Jabber XMPP protocol), <em>numeric service</em> (for pagers
-    that cannot display text messages), <em>text service</em> (for
-    alphanumeric pagers), and <em>work phone</em>, <em>mobile phone</em>, and
-    <em>home phone</em> for notifications by telephone. The <em>Telephone
-    PIN</em> is an optional numeric field used to authenticate called users.
-  </p>
+	<div class="form-row form-group">
+          <label for="userComments" class="col-sm-2 col-form-label">Comments</label>
+          <div class="col-sm-10">
+            <textarea class="form-control" rows="5" id="userComments" name="userComments"><%= (comments == null? "" : comments) %></textarea>
+          </div>
+        </div>
 
-  <p>
-    <b>Duty Schedules</b> allow you to flexibility to determine when users
-    should receive notifications.  A duty schedule consists of a list of
-    days for which the time will apply and a time range, presented in
-    military time with no punctuation.  Using this standard, days run from
-    <em>0000</em> to <em>2359</em>.
-  </p>
 
-  <p>
-    If your duty schedules span midnight, or if your users work multiple,
-    non-contiguous time periods, you will need to configure multiple duty
-    schedules.  To do so, select the number of duty schedules to add from
-    the drop-down box next to <b>[Add This Many Schedules]</b>, and click
-    the button.  Then, using the duty schedule fields you've just added,
-    create a duty schedule from the start time to 2359 on one day, and
-    enter a second duty schedule which begins at 0000 and ends at the end
-    of that users coverage.
-  </p>
+	<div class="form-group">
+        <h3>Security Roles</h3>
+        <div class="row">
+              <div class="col-sm-6">
+                  <label class="col-form-label">Available Roles</label>
+                  <%=createSelectList("availableRoles", availableRoles)%><br/>
+                  <button type="button" class="btn btn-secondary" id="roles.doAdd" onClick="javascript:addRoles()">Add &nbsp;&#155;&#155;&nbsp;</button>
+              </div>
+              <div class="col-sm-6">
+                  <label class="col-form-label">Currently in User</label>
+                  <%=createSelectList("configuredRoles", configuredRoles)%><br/>
+                  <button type="button" class="btn btn-secondary" id="roles.doRemove" onClick="javascript:removeRoles()">&nbsp;&#139;&#139;&nbsp; Remove</button>
+              </div>
+        </div>
+    </div>
 
-  <p>
-    To remove configured duty schedules, put a check in the <em>Delete</em>
-    column and click <b>[Remove Checked Schedules]</b>.
-  </p>
+        <h3>Notification Information</h3>
 
-  <p>
-   To save your configuration, click on <b>[Finish]</b>.
-  </p>
-</div>
+	<div class="form-row form-group">
+          <label for="email" class="col-sm-2 col-form-label">Email</label>
+          <div class="col-sm-10">
+            <input class="form-control" id="email" type="text" name="email" value='<%= (email == null ? "":email) %>'/>
+          </div>
+        </div>
 
-<div class="spacer"><!-- --></div>
+	<div class="form-row form-group">
+          <label for="pemail" class="col-sm-2 col-form-label">Pager Email</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" id="pemail" name="pemail" value='<%=(pagerEmail == null ? "":pagerEmail)%>'/>
+          </div>
+        </div>
 
-<p>
-  <b>Duty Schedules</b>
-</p>
-                                  <%
-Collection dutySchedules = user.getDutyScheduleCollection();
-        %>
-				<input type="hidden" name="dutySchedules" value="<%=user.getDutyScheduleCount()%>"/>
-          
-          <table width="100%" border="1" cellspacing="0" cellpadding="2" >
-            <tr bgcolor="#999999">
-              <td>&nbsp;</td>
-              <td><b>Delete</b></td>
-              <td><b>Mo</b></td>
-              <td><b>Tu</b></td>
-              <td><b>We</b></td>
-              <td><b>Th</b></td>
-              <td><b>Fr</b></td>
-              <td><b>Sa</b></td>
-              <td><b>Su</b></td>
-              <td><b>Begin Time</b></td>
-              <td><b>End Time</b></td>
-            </tr>
-                        <%
-int i = 0;
-        Iterator iter = dutySchedules.iterator();
-        while (iter.hasNext()) {
-            DutySchedule tmp = new DutySchedule((String) iter.next());
-            Vector curSched = tmp.getAsVector();
+	<div class="form-row form-group">
+          <label for="xmppAddress" class="col-sm-2 col-form-label">XMPP Address</label>
+          <div class="col-sm-10">
+            <input class="form-control" id="xmppAddress" type="text" name="xmppAddress" value='<%=(xmppAddress == null ? "":xmppAddress)%>'/>
+          </div>
+        </div>
 
+	<div class="form-row form-group">
+          <label for="microblog" class="col-sm-2 col-form-label">Microblog Username</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" id="microblog" name="microblog" value='<%=(microblog == null ? "":microblog)%>'/>
+          </div>
+        </div>
+
+	<div class="form-row form-group">
+          <label for="numericalService" class="col-sm-2 col-form-label">Numeric Service</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" id="numericalService" name="numericalService" value='<%=(numericPage == null ? "":numericPage) %>'/>
+          </div>
+        </div>
+
+	<div class="form-row form-group">
+          <label for="numericalPin" class="col-sm-2 col-form-label">Numeric PIN</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" id="numericalPin" name="numericalPin" value='<%= (numericPin == null ? "":numericPin)%>'/>
+          </div>
+        </div>
+
+	<div class="form-row form-group">
+          <label for="textService" class="col-sm-2 col-form-label">Text Service</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" id="textService" name="textService" value='<%= (textPage == null ? "":textPage)%>'/>
+          </div>
+        </div>
+
+	<div class="form-row form-group">
+          <label for="textPin" class="col-sm-2 col-form-label">Text PIN</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" id="textPin" name="textPin" value='<%=(textPin == null ? "":textPin)%>'/>
+          </div>
+        </div>
+
+	<div class="form-row form-group">
+          <label for="workPhone" class="col-sm-2 col-form-label">Work Phone</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" id="workPhone" name="workPhone" value='<%=(workPhone == null ? "":workPhone)%>'/>
+          </div>
+        </div>
+
+	<div class="form-row form-group">
+          <label for="mobilePhone" class="col-sm-2 col-form-label">Mobile Phone</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" id="mobilePhone" name="mobilePhone" value='<%=(mobilePhone == null ? "":mobilePhone)%>'/>
+          </div>
+        </div>
+
+	<div class="form-row form-group">
+          <label for="homePhone" class="col-sm-2 col-form-label">Home Phone</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>'/>
+          </div>
+        </div>
+
+    <div class="form-row form-group">
+          <label for="tuiPin" class="col-sm-2 col-form-label">Telephone PIN</label>
+          <div class="col-sm-10">
+              <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= (tuiPin == null? "" : tuiPin) %>" />
+          </div>
+    </div>
+
+    <h3>Date/Time Preferences</h3>
+    <div class="form-row form-group">
+          <label for="timeZoneId" class="col-sm-2 col-form-label">Time Zone</label>
+          <div class="col-sm-10">
+            <select class="form-control custom-select" id="timeZoneId" name="timeZoneId">
+<%
+              List<String> zones = new ArrayList<>();
+              zones.add("");
+              zones.addAll(ZoneId.getAvailableZoneIds());
+              Collections.sort(zones);
+              for(String element : zones){
+                out.append("<option");
+                if(timeZoneId!=null && element.equals(timeZoneId.getId())){
+                    out.append(" selected");
+                }
+                out.append(">");
+                out.append(element).append("</option>");
+              }
+%>
+            </select>
+          </div>
+    </div>
+
+      </div> <!-- card-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <span>User Properties</span>
+      </div>
+      <div class="card-body">
+        <p>
+          This panel allows you to modify information for each user, including
+          their name, notification information, and duty schedules.
+        </p>
+
+        <p>
+          <b>Notification Information</b> provides the ability for you to configure
+          contact information for each user, including any of <em>email</em>
+          address, <em>pager email</em> (in the case that the pager can be reached
+          as an email destination), <em>XMPP address</em> (for instant messages
+          using the Jabber XMPP protocol), <em>numeric service</em> (for pagers
+          that cannot display text messages), <em>text service</em> (for
+          alphanumeric pagers), and <em>work phone</em>, <em>mobile phone</em>, and
+          <em>home phone</em> for notifications by telephone. The <em>Telephone
+          PIN</em> is an optional numeric field used to authenticate called users.
+        </p>
+
+        <p>
+          <b>Duty Schedules</b> allow you to flexibility to determine when users
+          should receive notifications.  A duty schedule consists of a list of
+          days for which the time will apply and a time range, presented in
+          military time with no punctuation.  Using this standard, days run from
+          <em>0000</em> to <em>2359</em>.
+        </p>
+
+        <p>
+          If your duty schedules span midnight, or if your users work multiple,
+          non-contiguous time periods, you will need to configure multiple duty
+          schedules.  To do so, select the number of duty schedules to add from
+          the drop-down box next to <b>[Add This Many Schedules]</b>, and click
+          the button.  Then, using the duty schedule fields you've just added,
+          create a duty schedule from the start time to 2359 on one day, and
+          enter a second duty schedule which begins at 0000 and ends at the end
+          of that users coverage.
+        </p>
+
+        <p>
+          To remove configured duty schedules, put a check in the <em>Delete</em>
+          column and click <b>[Remove Checked Schedules]</b>.
+        </p>
+
+        <p>
+         To save your configuration, click on <b>[Finish]</b>.
+        </p>
+      </div> <!-- card-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
+
+<%
+Collection<String> dutySchedules = user.getDutySchedules();
+%>
+<input type="hidden" name="dutySchedules" value="<%=user.getDutySchedules().size()%>"/>
+
+    <div class="card">
+      <div class="card-header">
+        <span>Duty Schedule</span>
+      </div>
+      <div class="card-body">
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+          <th>#</th>
+          <th>Delete</th>
+          <th>Mo</th>
+          <th>Tu</th>
+          <th>We</th>
+          <th>Th</th>
+          <th>Fr</th>
+          <th>Sa</th>
+          <th>Su</th>
+          <th>Begin Time</th>
+          <th>End Time</th>
+          </tr>
+        </thead>
+        <%
+        int i = 0;
+        for (String dutySchedule : dutySchedules) {
+            DutySchedule tmp = new DutySchedule(dutySchedule);
+            Vector<Object> curSched = tmp.getAsVector();
             %>
+        <tbody>
                         <tr>
                           <td width="1%"><%=(i + 1)%></td>
                           <td width="1%">
@@ -495,45 +588,47 @@ int i = 0;
                           <%}
             %>
                           <td width="5%">
-                            <input type="text" size="4" name="duty<%=i%>Begin" value="<%=curSched.get(7)%>"/>
+                            <input type="text" class="form-control" size="4" name="duty<%=i%>Begin" value="<%=curSched.get(7)%>"/>
                           </td>
                           <td width="5%">
-                            <input type="text" size="4" name="duty<%=i%>End" value="<%=curSched.get(8)%>"/>
+                            <input type="text" class="form-control" size="4" name="duty<%=i%>End" value="<%=curSched.get(8)%>"/>
                           </td>
                         </tr>
                         <%i++;
         }
         %>
-          </table>
+         </tbody>
+       </table>
 
-<p>
-  <input id="addSchedulesButton" type="button" name="addSchedule"
-         value="Add This Many Schedules" onclick="addDutySchedules()"/>
+        <div class="form-row mt-2">
+            <button id="removeSchedulesButton" type="button" class="btn btn-secondary" name="addSchedule" onclick="removeDutySchedules()">Remove Checked Schedules</button>
+        </div>
 
-  <select name="numSchedules" value="3" size="1">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-  </select>
-</p>
+       <div class="form-row mt-2">
+           <select name="numSchedules" class="form-control custom-select col-xs-6 col-sm-2 col-md-1 mr-2" value="3">
+                 <option value="1">1</option>
+                 <option value="2">2</option>
+                 <option value="3">3</option>
+                 <option value="4">4</option>
+                 <option value="5">5</option>
+                 <option value="6">6</option>
+                 <option value="7">7</option>
+           </select>
+           <button id="addSchedulesButton" type="button" class="btn btn-secondary" name="addSchedule" onclick="addDutySchedules()" title="Add This Many Schedules"><i class="fa fa-plus"></i> Add Schedules</button>
+       </div>
 
-<p>
-  <input id="removeSchedulesButton" type="button" name="addSchedule"
-         value="Remove Checked Schedules" onclick="removeDutySchedules()"/>
-</p>
+   </div>
+   </div> <!-- card -->
 
-<p>
-  <input id="saveUserButton" type="submit" name="finish" value="Finish"
-         onclick="saveUser()"/>
-  &nbsp;&nbsp;&nbsp;
-  <input id="cancelButton" type="button" name="cancel" value="Cancel"
-         onclick="cancelUser()"/>
-</p>
-
+    <div class="form-group">
+        <button id="saveUserButton" type="submit" class="btn btn-secondary" name="finish" onclick="saveUser()">Finish</button>
+        <button id="cancelButton" type="button" class="btn btn-secondary" name="cancel" onclick="cancelUser()">Cancel</button>
+    </div>
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<script type="text/javascript" >
+    var m1 = document.modifyUser.availableRoles;
+    var m2 = document.modifyUser.configuredRoles;
+</script>
+ 
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

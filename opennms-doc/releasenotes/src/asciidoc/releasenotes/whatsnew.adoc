@@ -1,0 +1,186 @@
+[[releasenotes-25]]
+
+== What's New in OpenNMS Horizon 25
+
+=== System Requirements
+
+* *Java 8 through 11*: OpenNMS Horizon 25 runs on JDK 8 through 11.
+  We recommend the most recent version of OpenJDK 11.
+* *Default Heap Size*: The default heap size is now 2GB.
+* *PostgreSQL 10 or higher*: Horizon 25 requires any supported version of PostgreSQL 10 or higher.
+
+=== Breaking Changes
+
+The Flow Classification UI accepted invalid ip address values, e.g. `10,192.1,168.1,5.1-160`.
+When upgrading {opennms-product-name} existing Flow Classification Rules may be considered invalid.
+In this case they are silently ignored by the Flow Classification Engine.
+In order to assure no invalid Flow Classification Rules exist, please run the OSGi shell command `opennms-classification:list-invalid-rules` to list all invalid rules.
+If there are any invalid rules, they must be manually fixed using the Flow Classification UI.
+For more details, refer to issue https://issues.opennms.org/browse/NMS-12422[NMS-12422].
+
+==== PostgreSQL 10
+
+OpenNMS Horizon 25 is supported on PostgreSQL 10 or later.
+
+If you are upgrading from an OpenNMS using an older PostgreSQL version, you can use the `pg_upgrade` tool to migrate.
+For details on the migration process, see link:https://www.postgresql.org/docs/10/pgupgrade.html[the PostgreSQL `pg_upgrade` documentation].
+
+If you are running on a distribution that does not provide PostgreSQL 10 packages by default, you can link:https://www.postgresql.org/download/[download packages provided by PostgreSQL instead].
+
+==== Elasticsearch 7.x Support
+
+All of the features that leverage integrations with Elasticsearch i.e. event & alarm history, flows & situation feedback have been updated to support Elasticsearch 7.x.
+Elasticsearch versions before 7.x are no longer supported.
+
+Given the pace of changes and the number of breaking changes between major versions of Elastisearch, we will focus on supporting a single major version of Elasticsearch per release moving forward.
+
+==== Flows
+
+While working on improvements to flow support we have modified the index templates and it is no longer possible to query flows stored in indices created with prior version of OpenNMS.
+We will revisit ways to migrate these in a future release.
+
+It is now possible to use CIDR ip expressions when defining Classification Rules for Flows.
+
+==== Minion Packages Combined
+
+The Minion RPM and Debian/Ubuntu packages have been combined into a single package.
+Previously it was possible to just install the core container and optionally a set of features on top, but in the real world no one used this, and it's still possible to choose what features are used with configuration.
+
+NOTE: If you were previously _only_ installing the sub-packages and not installing the wrapper `opennms-minion` RPM package, you may need to run this command to upgrade cleanly:
+
+[source, shell]
+----
+$ yum swap 'opennms-minion*' -- install opennms-minion
+----
+
+==== Sentinel Now Requires an ID and Location
+
+The documentation for setting up a Sentinel already suggested setting ID and Location, but now they are required for tracing.
+
+==== Helm 4
+
+Technically not a part of OpenNMS, but it's important to note that Helm 4 introduces a datasource that _replaces_ the "Faults" datasource.
+Migration of existing dashboards requires a few manual steps; documentation on how to do so will be available in link:https://docs.opennms.org/helm/releases/latest/helm/latest/welcome/index.html[the latest Helm documentation] once Helm 4 goes live.
+
+==== Removed from Horizon 25
+
+* The Alarm Change Notifier plugin has been removed due to performance problems.  Use the Alarm History function instead.
+* The `resourcecli` tool has been removed in favor of link:https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-performance-mgmt-measurements-shell[Karaf shell commands] to perform the same operations.
+
+==== Event (and Alarm) Date/Time Formats
+
+Events and alarms previously used the current locale for formatting timestamps.
+As of Horizon 25.1.0, we now format dates as ISO-8601 date-time with offsets (eg, `2011-12-03T10:15:30+01:00`) _and_ we expect dates in incoming events to be the same.
+This reduces the amount of code we run through trying to figure out date formats while parsing events, and simplifies things to work no matter what locale you are using.
+
+=== New Features and Improvements
+
+==== Docker Containers
+
+* Docker containers are now built automatically as part of our CI process.
+* The `horizon` Docker container now runs as non-root by default.
+
+==== Poller
+
+* Pollerd now reloads properly with a `daemonReload` event.
+* Filters that use `<include-url>` now reload when Pollerd configuration reloads.
+* It is now possible to configure the poller with wildcard configurations that match multiple services.
+  For details, see link:https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-pollerd-packages-patterns[the Admin Guide section on Service Patterns].
+
+==== Thresholding
+
+* Thresholding state is now persisted to the database, and can also be shared with Sentinel.
+* Thresholding can now be applied to streaming telemetry data, including scaling to multiple Sentinel instances.
+* Thresholding expressions now support link:https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#ga-meta-data[meta-data]
+* Threshold state can be managed through the Karaf shell.
+
+==== Flows
+
+A large number of improvements have been made to flow support.
+
+* Flow classification rules are now configurable with custom priorities and custom groups can be created.
+* The node list, node details, and resource graph pages indicate whether flows are available.
+* Basic clock skew detection for flow timestamps has been introduced.
+* Flows can be grouped by monitoring location.
+
+ReST queries and Helm have been enhanced to support new flow features:
+
+* Support has been added for querying traffic for specific applications over time.
+* Support has been added for querying a list of "Top N" hosts, similar to applications and conversations.
+* Hostnames can now be shown in Helm rather than just IP addresses, when available.
+
+==== Elasticsearch
+
+* It is now possible to set a custom prefix for the indices, which allows for multiple OpenNMS instances to share the same cluster.
+
+==== Detectors, Monitors, and Collectors
+
+* TTLs can be customized per-detector, monitor, or collector.
+* A JMS/ActiveMQ detector and monitor have been added.
+* The TLS Certificate Monitor now supports using STARTTLS to negotiate.
+
+==== Reporting
+
+* The scheduled reporting UI has been updated and improved.
+* It is now possible to configure OpenNMS to integrate with Grafana and schedule PDF reports generated from Grafana dashboards.
+* Time zone is now considered when scheduling reports.
+* Scheduled reports now support multiple recipients.
+
+==== New or Updated Karaf Shell Commands
+
+The following new commands have been added to support new or existing functionality:
+
+* `events:send` - send an OpenNMS event
+* `opennms-dns:stress` - stress-test the new internal DNS resolver
+* `opennms-kv-blob:get` - print a record from the blob store
+* `opennms-kv-blob:put` - inserts a string into the blob store
+* `opennms-kv-blob:benchmark` - benchmark the internal OpenNMS blob store
+* `opennms-kv-json:get` - print a record from the JSON store
+* `opennms-kv-blob:put` - inserts a record into the JSON store
+* `opennms-measurements:show-measurements` - show measurements data
+* `opennms-measurements:show-newts-samples` - show raw sample data from Newts
+* `opennms-measurements:show-resources` - show/filter the resource tree
+* `opennms-measurements:delete-resource` - delete the measurements and meta-data for a resource
+* `opennms-snmp:fit` - given an IP address, "fit" that address to an SNMP config profile
+* `opennms-snmp:remove-from-definition` - remove an IP address from an SNMP config definition
+* `opennms-threshold-states:enumerate` - list threshold states
+* `opennms-threshold-states:details` - show the details of a specific threshold state
+* `opennms-threshold-states:clear` - clear a specific threshold state
+* `opennms-threshold-states:clear-all` - reset all threshold states
+* `provision:import-requisition` - import a requisition from a URL
+
+Additionally, a few commands have been updated to have `opennms-` as their prefix:
+
+* `snmp:show-config` -> `opennms-snmp:show-config`
+* `snmp:walk` -> `opennms-snmp:walk`
+
+==== UI Improvements
+
+* The UI has gone through a refresh, moving to Bootstrap 4 and vastly cleaning up our HTML to make it easier to make further improvements going forward.
+* "Graph All" now works properly even when there are a large number of resources to graph.
+* Node, interface, and service meta-data is now configurable in the requisition UI.
+* The Backshift graph zooming regression introduced with the web asset refactor has been fixed.
+* The rendered graph page can now be searched/filtered to pare down results, and graphs are now lazily loaded.
+* The alarm list can now be filtered by surveillance category.
+
+==== Development Considerations
+
+* The https://github.com/OpenNMS/opennms-integration-api#opennms-integration-api-[OpenNMS Integration API] now supports processing thresholds.
+
+==== Internals
+
+A ton of other internal improvements have been made:
+
+* The complete node object is now exposed to Scriptd and script policies.
+* A bunch more things have been added to the Karaf `health:check` command-line.
+* Elasticsearch client performance has been improved by enabling compression where possible.
+* A new DNS resolution service has been introduced internally that should speed up hostname lookups.
+* A new key/value store was added, for internal use in things like thresholding persistence and user session data.
+* The `snmp-config.xml` file now supports "profiles" for influencing the behavior of IPs that don't match existing definitions.
+  For details, see link:https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html#_snmp_profiles[the Admin Guide section on SNMP Profiles].
+* Our embedded Drools has been updated to the latest 7.x release.
+* More instrumentation has been added to the Jaeger OpenTracing support introduced in Horizon 24.
+* A ton of performance improvements have been made in various parts of the codebase.
+* 2 new roles have been added:
+  * `ROLE_REPORT_DESIGNER` - use the ReST APIs or UI for manipulating reports and report schedules
+  * `ROLE_FLOW_MANAGER` - use the Rest APIs or UI for managing flow classification rules

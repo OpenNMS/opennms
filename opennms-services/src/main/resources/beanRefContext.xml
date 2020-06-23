@@ -1,51 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd" default-lazy-init="true">
-        
-   <bean id="commonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd" default-lazy-init="true">
+
+    <bean id="pollerConfigContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+        <constructor-arg>
+            <list>
+                <value>META-INF/opennms/applicationContext-pollerConfigDaos.xml</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="daoContext" />
+    </bean>
+    
+   <bean id="thresholdingContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
-         <value>META-INF/opennms/applicationContext-commonConfigs.xml</value>
+         <value>META-INF/opennms/applicationContext-thresholding.xml</value>
+         <value>META-INF/opennms/applicationContext-thresholdingConfigDaos.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daemonContext" />
+     <constructor-arg ref="pollerConfigContext" />
    </bean>
-   
+
    <bean id="collectdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
+         <value>META-INF/opennms/applicationContext-rpc-collector.xml</value>
          <value>META-INF/opennms/applicationContext-collectd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="thresholdingContext" />
    </bean>
    
-   <bean id="capsdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+   <bean id="notifdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
-         <value>META-INF/opennms/applicationContext-capsd.xml</value>
+         <value>META-INF/opennms/applicationContext-notifd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="pollerConfigContext" />
    </bean>
-   
+
    <bean id="pollerdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-pollerd.xml</value>
+         <value>META-INF/opennms/applicationContext-rpc-poller.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
-   </bean>
-   
-   <bean id="provisionerContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-provisioner.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="thresholdingContext" />
    </bean>
    
    <bean id="snmpinterfacepollerdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
@@ -54,91 +57,43 @@
          <value>META-INF/opennms/applicationContext-snmpinterfacepollerd.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daoContext" />
    </bean>
 
-   <bean id="pollerBackEndContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-pollerBackEnd.xml</value>
-         <value>META-INF/opennms/applicationContext-exportedPollerBackEnd-rmi.xml</value>
-         <value>META-INF/opennms/applicationContext-exportedPollerBackEnd-http.xml</value>
-         <!-- Not sure why this isn't included... it must not work yet. -->
-         <!-- <value>META-INF/opennms/applicationContext-exportedPollerBackEnd-https.xml</value> -->
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="commonContext" />
-   </bean>
-   
     <bean id="statisticsDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-statisticsDaemon.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daemonContext" />
+     <constructor-arg ref="daoContext" />
    </bean>
-   
-    <bean id="troubleTicketerContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-troubleTicketer.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="daemonContext" />
-   </bean>
-   
+
     <bean id="queuedContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-queued.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="daemonContext" />
+     <constructor-arg ref="daoContext" />
    </bean>
-        
-    <bean id="linkdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+    
+    <bean id="rtcContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
-         <value>META-INF/opennms/applicationContext-linkd.xml</value>
+         <value>META-INF/opennms/applicationContext-rtc.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
-   </bean>
-        
-    <bean id="eventDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-eventDaemon.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="commonContext" />
-   </bean>
-        
-    <bean id="trapDaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-trapDaemon.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="commonContext" />
-   </bean>
-   
+     <constructor-arg ref="daoContext" />
+    </bean>
+    
    <bean id="tl1DaemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-tl1Daemon.xml</value>
        </list>
      </constructor-arg>
-     <constructor-arg ref="commonContext" />
+     <constructor-arg ref="daoContext" />
    </bean>
-    
-   <bean id="discoveryContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
-     <constructor-arg>
-       <list>
-         <value>META-INF/opennms/applicationContext-discovery.xml</value>
-       </list>
-     </constructor-arg>
-     <constructor-arg ref="commonContext" />
-   </bean> 
+   
 </beans>

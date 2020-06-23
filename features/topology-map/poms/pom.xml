@@ -4,8 +4,8 @@
 
   <parent>
     <groupId>org.opennms.features</groupId>
-    <artifactId>topology</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <artifactId>org.opennms.features.topology</artifactId>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -27,48 +27,8 @@
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>2.3.7</version>
           <extensions>true</extensions>
         </plugin>
-         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-         <plugin>
-            <groupId>org.eclipse.m2e</groupId>
-            <artifactId>lifecycle-mapping</artifactId>
-            <version>1.0.0</version>
-            <configuration>
-               <lifecycleMappingMetadata>
-                  <pluginExecutions>
-                     <pluginExecution>
-                        <pluginExecutionFilter>
-                           <groupId>org.opennms.maven.plugins</groupId>
-                           <artifactId>features-maven-plugin</artifactId>
-                           <versionRange>[1.0-SNAPSHOT,)</versionRange>
-                           <goals>
-                              <goal>generate-features-xml</goal>
-                           </goals>
-                        </pluginExecutionFilter>
-                        <action>
-                           <ignore></ignore>
-                        </action>
-                     </pluginExecution>
-                     <pluginExecution>
-                        <pluginExecutionFilter>
-                           <groupId>com.vaadin</groupId>
-                           <artifactId>vaadin-maven-plugin</artifactId>
-                           <versionRange>[1.0.2,)</versionRange>
-                           <goals>
-                              <goal>resources</goal>
-                              <goal>update-widgetset</goal>
-                           </goals>
-                        </pluginExecutionFilter>
-                        <action>
-                           <ignore></ignore>
-                        </action>
-                     </pluginExecution>
-                  </pluginExecutions>
-               </lifecycleMappingMetadata>
-            </configuration>
-         </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -77,45 +37,19 @@
     <dependencies>
       <dependency>
         <groupId>org.apache.karaf.shell</groupId>
-        <artifactId>org.apache.karaf.shell.console</artifactId>
+        <artifactId>org.apache.karaf.shell.core</artifactId>
         <version>${karafVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
 
-<!--
-  <repositories>
-    <repository>
-      <id>servicemix</id>
-      <name>Apache ServiceMix Repository</name>
-      <url>http://maven.opennms.org/content/groups/servicemix-release/</url>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>false</enabled></snapshots>
-    </repository>
-    <repository>
-      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
-      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
--->
-
   <pluginRepositories>
-    <pluginRepository>
-      <id>servicemix</id>
-      <name>Apache ServiceMix Repository</name>
-      <url>http://maven.opennms.org/content/groups/servicemix-release/</url>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>false</enabled></snapshots>
-    </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>true</enabled></snapshots>
       <releases><enabled>false</enabled></releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
     </pluginRepository>
   </pluginRepositories>
 

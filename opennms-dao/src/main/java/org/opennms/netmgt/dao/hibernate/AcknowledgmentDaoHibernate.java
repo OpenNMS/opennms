@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,20 +28,31 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.hibernate.ObjectNotFoundException;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
+import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -53,6 +64,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowledgment, Integer> implements AcknowledgmentDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(AcknowledgmentDaoHibernate.class);
+
+    @Autowired
+    private AlarmEntityNotifier alarmEntityNotifier;
+
     /**
      * <p>Constructor for AcknowledgmentDaoHibernate.</p>
      */
@@ -69,7 +84,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
     /** {@inheritDoc} */
     @Override
     public List<Acknowledgeable> findAcknowledgables(final OnmsAcknowledgment ack) {
-        List<Acknowledgeable> ackables = new ArrayList<Acknowledgeable>();
+        List<Acknowledgeable> ackables = new ArrayList<>();
         
         if (ack == null || ack.getAckType() == null) {
             return ackables;
@@ -185,24 +200,46 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
             try {
                 Acknowledgeable ackable = it.next();
 
+                final boolean isAlarm = ackable instanceof OnmsAlarm;
+                Consumer<OnmsAlarm> callback = null;
+
                 switch (ack.getAckAction()) {
                 case ACKNOWLEDGE:
                     LOG.debug("processAck: Acknowledging ackable: {}...", ackable);
+                    if (isAlarm) {
+                        final String ackUser = ackable.getAckUser();
+                        final Date ackTime = ackable.getAckTime();
+                        callback = (alarm) -> alarmEntityNotifier.didAcknowledgeAlarm(alarm, ackUser, ackTime);
+                    }
                     ackable.acknowledge(ack.getAckUser());
                     LOG.debug("processAck: Acknowledged ackable: {}", ackable);
                     break;
                 case UNACKNOWLEDGE:
                     LOG.debug("processAck: Unacknowledging ackable: {}...", ackable);
+                    if (isAlarm) {
+                        final String ackUser = ackable.getAckUser();
+                        final Date ackTime = ackable.getAckTime();
+                        callback = (alarm) -> alarmEntityNotifier.didUnacknowledgeAlarm(alarm, ackUser, ackTime);
+                    }
                     ackable.unacknowledge(ack.getAckUser());
                     LOG.debug("processAck: Unacknowledged ackable: {}", ackable);
                     break;
                 case CLEAR:
                     LOG.debug("processAck: Clearing ackable: {}...", ackable);
+                    if (isAlarm) {
+                        ((OnmsAlarm) ackable).getRelatedAlarms().forEach(relatedAlarm -> clearRelatedAlarm(relatedAlarm));
+                        final OnmsSeverity previousSeverity = ackable.getSeverity();
+                        callback = (alarm) -> alarmEntityNotifier.didUpdateAlarmSeverity(alarm, previousSeverity);
+                    }
                     ackable.clear(ack.getAckUser());
                     LOG.debug("processAck: Cleared ackable: {}", ackable);
                     break;
                 case ESCALATE:
                     LOG.debug("processAck: Escalating ackable: {}...", ackable);
+                    if (isAlarm) {
+                        final OnmsSeverity previousSeverity = ackable.getSeverity();
+                        callback = (alarm) -> alarmEntityNotifier.didUpdateAlarmSeverity(alarm, previousSeverity);
+                    }
                     ackable.escalate(ack.getAckUser());
                     LOG.debug("processAck: Escalated ackable: {}", ackable);
                     break;
@@ -213,6 +250,10 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
                 updateAckable(ackable);
                 save(ack);
                 flush();
+
+                if (callback != null) {
+                    callback.accept((OnmsAlarm)ackable);
+                }
             } catch (Throwable t) {
                 LOG.error("processAck: exception while processing: {}; {}", ack, t);
             }
@@ -220,16 +261,39 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
         }
         LOG.info("processAck: Found and processed acknowledgables for the acknowledgement: {}", ack);
     }
-	
-	 /** {@inheritDoc} */
-	public int deleteAcknowledgmentByRefId(int ackRefId) {
-		try {
-        	String hql = "delete from OnmsAcknowledgment where refid = ?";
-    	    Object[] values = {ackRefId};
-    	    return bulkDelete(hql, values);
-        } catch (final Exception e) {
-            LOG.warn("Unable to delete an acknowledgment with Id {}", ackRefId, e);
-        }
-		return 0;
-	}
+
+    private void clearRelatedAlarm(OnmsAlarm alarm) {
+        OnmsAcknowledgment clear = new OnmsAcknowledgment(alarm);
+        clear.setAckAction(AckAction.CLEAR);
+        processAck(clear);
+    }
+
+    @Override
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public List<OnmsAcknowledgment> findLatestAcks(Date from) {
+        final String hqlQuery = "SELECT acks FROM OnmsAcknowledgment acks " +
+                "WHERE acks.ackTime = (" +
+                    "SELECT MAX(filteredAcks.ackTime) " +
+                    "FROM OnmsAcknowledgment filteredAcks " +
+                    "WHERE filteredAcks.refId = acks.refId) " +
+                "AND acks.id = (" +
+                    "SELECT MAX(filteredAcks.id) FROM OnmsAcknowledgment filteredAcks " +
+                    "WHERE filteredAcks.refId = acks.refId) " +
+                "AND acks.ackTime >= (:minAckTimeParm)";
+        return (List<OnmsAcknowledgment>) getHibernateTemplate().findByNamedParam(hqlQuery, "minAckTimeParm", from);
+    }
+
+    @Override
+    @Transactional
+    public Optional<OnmsAcknowledgment> findLatestAckForRefId(Integer refId) {
+        CriteriaBuilder builder = new CriteriaBuilder(OnmsAcknowledgment.class)
+                .eq("refId", refId)
+                .limit(1)
+                .orderBy("ackTime").desc()
+                .orderBy("id").desc();
+        List<OnmsAcknowledgment> acks = findMatching(builder.toCriteria());
+
+        return acks.size() == 1 ? Optional.of(acks.get(0)) : Optional.empty();
+    }
 }

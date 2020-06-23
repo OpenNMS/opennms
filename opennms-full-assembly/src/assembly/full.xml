@@ -1,4 +1,8 @@
-<assembly>
+<assembly
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd"
+>
   <id>full</id>
   <formats>
     <format>tar.gz</format>
@@ -8,17 +12,14 @@
     <componentDescriptor>src/assembly/components/adapters.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/base-assembly.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/cifs.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/dhcp.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/juniper-tca.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/ncs.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/nsclient.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/osgi.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/radius.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/rxtx.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/selenium-monitor.xml</componentDescriptor>
+    <componentDescriptor>src/assembly/components/vtdxml.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/webapps.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/xml.xml</componentDescriptor>
     <componentDescriptor>src/assembly/components/xmp.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/osgi.xml</componentDescriptor>
-    <componentDescriptor>src/assembly/components/notifications.xml</componentDescriptor>
   </componentDescriptors>
 </assembly>

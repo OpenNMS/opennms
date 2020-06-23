@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -43,8 +43,7 @@ public class OnmsAssetRecordTest {
     public void equalsSameObject() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        rec1.setNode(new OnmsNode(distPoller));
+        rec1.setNode(new OnmsNode());
         rec1.getNode().setId(1);
         
         Assert.assertTrue(rec1.equals(rec1));
@@ -54,13 +53,12 @@ public class OnmsAssetRecordTest {
     public void equalsDiffObject() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        rec1.setNode(new OnmsNode(distPoller));
+        rec1.setNode(new OnmsNode());
         rec1.getNode().setId(1);
         
         OnmsAssetRecord rec2 = new OnmsAssetRecord();
         rec2.setId(null);
-        rec2.setNode(new OnmsNode(distPoller));
+        rec2.setNode(new OnmsNode());
         rec2.getNode().setId(1);
         
         Assert.assertTrue(rec1.equals(rec2));
@@ -75,13 +73,12 @@ public class OnmsAssetRecordTest {
     public void notEquals() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        rec1.setNode(new OnmsNode(distPoller));
+        rec1.setNode(new OnmsNode());
         rec1.getNode().setId(1);
         
         OnmsAssetRecord rec2 = new OnmsAssetRecord();
         rec2.setId(null);
-        rec2.setNode(new OnmsNode(distPoller));
+        rec2.setNode(new OnmsNode());
         rec2.getNode().setId(2);
         
         Assert.assertFalse(rec1.equals(rec2));
@@ -91,8 +88,7 @@ public class OnmsAssetRecordTest {
     public void testMergeEqualRecord() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        rec1.setNode(new OnmsNode(distPoller));
+        rec1.setNode(new OnmsNode());
         rec1.getNode().setId(1);
         rec1.setGeolocation(new OnmsGeolocation());
         rec1.getGeolocation().setAddress1("220 Chatham Business Drive");
@@ -101,7 +97,7 @@ public class OnmsAssetRecordTest {
         
         OnmsAssetRecord rec2 = new OnmsAssetRecord();
         rec2.setId(null);
-        rec2.setNode(new OnmsNode(distPoller));
+        rec2.setNode(new OnmsNode());
         rec2.getNode().setId(1);
         String newAddress1 = "7025 Kit Creek Rd";
         rec2.getGeolocation().setAddress1(newAddress1);
@@ -118,8 +114,7 @@ public class OnmsAssetRecordTest {
     public void testMergeNotEqualRecord() {
         OnmsAssetRecord rec1 = new OnmsAssetRecord();
         rec1.setId(1);
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
-        rec1.setNode(new OnmsNode(distPoller));
+        rec1.setNode(new OnmsNode());
         rec1.getNode().setId(1);
         String originalAddress1 = "220 Chatham Business Drive";
         rec1.getGeolocation().setAddress1(originalAddress1);
@@ -130,7 +125,7 @@ public class OnmsAssetRecordTest {
         
         OnmsAssetRecord rec2 = new OnmsAssetRecord();
         rec2.setId(null);
-        rec2.setNode(new OnmsNode(distPoller));
+        rec2.setNode(new OnmsNode());
         rec2.getNode().setId(2);
         rec2.getGeolocation().setAddress1("7025 Kit Creek Rd");
         rec2.getGeolocation().setAddress2("P.O. Box 14987");

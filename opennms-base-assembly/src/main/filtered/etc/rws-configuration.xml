@@ -1,5 +1,5 @@
 <rws-configuration>
-    <base-url server_url="http://localhost"/>
+    <base-url server_url="http://rws-not-configured"/>
     <!-- The following URLs are test based urls where you can find the current rws server -->
     <!-- base-url server_url="http://www.rionero.com/rws-current"/ -->
     <!-- base-url server_url="http://www.rionero.com/auth/rws-current" username="opennms" password="MyRancidApi"/-->

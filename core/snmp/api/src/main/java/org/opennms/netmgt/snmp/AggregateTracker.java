@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,12 +30,21 @@ package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.opennms.netmgt.snmp.proxy.CorrelationIdUtils;
+import org.opennms.netmgt.snmp.proxy.WalkRequest;
+import org.opennms.netmgt.snmp.proxy.WalkResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AggregateTracker extends CollectionTracker {
+    private static final Logger LOG = LoggerFactory.getLogger(AggregateTracker.class);
 
-    private static class ChildTrackerPduBuilder extends PduBuilder {
-        private List<SnmpObjId> m_oids = new ArrayList<SnmpObjId>();
+    private static final class ChildTrackerPduBuilder extends PduBuilder {
+        private List<SnmpObjId> m_oids = new ArrayList<>();
         private int m_nonRepeaters = 0;
         private int m_maxRepititions = 0;
         private ResponseProcessor m_responseProcessor;
@@ -71,8 +80,6 @@ public class AggregateTracker extends CollectionTracker {
         public int getMaxRepititions() {
             return hasRepeaters() ? m_maxRepititions : Integer.MAX_VALUE;
         }
-        
-        
         
         public int size() {
             return m_oids.size();
@@ -128,7 +135,7 @@ public class AggregateTracker extends CollectionTracker {
             return getRepeaterStartIndex() <= canonicalIndex && canonicalIndex < getRepeaterStartIndex()+getRepeaters();
         }
         
-        public int getChildIndex(int canonicalIndex) {
+        public int getChildIndex(int canonicalIndex) throws SnmpException {
             if (isNonRepeater(canonicalIndex)) {
                 return canonicalIndex - getNonRepeaterStartIndex();
             }
@@ -137,22 +144,21 @@ public class AggregateTracker extends CollectionTracker {
                 return canonicalIndex - getRepeaterStartIndex() + getNonRepeaters();
             }
             
-            throw new IllegalArgumentException("index out of range for tracker "+this);
+            throw new SnmpException("index out of range for tracker "+this);
         }
     }
 
-    private class ChildTrackerResponseProcessor implements ResponseProcessor {
+    private static class ChildTrackerResponseProcessor implements ResponseProcessor {
+        private final CollectionTracker m_tracker;
         private final int m_repeaters;
-    
         private final PduBuilder m_pduBuilder;
-    
         private final int m_nonRepeaters;
-    
         private final List<ChildTrackerPduBuilder> m_childPduBuilders;
         
         private int m_currResponseIndex = 0;
         
-        public ChildTrackerResponseProcessor(PduBuilder pduBuilder, List<ChildTrackerPduBuilder> builders, int nonRepeaters, int repeaters) {
+        public ChildTrackerResponseProcessor(final CollectionTracker tracker, final PduBuilder pduBuilder, final List<ChildTrackerPduBuilder> builders, final int nonRepeaters, final int repeaters) {
+            m_tracker = tracker;
             m_repeaters = repeaters;
             m_pduBuilder = pduBuilder;
             m_nonRepeaters = nonRepeaters;
@@ -160,19 +166,19 @@ public class AggregateTracker extends CollectionTracker {
         }
     
         @Override
-        public void processResponse(SnmpObjId snmpObjId, SnmpValue val) {
+        public void processResponse(SnmpObjId snmpObjId, SnmpValue val) throws SnmpException {
             ChildTrackerPduBuilder childBuilder = getChildBuilder(m_currResponseIndex++);
             childBuilder.getResponseProcessor().processResponse(snmpObjId, val);
         }
     
-        public boolean processChildError(int errorStatus, int errorIndex) {
+        public boolean processChildError(int errorStatus, int errorIndex) throws SnmpException {
             int canonicalIndex = getCanonicalIndex(errorIndex-1);
             ChildTrackerPduBuilder childBuilder = getChildBuilder(canonicalIndex);
             int childIndex = childBuilder.getChildIndex(canonicalIndex);
             return childBuilder.getResponseProcessor().processErrors(errorStatus, childIndex+1);
         }
     
-        private ChildTrackerPduBuilder getChildBuilder(int zeroBasedIndex) {
+        private ChildTrackerPduBuilder getChildBuilder(int zeroBasedIndex) throws SnmpException {
             int canonicalIndex = getCanonicalIndex(zeroBasedIndex);
             for (ChildTrackerPduBuilder childBuilder : m_childPduBuilders) {
                 if (childBuilder.isNonRepeater(canonicalIndex) || childBuilder.isRepeater(canonicalIndex)) {
@@ -180,7 +186,7 @@ public class AggregateTracker extends CollectionTracker {
                 }
             }
     
-            throw new IllegalStateException("Unable to find childBuilder for index "+zeroBasedIndex);
+            throw new SnmpException("Unable to find childBuilder for index "+zeroBasedIndex);
         }
     
         private int getCanonicalIndex(int zeroBasedIndex) {
@@ -196,24 +202,26 @@ public class AggregateTracker extends CollectionTracker {
         }
     
         @Override
-        public boolean processErrors(int errorStatus, int errorIndex) {
-            if (errorStatus == TOO_BIG_ERR) {
+        public boolean processErrors(int errorStatus, int errorIndex) throws SnmpException {
+            //LOG.trace("processErrors: errorStatus={}, errorIndex={}", errorStatus, errorIndex);
+
+            final ErrorStatus status = ErrorStatus.fromStatus(errorStatus);
+
+            // handle special cases first
+            if (status == ErrorStatus.TOO_BIG) {
                 int maxVarsPerPdu = m_pduBuilder.getMaxVarsPerPdu();
                 if (maxVarsPerPdu <= 1) {
-                    throw new IllegalArgumentException("Unable to handle tooBigError when maxVarsPerPdu = "+maxVarsPerPdu);
+                    throw new SnmpException("Unable to handle tooBigError when maxVarsPerPdu = "+maxVarsPerPdu);
                 }
                 m_pduBuilder.setMaxVarsPerPdu(maxVarsPerPdu/2);
-                reportTooBigErr("Reducing maxVarsPerPdu for this request to "+m_pduBuilder.getMaxVarsPerPdu());
+                m_tracker.reportTooBigErr("Reducing maxVarsPerPDU for this request.");
                 return true;
-            } else if (errorStatus == GEN_ERR) {
-                return processChildError(errorStatus, errorIndex);
-            } else if (errorStatus == NO_SUCH_NAME_ERR) {
-                return processChildError(errorStatus, errorIndex);
-            } else if (errorStatus != NO_ERR){
-                throw new IllegalArgumentException("Unrecognized errorStatus "+errorStatus);
+            } else if (status.isFatal()) {
+                final ErrorStatusException ex = new ErrorStatusException(status);
+                m_tracker.reportFatalErr(ex);
+                throw ex;
             } else {
-                // Continue on.. no need to retry
-                return false;
+                return processChildError(errorStatus, errorIndex);
             }
         }
     }
@@ -266,6 +274,13 @@ public class AggregateTracker extends CollectionTracker {
     }
 
     @Override
+    public void setMaxRetries(final int maxRetries) {
+        for (final CollectionTracker child : m_children) {
+            child.setMaxRetries(maxRetries);
+        }
+    }
+
+    @Override
     public boolean isFinished() {
         for (CollectionTracker child : m_children) {
             if (!child.isFinished()) {
@@ -276,7 +291,7 @@ public class AggregateTracker extends CollectionTracker {
     }
     
     @Override
-    public ResponseProcessor buildNextPdu(final PduBuilder parentBuilder) {
+    public ResponseProcessor buildNextPdu(final PduBuilder parentBuilder) throws SnmpException {
         
         // first process the child trackers that aren't finished up to maxVars 
         int count = 0;
@@ -317,6 +332,43 @@ public class AggregateTracker extends CollectionTracker {
         
         // construct a response processor that tracks the changes and informs the response processors
         // for the child trackers
-        return new ChildTrackerResponseProcessor(parentBuilder, builders, nonRepeaters, repeaters);
+        return new ChildTrackerResponseProcessor(this, parentBuilder, builders, nonRepeaters, repeaters);
+    }
+
+    @Override
+    public List<WalkRequest> getWalkRequests() {
+        final List<WalkRequest> walkRequests = new ArrayList<>();
+        for (int k = 0; k < m_children.length; k++) {
+            for (WalkRequest walkRequest : m_children[k].getWalkRequests()) {
+                // Add the index to the correlation id, so we know which child the responses
+                // should be associated with
+                CorrelationIdUtils.pushIndexToCorrelationId(walkRequest, k);
+                walkRequests.add(walkRequest);
+            }
+        }
+        return walkRequests;
+    }
+
+    @Override
+    public void handleWalkResponses(List<WalkResponse> responses) {
+        // Group the responses by index
+        Map<Integer, List<WalkResponse>> responsesByCorrelationId = new HashMap<>();
+        for (int i = 0; i < m_children.length; i++) {
+            // Add an empty list to every index to make sure we call handleWalkResponses() on every child
+            responsesByCorrelationId.put(i, new ArrayList<>());
+        }
+        responses.stream().forEach(r -> CorrelationIdUtils.popIndexFromCollerationId(r, responsesByCorrelationId));
+
+        // Store the results in the appropriate child trackers
+        responsesByCorrelationId.entrySet().stream()
+            .forEach(entry -> {
+                int index = entry.getKey();
+                if (index < 0 || index > (m_children.length  -1)) {
+                    // This shouldn't happen, but just in case...
+                    LOG.warn("Invalid index on response: {}, {}, {}", index, entry.getValue(), m_children.length);
+                } else {
+                    m_children[index].handleWalkResponses(entry.getValue());
+                }
+            });
     }
 }

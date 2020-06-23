@@ -1,0 +1,102 @@
+<div class="row">
+    <div class="" ng-class="{'col-md-12': isClassificationCollapsed, 'col-md-9': !isClassificationCollapsed}">
+        <ul id="tabs" class="nav nav-tabs">
+            <li role="presentation" class="nav-item">
+                <a ui-sref-active="active" ui-sref="classifications.config" data-name="settings" class="nav-link">Settings</a>
+            </li>
+
+            <li role="presentation" ng-repeat="group in groups" class="nav-item">
+                <a ui-sref-active="active" ui-sref="classifications.group({'id': group.id, 'group': group})" title="{{group.description}}" data-name={{group.name}} class="nav-link">
+                    {{group.name | capitalize}} Rules <span class="badge badge-primary" title="{{group.ruleCount}} defined rules">{{group.ruleCount}}</span>
+                </a>
+            </li>
+            <button id="action.classification.toggle" class="btn btn-secondary mr-3"
+                    style="position: absolute; right: 0px; z-index: 900"
+                    ng-click="isClassificationCollapsed = !isClassificationCollapsed"
+                    title="{{isClassificationCollapsed ? 'Test classification' : 'Collapse classification panel'}}">
+                <i class="fa" ng-class="{'fa-magic': isClassificationCollapsed, 'fa-caret-right': !isClassificationCollapsed}"/>
+            </button>
+        </ul>
+        <div class="card border-top-0" ui-view>
+        </div>
+    </div>
+
+    <div id="classification-tab" class="col-md-3" class="collapse" uib-collapse="isClassificationCollapsed">
+        <div>
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="nav-item">
+                    <a class="nav-link active">Test Classification</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card border-top-0">
+            <div class="card-default card-body">
+                    <form name="classifyForm">
+                        <div class="form-group">
+                            <label class="col-form-label" for="classify-protocol">Protocol</label>
+                            <input class="form-control"
+                                   type="text"
+                                   autocomplete="off"
+                                   id="classify-protocol"
+                                   name="classify-protocol"
+                                   ng-model="classificationRequest.protocol"
+                                   placeholder="A valid RFC specified IP protocol, e.g. TCP, UDP"
+                                   typeahead-min-length="0"
+                                   uib-typeahead="protocol.keyword for protocol in protocols | filter:$viewValue"
+                                   typeahead-editable="false"
+                                   ng-class="{ 'is-invalid' : ruleForm['classify-protocol'].$invalid || classifyError.protocol }"/>
+                            <p id="classifyError.protocol" ng-show="classifyError.protocol" class="form-text text-muted">{{classifyError.protocol}}</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-form-label" for="classify-exporterAddress">Exporter Address</label>
+                            <input class="form-control" type="text" id="classify-exporterAddress" name="classify-exporterAddress" placeholder="e.g. 10.0.0.1"
+                                   ng-model="classificationRequest.exporterAddress"
+                                   ng-class="{ 'is-invalid' : ruleForm['classify-exporterAddress'].$invalid || classifyError.exporterAddress }">
+                            <p id="classifyError.exporterAddress" ng-show="classifyError.exporterAddress" class="invalid-feedback">{{classifyError.exporterAddress}}</p>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-8 col-sm-8 col-xs-8">
+                                <label class="col-form-label" for="classify-srcAddress" >Source Address</label>
+                                <input class="form-control" type="text" id="classify-srcAddress" name="classify-srcAddress" placeholder="e.g. 127.0.0.1"
+                                       ng-model="classificationRequest.srcAddress"
+                                       ng-class="{ 'is-invalid' : ruleForm['classify-srcAddress'].$invalid || classifyError.srcAddress }">
+                                <p id="classifyError.srcAddress" ng-show="classifyError.srcAddress" class="invalid-feedback">{{classifyError.srcAddress}}</p>
+                            </div>
+                            <div class="form-group col-md-4 col-sm-4 col-xs-4">
+                                <label class="col-form-label" for="classify-srcPort" >Port</label>
+                                <input class="form-control" type="text" id="classify-srcPort" name="classify-srcPort" placeholder="e.g. 55252"
+                                       ng-model="classificationRequest.srcPort"
+                                       ng-class="{ 'is-invalid' : ruleForm['classify-srcPort'].$invalid || classifyError.srcPort }">
+                                <p id="classifyError.srcPort" ng-show="classifyError.srcPort" class="invalid-feedback">{{classifyError.srcPort}}</p>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-8 col-sm-8 col-xs-8">
+                                <label class="col-form-label" for="classify-dstAddress">Destination Address</label>
+                                <input class="form-control" type="text" id="classify-dstAddress" name="classify-dstAddress" placeholder="e.g. 127.0.0.1"
+                                       ng-model="classificationRequest.dstAddress"
+                                       ng-class="{ 'is-invalid' : ruleForm['classify-dstAddress'].$invalid || classifyError.dstAddress }">
+                                <p id="classifyError.dstAddress" ng-show="classifyError.dstAddress" class="invalid-feedback">{{classifyError.dstAddress}}</p>
+                            </div>
+                            <div class="form-group col-md-4 col-sm-4 col-xs-4">
+                                <label class="col-form-label" for="classify-dstPort">Port</label>
+                                <input class="form-control" type="text" id="classify-dstPort" name="classify-dstPort" placeholder="e.g. 80"
+                                       ng-model="classificationRequest.dstPort"
+                                       ng-class="{ 'is-invalid' : ruleForm['classify-dstPort'].$invalid || classifyError.dstPort }">
+                                <p id="classifyError.dstPort" ng-show="classifyError.dstPort" class="invalid-feedback">{{classifyError.dstPort}}</p>
+                            </div>
+                        </div>
+                        <div class="badge badge-secondary" ng-show="classificationResponse">
+                            <span id="classification-response" title="Based on the current set of rules, the given flow would be mapped to">{{classificationResponse}}</span>
+                        </div>
+                        <div class="alert alert-danger" ng-show="classifyError.entity">
+                            <span id="classification-error">{{classifyError.entity}}</span>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary pull-right" id="classification-submit" ng-click="classify(classificationRequest)" ng-disabled="classifyForm.$invalid || !fullyDefined()">Classify</button>
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>

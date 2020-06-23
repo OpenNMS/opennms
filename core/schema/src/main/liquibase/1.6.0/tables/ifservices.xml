@@ -8,6 +8,7 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-ifServices">
+		<validCheckSum>3:bcebcffc7621fd938946ea977edd9b8e</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="ifservices" /></not>
 		</preConditions> 
@@ -38,10 +39,10 @@
 			</column>
 
 			<!-- Date and time of last successful poll by this poller package -->
-			<column name="lastgood" type="DATETIME" />
+			<column name="lastgood" type="TIMESTAMP WITH TIME ZONE" />
 
 			<!-- Date and time of last failed poll by this poller package -->
-			<column name="lastfail" type="DATETIME" />
+			<column name="lastfail" type="TIMESTAMP WITH TIME ZONE" />
 
 			<!-- Service qualifier.  May be used to distinguish two services which have the same serviceID.
 				For example, in the case of the HTTP service a qualifier might be the specific port on which

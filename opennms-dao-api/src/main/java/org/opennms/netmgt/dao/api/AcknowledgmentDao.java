@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,6 +30,8 @@ package org.opennms.netmgt.dao.api;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.Date;
 
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -71,12 +73,26 @@ public interface AcknowledgmentDao extends OnmsDao<OnmsAcknowledgment, Integer> 
      * @param acks a {@link java.util.Collection} object.
      */
     void processAcks(Collection<OnmsAcknowledgment> acks);
-	
-	/**
-     * <p>deleteAcknowledgmentByRefId</p>
+
+    /**
+     * <p>findLatestAcks</p>
+     * 
+     * Finds the latest acknowledgement for each refId. The latest acknowledgement is selected based on the most recent
+     * ackTime (and highest Id in the case of multiple occuring at the same time).
      *
-     * @param ackRefId an int type.
-     * @return an int type
+     * @param from limit results to acks created on or after
+     * @return the list of latest acks (empty list in the case of no acks found)
      */
-    int deleteAcknowledgmentByRefId(int ackRefId);
+    List<OnmsAcknowledgment> findLatestAcks(Date from);
+
+    /**
+     * <p>findLatestAckForRefId</p>
+     * 
+     * Finds the latest acknowledgement for the given refId. The latest acknowledgement is selected based on the most 
+     * recent ackTime (and highest Id in the case of multiple occurring at the same time).
+     * 
+     * @param refId the refId to search for
+     * @return an optional containing the latest ack for the given refId or Optional.empty() if none found
+     */
+    Optional<OnmsAcknowledgment> findLatestAckForRefId(Integer refId);
 }

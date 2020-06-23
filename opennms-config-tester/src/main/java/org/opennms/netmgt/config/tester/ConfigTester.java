@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,7 +28,16 @@
 
 package org.opennms.netmgt.config.tester;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -37,15 +46,24 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.tester.checks.ConfigCheckValidationException;
+import org.opennms.netmgt.config.tester.checks.PropertiesFileChecker;
+import org.opennms.netmgt.config.tester.checks.XMLFileChecker;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ConfigTester implements ApplicationContextAware {
+
+	private Logger log = Logger.getLogger(ConfigTester.class.getName());
+
 	private ApplicationContext m_context;
 	private Map<String, String> m_configs;
+	private final static Pattern DIRECTORY_AND_CLASS_PATTERN = Pattern.compile("^directory:(.+)$");
 
 	public Map<String, String> getConfigs() {
 		return m_configs;
@@ -59,15 +77,83 @@ public class ConfigTester implements ApplicationContextAware {
 		return m_context;
 	}
 
-        @Override
+	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		m_context = context;
 	}
 
-	public void testConfig(String name, boolean ignoreUnknown) {
+	public void testConfig(final String name, final boolean ignoreUnknown) {
 		checkConfigNameValid(name, ignoreUnknown);
-		
-		m_context.getBean(m_configs.get(name));
+		final String beanName = m_configs.get(name);
+		final Matcher matcher = DIRECTORY_AND_CLASS_PATTERN.matcher(beanName);
+		if (matcher.matches()) {
+			final String xmlModelName = matcher.group(1);
+			checkDirectoryForXmlFiles(name, xmlModelName);
+		} else if("directory".equalsIgnoreCase(beanName)){
+			checkDirectoryForUnKnownFiles(name);
+		} else if ("unknown".equalsIgnoreCase(beanName)){
+			checkFileForSyntax(name);
+		} else {
+			m_context.getBean(beanName);
+		}
+	}
+
+	private void checkDirectoryForXmlFiles(final String name, final String xmlModelName) {
+		final Path directory = Paths.get(ConfigFileConstants.getFilePathString(), name);
+
+		if (!Files.exists(directory)) {
+			return;
+		}
+
+		final Class clazz;
+		try {
+			clazz = Class.forName(xmlModelName);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+
+		try (final DirectoryStream<Path> stream = Files.newDirectoryStream(directory, "*.xml")) {
+			for (final Path entry : stream) {
+				try {
+					JaxbUtils.unmarshal(clazz, entry.toFile(), true);
+				} catch (final Exception e) {
+					throw new ConfigCheckValidationException("File " + entry.toString() + " not valid!", e);
+				}
+			}
+		} catch (final IOException e) {
+			throw new ConfigCheckValidationException(e);
+		}
+	}
+
+	private void checkDirectoryForUnKnownFiles(String name) {
+		Path directory = Paths.get(ConfigFileConstants.getFilePathString(), name);
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory, "*.{properties,xml}")) {
+			for (Path entry : stream) {
+				checkFileForSyntax(entry);
+			}
+		} catch (IOException e) {
+			throw new ConfigCheckValidationException(e);
+		}
+	}
+
+	private void checkFileForSyntax(String fileName) {
+		File file;
+		try {
+			file = ConfigFileConstants.getConfigFileByName(fileName);
+			checkFileForSyntax(file.toPath());
+		} catch (IOException e) {
+			throw new ConfigCheckValidationException(e);
+		}
+	}
+
+	private void checkFileForSyntax(Path file) {
+		if(file.toString().endsWith("properties")){
+            PropertiesFileChecker.checkFile(file).forSyntax();
+		} else if(file.toString().endsWith("xml")){
+			XMLFileChecker.checkFile(file).forSyntax();
+		} else {
+			log.warning("No FileChecker for file found: " + file.toAbsolutePath().toString());
+		}
 	}
 
 	private void checkConfigNameValid(String name, boolean ignoreUnknown) {
@@ -81,9 +167,10 @@ public class ConfigTester implements ApplicationContextAware {
 	}
 
 	public static void main(String[] argv) {
-		
-		ApplicationContext context = BeanUtils.getFactory("configTesterContext", ClassPathXmlApplicationContext.class);
-		ConfigTester tester = context.getBean("configTester", ConfigTester.class);
+
+        FilterDaoFactory.setInstance(new ConfigTesterFilterDao());
+        DataSourceFactory.setInstance(new ConfigTesterDataSource());
+		ConfigTester tester = BeanUtils.getBean("configTesterContext", "configTester", ConfigTester.class);
 
 		final CommandLineParser parser = new PosixParser();
 
@@ -123,7 +210,7 @@ public class ConfigTester implements ApplicationContextAware {
 		boolean verbose = line.hasOption('v');
 
 		DataSourceFactory.setInstance(new ConfigTesterDataSource());
-		
+
 		if (line.hasOption('l')) {
 			System.out.println("Supported configuration files: ");
 			for (String configFile : tester.getConfigs().keySet()) {
@@ -137,10 +224,12 @@ public class ConfigTester implements ApplicationContextAware {
 			for (String configFile : tester.getConfigs().keySet()) {
 				tester.testConfig(configFile, verbose, ignoreUnknown);
 			}
+			System.out.println("Test is finished, found no problems.");
 		} else {
 			for (String configFile : line.getArgs()) {
 				tester.testConfig(configFile, verbose, ignoreUnknown);
 			}
+			System.out.println("Test is finished, found no problems.");
 		}
 	}
 

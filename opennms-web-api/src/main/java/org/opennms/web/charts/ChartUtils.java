@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,18 +31,17 @@ package org.opennms.web.charts;
 import java.awt.Color;
 import java.awt.Paint;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -61,8 +60,10 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.netmgt.config.ChartConfigFactory;
 import org.opennms.netmgt.config.charts.BarChart;
 import org.opennms.netmgt.config.charts.Blue;
+import org.opennms.netmgt.config.charts.ChartBackgroundColor;
 import org.opennms.netmgt.config.charts.Green;
 import org.opennms.netmgt.config.charts.ImageSize;
+import org.opennms.netmgt.config.charts.PlotBackgroundColor;
 import org.opennms.netmgt.config.charts.Red;
 import org.opennms.netmgt.config.charts.Rgb;
 import org.opennms.netmgt.config.charts.SeriesDef;
@@ -87,22 +88,11 @@ public abstract class ChartUtils {
      */
     static {
         try {
-            DataSourceFactory.init();
             ChartConfigFactory.init();
-        } catch (MarshalException e) {
-            LOG.error("static initializer: Error marshalling chart configuration", e);
-        } catch (ValidationException e) {
-            LOG.error("static initializer: Error validating chart configuration.", e);
         } catch (FileNotFoundException e) {
             LOG.error("static initializer: Error finding chart configuration.", e);
         } catch (IOException e) {
             LOG.error("static initializer: IO error while marshalling chart configuration file.", e);
-        } catch (ClassNotFoundException e) {
-            LOG.error("static initializer: Error initializing database connection factory.", e);
-        } catch (PropertyVetoException e) {
-            LOG.error("static initializer: Error initializing database connection factory.", e);
-        } catch (SQLException e) {
-            LOG.error("static initializer: Error initializing database connection factory.", e);
         }
         // XXX why don't we throw an exception here or something?
     }
@@ -112,12 +102,10 @@ public abstract class ChartUtils {
      *
      * @param chartName Name specified in chart-configuration.xml
      * @return <code>JFreeChart</code> constructed from the chartName
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      * @throws java.sql.SQLException if any.
      */
-    public static JFreeChart getBarChart(String chartName) throws MarshalException, ValidationException, IOException, SQLException {
+    public static JFreeChart getBarChart(String chartName) throws IOException, SQLException {
 
         //ChartConfigFactory.reload();
         
@@ -132,11 +120,9 @@ public abstract class ChartUtils {
         JFreeChart barChart = createBarChart(chartConfig, baseDataSet);
         addSubTitles(chartConfig, barChart);
 
-        String subLabelClass = chartConfig.getSubLabelClass();
-        if(subLabelClass != null) {
-            addSubLabels(barChart, subLabelClass);
-        }
-        
+        if (chartConfig.getSubLabelClass().isPresent()) {
+            addSubLabels(barChart, chartConfig.getSubLabelClass().get());
+        }        
 
         customizeSeries(barChart, chartConfig);
 
@@ -180,9 +166,9 @@ public abstract class ChartUtils {
         SeriesDef[] seriesDefs = chartConfig.getSeriesDef();
         CustomSeriesColors seriesColors = null;
         
-        if (chartConfig.getSeriesColorClass() != null) {
+        if (chartConfig.getSeriesColorClass().isPresent()) {
             try {
-                seriesColors = (CustomSeriesColors) Class.forName(chartConfig.getSeriesColorClass()).newInstance();
+                seriesColors = (CustomSeriesColors) Class.forName(chartConfig.getSeriesColorClass().get()).newInstance();
             } catch (InstantiationException e) {
                 LOG.error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: {}", seriesColors, e);
             } catch (IllegalAccessException e) {
@@ -198,8 +184,8 @@ public abstract class ChartUtils {
             if (seriesColors != null) {
                 Comparable<?> cat = (Comparable<?>)((BarRenderer)barChart.getCategoryPlot().getRenderer()).getPlot().getCategories().get(i);
                 paint = seriesColors.getPaint(cat);
-            } else {
-                Rgb rgb = seriesDef.getRgb();
+            } else if (seriesDef.getRgb().isPresent()) {
+                final Rgb rgb = seriesDef.getRgb().get();
                 paint = new Color(rgb.getRed().getRgbColor(), rgb.getGreen().getRgbColor(), rgb.getBlue().getRgbColor());
             }
             ((BarRenderer)barChart.getCategoryPlot().getRenderer()).setSeriesPaint(i, paint);
@@ -231,9 +217,9 @@ public abstract class ChartUtils {
      * @return
      */
     private static JFreeChart createBarChart(BarChart chartConfig, DefaultCategoryDataset baseDataSet) {
-        PlotOrientation po = (chartConfig.getPlotOrientation() == "horizontal" ? PlotOrientation.HORIZONTAL : PlotOrientation.VERTICAL);        
+        PlotOrientation po = (chartConfig.getPlotOrientation().orElse(null) == "horizontal" ? PlotOrientation.HORIZONTAL : PlotOrientation.VERTICAL);        
         JFreeChart barChart = null;
-        if ("3d".equalsIgnoreCase(chartConfig.getVariation())) {
+        if ("3d".equalsIgnoreCase(chartConfig.getVariation().orElse(null))) {
             barChart = ChartFactory.createBarChart3D(chartConfig.getTitle().getValue(),
                     chartConfig.getDomainAxisLabel(),
                     chartConfig.getRangeAxisLabel(),
@@ -301,12 +287,10 @@ public abstract class ChartUtils {
      *
      * @param chartName a {@link java.lang.String} object.
      * @param out a {@link java.io.OutputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      * @throws java.sql.SQLException if any.
      */
-    public static void getBarChart(String chartName, OutputStream out) throws MarshalException, ValidationException, IOException, SQLException {
+    public static void getBarChart(String chartName, OutputStream out) throws IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
         ImageSize imageSize = chartConfig.getImageSize();
@@ -330,20 +314,18 @@ public abstract class ChartUtils {
      *
      * @param chartName a {@link java.lang.String} object.
      * @param out a {@link java.io.OutputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      * @throws java.sql.SQLException if any.
      */
-    public static void getBarChartPNG(String chartName, OutputStream out) throws MarshalException, ValidationException, IOException, SQLException {
+    public static void getBarChartPNG(String chartName, OutputStream out) throws IOException, SQLException {
         ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
-        if(chartConfig.getChartBackgroundColor() != null) {
+        if(chartConfig.getChartBackgroundColor().isPresent()) {
             setChartBackgroundColor(chartConfig, chart);
         }
         
-        if(chartConfig.getPlotBackgroundColor() !=  null) {
+        if(chartConfig.getPlotBackgroundColor().isPresent()) {
             setPlotBackgroundColor(chartConfig, chart);
         }
         ImageSize imageSize = chartConfig.getImageSize();
@@ -364,19 +346,28 @@ public abstract class ChartUtils {
 
     private static void setPlotBackgroundColor(BarChart chartConfig,
             JFreeChart chart) {
-        Red red = chartConfig.getPlotBackgroundColor().getRgb().getRed();
-        Blue blue = chartConfig.getPlotBackgroundColor().getRgb().getBlue();
-        Green green = chartConfig.getPlotBackgroundColor().getRgb().getGreen();
-        
-        chart.getPlot().setBackgroundPaint(new Color(red.getRgbColor(), green.getRgbColor(), blue.getRgbColor()));
+        if (chartConfig.getPlotBackgroundColor().isPresent()) {
+            final PlotBackgroundColor bgColor = chartConfig.getPlotBackgroundColor().get();
+            final Optional<Rgb> rgb = bgColor.getRgb();
+            if (rgb.isPresent()) {
+                final Red red = rgb.get().getRed();
+                final Blue blue = rgb.get().getBlue();
+                final Green green = rgb.get().getGreen();
+                
+                chart.getPlot().setBackgroundPaint(new Color(red.getRgbColor(), green.getRgbColor(), blue.getRgbColor()));
+            }
+        }
     }
 
     private static void setChartBackgroundColor(BarChart chartConfig,
             JFreeChart chart) {
-        Red red = chartConfig.getChartBackgroundColor().getRgb().getRed();
-        Blue blue = chartConfig.getChartBackgroundColor().getRgb().getBlue();
-        Green green = chartConfig.getChartBackgroundColor().getRgb().getGreen();
-        chart.setBackgroundPaint(new Color(red.getRgbColor(), green.getRgbColor(), blue.getRgbColor()));
+        if (chartConfig.getChartBackgroundColor().isPresent()) {
+            final ChartBackgroundColor bgColor = chartConfig.getChartBackgroundColor().get();
+            Red red = bgColor.getRgb().getRed();
+            Blue blue = bgColor.getRgb().getBlue();
+            Green green = bgColor.getRgb().getGreen();
+            chart.setBackgroundPaint(new Color(red.getRgbColor(), green.getRgbColor(), blue.getRgbColor()));
+        }
     }
     
     /**
@@ -384,12 +375,10 @@ public abstract class ChartUtils {
      *
      * @param chartName a {@link java.lang.String} object.
      * @return a byte array
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      * @throws java.sql.SQLException if any.
      */
-    public static byte[] getBarChartAsPNGByteArray(String chartName) throws MarshalException, ValidationException, IOException, SQLException {
+    public static byte[] getBarChartAsPNGByteArray(String chartName) throws IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
         ImageSize imageSize = chartConfig.getImageSize();
@@ -411,12 +400,10 @@ public abstract class ChartUtils {
      *
      * @param chartName a {@link java.lang.String} object.
      * @return a <code>BufferedImage</code>
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      * @throws java.sql.SQLException if any.
      */
-    public static BufferedImage getChartAsBufferedImage(String chartName) throws MarshalException, ValidationException, IOException, SQLException {
+    public static BufferedImage getChartAsBufferedImage(String chartName) throws IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
         ImageSize imageSize = chartConfig.getImageSize();
@@ -436,15 +423,13 @@ public abstract class ChartUtils {
     }
     
     /**
-     * Helper method used to retrieve the XML defined BarChart (castor class)
+     * Helper method used to retrieve the XML defined BarChart
      *
      * @param chartName a {@link java.lang.String} object.
-     * @return a derived Castor class: BarChart
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @return a BarChart
      * @throws java.io.IOException if any.
      */
-    public static BarChart getBarChartConfigByName(String chartName) throws MarshalException, ValidationException, IOException {
+    public static BarChart getBarChartConfigByName(String chartName) throws IOException {
         Iterator<BarChart> it = getChartCollectionIterator();
         BarChart chart = null;
         while (it.hasNext()) {
@@ -460,10 +445,18 @@ public abstract class ChartUtils {
      *
      * @return <code>BarChart</code> Iterator
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static Iterator<BarChart> getChartCollectionIterator() throws IOException, MarshalException, ValidationException {
+    public static Collection<BarChart> getChartCollection() throws IOException {
+        return ChartConfigFactory.getInstance().getConfiguration().getBarChartCollection();
+    }
+
+    /**
+     * Helper method used to fetch an Iterator for all defined Charts
+     *
+     * @return <code>BarChart</code> Iterator
+     * @throws java.io.IOException if any.
+     */
+    public static Iterator<BarChart> getChartCollectionIterator() throws IOException {
         return ChartConfigFactory.getInstance().getConfiguration().getBarChartCollection().iterator();
     }
     

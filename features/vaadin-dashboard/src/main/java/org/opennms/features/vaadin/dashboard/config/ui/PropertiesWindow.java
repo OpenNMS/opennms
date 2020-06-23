@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,16 +25,25 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.config.ui;
 
-import com.vaadin.data.Container;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.ui.*;
+import java.util.Map;
+
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletFactory;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
-import java.util.Map;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.ui.DefaultFieldFactory;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * Class representing the properties window used for editing dashlet parameters.
@@ -55,7 +64,6 @@ public class PropertiesWindow extends DashletConfigurationWindow {
          */
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(true);
-        //verticalLayout.addStyleName("debug");
         verticalLayout.setSizeFull();
         verticalLayout.setHeight(100, Unit.PERCENTAGE);
 
@@ -66,8 +74,8 @@ public class PropertiesWindow extends DashletConfigurationWindow {
 
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
-            public Field createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-                Field field = super.createField(container, itemId, propertyId, uiContext);
+            public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+                Field<?> field = super.createField(container, itemId, propertyId, uiContext);
                 if (propertyId.equals("Key")) {
                     field.setReadOnly(true);
                 } else {
@@ -90,7 +98,7 @@ public class PropertiesWindow extends DashletConfigurationWindow {
         final Map<String, String> requiredParameters = dashletFactory.getRequiredParameters();
 
         for (Map.Entry<String, String> entry : requiredParameters.entrySet()) {
-            table.addItem(new Object[]{entry.getKey(), dashletSpec.getParameters().get(entry.getKey())}, entry.getKey());
+            table.addItem(new Object[]{entry.getKey(), dashletSpec.getParameters().containsKey(entry.getKey()) ? dashletSpec.getParameters().get(entry.getKey()) : ""}, entry.getKey());
         }
 
         table.setColumnWidth("Key", 100);
@@ -111,6 +119,7 @@ public class PropertiesWindow extends DashletConfigurationWindow {
          * Adding the cancel button...
          */
         Button cancel = new Button("Cancel");
+        cancel.setDescription("Cancel editing properties");
         cancel.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -127,6 +136,7 @@ public class PropertiesWindow extends DashletConfigurationWindow {
          * ...and the OK button
          */
         Button ok = new Button("Save");
+        ok.setDescription("Save properties and close");
 
         ok.addClickListener(new Button.ClickListener() {
             @Override

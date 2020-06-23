@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<wmi-config retry="2" timeout="1500" 
+	username="Administrator" domain="WORKGROUP" password="password">
+</wmi-config>
+

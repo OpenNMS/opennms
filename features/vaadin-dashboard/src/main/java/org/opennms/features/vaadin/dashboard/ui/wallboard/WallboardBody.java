@@ -1,22 +1,56 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.ui.wallboard;
 
-import com.vaadin.server.ClientConnector;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ProgressIndicator;
-import com.vaadin.ui.VerticalLayout;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 
-import java.util.*;
-import java.util.Timer;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.ProgressIndicator;
 
 public class WallboardBody extends VerticalLayout {
     private final CssLayout contentLayout;
-    private List<DashletSpec> dashletSpecs = new LinkedList<DashletSpec>();
+    private List<DashletSpec> dashletSpecs = new LinkedList<>();
     private Map<Integer, Dashlet> dashlets = new HashMap<Integer, Dashlet>();
     private Map<Integer, Integer> priorityMap = new HashMap<Integer, Integer>();
     private Map<Integer, Integer> durationMap = new HashMap<Integer, Integer>();
@@ -25,11 +59,12 @@ public class WallboardBody extends VerticalLayout {
     private Timer timer;
     private int waitFor = 0;
     private int iteration = 1, index = -1;
-    private final int PRIORITY_DECREASE = 1;
-    private final int DURATION_DECREASE = 1;
+    private static final int PRIORITY_DECREASE = 1;
+    private static final int DURATION_DECREASE = 1;
     private ProgressIndicator progressIndicator;
     private Label debugLabel = new Label("debug");
     private boolean debugEnabled = false;
+    private boolean paused = false;
 
     public WallboardBody() {
         addStyleName("wallboard-board");
@@ -44,24 +79,28 @@ public class WallboardBody extends VerticalLayout {
             addComponent(debugLabel);
         }
         addComponent(contentLayout);
-        setExpandRatio(contentLayout, 1.0f);
 
         progressIndicator = new ProgressIndicator();
         progressIndicator.setWidth("100%");
         progressIndicator.setPollingInterval(250);
-        progressIndicator.setVisible(false);
+        progressIndicator.setVisible(true);
         addComponent(progressIndicator);
 
-        timer = new Timer();
+        setExpandRatio(contentLayout, 0.95f);
+        setExpandRatio(progressIndicator, 0.05f);
 
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                VaadinSession.getCurrent().lock();
-                try {
-                    advanceTimer();
-                } finally {
-                    VaadinSession.getCurrent().unlock();
+                final UI ui = getUI();
+                if (ui != null) {
+                    ui.accessSynchronously(new Runnable() {
+                        @Override
+                        public void run() {
+                            advanceTimer();
+                        }
+                    });
                 }
             }
         }, 250, 250);
@@ -86,18 +125,34 @@ public class WallboardBody extends VerticalLayout {
         iteration = 1;
         index = -1;
 
-        VaadinSession.getCurrent().lock();
         try {
+            getUI().getSession().lock();
             progressIndicator.setVisible(true);
         } finally {
-            VaadinSession.getCurrent().unlock();
+            getUI().getSession().unlock();
         }
+    }
+
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        paused = false;
+    }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public boolean isPausable() {
+        return dashletSpecs.size() > 0;
     }
 
     public Dashlet getDashletInstance(DashletSpec dashletSpec) {
         DashletSelector dashletSelector = ((DashletSelectorAccess) getUI()).getDashletSelector();
         Dashlet dashlet = dashletSelector.getDashletFactoryForName(dashletSpec.getDashletName()).newDashletInstance(dashletSpec);
-        dashlet.setCaption(null);
+        dashlet.getWallboardComponent(getUI()).getComponent().setCaption(null);
         return dashlet;
     }
 
@@ -143,11 +198,11 @@ public class WallboardBody extends VerticalLayout {
 
             if (!priorityMap.containsKey(index)) {
                 Dashlet dashlet = getDashletInstance(dashletSpecs.get(index));
-                dashlet.addStyleName("wallboard");
+                dashlet.getWallboardComponent(getUI()).getComponent().addStyleName("wallboard");
 
                 dashlets.put(index, dashlet);
 
-                dashlets.get(index).update();
+                dashlets.get(index).getWallboardComponent(getUI()).refresh();
 
                 if (dashlets.get(index).isBoosted()) {
                     priorityMap.put(index, Math.max(0, dashletSpecs.get(index).getPriority() - dashletSpecs.get(index).getBoostPriority()));
@@ -163,7 +218,7 @@ public class WallboardBody extends VerticalLayout {
 
             if (priorityMap.get(index) <= 0) {
 
-                dashlets.get(index).update();
+                dashlets.get(index).getWallboardComponent(getUI()).refresh();
 
                 if (dashlets.get(index).isBoosted()) {
                     priorityMap.put(index, Math.max(0, dashletSpecs.get(index).getPriority() - dashletSpecs.get(index).getBoostPriority()));
@@ -185,6 +240,10 @@ public class WallboardBody extends VerticalLayout {
 
     private void advanceTimer() {
 
+        if (paused) {
+            return;
+        }
+
         waitFor = (waitFor > 250 ? waitFor - 250 : 0);
 
         if (dashletSpecs.size() > 0) {
@@ -201,7 +260,28 @@ public class WallboardBody extends VerticalLayout {
                         dashlets.put(next, getDashletInstance(dashletSpecs.get(next)));
                     }
 
-                    contentLayout.addComponent(dashlets.get(next));
+                    Panel panel = new Panel();
+                    panel.setSizeFull();
+
+                    String caption = dashlets.get(next).getName();
+
+                    if (dashlets.get(next).getDashletSpec().getTitle() != null) {
+                        if (!"".equals(dashlets.get(next).getDashletSpec().getTitle())) {
+                            caption += ": " + "" + dashlets.get(next).getDashletSpec().getTitle();
+                        }
+                    }
+
+                    panel.setCaption(caption);
+
+                    Component component = dashlets.get(next).getWallboardComponent(getUI()).getComponent();
+
+                    VerticalLayout verticalLayout = new VerticalLayout(component);
+                    verticalLayout.setSizeFull();
+                    verticalLayout.setMargin(true);
+
+                    panel.setContent(verticalLayout);
+
+                    contentLayout.addComponent(panel);
 
                     if (!progressIndicator.isVisible()) {
                         progressIndicator.setVisible(true);

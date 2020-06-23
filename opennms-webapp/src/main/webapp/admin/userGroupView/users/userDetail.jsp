@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -60,7 +60,7 @@
 	}
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="User Detail" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
@@ -68,152 +68,172 @@
   <jsp:param name="breadcrumb" value="User Detail" />
 </jsp:include>
 
-    <table width="100%" border="0" cellspacing="0" cellpadding="2" >
-      <tr>
-        <td>
-          <h2>Details for User: <%=user.getUserId()%> <%= user.isReadOnly()? "(Read Only)":"" %></h2>
-          <table width="100%" border="0" cellspacing="0" cellpadding="2">
-            <tr>
-              <td width="10%" valign="top">
-                <b>Full Name:</b>
-              </td>
-              <td width="90%" valign="top">
-                <%=user.getFullName()%>
-              </td>
-            </tr>
-            
-            <tr>
-              <td width="10%" valign="top"> 
-                <b>Comments:</b>
-              </td>
-              <td width="90%" valign="top">
-                <%=user.getUserComments()%>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          
-            <table width="100%" border="0" cellspacing="0" cellpadding="2" >
-              
-              <tr>
-                <td>
-                  <table>
-                    <tr>
-                      <td>
-                        <b>Notification Information</b>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td width="10%" valign="top">
-                        <b>Email:</b>
-                      </td>
-                      <td width="90%" valign="top">
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <span>Details for User: <%=user.getUserId()%></span>
+      </div>
+      <table class="table table-sm">
+        <tr>
+          <th>
+            Full Name:
+          </th>
+          <td width="75%">
+            <%=user.getFullName().orElse("")%>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Security Roles:
+          </th>
+          <td width="75%">
+            <%=org.apache.commons.lang.StringUtils.join(user.getRoles().toArray(new String[user.getRoles().size()]), "<br/>")%>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            Comments:
+          </th>
+          <td width="75%">
+            <%=user.getUserComments().orElse("")%>
+          </td>
+        </tr>
+      </table>
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Notification Information</h2>
+      </div>
+      <table class="table table-sm">
+                   <tr>
+                     <th>
+                       Email:
+                     </th>
+                      <td width="75%">
                         <%=userFactory.getEmail(userID)%>
                       </td>
                     </tr>
                     
                     <tr>
-                      <td width="10%" valign="top">
-                        <b>Pager Email:</b>
-                      </td>
-                      <td width="90%" valign="top">
+                      <th>
+                        Pager Email:
+                      </th>
+                      <td>
                         <%=userFactory.getPagerEmail(userID)%>
                       </td>
                     </tr>
                     
                     <tr>
-                      <td width="10%" valign="top">
-                        <b>XMPP Address:</b>
-                      </td>
-                      <td width="90%" valign="top">
+                      <th>
+                        XMPP Address:
+                      </th>
+                      <td>
                         <%=userFactory.getXMPPAddress(userID)%>
                       </td>
                     </tr>
 
                     <tr>
-                      <td width="10%" valign="top">
-                        <b>Numerical Service:</b>
-                      </td>
-                      <td width="90%" valign="top">
+                      <th>
+                        Numerical Service:
+                      </th>
+                      <td>
                         <%=userFactory.getNumericPage(userID)%>
                       </td>
                     </tr>
                     
                     <tr>
-                      <td width="10%" valign="top">
-                        <b>Numerical Pin:</b>
-                      </td>
-                      <td width="90%" valign="top">
+                      <th>
+                        Numerical Pin:
+                      </th>
+                      <td>
                         <%=userFactory.getNumericPin(userID)%>
                       </td>
                     </tr>
-                    
+
                     <tr>
-                      <td width="10%" valign="top">
-                        <b>Text Service:</b>
-                      </td>
-                      <td width="90%" valign="top">
+                      <th>
+                        Text Service:
+                      </th>
+                      <td>
                         <%=userFactory.getTextPage(userID)%>
                       </td>
                     </tr>
-                    
+
                     <tr>
-                      <td width="10%" valign="top">
-                        <b>Text Pin:</b>
-                      </td>
-                      <td width="90%" valign="top">
+                      <th>
+                        Text Pin:
+                      </th>
+                      <td>
                         <%=userFactory.getTextPin(userID)%>
                       </td>
                     </tr>
-                    
+
                     <tr>
-                      <td width="10%" valign="top">
-                        <b>Work Phone:</b>
-                      </td>
-                      <td width="90%" valign="top">
+                      <th>
+                        Work Phone:
+                      </th>
+                      <td>
                         <%=userFactory.getWorkPhone(userID)%>
                       </td>
                     </tr>
 
                     <tr>
-                      <td width="10%" valign="top">
-                        <b>Mobile Phone:</b>
-                      </td>
-                      <td width="90%" valign="top">
+                      <th>
+                        Mobile Phone:
+                      </th>
+                      <td>
                         <%=userFactory.getMobilePhone(userID)%>
                       </td>
                     </tr>
 
                     <tr>
-                      <td width="10%" valign="top">
-                        <b>Home Phone:</b>
-                      </td>
-                      <td width="90%" valign="top">
+                      <th>
+                        Home Phone:
+                      </th>
+                      <td>
                         <%=userFactory.getHomePhone(userID)%>
                       </td>
                     </tr>
-
-                  </table>
-                </td>
-              </tr>
+      </table>
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
               
-              <tr>
-                <td>
-                <b>Duty Schedules:</b>
-                  
-                      <table width="50%" border="1" cellspacing="0" cellpadding="2" >
-			<% Collection dutySchedules = user.getDutyScheduleCollection(); %>
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <span>Duty Schedules</span>
+      </div>
+      <% Collection<String> dutySchedules = user.getDutySchedules(); %>
+      <% if (dutySchedules.isEmpty()) { %>
+      <div class="card-body">No schedule(s) defined yet.</div>
+      <% } else { %>
+      <table class="table table-sm table-striped">
+        <thead>
+          <tr>
+          <th>Mo</th>
+          <th>Tu</th>
+          <th>We</th>
+          <th>Th</th>
+          <th>Fr</th>
+          <th>Sa</th>
+          <th>Su</th>
+          <th>Begin Time</th>
+          <th>End Time</th>
+          </tr>
+        </thead>
+
                         <%
-                                int i =0;
-                                Iterator iter = dutySchedules.iterator();
-                                while(iter.hasNext())
-                                {  
-                                        DutySchedule tmp = new DutySchedule((String)iter.next());
-                                        Vector curSched = tmp.getAsVector();        
-					i++;
+                                for (String dutySchedule : dutySchedules) {
+                                        DutySchedule tmp = new DutySchedule(dutySchedule);
+                                        Vector<Object> curSched = tmp.getAsVector();        
                               
                         %>
                         <tr>
@@ -234,12 +254,10 @@
                           </td>
                         </tr>
                         <% } %>
-                      </table>
-                </td>
-              </tr>
-        
-          </table>
       </table>
- 
+      <% } %>
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

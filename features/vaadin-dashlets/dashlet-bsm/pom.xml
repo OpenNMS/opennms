@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <relativePath>../../topology-map/poms/compiled/</relativePath>
+        <groupId>org.opennms.features.topology.build</groupId>
+        <artifactId>compiled-bundle-settings</artifactId>
+        <version>25.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.opennms.features.vaadin-dashlets</groupId>
+    <artifactId>dashlet-bsm</artifactId>
+
+    <properties>
+        <bundle.symbolicName>org.opennms.features.vaadin-dashlets.dashlet-bsm</bundle.symbolicName>
+        <bundle.namespace>org.opennms.features.vaadin.dashboard.dashlets</bundle.namespace>
+    </properties>
+
+    <name>OpenNMS :: Features :: Dashlets :: BSM</name>
+
+    <packaging>bundle</packaging>
+    <dependencies>
+
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>vaadin-dashboard</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.bsm</groupId>
+            <artifactId>org.opennms.features.bsm.service.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Vaadin Dependencies -->
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>vaadin</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.themes</groupId>
+            <artifactId>dashboard-theme</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
+</project>

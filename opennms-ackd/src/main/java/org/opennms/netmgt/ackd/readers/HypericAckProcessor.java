@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,26 +57,15 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthState;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.GtRestriction;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.dao.api.AckdConfigurationDao;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
@@ -82,7 +73,7 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,7 +215,7 @@ public class HypericAckProcessor implements AckProcessor {
 
         @Override
         public String toString() {
-            StringBuffer retval = new StringBuffer();
+            final StringBuilder retval = new StringBuilder();
             retval.append("{ ");
             retval.append("id: ").append(String.valueOf(alertId)).append(", ");
             retval.append("fixed: ").append(String.valueOf(isFixed)).append(", ");
@@ -257,16 +248,16 @@ public class HypericAckProcessor implements AckProcessor {
      */
     public List<OnmsAlarm> fetchUnclearedHypericAlarms() {
         // Query for existing, unacknowledged alarms in OpenNMS that were generated based on Hyperic alerts
-        OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class, "alarm");
+        Criteria criteria = new Criteria(OnmsAlarm.class);
 
         // criteria.add(Restrictions.isNull("alarmAckUser"));
 
         // Restrict to Hyperic alerts
-        criteria.add(Restrictions.eq("uei", "uei.opennms.org/external/hyperic/alert"));
+        criteria.addRestriction(new EqRestriction("uei", "uei.opennms.org/external/hyperic/alert"));
 
         // Only consider alarms that are above severity NORMAL
         // {@see org.opennms.netmgt.model.OnmsSeverity}
-        criteria.add(Restrictions.gt("severity", OnmsSeverity.NORMAL));
+        criteria.addRestriction(new GtRestriction("severity", OnmsSeverity.NORMAL));
 
         // TODO Figure out how to query by parameters (maybe necessary)
 
@@ -405,19 +396,12 @@ public class HypericAckProcessor implements AckProcessor {
      * @return a {@link org.opennms.netmgt.model.OnmsAlarm} object.
      */
     public static OnmsAlarm findAlarmForHypericAlert(List<OnmsAlarm> alarms, String platformId, HypericAlertStatus alert) {
-        String targetPlatformId = "alert.source=" + platformId + "(string,text)";
-        String targetAlertId = "alert.id="+ String.valueOf(alert.getAlertId()) + "(string,text)";
         for (OnmsAlarm alarm : alarms) {
-            String parmString = alarm.getEventParms();
-            String[] parms = parmString.split(";");
-            for (String parm : parms) {
-                if (targetPlatformId.equals(parm)) {
-                    for (String alertparm : parms) {
-                        if (targetAlertId.equals(alertparm)) {
-                            return alarm;
-                        }
-                    }
-                }
+            final Optional<String> targetPlatformId = alarm.findEventParameter("alert.source").map(OnmsEventParameter::getValue).filter(s -> Objects.equals(s, platformId));
+            final Optional<String> targetAlertId = alarm.findEventParameter("alert.source").map(OnmsEventParameter::getValue).filter(s -> Objects.equals(s, String.valueOf(alert.getAlertId())));
+
+            if (targetPlatformId.isPresent() && targetAlertId.isPresent()) {
+                return alarm;
             }
         }
         return null;
@@ -430,7 +414,7 @@ public class HypericAckProcessor implements AckProcessor {
      * @return a {@link java.lang.String} object.
      */
     public static String getAlertSourceParmValue(OnmsAlarm alarm) {
-        return getParmValueByRegex(alarm, "alert.source=(.*)[(]string,text[)]");
+        return getParmValueByRegex(alarm, "alert.source");
     }
 
     /**
@@ -440,7 +424,7 @@ public class HypericAckProcessor implements AckProcessor {
      * @return a {@link java.lang.String} object.
      */
     public static String getAlertIdParmValue(OnmsAlarm alarm) {
-        return getParmValueByRegex(alarm, "alert.id=([0-9]*)[(]string,text[)]");
+        return getParmValueByRegex(alarm, "alert.id");
     }
 
     /**
@@ -458,12 +442,10 @@ public class HypericAckProcessor implements AckProcessor {
      */
     public static String getParmValueByRegex(OnmsAlarm alarm, String regex) {
         Pattern pattern = Pattern.compile(regex);
-        String parmString = alarm.getEventParms();
-        String[] parms = parmString.split(";");
-        for (String parm : parms) {
-            Matcher matcher = pattern.matcher(parm);
+        for (final OnmsEventParameter parm : alarm.getEventParameters()) {
+            Matcher matcher = pattern.matcher(parm.getName());
             if (matcher.matches()) {
-                return matcher.group(1);
+                return parm.getValue();
             }
         }
         return null;
@@ -489,7 +471,7 @@ public class HypericAckProcessor implements AckProcessor {
 
         for (int i = 0; i < alertIds.size(); i++) {
             // Construct the query string for the HTTP operation
-            StringBuffer alertIdString = new StringBuffer();
+            final StringBuilder alertIdString = new StringBuilder();
             alertIdString.append("?");
             for (int j = 0; (j < ALERTS_PER_HTTP_TRANSACTION) && (i < alertIds.size()); j++,i++) {
                 if (j > 0) alertIdString.append("&");
@@ -497,67 +479,37 @@ public class HypericAckProcessor implements AckProcessor {
                 alertIdString.append("id=").append(alertIds.get(i));
             }
 
-            // Create an HTTP client
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            httpClient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 3000);
-            httpClient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 3000);
-            HttpUriRequest httpMethod = new HttpGet(hypericUrl + alertIdString.toString());
+            final HttpClientWrapper clientWrapper = HttpClientWrapper.create()
+                    .setConnectionTimeout(3000)
+                    .setSocketTimeout(3000)
+                    // Set a custom user-agent so that it's easy to tcpdump these requests
+                    .setUserAgent("OpenNMS-Ackd.HypericAckProcessor");
 
-            // Set a custom user-agent so that it's easy to tcpdump these requests
-            httpMethod.getParams().setParameter(CoreProtocolPNames.USER_AGENT, "OpenNMS-Ackd.HypericAckProcessor");
+            HttpUriRequest httpMethod = new HttpGet(hypericUrl + alertIdString.toString());
 
             // Parse the URI from the config so that we can deduce the username/password information
             String userinfo = null;
             try {
                 URI hypericUri = new URI(hypericUrl);
                 userinfo = hypericUri.getUserInfo();
-                // httpMethod.getParams().setParameter(ClientPNames.VIRTUAL_HOST, new HttpHost("localhost", hypericUri.getPort()));
-            } catch (URISyntaxException e) {
+            } catch (final URISyntaxException e) {
                 LOG.warn("Could not parse URI to get username/password stanza: {}", hypericUrl, e);
             }
             if (userinfo != null && !"".equals(userinfo)) {
-                // Add the credentials to the HttpClient instance
-                httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userinfo));
-
-                /**
-                 * Add an HttpRequestInterceptor that will perform preemptive auth
-                 * @see http://hc.apache.org/httpcomponents-client-4.0.1/tutorial/html/authentication.html
-                 */
-                HttpRequestInterceptor preemptiveAuth = new HttpRequestInterceptor() {
-
-                    @Override
-                    public void process(final HttpRequest request, final HttpContext context) throws IOException {
-
-                        AuthState authState = (AuthState)context.getAttribute(ClientContext.TARGET_AUTH_STATE);
-                        CredentialsProvider credsProvider = (CredentialsProvider)context.getAttribute(ClientContext.CREDS_PROVIDER);
-                        HttpHost targetHost = (HttpHost)context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
-
-                        // If not auth scheme has been initialized yet
-                        if (authState.getAuthScheme() == null) {
-                            AuthScope authScope = new AuthScope(targetHost.getHostName(), targetHost.getPort());
-                            // Obtain credentials matching the target host
-                            Credentials creds = credsProvider.getCredentials(authScope);
-                            // If found, generate BasicScheme preemptively
-                            if (creds != null) {
-                                authState.update(new BasicScheme(), creds);
-                            }
-                        }
-                    }
-
-                };
-                httpClient.addRequestInterceptor(preemptiveAuth, 0);
+                final String[] credentials = userinfo.split(":");
+                if (credentials.length == 2) {
+                    clientWrapper.addBasicCredentials(credentials[0], credentials[1])
+                        .usePreemptiveAuth();
+                } else {
+                    LOG.warn("Unable to deduce username/password from '{}'", userinfo);
+                }
             }
 
             try {
-                HttpResponse response = httpClient.execute(httpMethod);
-
-                // int statusCode = response.getStatusLine().getStatusCode();
-                // String statusText = response.getStatusLine().getReasonPhrase();
-
+                CloseableHttpResponse response = clientWrapper.execute(httpMethod);
                 retval = parseHypericAlerts(new StringReader(EntityUtils.toString(response.getEntity())));
-            } finally{
-                // Do we need to do any cleanup?
-                // httpMethod.releaseConnection();
+            } finally {
+                IOUtils.closeQuietly(clientWrapper);
             }
         }
         return retval;
@@ -601,7 +553,7 @@ public class HypericAckProcessor implements AckProcessor {
             }
         } else {
             // Try to pull in the HTTP response to give the user a better idea of what went wrong
-            StringBuffer errorContent = new StringBuffer();
+            final StringBuilder errorContent = new StringBuilder();
             LineNumberReader lineReader = new LineNumberReader(reader);
             try {
                 String line;

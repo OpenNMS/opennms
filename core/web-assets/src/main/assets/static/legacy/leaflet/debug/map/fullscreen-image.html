@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet debug page</title>
+
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="../css/screen.css" />
+
+	<script type="text/javascript" src="../../build/deps.js"></script>
+	<script src="../leaflet-include.js"></script>
+</head>
+<body>
+
+	<div id="map"></div>
+
+<script type="text/javascript">
+
+	var	bounds = new L.LatLngBounds(
+		new L.LatLng(0,0),
+		new L.LatLng(3182, 6384));
+
+	var map = L.map('map', {
+		maxZoom: 1,
+		minZoom: -4,
+		crs: L.CRS.Simple
+	}).setView([0, 0], 20);
+
+	map.fitBounds(bounds);
+
+	var leaves = new L.ImageOverlay("file:///home/ivan/Downloads/14089157395_c6a7843c93_o.jpg", bounds, { attribution: "Background image by <a href='https://www.flickr.com/photos/54336566@N08/14089157395/'>Jonas Weckschmied</a>, CC-nc"});
+	map.addLayer(leaves);
+
+</script>
+</body>
+</html>

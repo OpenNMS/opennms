@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -60,7 +60,7 @@ public class RtTicketerPlugin implements Plugin {
     private String m_openStatus;
     private String m_closedStatus;
     private String m_cancelledStatus;
-    private List<Integer> m_validOpenStatus;
+    private List<String> m_validOpenStatus;
     private List<String> m_validClosedStatus;
     private List<String> m_validCancelledStatus;
 
@@ -79,7 +79,8 @@ public class RtTicketerPlugin implements Plugin {
 	    m_queue = dao.getQueue();
 	    m_requestor = dao.getRequestor();
 
-	    m_requestTracker = new RequestTracker(dao.getBaseURL(), dao.getUsername(), dao.getPassword(), dao.getTimeout(), dao.getRetry());
+	    m_requestTracker = new RequestTracker(dao.getBaseURL(), dao.getUsername(), dao.getPassword(), dao.getTimeout(),
+				dao.getRetry(), dao.getUseSystemProxy());
 	}
     
 	/**
@@ -214,7 +215,7 @@ public class RtTicketerPlugin implements Plugin {
      * @return a String representing the RT Status of the ticket.
      */
 	
-	private String openNMSToRTState(final Ticket.State state) {
+	public String openNMSToRTState(final Ticket.State state) {
 
 		String rtStatus;
 		
@@ -255,7 +256,7 @@ public class RtTicketerPlugin implements Plugin {
      * @return the converted <code>org.opennms.netmgt.ticketd.Ticket.State</code>
      */
 	
-    private Ticket.State rtToOpenNMSState(final String rtStatus) {
+    public Ticket.State rtToOpenNMSState(final String rtStatus) {
     	
         if (m_validOpenStatus.contains(rtStatus)) {
         	LOG.debug("RT status {} matched OpenNMS state Open", rtStatus);
@@ -279,7 +280,7 @@ public class RtTicketerPlugin implements Plugin {
      * @param user a {@link java.lang.String} object.
      */
     public void setUser(final String user) {
-        m_requestTracker.setUser(user);
+        m_requestTracker.setUsername(user);
     }
 
 

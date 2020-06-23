@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,8 +33,9 @@ package org.opennms.netmgt.mock;
  */
 
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.categories.CatFactory;
+import org.opennms.netmgt.config.api.CatFactory;
 import org.opennms.netmgt.config.categories.Category;
+
 import junit.framework.TestCase;
 
 public class MockCategoryFactoryTest extends TestCase {
@@ -91,12 +92,13 @@ public class MockCategoryFactoryTest extends TestCase {
 	public void testGetCategory() {
 		
 		Category category = m_catFactory.getCategory(CATLABEL);
-		assertEquals(99,category.getNormal(),0);
-		assertEquals(97,category.getWarning(),0);
-		assertEquals(CATCOMMENT,category.getComment());
+		assertEquals(99,category.getNormalThreshold(),0);
+		assertEquals(97,category.getWarningThreshold(),0);
+		assertTrue(category.getComment().isPresent());
+		assertEquals(CATCOMMENT,category.getComment().get());
 		assertEquals(CATRULE,category.getRule());
-		assertEquals("ICMP",category.getService(0));
-		assertEquals("SNMP",category.getService(1));
+		assertEquals("ICMP",category.getServices().get(0));
+		assertEquals("SNMP",category.getServices().get(1));
 		
 		
 	}

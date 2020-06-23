@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+
+  <!-- Find an open port that doesn't conflict with a running OpenNMS instance -->
+  <bean id="eventdPort" class="org.opennms.core.test.camel.CamelBlueprintTest" factory-method="getAvailablePort">
+    <constructor-arg>
+      <bean class="java.util.concurrent.atomic.AtomicInteger">
+        <constructor-arg value="5837"/>
+      </bean>
+    </constructor-arg>
+    <constructor-arg value="6837"/>
+  </bean>
+
+  <!--
+    Define CustomEventdConfigManager to override default one and allow possibility to provide custom eventd-configuration.xml properties
+    without providing a custom xml file
+  -->
+  <bean id="eventdConfigManager" class="org.opennms.netmgt.syslogd.CustomEventdConfigManager">
+    <constructor-arg>
+      <map>
+        <entry key="tcpIpAddress" value="127.0.0.1"/>
+        <entry key="tcpPort" value-ref="eventdPort"/>
+        <entry key="udpIpAddress" value="127.0.0.1"/>
+        <entry key="udpPort" value-ref="eventdPort"/>
+      </map>
+    </constructor-arg>
+  </bean>
+
+</beans>

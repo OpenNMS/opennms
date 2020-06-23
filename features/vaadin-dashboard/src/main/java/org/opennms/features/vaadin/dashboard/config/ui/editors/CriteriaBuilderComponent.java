@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,16 +25,17 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.config.ui.editors;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * This component is used to construct criterias.
@@ -45,7 +46,7 @@ public class CriteriaBuilderComponent extends Panel {
     /**
      * list of criteria components
      */
-    private List<CriteriaRestrictionComponent> m_criteriaRestrictionComponents = new ArrayList<CriteriaRestrictionComponent>();
+    private List<CriteriaRestrictionComponent> m_criteriaRestrictionComponents = new ArrayList<>();
     /**
      * the {@link CriteriaBuilderHelper} instance
      */
@@ -76,7 +77,7 @@ public class CriteriaBuilderComponent extends Panel {
          * parsing the criteria string...
          */
         if (!"".equals(criteriaString) && criteriaString != null) {
-            String arr[] = criteriaString.split("\\)\\.");
+            String[] arr = criteriaString.split("\\)\\.");
             for (String criteria : arr) {
                 /**
                  * ...and adding components
@@ -120,18 +121,22 @@ public class CriteriaBuilderComponent extends Panel {
             Button plusButton = new Button();
             plusButton.setStyleName("small");
             plusButton.setIcon(new ThemeResource("../runo/icons/16/document-add.png"));
+            plusButton.setDescription("Add a new criteria entry");
 
             Button minusButton = new Button();
             minusButton.setStyleName("small");
             minusButton.setIcon(new ThemeResource("../runo/icons/16/document-delete.png"));
+            minusButton.setDescription("Remove this criteria entry");
 
             Button upButton = new Button();
             upButton.setStyleName("small");
             upButton.setIcon(new ThemeResource("../runo/icons/16/arrow-up.png"));
+            upButton.setDescription("Move this a criteria entry one position up");
 
             Button downButton = new Button();
             downButton.setStyleName("small");
             downButton.setIcon(new ThemeResource("../runo/icons/16/arrow-down.png"));
+            downButton.setDescription("Move this a criteria entry one position down");
 
             criteriaRestrictionComponent.getRightLayout().addComponent(upButton);
             criteriaRestrictionComponent.getRightLayout().addComponent(downButton);

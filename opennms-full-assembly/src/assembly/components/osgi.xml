@@ -1,18 +1,13 @@
-<component>
+<component
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2 http://maven.apache.org/xsd/component-1.1.2.xsd"
+>
   <fileSets>
     <fileSet>
       <filtered>false</filtered>
-      <outputDirectory>/system</outputDirectory>
-      <directory>target/features-repo</directory>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
-    </fileSet>
-    <fileSet>
-      <filtered>false</filtered>
-      <outputDirectory>/</outputDirectory>
-      <directory>target/resources</directory>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
+      <outputDirectory>system</outputDirectory>
+      <directory>target/opennms-repo</directory>
     </fileSet>
   </fileSets>
 </component>

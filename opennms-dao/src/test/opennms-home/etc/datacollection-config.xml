@@ -24,6 +24,7 @@
     <include-collection dataCollectionGroup="Colubris"/>
     <include-collection dataCollectionGroup="Concord"/>
     <include-collection dataCollectionGroup="Cyclades"/>
+    <include-collection dataCollectionGroup="Dell"/>
     <include-collection dataCollectionGroup="Equallogic"/>
     <include-collection dataCollectionGroup="Extreme Networks"/>
     <include-collection dataCollectionGroup="F5"/>
@@ -49,9 +50,12 @@
     <include-collection dataCollectionGroup="Nortel"/>
     <include-collection dataCollectionGroup="Novell"/>
     <include-collection dataCollectionGroup="Powerware"/>
+    <include-collection dataCollectionGroup="Printers"/>
     <include-collection dataCollectionGroup="Riverbed"/>
+    <include-collection dataCollectionGroup="Routers"/>
     <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
     <include-collection dataCollectionGroup="ServerTech"/>
+    <include-collection dataCollectionGroup="SNMP-Informant"/>
     <include-collection dataCollectionGroup="SofaWare"/>
     <include-collection dataCollectionGroup="SUN Microsystems"/>
     <include-collection dataCollectionGroup="Trango"/>

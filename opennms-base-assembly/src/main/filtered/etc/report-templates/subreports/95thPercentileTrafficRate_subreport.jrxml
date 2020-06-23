@@ -1,59 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterfaceUtilizationSummary_subreport" pageWidth="725" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="725" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="1.5"/>
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-09-10T17:15:24 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InterfaceUtilizationSummary_subreport" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="31dde554-de85-40d3-a879-e2cf7990b672">
+	<property name="net.sf.jasperreports.chart.pie.ignore.duplicated.key" value="true"/>
+	<property name="ireport.zoom" value="1.8150000000000004"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
-	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false">
-		<defaultValueExpression><![CDATA[Integer.valueOf(11)]]></defaultValueExpression>
-	</parameter>
-	<parameter name="startDate" class="java.util.Date" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new Date(1290098100000L)]]></defaultValueExpression>
-	</parameter>
-	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new Date()]]></defaultValueExpression>
-	</parameter>
+	<parameter name="nodeid" class="java.lang.Integer"/>
+	<parameter name="foreignsource" class="java.lang.String"/>
+	<parameter name="foreignid" class="java.lang.String"/>
+	<parameter name="startDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date"/>
 	<parameter name="snmpifalias" class="java.lang.String"/>
 	<parameter name="snmpifname" class="java.lang.String"/>
 	<parameter name="snmpifdescr" class="java.lang.String"/>
 	<parameter name="snmpphysaddr" class="java.lang.String"/>
-	<parameter name="snmpifspeed" class="java.lang.Long" isForPrompting="false"/>
+	<parameter name="snmpifspeed" class="java.lang.Long"/>
 	<parameter name="ifLabel" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="interface" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getInterfaceDirectory($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getInterfaceDescriptor($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
 	</parameter>
-	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
+	<parameter name="startDateTime" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{startDate}.getTime()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="outOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
+	<parameter name="endDateTime" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{endDate}.getTime()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ifInOctets_PATH" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
+	<parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ifOutOctets_PATH" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
-	</parameter>
-	<queryString language="jrobin">
-		<![CDATA[--start $P{startDate} --end $P{endDate}
-		DEF:xx=$P{ifInOctets_PATH}:$P{inOctets}:AVERAGE
-		DEF:yy=$P{ifOutOctets_PATH}:$P{outOctets}:AVERAGE
-		XPORT:xx:IfInOctets
-		XPORT:yy:IfOutOctets]]>
+	<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String"/>
+	<queryString language="Measurement">
+		<![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000">
+  <source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" fallback-attribute="ifInOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
+  <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" fallback-attribute="ifOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
+</query-request>]]>
 	</queryString>
-	<field name="Timestamp" class="java.util.Date">
-		<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
+	<field name="timestamp" class="java.util.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="IfInOctets" class="java.lang.Double">
-		<fieldDescription><![CDATA[IfInOctets]]></fieldDescription>
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="IfOutOctets" class="java.lang.Double">
-		<fieldDescription><![CDATA[IfOutOctets]]></fieldDescription>
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<variable name="received_SUM" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{IfInOctets}]]></variableExpression>
@@ -108,30 +108,29 @@
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="162" splitType="Stretch">
+		<band height="200" splitType="Stretch">
 			<textField>
-				<reportElement style="Body" x="0" y="0" width="140" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifname} != null ? $P{snmpifname} : $P{snmpifdescr}]]></textFieldExpression>
+				<reportElement style="Body" x="0" y="20" width="140" height="20" uuid="f2cfacd6-7128-4b9b-a5c3-32d6f886ad28"/>
+				<textFieldExpression><![CDATA[$P{snmpifname} != null ? $P{snmpifname} : $P{snmpifdescr}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement style="Body" x="435" y="0" width="140" height="20" backcolor="#333333"/>
+				<reportElement style="Body" x="298" y="20" width="120" height="20" backcolor="#333333" uuid="d34c0ecc-62dd-48ce-a9d0-dcff5ea041a5"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{transmitted_RATE_BITS} > 1048576 ? String.format("%10.2f", $V{transmitted_RATE_BITS}/new Double("1048576.0")) + " mb/s" : String.format("%10.2f", $V{transmitted_RATE_BITS}/new Double("1024.0")) + " kb/s"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{transmitted_RATE_BITS} > 1048576 ? String.format("%10.2f", $V{transmitted_RATE_BITS}/new Double("1048576.0")) + " mb/s" : String.format("%10.2f", $V{transmitted_RATE_BITS}/new Double("1024.0")) + " kb/s"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement style="Body" x="580" y="0" width="140" height="20"/>
+				<reportElement style="Body" x="435" y="20" width="120" height="20" uuid="e23392b1-c9c8-4ed2-bddf-ad441e5a74fb"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifspeed} > 1048576 ? String.format("%10.2f", $P{snmpifspeed}/new Double("1048576.0")) + " mb/s" : String.format("%10.2f", $P{snmpifspeed}/new Double("1024.0")) + " kb/s"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{snmpifspeed} > 1048576 ? String.format("%10.2f", $P{snmpifspeed}/new Double("1048576.0")) + " mb/s" : String.format("%10.2f", $P{snmpifspeed}/new Double("1024.0")) + " kb/s"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement style="Body" x="290" y="0" width="140" height="20" backcolor="#CC9900"/>
+				<reportElement style="Body" x="158" y="20" width="120" height="20" backcolor="#CC9900" uuid="efe8ae55-08b4-4664-9192-bc9c7d5ba845"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{received_RATE_BITS} > 1048576 ? String.format("%10.2f", $V{received_RATE_BITS}/new Double("1048576.0")) + " mb/s" : String.format("%10.2f", $V{received_RATE_BITS}/new Double("1024.0")) + " kb/s"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{received_RATE_BITS} > 1048576 ? String.format("%10.2f", $V{received_RATE_BITS}/new Double("1048576.0")) + " mb/s" : String.format("%10.2f", $V{received_RATE_BITS}/new Double("1024.0")) + " kb/s"]]></textFieldExpression>
 			</textField>
 			<pieChart>
 				<chart isShowLegend="true">
-					<reportElement x="290" y="20" width="140" height="140"/>
+					<reportElement x="158" y="51" width="140" height="140" uuid="6d7d1823-978f-4db8-884e-6d83b1688e47"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -153,7 +152,7 @@
 			</pieChart>
 			<pieChart>
 				<chart isShowLegend="true">
-					<reportElement x="435" y="20" width="140" height="140"/>
+					<reportElement x="303" y="51" width="140" height="140" uuid="2ada0f36-81b8-49e3-ae01-953ff0816f56"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -173,19 +172,36 @@
 					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 				</piePlot>
 			</pieChart>
+			<staticText>
+				<reportElement style="Sub-sub-header" x="435" y="0" width="120" height="20" uuid="8a23b386-d8de-43d0-80bf-0663ae938971"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[interface rate]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Sub-sub-header" x="298" y="0" width="120" height="20" uuid="2344d35c-027e-4fdc-8124-a328861a5cfb"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[avg rate (out)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Sub-sub-header" x="158" y="0" width="120" height="20" uuid="4549f630-8da7-43f3-badb-2494af4d8bee"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[avg rate (in)	]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Sub-sub-header" x="0" y="0" width="140" height="20" uuid="ec0119c2-2725-4162-9640-4befc2852a87"/>
+				<text><![CDATA[interface]]></text>
+			</staticText>
 		</band>
 	</summary>
 	<noData>
-		<band height="50">
+		<band height="21">
 			<textField>
-				<reportElement style="Body" x="0" y="15" width="140" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{snmpifname} != null ? $P{snmpifname} : $P{snmpifdescr}]]></textFieldExpression>
+				<reportElement style="Body" x="0" y="0" width="140" height="20" uuid="2405bd0f-1a47-4ca4-886f-8715a781e242"/>
+				<textFieldExpression><![CDATA[$P{snmpifname} != null ? $P{snmpifname} : $P{snmpifdescr}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="435" y="15" width="166" height="20"/>
-				<textElement/>
-				<text><![CDATA[There is No Data for this Entry]]></text>
+				<reportElement x="158" y="0" width="437" height="20" uuid="ee0dcf16-83cc-46f7-ace4-c6676ad325f5"/>
+				<text><![CDATA[There is no data for this entry.]]></text>
 			</staticText>
 		</band>
 	</noData>

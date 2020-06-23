@@ -1,0 +1,42 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-alarmd-introduction]]
+_{opennms-product-name}_ has the ability to monitor the state of problems with its managed entities (ME), their resources, the services they provide, as well as the applications they host; or more simply, _the Network_.
+In _{opennms-product-name}_, the state of these problems are characterized as _Alarms_.
+
+.In the beginning, there were Events
+Before Alarmd was created, OpenNMS' Events (or messages) were used not only as interprocess communication messages (IPC), but also as indications of problems in _the network_.
+Even today, OpenNMS Events still carry problem state attributes such as: Acknowledgement and Severity.
+However, these attributes have long since been functionally deprecated now that Alarms are used as _the_ indicator for problems in the network, (see also Situations and <<ga-bsm-introduction, Business Services>>).
+
+IMPORTANT: A significant change occurred with the release of Horizon 23.0.0 (H23).
+Prior to H23 and since the introduction of Alarms in OpenNMS, Alarmd was designed and configured to track the state of a problem using two Alarms; a _Down_ and an _Up_ Alarm.
+Now, OpenNMS is designed with the intention to use a single Alarm to track the state of a problem.
+The old behavior can be re-enabled by setting the system property org.opennms.alarmd.legacyAlarmState = true.
+
+=== Single Alarm Tracking Problem States
+.First occurrence of a Service Down problem (SNMP), Alarm instantiated
+image:alarms/single_alarm_1.png[]
+
+.The Service Down Event from the Poller (via clicking on Alarm count)
+image:alarms/single_alarm_2.png[]
+
+.Alarm is cleared immediately (no longer creating separate Alarm for Normal state)
+image:alarms/single_alarm_3.png[]
+
+.Both Service Down and Service restored Events from the Poller
+image:alarms/single_alarm_4.png[]
+
+.The Second occurence of the Service Down problem (SNMP), Alarm reduced
+image:alarms/single_alarm_5.png[]
+
+.Both Service Down Events and the previous Service restored Event from the Poller
+image:alarms/single_alarm_6.png[]
+
+.The Alarm is again cleared immediately (notice counter doesn't increment)
+image:alarms/single_alarm_7.png[]
+
+.Both Service Down and restored Events
+image:alarms/single_alarm_8.png[]

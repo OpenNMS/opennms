@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -49,9 +49,9 @@ import org.opennms.netmgt.config.groups.Role;
  */
 public class Day {
     
-    private Calendar m_calendar;
-    private Role m_role;
-    private GroupManager m_groupManager;
+    private final Calendar m_calendar;
+    private final Role m_role;
+    private final GroupManager m_groupManager;
 
     /**
      * <p>Constructor for Day.</p>
@@ -126,7 +126,7 @@ public class Day {
      */
     public CalendarEntry[] getEntries() {
         try {
-            List<CalendarEntry> entries = new ArrayList<CalendarEntry>();
+            List<CalendarEntry> entries = new ArrayList<>();
             
             OwnedIntervalSequence schedEntries = m_groupManager.getRoleScheduleEntries(m_role.getName(), getTime(0,0), getTime(24,0));
             
@@ -144,7 +144,7 @@ public class Day {
 
     private String ownerString(List<Owner> owners) {
         boolean first = true;
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         for (Owner owner : owners) {
             if (first) {
                 first = false;

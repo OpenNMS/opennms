@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,23 +33,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.utils.DBUtils;
+import org.opennms.netmgt.dao.api.NotificationDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.core.utils.DBUtils;
 
+/**
+ * @deprecated Use the {@link NotificationDao} directly or use the {@link WebNotificationRepository}
+ * instead of this class.
+ */
 public class NotificationModel extends Object {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(NotificationModel.class);
-
-    private static final String USERID = "userID";
-
-    private static final String NOTICE_TIME = "notifytime";
 
     private static final String TXT_MESG = "textMsg";
 
@@ -63,102 +62,15 @@ public class NotificationModel extends Object {
 
     private static final String ANS_BY = "answeredBy";
 
-    private static final String CONTACT = "contactInfo";
-
     private static final String NODE = "nodeID";
 
     private static final String INTERFACE = "interfaceID";
 
     private static final String SERVICE = "serviceID";
 
-    private static final String MEDIA = "media";
-
     private static final String EVENTID = "eventid";
 
     private static final String SELECT = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid from NOTIFICATIONS";
-
-    private static final String NOTICE_ID = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid from NOTIFICATIONS where NOTIFYID = ?";
-
-    private static final String SENT_TO = "SELECT userid, notifytime, media, contactinfo FROM usersnotified WHERE notifyid=?";
-
-    private static final String INSERT_NOTIFY = "INSERT INTO NOTIFICATIONS (notifyid, textmsg, numericmsg, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid) VALUES (NEXTVAL('notifyNxtId'), ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    private static final String OUTSTANDING = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid FROM NOTIFICATIONS WHERE respondTime is NULL";
-
-    private static final String OUTSTANDING_COUNT = "SELECT COUNT(notifyid) AS TOTAL FROM NOTIFICATIONS WHERE respondTime is NULL";
-
-    private static final String USER_OUTSTANDING = "SELECT textmsg, numericmsg, notifyid, pagetime, respondtime, answeredby, nodeid, interfaceid, serviceid, eventid FROM NOTIFICATIONS WHERE (respondTime is NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
-
-    private static final String USER_OUTSTANDING_COUNT = "SELECT COUNT(notifyid) AS TOTAL FROM NOTIFICATIONS WHERE (respondTime is NULL) AND notifications.notifyid in (SELECT DISTINCT usersnotified.notifyid FROM usersnotified WHERE usersnotified.userid=?)";
-
-    
-
-    /**
-     * <p>getNoticeInfo</p>
-     *
-     * @param id a int.
-     * @return a {@link org.opennms.web.notification.Notification} object.
-     * @throws java.sql.SQLException if any.
-     */
-    public Notification getNoticeInfo(int id) throws SQLException {
-        Notification nbean = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        final Connection conn = Vault.getDbConnection();
-        final DBUtils d = new DBUtils(getClass(), conn);
-
-        try {
-            pstmt = conn.prepareStatement(NOTICE_ID);
-            d.watch(pstmt);
-            pstmt.setInt(1, id);
-
-            rs = pstmt.executeQuery();
-            d.watch(rs);
-
-            Notification[] n = rs2NotifyBean(conn, rs);
-            if (n.length > 0) {
-                nbean = n[0];
-            } else {
-                nbean = new Notification();
-            }
-
-            rs.close();
-            pstmt.close();
-
-            // create the list of users the page was sent to
-            final PreparedStatement sentTo = conn.prepareStatement(SENT_TO);
-            d.watch(sentTo);
-            sentTo.setInt(1, id);
-
-            final ResultSet sentToResults = sentTo.executeQuery();
-            d.watch(sentToResults);
-
-            final List<NoticeSentTo> sentToList = new ArrayList<NoticeSentTo>();
-            while (sentToResults.next()) {
-                NoticeSentTo newSentTo = new NoticeSentTo();
-                newSentTo.setUserId(sentToResults.getString(USERID));
-                Timestamp ts = sentToResults.getTimestamp(NOTICE_TIME);
-                if (ts != null) {
-                    newSentTo.setTime(ts.getTime());
-                } else {
-                    newSentTo.setTime(0);
-                }
-                newSentTo.setMedia(sentToResults.getString(MEDIA));
-                newSentTo.setContactInfo(sentToResults.getString(CONTACT));
-                sentToList.add(newSentTo);
-            }
-
-            nbean.m_sentTo = sentToList;
-        } catch (SQLException e) {
-            LOG.error("Problem getting data from the notifications table: {}", e, e);
-            throw e;
-        } finally {
-            d.cleanUp();
-        }
-
-        return nbean;
-    }
 
     /**
      * <p>allNotifications</p>
@@ -180,7 +92,7 @@ public class NotificationModel extends Object {
     public Notification[] allNotifications(String order) throws SQLException {
         Notification[] notices = null;
 
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(getClass(), conn);
 
         try {
@@ -212,7 +124,7 @@ public class NotificationModel extends Object {
         return (notices);
     }
 
-    private String getServiceName(Connection conn, Integer id) {
+    protected static String getServiceName(Connection conn, Integer id) {
         if (id == null) {
             return null;
         }
@@ -221,7 +133,7 @@ public class NotificationModel extends Object {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        final DBUtils d = new DBUtils(getClass());
+        final DBUtils d = new DBUtils(NotificationModel.class);
         try {
             ps = conn.prepareStatement("SELECT servicename from service where serviceid = ?");
             d.watch(ps);
@@ -252,9 +164,8 @@ public class NotificationModel extends Object {
      * @return an array of {@link org.opennms.web.notification.Notification} objects.
      * @throws java.sql.SQLException if any.
      */
-    protected Notification[] rs2NotifyBean(Connection conn, ResultSet rs) throws SQLException {
-        Notification[] notices = null;
-        Vector<Notification> vector = new Vector<Notification>();
+    protected static Notification[] rs2NotifyBean(Connection conn, ResultSet rs) throws SQLException {
+        List<Notification> vector = new ArrayList<>();
 
         try {
 
@@ -277,219 +188,13 @@ public class NotificationModel extends Object {
                 nbean.m_serviceId = rs.getInt(SERVICE);
                 nbean.m_eventId = rs.getInt(EVENTID);
                 nbean.m_serviceName = getServiceName(conn, nbean.m_serviceId);
-                vector.addElement(nbean);
+                vector.add(nbean);
             }
         } catch (SQLException e) {
             LOG.error("Error occurred in rs2NotifyBean: {}", e, e);
             throw e;
         }
 
-        notices = new Notification[vector.size()];
-
-        for (int i = 0; i < notices.length; i++) {
-            notices[i] = vector.elementAt(i);
-        }
-
-        return notices;
+        return vector.toArray(new Notification[vector.size()]);
     }
-
-    /**
-     * This method returns the count of all outstanding notices.
-     *
-     * @return an array of {@link org.opennms.web.notification.Notification} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    public Notification[] getOutstandingNotices() throws SQLException {
-        Notification[] notices = null;
-
-        final Connection conn = Vault.getDbConnection();
-        final DBUtils d = new DBUtils(getClass(), conn);
-
-        try {
-            final Statement stmt = conn.createStatement();
-            d.watch(stmt);
-
-            final ResultSet rs = stmt.executeQuery(OUTSTANDING);
-            d.watch(rs);
-
-            notices = rs2NotifyBean(conn, rs);
-        } catch (SQLException e) {
-            LOG.error("Problem getting data from the notifications table: {}", e, e);
-            throw e;
-        } finally {
-            d.cleanUp();
-        }
-
-        return notices;
-    }
-
-    /**
-     * This method returns notices not yet acknowledged.
-     *
-     * @return a int.
-     * @throws java.sql.SQLException if any.
-     */
-    public int getOutstandingNoticeCount() throws SQLException {
-        int count = 0;
-
-        final Connection conn = Vault.getDbConnection();
-        final DBUtils d = new DBUtils(getClass(), conn);
-
-        try {
-            final Statement stmt = conn.createStatement();
-            d.watch(stmt);
-
-            final ResultSet rs = stmt.executeQuery(OUTSTANDING_COUNT);
-            d.watch(rs);
-
-            if (rs.next()) {
-                count = rs.getInt("TOTAL");
-            }
-        } catch (SQLException e) {
-            LOG.error("Problem getting data from the notifications table: {}", e, e);
-            throw e;
-        } finally {
-            d.cleanUp();
-        }
-
-        return count;
-    }
-
-    /**
-     * This method returns notices not yet acknowledged.
-     *
-     * @param username a {@link java.lang.String} object.
-     * @return a int.
-     * @throws java.sql.SQLException if any.
-     */
-    public int getOutstandingNoticeCount(String username) throws SQLException {
-        if (username == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        int count = 0;
-
-        final Connection conn = Vault.getDbConnection();
-        final DBUtils d = new DBUtils(getClass(), conn);
-
-        try {
-            final PreparedStatement pstmt = conn.prepareStatement(USER_OUTSTANDING_COUNT);
-            d.watch(pstmt);
-            pstmt.setString(1, username);
-
-            final ResultSet rs = pstmt.executeQuery();
-            d.watch(rs);
-
-            if (rs.next()) {
-                count = rs.getInt("TOTAL");
-            }
-        } catch (SQLException e) {
-            LOG.error("Problem getting data from the notifications table: {}", e, e);
-            throw e;
-        } finally {
-            d.cleanUp();
-        }
-
-        return (count);
-    }
-
-    /**
-     * This method returns notices not yet acknowledged.
-     *
-     * @param name a {@link java.lang.String} object.
-     * @return an array of {@link org.opennms.web.notification.Notification} objects.
-     * @throws java.sql.SQLException if any.
-     */
-    public Notification[] getOutstandingNotices(String name) throws SQLException {
-        Notification[] notices = null;
-
-        final Connection conn = Vault.getDbConnection();
-        final DBUtils d = new DBUtils(getClass(), conn);
-
-        try {
-            final PreparedStatement pstmt = conn.prepareStatement(USER_OUTSTANDING);
-            d.watch(pstmt);
-            pstmt.setString(1, name);
-
-            final ResultSet rs = pstmt.executeQuery();
-            d.watch(rs);
-
-            notices = rs2NotifyBean(conn, rs);
-        } catch (SQLException e) {
-            LOG.error("Problem getting data from the notifications table: {}", e, e);
-            throw e;
-        } finally {
-            d.cleanUp();
-        }
-
-        return (notices);
-    }
-
-    /**
-     * This method updates the table when the user acknowledges the pager
-     * information.
-     *
-     * @param name a {@link java.lang.String} object.
-     * @param noticeId a int.
-     * @throws java.sql.SQLException if any.
-     */
-    public void acknowledged(String name, int noticeId) throws SQLException {
-        if (name == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        final Connection conn = Vault.getDbConnection();
-        final DBUtils d = new DBUtils(getClass(), conn);
-
-        try {
-            final PreparedStatement pstmt = conn.prepareStatement("UPDATE notifications SET respondtime = ? , answeredby = ? WHERE notifyid= ?");
-            d.watch(pstmt);
-            pstmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
-            pstmt.setString(2, name);
-            pstmt.setInt(3, noticeId);
-            pstmt.execute();
-        } catch (SQLException e) {
-            LOG.error("Problem acknowledging notification {} as answered by '{}': {}", noticeId, name, e, e);
-            throw e;
-        } finally {
-            d.cleanUp();
-        }
-    }
-
-    /**
-     * This method helps insert into the database.
-     *
-     * @param nbean a {@link org.opennms.web.notification.Notification} object.
-     * @throws java.sql.SQLException if any.
-     */
-    public void insert(Notification nbean) throws SQLException {
-        if (nbean == null || nbean.m_txtMsg == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        final Connection conn = Vault.getDbConnection();
-        final DBUtils d = new DBUtils(getClass(), conn);
-
-        try {
-            final PreparedStatement pstmt = conn.prepareStatement(INSERT_NOTIFY);
-            d.watch(pstmt);
-            pstmt.setString(1, nbean.m_txtMsg);
-            pstmt.setString(2, nbean.m_numMsg);
-            pstmt.setLong(3, nbean.m_timeSent);
-            pstmt.setLong(4, nbean.m_timeReply);
-            pstmt.setString(5, nbean.m_responder);
-            pstmt.setInt(6, nbean.m_nodeID);
-            pstmt.setString(7, nbean.m_interfaceID);
-            pstmt.setInt(8, nbean.m_serviceId);
-            pstmt.setInt(9, nbean.m_eventId);
-
-            pstmt.execute();
-        } catch (SQLException e) {
-            LOG.error("Problem getting data from the notifications table: {}", e, e);
-            throw e;
-        } finally {
-            d.cleanUp();
-        }
-    }
-
 }

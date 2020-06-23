@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,11 +30,10 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.scriptd.Engine;
 import org.opennms.netmgt.config.scriptd.EventScript;
 import org.opennms.netmgt.config.scriptd.ReloadScript;
@@ -78,13 +77,9 @@ public final class ScriptdConfigFactory {
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      */
-    private ScriptdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(ScriptdConfiguration.class, new FileSystemResource(configFile));
+    private ScriptdConfigFactory(String configFile) throws IOException {
+        m_config = JaxbUtils.unmarshal(ScriptdConfiguration.class, new FileSystemResource(configFile));
     }
 
     /**
@@ -93,15 +88,9 @@ public final class ScriptdConfigFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -119,15 +108,9 @@ public final class ScriptdConfigFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException {
         m_singleton = null;
         m_loaded = false;
 
@@ -153,8 +136,8 @@ public final class ScriptdConfigFactory {
      *
      * @return the array of configured engines
      */
-    public synchronized Engine[] getEngines() {
-        return m_config.getEngine();
+    public synchronized List<Engine> getEngines() {
+        return m_config.getEngines();
     }
 
     /**
@@ -162,8 +145,8 @@ public final class ScriptdConfigFactory {
      *
      * @return the array of start scripts
      */
-    public synchronized StartScript[] getStartScripts() {
-        return m_config.getStartScript();
+    public synchronized List<StartScript> getStartScripts() {
+        return m_config.getStartScripts();
     }
 
     /**
@@ -171,8 +154,8 @@ public final class ScriptdConfigFactory {
      *
      * @return the array of stop scripts
      */
-    public synchronized StopScript[] getStopScripts() {
-        return m_config.getStopScript();
+    public synchronized List<StopScript> getStopScripts() {
+        return m_config.getStopScripts();
     }
 
     /**
@@ -180,8 +163,8 @@ public final class ScriptdConfigFactory {
      *
      * @return the array of reload scripts
      */
-    public synchronized ReloadScript[] getReloadScripts() {
-        return m_config.getReloadScript();
+    public synchronized List<ReloadScript> getReloadScripts() {
+        return m_config.getReloadScripts();
     }
 
     /**
@@ -189,7 +172,12 @@ public final class ScriptdConfigFactory {
      *
      * @return the array of configured event scripts
      */
-    public synchronized EventScript[] getEventScripts() {
-        return m_config.getEventScript();
+    public synchronized List<EventScript> getEventScripts() {
+        return m_config.getEventScripts();
+    }
+
+
+    public synchronized Boolean getTransactional() {
+        return m_config.getTransactional();
     }
 }

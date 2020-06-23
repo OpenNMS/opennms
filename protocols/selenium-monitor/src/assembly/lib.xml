@@ -1,6 +1,8 @@
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+<assembly
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd"
+>
   <id>lib</id>
   <formats>
     <format>tar.gz</format>
@@ -10,13 +12,14 @@
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>com.google.guava:guava</include>
-        <include>org.json:json</include>
         <include>org.seleniumhq.selenium:selenium*</include>
-        <include>org.codehaus.groovy:groovy</include>
-        <include>antlr:antlr</include>
-        <include>asm:asm*</include>
+        <include>org.codehaus.groovy:groovy-all</include>
+        <include>com.codeborne:phantomjsdriver</include>
+        <include>com.google.code.gson:gson</include>
+        <include>junit:junit</include>
       </includes>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>

@@ -1,0 +1,30 @@
+
+[[telemetryd-listener-udp]]
+==== UDP Listener
+
+The _UDP Listener_ can be used to open a UDP socket and forward the received packets to a _Parser_.
+
+The _UDP Listener_ can support multiple _Parsers_ if all of these _Parsers_ do support protocol detection.
+If this is the case, each _Parser_ defined for the _Listener_ will be asked if it can handle the incoming packet.
+The first _Parser_ which accepts the packet is then used to parse the packet and dispatch it to its _Queue_.
+
+If only a single _Parser_ is defined in the _Listener_, the packet is directly handed over for parsing.
+
+===== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.listeners.UdpListener`
+| Supported on Minion | `Yes`
+|===
+
+===== Parameters
+
+.Listener specific parameters for the UdpListener
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                       | Required | Default value
+| `host`           | IP address on which to bind the UDP port                          | optional | `0.0.0.0`
+| `port`           | UDP port number on which to listen                                | optional | `50000`
+| `maxPacketSize`  | Maximum packet size in bytes (anything greater will be truncated) | optional | `8096`
+|===

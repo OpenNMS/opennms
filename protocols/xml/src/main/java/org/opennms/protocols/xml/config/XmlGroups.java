@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -45,19 +45,23 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="xml-groups")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlGroups implements Serializable {
+public class XmlGroups implements Serializable, Cloneable {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 8626665420339279584L;
 
     /** The XML groups list. */
     @XmlElement(name="xml-group", required=true)
-    private List<XmlGroup> m_xmlGroups = new ArrayList<XmlGroup>();
+    private List<XmlGroup> m_xmlGroups = new ArrayList<>();
 
     /**
      * Instantiates a new XML source.
      */
     public XmlGroups() {
+    }
+
+    public XmlGroups(XmlGroups copy) {
+        copy.m_xmlGroups.stream().forEach(g -> m_xmlGroups.add(g.clone()));
     }
 
     /**
@@ -111,4 +115,8 @@ public class XmlGroups implements Serializable {
         }
     }
 
+    @Override
+    public XmlGroups clone() {
+        return new XmlGroups(this);
+    }
 }

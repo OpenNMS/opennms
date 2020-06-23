@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.snmp</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
 	 <relativePath>..</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
   <artifactId>org.opennms.core.snmp.joesnmp</artifactId>
-  <name>OpenNMS Core SNMP JoeSNMP library</name>
+  <name>OpenNMS :: Core :: SNMP :: JoeSNMP</name>
   <packaging>bundle</packaging>
   <build>
     <plugins>
@@ -19,7 +19,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>

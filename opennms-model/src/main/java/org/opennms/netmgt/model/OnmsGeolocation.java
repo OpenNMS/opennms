@@ -1,16 +1,42 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
 public class OnmsGeolocation implements Serializable {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -3859935145186027524L;
+    private static final long serialVersionUID = -3346555393433178515L;
 
     public OnmsGeolocation() {}
 
@@ -20,15 +46,15 @@ public class OnmsGeolocation implements Serializable {
     private String m_state;
     private String m_zip;
     private String m_country;
-    private Float m_longitude;
-    private Float m_latitude;
+    private Double m_longitude;
+    private Double m_latitude;
 
     /**
      *--# address1         : Address of geographical location of asset, line 1.
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="address1", length=256)
+    @Column(name="address1")
     public String getAddress1() {
         return m_address1;
     }
@@ -47,7 +73,7 @@ public class OnmsGeolocation implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="address2", length=256)
+    @Column(name="address2")
     public String getAddress2() {
         return m_address2;
     }
@@ -66,7 +92,7 @@ public class OnmsGeolocation implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="city", length=64)
+    @Column(name="city")
     public String getCity() {
         return m_city;
     }
@@ -85,7 +111,7 @@ public class OnmsGeolocation implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="state", length=64)
+    @Column(name="state")
     public String getState() {
         return m_state;
     }
@@ -104,7 +130,7 @@ public class OnmsGeolocation implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="zip", length=64)
+    @Column(name="zip")
     public String getZip() {
         return m_zip;
     }
@@ -123,7 +149,7 @@ public class OnmsGeolocation implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Column(name="country", length=64)
+    @Column(name="country")
     public String getCountry() {
         return m_country;
     }
@@ -142,11 +168,11 @@ public class OnmsGeolocation implements Serializable {
      * @return
      */
     @Column(name="longitude")
-    public Float getLongitude() {
+    public Double getLongitude() {
         return m_longitude;
     }
 
-    public void setLongitude(final Float longitude) {
+    public void setLongitude(final Double longitude) {
         m_longitude = longitude;
     }
 
@@ -155,11 +181,11 @@ public class OnmsGeolocation implements Serializable {
      * @return
      */
     @Column(name="latitude")
-    public Float getLatitude() {
+    public Double getLatitude() {
         return m_latitude;
     }
 
-    public void setLatitude(final Float latitude) {
+    public void setLatitude(final Double latitude) {
         m_latitude = latitude;
     }
 
@@ -169,37 +195,80 @@ public class OnmsGeolocation implements Serializable {
     }
 
     public String asAddressString() {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
 
-        if (this.getAddress1() != null) {
+        if (hasText(this.getAddress1())) {
             sb.append(this.getAddress1());
-            if (this.getAddress2() != null) {
+            if (hasText(this.getAddress2())) {
                 sb.append(" ").append(this.getAddress2());
             }
         }
 
-        if (this.getCity() != null) {
+        if (hasText(this.getCity())) {
             if (sb.length() > 0) sb.append(", ");
             sb.append(this.getCity());
         }
-        if (this.getState() != null) {
+        if (hasText(this.getState())) {
             if (sb.length() > 0) sb.append(", ");
             sb.append(this.getState());
         }
-        if (this.getZip() != null) {
-            if (this.getState() != null) {
+        if (hasText(this.getZip())) {
+            if (hasText(this.getState())) {
                 sb.append(" ");
             } else if (sb.length() > 0) {
                 sb.append(", ");
             }
             sb.append(this.getZip());
         }
-        if (this.getCountry() != null) {
+        if (hasText(this.getCountry())) {
             if (sb.length() > 0) sb.append(", ");
             sb.append(this.getCountry());
+        }
+
+        if (sb.length() == 0) {
+            return null;
         }
 
         return sb.toString();
     }
 
+    private boolean hasText(final String string) {
+        return !(string == null || string.isEmpty() || string.trim().isEmpty());
+    }
+
+    private boolean isAddressEqual(OnmsGeolocation other) {
+        return Objects.equals(asAddressString(), other.asAddressString());
+    }
+
+    public void mergeGeolocation(final OnmsGeolocation mergeWith) {
+        if (mergeWith == null) {
+            return;
+        }
+
+        // The address has changed, we must reset long/lat to have
+        // the GeolocationProvisioningAdapter resolve it.
+        boolean addressEqual = isAddressEqual(mergeWith);
+        if (!addressEqual) {
+            setLatitude(null);
+            setLongitude(null);
+        }
+
+        // Update address
+        setCity(mergeWith.getCity());
+        setAddress1(mergeWith.getAddress1());
+        setAddress2(mergeWith.getAddress2());
+        setZip(mergeWith.getZip());
+        setCountry(mergeWith.getCountry());
+        setState(mergeWith.getState());
+
+        // If there is long/lat defined, we use it no matter what.
+        // This prevents resetting already resolved long/lat information
+        // by the GeolocationProvisioningAdapter
+        if (mergeWith.getLongitude() != null) {
+            setLongitude(mergeWith.getLongitude());
+        }
+        if (mergeWith.getLatitude() != null) {
+            setLatitude(mergeWith.getLatitude());
+        }
+    }
 }

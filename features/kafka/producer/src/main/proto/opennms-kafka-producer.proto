@@ -1,0 +1,207 @@
+syntax = "proto3";
+option java_package = "org.opennms.features.kafka.producer.model";
+option java_outer_classname = "OpennmsModelProtos";
+
+// The values differ from the standard codes in OpenNMS
+// since proto3 enforces us to start at 0
+enum Severity {
+  INDETERMINATE = 0;
+  CLEARED = 1;
+  NORMAL = 2;
+  WARNING = 3;
+  MINOR = 4;
+  MAJOR = 5;
+  CRITICAL = 6;
+}
+
+enum TroubleTicketState {
+  OPEN = 0;
+  CREATE_PENDING = 1;
+  CREATE_FAILED = 2;
+  UPDATE_PENDING = 3;
+  UPDATE_FAILED = 4;
+  CLOSED = 5;
+  CLOSE_PENDING = 6;
+  CLOSE_FAILED = 7;
+  RESOLVED = 8;
+  RESOLVE_PENDING = 9;
+  RESOLVE_FAILED = 10;
+  CANCELLED = 11;
+  CANCEL_PENDING = 12;
+  CANCEL_FAILED = 13;
+}
+
+message NodeCriteria {
+  uint64 id = 1;
+  string foreign_source = 2;
+  string foreign_id = 3;
+}
+
+message EventParameter {
+  string name = 1;
+  string value = 2;
+  string type = 3;
+}
+
+message Event {
+  uint64 id = 1;
+  string uei = 2;
+  string label = 3;
+  uint64 time = 4;
+  string source = 5;
+  repeated EventParameter parameter = 6;
+  uint64 create_time = 7;
+  string description = 8;
+  string log_message = 9;
+  Severity severity = 10;
+  bool log = 11;
+  bool display = 12;
+  NodeCriteria node_criteria = 13;
+  string ip_address = 14;
+}
+
+message Alarm {
+  uint64 id = 1;
+  string uei = 2;
+  NodeCriteria node_criteria = 3;
+  string ip_address = 4;
+  string service_name = 5;
+  string reduction_key = 6;
+  enum Type {
+    PROBLEM_WITH_CLEAR = 0;
+    CLEAR = 1;
+    PROBLEM_WITHOUT_CLEAR = 2;
+  }
+  Type type = 7;
+  uint64 count = 8;
+  Severity severity = 9;
+  uint64 first_event_time = 10;
+  string description = 11;
+  string log_message = 12;
+  string ack_user = 13;
+  uint64 ack_time = 14;
+  Event last_event = 15;
+  uint64 last_event_time = 16;
+  uint32 if_index = 17;
+  string operator_instructions = 18;
+  string clear_key = 19;
+  string managed_object_instance = 20;
+  string managed_object_type = 21;
+  repeated Alarm relatedAlarm = 22;
+  string trouble_ticket_id = 23;
+  TroubleTicketState trouble_ticket_state = 24;
+}
+
+message AlarmFeedback {
+  string situation_key = 1;
+  string situation_fingerprint = 2;
+  string alarm_key = 3;
+  enum FeedbackType {
+    FALSE_POSITIVE = 0;
+    FALSE_NEGATIVE = 1;
+    CORRECT = 2;
+    UNKNOWN = 3;
+  }
+  FeedbackType feedback_type = 4;
+  string reason = 5;
+  string user = 6;
+  uint64 timestamp = 7;
+}
+
+message IpInterface {
+  uint64 id = 1;
+  string ip_address = 2;
+  uint32 if_index = 3;
+  enum PrimaryType {
+    PRIMARY = 0;
+    SECONDARY = 1;
+    NOT_ELIGIBLE = 2;
+  }
+  PrimaryType primary_type = 4;
+  repeated string service = 5;
+}
+
+message SnmpInterface {
+  uint64 id = 1;
+  uint32 if_index = 2;
+  string if_descr = 3;
+  uint32 if_type = 4;
+  string if_name = 5;
+  uint64 if_speed = 6;
+  string if_phys_address = 7;
+  uint32 if_admin_status = 8;
+  uint32 if_oper_status = 9;
+  string if_alias = 10;
+}
+
+message HwAlias {
+  uint32 index = 1;
+  string oid = 2;
+}
+
+message HwEntity {
+  uint32 ent_physical_index = 1;
+  uint32 entity_id = 2;
+  string ent_physical_class = 3;
+  string ent_physical_descr = 4;
+  bool ent_physical_is_fru = 5;
+  string ent_physical_name = 6;
+  string ent_physical_vendor_type = 7;
+  repeated HwAlias ent_hw_alias = 8;
+  repeated HwEntity children = 9;
+}
+
+message Node {
+  uint64 id = 1;
+  string foreign_source = 2;
+  string foreign_id = 3;
+  string location = 4;
+  repeated string category = 5;
+  string label = 6;
+  uint64 create_time = 7;
+  string sys_contact = 8;
+  string sys_description = 9;
+  string sys_object_id = 10;
+  repeated IpInterface ip_interface = 11;
+  repeated SnmpInterface snmp_interface = 12;
+  HwEntity hw_inventory = 13;
+}
+
+message TopologyRef {
+  string id = 1;
+  enum Protocol {
+    LLDP = 0;
+    OSPF = 1;
+    ISIS = 2;
+    BRIDGE = 3;
+    CDP = 4;
+    USERDEFINED = 5;
+  }
+  Protocol protocol = 2;
+}
+
+message TopologySegment {
+  TopologyRef ref = 1;
+}
+
+message TopologyPort {
+  string vertex_id = 1;
+  uint64 if_index = 2;
+  string if_name = 3;
+  string address = 4;
+  NodeCriteria node_criteria = 5;
+}
+
+message TopologyEdge {
+  TopologyRef ref = 1;
+  oneof source {
+    TopologyPort sourcePort = 3;
+    TopologySegment sourceSegment = 4;
+    Node sourceNode = 5;
+  }
+  oneof target {
+    TopologyPort targetPort = 6;
+    TopologySegment targetSegment = 7;
+    Node targetNode = 8;
+  }
+}

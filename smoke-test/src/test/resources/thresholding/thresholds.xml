@@ -1,0 +1,8 @@
+<thresholding-config xmlns="http://xmlns.opennms.org/xsd/config/thresholding">
+    <group name="ttest-latency" rrdRepository="/opt/opennms/share/rrd/response">
+        <threshold type="high" ds-type="if" value="5000.0" rearm="4000.0" trigger="2" ds-name="svc-to-thresh"/>
+    </group>
+    <group name="ttest-collect" rrdRepository="/opt/opennms/share/rrd/snmp">
+        <threshold type="absoluteChange" ds-type="nodeMetadata" value="10000.0" rearm="1.0" trigger="1" ds-name="value"/>
+    </group>
+</thresholding-config>

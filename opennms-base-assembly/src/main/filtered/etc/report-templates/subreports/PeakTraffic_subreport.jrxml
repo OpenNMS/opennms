@@ -1,78 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TrafficSubReport" pageWidth="650" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="650" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="1.0"/>
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-08-24T15:39:30 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TrafficSubReport" pageWidth="555" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="571815ec-7aa8-49bd-9b52-ee6a4a9ab2ac">
+	<property name="ireport.zoom" value="1.610510000000001"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Center" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Detail" hAlign="Center" vAlign="Middle"/>
 	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<parameter name="startDate" class="java.util.Date" isForPrompting="false">
+	<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String"/>
+	<parameter name="startDate" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new java.util.Date(1291141800000L)]]></defaultValueExpression>
 	</parameter>
-	<parameter name="endDate" class="java.util.Date" isForPrompting="false">
+	<parameter name="endDate" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new java.util.Date()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["${install.dir}/share/rrd"]]></defaultValueExpression>
-	</parameter>
-	<parameter name="snmpifalias" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="snmpifname" class="java.lang.String" isForPrompting="false">
+	<parameter name="snmpifalias" class="java.lang.String"/>
+	<parameter name="snmpifname" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="snmpifdescr" class="java.lang.String" isForPrompting="false">
+	<parameter name="snmpifdescr" class="java.lang.String">
 		<defaultValueExpression><![CDATA["eth0"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="snmpphysaddr" class="java.lang.String" isForPrompting="false">
+	<parameter name="snmpphysaddr" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false">
+	<parameter name="nodeid" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[Integer.valueOf(14)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="foreignsource" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="foreignid" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<parameter name="ifLabel" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="interface" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getInterfaceDirectory($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getInterfaceDescriptor($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
 	</parameter>
-	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
+	<parameter name="startDateTime" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{startDate}.getTime()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="outOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
+	<parameter name="endDateTime" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{endDate}.getTime()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ifInOctets_PATH" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
+	<parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ifOutOctets_PATH" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
-	</parameter>
-	<queryString language="jrobin">
-		<![CDATA[--start $P{startDate} --end $P{endDate}
-		DEF:xx=$P{ifInOctets_PATH}:$P{inOctets}:AVERAGE
-		DEF:yy=$P{ifOutOctets_PATH}:$P{outOctets}:AVERAGE
-		XPORT:xx:InOctets
-		XPORT:yy:OutOctets]]>
+	<queryString language="measurement">
+		<![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="5000">
+  <source aggregation="AVERAGE" label="InOctets" attribute="ifHCInOctets" fallback-attribute="ifInOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
+  <source aggregation="AVERAGE" label="OutOctets" attribute="ifHCOutOctets" fallback-attribute="ifOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
+</query-request>]]>
 	</queryString>
-	<field name="Timestamp" class="java.util.Date">
-		<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
+	<field name="timestamp" class="java.util.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="InOctets" class="java.lang.Double">
-		<fieldDescription><![CDATA[InOctets]]></fieldDescription>
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="OutOctets" class="java.lang.Double">
-		<fieldDescription><![CDATA[OutOctets]]></fieldDescription>
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<variable name="ifInOctets_Average" class="java.lang.Double" calculation="Average">
-		<variableExpression><![CDATA[$F{InOctets}]]></variableExpression>
+	<variable name="ifInBits_Average" class="java.lang.Double" calculation="Average">
+		<variableExpression><![CDATA[$F{InOctets} * 8]]></variableExpression>
 	</variable>
-	<variable name="ifOutOctets_Average" class="java.lang.Double" calculation="Average">
-		<variableExpression><![CDATA[$F{OutOctets}]]></variableExpression>
+	<variable name="ifOutBits_Average" class="java.lang.Double" calculation="Average">
+		<variableExpression><![CDATA[$F{OutOctets} * 8]]></variableExpression>
 	</variable>
-	<variable name="ifInOctets_Peak" class="java.lang.Double" calculation="Highest">
-		<variableExpression><![CDATA[$F{InOctets}]]></variableExpression>
+	<variable name="ifInBits_Peak" class="java.lang.Double" calculation="Highest">
+		<variableExpression><![CDATA[$F{InOctets} * 8]]></variableExpression>
 	</variable>
-	<variable name="ifOutOctets_Peak" class="java.lang.Double" calculation="Highest">
-		<variableExpression><![CDATA[$F{OutOctets}]]></variableExpression>
+	<variable name="ifOutBits_Peak" class="java.lang.Double" calculation="Highest">
+		<variableExpression><![CDATA[$F{OutOctets} * 8]]></variableExpression>
 	</variable>
 	<filterExpression><![CDATA[!$F{InOctets}.isNaN() && !$F{OutOctets}.isNaN()]]></filterExpression>
 	<background>
@@ -81,45 +94,63 @@
 	<summary>
 		<band height="24" splitType="Stretch">
 			<textField pattern="#,##0.00">
-				<reportElement style="Detail" x="534" y="4" width="115" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ifOutOctets_Peak}]]></textFieldExpression>
+				<reportElement style="Detail" x="451" y="4" width="105" height="20" uuid="9c7e371b-ca66-4bca-aaa7-52a864a8d55c">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$V{ifOutBits_Peak}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement style="Detail" x="179" y="4" width="111" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ifInOctets_Average}]]></textFieldExpression>
+				<reportElement style="Detail" x="113" y="4" width="123" height="20" uuid="4269bf48-156f-4447-bed0-83f3c048cb8f">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$V{ifInBits_Average}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement style="Detail" x="404" y="4" width="130" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ifOutOctets_Average}]]></textFieldExpression>
+				<reportElement style="Detail" x="329" y="4" width="120" height="20" uuid="d15a4671-5e26-4d42-af3a-e7e39da81b11">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$V{ifOutBits_Average}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Detail" x="3" y="4" width="176" height="20"/>
+				<reportElement style="Detail" x="3" y="4" width="110" height="20" uuid="5ca6f441-c070-481f-8d2f-8e4a0dd763f8">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{interface}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{interface}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement style="Detail" x="290" y="4" width="114" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ifInOctets_Peak}]]></textFieldExpression>
+				<reportElement style="Detail" x="225" y="4" width="100" height="20" uuid="8fce92a7-fd0d-458a-92a9-1642d08d61cf">
+					<property name="local_mesure_unitx" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$V{ifInBits_Peak}]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>
 	<noData>
-		<band height="20">
+		<band height="30">
 			<textField>
-				<reportElement style="Detail" x="0" y="0" width="179" height="20"/>
+				<reportElement style="Detail" x="3" y="0" width="110" height="20" uuid="0d4d8fc4-6714-45b3-ac89-aedfdc16fe3e">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{interface}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{interface}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="179" y="0" width="470" height="20"/>
-				<textElement textAlignment="Center">
-					<font size="14"/>
+				<reportElement x="113" y="0" width="442" height="20" uuid="1ecaa655-9b5d-4439-b9a9-571191129c62"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10"/>
 				</textElement>
-				<text><![CDATA[No Data for this Interface]]></text>
+				<text><![CDATA[No data for this Interface]]></text>
 			</staticText>
 		</band>
 	</noData>

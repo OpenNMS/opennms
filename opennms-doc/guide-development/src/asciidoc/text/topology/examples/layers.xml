@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+    <!-- Key section -->
+    <key id="label" for="graphml" attr.name="label" attr.type="string"></key>
+    <key id="label" for="graph" attr.name="label" attr.type="string"></key>
+    <key id="label" for="node" attr.name="label" attr.type="string"></key>
+    <key id="description" for="graph" attr.name="description" attr.type="string"></key>
+    <key id="namespace" for="graph" attr.name="namespace" attr.type="string"></key>
+    <key id="preferred-layout" for="graph" attr.name="preferred-layout" attr.type="string"></key>
+    <key id="focus-strategy" for="graph" attr.name="focus-strategy" attr.type="string"></key>
+    <key id="focus-ids" for="graph" attr.name="focus-ids" attr.type="string"></key>
+    <key id="semantic-zoom-level" for="graph" attr.name="semantic-zoom-level" attr.type="int"/>
+
+    <!-- Label for Topology Selection menu -->
+    <data key="label">Layer Example</data>
+    <graph id="regions">
+        <data key="namespace">acme:regions</data>
+        <data key="label">Regions</data>
+        <data key="description">The Regions Layer.</data>
+        <data key="preferred-layout">Circle Layout</data>
+        <data key="focus-strategy">ALL</data>
+        <node id="north">
+            <data key="label">North</data>
+        </node>
+        <node id="west">
+            <data key="label">West</data>
+        </node>
+        <node id="south">
+            <data key="label">South</data>
+        </node>
+        <node id="east">
+            <data key="label">East</data>
+        </node>
+    </graph>
+    <graph id="markets">
+        <data key="namespace">acme:markets</data>
+        <data key="description">The Markets Layer.</data>
+        <data key="label">Markets</data>
+        <data key="description">The Markets Layer</data>
+        <data key="semantic-zoom-level">1</data>
+        <data key="focus-strategy">SPECIFIC</data>
+        <data key="focus-ids">north.2</data>
+        <node id="north.1">
+            <data key="label">North 1</data>
+        </node>
+        <node id="north.2">
+            <data key="label">North 2</data>
+        </node>
+        <node id="north.3">
+            <data key="label">North 3</data>
+        </node>
+        <node id="north.4">
+            <data key="label">North 4</data>
+        </node>
+        <node id="west.1">
+            <data key="label">West 1</data>
+        </node>
+        <node id="west.2">
+            <data key="label">West 2</data>
+        </node>
+        <node id="west.3">
+            <data key="label">West 3</data>
+        </node>
+        <node id="west.4">
+            <data key="label">West 4</data>
+        </node>
+        <node id="south.1">
+            <data key="label">South 1</data>
+        </node>
+        <node id="south.2">
+            <data key="label">South 2</data>
+        </node>
+        <node id="south.3">
+            <data key="label">South 3</data>
+        </node>
+        <node id="south.4">
+            <data key="label">South 4</data>
+        </node>
+        <node id="east.1">
+            <data key="label">East 1</data>
+        </node>
+        <node id="east.2">
+            <data key="label">East 2</data>
+        </node>
+        <node id="east.3">
+            <data key="label">East 3</data>
+        </node>
+        <node id="east.4">
+            <data key="label">East 4</data>
+        </node>
+        <!-- Edges in this layer -->
+        <edge id="north.1_north.2" source="north.1" target="north.2"/>
+        <edge id="north.2_north.3" source="north.2" target="north.3"/>
+        <edge id="north.3_north.4" source="north.3" target="north.4"/>
+        <edge id="east.1_east.2" source="east.1" target="east.2"/>
+        <edge id="east.2_east.3" source="east.2" target="east.3"/>
+        <edge id="east.3_east.4" source="east.3" target="east.4"/>
+        <edge id="south.1_south.2" source="south.1" target="south.2"/>
+        <edge id="south.2_south.3" source="south.2" target="south.3"/>
+        <edge id="south.3_south.4" source="south.3" target="south.4"/>
+        <edge id="north.1_north.2" source="north.1" target="north.2"/>
+        <edge id="north.2_north.3" source="north.2" target="north.3"/>
+        <edge id="north.3_north.4" source="north.3" target="north.4"/>
+
+        <!-- Edges to different layers -->
+        <edge id="west_north.1" source="north" target="north.1"/>
+        <edge id="north_north.2" source="north" target="north.2"/>
+        <edge id="north_north.3" source="north" target="north.3"/>
+        <edge id="north_north.4" source="north" target="north.4"/>
+        <edge id="south_south.1" source="south" target="south.1"/>
+        <edge id="south_south.2" source="south" target="south.2"/>
+        <edge id="south_south.3" source="south" target="south.3"/>
+        <edge id="south_south.4" source="south" target="south.4"/>
+        <edge id="east_east.1" source="east" target="east.1"/>
+        <edge id="east_east.2" source="east" target="east.2"/>
+        <edge id="east_east.3" source="east" target="east.3"/>
+        <edge id="east_east.4" source="east" target="east.4"/>
+        <edge id="west_west.1" source="west" target="west.1"/>
+        <edge id="west_west.2" source="west" target="west.2"/>
+        <edge id="west_west.3" source="west" target="west.3"/>
+        <edge id="west_west.4" source="west" target="west.4"/>
+    </graph>
+</graphml>

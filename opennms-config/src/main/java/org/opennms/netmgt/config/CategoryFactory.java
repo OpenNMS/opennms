@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,19 +30,15 @@ package org.opennms.netmgt.config;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.categories.CatFactory;
-import org.opennms.netmgt.config.categories.Categories;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.CatFactory;
 import org.opennms.netmgt.config.categories.Category;
-import org.opennms.netmgt.config.categories.Categorygroup;
+import org.opennms.netmgt.config.categories.CategoryGroup;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -84,13 +80,9 @@ public final class CategoryFactory implements CatFactory {
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * 
      */
-    private CategoryFactory(final String configFile) throws IOException, MarshalException, ValidationException {
+    private CategoryFactory(final String configFile) throws IOException {
         this(new FileSystemResource(configFile));
     }
     
@@ -99,11 +91,9 @@ public final class CategoryFactory implements CatFactory {
      *
      * @param resource a {@link org.springframework.core.io.Resource} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public CategoryFactory(final Resource resource) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(Catinfo.class, resource);
+    public CategoryFactory(final Resource resource) throws IOException {
+        m_config = JaxbUtils.unmarshal(Catinfo.class, resource);
     }
     
     @Override
@@ -122,15 +112,9 @@ public final class CategoryFactory implements CatFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -146,15 +130,9 @@ public final class CategoryFactory implements CatFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException {
         m_singleton = null;
         m_loaded = false;
 
@@ -178,7 +156,7 @@ public final class CategoryFactory implements CatFactory {
 	/**
 	 * <p>setInstance</p>
 	 *
-	 * @param singleton a {@link org.opennms.netmgt.config.categories.CatFactory} object.
+	 * @param singleton a {@link org.opennms.netmgt.config.api.CatFactory} object.
 	 */
 	public static void setInstance(final CatFactory singleton) {
 		m_singleton = singleton;
@@ -192,8 +170,8 @@ public final class CategoryFactory implements CatFactory {
      */
     @Override
     public Catinfo getConfig() {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             return m_config;
         } finally {
             getReadLock().unlock();
@@ -206,10 +184,10 @@ public final class CategoryFactory implements CatFactory {
      * @param group
      *            category group to be added
      */
-    public void addCategoryGroup(final Categorygroup group) {
-        getWriteLock().lock();
+    public void addCategoryGroup(final CategoryGroup group) {
         try {
-            m_config.addCategorygroup(group);
+            getWriteLock().lock();
+            m_config.addCategoryGroup(group);
         } finally {
             getWriteLock().unlock();
         }
@@ -222,16 +200,18 @@ public final class CategoryFactory implements CatFactory {
      *            category group to be replaced
      * @return true if categorygroup is successfully replaced
      */
-    public boolean replaceCategoryGroup(final Categorygroup group) {
-        getWriteLock().lock();
-        
+    public boolean replaceCategoryGroup(final CategoryGroup group) {
         try {
+            getWriteLock().lock();
+
             final String groupname = group.getName();
     
-            for (int i = 0; i < m_config.getCategorygroupCount(); i++) {
-                final Categorygroup oldCg = m_config.getCategorygroup(i);
+            for (int i = 0; i < m_config.getCategoryGroups().size(); i++) {
+                final int index1 = i;
+                final CategoryGroup oldCg = m_config.getCategoryGroups().get(index1);
                 if (oldCg.getName().equals(groupname)) {
-                    m_config.setCategorygroup(i, group);
+                    final int index = i;
+                    m_config.getCategoryGroups().set(index, group);
                     return true;
                 }
             }
@@ -248,10 +228,10 @@ public final class CategoryFactory implements CatFactory {
      *            category group to be removed
      * @return true if categorygroup is successfully deleted
      */
-    public boolean deleteCategoryGroup(final Categorygroup group) {
-        getWriteLock().lock();
+    public boolean deleteCategoryGroup(final CategoryGroup group) {
         try {
-            return m_config.removeCategorygroup(group);
+            getWriteLock().lock();
+            return m_config.removeCategoryGroup(group);
         } finally {
             getWriteLock().unlock();
         }
@@ -265,21 +245,9 @@ public final class CategoryFactory implements CatFactory {
      * @return true if categorygroup is successfully deleted
      */
     public boolean deleteCategoryGroup(final String groupname) {
-        getWriteLock().lock();
-        
         try {
-            boolean deleted = false;
-    
-            final Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-            while (enumCG.hasMoreElements()) {
-                final Categorygroup cg = enumCG.nextElement();
-                if (cg.getName().equals(groupname)) {
-                    deleted = m_config.removeCategorygroup(cg);
-                    break;
-                }
-            }
-    
-            return deleted;
+            getWriteLock().lock();
+            return m_config.removeCategoryGroup(groupname);
         } finally {
             getWriteLock().unlock();
         }
@@ -296,15 +264,11 @@ public final class CategoryFactory implements CatFactory {
      *         group
      */
     public boolean addCategory(final String groupname, final Category cat) {
-        getWriteLock().lock();
         try {
-            Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-            while (enumCG.hasMoreElements()) {
-                Categorygroup cg = enumCG.nextElement();
+            getWriteLock().lock();
+            for (final CategoryGroup cg : m_config.getCategoryGroups()) {
                 if (cg.getName().equals(groupname)) {
-                    // get categories and add
-                    Categories cats = cg.getCategories();
-                    cats.addCategory(cat);
+                    cg.addCategory(cat);
                     return true;
                 }
             }
@@ -325,27 +289,9 @@ public final class CategoryFactory implements CatFactory {
      *         category group
      */
     public boolean replaceCategory(final String groupname, final Category cat) {
-        getWriteLock().lock();
         try {
-            final Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-            while (enumCG.hasMoreElements()) {
-                final Categorygroup cg = enumCG.nextElement();
-                if (cg.getName().equals(groupname)) {
-                    final String catlabel = cat.getLabel();
-
-                    // get categories and replace
-                    final Categories cats = cg.getCategories();
-
-                    for (int i = 0; i < cats.getCategoryCount(); i++) {
-                        final Category oldCat = cats.getCategory(i);
-                        if (oldCat.getLabel().equals(catlabel)) {
-                            cats.setCategory(i, cat);
-                            return true;
-                        }
-                    }
-    
-                }
-            }
+            getWriteLock().lock();
+            m_config.replaceCategoryInGroup(groupname, cat);
         } finally {
             getWriteLock().unlock();
         }
@@ -363,15 +309,11 @@ public final class CategoryFactory implements CatFactory {
      *         category group
      */
     public boolean deleteCategory(final String groupname, final Category cat) {
-        getWriteLock().lock();
         try {
-            final Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-            while (enumCG.hasMoreElements()) {
-                final Categorygroup cg = enumCG.nextElement();
+            getWriteLock().lock();
+            for (final CategoryGroup cg : m_config.getCategoryGroups()) {
                 if (cg.getName().equals(groupname)) {
-                    // get categories and delete
-                    final Categories cats = cg.getCategories();
-                    cats.removeCategory(cat);
+                    cg.removeCategory(cat);
                     return true;
                 }
             }
@@ -392,24 +334,11 @@ public final class CategoryFactory implements CatFactory {
      *         category group
      */
     public boolean deleteCategory(final String groupname, final String catlabel) {
-        getWriteLock().lock();
         try {
-            final Enumeration<Categorygroup> enumCG = m_config.enumerateCategorygroup();
-            while (enumCG.hasMoreElements()) {
-                final Categorygroup cg = enumCG.nextElement();
+            getWriteLock().lock();
+            for (final CategoryGroup cg : m_config.getCategoryGroups()) {
                 if (cg.getName().equals(groupname)) {
-                    // get categories and delete
-                    final Categories cats = cg.getCategories();
-    
-                    final Enumeration<Category> enumCat = cats.enumerateCategory();
-                    while (enumCat.hasMoreElements()) {
-                        final Category cat = enumCat.nextElement();
-                        if (cat.getLabel().equals(catlabel)) {
-                            cats.removeCategory(cat);
-                            return true;
-                        }
-                    }
-    
+                    cg.removeCategory(catlabel);
                 }
             }
         } finally {
@@ -425,10 +354,10 @@ public final class CategoryFactory implements CatFactory {
      */
     @Override
     public Category getCategory(final String name) {
-        getReadLock().lock();
         try {
-            for (final Categorygroup cg: m_config.getCategorygroupCollection()) {
-                for (final Category cat : cg.getCategories().getCategoryCollection()) {
+            getReadLock().lock();
+            for (final CategoryGroup cg: m_config.getCategoryGroups()) {
+                for (final Category cat : cg.getCategories()) {
                     if (cat.getLabel().equals(name)) {
                         return cat;
                     }
@@ -449,7 +378,7 @@ public final class CategoryFactory implements CatFactory {
     @Override
     public double getNormal(final String catlabel) {
         final Category cat = getCategory(catlabel);
-        return (cat == null? -1.0 : cat.getNormal());
+        return (cat == null? -1.0 : cat.getNormalThreshold());
     }
 
     /**
@@ -460,7 +389,7 @@ public final class CategoryFactory implements CatFactory {
     @Override
     public double getWarning(final String catlabel) {
         final Category cat = getCategory(catlabel);
-        return (cat == null? -1.0 : cat.getWarning());
+        return (cat == null? -1.0 : cat.getWarningThreshold());
     }
 
     /**
@@ -473,7 +402,7 @@ public final class CategoryFactory implements CatFactory {
      */
     public String[] getServices(final String catlabel) {
         final Category cat = getCategory(catlabel);
-        return (cat == null? null : cat.getService());
+        return (cat == null? null : cat.getServices().toArray(new String[0]));
     }
 
     /**
@@ -497,13 +426,12 @@ public final class CategoryFactory implements CatFactory {
      */
     @Override
     public String getEffectiveRule(final String catlabel) {
-        getReadLock().lock();
         try {
-            for (final Categorygroup cg : m_config.getCategorygroupCollection()) {
-                for (final Category cat : cg.getCategories().getCategoryCollection()) {
+            getReadLock().lock();
+            for (final CategoryGroup cg : m_config.getCategoryGroups()) {
+                for (final Category cat : cg.getCategories()) {
                     if (cat.getLabel().equals(catlabel)) {
-                        String catRule = "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
-                        return catRule;
+                        return "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
                     }
                 }
             }

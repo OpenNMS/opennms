@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>nrtg</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>nrtg-nrtbroker-jms</artifactId>
@@ -13,7 +13,7 @@
     <bundle.symbolicName>org.opennms.features.nrtg.nrtbroker.jms</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.nrtbroker.jms</bundle.namespace>
   </properties>
-  <name>OpenNMS Features NRTG Broker Implementation - JMS</name>
+  <name>OpenNMS :: Features :: NRTG :: JMS Broker Impl</name>
   <description>
     An NRT Broker implementation using JMS, Spring and ActiveMQ
   </description>
@@ -49,7 +49,6 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
-      <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>

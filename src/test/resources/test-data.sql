@@ -23,13 +23,6 @@ SELECT pg_catalog.setval('catnxtid', 1, false);
 
 
 --
--- Name: demandpollnxtid; Type: SEQUENCE SET; Schema: public; Owner: opennms
---
-
-SELECT pg_catalog.setval('demandpollnxtid', 1, false);
-
-
---
 -- Name: eventsnxtid; Type: SEQUENCE SET; Schema: public; Owner: opennms
 --
 
@@ -64,12 +57,6 @@ SELECT pg_catalog.setval('notifynxtid', 1, false);
 SELECT pg_catalog.setval('outagenxtid', 2, true);
 
 
---
--- Name: pollresultnxtid; Type: SEQUENCE SET; Schema: public; Owner: opennms
---
-
-SELECT pg_catalog.setval('pollresultnxtid', 1, false);
-
 
 --
 -- Name: servicenxtid; Type: SEQUENCE SET; Schema: public; Owner: opennms
@@ -83,13 +70,6 @@ SELECT pg_catalog.setval('servicenxtid', 3, true);
 --
 
 SELECT pg_catalog.setval('usernotifnxtid', 1, false);
-
-
---
--- Name: vulnnxtid; Type: SEQUENCE SET; Schema: public; Owner: opennms
---
-
-SELECT pg_catalog.setval('vulnnxtid', 1, false);
 
 
 --
@@ -130,12 +110,6 @@ INSERT INTO assets (nodeid, category, manufacturer, vendor, modelnumber, serialn
 
 --
 -- Data for Name: datalinkinterface; Type: TABLE DATA; Schema: public; Owner: opennms
---
-
-
-
---
--- Data for Name: demandpolls; Type: TABLE DATA; Schema: public; Owner: opennms
 --
 
 
@@ -271,18 +245,6 @@ INSERT INTO outages (outageid, svclosteventid, svcregainedeventid, nodeid, ipadd
 
 
 --
--- Data for Name: pollresults; Type: TABLE DATA; Schema: public; Owner: opennms
---
-
-
-
---
--- Data for Name: servermap; Type: TABLE DATA; Schema: public; Owner: opennms
---
-
-
-
---
 -- Data for Name: service; Type: TABLE DATA; Schema: public; Owner: opennms
 --
 
@@ -292,18 +254,12 @@ INSERT INTO service (serviceid, servicename) VALUES (3, 'HTTP');
 
 
 --
--- Data for Name: servicemap; Type: TABLE DATA; Schema: public; Owner: opennms
---
-
-
-
---
 -- Data for Name: snmpinterface; Type: TABLE DATA; Schema: public; Owner: opennms
 --
 
-INSERT INTO snmpinterface (nodeid, ipaddr, snmpipadentnetmask, snmpphysaddr, snmpifindex, snmpifdescr, snmpiftype, snmpifname, snmpifspeed, snmpifadminstatus, snmpifoperstatus, snmpifalias) VALUES (1, '192.168.1.1', NULL, NULL, 1, NULL, NULL, NULL, 10000000, NULL, NULL, NULL);
-INSERT INTO snmpinterface (nodeid, ipaddr, snmpipadentnetmask, snmpphysaddr, snmpifindex, snmpifdescr, snmpiftype, snmpifname, snmpifspeed, snmpifadminstatus, snmpifoperstatus, snmpifalias) VALUES (1, '192.168.1.2', NULL, NULL, 2, NULL, NULL, NULL, 10000000, NULL, NULL, NULL);
-INSERT INTO snmpinterface (nodeid, ipaddr, snmpipadentnetmask, snmpphysaddr, snmpifindex, snmpifdescr, snmpiftype, snmpifname, snmpifspeed, snmpifadminstatus, snmpifoperstatus, snmpifalias) VALUES (1, '192.168.1.3', NULL, NULL, 3, NULL, NULL, NULL, 10000000, NULL, NULL, NULL);
+INSERT INTO snmpinterface (nodeid, ipaddr, snmpphysaddr, snmpifindex, snmpifdescr, snmpiftype, snmpifname, snmpifspeed, snmpifadminstatus, snmpifoperstatus, snmpifalias) VALUES (1, '192.168.1.1', NULL, 1, NULL, NULL, NULL, 10000000, NULL, NULL, NULL);
+INSERT INTO snmpinterface (nodeid, ipaddr, snmpphysaddr, snmpifindex, snmpifdescr, snmpiftype, snmpifname, snmpifspeed, snmpifadminstatus, snmpifoperstatus, snmpifalias) VALUES (1, '192.168.1.2', NULL, 2, NULL, NULL, NULL, 10000000, NULL, NULL, NULL);
+INSERT INTO snmpinterface (nodeid, ipaddr, snmpphysaddr, snmpifindex, snmpifdescr, snmpiftype, snmpifname, snmpifspeed, snmpifadminstatus, snmpifoperstatus, snmpifalias) VALUES (1, '192.168.1.3', NULL, 3, NULL, NULL, NULL, 10000000, NULL, NULL, NULL);
 
 
 --
@@ -320,18 +276,6 @@ INSERT INTO snmpinterface (nodeid, ipaddr, snmpipadentnetmask, snmpphysaddr, snm
 
 --
 -- Data for Name: usersnotified; Type: TABLE DATA; Schema: public; Owner: opennms
---
-
-
-
---
--- Data for Name: vulnerabilities; Type: TABLE DATA; Schema: public; Owner: opennms
---
-
-
-
---
--- Data for Name: vulnplugins; Type: TABLE DATA; Schema: public; Owner: opennms
 --
 
 

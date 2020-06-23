@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,18 +28,22 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
+import java.util.Map;
+
+import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFilenameFilter;
-import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.poller.MonitoredService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
-import java.util.Map;
 
 /**
  * This class is designed to be used by the service poller framework to test the availability
@@ -50,7 +54,7 @@ import java.util.Map;
  * @author <a mailto:christian.pape@informatik.hs-fulda.de>Christian Pape</a>
  * @version 1.10.9
  */
-public class JCifsMonitor extends AbstractServiceMonitor {
+public class JCifsMonitor extends ParameterSubstitutingMonitor {
 
     /*
     * default retries
@@ -77,7 +81,7 @@ public class JCifsMonitor extends AbstractServiceMonitor {
     /**
      * logging for JCifs monitor
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.Poller." + JCifsMonitor.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(JCifsMonitor.class);
 
     /**
      * This method queries the CIFS share.
@@ -89,9 +93,9 @@ public class JCifsMonitor extends AbstractServiceMonitor {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 
-        final String domain = parameters.containsKey("domain") ? (String) parameters.get("domain") : "";
-        final String username = parameters.containsKey("username") ? (String) parameters.get("username") : "";
-        final String password = parameters.containsKey("password") ? (String) parameters.get("password") : "";
+        final String domain = resolveKeyedString(parameters, "domain", "");
+        final String username = resolveKeyedString(parameters, "username", "");
+        final String password = resolveKeyedString(parameters, "password", "");
         String mode = parameters.containsKey("mode") ? ((String) parameters.get("mode")).toUpperCase() : "PATH_EXIST";
         String path = parameters.containsKey("path") ? (String) parameters.get("path") : "";
         String smbHost = parameters.containsKey("smbHost") ? (String) parameters.get("smbHost") : "";
@@ -143,6 +147,8 @@ public class JCifsMonitor extends AbstractServiceMonitor {
 
         // Initializing TimeoutTracker with default values
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
+
+        setJCifsTimeouts(tracker.getConnectionTimeout());
 
         // Setting default PollStatus
         PollStatus serviceStatus = PollStatus.unknown();
@@ -211,6 +217,33 @@ public class JCifsMonitor extends AbstractServiceMonitor {
         }
 
         return serviceStatus;
+    }
+
+    private void setFieldValue(final Field finalStaticField, final Object value) throws NoSuchFieldException, IllegalAccessException {
+        finalStaticField.setAccessible(true);
+
+        final Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(finalStaticField, finalStaticField.getModifiers() & ~Modifier.FINAL);
+
+        finalStaticField.set(null, value);
+    }
+
+    /**
+     * Due to limitations of the JCifs library we must use this hack to modify the timeouts. Since the timeouts are set
+     * in a static fields only global timeouts will work reliably.
+     *
+     * @param timeoutInMilliseconds the timeout to be set
+     */
+    private void setJCifsTimeouts(final int timeoutInMilliseconds) {
+        try {
+            final Class<?> clazz = Class.forName("jcifs.smb.SmbConstants");
+            setFieldValue(clazz.getField("SO_TIMEOUT"), timeoutInMilliseconds);
+            setFieldValue(clazz.getField("CONN_TIMEOUT"), timeoutInMilliseconds);
+            setFieldValue(clazz.getField("DEFAULT_RESPONSE_TIMEOUT"), timeoutInMilliseconds);
+        } catch (NoSuchFieldException | ClassNotFoundException | IllegalAccessException e) {
+            logger.error("Error setting JCifs timeouts ", e);
+        }
     }
 
     /**

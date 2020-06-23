@@ -1,5 +1,0 @@
-<!DOCTYPE dataset SYSTEM "src/test/resources/org/opennms/acl/conf/dbunit/database-schema.dtd">
-<dataset>
-  <group_members username="max" group_id="1"/>
-  <group_members username="max" group_id="2"/>
-</dataset>

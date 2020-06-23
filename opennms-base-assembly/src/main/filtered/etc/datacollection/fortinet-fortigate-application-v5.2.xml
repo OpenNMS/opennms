@@ -1,0 +1,184 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Fortinet-Fortigate-Application-v5.2">
+   <resourceType name="fgApHTTPStatsEntry" label="Fortigate HTTP Proxy Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgApSMTPStatsEntry" label="Fortigate SMTP Proxy Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgApPOP3StatsEntry" label="Fortigate POP3 Proxy Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgApIMAPStatsEntry" label="Fortigate IMAP Proxy Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgApNNTPStatsEntry" label="Fortigate NNTP Proxy Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgApIMStatsEntry" label="Fortigate IM Proxy Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgApSIPStatsEntry" label="Fortigate SIP Proxy Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgAppSuStatsEntry" label="Fortigate Scan Unit" resourceLabel="Scan Unit: ${fgAppSuIndex}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgAppVoIPStatsEntry" label="Fortigate VoIP Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgAppP2PStatsEntry" label="Fortigate P2P Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgAppIMStatsEntry" label="Fortigate IM Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgApFTPStatsEntry" label="Fortigate FTP Proxy Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgWebChDskStsEntry" label="Fortigate Web Cache Disk Statistics" resourceLabel="Cache Disk: ${fgWebCacheDisk}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <group name="fgApHTTPStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgApHTTPStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.100.3.1.1" instance="fgApHTTPStatsEntry" alias="fgApHTTPReqProc" type="Counter32"/>
+   </group>
+   <group name="fgApHTTPConnections" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.100.4" instance="0" alias="fgApHTTPConn" type="Integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.100.5" instance="0" alias="fgApHTTPMaxConn" type="Integer32"/>
+   </group>
+   <group name="fgApSMTPStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgApSMTPStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.3.1.1" instance="fgApSMTPStatsEntry" alias="fgApSMTPReqProc" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.3.1.2" instance="fgApSMTPStatsEntry" alias="fgApSMTPSpamDetect" type="Counter32"/>
+   </group>
+   <group name="fgApSMPTConnections" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.4" instance="0" alias="fgApSMTPConn" type="Integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.101.5" instance="0" alias="fgApSMTPMaxConn" type="Integer32"/>
+   </group>
+   <group name="fgApPOP3StatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgApPOP3StatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.102.3.1.1" instance="fgApPOP3StatsEntry" alias="fgApPOP3ReqProc" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.102.3.1.2" instance="fgApPOP3StatsEntry" alias="fgApPOP3SpamDetect" type="Counter32"/>
+   </group>
+   <group name="fgApPOP3Connections" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.102.4" instance="0" alias="fgApPOP3Conn" type="Integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.102.5" instance="0" alias="fgApPOP3MaxConn" type="Integer32"/>
+   </group>
+   <group name="fgApIMAPStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgApIMAPStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.103.3.1.1" instance="fgApIMAPStatsEntry" alias="fgApIMAPReqProc" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.103.3.1.2" instance="fgApIMAPStatsEntry" alias="fgApIMAPSpamDetect" type="Counter32"/>
+   </group>
+   <group name="fgApIMAPConnections" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.103.4" instance="0" alias="fgApIMAPConn" type="Integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.103.5" instance="0" alias="fgApIMAPMaxConn" type="Integer32"/>
+   </group>
+   <group name="fgApNNTPStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgApNNTPStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.3.1.1" instance="fgApNNTPStatsEntry" alias="fgApNNTPReqProc" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.3.1.2" instance="fgApNNTPStatsEntry" alias="fgApNNTPSpamDetect" type="Counter32"/>
+   </group>
+   <group name="fgApNNTPConnections" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.4" instance="0" alias="fgApNNTPConn" type="Integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.5" instance="0" alias="fgApNNTPMaxConn" type="Integer32"/>
+   </group>
+   <group name="fgApIMStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgApIMStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.105.3.1.1" instance="fgApIMStatsEntry" alias="fgApIMReqProc" type="Counter32"/>
+   </group>
+   <group name="fgApFTPStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgApNNTPStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.111.3.1.1" instance="fgApNNTPStatsEntry" alias="fgApNNTPReqProc" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.111.3.1.2" instance="fgApNNTPStatsEntry" alias="fgApNNTPSpamDetect" type="Counter32"/>
+   </group>
+   <group name="fgApFTPConnections" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.4" instance="0" alias="fgApNNTPConn" type="Integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.104.5" instance="0" alias="fgApNNTPMaxConn" type="Integer32"/>
+   </group>
+   <group name="fgApIMMemUsage" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.105.2" instance="0" alias="fgApIMMemUsage" type="Gauge32"/>
+   </group>
+   <group name="fgApSIPMemUsage" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.106.2" instance="0" alias="fgApSIPMemUsage" type="Gauge32"/>
+   </group>
+   <group name="fgApSIPStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgApSIPStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.106.3.1.1" instance="fgApSIPStatsEntry" alias="fgApSIPClientReg" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.106.3.1.2" instance="fgApSIPStatsEntry" alias="fgApSIPCallHandling" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.106.3.1.3" instance="fgApSIPStatsEntry" alias="fgApSIPServices" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.106.3.1.4" instance="fgApSIPStatsEntry" alias="fgApSIPOtherReq" type="Counter32"/>
+   </group>
+   <group name="fgAppSuStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.107.2.1.1" instance="fgAppSuStatsEntry" alias="fgAppSuIndex" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.107.2.1.2" instance="fgAppSuStatsEntry" alias="fgAppSuFileScanned" type="Counter32"/>
+   </group>
+   <group name="fgAppVoIPStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgAppVoIPStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.108.1.1.1" instance="fgAppVoIPStatsEntry" alias="fgAppVoIPConn" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.108.1.1.2" instance="fgAppVoIPStatsEntry" alias="fgAppVoIPCallBlck" type="Counter32"/>
+   </group>
+   <group name="fgAppP2PStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgAppP2PStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.109.1.1.1" instance="fgAppP2PStatsEntry" alias="fgAppP2PConnBlocked" type="Counter32"/>
+   </group>
+   <group name="fgAppIMStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgAppIMStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.110.1.1.1" instance="fgAppIMStatsEntry" alias="fgAppIMMessages" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.110.1.1.2" instance="fgAppIMStatsEntry" alias="fgAppIMFileTransf" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.110.1.1.3" instance="fgAppIMStatsEntry" alias="fgAppIMFileTxBlock" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.110.1.1.4" instance="fgAppIMStatsEntry" alias="fgAppIMConnBlocked" type="Counter32"/>
+   </group>
+   <group name="fgApFTPStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgApFTPStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.111.3.1.1" instance="fgApFTPStatsEntry" alias="fgApFTPReqProcessed" type="Counter32"/>
+   </group>
+   <group name="fgApFTPConnections" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.111.4" instance="0" alias="fgApFTPConns" type="Integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.111.5" instance="0" alias="fgApFTPMaxConns" type="Integer32"/>
+   </group>
+   <group name="fgWebCacheDiskStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.113.2.1.1" instance="fgWebChDskStsEntry" alias="fgWebCacheDisk" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.113.2.1.2" instance="fgWebChDskStsEntry" alias="fgWebCacheDiskLimit" type="Gauge64"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.113.2.1.3" instance="fgWebChDskStsEntry" alias="fgWebCacheDiskUsage" type="Gauge64"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.113.2.1.4" instance="fgWebChDskStsEntry" alias="fgWebCacheDiskHits" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.113.2.1.5" instance="fgWebChDskStsEntry" alias="fgWebCacheDiskMiss" type="Counter32"/>
+   </group>
+   <systemDef name="Fortinet-Fortigate-Application-v5.2">
+      <sysoidMask>.1.3.6.1.4.1.12356.</sysoidMask>
+      <collect>
+         <includeGroup>fgApHTTPStatsTable</includeGroup>
+         <includeGroup>fgApHTTPConnections</includeGroup>
+         <includeGroup>fgApSMTPStatsTable</includeGroup>
+         <includeGroup>fgApPOP3StatsTable</includeGroup>
+         <includeGroup>fgApPOP3Connections</includeGroup>
+         <includeGroup>fgApIMAPStatsTable</includeGroup>
+         <includeGroup>fgApIMAPConnections</includeGroup>
+         <includeGroup>fgApNNTPStatsTable</includeGroup>
+         <includeGroup>fgApNNTPConnections</includeGroup>
+         <includeGroup>fgApIMStatsTable</includeGroup>
+         <includeGroup>fgApIMMemUsage</includeGroup>
+         <includeGroup>fgApSIPMemUsage</includeGroup>
+         <includeGroup>fgApSIPStatsTable</includeGroup>
+         <includeGroup>fgAppSuStatsTable</includeGroup>
+         <includeGroup>fgAppVoIPStatsTable</includeGroup>
+         <includeGroup>fgAppP2PStatsTable</includeGroup>
+         <includeGroup>fgAppIMStatsTable</includeGroup>
+         <includeGroup>fgApFTPStatsTable</includeGroup>
+         <includeGroup>fgApFTPConnections</includeGroup>
+         <includeGroup>fgWebCacheDiskStatsTable</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

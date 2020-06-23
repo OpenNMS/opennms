@@ -1,0 +1,192 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.netmgt.alarmd.drools;
+
+import java.util.Date;
+import org.kie.api.time.SessionClock;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
+
+global org.opennms.netmgt.alarmd.drools.AlarmService alarmService;
+
+declare org.opennms.netmgt.model.OnmsAlarm
+    @role(event)
+    @timestamp(lastUpdateTime)
+end
+
+rule "cosmicClear"
+  salience 100
+  when
+    $sessionClock : SessionClock()
+    $clear : OnmsAlarm(alarmType == OnmsAlarm.RESOLUTION_TYPE)
+    $trigger : OnmsAlarm(alarmType == OnmsAlarm.PROBLEM_TYPE, severity.isGreaterThanOrEqual(OnmsSeverity.NORMAL), reductionKey == $clear.clearKey, lastEventTime <= $clear.lastEventTime)
+  then
+    alarmService.clearAlarm($trigger, new Date($sessionClock.getCurrentTime()));
+end
+
+rule "unclear"
+  when
+    $sessionClock : SessionClock()
+    $trigger : OnmsAlarm(alarmType == OnmsAlarm.PROBLEM_TYPE,
+                         severity == OnmsSeverity.CLEARED, lastEvent != null,
+                         OnmsSeverity.get(lastEvent.getEventSeverity()).isGreaterThan(OnmsSeverity.CLEARED),
+                         lastEventTime > lastAutomationTime)
+  then
+    alarmService.unclearAlarm($trigger, new Date($sessionClock.getCurrentTime()));
+end
+
+/*
+  An example of how the alarm severity can be made to automatically increase over time.
+  This rule is purposely commented out and disabled by default.
+
+rule "escalation"
+  when
+    $sessionClock : SessionClock()
+    $alarm : OnmsAlarm((alarmType == OnmsAlarm.PROBLEM_TYPE || alarmType == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
+                         OnmsSeverity.WARNING.isLessThanOrEqual(severity) &&
+                         OnmsSeverity.CRITICAL.isGreaterThan(severity) &&
+                         serviceType != null &&
+                         alarmAckTime == null)
+    not( OnmsAlarm( this == $alarm ) over window:time( 1h ) )
+  then
+    alarmService.escalateAlarm($alarm, new Date($sessionClock.getCurrentTime()));
+end
+*/
+
+rule "cleanUp"
+  salience 0
+  when
+    $sessionClock : SessionClock()
+    $alarm : OnmsAlarm(severity.isLessThanOrEqual(OnmsSeverity.NORMAL) &&
+                       alarmAckTime == null &&
+                       (TTicketState == null || TTicketState == TroubleTicketState.CLOSED || TTicketState == TroubleTicketState.CANCELLED))
+    not( OnmsAlarm( this == $alarm ) over window:time( 5m ) )
+  then
+    alarmService.deleteAlarm($alarm);
+end
+
+rule "fullCleanUp"
+  salience 0
+  when
+    $sessionClock : SessionClock()
+    $alarm : OnmsAlarm(severity.isLessThanOrEqual(OnmsSeverity.NORMAL) &&
+                        (TTicketState == null || TTicketState == TroubleTicketState.CLOSED || TTicketState == TroubleTicketState.CANCELLED))
+    not( OnmsAlarm( this == $alarm ) over window:time( 1d ) )
+  then
+    alarmService.deleteAlarm($alarm);
+end
+
+rule "GC"
+  salience 0
+  when
+    $sessionClock : SessionClock()
+    $alarm : OnmsAlarm(alarmAckTime == null)
+    not( OnmsAlarm( this == $alarm ) over window:time( 3d ) )
+  then
+    alarmService.deleteAlarm($alarm);
+end
+
+rule "fullGC"
+  salience 0
+  when
+    $sessionClock : SessionClock()
+    $alarm : OnmsAlarm()
+    not( OnmsAlarm( this == $alarm ) over window:time( 8d ) )
+  then
+    alarmService.deleteAlarm($alarm);
+end
+
+rule "createTickets"
+  enabled false
+  when
+    $sessionClock : SessionClock()
+    $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
+    $alarm : OnmsAlarm(severity.isGreaterThan(OnmsSeverity.CLEARED) &&
+                       (alarmType == OnmsAlarm.PROBLEM_TYPE || alarmType == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
+                       alarmAckUser == null &&
+                       TTicketState == null)
+    not( OnmsAlarm( this == $alarm ) over window:time( 15m ) )
+  then
+    alarmService.acknowledgeAlarm($alarm, new Date($sessionClock.getCurrentTime()));
+    $ticketer.createTicket($alarm, new Date($sessionClock.getCurrentTime()));
+end
+
+rule "createCriticalTicket"
+  enabled false
+  when
+    $sessionClock : SessionClock()
+    $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
+    $alarm : OnmsAlarm(severity == OnmsSeverity.CRITICAL &&
+                       (alarmType == OnmsAlarm.PROBLEM_TYPE || alarmType == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
+                       alarmAckUser == null &&
+                       TTicketState == null)
+    not( OnmsAlarm( this == $alarm ) over window:time( 5m ) )
+  then
+    alarmService.acknowledgeAlarm($alarm, new Date($sessionClock.getCurrentTime()));
+    $ticketer.createTicket($alarm, new Date($sessionClock.getCurrentTime()));
+end
+
+rule "updateTickets"
+  enabled false
+  when
+    $sessionClock : SessionClock()
+    $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
+    $alarm : OnmsAlarm(severity.isGreaterThan(OnmsSeverity.CLEARED) &&
+                       (alarmType == OnmsAlarm.PROBLEM_TYPE || alarmType == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
+                       TTicketState != null)
+    not( OnmsAlarm( this == $alarm ) over window:time( 15m ) )
+  then
+    $ticketer.updateTicket($alarm, new Date($sessionClock.getCurrentTime()));
+end
+
+rule "closeClearedAlarmTickets"
+  enabled false
+  when
+    $sessionClock : SessionClock()
+    $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
+    $alarm : OnmsAlarm(severity == OnmsSeverity.CLEARED &&
+                       alarmType == OnmsAlarm.PROBLEM_TYPE &&
+                       TTicketState == TroubleTicketState.OPEN)
+    not( OnmsAlarm( this == $alarm ) over window:time( 15m ) )
+  then
+    $ticketer.closeTicket($alarm, new Date($sessionClock.getCurrentTime()));
+end
+
+rule "clearAlarmsForClosedTickets"
+  enabled false
+  when
+    $sessionClock : SessionClock()
+    AlarmTicketerService(isTicketingEnabled() == true)
+    $alarm : OnmsAlarm(severity.isGreaterThan(OnmsSeverity.CLEARED) &&
+                       (alarmType == OnmsAlarm.PROBLEM_TYPE || alarmType == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
+                       TTicketState == TroubleTicketState.CLOSED)
+  then
+    alarmService.clearAlarm($alarm, new Date($sessionClock.getCurrentTime()));
+end

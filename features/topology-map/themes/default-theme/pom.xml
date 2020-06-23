@@ -1,61 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
-    <artifactId>themes</artifactId>
-    <groupId>org.opennms.features.topology</groupId>
-    <version>1.13.0-SNAPSHOT</version>
-  </parent>
-
+        <artifactId>org.opennms.features.topology.themes</artifactId>
+        <groupId>org.opennms.features.topology</groupId>
+        <version>25.0.0-SNAPSHOT</version>
+    </parent>
     <groupId>org.opennms.features.topology.themes</groupId>
-    <artifactId>default-theme</artifactId>
+    <artifactId>org.opennms.features.topology.themes.default-theme</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS :: Topology :: Default  Theme</name>
+    <name>OpenNMS :: Features :: Topology :: Default Theme</name>
     <properties>
         <bundle.symbolicname>org.opennms.features.topology.themes.default-theme</bundle.symbolicname>
     </properties>
     <description>This is an OSGi bundle created with the OpenNMS Operation archetype</description>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
-            <artifactId>opennms-topology-api</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
-            <artifactId>vaadin</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-        </dependency>
-    </dependencies>
-
     <build>
         <resources>
             <resource>
-                <directory>src/main/java</directory>
+                <directory>src/main/filtered</directory>
+                <filtering>true</filtering>
             </resource>
         </resources>
-        
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <scmDirectory>../../../..</scmDirectory>
+                    <shortRevisionLength>8</shortRevisionLength>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                    <revisionOnScmFailure>0</revisionOnScmFailure>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Fragment-Host>com.vaadin.themes;bundle-version=${vaadinVersion}</Fragment-Host>
+                        <Include-Resource>
+                            {maven-resources},
+                            {maven-dependencies}
+                        </Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>

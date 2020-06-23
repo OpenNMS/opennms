@@ -1,0 +1,21 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <bean id="surveillanceDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.SurveillanceDashletFactory" scope="singleton">
+        <property name="name" value="Surveillance"/>
+        <property name="boostable" value="false"/>
+        <property name="dashboardSuitable" value="true"/>
+
+        <property name="requiredParameters">
+            <map>
+                <entry key="viewName" value="default"/>
+            </map>
+        </property>
+        <property name="requiredParameterDescriptions">
+            <map>
+                <entry key="viewName" value="The surveillance view's name to be displayed inside the iFrame"/>
+            </map>
+        </property>
+    </bean>
+
+    <service ref="surveillanceDashletFactory" interface="org.opennms.features.vaadin.dashboard.model.DashletFactory"/>
+</blueprint>

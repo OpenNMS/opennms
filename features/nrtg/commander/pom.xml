@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>nrtg</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>nrtg-commander</artifactId>
@@ -14,7 +14,7 @@
     <!-- refactor code so namespace matches symbolic name -->
     <bundle.namespace>org.opennms.nrtg.commander</bundle.namespace>
   </properties>
-  <name>OpenNMS Features NRTG Commander</name>
+  <name>OpenNMS :: Features :: NRTG :: Commander</name>
   <description>
      The Commander is a dummy implementation to generate CollectionJobs
      and publish them via JMS-Queues. It's able to run in parallel and 
@@ -59,7 +59,6 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
-      <version>${project.version}</version>
       <type>pom</type>
     </dependency>
     
@@ -83,12 +82,15 @@
         <configuration>
           <archive>
             <manifest>
-	      <mainClass>org.opennms.nrtg.commander.internal.CollectionCommanderStarter</mainClass>
+              <mainClass>org.opennms.nrtg.commander.internal.CollectionCommanderStarter</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
       </plugin>
     </plugins>

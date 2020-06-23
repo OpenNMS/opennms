@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,7 +30,10 @@ package org.opennms.netmgt.provision.persist;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +47,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-public class RequisitionFileUtils {
+public abstract class RequisitionFileUtils {
     
     private static final Logger LOG = LoggerFactory.getLogger(RequisitionFileUtils.class);
 
@@ -95,7 +98,7 @@ public class RequisitionFileUtils {
             return null;
         }
 
-        final String sourceFileName = url.getFile();
+        final String sourceFileName = getFilename(url);
         if (sourceFileName == null) {
             LOG.warn("Trying to create snapshot for {}, but getFile() doesn't return a value", url);
             return null;
@@ -120,7 +123,7 @@ public class RequisitionFileUtils {
     }
 
     public static List<File> findSnapshots(final ForeignSourceRepository repository, final String foreignSource) {
-        final List<File> files = new ArrayList<File>();
+        final List<File> files = new ArrayList<>();
 
         URL url = null;
         try {
@@ -130,7 +133,7 @@ public class RequisitionFileUtils {
         }
 
         if (url != null) {
-            final String sourceFileName = url.getFile();
+            final String sourceFileName = getFilename(url);
             if (sourceFileName != null) {
                 final File sourceFile = new File(sourceFileName);
                 final File sourceDirectory = sourceFile.getParentFile();
@@ -172,7 +175,9 @@ public class RequisitionFileUtils {
         for (final File snapshotFile : findSnapshots(repository, foreignSource)) {
             if (!isNewer(snapshotFile, date)) {
                 LOG.trace("Deleting {}", snapshotFile);
-                snapshotFile.delete();
+                if(!snapshotFile.delete()) {
+                	LOG.warn("Could not delete file: {}", snapshotFile.getPath());
+                }
             }
         }
     }
@@ -182,7 +187,9 @@ public class RequisitionFileUtils {
             final List<File> snapshots = findSnapshots(repository, foreignSource);
             for (final File snapshot : snapshots) {
                 LOG.trace("Deleting {}", snapshot);
-                snapshot.delete();
+                if(!snapshot.delete()) {
+                	LOG.warn("Could not delete file: {}", snapshot.getPath());
+                }
             }
         }
     }
@@ -201,11 +208,19 @@ public class RequisitionFileUtils {
     /** return true if the snapshot file is newer than the supplied date **/
     public static boolean isNewer(final File snapshotFile, final Date date) {
         final String name = snapshotFile.getName();
-        final String timestamp = name.substring(name.lastIndexOf(".") + 1);
+        final String timestamp = name.substring(name.lastIndexOf('.') + 1);
         final Date snapshotDate = new Date(Long.valueOf(timestamp));
         final boolean isNewer = snapshotDate.after(date);
         LOG.trace("snapshot date = {}, comparison date = {}, snapshot date {} newer than comparison date", snapshotDate.getTime(), date.getTime(), (isNewer? "is" : "is not"));
         return isNewer;
     }
 
+    private static String getFilename(final URL url) {
+        try {
+            return URLDecoder.decode(url.getFile(), StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            LOG.warn("Failed to decode URL {} as a file.", url.getFile(), e);
+            return null;
+        }
+    }
 }

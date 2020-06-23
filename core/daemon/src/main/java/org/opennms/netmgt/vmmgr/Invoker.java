@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,7 +30,6 @@ package org.opennms.netmgt.vmmgr;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,11 +41,10 @@ import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
+import org.opennms.netmgt.config.service.InvokeAtType;
 import org.opennms.netmgt.config.service.Service;
-import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,20 +94,6 @@ public class Invoker {
     }
     
     /**
-     * <p>getDefaultServiceConfigFactory</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.ServiceConfigFactory} object.
-     */
-    public static ServiceConfigFactory getDefaultServiceConfigFactory() {
-        try {
-            ServiceConfigFactory.init();
-            return ServiceConfigFactory.getInstance();
-        } catch (Throwable t) {
-            throw new UndeclaredThrowableException(t);
-        }
-    }
-    
-    /**
      * <p>instantiateClasses</p>
      */
     public void instantiateClasses() {
@@ -130,7 +114,7 @@ public class Invoker {
                 // Get a new instance of the class
                 LOG.debug("create new instance of {}", service.getClassName());
                 
-                Map<?,?> mdc = Logging.getCopyOfContextMap();
+                Map<String,String> mdc = Logging.getCopyOfContextMap();
                 Object bean;
                 try {
                     bean = clazz.newInstance();
@@ -145,10 +129,9 @@ public class Invoker {
                 invokerService.setMbean(getServer().registerMBean(bean, name));
 
                 // Set attributes
-                org.opennms.netmgt.config.service.Attribute[] attribs =
-                    service.getAttribute();
+                final List<org.opennms.netmgt.config.service.Attribute> attribs = service.getAttributes();
                 if (attribs != null) {
-                    for (org.opennms.netmgt.config.service.Attribute attrib : attribs) {
+                    for (final org.opennms.netmgt.config.service.Attribute attrib : attribs) {
                     	LOG.debug("setting attribute {}", attrib.getName());
                         getServer().setAttribute(name, getAttribute(attrib));
                     }
@@ -211,7 +194,7 @@ public class Invoker {
                     }
                 }
                 
-                for (Invoke invoke : invokerService.getService().getInvoke()) {
+                for (final Invoke invoke : invokerService.getService().getInvokes()) {
                     if (invoke.getPass() != pass || !getAtType().equals(invoke.getAt())) {
                         continue;
                     }
@@ -250,13 +233,13 @@ public class Invoker {
         
         int end = 0;
         
-        for (InvokerService invokerService : invokerServices) {
-            Invoke[] invokes = invokerService.getService().getInvoke();
+        for (final InvokerService invokerService : invokerServices) {
+            final List<Invoke> invokes = invokerService.getService().getInvokes();
             if (invokes == null) {
                 continue;
             }
             
-            for (Invoke invoke : invokes) {
+            for (final Invoke invoke : invokes) {
                 if (invoke.getPass() > end) {
                     end = invoke.getPass();
                 }
@@ -266,16 +249,16 @@ public class Invoker {
         return end;
     }
 
-    private Object invoke(Invoke invoke, ObjectInstance mbean) throws Throwable {
-        Argument[] args = invoke.getArgument();
+    private Object invoke(final Invoke invoke, final ObjectInstance mbean) throws Throwable {
+        List<Argument> args = invoke.getArguments();
         Object[] parms = new Object[0];
         String[] sig = new String[0];
-        if (args != null && args.length > 0) {
-            parms = new Object[args.length];
-            sig = new String[args.length];
+        if (args != null && args.size() > 0) {
+            parms = new Object[args.size()];
+            sig = new String[args.size()];
             for (int k = 0; k < parms.length; k++) {
                 try {
-                    parms[k] = getArgument(args[k]);
+                    parms[k] = getArgument(args.get(k));
                 } catch (Throwable t) {
 			LOG.error("An error occurred building argument {} for operation {} on MBean {}", k, invoke.getMethod(), mbean.getObjectName(), t);
                   throw t;
@@ -289,14 +272,14 @@ public class Invoker {
 
         Object object;
         try {
-        	Map<?,?> mdc = Logging.getCopyOfContextMap();
+        	Map<String,String> mdc = Logging.getCopyOfContextMap();
             try {
                 object = getServer().invoke(mbean.getObjectName(), invoke.getMethod(), parms, sig);
             } finally {
             	Logging.setContextMap(mdc);
             }
         } catch (Throwable t) {
-		LOG.error("An error occurred invoking operation {} on MBean {}", invoke.getMethod(), mbean.getObjectName(), t);
+            LOG.error("An error occurred invoking operation {} on MBean {}", invoke.getMethod(), mbean.getObjectName(), t);
             throw t;
         }
 
@@ -310,7 +293,7 @@ public class Invoker {
         Constructor<?> construct = attribClass.getConstructor(new Class[] { String.class });
 
         Object value;
-        Map<?,?> mdc = Logging.getCopyOfContextMap();
+        Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
             value = construct.newInstance(new Object[] { attrib.getValue().getContent() });
         } finally {
@@ -324,9 +307,9 @@ public class Invoker {
         Class<?> argClass = Class.forName(arg.getType());
         Constructor<?> construct = argClass.getConstructor(new Class[] { String.class });
 
-        Map mdc = Logging.getCopyOfContextMap();
+        Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
-            return construct.newInstance(new Object[] { arg.getContent() });
+            return construct.newInstance(new Object[] { arg.getValue().orElse(null) });
         } finally {
             Logging.setContextMap(mdc);
         }
@@ -335,7 +318,7 @@ public class Invoker {
     /**
      * <p>getAtType</p>
      *
-     * @return a {@link org.opennms.netmgt.config.service.types.InvokeAtType} object.
+     * @return a {@link org.opennms.netmgt.config.service.InvokeAtType} object.
      */
     public InvokeAtType getAtType() {
         return m_atType;
@@ -344,7 +327,7 @@ public class Invoker {
     /**
      * <p>setAtType</p>
      *
-     * @param atType a {@link org.opennms.netmgt.config.service.types.InvokeAtType} object.
+     * @param atType a {@link org.opennms.netmgt.config.service.InvokeAtType} object.
      */
     public void setAtType(InvokeAtType atType) {
         m_atType = atType;

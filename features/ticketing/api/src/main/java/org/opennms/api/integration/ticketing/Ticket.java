@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,7 +29,9 @@
 package org.opennms.api.integration.ticketing;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -71,7 +73,9 @@ public class Ticket {
     private String m_user;
     private String m_modificationTimestamp;
     private Map<String, String> m_attributes;
-    
+    private boolean m_isSituation = false;
+    private List<RelatedAlarmSummary> m_relatedAlarms = new ArrayList<>();
+
     /**
      * <p>getAttributes</p>
      *
@@ -162,7 +166,15 @@ public class Ticket {
     public String getId() {
         return m_id;
     }
-    
+
+    public boolean hasId() {
+        return m_id != null && !m_id.isEmpty();
+    }
+
+    public boolean hasAttributes() {
+        return m_attributes != null && !m_attributes.isEmpty();
+    }
+
     /**
      * The TicketerPlugin should set the ID.
      *
@@ -281,5 +293,46 @@ public class Ticket {
     public void setIpAddress(InetAddress ipAddress) {
         this.m_ipAddress = ipAddress;
     }
-    
+
+    /**
+     *
+     * @return boolean depending on whether alarm is situation or not. default is false.
+     */
+    public boolean isSituation() {
+        return m_isSituation;
+    }
+
+    /**
+     *  Set as true if this alarm is a situation.
+     *
+     * @param situation  whether or not this alarm is a situation.
+     */
+    public void setSituation(boolean situation) {
+        m_isSituation = situation;
+    }
+
+    /**
+     *
+     * @return a {@link List} of {@link RelatedAlarmSummary} containing related alarm details
+     */
+    public List<RelatedAlarmSummary> getRelatedAlarms() {
+        return m_relatedAlarms;
+    }
+
+    /**
+     * Set related alarms for the current alarm associated with ticket.
+     *
+     * @param relatedAlarms a {@link List} of {@link RelatedAlarmSummary}
+     */
+    public void setRelatedAlarms(List<RelatedAlarmSummary> relatedAlarms) {
+        m_relatedAlarms = relatedAlarms;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Ticket[id=%s, alarmId=%d, nodeId=%d, ipAddress=%s, state=%s, "
+                + "summary=%s, details=%s, user=%s, modificationTimestamp=%s, attributes=%s relatedAlarms=%s]",
+                m_id, m_alarmId, m_nodeId, m_ipAddress, m_state, m_summary, m_details, m_user,
+                m_modificationTimestamp, m_attributes, m_relatedAlarms);
+    }
 }

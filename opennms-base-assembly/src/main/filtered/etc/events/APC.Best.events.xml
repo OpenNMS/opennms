@@ -1,1436 +1,1324 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: BESTPOWER-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapPowerFail</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapPowerFail</event-label>
-	<descr>
-&lt;p&gt;WARNING: Utility power not available.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapPowerFail trap received&lt;/p&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapPowerFail</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapPowerFail</event-label>
+      <descr>&lt;p>WARNING: Utility power not available.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapPowerFail trap received&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapPowerRestored</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapPowerRestored</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: Utility power has been restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapPowerRestored trap received&lt;/p&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapPowerRestored</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapPowerRestored</event-label>
+      <descr>&lt;p>INFORMATION: Utility power has been restored.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapPowerRestored trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSOnBattery</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapUPSOnBattery</event-label>
-	<descr>
-&lt;p&gt;WARNING: The UPS has switched to battery backup power.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSOnBattery</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapUPSOnBattery</event-label>
+      <descr>&lt;p>WARNING: The UPS has switched to battery backup power.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsBatteryTimeOnBattery&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	upsBatteryTimeOnBattery&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsBatteryRuntimeRemaining&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	upsBatteryRuntimeRemaining&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsConfigLowRuntimeSetpoint&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	upsConfigLowRuntimeSetpoint&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsBatteryVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	upsBatteryVoltage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			APC-Best Power event: upsTrapUPSOnBattery trap received 
 			upsBatteryTimeOnBattery=%parm[#1]% 
 			upsBatteryRuntimeRemaining=%parm[#2]% 
 			upsConfigLowRuntimeSetpoint=%parm[#3]% 
-			upsBatteryVoltage=%parm[#4]%&lt;/p&gt;
+			upsBatteryVoltage=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSNotOnBattery</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapUPSNotOnBattery</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The UPS is not on battery power.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapUPSNotOnBattery trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSNotOnBattery</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapUPSNotOnBattery</event-label>
+      <descr>&lt;p>INFORMATION: The UPS is not on battery power.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapUPSNotOnBattery trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapLowRuntime</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapLowRuntime</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The runtime remaining on battery power is very short,
-and the UPS will soon shut down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapLowRuntime trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapLowRuntime</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapLowRuntime</event-label>
+      <descr>&lt;p>SEVERE: The runtime remaining on battery power is very short,
+and the UPS will soon shut down.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapLowRuntime trap received&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSCanRunOnBattery</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapUPSCanRunOnBattery</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The UPS has returned from a low runtime
-condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapUPSCanRunOnBattery trap received&lt;/p&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSCanRunOnBattery</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapUPSCanRunOnBattery</event-label>
+      <descr>&lt;p>INFORMATION: The UPS has returned from a low runtime
+condition.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapUPSCanRunOnBattery trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapNearLowBattery</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapNearLowBattery</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The UPS batteries are low and will soon be exhausted.
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapNearLowBattery</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapNearLowBattery</event-label>
+      <descr>&lt;p>SEVERE: The UPS batteries are low and will soon be exhausted.
 If utility power is not restored the UPS will put itself
-to 'sleep' and immediately cut power to the load.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+to 'sleep' and immediately cut power to the load.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsBatteryVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	upsBatteryVoltage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			APC-Best Power event: upsTrapNearLowBattery trap received 
-			upsBatteryVoltage=%parm[#1]%&lt;/p&gt;
+			upsBatteryVoltage=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapHighBattery</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapHighBattery</event-label>
-	<descr>
-&lt;p&gt;WARNING: The battery charger voltage on the UPS has reached a
-value that is too high for safe battery maintenance.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapHighBattery</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapHighBattery</event-label>
+      <descr>&lt;p>WARNING: The battery charger voltage on the UPS has reached a
+value that is too high for safe battery maintenance.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsBatteryVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	upsBatteryVoltage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			APC-Best Power event: upsTrapHighBattery trap received 
-			upsBatteryVoltage=%parm[#1]%&lt;/p&gt;
+			upsBatteryVoltage=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapBatteryOK</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapBatteryOK</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The UPS has returned from a near low or high battery
-condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapBatteryOK trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapBatteryOK</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapBatteryOK</event-label>
+      <descr>&lt;p>INFORMATION: The UPS has returned from a near low or high battery
+condition.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapBatteryOK trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>10</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapLowBattery</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapLowBattery</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The UPS will run for approximately 2 minutes more and then
-put itself to sleep to prevent a complete discharge of the batteries.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapLowBattery</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapLowBattery</event-label>
+      <descr>&lt;p>SEVERE: The UPS will run for approximately 2 minutes more and then
+put itself to sleep to prevent a complete discharge of the batteries.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsBatteryVoltage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	upsBatteryVoltage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			APC-Best Power event: upsTrapLowBattery trap received 
-			upsBatteryVoltage=%parm[#1]%&lt;/p&gt;
+			upsBatteryVoltage=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>11</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapCheckBattery</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapCheckBattery</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The UPS has failed a scheduled or manual battery test.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapCheckBattery trap received&lt;/p&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapCheckBattery</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapCheckBattery</event-label>
+      <descr>&lt;p>SEVERE: The UPS has failed a scheduled or manual battery test.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapCheckBattery trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>12</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapReplaceBattery</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapReplaceBattery</event-label>
-	<descr>
-&lt;p&gt;SEVERE: One or more UPS batteries need to be replaced.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapReplaceBattery trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapReplaceBattery</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapReplaceBattery</event-label>
+      <descr>&lt;p>SEVERE: One or more UPS batteries need to be replaced.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapReplaceBattery trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>13</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapCheckInverter</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapCheckInverter</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The UPS has failed a scheduled or manual inverter test.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapCheckInverter trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapCheckInverter</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapCheckInverter</event-label>
+      <descr>&lt;p>SEVERE: The UPS has failed a scheduled or manual inverter test.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapCheckInverter trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>14</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapBatteriesDisconnected</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapBatteriesDisconnected</event-label>
-	<descr>
-&lt;p&gt;WARNING: The UPS battery voltage is either too low or missing to start up.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapBatteriesDisconnected trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapBatteriesDisconnected</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapBatteriesDisconnected</event-label>
+      <descr>&lt;p>WARNING: The UPS battery voltage is either too low or missing to start up.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapBatteriesDisconnected trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>15</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapOutputOverload</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapOutputOverload</event-label>
-	<descr>
-&lt;p&gt;WARNING: The output load exceeds the UPS output capacity.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapOutputOverload trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapOutputOverload</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapOutputOverload</event-label>
+      <descr>&lt;p>WARNING: The output load exceeds the UPS output capacity.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapOutputOverload trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>16</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSNoLongerOverloaded</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapUPSNoLongerOverloaded</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The UPS has returned from an output overload
-condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapUPSNoLongerOverloaded trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSNoLongerOverloaded</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapUPSNoLongerOverloaded</event-label>
+      <descr>&lt;p>INFORMATION: The UPS has returned from an output overload
+condition.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapUPSNoLongerOverloaded trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>17</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapLowAcOut</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapLowAcOut</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The output load has exceeded the UPS output capacity, and the UPS has shut down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapLowAcOut trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapLowAcOut</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapLowAcOut</event-label>
+      <descr>&lt;p>SEVERE: The output load has exceeded the UPS output capacity, and the UPS has shut down.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapLowAcOut trap received&lt;/p>
 		</logmsg>
-	<severity>Critical</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>18</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapCircuitBreakerWarning</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapCircuitBreakerWarning</event-label>
-	<descr>
-&lt;p&gt;SEVERE: To much load equipment has been connected to the UPS and
-has has caused excess current draw  from the output.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapCircuitBreakerWarning trap received&lt;/p&gt;
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>18</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapCircuitBreakerWarning</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapCircuitBreakerWarning</event-label>
+      <descr>&lt;p>SEVERE: To much load equipment has been connected to the UPS and
+has has caused excess current draw  from the output.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapCircuitBreakerWarning trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>19</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapCircuitBreakerOK</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapCircuitBreakerOK</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The UPS has returned from a circuit breaker warning
-condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapCircuitBreakerOK trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapCircuitBreakerOK</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapCircuitBreakerOK</event-label>
+      <descr>&lt;p>INFORMATION: The UPS has returned from a circuit breaker warning
+condition.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapCircuitBreakerOK trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>20</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapCircuitBreakerShdn</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapCircuitBreakerShdn</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The UPS has shut down due to an extended excess of current
-draw from the output.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapCircuitBreakerShdn trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapCircuitBreakerShdn</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapCircuitBreakerShdn</event-label>
+      <descr>&lt;p>SEVERE: The UPS has shut down due to an extended excess of current
+draw from the output.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapCircuitBreakerShdn trap received&lt;/p>
 		</logmsg>
-	<severity>Critical</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>21</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapBypassOn</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapBypassOn</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The Bypass is presently engaged on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapBypassOn trap received&lt;/p&gt;
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>21</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapBypassOn</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapBypassOn</event-label>
+      <descr>&lt;p>SEVERE: The Bypass is presently engaged on the UPS.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapBypassOn trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>22</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSOnline</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapUPSOnline</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The UPS has returned from an on bypass condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapUPSOnline trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSOnline</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapUPSOnline</event-label>
+      <descr>&lt;p>INFORMATION: The UPS has returned from an on bypass condition.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapUPSOnline trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>23</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapSiteWiringFault</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapSiteWiringFault</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The UPS has found a problem in your wall outlet.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapSiteWiringFault trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapSiteWiringFault</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapSiteWiringFault</event-label>
+      <descr>&lt;p>SEVERE: The UPS has found a problem in your wall outlet.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapSiteWiringFault trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>24</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapCheckFan</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapCheckFan</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The fan on the UPS has stopped .&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapCheckFan trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>24</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapCheckFan</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapCheckFan</event-label>
+      <descr>&lt;p>SEVERE: The fan on the UPS has stopped .&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapCheckFan trap received&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>25</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapHighUPSTemp</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapHighUPSTemp</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The internal temperature inside the UPS is too hot.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapHighUPSTemp trap received&lt;/p&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>25</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapHighUPSTemp</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapHighUPSTemp</event-label>
+      <descr>&lt;p>SEVERE: The internal temperature inside the UPS is too hot.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapHighUPSTemp trap received&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>26</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapTempOK</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapTempOK</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The UPS has returned from a high ambient temp
-condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapTempOK trap received&lt;/p&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>26</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapTempOK</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapTempOK</event-label>
+      <descr>&lt;p>INFORMATION: The UPS has returned from a high ambient temp
+condition.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapTempOK trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>27</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapHighHSTemp</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapHighHSTemp</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The Inverter heatsink assembly inside the UPS is too hot .&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapHighHSTemp trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>27</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapHighHSTemp</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapHighHSTemp</event-label>
+      <descr>&lt;p>SEVERE: The Inverter heatsink assembly inside the UPS is too hot .&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapHighHSTemp trap received&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>28</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapHSTempOK</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapHSTempOK</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The UPS has returned from a high heatsink temp condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapHSTempOK trap received&lt;/p&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>28</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapHSTempOK</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapHSTempOK</event-label>
+      <descr>&lt;p>INFORMATION: The UPS has returned from a high heatsink temp condition.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapHSTempOK trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>29</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapHighXFMRTemp</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapHighXFMRTemp</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The temperature of the main transformer inside the UPS is too hot .&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapHighXFMRTemp trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>29</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapHighXFMRTemp</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapHighXFMRTemp</event-label>
+      <descr>&lt;p>SEVERE: The temperature of the main transformer inside the UPS is too hot .&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapHighXFMRTemp trap received&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>30</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapHighPFMTemp</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapHighPFMTemp</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The temperature of the PFM module inside the UPS is too hot.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapHighPFMTemp trap received&lt;/p&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>30</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapHighPFMTemp</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapHighPFMTemp</event-label>
+      <descr>&lt;p>SEVERE: The temperature of the PFM module inside the UPS is too hot.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapHighPFMTemp trap received&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>31</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapProbeMissing</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapProbeMissing</event-label>
-	<descr>
-&lt;p&gt;SEVERE: One or all of the temperature probes has been disconnected on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapProbeMissing trap received&lt;/p&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>31</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapProbeMissing</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapProbeMissing</event-label>
+      <descr>&lt;p>SEVERE: One or all of the temperature probes has been disconnected on the UPS.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapProbeMissing trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>32</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapProbeReconnected</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapProbeReconnected</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The UPS has returned from a probe missing condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapProbeReconnected trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>32</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapProbeReconnected</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapProbeReconnected</event-label>
+      <descr>&lt;p>INFORMATION: The UPS has returned from a probe missing condition.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapProbeReconnected trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>33</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapCheckPowerSupply</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapCheckPowerSupply</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The internal DC supply voltages are attenuated or missing.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapCheckPowerSupply trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>33</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapCheckPowerSupply</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapCheckPowerSupply</event-label>
+      <descr>&lt;p>SEVERE: The internal DC supply voltages are attenuated or missing.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapCheckPowerSupply trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>34</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapTapRegulatorFault</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapTapRegulatorFault</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The UPS detected a possible failure in the tap changer (open or welded relay, etc.)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapTapRegulatorFault trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>34</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapTapRegulatorFault</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapTapRegulatorFault</event-label>
+      <descr>&lt;p>SEVERE: The UPS detected a possible failure in the tap changer (open or welded relay, etc.)&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapTapRegulatorFault trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>35</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapRelayFailure</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapRelayFailure</event-label>
-	<descr>
-&lt;p&gt;SEVERE: There is a hardware problem inside the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapRelayFailure trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>35</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapRelayFailure</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapRelayFailure</event-label>
+      <descr>&lt;p>SEVERE: There is a hardware problem inside the UPS.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapRelayFailure trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>36</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapCheckFuse</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapCheckFuse</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The failure of one or more fuses has been detected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapCheckFuse trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>36</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapCheckFuse</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapCheckFuse</event-label>
+      <descr>&lt;p>SEVERE: The failure of one or more fuses has been detected.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapCheckFuse trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>37</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapCheckMOV</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapCheckMOV</event-label>
-	<descr>
-&lt;p&gt;SEVERE: One or more MOVs have failed due to a voltage surge.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapCheckMOV trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>37</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapCheckMOV</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapCheckMOV</event-label>
+      <descr>&lt;p>SEVERE: One or more MOVs have failed due to a voltage surge.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapCheckMOV trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>38</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapMemoryError</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapMemoryError</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The UPS has lost the programmed settings in the memory of the logic board.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapMemoryError trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>38</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapMemoryError</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapMemoryError</event-label>
+      <descr>&lt;p>SEVERE: The UPS has lost the programmed settings in the memory of the logic board.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapMemoryError trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>39</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapCallService</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapCallService</event-label>
-	<descr>
-&lt;p&gt;SEVERE: A hardware malfunction has occurred inside the UPS.
-Please consult a factory authorized service  representative for assistance.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapCallService trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>39</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapCallService</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapCallService</event-label>
+      <descr>&lt;p>SEVERE: A hardware malfunction has occurred inside the UPS.
+Please consult a factory authorized service  representative for assistance.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapCallService trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>40</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapManualAlarmBeeperTestInitiated</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapManualAlarmBeeperTestInitiated</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: A  manual test of the alarm beeper is being performed
-on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapManualAlarmBeeperTestInitiated trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>40</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapManualAlarmBeeperTestInitiated</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapManualAlarmBeeperTestInitiated</event-label>
+      <descr>&lt;p>INFORMATION: A  manual test of the alarm beeper is being performed
+on the UPS.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapManualAlarmBeeperTestInitiated trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>41</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapManualAlarmBeeperTestAborted</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapManualAlarmBeeperTestAborted</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The test of UPS has completed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapManualAlarmBeeperTestAborted trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>41</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapManualAlarmBeeperTestAborted</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapManualAlarmBeeperTestAborted</event-label>
+      <descr>&lt;p>INFORMATION: The test of UPS has completed.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapManualAlarmBeeperTestAborted trap received&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>42</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapScheduledTestInProgress</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapScheduledTestInProgress</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: A test is in progress.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapScheduledTestInProgress trap received&lt;/p&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>42</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapScheduledTestInProgress</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapScheduledTestInProgress</event-label>
+      <descr>&lt;p>INFORMATION: A test is in progress.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapScheduledTestInProgress trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>43</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapScheduledTestFailed</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapScheduledTestFailed</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The last test performed failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapScheduledTestFailed trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>43</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapScheduledTestFailed</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapScheduledTestFailed</event-label>
+      <descr>&lt;p>SEVERE: The last test performed failed.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapScheduledTestFailed trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>44</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapCommunicationLost</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapCommunicationLost</event-label>
-	<descr>
-&lt;p&gt;SEVERE: Communication to the UPS has been lost.  Steps
-to reestablish communication are in progress.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapCommunicationLost trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>44</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapCommunicationLost</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapCommunicationLost</event-label>
+      <descr>&lt;p>SEVERE: Communication to the UPS has been lost.  Steps
+to reestablish communication are in progress.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapCommunicationLost trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>45</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapCommunicationRestored</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapCommunicationRestored</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: Communication with the UPS has been
-restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapCommunicationRestored trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>45</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapCommunicationRestored</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapCommunicationRestored</event-label>
+      <descr>&lt;p>INFORMATION: Communication with the UPS has been
+restored.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapCommunicationRestored trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>46</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSGoingDown</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapUPSGoingDown</event-label>
-	<descr>
-&lt;p&gt;WARNING: The ups has been given shutdown command
-by the management station.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapUPSGoingDown trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>46</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSGoingDown</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapUPSGoingDown</event-label>
+      <descr>&lt;p>WARNING: The ups has been given shutdown command
+by the management station.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapUPSGoingDown trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>47</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSTurnedOff</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapUPSTurnedOff</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The ups has been turned off
-by the management station.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapUPSTurnedOff trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>47</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSTurnedOff</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapUPSTurnedOff</event-label>
+      <descr>&lt;p>INFORMATION: The ups has been turned off
+by the management station.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapUPSTurnedOff trap received&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>48</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSSleeping</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapUPSSleeping</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The UPS has entered in 'sleep' mode. Power to the
-load has been cut off.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapUPSSleeping trap received&lt;/p&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>48</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSSleeping</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapUPSSleeping</event-label>
+      <descr>&lt;p>INFORMATION: The UPS has entered in 'sleep' mode. Power to the
+load has been cut off.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapUPSSleeping trap received&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>49</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSWokeUp</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapUPSWokeUp</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The UPS woke up from 'sleep' mode. Power to the load has been restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapUPSWokeUp trap received&lt;/p&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>49</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSWokeUp</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapUPSWokeUp</event-label>
+      <descr>&lt;p>INFORMATION: The UPS woke up from 'sleep' mode. Power to the load has been restored.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapUPSWokeUp trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>50</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSRebooted</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapUPSRebooted</event-label>
-	<descr>
-&lt;p&gt;INFORMATION: The UPS is rebooted.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapUPSRebooted trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>50</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSRebooted</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapUPSRebooted</event-label>
+      <descr>&lt;p>INFORMATION: The UPS is rebooted.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapUPSRebooted trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>51</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapEmergencyPowerOFF</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapEmergencyPowerOFF</event-label>
-	<descr>
-&lt;p&gt;SEVERE: The Emergency Power OFF feature has been activiated at
-the RS-232 port on the UPS.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapEmergencyPowerOFF trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>51</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapEmergencyPowerOFF</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapEmergencyPowerOFF</event-label>
+      <descr>&lt;p>SEVERE: The Emergency Power OFF feature has been activiated at
+the RS-232 port on the UPS.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapEmergencyPowerOFF trap received&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>52</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapHistLogWarn</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapHistLogWarn</event-label>
-	<descr>
-&lt;p&gt;WARNING: The ups history log buffer is almost full.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapHistLogWarn trap received&lt;/p&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>52</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapHistLogWarn</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapHistLogWarn</event-label>
+      <descr>&lt;p>WARNING: The ups history log buffer is almost full.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapHistLogWarn trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>53</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapEventLogWarn</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapEventLogWarn</event-label>
-	<descr>
-&lt;p&gt;WARNING: The ups event log buffer is almost full.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapEventLogWarn trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>53</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapEventLogWarn</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapEventLogWarn</event-label>
+      <descr>&lt;p>WARNING: The ups event log buffer is almost full.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapEventLogWarn trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2947.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>54</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSFail</uei>
-	<event-label>BESTPOWER-MIB defined trap event: upsTrapUPSFail</event-label>
-	<descr>
-&lt;p&gt;SEVERE: A critical fault has been detected inside the UPS.
-Power to the load has been shut off.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			APC-Best Power event: upsTrapUPSFail trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>54</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/upsTrapUPSFail</uei>
+      <event-label>BESTPOWER-MIB defined trap event: upsTrapUPSFail</event-label>
+      <descr>&lt;p>SEVERE: A critical fault has been detected inside the UPS.
+Power to the load has been shut off.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			APC-Best Power event: upsTrapUPSFail trap received&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<!-- End of auto generated data from MIB: BESTPOWER-MIB -->
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.2947.%</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/APC/traps/apcBestGenericUnknownEvent</uei>
-        <event-label>XUPS-MIB defined trap event: apcBestGenericUnknownEvent</event-label>
-        <descr>
-&lt;p&gt;An event was received with the Best Power (APC) enterprise ID, but no configuration exists
-for this event in eventconf.xml.&lt;/p&gt;&lt;
-&lt;p&gt;(enterprise:%id% generic:%generic% specific:%specific%). %parm[##]%&lt;/p&gt;&lt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2947.%</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/APC/traps/apcBestGenericUnknownEvent</uei>
+      <event-label>XUPS-MIB defined trap event: apcBestGenericUnknownEvent</event-label>
+      <descr>&lt;p>An event was received with the Best Power (APC) enterprise ID, but no configuration exists
+for this event in eventconf.xml.&lt;/p>&lt;
+&lt;p>(enterprise:%id% generic:%generic% specific:%specific%). %parm[##]%&lt;/p>&lt;</descr>
+      <logmsg dest="logndisplay">&lt;p>
                         APC XUPS Event: Generic Unknown Event
                         xupsAlarmID=%parm[#1]%
                         xupsAlarmDescr=%parm[#2]%
-                        xupsTrapMessage=%parm[#3]%&lt;/p&gt;
+                        xupsTrapMessage=%parm[#3]%&lt;/p>
                 </logmsg>
-        <severity>Indeterminate</severity>
-</event>
+      <severity>Indeterminate</severity>
+   </event>
 </events>

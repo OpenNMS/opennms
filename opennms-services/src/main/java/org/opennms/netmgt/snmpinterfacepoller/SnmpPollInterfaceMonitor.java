@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.snmpinterfacepoller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface.SnmpMinimalPollInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +67,16 @@ public class SnmpPollInterfaceMonitor {
      */
     private static final String IF_OPER_STATUS_OID = ".1.3.6.1.2.1.2.2.1.8.";
 
+    private final LocationAwareSnmpClient m_client;
+
+    private String m_location;
+
+    private long m_interval;
+
+    public SnmpPollInterfaceMonitor(LocationAwareSnmpClient locationAwareSnmpClient) {
+        this.m_client = locationAwareSnmpClient;
+    }
+
     /**
      * <p>poll</p>
      *
@@ -82,7 +95,6 @@ public class SnmpPollInterfaceMonitor {
 		LOG.debug("Got {} interfaces to poll", mifaces.size());
 
 		// Retrieve this interface's SNMP peer object
-		//
 		if (agentConfig == null)
 			throw new RuntimeException("SnmpAgentConfig object not available");
 
@@ -99,45 +111,70 @@ public class SnmpPollInterfaceMonitor {
 			LOG.debug("Adding Admin/Oper oids: {}/{}", adminoids[i], operooids[i]);
 		}
 
-		SnmpValue[] adminresults = new SnmpValue[mifaces.size()];
-		SnmpValue[] operoresults = new SnmpValue[mifaces.size()];
+        String ipAddress = agentConfig.getAddress().getCanonicalHostName();
+        CompletableFuture<List<SnmpValue>> adminValuesFuture = m_client.get(agentConfig, adminoids)
+                .withLocation(m_location).withDescription("SnmpInterfacePoller Admin Status for " + ipAddress)
+                .withTimeToLive(m_interval).execute();
+        CompletableFuture<List<SnmpValue>> operationalValesFuture = m_client.get(agentConfig, operooids)
+                .withLocation(m_location).withDescription("SnmpInterfacePoller Operational Status for " + ipAddress)
+                .withTimeToLive(m_interval).execute();
+        List<SnmpValue> adminSnmpValues = new ArrayList<>();
+        List<SnmpValue> operationalSnmpValues = new ArrayList<>();
+        try {
+            adminSnmpValues = adminValuesFuture.get();
+            operationalSnmpValues = operationalValesFuture.get();
+            if (adminSnmpValues.size() != mifaces.size()) {
+                LOG.warn("Snmp Interface Admin statuses collection failed for interfaces in '{}' at location ", ipAddress, m_location);
+                return mifaces;
+            }
+            if (operationalSnmpValues.size() != mifaces.size()) {
+                LOG.warn("Snmp Interface Operational statuses collection failed for interfaces in '{}' at location {}", ipAddress, m_location);
+                return mifaces;
+            }
+            LOG.debug("Received admin/operational statuses for interfaces in '{}' at location {}", ipAddress, m_location);
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Exception while retrieving admin/operational statuses for interfaces in '{}' at location", ipAddress, m_location, e);
+            return null;
+        }
 
-		LOG.debug("try to get admin statuses");
-		adminresults = SnmpUtils.get(agentConfig, adminoids);
-		LOG.debug("got admin status {} SnmpValues", adminresults.length);
-		if (adminresults.length != mifaces.size()) {
-			LOG.warn("Snmp Interface Admin statuses collection failed");
-			return mifaces;
-		}
+        for (int i = 0; i < mifaces.size(); i++) {
+            SnmpMinimalPollInterface miface = mifaces.get(i);
+            SnmpValue adminSnmpValue = adminSnmpValues.get(i);
+            SnmpValue operationalSnmpValue = operationalSnmpValues.get(i);
 
-		LOG.debug("try to get operational statuses");
-		operoresults = SnmpUtils.get(agentConfig, operooids);
-		LOG.debug("got operational status {} SnmpValues", operoresults.length);
-		if (operoresults.length != mifaces.size()) {
-			LOG.warn("Snmp Interface Operational statuses collection failed");
-			return mifaces;
-		}
+            if (adminSnmpValue != null && operationalSnmpValue != null) {
+                try {
+                    miface.setAdminstatus(adminSnmpValue.toInt());
+                    miface.setOperstatus(operationalSnmpValue.toInt());
+                    miface.setStatus(PollStatus.up());
+                    LOG.debug("SNMP Value is {} for oid: {}", adminSnmpValue.toInt(), adminoids[i]);
+                    LOG.debug("SNMP Value is {} for oid: {}", operationalSnmpValue.toInt(), operooids[i]);
+                } catch (Exception e) {
+                    LOG.warn("SNMP Value is {} for oid: {}", adminSnmpValue.toDisplayString(), adminoids[i]);
+                    LOG.warn("SNMP Value is {} for oid: {}", operationalSnmpValue.toDisplayString(), operooids[i]);
+                }
+            } else {
+                LOG.info("SNMP Value is null for oid: {}/{}", adminoids[i], operooids[i]);
+            }
+        }
 
-		for (int i = 0; i < mifaces.size(); i++) {
-			SnmpMinimalPollInterface miface = mifaces.get(i);
-
-			if (adminresults[i] != null && operoresults[i] != null) {
-				try {
-					miface.setAdminstatus(adminresults[i].toInt());
-					miface.setOperstatus(operoresults[i].toInt());
-					miface.setStatus(PollStatus.up());
-					LOG.debug("SNMP Value is {} for oid: {}", adminresults[i].toInt(), adminoids[i]);
-					LOG.debug("SNMP Value is {} for oid: {}", operoresults[i].toInt(), operooids[i]);
-				} catch (Exception e) {
-					LOG.warn("SNMP Value is {} for oid: {}", adminresults[i].toDisplayString(), adminoids[i]);
-					LOG.warn("SNMP Value is {} for oid: {}", operoresults[i].toDisplayString(), operooids[i]);
-				}
-			} else {
-				LOG.info("SNMP Value is null for oid: {}/{}", adminoids[i], operooids[i]);
-			}
-		}
-
-		return mifaces;
+        return mifaces;
 	}
+
+    public String getLocation() {
+        return m_location;
+    }
+
+    public void setLocation(String location) {
+        this.m_location = location;
+    }
+
+    public long getInterval() {
+        return m_interval;
+    }
+
+    public void setInterval(long interval) {
+        this.m_interval = interval;
+    }
 
 }

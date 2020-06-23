@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -27,7 +27,6 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.provision.service.operations;
-
 
 import org.opennms.netmgt.provision.service.ProvisionService;
 
@@ -40,13 +39,15 @@ public class UpdateOperation extends SaveOrUpdateOperation {
      * @param foreignSource a {@link java.lang.String} object.
      * @param foreignId a {@link java.lang.String} object.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param location a {@link java.lang.String} object.
      * @param building a {@link java.lang.String} object.
      * @param city a {@link java.lang.String} object.
      * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
+     * @param rescanExisting a {@link java.lang.String} object
      */
-    public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
-		super(nodeId, foreignSource, foreignId, nodeLabel, building, city, provisionService);
-	}
+    public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String location, String building, String city, ProvisionService provisionService, String rescanExisting) {
+        super(nodeId, foreignSource, foreignId, nodeLabel, location, building, city, provisionService, rescanExisting);
+    }
 
 	/**
 	 * <p>toString</p>
@@ -55,12 +56,12 @@ public class UpdateOperation extends SaveOrUpdateOperation {
 	 */
 	@Override
 	public String toString() {
-       return "UPDATE: Node: "+getNode().getId()+": "+getNode().getLabel();
+       return "UPDATE: Node: "+(getNode().getId() == null ? "[no ID]" : getNode().getId())+": "+getNode().getLabel();
     }
 
 	/** {@inheritDoc} */
 	@Override
     protected void doPersist() {
-        getProvisionService().updateNode(getNode());
+        getProvisionService().updateNode(getNode(), getRescanExisting());
     }
 }

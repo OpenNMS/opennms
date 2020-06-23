@@ -1,30 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ResponseTime_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="204"/>
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-08-25T11:07:58 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ResponseTime_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="16ad0181-e27a-4aad-9d3f-f26b45875fa3">
+	<property name="ireport.zoom" value="1.5026296018031553"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Center" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Detail" hAlign="Center" vAlign="Middle"/>
 	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<parameter name="startDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[new Date(1290098100000L)]]></defaultValueExpression>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="endDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[new Date(1290120600000L)]]></defaultValueExpression>
+	<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String"/>
+	<parameter name="nodeId" class="java.lang.String"/>
+	<parameter name="foreignid" class="java.lang.String"/>
+	<parameter name="foreignsource" class="java.lang.String"/>
+	<parameter name="startDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date"/>
+	<parameter name="startDateTime" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{startDate}.getTime()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="rrdDir" class="java.lang.String"/>
+	<parameter name="endDateTime" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{endDate}.getTime()]]></defaultValueExpression>
+	</parameter>
 	<parameter name="ipv4_interface" class="java.lang.String"/>
-	<queryString language="jrobin">
-		<![CDATA[--start $P{startDate} --end $P{endDate}
-		DEF:xx=$P{rrdDir}/response/$P{ipv4_interface}/icmp.jrb:icmp:AVERAGE
-		XPORT:xx:IcmpLatency]]>
+	<parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor($P{nodeId}, $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
+	</parameter>
+	<queryString language="measurement">
+		<![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="5000">
+  <source aggregation="AVERAGE" label="IcmpLatency" attribute="icmp" transient="false" resourceId="$P{nodeResourceDescriptor}.responseTime[$P{ipv4_interface}]"/>
+</query-request>]]>
 	</queryString>
-	<field name="Timestamp" class="java.util.Date">
-		<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
+	<field name="timestamp" class="java.util.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="IcmpLatency" class="java.lang.Double">
-		<fieldDescription><![CDATA[IcmpLatency]]></fieldDescription>
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<variable name="ICMP_Latency_AVG" class="java.lang.Double" calculation="Average">
 		<variableExpression><![CDATA[$F{IcmpLatency}]]></variableExpression>
@@ -62,84 +78,72 @@
 	</pageFooter>
 	<summary>
 		<band height="47" splitType="Stretch">
-			<rectangle>
-				<reportElement x="25" y="0" width="530" height="20" backcolor="#CCCCCC"/>
-			</rectangle>
 			<textField pattern="###0.00">
-				<reportElement style="Body" x="355" y="20" width="100" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ICMP_Latency_AVG}/new Double("1000.0")]]></textFieldExpression>
+				<reportElement style="Body" x="355" y="20" width="100" height="20" uuid="51638d45-0487-49d1-85f3-4996fb14a352"/>
+				<textFieldExpression><![CDATA[$V{ICMP_Latency_AVG}/new Double("1000.0")]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Body" x="255" y="20" width="100" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ICMP_Latency_MIN}/new Double("1000.0")]]></textFieldExpression>
+				<reportElement style="Body" x="255" y="20" width="100" height="20" uuid="5898691c-6c6f-49d3-a014-c8613d735537"/>
+				<textFieldExpression><![CDATA[$V{ICMP_Latency_MIN}/new Double("1000.0")]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Body" x="455" y="20" width="100" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$V{ICMP_Latency_MAX}/new Double("1000.0")]]></textFieldExpression>
+				<reportElement style="Body" x="455" y="20" width="100" height="20" uuid="7e89c7a9-a0e2-4b2d-bb11-a943df902dad"/>
+				<textFieldExpression><![CDATA[$V{ICMP_Latency_MAX}/new Double("1000.0")]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Body" x="25" y="20" width="230" height="20"/>
+				<reportElement style="Body" x="25" y="20" width="230" height="20" uuid="3cfedf59-ea0f-4e1b-9f90-63c4265df20f"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{ipv4_interface}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{ipv4_interface}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Sub-sub-sub-header" x="25" y="0" width="230" height="20"/>
+				<reportElement style="Sub-sub-sub-header" x="25" y="0" width="230" height="20" uuid="9c07f702-581b-4c08-bf4e-065b93ecac80"/>
 				<textElement textAlignment="Left"/>
 				<text><![CDATA[IP-Interface]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Sub-sub-sub-header" x="255" y="0" width="100" height="20"/>
-				<textElement/>
+				<reportElement style="Sub-sub-sub-header" x="255" y="0" width="100" height="20" uuid="39d8a0a2-dddb-40d3-9457-54c49faa8290"/>
 				<text><![CDATA[Minimum (ms)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Sub-sub-sub-header" x="355" y="0" width="100" height="20"/>
-				<textElement/>
+				<reportElement style="Sub-sub-sub-header" x="355" y="0" width="100" height="20" uuid="f4742532-0e63-4ae3-b8c3-6bf80e9860e9"/>
 				<text><![CDATA[Average (ms)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Sub-sub-sub-header" x="455" y="0" width="100" height="20"/>
-				<textElement/>
+				<reportElement style="Sub-sub-sub-header" x="455" y="0" width="100" height="20" uuid="42ea2109-1eb4-44a0-b337-0a0b06efdde9"/>
 				<text><![CDATA[Maximum (ms)]]></text>
 			</staticText>
 		</band>
 	</summary>
 	<noData>
-		<band height="50">
+		<band height="48">
 			<textField>
-				<reportElement style="Body" x="25" y="22" width="230" height="20"/>
+				<reportElement style="Body" x="25" y="22" width="230" height="20" uuid="a36626c7-2ed7-464e-9641-33fab31970ba"/>
 				<textElement textAlignment="Left"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{ipv4_interface}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{ipv4_interface}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Sub-sub-sub-header" x="25" y="2" width="230" height="20"/>
+				<reportElement style="Sub-sub-sub-header" x="25" y="2" width="230" height="20" uuid="de483870-4125-4964-957a-93134b22a30a"/>
 				<textElement textAlignment="Left"/>
 				<text><![CDATA[IP-Interface]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Sub-sub-sub-header" x="255" y="2" width="100" height="20"/>
-				<textElement/>
+				<reportElement style="Sub-sub-sub-header" x="255" y="2" width="100" height="20" uuid="1a381be1-c1e7-4725-8290-04d51cf41209"/>
 				<text><![CDATA[Minimum (ms)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Sub-sub-sub-header" x="355" y="2" width="100" height="20"/>
-				<textElement/>
+				<reportElement style="Sub-sub-sub-header" x="355" y="2" width="100" height="20" uuid="8119ddc0-e15a-4e61-836c-26367b98461c"/>
 				<text><![CDATA[Average (ms)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Sub-sub-sub-header" x="455" y="2" width="100" height="20"/>
-				<textElement/>
+				<reportElement style="Sub-sub-sub-header" x="455" y="2" width="100" height="20" uuid="e656ce76-998f-4cf9-9307-d1261a4ddfe2"/>
 				<text><![CDATA[Maximum (ms)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="255" y="22" width="300" height="20"/>
-				<textElement textAlignment="Center">
-					<font size="14"/>
+				<reportElement style="Body" x="255" y="22" width="300" height="20" uuid="b1d8408a-9a07-4c8b-a6ea-10a0182662d8"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="10"/>
 				</textElement>
-				<text><![CDATA[No Data for Interface]]></text>
+				<text><![CDATA[No data for interface]]></text>
 			</staticText>
 		</band>
 	</noData>

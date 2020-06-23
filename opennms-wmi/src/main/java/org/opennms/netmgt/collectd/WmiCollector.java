@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,34 +28,40 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Date;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collectd.wmi.WmiAgentState;
-import org.opennms.netmgt.collectd.wmi.WmiCollectionAttributeType;
-import org.opennms.netmgt.collectd.wmi.WmiCollectionResource;
-import org.opennms.netmgt.collectd.wmi.WmiCollectionSet;
-import org.opennms.netmgt.collectd.wmi.WmiMultiInstanceCollectionResource;
-import org.opennms.netmgt.collectd.wmi.WmiSingleInstanceCollectionResource;
+import org.opennms.netmgt.collection.api.AbstractRemoteServiceCollector;
+import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
+import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiDataCollectionConfigFactory;
 import org.opennms.netmgt.config.WmiPeerFactory;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.CollectionSet;
+import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
+import org.opennms.netmgt.config.datacollection.ResourceType;
+import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.config.wmi.Attrib;
+import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.config.wmi.WmiCollection;
 import org.opennms.netmgt.config.wmi.Wpm;
-import org.opennms.netmgt.model.RrdRepository;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.wmi.WmiClient;
 import org.opennms.protocols.wmi.WmiException;
 import org.opennms.protocols.wmi.WmiManager;
@@ -76,39 +82,63 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:matt.raykowski@gmail.com">Matt Raykowski</a>
  * @author <a href="http://www.opennms.org">OpenNMS</a>
  */
-public class WmiCollector implements ServiceCollector {
-	
+public class WmiCollector extends AbstractRemoteServiceCollector {
+
 	private static final Logger LOG = LoggerFactory.getLogger(WmiCollector.class);
 
+	private static final String WMI_COLLECTION_KEY = "wmiCollection";
 
-    // Don't make this static because each service will have its own
-    // copy and the key won't require the service name as part of the key.
-    private final HashMap<Integer, WmiAgentState> m_scheduledNodes = new HashMap<Integer, WmiAgentState>();
-    private HashMap<String, AttributeGroupType> m_groupTypeList = new HashMap<String, AttributeGroupType>();
-    private HashMap<String, WmiCollectionAttributeType> m_attribTypeList = new HashMap<String, WmiCollectionAttributeType>();
+	private static final String WMI_AGENT_CONFIG_KEY = "wmiAgentConfig";
+
+	private static final Map<String, Class<?>> TYPE_MAP = Collections.unmodifiableMap(Stream.of(
+            new SimpleEntry<>(WMI_COLLECTION_KEY, WmiCollection.class),
+            new SimpleEntry<>(WMI_AGENT_CONFIG_KEY, WmiAgentConfig.class))
+            .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
+
+    public WmiCollector() {
+        super(TYPE_MAP);
+    }
+
+    @Override
+    public void initialize() {
+        LOG.debug("initialize: Initializing WmiCollector.");
+        initWMIPeerFactory();
+        initWMICollectionConfig();
+    }
+
+    @Override
+    public Map<String, Object> getRuntimeAttributes(CollectionAgent agent, Map<String, Object> parameters) {
+        final Map<String, Object> runtimeAttributes = new HashMap<>();
+        final String collectionName = ParameterMap.getKeyedString(parameters, "collection", ParameterMap.getKeyedString(parameters, "wmi-collection", null));
+        final WmiCollection collection = WmiDataCollectionConfigFactory.getInstance().getWmiCollection(collectionName);
+        runtimeAttributes.put(WMI_COLLECTION_KEY, collection);
+        final WmiAgentConfig agentConfig = WmiPeerFactory.getInstance().getAgentConfig(agent.getAddress());
+        runtimeAttributes.put(WMI_AGENT_CONFIG_KEY, agentConfig);
+        return runtimeAttributes;
+    }
 
     /** {@inheritDoc} */
     @Override
-    public CollectionSet collect(final CollectionAgent agent, final EventProxy eproxy, final Map<String, Object> parameters) {
-
-        String collectionName = ParameterMap.getKeyedString(parameters, "collection", ParameterMap.getKeyedString(parameters, "wmi-collection", null));
+    public CollectionSet collect(final CollectionAgent agent, final Map<String, Object> parameters) {
         // Find attributes to collect - check groups in configuration. For each,
         // check scheduled nodes to see if that group should be collected
-        final WmiCollection collection = WmiDataCollectionConfigFactory.getInstance().getWmiCollection(collectionName);
-        final WmiAgentState agentState = m_scheduledNodes.get(agent.getNodeId());
-
-        // Load the attribute group types.
-        loadAttributeGroupList(collection);
-
-        // Load the attribute types.
-        loadAttributeTypeList(collection);
+        final WmiCollection collection = (WmiCollection)parameters.get(WMI_COLLECTION_KEY);
+        final WmiAgentConfig agentConfig = (WmiAgentConfig)parameters.get(WMI_AGENT_CONFIG_KEY);
+        final WmiAgentState agentState = new WmiAgentState(agent.getAddress(), agentConfig, parameters);
 
         // Create a new collection set.
-        final WmiCollectionSet collectionSet = new WmiCollectionSet(agent);        
-        collectionSet.setCollectionTimestamp(new Date());
+        CollectionSetBuilder builder = new CollectionSetBuilder(agent)
+                .withStatus(CollectionStatus.FAILED);
+
+        if (collection.getWpms().size() < 1) {
+            LOG.info("No groups to collect.");
+            return builder.withStatus(CollectionStatus.SUCCEEDED).build();
+        }
+
+        final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
 
         // Iterate through the WMI collection groups.
-        for (final Wpm wpm : collection.getWpms().getWpm()) {
+        for (final Wpm wpm : collection.getWpms()) {
             // A wpm consists of a list of attributes, identified by name
             if (agentState.shouldCheckAvailability(wpm.getName(), wpm.getRecheckInterval())) {
                 if (!isGroupAvailable(agentState, wpm)) {
@@ -121,7 +151,7 @@ public class WmiCollector implements ServiceCollector {
                 // Collect the data
                 try {
                     // Tell the agent to connect
-                    agentState.connect();
+                    agentState.connect(wpm.getWmiNamespace());
 
                     // And retrieve the client object for working.
                     client = (WmiClient) agentState.getWmiClient();
@@ -134,7 +164,7 @@ public class WmiCollector implements ServiceCollector {
                         //  Go through each object (class instance) in the object set.
                         for (int i = 0; i < wOS.count(); i++) {
                             // Create a new collection resource.
-                            WmiCollectionResource resource = null;
+                            Resource resource = null;
 
                             // Fetch our WBEM Object
                             final OnmsWbemObject obj = wOS.get(i);
@@ -150,20 +180,32 @@ public class WmiCollector implements ServiceCollector {
                                 } else {
                                     instance = propVal.toString();
                                 }
-                                resource = new WmiMultiInstanceCollectionResource(agent,instance,wpm.getResourceType());
+                                resource = getWmiResource(agent, wpm.getResourceType(), nodeResource, instance);
                             } else {
-                                resource = new WmiSingleInstanceCollectionResource(agent);
+                                resource = nodeResource;
                             }
 
-
-                            for (final Attrib attrib : wpm.getAttrib()) {
-                                final OnmsWbemProperty prop = obj.getWmiProperties().getByName(attrib.getWmiObject());                                
-                                final WmiCollectionAttributeType attribType = m_attribTypeList.get(attrib.getName());
-                                resource.setAttributeValue(attribType, prop.getWmiValue().toString());
+                            for (final Attrib attrib : wpm.getAttribs()) {
+                                final OnmsWbemProperty prop = obj.getWmiProperties().getByName(attrib.getWmiObject());
+                                final AttributeType type = attrib.getType();
+                                final String stringValue = prop.getWmiValue().toString();
+                                if (type.isNumeric()) {
+                                    Double numericValue = Double.NaN;
+                                    try {
+                                        numericValue = Double.parseDouble(stringValue);
+                                    } catch (NumberFormatException e) {
+                                        LOG.warn("Value '{}' for attribute named '{}' cannot be converted to a number. Skipping.",
+                                                prop.getWmiValue(), attrib.getName());
+                                        continue;
+                                    }
+                                    builder.withNumericAttribute(resource, wpm.getName(), attrib.getAlias(), numericValue, type);
+                                } else {
+                                    builder.withStringAttribute(resource, wpm.getName(), attrib.getAlias(), stringValue);
+                                }
                             }
-                            collectionSet.getResources().add(resource);
                         }
                     }
+                    builder.withStatus(CollectionStatus.SUCCEEDED);
                 } catch (final WmiException e) {
                     LOG.info("unable to collect params for wpm '{}'", wpm.getName(), e);
                 } finally {
@@ -177,29 +219,11 @@ public class WmiCollector implements ServiceCollector {
                 }
             }
         }
-        collectionSet.setStatus(ServiceCollector.COLLECTION_SUCCEEDED);
-        return collectionSet;
-    }
-
-    private void loadAttributeGroupList(final WmiCollection collection) {
-        for (final Wpm wpm : collection.getWpms().getWpm()) {
-            final AttributeGroupType attribGroupType1 = new AttributeGroupType(wpm.getName(), wpm.getIfType());
-            m_groupTypeList.put(wpm.getName(), attribGroupType1);
-        }
-    }
-
-    private void loadAttributeTypeList(final WmiCollection collection) {
-        for (final Wpm wpm : collection.getWpms().getWpm()) {
-            for (final Attrib attrib : wpm.getAttrib()) {
-                final AttributeGroupType attribGroupType = m_groupTypeList.get(wpm.getName());
-                final WmiCollectionAttributeType attribType = new WmiCollectionAttributeType(attrib, attribGroupType);
-                m_attribTypeList.put(attrib.getName(), attribType);
-            }
-        }
+        return builder.build();
     }
 
     private boolean isGroupAvailable(final WmiAgentState agentState, final Wpm wpm) {
-        LOG.debug("Checking availability of group {}", wpm.getName());
+        LOG.debug("Checking availability of group {} via object {} of class {} in namespace {}", wpm.getName(), wpm.getKeyvalue(), wpm.getWmiClass(), wpm.getWmiNamespace());
         WmiManager manager = null;
 
         /*
@@ -211,6 +235,7 @@ public class WmiCollector implements ServiceCollector {
         try {
             // Get and initialize the WmiManager
             manager = agentState.getManager();
+            manager.setNamespace(wpm.getWmiNamespace());
             manager.init();
 
             final WmiParams params = new WmiParams(WmiParams.WMI_OPERATION_INSTANCEOF, "not-applicable", "NOOP", wpm.getWmiClass(), wpm.getKeyvalue());
@@ -240,27 +265,24 @@ public class WmiCollector implements ServiceCollector {
         return true;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void initialize(final Map<String, String> parameters) {
-        LOG.debug("initialize: Initializing WmiCollector.");
-        m_scheduledNodes.clear();
-        initWMIPeerFactory();
-        initWMICollectionConfig();
-        initDatabaseConnectionFactory();
-        initializeRrdRepository();
+    private Resource getWmiResource(CollectionAgent agent, String resourceType, NodeLevelResource nodeResource, String instance) {
+        ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
+        if (rt == null) {
+            LOG.debug("getWmiResourceType: using default WMI resource type strategy - index / all");
+            rt = new ResourceType();
+            rt.setName(resourceType);
+            rt.setStorageStrategy(new StorageStrategy());
+            rt.getStorageStrategy().setClazz(IndexStorageStrategy.class.getName());
+            rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
+            rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
+        }
+        return new GenericTypeResource(nodeResource, rt, instance);
     }
 
     private void initWMIPeerFactory() {
         LOG.debug("initialize: Initializing WmiPeerFactory");
         try {
             WmiPeerFactory.init();
-        } catch (final MarshalException e) {
-            LOG.error("initialize: Error marshalling configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (final ValidationException e) {
-            LOG.error("initialize: Error validating configuration.", e);
-            throw new UndeclaredThrowableException(e);
         } catch (final IOException e) {
             LOG.error("initialize: Error reading configuration.", e);
             throw new UndeclaredThrowableException(e);
@@ -271,12 +293,6 @@ public class WmiCollector implements ServiceCollector {
         LOG.debug("initialize: Initializing collector: {}", getClass());
         try {
             WmiDataCollectionConfigFactory.init();
-        } catch (final MarshalException e) {
-            LOG.error("initialize: Error marshalling configuration.", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("initialize: Error validating configuration.", e);
-            throw new UndeclaredThrowableException(e);
         } catch (FileNotFoundException e) {
             LOG.error("initialize: Error locating configuration.", e);
             throw new UndeclaredThrowableException(e);
@@ -286,80 +302,10 @@ public class WmiCollector implements ServiceCollector {
         }
     }
 
-    private void initializeRrdRepository() {
-        LOG.debug("initializeRrdRepository: Initializing RRD repo from WmiCollector...");
-        initializeRrdDirs();
-    }
-
-    private void initializeRrdDirs() {
-        /*
-         * If the RRD file repository directory does NOT already exist, create
-         * it.
-         */
-        final File f = new File(WmiDataCollectionConfigFactory.getInstance().getRrdPath());
-        if (!f.isDirectory()) {
-            if (!f.mkdirs()) {
-                throw new RuntimeException("Unable to create RRD file repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
-            }
-        }
-    }
-
-    private void initDatabaseConnectionFactory() {
-        try {
-            DataSourceFactory.init();
-        } catch (final Exception e) {
-            LOG.error("initDatabaseConnectionFactory: Error initializing DataSourceFactory.", e);
-            throw new UndeclaredThrowableException(e);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void initialize(final CollectionAgent agent, final Map<String, Object> parameters) {
-        LOG.debug("initialize: Initializing WMI collection for agent: {}", agent);
-        final Integer scheduledNodeKey = new Integer(agent.getNodeId());
-        WmiAgentState nodeState = m_scheduledNodes.get(scheduledNodeKey);
-
-        if (nodeState != null) {
-            LOG.info("initialize: Not scheduling interface for WMI collection: {}", nodeState.getAddress());
-            final StringBuffer sb = new StringBuffer();
-            sb.append("initialize service: ");
-            sb.append(" for address: ");
-            sb.append(nodeState.getAddress());
-            sb.append(" already scheduled for collection on node: ");
-            sb.append(agent);
-            LOG.debug(sb.toString());
-            throw new IllegalStateException(sb.toString());
-        } else {
-            nodeState = new WmiAgentState(agent.getInetAddress(), parameters);
-            LOG.info("initialize: Scheduling interface for collection: {}", nodeState.getAddress());
-            m_scheduledNodes.put(scheduledNodeKey, nodeState);
-        }
-    }
-
-    /**
-     * <p>release</p>
-     */
-    @Override
-    public void release() {
-        m_scheduledNodes.clear();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void release(final CollectionAgent agent) {
-        final WmiAgentState nodeState = m_scheduledNodes.get((Integer) agent.getNodeId());
-        if (nodeState != null) {
-            m_scheduledNodes.remove((Integer) agent.getNodeId());
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public RrdRepository getRrdRepository(final String collectionName) {
         return WmiDataCollectionConfigFactory.getInstance().getRrdRepository(collectionName);
     }
-
-
 
 }

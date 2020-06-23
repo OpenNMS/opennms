@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.opennms.org/xsd/config/jmx-datacollection" xmlns:this="http://xmlns.opennms.org/xsd/config/jmx-datacollection" elementFormDefault="qualified">
+    <element name="jmx-datacollection-config">
+		<complexType>
+			<sequence>
+				<!-- JMX data collection element -->
+				<element ref="this:jmx-collection" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+			<!-- full path to the RRD repository for collected JMX data -->
+			<attribute name="rrdRepository" type="string" use="required"/>
+		</complexType>
+	</element>
+	<!-- a grouping of JMX related RRD parms, JMX object groups and sysoid based
+		 system definitions. 
+	-->
+	<element name="jmx-collection">
+		<complexType>
+			<sequence>
+				<!-- RRD parms -->
+				<element ref="this:rrd" minOccurs="1" maxOccurs="1"/>
+				
+				<!-- JMX object groups -->
+				<element ref="this:mbeans" minOccurs="1" maxOccurs="1"/>
+
+				<!--element ref="jmx-systems" minOccurs="1" maxOccurs="1"/-->
+
+			</sequence>
+			<!-- collector name -->
+			<attribute name="name" type="string" use="required"/>
+			
+			<attribute name="maxVarsPerPdu" type="int" use="optional">
+				<annotation>
+					<documentation>DEPRECATED</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+
+	<!-- RRD parms -->
+	<element name="rrd">
+		<complexType>
+			<sequence>
+				<!-- Round Robin Archive definitions -->
+				<element name="rra" minOccurs="1" maxOccurs="unbounded">
+					<simpleType>
+						<restriction base="string">
+							<pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
+						</restriction>
+					</simpleType>
+				</element>
+			</sequence>
+			
+			<!-- step size for the RRD -->
+			<attribute name="step" type="int" use="required"/>
+		</complexType>
+	</element>
+
+	<!-- JMX object groups -->
+	<element name="mbeans">
+		<complexType>
+			<sequence>
+				<!-- a JMX object group -->
+				<element ref="this:mbean" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<!-- a JMX object group -->
+	<element name="mbean">
+		<complexType>
+			<sequence>
+				<!-- a JMX object -->
+				<element ref="this:attrib" minOccurs="0"
+					maxOccurs="unbounded" />
+
+				<!-- sub group -->
+				<element name="includeMbean" type="string" minOccurs="0"
+					maxOccurs="unbounded" />
+				<element ref="this:comp-attrib" maxOccurs="unbounded" minOccurs="0"></element>
+			</sequence>
+
+			<!-- mbean name -->
+			<attribute name="name"       type="string" use="required"/>
+			<attribute name="objectname" type="string" use="required"/>
+			<attribute name="keyfield"   type="string" use="optional"/>
+			<attribute name="exclude"    type="string" use="optional"/>
+			<attribute name="key-alias"  type="string" use="optional"/>
+			<attribute name="resource-type"   type="string" use="optional"/>
+		</complexType>
+	</element>
+
+	<!-- an attribute object -->
+	<element name="attrib">
+		<complexType>
+			<attribute name="name" type="string" use="required"/>
+			
+			<attribute name="alias" type="string" use="required"/>
+			
+			<attribute name="type" use="required">
+                                <simpleType>
+					<restriction base="string">
+						<pattern value="([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING))"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+			
+			<attribute name="maxval" type="string" use="optional"/>
+			<attribute name="minval" type="string" use="optional"/>
+		</complexType>
+	</element>	
+	
+	<!-- a composite attribute object -->
+	<element name="comp-attrib">
+		<complexType>
+			<sequence>
+						<element ref="this:comp-member" maxOccurs="unbounded" minOccurs="0"></element>
+			</sequence>
+		
+			<attribute name="name" type="string" use="required"/>
+			
+			<attribute name="alias" type="string" use="optional"/>
+			
+			<attribute name="type" use="required">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="[Cc](omposite|OMPOSITE)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+		</complexType>
+	</element>	
+	
+	<!-- a composite attribute member object -->
+	<element name="comp-member">
+		<complexType>
+			<attribute name="name" type="string" use="required"/>
+			
+			<attribute name="alias" type="string" use="optional"/>
+			
+			<attribute name="type" use="required">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING)?|[Cc](omposite|OMPOSITE))"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+
+			<attribute name="maxval" type="string" use="optional"/>
+
+			<attribute name="minval" type="string" use="optional"/>
+		</complexType>
+	</element>	
+
+	<!--jmx-systems>
+
+	<element name="jmx-systems">
+		<complexType>
+			<sequence>
+				<element ref="jmx-systemDef" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="jmx-systemDef">
+		<complexType>
+			<sequence>	
+				<choice>
+					<element name="sysoid" type="string" minOccurs="1" maxOccurs="1"/>
+					<element name="sysoidMask" type="string" minOccurs="1" maxOccurs="1"/>
+				</choice>
+				<element ref="ipList" minOccurs="0" maxOccurs="1"/>
+				<element ref="jmx-collect" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+			<attribute name="name" type="string" use="required"/>	
+		</complexType>
+	</element>
+
+	<element name="ipList">
+		<complexType>
+			<sequence>
+				<element name="ipAddr" type="string" minOccurs="0" maxOccurs="unbounded"/>
+				<element name="ipAddrMask" type="string" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="jmx-collect">
+		<complexType>
+			<sequence>
+				<element name="includeMbean" type="string" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element-->
+
+
+
+
+</schema>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,13 +25,11 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.data.Property;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Page;
-import com.vaadin.ui.*;
+import java.util.Iterator;
+
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUI;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
@@ -39,7 +37,18 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.config.charts.BarChart;
 import org.opennms.web.charts.ChartUtils;
 
-import java.util.Iterator;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.NativeSelect;
 
 /**
  * This class represents the configuration window for charts dashlets.
@@ -72,7 +81,7 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
          * Setting up the base layouts
          */
 
-        setHeight(310, Unit.PIXELS);
+        setHeight(410, Unit.PIXELS);
         setWidth(40, Unit.PERCENTAGE);
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -90,9 +99,11 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
          */
         m_maximizeWidth = new CheckBox();
         m_maximizeWidth.setCaption("Maximize width");
+        m_maximizeWidth.setDescription("Maximize width");
 
         m_maximizeHeight = new CheckBox();
         m_maximizeHeight.setCaption("Maximize height");
+        m_maximizeHeight.setDescription("Maximize height");
 
         String maximizeWidthString = m_dashletSpec.getParameters().get("maximizeWidth");
         String maximizeHeightString = m_dashletSpec.getParameters().get("maximizeHeight");
@@ -104,6 +115,7 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
         m_maximizeHeight.setValue(maximizeHeight);
 
         m_chartSelect = new NativeSelect();
+        m_chartSelect.setDescription("Select chart to be displayed");
         m_chartSelect.setCaption("Chart");
         m_chartSelect.setNullSelectionAllowed(false);
         m_chartSelect.setInvalidAllowed(false);
@@ -141,7 +153,12 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
 
         formLayout.addComponent(m_chartSelect);
 
-        Page.getCurrent().getStyles().add(".preview { width:225px; }");
+        addAttachListener(new AttachListener() {
+            @Override
+            public void attach(AttachEvent attachEvent) {
+                getUI().getPage().getStyles().add(".preview { width:225px; }");
+            }
+        });
 
         m_chartSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
@@ -175,6 +192,7 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
          * Adding the cancel button...
          */
         Button cancel = new Button("Cancel");
+        cancel.setDescription("Cancel editing");
         cancel.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -191,7 +209,7 @@ public class ChartsConfigurationWindow extends DashletConfigurationWindow {
          * ...and the OK button
          */
         Button ok = new Button("Save");
-
+        ok.setDescription("Save properties and close");
         ok.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {

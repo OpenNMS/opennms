@@ -1,0 +1,405 @@
+// Global settings
+:ascii-ids:
+:encoding: UTF-8
+:lang: en
+:icons: font
+:toc: left
+:toclevels: 3
+:numbered:
+:stem:
+
+[[ga]]
+= Administrators Guide
+:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
+:revnumber: {opennms-product-name} {opennms-version}
+:revdate: {last-update-label} {docdatetime}
+:version-label!:
+
+[[ga-admin-datachoices]]
+== Data Choices
+include::text/datachoices.adoc[]
+
+[[ga-role-user-management]]
+== User Management
+include::text/user-management/users.adoc[]
+include::text/user-management/security-roles.adoc[]
+include::text/user-management/pre-authentication.adoc[]
+
+[[ga-admin-ui]]
+== Administrative Webinterface
+
+[[ga-surveillance-view]]
+=== Surveillance View
+include::text/surveillance-view.adoc[]
+
+[[ga-dashboard-view]]
+=== Dashboard
+include::text/dashboard.adoc[]
+
+[[ga-admin-ui-start-page]]
+=== Grafana Dashboard Box
+include::text/webui/grafana-dashboard-box.adoc[]
+
+[[ga-admin-ui-ops-board]]
+=== Operator Board
+include::text/webui/opsboard/introduction.adoc[]
+
+// Dashlets
+include::text/webui/opsboard/dashlet/alarm-detail.adoc[]
+include::text/webui/opsboard/dashlet/alarms.adoc[]
+include::text/webui/opsboard/dashlet/charts.adoc[]
+include::text/webui/opsboard/dashlet/grafana.adoc[]
+include::text/webui/opsboard/dashlet/image.adoc[]
+include::text/webui/opsboard/dashlet/ksc.adoc[]
+include::text/webui/opsboard/dashlet/map.adoc[]
+include::text/webui/opsboard/dashlet/rrd.adoc[]
+include::text/webui/opsboard/dashlet/rtc.adoc[]
+include::text/webui/opsboard/dashlet/summary.adoc[]
+include::text/webui/opsboard/dashlet/surveillance.adoc[]
+include::text/webui/opsboard/dashlet/topology.adoc[]
+include::text/webui/opsboard/dashlet/url.adoc[]
+
+// Generic components
+include::text/webui/opsboard/boosting-behavior.adoc[]
+include::text/webui/opsboard/criteria-builder.adoc[]
+
+[[ga-admin-ui-jmx-config-generator]]
+=== JMX Configuration Generator
+include::text/webui/jmx-config-generator/introduction.adoc[]
+include::text/webui/jmx-config-generator/webui.adoc[]
+include::text/webui/jmx-config-generator/cli.adoc[]
+
+[[ga-admin-ui-heatmap]]
+=== Heatmap
+include::text/webui/heatmap/introduction.adoc[]
+
+[[ga-admin-ui-trend]]
+=== Trend
+include::text/webui/trend/introduction.adoc[]
+
+[[ga-service-assurance]]
+== Service Assurance
+include::text/service-assurance/introduction.adoc[]
+include::text/service-assurance/configuration.adoc[]
+include::text/service-assurance/critical-service.adoc[]
+include::text/service-assurance/downtime-model.adoc[]
+include::text/service-assurance/path-outages.adoc[]
+include::text/service-assurance/polling-packages.adoc[]
+
+// Included in alphabetical order
+[[ga-service-monitors]]
+=== Service monitors
+include::text/service-assurance/monitors/introduction.adoc[]
+include::text/service-assurance/monitors/ActiveMQMonitor.adoc[]
+include::text/service-assurance/monitors/AvailabilityMonitor.adoc[]
+include::text/service-assurance/monitors/BgpSessionMonitor.adoc[]
+include::text/service-assurance/monitors/BSFMonitor.adoc[]
+include::text/service-assurance/monitors/CiscoIpSlaMonitor.adoc[]
+include::text/service-assurance/monitors/CiscoPingMibMonitor.adoc[]
+include::text/service-assurance/monitors/CitrixMonitor.adoc[]
+include::text/service-assurance/monitors/DhcpMonitor.adoc[]
+include::text/service-assurance/monitors/DiskUsageMonitor.adoc[]
+include::text/service-assurance/monitors/DnsMonitor.adoc[]
+include::text/service-assurance/monitors/DNSResolutionMonitor.adoc[]
+include::text/service-assurance/monitors/FtpMonitor.adoc[]
+include::text/service-assurance/monitors/HostResourceSwRunMonitor.adoc[]
+include::text/service-assurance/monitors/HttpMonitor.adoc[]
+include::text/service-assurance/monitors/HttpPostMonitor.adoc[]
+include::text/service-assurance/monitors/HttpsMonitor.adoc[]
+include::text/service-assurance/monitors/IcmpMonitor.adoc[]
+include::text/service-assurance/monitors/ImapMonitor.adoc[]
+include::text/service-assurance/monitors/ImapsMonitor.adoc[]
+include::text/service-assurance/monitors/JCifsMonitor.adoc[]
+include::text/service-assurance/monitors/JDBCMonitor.adoc[]
+include::text/service-assurance/monitors/JDBCStoredProcedureMonitor.adoc[]
+include::text/service-assurance/monitors/JDBCQueryMonitor.adoc[]
+include::text/service-assurance/monitors/JmxMonitor.adoc[]
+include::text/service-assurance/monitors/JolokiaBeanMonitor.adoc[]
+include::text/service-assurance/monitors/LdapMonitor.adoc[]
+include::text/service-assurance/monitors/LdapsMonitor.adoc[]
+include::text/service-assurance/monitors/MemcachedMonitor.adoc[]
+include::text/service-assurance/monitors/NetScalerGroupHealthMonitor.adoc[]
+include::text/service-assurance/monitors/NrpeMonitor.adoc[]
+include::text/service-assurance/monitors/NtpMonitor.adoc[]
+include::text/service-assurance/monitors/OmsaStorageMonitor.adoc[]
+include::text/service-assurance/monitors/OpenManageChassisMonitor.adoc[]
+include::text/service-assurance/monitors/PageSequenceMonitor.adoc[]
+include::text/service-assurance/monitors/PercMonitor.adoc[]
+include::text/service-assurance/monitors/Pop3Monitor.adoc[]
+include::text/service-assurance/monitors/PrTableMonitor.adoc[]
+include::text/service-assurance/monitors/RadiusAuthMonitor.adoc[]
+include::text/service-assurance/monitors/SmbMonitor.adoc[]
+include::text/service-assurance/monitors/SmtpMonitor.adoc[]
+include::text/service-assurance/monitors/SnmpMonitor.adoc[]
+include::text/service-assurance/monitors/SshMonitor.adoc[]
+include::text/service-assurance/monitors/SSLCertMonitor.adoc[]
+include::text/service-assurance/monitors/StrafePingMonitor.adoc[]
+include::text/service-assurance/monitors/TcpMonitor.adoc[]
+include::text/service-assurance/monitors/SystemExecuteMonitor.adoc[]
+include::text/service-assurance/monitors/VmwareCimMonitor.adoc[]
+include::text/service-assurance/monitors/VmwareMonitor.adoc[]
+include::text/service-assurance/monitors/WebMonitor.adoc[]
+include::text/service-assurance/monitors/Win32ServiceMonitor.adoc[]
+include::text/service-assurance/monitors/WsManMonitor.adoc[]
+include::text/service-assurance/monitors/XmpMonitor.adoc[]
+
+[[ga-performance-mgmt]]
+== Performance Management
+include::text/performance-data-collection/introduction.adoc[]
+include::text/performance-data-collection/configuration.adoc[]
+include::text/performance-data-collection/collection-packages.adoc[]
+
+[[ga-performance-mgmt-collectors]]
+=== Collectors
+include::text/performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
+include::text/performance-data-collection/collectors/http.adoc[]
+include::text/performance-data-collection/collectors/jdbc.adoc[]
+include::text/performance-data-collection/collectors/jmx.adoc[]
+include::text/performance-data-collection/collectors/nsclient.adoc[]
+include::text/performance-data-collection/collectors/tca.adoc[]
+include::text/performance-data-collection/collectors/vmware-cim.adoc[]
+include::text/performance-data-collection/collectors/vmware.adoc[]
+include::text/performance-data-collection/collectors/wmi.adoc[]
+include::text/performance-data-collection/collectors/wsman.adoc[]
+include::text/performance-data-collection/collectors/xml.adoc[]
+include::text/performance-data-collection/collectors/xmp.adoc[]
+
+[[ga-performance-mgmt-shell]]
+=== Shell Commands
+include::text/performance-data-collection/shell/introduction.adoc[]
+include::text/performance-data-collection/shell/adhoc-collection.adoc[]
+include::text/performance-data-collection/shell/measurements.adoc[]
+include::text/performance-data-collection/shell/stress-testing.adoc[]
+
+[[ga-performance-mgmt-thresholds]]
+== Thresholding
+include::text/thresholds/thresholding.adoc[]
+
+[[ga-events]]
+== Events
+include::text/events/anatomy-events.adoc[]
+include::text/events/event-sources.adoc[]
+include::text/events/sources/snmp-traps.adoc[]
+include::text/events/sources/syslog.adoc[]
+include::text/events/sources/rest.adoc[]
+include::text/events/sources/xml-tcp.adoc[]
+include::text/events/sources/eif-adapter.adoc[]
+include::text/events/sources/tl1.adoc[]
+include::text/events/sources/sink-api.adoc[]
+include::text/events/eventbus.adoc[]
+include::text/events/event-configuration.adoc[]
+
+[[ga-alarms]]
+== Alarms
+include::text/alarms/introduction.adoc[]
+include::text/alarms/alarmd.adoc[]
+include::text/alarms/configuring-alarms.adoc[]
+include::text/alarms/alarm-notes.adoc[]
+include::text/alarms/alarm-sound-flash.adoc[]
+include::text/alarms/history.adoc[]
+
+[[ga-notifications]]
+== Notifications
+include::text/notifications/introduction.adoc[]
+include::text/notifications/getting-started.adoc[]
+include::text/notifications/concepts.adoc[]
+include::text/notifications/bonus-strategies.adoc[]
+include::text/notifications/strategies/mattermost.adoc[]
+include::text/notifications/strategies/slack.adoc[]
+
+[[ga-provisioning]]
+== Provisioning
+include::text/provisioning/introduction.adoc[]
+include::text/provisioning/concepts.adoc[]
+include::text/provisioning/terminology.adoc[]
+include::text/provisioning/scalability.adoc[]
+include::text/provisioning/getting-started.adoc[]
+include::text/provisioning/import-handler.adoc[]
+include::text/provisioning/examples.adoc[]
+include::text/provisioning/adapters.adoc[]
+include::text/provisioning/meta-data.adoc[]
+include::text/provisioning/integration.adoc[]
+include::text/provisioning/single-node.adoc[]
+include::text/provisioning/fine-grained.adoc[]
+include::text/provisioning/api-examples.adoc[]
+include::text/provisioning/snmp-profile.adoc[]
+include::text/provisioning/auto-discovery-detectors.adoc[]
+
+[[ga-provisioning-detectors]]
+=== Service Detectors
+include::text/provisioning/detectors.adoc[]
+include::text/provisioning/detectors/HttpDetector.adoc[]
+include::text/provisioning/detectors/HttpsDetector.adoc[]
+include::text/provisioning/detectors/SnmpDetector.adoc[]
+include::text/provisioning/detectors/wsman.adoc[]
+include::text/provisioning/detectors/wsmanwql.adoc[]
+include::text/provisioning/detectors/ReverseDNSLookupDetector.adoc[]
+
+[[ga-bsm]]
+== Business Service Monitoring
+include::text/bsm/introduction.adoc[]
+include::text/bsm/business-service-hierarchy.adoc[]
+include::text/bsm/operational-status.adoc[]
+include::text/bsm/root-cause-impact-analysis.adoc[]
+include::text/bsm/simulation-mode.adoc[]
+include::text/bsm/share-bsm-view.adoc[]
+include::text/bsm/change-icons.adoc[]
+include::text/bsm/business-service-definition.adoc[]
+include::text/bsm/edges.adoc[]
+include::text/bsm/map-functions.adoc[]
+include::text/bsm/reduce-functions.adoc[]
+include::text/bsm/bsmd.adoc[]
+
+
+
+[[ga-topology]]
+== Topology Map
+include::text/topology/topology.adoc[]
+
+== Asset Topology Provider
+include::text/asset-topology/graphml-asset-topology-provider.adoc[]
+
+[[ga-database-reports]]
+== Database Reports
+include::text/database-reports/database.adoc[]
+
+[[ga-enlinkd]]
+== Enhanced Linkd
+include::text/enlinkd/introduction.adoc[]
+
+// Layer 2 Link Discovery
+include::text/enlinkd/layer-2-discovery.adoc[]
+include::text/enlinkd/layer-2/lldp-discovery.adoc[]
+include::text/enlinkd/layer-2/cdp-discovery.adoc[]
+include::text/enlinkd/layer-2/bridge-discovery.adoc[]
+
+// Layer 3 Link Discovery
+include::text/enlinkd/layer-3-discovery.adoc[]
+include::text/enlinkd/layer-3/ospf-discovery.adoc[]
+include::text/enlinkd/layer-3/is-is-discovery.adoc[]
+
+
+[[ga-opennms-opentracing]]
+== OpenTracing
+include::text/opentracing/setup.adoc[]
+
+[[ga-opennms-operation]]
+== Operation
+include::text/operation/ssl/ssl.adoc[]
+include::text/operation/request-logging.adoc[]
+include::text/operation/geocoder.adoc[]
+include::text/operation/newts-repository-converter.adoc[]
+
+[[ga-opennms-operation-newts]]
+=== Newts
+include::text/operation/newts/introduction.adoc[]
+include::text/operation/newts/configuration.adoc[]
+include::text/operation/newts/cassandra-jmx.adoc[]
+include::text/operation/newts/cassandra-newts-jmx.adoc[]
+
+[[ga-opennms-operation-daemon-config-files]]
+=== Daemon Configuration Files
+include::text/operation/daemon-config-files/introduction.adoc[]
+include::text/operation/daemon-config-files/eventd.adoc[]
+include::text/operation/daemon-config-files/notifd.adoc[]
+include::text/operation/daemon-config-files/pollerd.adoc[]
+include::text/operation/daemon-config-files/syslogd.adoc[]
+include::text/operation/daemon-config-files/trapd.adoc[]
+
+[[ga-opennms-system-properties]]
+== System Properties
+include::text/system-properties/introduction.adoc[]
+include::text/system-properties/system-proxies.adoc[]
+
+[[ga-ticketing]]
+== Ticketing
+include::text/ticketing/introduction.adoc[]
+include::text/ticketing/jira.adoc[]
+include::text/ticketing/remedy.adoc[]
+
+// TSRM Ticketer
+include::text/ticketing/tsrm.adoc[]
+
+[[ga-rmi]]
+== Enabling RMI
+include::text/rmi.adoc[]
+
+[[ga-minion]]
+== Minion
+include::text/minion/jms.adoc[]
+include::text/minion/aws-sqs.adoc[]
+include::text/minion/offheap.adoc[]
+include::text/minion/jdbc-driver.adoc[]
+include::text/minion/ttl.adoc[]
+
+[[ga-sentinel]]
+== Sentinel
+include::text/sentinel/sentinel.adoc[]
+
+[[ga-special-cases-and-workarounds]]
+== Special Cases and Workarounds
+include::text/workarounds/snmp.adoc[]
+
+[[ga-ifttt]]
+== IFTTT Integration
+include::text/ifttt/ifttt-integration.adoc[]
+
+
+[[ga-dnsresolver]]
+== DNS Resolver
+include::text/dnsresolver/introduction.adoc[]
+
+[[ga-telemetryd]]
+== Telemetry Daemon
+include::text/telemetryd/introduction.adoc[]
+
+[[ga-telemetryd-listener]]
+=== Listener Reference
+include::text/telemetryd/listener/tcp.adoc[]
+include::text/telemetryd/listener/udp.adoc[]
+
+[[ga-telemetryd-protocols]]
+=== Protocol Reference
+include::text/telemetryd/protocols/ipfix.adoc[]
+include::text/telemetryd/protocols/jti.adoc[]
+include::text/telemetryd/protocols/netflow5.adoc[]
+include::text/telemetryd/protocols/netflow9.adoc[]
+include::text/telemetryd/protocols/nxos.adoc[]
+include::text/telemetryd/protocols/sflow.adoc[]
+
+[[ga-elasticsearch-integration]]
+== Elasticsearch Integration
+include::text/elasticsearch/introduction.adoc[]
+
+[[ga-elasticsearch-integration-features]]
+=== Features
+include::text/elasticsearch/features/introduction.adoc[]
+include::text/elasticsearch/features/event-forwarder.adoc[]
+include::text/elasticsearch/features/event-forwarder-mapping.adoc[]
+include::text/elasticsearch/features/event-forwarder-mapping-table.adoc[]
+include::text/elasticsearch/features/flows.adoc[]
+include::text/elasticsearch/features/situation-feedback.adoc[]
+include::text/elasticsearch/features/alarm-history.adoc[]
+
+[[ga-flow-support]]
+== Flow Support
+include::text/flows/introduction.adoc[]
+include::text/flows/setup.adoc[]
+include::text/flows/classification-engine.adoc[]
+
+[[ga-kafka-producer]]
+== Kafka Producer
+include::text/kafka-producer/kafka-producer.adoc[]
+
+[[ga-alarm-correlation]]
+== Alarm Correlation
+include::text/alarm-correlation/situation-feedback.adoc[]
+
+[[ga-meta-data]]
+== Meta-Data
+include::text/meta-data.adoc[]
+
+[[ga-admin]]
+== {opennms-product-name} Administration
+include::text/admin/introduction.adoc[]
+include::text/admin/restart.adoc[]

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("serial")
 public class TestServlet extends HttpServlet {
 
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(TestServlet.class);
 
     /* (non-Javadoc)
@@ -60,8 +61,8 @@ public class TestServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LOG.info("JUnit Test Request: %s", req.getRequestURI());
-        LOG.info("JUnit Test Content Type: %s", req.getContentType());
+        LOG.info("JUnit Test Request: {}", req.getRequestURI());
+        LOG.info("JUnit Test Content Type: {}", req.getContentType());
         String requestContent = IOUtils.toString(req.getReader());
         if (req.getRequestURI().equals("/junit/test/sample")) {
             resp.getWriter().write("OK!");
@@ -86,13 +87,26 @@ public class TestServlet extends HttpServlet {
                 StringTokenizer st = new StringTokenizer(requestContent, "&");
                 SampleData data = new SampleData();
                 while (st.hasMoreTokens()) {
-                    String pair[] = ((String)st.nextToken()).split("=");
+                    String[] pair = ((String)st.nextToken()).split("=");
                     data.addParameter(pair[0], pair[1]);
                 }
                 resp.getWriter().write(JaxbUtils.marshal(data));
             } else {
                 resp.setContentType("text/plain");
                 resp.getWriter().write("ERROR!");
+            }
+        }
+        if (req.getRequestURI().equals("/junit/test/post-data")) {
+            Person p = JaxbUtils.unmarshal(Person.class, requestContent);
+            if ("Alejandro".equals(p.getFirstName()) && "Galue".equals(p.getLastName())) {
+                SampleData data = new SampleData();
+                data.addParameter("contributions", "500");
+                data.addParameter("applications", "2");
+                data.addParameter("frameworks", "25");
+                resp.setContentType("application/xml");
+                resp.getWriter().write(JaxbUtils.marshal(data));
+            } else {
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid request");
             }
         }
     }

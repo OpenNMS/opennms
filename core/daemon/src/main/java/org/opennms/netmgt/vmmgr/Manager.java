@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,15 +36,19 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 
-import org.opennms.netmgt.config.service.types.InvokeAtType;
-import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.core.logging.Logging;
+import org.opennms.netmgt.config.ServiceConfigFactory;
+import org.opennms.netmgt.config.service.InvokeAtType;
+import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.icmp.PingerFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,12 +90,25 @@ public class Manager implements ManagerMBean {
      */
     private static final String LOG4J_CATEGORY = "manager";
     private static final String m_osName = System.getProperty("os.name") == null? "" : System.getProperty("os.name").toLowerCase();
+    private static long startTime = System.currentTimeMillis();
+    private static AtomicBoolean stopInitiated = new AtomicBoolean(false);
 
+
+    /**
+     *  Register shutdown hook to handle SIGTERM signal for the process.
+     */
+    public void init() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> stop()));
+    }
     /**
      * <p>stop</p>
      */
     @Override
-    public void stop() {
+    public synchronized void stop() {
+        if (stopInitiated.get()) {
+            return;
+        }
+        stopInitiated.set(true);
         setLogPrefix();
 
         for (MBeanServer server : getMBeanServers()) {
@@ -107,7 +124,7 @@ public class Manager implements ManagerMBean {
         invoker.setReverse(true);
         invoker.setFailFast(false);
         
-        List<InvokerService> services = InvokerService.createServiceList(Invoker.getDefaultServiceConfigFactory().getServices());
+        List<InvokerService> services = InvokerService.createServiceList(new ServiceConfigFactory().getServices());
         invoker.setServices(services);
         invoker.getObjectInstances();
         invoker.invokeMethods();
@@ -124,7 +141,7 @@ public class Manager implements ManagerMBean {
     public List<String> status() {
         setLogPrefix();
 
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (MBeanServer server : getMBeanServers()) {
             result.addAll(status(server));
         }
@@ -138,7 +155,7 @@ public class Manager implements ManagerMBean {
         invoker.setAtType(InvokeAtType.STATUS);
         invoker.setFailFast(false);
 
-        final List<InvokerService> services = InvokerService.createServiceList(Invoker.getDefaultServiceConfigFactory().getServices());
+        final List<InvokerService> services = InvokerService.createServiceList(new ServiceConfigFactory().getServices());
         invoker.setServices(services);
         invoker.getObjectInstances();
         final List<InvokerResult> results = invoker.invokeMethods();
@@ -175,12 +192,18 @@ public class Manager implements ManagerMBean {
             LOG.debug("memory usage (free/used/total/max allowed): {}/{}/{}/{}", r.freeMemory(), (r.totalMemory() - r.freeMemory()), r.totalMemory(), (r.maxMemory() == Long.MAX_VALUE ? "infinite" : r.maxMemory()));
         }
         
-        LOG.info("calling System.exit(1)");
+        LOG.info("calling System.exit(0)");
         shutdownLogging();
-        System.exit(1);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.exit(0);
+            }
+        }, 500);
+
     }
 
-    private void dumpThreads() {
+    public void dumpThreads() {
         Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
         int daemons = 0;
         for (Thread t : threads.keySet()) {
@@ -229,7 +252,8 @@ public class Manager implements ManagerMBean {
     }
 
     private void testPinger() {
-        final Pinger pinger = PingerFactory.getInstance();
+        final PingerFactoryImpl pingerFactory = new PingerFactoryImpl();
+        final Pinger pinger = pingerFactory.getInstance();
 
         boolean hasV4 = pinger.isV4Available();
         boolean hasV6 = pinger.isV6Available();
@@ -272,6 +296,8 @@ public class Manager implements ManagerMBean {
         }
         
         // at least one is initialized, and we haven't said otherwise, so barrel ahead
+        // but first, reset the pinger factory so we can let auto-detection happen
+        pingerFactory.reset();
     }
 
     private void throwPingError(final String message) throws IllegalStateException {
@@ -288,5 +314,9 @@ public class Manager implements ManagerMBean {
 
     private List<MBeanServer> getMBeanServers() {
         return MBeanServerFactory.findMBeanServer(null);
+    }
+
+    public Long getUptime() {
+        return (System.currentTimeMillis() - startTime);
     }
 }

@@ -1,113 +1,73 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: NET-SNMP-AGENT-MIB -->
-
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.8072.4</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>1001</mevalue>
-                </maskelement>
-                <varbind>
-                        <vbnumber>1</vbnumber>
-                        <vbvalue>One or more logical devices contain a bad stripe%</vbvalue>
-                </varbind>
-        </mask>
-        <uei>uei.opennms.org/traps/SPACE-PLATFORM-MIB/jnxSpaceRAIDError</uei>
-        <event-label>SPACE-PLATFORM customized trap event: jnxSpaceRAIDError</event-label>
-        <descr>
-        &lt;p&gt;RAID error: %parm[#1]% &lt;/p&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
-                        RAID error trap received: %parm[#1]% &lt;/p&gt;
-                </logmsg>
-        <severity>Major</severity>
-        <alarm-data auto-clean="true" alarm-type="1" reduction-key="%uei%:%dpname%:%nodeid%"/>
-</event>
-
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.8072.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/netsnmp/traps/nsNotifyStart</uei>
-	<event-label>NET-SNMP-AGENT-MIB defined trap event: nsNotifyStart</event-label>
-	<descr>
-&lt;p&gt;An indication that the agent has started running.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			nsNotifyStart trap received&lt;/p&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8072.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/netsnmp/traps/nsNotifyStart</uei>
+      <event-label>NET-SNMP-AGENT-MIB defined trap event: nsNotifyStart</event-label>
+      <descr>&lt;p>An indication that the agent has started running.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			nsNotifyStart trap received&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.8072.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/netsnmp/traps/nsNotifyShutdown</uei>
-	<event-label>NET-SNMP-AGENT-MIB defined trap event: nsNotifyShutdown</event-label>
-	<descr>
-&lt;p&gt;An indication that the agent is in the process of being shut down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			nsNotifyShutdown trap received&lt;/p&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8072.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/netsnmp/traps/nsNotifyShutdown</uei>
+      <event-label>NET-SNMP-AGENT-MIB defined trap event: nsNotifyShutdown</event-label>
+      <descr>&lt;p>An indication that the agent is in the process of being shut down.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			nsNotifyShutdown trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.8072.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/netsnmp/traps/nsNotifyRestart</uei>
-	<event-label>NET-SNMP-AGENT-MIB defined trap event: nsNotifyRestart</event-label>
-	<descr>
-&lt;p&gt;An indication that the agent has been restarted.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8072.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/netsnmp/traps/nsNotifyRestart</uei>
+      <event-label>NET-SNMP-AGENT-MIB defined trap event: nsNotifyRestart</event-label>
+      <descr>&lt;p>An indication that the agent has been restarted.
 This does not imply anything about whether the configuration has
-changed or not (unlike the standard coldStart or warmStart traps)&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			nsNotifyRestart trap received&lt;/p&gt;
+changed or not (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			nsNotifyRestart trap received&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<!-- End of auto generated data from MIB: NET-SNMP-AGENT-MIB -->
+      <severity>Normal</severity>
+   </event>
 </events>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-08-27T15:00:02 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AllChartsReport" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Key" uuid="81ca14f3-e425-46db-b1b9-384bfdba9c28">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<subDataset name="categoryDataset" uuid="a5d9edca-a1c7-41e3-8d1e-7e4cd5671e93">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="OpenNMS Database"/>
+		<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
+		<parameter name="startDate" class="java.lang.String"/>
+		<parameter name="endDate" class="java.lang.String"/>
+		<queryString language="measurement">
+			<![CDATA[<query-request step="3600" start="$P{startDate}" end="$P{endDate}">
+   <expression label="moCallAttempts" transient="false" value="mo_call_attempts * 3600"/>
+   <expression label="mtCallAttempts" transient="false" value="mt_call_attempts * 3600"/>
+   <source aggregation="AVERAGE" label="mt_call_attempts" attribute="mt_call_attempts" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+   <source aggregation="AVERAGE" label="mo_call_attempts" attribute="mo_call_attempts" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+ </query-request>]]>
+		</queryString>
+		<field name="timestamp" class="java.util.Date">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="moCallAttempts" class="java.lang.Double">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="mtCallAttempts" class="java.lang.Double">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<variable name="Hour" class="java.lang.Integer">
+			<variableExpression><![CDATA[Integer.valueOf($F{timestamp}.getHours())]]></variableExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="timeSeriesDataset" uuid="8e8f78f4-17c9-49e8-a5d1-e55f6e7e510a">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="QueryExecutorAdapter"/>
+		<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
+		<parameter name="startDate" class="java.lang.String"/>
+		<parameter name="endDate" class="java.lang.String"/>
+		<queryString language="measurement">
+			<![CDATA[<query-request step="3600" start="$P{startDate}" end="$P{endDate}">
+  <expression label="moSuccessRate" transient="false" value="moCompletes * 100 / moAttempts"/>
+  <expression label="mtSuccessRate" transient="false" value="mtCompletes * 100 / mAttempts"/>
+  <source aggregation="AVERAGE" label="mt_call_completes" attribute="mt_call_completes" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+  <source aggregation="AVERAGE" label="mt_call_attempts" attribute="mt_call_attempts" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+  <source aggregation="AVERAGE" label="mo_call_completes" attribute="mo_call_completes" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+  <source aggregation="AVERAGE" label="mo_call_attempts" attribute="mo_call_attempts" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+</query-request>]]>
+		</queryString>
+		<field name="timestamp" class="java.util.Date">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="moSuccessRate" class="java.lang.Double">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="mtSuccessRate" class="java.lang.Double">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<variable name="Hour" class="java.lang.Integer">
+			<variableExpression><![CDATA[Integer.valueOf($F{timestamp}.getHours())]]></variableExpression>
+		</variable>
+	</subDataset>
+	<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
+	<parameter name="startDate" class="java.lang.String"/>
+	<parameter name="endDate" class="java.lang.String"/>
+	<group name="Bar">
+		<groupExpression><![CDATA[null]]></groupExpression>
+		<groupHeader>
+			<band height="400">
+				<barChart>
+					<chart evaluationTime="Report">
+						<reportElement x="0" y="0" width="555" height="300" uuid="2ec42996-dfd8-43b7-b1ff-deac29804cd3"/>
+						<chartTitle>
+							<titleExpression><![CDATA["Bar Chart"]]></titleExpression>
+						</chartTitle>
+						<chartSubtitle>
+							<subtitleExpression><![CDATA["Using JRobin Queries to make Bar Charts"]]></subtitleExpression>
+						</chartSubtitle>
+						<chartLegend/>
+						<hyperlinkTooltipExpression><![CDATA["Bar Chart"]]></hyperlinkTooltipExpression>
+					</chart>
+					<categoryDataset>
+						<dataset>
+							<datasetRun subDataset="categoryDataset" uuid="cbd574d6-c063-41c7-be6b-21ace4e29804">
+								<datasetParameter name="MEASUREMENT_URL">
+									<datasetParameterExpression><![CDATA[$P{MEASUREMENT_URL}]]></datasetParameterExpression>
+								</datasetParameter>
+								<datasetParameter name="startDate">
+									<datasetParameterExpression><![CDATA[$P{startDate}]]></datasetParameterExpression>
+								</datasetParameter>
+								<datasetParameter name="endDate">
+									<datasetParameterExpression><![CDATA[$P{endDate}]]></datasetParameterExpression>
+								</datasetParameter>
+							</datasetRun>
+						</dataset>
+						<categorySeries>
+							<seriesExpression><![CDATA["MO Call Attempts"]]></seriesExpression>
+							<categoryExpression><![CDATA[$V{Hour}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{moCallAttempts}]]></valueExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["MT Call Attempts"]]></seriesExpression>
+							<categoryExpression><![CDATA[$V{Hour}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{mtCallAttempts}]]></valueExpression>
+						</categorySeries>
+					</categoryDataset>
+					<barPlot>
+						<plot/>
+						<itemLabel color="#CCCCCC" backgroundColor="#FFFFFF"/>
+						<categoryAxisLabelExpression><![CDATA["Hour of the Day"]]></categoryAxisLabelExpression>
+						<categoryAxisFormat>
+							<axisFormat/>
+						</categoryAxisFormat>
+						<valueAxisLabelExpression><![CDATA["Call Attempts"]]></valueAxisLabelExpression>
+						<valueAxisFormat>
+							<axisFormat/>
+						</valueAxisFormat>
+					</barPlot>
+				</barChart>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="TimeSeries">
+		<groupExpression><![CDATA[null]]></groupExpression>
+		<groupHeader>
+			<band height="400">
+				<timeSeriesChart>
+					<chart evaluationTime="Report">
+						<reportElement positionType="Float" x="0" y="0" width="555" height="300" uuid="c4c157a4-71ab-4a17-9d33-f7baabc25dfb"/>
+						<chartTitle>
+							<titleExpression><![CDATA["Time Series Chart"]]></titleExpression>
+						</chartTitle>
+						<chartSubtitle>
+							<subtitleExpression><![CDATA["Graphing JRobin Data Over Time"]]></subtitleExpression>
+						</chartSubtitle>
+						<chartLegend/>
+						<hyperlinkTooltipExpression><![CDATA["Time Series Chart"]]></hyperlinkTooltipExpression>
+					</chart>
+					<timeSeriesDataset timePeriod="Hour">
+						<dataset>
+							<datasetRun subDataset="timeSeriesDataset" uuid="b1fb11f3-bc42-4785-8638-5fbe0c99aab4">
+								<datasetParameter name="MEASUREMENT_URL">
+									<datasetParameterExpression><![CDATA[$P{MEASUREMENT_URL}]]></datasetParameterExpression>
+								</datasetParameter>
+								<datasetParameter name="startDate">
+									<datasetParameterExpression><![CDATA[$P{startDate}]]></datasetParameterExpression>
+								</datasetParameter>
+								<datasetParameter name="endDate">
+									<datasetParameterExpression><![CDATA[$P{endDate}]]></datasetParameterExpression>
+								</datasetParameter>
+							</datasetRun>
+						</dataset>
+						<timeSeries>
+							<seriesExpression><![CDATA["MO Success Rate"]]></seriesExpression>
+							<timePeriodExpression><![CDATA[$F{timestamp}]]></timePeriodExpression>
+							<valueExpression><![CDATA[$F{moSuccessRate}]]></valueExpression>
+							<labelExpression><![CDATA[]]></labelExpression>
+						</timeSeries>
+						<timeSeries>
+							<seriesExpression><![CDATA["MT Success Rate"]]></seriesExpression>
+							<timePeriodExpression><![CDATA[$F{timestamp}]]></timePeriodExpression>
+							<valueExpression><![CDATA[$F{mtSuccessRate}]]></valueExpression>
+							<labelExpression><![CDATA[]]></labelExpression>
+						</timeSeries>
+					</timeSeriesDataset>
+					<timeSeriesPlot isShowLines="true" isShowShapes="true">
+						<plot/>
+						<timeAxisLabelExpression><![CDATA["Time"]]></timeAxisLabelExpression>
+						<timeAxisFormat>
+							<axisFormat/>
+						</timeAxisFormat>
+						<valueAxisLabelExpression><![CDATA["Call Success Rate (%)"]]></valueAxisLabelExpression>
+						<valueAxisFormat>
+							<axisFormat/>
+						</valueAxisFormat>
+					</timeSeriesPlot>
+				</timeSeriesChart>
+			</band>
+		</groupHeader>
+	</group>
+</jasperReport>

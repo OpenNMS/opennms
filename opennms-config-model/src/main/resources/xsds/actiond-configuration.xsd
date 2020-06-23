@@ -19,6 +19,10 @@
     </annotation>
 
     <complexType>
+      <sequence>
+        <any minOccurs="0" />
+      </sequence>      
+
       <attribute name="max-outstanding-actions" use="required">
         <annotation>
           <documentation>The maximum number of simultaneous processes launched
@@ -41,6 +45,7 @@
           is terminated.</documentation>
         </annotation>
       </attribute>
+
     </complexType>
   </element>
 </schema>

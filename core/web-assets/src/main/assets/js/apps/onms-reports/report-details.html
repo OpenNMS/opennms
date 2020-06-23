@@ -1,0 +1,372 @@
+<style type="text/css">
+    .ui-select-bootstrap.is-invalid > .ui-select-match > .btn {
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23dc3545' viewBox='-2 -2 7 7'%3e%3cpath stroke='%23dc3545' d='M0 0l3 3m0-3L0 3'/%3e%3ccircle r='.5'/%3e%3ccircle cx='3' r='.5'/%3e%3ccircle cy='3' r='.5'/%3e%3ccircle cx='3' cy='3' r='.5'/%3e%3c/svg%3E");
+        background-repeat: no-repeat;
+        background-position: 100% calc(.375em + .1875rem);
+        background-size: calc(.75em + .375rem) calc(.75em + .375rem);
+    }
+
+    .ui-select-bootstrap > .ui-select-match > .btn {
+        border-color: #ced4da;
+        background-color: #fff;
+        background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23{$custom-select-indicator-color}' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px;
+    }
+</style>
+
+<form name="reportForm" class="form mx-4 mt-2" role="form" novalidate>
+    <div class="" ng-if="report.parameters && report.parameters.length > 0">
+        <h3 class="">Report Parameters</h3>
+
+        <!-- Grafana Parameters -->
+        <div ng-show="report.isGrafanaReport()" class="form-group">
+            <label>Grafana Endpoint</label>
+            <a href="/opennms/admin/endpoint/index.jsp" title="Configure Grafana Endpoints"> <i class="fa fa-plug"></i></a>
+            <a href title="Reload Grafana Endpoints" ng-click="loadEndpoints()"> <i class="fa fa-refresh"></i></a>
+            <ui-select
+                    ng-model="selected.endpoint"
+                    ng-show="endpoints.length > 0"
+                    ng-class="{ 'is-invalid': report.errors.GRAFANA_ENDPOINT_UID || report.errors.GRAFANA_DASHBOARD_UID }"
+                    ng-change="endpointChanged()"
+                    theme="bootstrap" >
+                <ui-select-match placeholder="Select Grafana Endpoint">
+                    <span>{{$select.selected.label}}</span>
+                </ui-select-match>
+                <ui-select-choices repeat="endpoint in (endpoints | filter: $select.search)">
+                    {{endpoint.label}}
+                </ui-select-choices>
+            </ui-select>
+            <p class="alert alert-warning" ng-if="endpoints.length == 0">
+                There is no Grafana Endpoint defined.
+                Please <a href="/opennms/admin/endpoint/index.jsp">add a Grafana Endpoint</a>.
+            </p>
+            <div class="text-danger mt-1" style="font-size: 80%" ng-if="report.errors.GRAFANA_ENDPOINT_UID">
+                {{report.errors.GRAFANA_ENDPOINT_UID}}: <a href="/opennms/admin/endpoint/index.jsp#!/endpoints/grafana">Configure Grafana Endpoints</a>
+            </div>
+            <div class="text-danger mt-1" style="font-size: 80%" ng-if="report.errors.GRAFANA_DASHBOARD_UID">
+                {{report.errors.GRAFANA_DASHBOARD_UID}}
+            </div>
+        </div>
+        <div ng-show="report.isGrafanaReport() && selected.endpoint" class="form-group">
+            <label>Grafana Dashboard</label>
+            <a ng-if="dashboards.length > 0" href="{{selected.endpoint.url}}/{{selected.dashboard.url}}" title="Show Dasbhoard" target="_blank"> <i class="fa fa-dashboard"></i></a>
+            <a href title="Refresh Dashboards" ng-click="endpointChanged()"><i class="fa fa-refresh"></i></a>
+            <ui-select
+                    ng-model="selected.dashboard"
+                    ng-show="dashboards.length > 0"
+                    theme="bootstrap" >
+                <ui-select-match placeholder="Select Grafana Dashboard">
+                    <span>{{$select.selected.title}}</span>
+                </ui-select-match>
+                <ui-select-choices repeat="dashboard in (dashboards | filter: $select.search)">
+                    {{dashboard.title}}
+                </ui-select-choices>
+            </ui-select>
+            <p class="alert alert-warning" ng-if="dashboards.length == 0">
+                There is no Grafana Dashboard defined.
+                Please <a href="{{selected.endpoint.url}}/dashboards" target="_blank">add a Dashboard</a>.
+            </p>
+        </div>
+
+        <!-- Other Parameters -->
+        <div ng-if="parameter.type === 'string' && parameter.hidden === false" class="form-group" ng-repeat-start="parameter in report.parameters">
+            <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+
+            <!--String -->
+            <select id="{{parameter.name}}"
+                    name="p{{parameter.name}}"
+                    ng-if="parameter.inputType === 'reportCategorySelector'"
+                    class="form-control custom-select"
+                    ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || error[parameter.name]}"
+                    ng-model="parameter.value"
+                    ng-options="option for option in report.supportedSurveillanceCategories">
+            </select>
+
+            <select id="{{parameter.name}}" ng-if="parameter.inputType === 'onmsCategorySelector'" class="form-control custom-select" ng-model="parameter.value">
+                <option ng-repeat="option in report.supportedCategories">{{option}}</option>
+            </select>
+            <input id="{{parameter.name}}"
+                   name="{{parameter.name}}"
+                   ng-if="parameter.inputType !== 'reportCategorySelector' && parameter.inputType !== 'onmsCategorySelector'"
+                   ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name]}"
+                   class="form-control"
+                   type="text"
+                   ng-model="parameter.value"
+                   required/>
+            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a value.</div>
+            <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
+        </div>
+        <!-- INT -->
+        <div ng-if="parameter.type === 'integer'" class="form-group">
+            <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+            <input id="{{parameter.name}}"
+                   name="{{parameter.name}}"
+                   ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
+                   class="form-control"
+                   type="text"
+                   ng-pattern="/^-?[0-9]*$/"
+                   ng-model="parameter.value"
+                   required />
+            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide an integer value.</div>
+            <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
+        </div>
+        <!-- FLOAT -->
+        <div ng-if="parameter.type === 'float'" class="form-group">
+            <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+            <input id="{{parameter.name}}"
+                   name="{{parameter.name}}"
+                   ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
+                   class="form-control"
+                   type="number"
+                   ng-model="parameter.value"
+                   required/>
+            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a decimal number.</div>
+            <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
+        </div>
+        <!-- DOUBLE -->
+        <div ng-if="parameter.type === 'double'" class="form-group">
+            <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+            <input id="{{parameter.name}}"
+                   name="{{parameter.name}}"
+                   ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
+                   class="form-control"
+                   type="number"
+                   ng-model="parameter.value"
+                   required/>
+            <div ng-show="reportForm[parameter.name].$invalid" class="invalid-feedback">Please provide a decimal number.</div>
+            <div ng-show="report.errors[parameter.name]" class="invalid-feedback">{{report.errors[parameter.name]}}</div>
+        </div>
+        <!-- DATE -->
+        <div ng-if="parameter.type === 'date'" class="form-group">
+            <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+            <div class="input-group" ng-if="options.scheduleReport && parameter.useAbsoluteDate === false">
+                <input type="number"
+                       name="{{parameter.name}}Count"
+                       ng-class="{ 'is-invalid' : reportForm[parameter.name + 'Count'].$invalid || report.errors[parameter.name + 'Count'] }"
+                       class="form-control"
+                       min="0" max="31" step="1"
+                       ng-pattern="/^[0-9]*$/"
+                       ng-model="parameter.count"
+                       placeholder="count"
+                       required/>
+                <select class="form-control custom-select" ng-model="parameter.interval">
+                    <option value="day">day</option>
+                    <option value="month">month</option>
+                    <option value="year">year</option>
+                </select>
+                <label class="my-auto mx-2"> ago, at </label>
+                <input type="number"
+                       name="{{parameter.name}}Hours"
+                       ng-class="{ 'is-invalid' : reportForm[parameter.name + 'Hours'].$invalid || report.errors[parameter.name + 'Hours'] }"
+                       class="form-control"
+                       min="0" max="23" step="1"
+                       ng-pattern="/^[0-9]*$/"
+                       ng-model="parameter.hours"
+                       placeholder="hours"
+                       required />
+                <input type="number"
+                       name="{{parameter.name}}Minutes"
+                       ng-class="{ 'is-invalid' : reportForm[parameter.name + 'Minutes'].$invalid || report.errors[parameter.name + 'Minutes'] }"
+                       class="form-control"
+                       min="0" max="59" step="1"
+                       ng-pattern="/^[0-9]*$/"
+                       ng-model="parameter.minutes"
+                       placeholder="minutes"
+                       required />
+                <div ng-show="reportForm[parameter.name + 'Count'].$invalid || report.errors[parameter.name + 'Count']" class="invalid-feedback">{{report.errors[parameter.name + 'Count'] || 'Please provide a count value between 0 and 31.'}}</div>
+                <div ng-show="reportForm[parameter.name + 'Hours'].$invalid || report.errors[parameter.name + 'Hours']" class="invalid-feedback">{{report.errors[parameter.name + 'Hours'] || 'Please provide an hours value between 0 and 23.'}}</div>
+                <div ng-show="reportForm[parameter.name + 'Minutes'].$invalid || report.errors[parameter.name + 'Minutes']" class="invalid-feedback">{{report.errors[parameter.name + 'Minutes'] || 'Please provide a minutes value between 0 and 59.'}}</div>
+            </div>
+            <datetimepicker ng-if="!options.scheduleReport || parameter.useAbsoluteDate === true"
+                            locale="parameter.internalLocale"
+                            format="parameter.internalFormat"
+                            ng-model="parameter.internalValue"
+                            expand="true"
+                            on-state-change="onDateParamStateChange(invalidState)"
+            ></datetimepicker>
+        </div>
+        <!-- TimeZone -->
+        <div ng-if="parameter.type === 'timezone'" class="form-group" ng-repeat-end>
+            <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
+            <ui-select
+                    id="{{parameter.name}}"
+                    name="{{parameter.name}}"
+                    ng-model="parameter.value"
+                    ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
+                    theme="bootstrap" >
+                <ui-select-match placeholder="Select Timezone">
+                    <span>{{$select.selected}}</span>
+                </ui-select-match>
+                <ui-select-choices repeat="timezone in (report.supportedTimezones | filter: $select.search)">
+                    {{timezone}}
+                </ui-select-choices>
+            </ui-select>
+            <div ng-show="report.errors[parameter.name]" class="text-danger mt-1" style="font-size: 80%">{{report.errors[parameter.name]}}</div>
+        </div>
+        <hr class="mb-4"/>
+    </div>
+
+    <!-- FORMAT -->
+    <div class="form-group" ng-if="options.showReportFormatOptions && !options.deliverReport">
+        <label for="reportFormat" class="">Report Format</label>
+        <select id="reportFormat"
+                name="reportFormat"
+                ng-class="{ 'is-invalid' : reportForm.reportFormat.$invalid || report.errors.format }"
+                class="form-control custom-select"
+                ng-model="report.format"
+                ng-options="format as format for format in report.supportedFormats">
+        </select>
+        <div ng-show="report.errors.format" class="invalid-feedback">{{report.errors.format}}</div>
+        <hr class="mb-4"/>
+    </div>
+
+    <div class="form-group ml-4" ng-if="options.showDeliveryOptions && options.showDeliveryOptionsToggle">
+        <input type="checkbox" id="deliverReport" ng-model="options.deliverReport" class="form-check-input" ng-change="options.scheduleReport = options.deliverReport && options.scheduleReport" />
+        <label class="form-check-label"
+               data-toggle="tooltip"
+               data-placement="right"
+               title="Deliver report to file system or via e-mail"
+               for="deliverReport" >
+            <i class="fa fa-share"></i> Deliver this report
+        </label>
+    </div>
+    <div class="" ng-if="options.showDeliveryOptions && options.deliverReport">
+        <h3>Report Delivery Options</h3>
+        <div class="">
+            <div class="form-group">
+                <label for="instanceId">Unique name</label>
+                <button class="btn btn-link text-secondary px-0"
+                        popover-trigger="'mouseenter'"
+                        uib-popover="A name to identify this report. Must be unique overall schedules/deliveries."><i class="fa fa-info-circle"/>
+                </button>
+                <input ng-disabled="!options.canEditTriggerName"
+                       id="instanceId"
+                       name="instanceId"
+                       ng-model="report.deliveryOptions.instanceId"
+                       ng-class="{ 'is-invalid' : reportForm.instanceId.$invalid || report.errors.instanceId }"
+                       class="form-control"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       title="A name to identify this report. Must be unique overall reports."
+                       required
+                />
+                <div ng-show="reportForm.instanceId.$invalid" class="invalid-feedback">Please provide a value.</div>
+                <div ng-show="report.errors.instanceId" class="invalid-feedback">{{report.errors.instanceId}}</div>
+            </div>
+            <div class="form-group">
+                <label for="format" class="">Format</label>
+                <select id="format"
+                        name="format"
+                        ng-class="{ 'is-invalid' : reportForm.format.$invalid || report.errors.format }"
+                        class="form-control custom-select"
+                        ng-model="report.format"
+                        data-toggle="tooltip"
+                        data-placement="right"
+                        title="The output format of the generated report."
+                        ng-options="format as format for format in report.supportedFormats">
+                </select>
+                <div ng-show="report.errors.format" class="invalid-feedback">{{report.errors.format}}</div>
+            </div>
+            <div class="form-group ml-4">
+                <input type="checkbox" id="persistToggle" ng-model="report.deliveryOptions.persist" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist_webhook }"/>
+                <label class="form-check-label"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       title="Indicates whether a copy of the generated report is stored on disk."
+                       for="persistToggle" >
+                    Save a copy of this report
+                </label>
+            </div>
+            <div class="form-group ml-4">
+                <input type="checkbox" id="sendMailToggle" ng-model="report.deliveryOptions.sendMail" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist_webhook }" />
+                <label class="form-check-label" for="sendMailToggle" data-toggle="tooltip" data-placement="right" title="Indicates whether the generated report is send via email to the defined recipient.">
+                    Email report
+                </label>
+            </div>
+            <div class="form-group ml-4">
+                <input type="checkbox" id="webhookToggle" ng-model="report.deliveryOptions.webhook" class="form-check-input" ng-class="{ 'is-invalid' : report.errors.sendMail_persist_webhook }" />
+                <label class="form-check-label" for="webhookToggle" data-toggle="tooltip" data-placement="right" title="Indicates wheter the generated report is pushed to an URL">
+                    Webhook
+                </label>
+                <div ng-show="report.errors.sendMail_persist_webhook" class="invalid-feedback">Please select at least one delivery method</div>
+            </div>
+            <div class="form-group" ng-if="report.deliveryOptions.sendMail">
+                <label for="mailRecipient">Recipient</label>
+                <button class="btn btn-link text-secondary px-0"
+                        popover-trigger="'mouseenter'"
+                        uib-popover="Allows multiple recipients by separating them via comma: test@opennms.org,ulf@opennms.org"><i class="fa fa-info-circle"/>
+                </button>
+                <input id="mailRecipient"
+                       name="mailRecipient"
+                       ng-model="report.deliveryOptions.mailTo"
+                       placeholder="some@email.org"
+                       type="email"
+                       class="form-control"
+                       ng-class="{ 'is-invalid' : reportForm.mailRecipient.$invalid || report.errors.mailTo }"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       title="The recipient of the generated report if 'Email report' is enabled."
+                       multi-emails
+                       required
+                />
+                <div ng-show="reportForm.mailRecipient.$invalid" class="invalid-feedback">Please provide a valid email.</div>
+                <div ng-show="report.errors.mailTo" class="invalid-feedback">{{report.errors.mailTo}}</div>
+            </div>
+            <div class="form-group" ng-if="report.deliveryOptions.webhook">
+                <label for="mailRecipient">Webhook URL</label>
+                <button class="btn btn-link text-secondary px-0"
+                        popover-trigger="'outsideClick'"
+                        uib-popover-html="'
+                        <div>
+                            Posts the generated report to this http endpoint.
+                            If url parameters are required, substitution of the URL supports the following parameters: <br/> <br/>
+                            - <strong>format</strong> Format of the report <br/>
+                            - <strong>instanceId</strong> Unique name of the report <br/>
+                            - <strong>parameter_&lt;parameterName&gt;</strong> Any report parameter <br/> <br/>
+
+                            <strong>Example</strong> <br/>
+                            <span>http://localhost:8080/files?instanceId=:instanceId&format=:format&option=:parameter_option</pre>
+                        </div>'">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+                <input id="webhookUrl"
+                       name="webhookUrl"
+                       ng-model="report.deliveryOptions.webhookUrl"
+                       placeholder="https://example.org/:reportId/?:instanceId"
+                       type="text"
+                       class="form-control"
+                       ng-class="{ 'is-invalid' : reportForm.webhookUrl.$invalid || report.errors.webhookUrl }"
+                       data-toggle="tooltip"
+                       data-placement="right"
+                       title="The report is sent to this URL with an http post request after generated"
+                       required
+                />
+                <div ng-show="reportForm.webhookUrl.$invalid" class="invalid-feedback">Please provide a valid webhook url.</div>
+                <div ng-show="report.errors.webhookUrl" class="invalid-feedback">{{report.errors.webhookUrl}}</div>
+            </div>
+        </div>
+        <hr class="mb-4"/>
+    </div>
+
+    <div class="form-group ml-4" ng-if="options.showScheduleOptions && options.showScheduleOptionsToggle">
+        <input type="checkbox" id="createSchedule" ng-model="options.scheduleReport" class="form-check-input" ng-change="options.deliverReport = options.deliverReport || options.scheduleReport" />
+        <label class="form-check-label"
+               data-toggle="tooltip"
+               data-placement="right"
+               title="Schedule this report"
+               for="createSchedule" >
+            <i class="fa fa-clock-o"></i> Schedule this report
+        </label>
+    </div>
+    <div class="" ng-if="options.showScheduleOptions && options.scheduleReport">
+        <h3>Schedule Editor</h3>
+        <div class="">
+            <onms-schedule-editor ng-model="report.scheduleOptions" />
+            <div class="text-danger" style="font-size: 80%; max-width: 300px" ng-if="report.errors.cronExpression">{{report.errors.cronExpression}}</div>
+        </div>
+        <hr />
+    </div>
+    <p class="text-danger" style="font-size: 80%" ng-if="report.errors.entity">
+        {{report.errors.entity}}
+    </p>
+</form>

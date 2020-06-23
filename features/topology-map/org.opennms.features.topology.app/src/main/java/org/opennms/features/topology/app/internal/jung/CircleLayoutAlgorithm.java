@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,6 +34,7 @@ import java.util.Collection;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -44,50 +45,38 @@ import edu.uci.ics.jung.graph.SparseGraph;
 public class CircleLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	@Override
-	public void updateLayout(final GraphContainer graphContainer) {
-		
-		Graph g = graphContainer.getGraph();
-		
-		final Layout graphLayout = g.getLayout();
-		
+	public void updateLayout(final Graph graph) {
+
+		final Layout graphLayout = graph.getLayout();
+
 		SparseGraph<VertexRef, Edge> jungGraph = new SparseGraph<VertexRef, Edge>();
 
-		Collection<? extends Vertex> vertices = g.getDisplayVertices();
-		
+		Collection<? extends Vertex> vertices = graph.getDisplayVertices();
+
 		for(VertexRef v : vertices) {
 			jungGraph.addVertex(v);
 		}
-		
-		for(Edge e : g.getDisplayEdges()) {
+
+		for(Edge e : graph.getDisplayEdges()) {
 			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
 		}
-		
 
 		CircleLayout<VertexRef, Edge> layout = new CircleLayout<VertexRef, Edge>(jungGraph);
 		layout.setInitializer(initializer(graphLayout));
-		layout.setSize(selectLayoutSize(graphContainer));
-		
+		layout.setSize(selectLayoutSize(graph));
+
 		for(VertexRef v : vertices) {
-			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
+			graphLayout.setLocation(v, new Point(layout.getX(v), layout.getY(v)));
 		}
-		
-		
-		
-		
 	}
 
-	@Override
-	protected Dimension selectLayoutSize(GraphContainer g) {
+	protected static Dimension selectLayoutSize(GraphContainer g) {
 		int vertexCount = g.getGraph().getDisplayVertices().size();
-		
-		int spacing = ELBOW_ROOM/5;
+
+		int spacing = ELBOW_ROOM;
 
 		int diameter = (int)(vertexCount*spacing/Math.PI);
 
-		 return new Dimension(diameter+ELBOW_ROOM, diameter+ELBOW_ROOM);
-
+		return new Dimension(diameter+ELBOW_ROOM, diameter+ELBOW_ROOM);
 	}
-	
-	
-
 }

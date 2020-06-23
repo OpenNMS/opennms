@@ -1,11 +1,43 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Marcus Hellberg (marcus@vaadin.com)
  */
-public class MapNode {
+public class MapNode implements Serializable {
+    private static final long serialVersionUID = -8153594123122717289L;
+
     private double latitude;
     private double longitude;
     private String nodeId;
@@ -122,5 +154,31 @@ public class MapNode {
 
     public void setCategories(List<String> categories) {
         this.categories = categories;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final MapNode mapNode = (MapNode) o;
+        return Double.compare(mapNode.latitude, latitude) == 0 &&
+                Double.compare(mapNode.longitude, longitude) == 0 &&
+                unackedCount == mapNode.unackedCount &&
+                Objects.equals(nodeId, mapNode.nodeId) &&
+                Objects.equals(nodeLabel, mapNode.nodeLabel) &&
+                Objects.equals(foreignSource, mapNode.foreignSource) &&
+                Objects.equals(foreignId, mapNode.foreignId) &&
+                Objects.equals(description, mapNode.description) &&
+                Objects.equals(maintcontract, mapNode.maintcontract) &&
+                Objects.equals(ipAddress, mapNode.ipAddress) &&
+                Objects.equals(severity, mapNode.severity) &&
+                Objects.equals(severityLabel, mapNode.severityLabel) &&
+                Objects.equals(categories, mapNode.categories);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(latitude, longitude, nodeId, nodeLabel, foreignSource, foreignId, description,
+                maintcontract, ipAddress, severity, severityLabel, unackedCount, categories);
     }
 }

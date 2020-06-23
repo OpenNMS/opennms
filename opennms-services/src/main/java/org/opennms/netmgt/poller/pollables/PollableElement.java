@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,10 +32,10 @@ import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
+import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.xml.event.Event;
 
 /**
  * Represents a PollableElement
@@ -43,7 +43,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-abstract public class PollableElement {
+public abstract class PollableElement {
     private static final Logger LOG = LoggerFactory.getLogger(PollableElement.class);
     private final Scope m_scope; 
 
@@ -116,7 +116,7 @@ abstract public class PollableElement {
     /**
      * <p>getStatus</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus getStatus() {
         return m_status;
@@ -138,13 +138,13 @@ abstract public class PollableElement {
     /**
      * <p>updateStatus</p>
      *
-     * @param newStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param newStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public void updateStatus(PollStatus newStatus) {
         PollStatus oldStatus = getStatus();
         if (!oldStatus.equals(newStatus)) {
             
-            LOG.info("Changing status of PollableElement {} from {} to {}", newStatus, this, oldStatus);
+            LOG.info("Changing status of PollableElement {} from {} to {}", this, oldStatus, newStatus);
             setStatus(newStatus);
             setStatusChanged(true);
         }
@@ -172,8 +172,8 @@ abstract public class PollableElement {
     /**
      * <p>doPoll</p>
      *
-     * @param elem a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param elemvrendmunalv02 a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus doPoll(PollableElement elem) {
         if (getParent() == null) {
@@ -189,33 +189,32 @@ abstract public class PollableElement {
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
-    public PollableElement getLockRoot() {
+    protected PollableElement getLockRoot() {
         PollableContainer parent = getParent();
         return (parent == null ? this : parent.getLockRoot());
     }
-    
+
     /**
-     * <p>isTreeLockAvailable</p>
-     *
-     * @return a boolean.
+     * <p>obtainTreeLock</p>
      */
-    public boolean isTreeLockAvailable() {
-        return getLockRoot().isTreeLockAvailable();
+    protected void obtainTreeLock() {
+        getLockRoot().obtainTreeLock();
     }
     
     /**
      * <p>obtainTreeLock</p>
      *
-     * @param timeout a long.
+     * @param timeout Lock timeout in milliseconds
+     * @throws LockUnavailable 
      */
-    public void obtainTreeLock(long timeout) {
+    protected void obtainTreeLock(long timeout) throws LockUnavailable {
         getLockRoot().obtainTreeLock(timeout);
     }
     
     /**
      * <p>releaseTreeLock</p>
      */
-    public void releaseTreeLock() {
+    protected void releaseTreeLock() {
         getLockRoot().releaseTreeLock();
     }
 
@@ -224,8 +223,8 @@ abstract public class PollableElement {
      *
      * @param r a {@link java.lang.Runnable} object.
      */
-    public void withTreeLock(Runnable r) {
-        withTreeLock(r, 0);
+    public final void withTreeLock(Runnable r) {
+        withTreeLock(Executors.callable(r));
     }
     
     /**
@@ -235,32 +234,9 @@ abstract public class PollableElement {
      * @param <T> a T object.
      * @return a T object.
      */
-    public <T> T withTreeLock(Callable<T> c) {
-        return withTreeLock(c, 0);
-    }
-    
-    
-    /**
-     * <p>withTreeLock</p>
-     *
-     * @param r a {@link java.lang.Runnable} object.
-     * @param timeout a long.
-     */
-    public void withTreeLock(Runnable r, long timeout) {
-        withTreeLock(Executors.callable(r), timeout);
-    }
-
-    /**
-     * <p>withTreeLock</p>
-     *
-     * @param c a {@link java.util.concurrent.Callable} object.
-     * @param timeout a long.
-     * @param <T> a T object.
-     * @return a T object.
-     */
-    public <T> T withTreeLock(Callable<T> c, long timeout) {
+    protected final <T> T withTreeLock(Callable<T> c) {
         try {
-            obtainTreeLock(timeout);
+            obtainTreeLock();
             return c.call();
         } catch (RuntimeException e) {
             throw e;
@@ -270,21 +246,61 @@ abstract public class PollableElement {
             releaseTreeLock();
         }
     }
+    
+    
+    /**
+     * <p>withTreeLock</p>
+     *
+     * @param r a {@link java.lang.Runnable} object.
+     * @param timeout Lock timeout in milliseconds
+     * @throws LockUnavailable 
+     */
+    protected final void withTreeLock(Runnable r, long timeout) throws LockUnavailable {
+        withTreeLock(Executors.callable(r), timeout);
+    }
+
+    /**
+     * <p>withTreeLock</p>
+     *
+     * @param c a {@link java.util.concurrent.Callable} object.
+     * @param timeout Lock timeout in milliseconds
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws LockUnavailable 
+     */
+    protected final <T> T withTreeLock(Callable<T> c, long timeout) throws LockUnavailable {
+        boolean locked = false;
+        try {
+            obtainTreeLock(timeout);
+            locked = true;
+            return c.call();
+        } catch (LockUnavailable e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (locked) {
+                releaseTreeLock();
+            }
+        }
+    }
 
     
 
     /**
      * <p>poll</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    abstract public PollStatus poll();
+    public abstract PollStatus poll();
 
     /**
      * <p>poll</p>
      *
-     * @param elem a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param elemvrendmunalv02 a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     protected PollStatus poll(PollableElement elem) {
         if (elem != this)

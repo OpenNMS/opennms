@@ -6,24 +6,20 @@
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
        ">
 
     <context:annotation-config />
     <aop:aspectj-autoproxy />
     
-    <bean name="eventIpcManager" class="org.opennms.netmgt.dao.mock.MockEventIpcManager" >
-      <property name="eventIpcManagerProxy">
-        <bean class="org.opennms.netmgt.model.events.EventIpcManagerProxy" />
-      </property>
-    </bean>
+    <bean name="eventIpcManager" class="org.opennms.netmgt.dao.mock.MockEventIpcManager"/>
 
     <bean name="handler" class="org.opennms.spring.xml.AspectJTestEventHandler" />
     
-    <bean name="adapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+    <bean name="adapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
         <property name="eventSubscriptionService" ref="eventIpcManager" />
         <property name="annotatedListener" ref="handler" />
     </bean>

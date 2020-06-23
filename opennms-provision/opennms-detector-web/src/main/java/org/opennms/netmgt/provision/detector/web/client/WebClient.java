@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,29 +30,19 @@ package org.opennms.netmgt.provision.detector.web.client;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map.Entry;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.HttpResponse;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpVersion;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.AuthState;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.provision.detector.web.request.WebRequest;
 import org.opennms.netmgt.provision.detector.web.response.WebResponse;
 import org.opennms.netmgt.provision.support.Client;
@@ -63,37 +53,81 @@ import org.slf4j.LoggerFactory;
  * <p>WebClient class.</p>
  *
  * @author Alejandro Galue <agalue@opennms.org>
- * @version $Id: $
+ * @author <A HREF="mailto:cliles@capario.com">Chris Liles</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
 public class WebClient implements Client<WebRequest, WebResponse> {
-    
     private static final Logger LOG = LoggerFactory.getLogger(WebClient.class);
-    private DefaultHttpClient m_httpClient;
 
+    private HttpClientWrapper m_httpClientWrapper = null;
     private HttpGet m_httpMethod;
 
-    private String schema;
+    private HttpVersion m_version = HttpVersion.HTTP_1_1;
+    private String m_schema;
+    private String m_path;
+    private String m_queryString;
+    private String m_userAgent;
+    private String m_virtualHost;
+    private String m_userName;
+    private String m_password;
+    private boolean m_overrideSSL = false;
+    private boolean m_authPreemptive = false;
+    private boolean m_useSystemProxy = false;
 
-    private String path;
-
-    public WebClient() {
-        m_httpClient = new DefaultHttpClient();
+    public WebClient(boolean override) {
+        m_overrideSSL = override;
     }
 
     @Override
     public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
-        URIBuilder ub = new URIBuilder();
-        ub.setScheme(schema);
+        final URIBuilder ub = new URIBuilder();
+        ub.setScheme(m_schema);
         ub.setHost(InetAddressUtils.str(address));
         ub.setPort(port);
-        ub.setPath(path);
+        ub.setPath(m_path);
+        if (m_queryString != null && m_queryString.trim().length() > 0) {
+            final List<NameValuePair> params = URLEncodedUtils.parse(m_queryString, StandardCharsets.UTF_8);
+            if (!params.isEmpty()) {
+                ub.setParameters(params);
+            }
+        }
+
         m_httpMethod = new HttpGet(ub.build());
-        setTimeout(timeout);
+        m_httpMethod.setProtocolVersion(m_version);
+
+        m_httpClientWrapper = HttpClientWrapper.create();
+        if (m_overrideSSL) {
+            try {
+                m_httpClientWrapper.trustSelfSigned("https");
+            } catch (final Exception e) {
+                LOG.warn("Failed to create relaxed SSL client.", e);
+            }
+        }
+        if (m_userAgent != null && !m_userAgent.trim().isEmpty()) {
+            m_httpClientWrapper.setUserAgent(m_userAgent);
+        }
+        if (timeout > 0) {
+            m_httpClientWrapper.setConnectionTimeout(timeout);
+            m_httpClientWrapper.setSocketTimeout(timeout);
+        }
+        if (m_virtualHost != null && !m_virtualHost.trim().isEmpty()) {
+            m_httpClientWrapper.setVirtualHost(m_virtualHost);
+        }
+        if (m_userName != null && !m_userName.trim().isEmpty()) {
+            m_httpClientWrapper.addBasicCredentials(m_userName, m_password);
+        }
+        if (m_authPreemptive) {
+            m_httpClientWrapper.usePreemptiveAuth();
+        }
+        if(m_useSystemProxy){
+            m_httpClientWrapper.useSystemProxySettings();
+        }
     }
 
     @Override
     public void close() {
-        m_httpClient.getConnectionManager().shutdown();
+        IOUtils.closeQuietly(m_httpClientWrapper);
+        m_httpClientWrapper = null;
     }
 
     @Override
@@ -102,80 +136,58 @@ public class WebClient implements Client<WebRequest, WebResponse> {
     }
 
     @Override
-    public WebResponse sendRequest(WebRequest request) throws IOException, Exception {
-        for (Entry<String,String> entry : request.getHeaders().entrySet()) {
+    public WebResponse sendRequest(final WebRequest request) throws IOException, Exception {
+        for (final Entry<String,String> entry : request.getHeaders().entrySet()) {
             m_httpMethod.addHeader(entry.getKey(), entry.getValue());
         }
+        CloseableHttpResponse response = null;
         try {
-            HttpResponse response = m_httpClient.execute(m_httpMethod);
+            response = m_httpClientWrapper.execute(m_httpMethod);
             return new WebResponse(request, response);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.info(e.getMessage(), e);
             return new WebResponse(request, null);
         }
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setPath(final String path) {
+        m_path = path;
     }
 
-    public void setSchema(String schema) {
-        this.schema = schema;        
+    public void setQueryString(final String queryString) {
+        m_queryString = queryString;
     }
 
-    public void setTimeout(int timeout) {
-        if (timeout > 0) {
-            m_httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, timeout);
-            m_httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, timeout);
-        }
+    public void setSchema(final String schema) {
+        m_schema = schema;        
     }
 
-    public void setUserAgent(String userAgent) {
-        m_httpClient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, userAgent);
+    public void setUserAgent(final String userAgent) {
+        m_userAgent = userAgent;
     }
 
-    public void setVirtualHost(String virtualHost, int virtualPort) {
-        if (virtualHost == null || virtualPort == 0)
-            return;
-        m_httpClient.getParams().setParameter(ClientPNames.VIRTUAL_HOST, new HttpHost(virtualHost, virtualPort));
+    public void setVirtualHost(final String virtualHost) {
+        m_virtualHost = virtualHost;
     }
 
     public void setUseHttpV1(boolean useHttpV1) {
         if (useHttpV1) {
-            m_httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_0);
+            m_version = HttpVersion.HTTP_1_0;
         }
     }
 
-    public void setAuth(String userName, String password) {
+    public void setAuth(final String userName, final String password) {
         LOG.debug("enabling user authentication using credentials for {}", userName);
-        m_httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
+        m_userName = userName;
+        m_password = password;
     }
 
-    public void setAuthPreemtive(boolean authPreemtive) {
-        /**
-         * Add an HttpRequestInterceptor that will perform preemptive authentication
-         * @see http://hc.apache.org/httpcomponents-client-4.0.1/tutorial/html/authentication.html
-         */
-        HttpRequestInterceptor preemptiveAuth = new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) throws IOException {
-                AuthState authState = (AuthState)context.getAttribute(ClientContext.TARGET_AUTH_STATE);
-                CredentialsProvider credsProvider = (CredentialsProvider)context.getAttribute(ClientContext.CREDS_PROVIDER);
-                HttpHost targetHost = (HttpHost)context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
-                // If not authentication scheme has been initialized yet
-                if (authState.getAuthScheme() == null) {
-                    AuthScope authScope = new AuthScope(targetHost.getHostName(), targetHost.getPort());
-                    // Obtain credentials matching the target host
-                    Credentials creds = credsProvider.getCredentials(authScope);
-                    // If found, generate BasicScheme preemptively
-                    if (creds != null) {
-                        authState.update(new BasicScheme(), creds);
-                    }
-                }
-            }
+    public void setAuthPreemtive(final boolean authPreemtive) {
+        m_authPreemptive = authPreemtive;
+    }
 
-        };
-        m_httpClient.addRequestInterceptor(preemptiveAuth, 0);
+    public void setUseSystemProxy(boolean useSystemProxy){
+        m_useSystemProxy = useSystemProxy;
     }
 
 }

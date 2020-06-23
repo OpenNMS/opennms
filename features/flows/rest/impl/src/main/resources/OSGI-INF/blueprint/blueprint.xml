@@ -1,0 +1,53 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xsi:schemaLocation="
+                http://www.osgi.org/xmlns/blueprint/v1.0.0
+                https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+                http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+                http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+">
+
+    <reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory"/>
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+    <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
+    <reference id="classificationService" interface="org.opennms.netmgt.flows.classification.ClassificationService" availability="mandatory"/>
+
+  <!-- Configuration properties -->
+	<cm:property-placeholder id="flowGraphUrlProperties" persistent-id="org.opennms.netmgt.flows.rest" update-strategy="reload">
+	  <cm:default-properties>
+	    <cm:property name="flowGraphUrl" value=""/>
+	  </cm:default-properties>
+	</cm:property-placeholder>
+
+    <bean id="flowRestService" class="org.opennms.netmgt.flows.rest.internal.FlowRestServiceImpl">
+        <argument ref="flowRepository" />
+        <argument ref="nodeDao" />
+        <argument ref="snmpInterfaceDao" />
+        <argument ref="transactionOperations" />
+        <property name="flowGraphUrl" value="${flowGraphUrl}" />
+    </bean>
+
+    <service interface="org.opennms.netmgt.flows.rest.FlowRestService" ref="flowRestService" >
+        <service-properties>
+            <entry key="application-path" value="/rest" />
+        </service-properties>
+    </service>
+
+    <bean id="classificationRestService" class="org.opennms.netmgt.flows.rest.internal.classification.ClassificationRestServiceImpl">
+        <argument ref="classificationService" />
+    </bean>
+    <service interface="org.opennms.netmgt.flows.rest.classification.ClassificationRestService" ref="classificationRestService">
+        <service-properties>
+            <entry key="application-path" value="/rest" />
+        </service-properties>
+    </service>
+    <service interface="javax.ws.rs.ext.ExceptionMapper">
+        <bean class="org.opennms.netmgt.flows.rest.internal.classification.ClassificationExceptionMapper"/>
+    </service>
+    <service interface="javax.ws.rs.ext.ExceptionMapper">
+        <bean class="org.opennms.netmgt.flows.rest.internal.classification.CSVImportExceptionMapper"/>
+    </service>
+</blueprint>

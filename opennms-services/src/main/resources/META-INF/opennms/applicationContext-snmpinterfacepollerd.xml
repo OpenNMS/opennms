@@ -1,31 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xsi:schemaLocation="
-	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
-	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
-	">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
 
     <aop:aspectj-autoproxy proxy-target-class="true"/>
-        
+    <context:annotation-config />
+
     <bean name="pollContext" class="org.opennms.netmgt.snmpinterfacepoller.DefaultPollContext">
       <property name="eventManager" ref="eventIpcManager" />
       <property name="localHostName" ref="localHostName" />
       <property name="name" value="OpenNMS.SnmpPoller.DefaultPollContext" />
-      <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
-      <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     </bean> 
     
     <bean name="pollableNetwork" class="org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork">
         <constructor-arg ref="pollContext" />
     </bean>
     
-        
     <bean name="daemon" class="org.opennms.netmgt.snmpinterfacepoller.SnmpPoller" destroy-method="stop">
       <property name="pollerConfig" ref="snmpinterfacepollerConfig" />
       <property name="network" ref="pollableNetwork" />
@@ -37,7 +40,7 @@
 
     <bean id="snmpinterfacepollerConfig" class="org.opennms.netmgt.config.SnmpInterfacePollerConfigFactory" depends-on="init-snmpinterfacepollerConfig-factory" factory-method="getInstance"/>
 	
-    <bean id="snmpPollerEventListenerAdapter" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+    <bean id="snmpPollerEventListenerAdapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
   	  <property name="annotatedListener" ref="daemon" />
   	  <property name="eventSubscriptionService" ref="eventSubscriptionService" />
     </bean>

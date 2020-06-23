@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,8 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File,
-		java.util.*,
+	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.admin.nodeManagement.*
 	"
@@ -45,7 +44,7 @@
 
 <%
     HttpSession userSession = request.getSession(false);
-    List nodes = null;
+    List<SnmpManagedNode> nodes = null;
     Integer lineItems= new Integer(0);
     
     interfaceIndex = 0;
@@ -54,7 +53,7 @@
 	throw new ServletException("session is null");
     }
 
-    nodes = (List)userSession.getAttribute("listAllnodes.snmpmanage.jsp");
+    nodes = (List<SnmpManagedNode>)userSession.getAttribute("listAllnodes.snmpmanage.jsp");
     lineItems = (Integer)userSession.getAttribute("lineNodeItems.snmpmanage.jsp");
 
     if (nodes == null) {
@@ -65,7 +64,7 @@
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Manage SNMP by Interface" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
@@ -73,71 +72,56 @@
   <jsp:param name="breadcrumb" value="Manage SNMP by Interface" />
 </jsp:include>
 
-<%
-  int midNodeIndex = 1;
-  
-  if (nodes.size() > 1)
-  {
-    midNodeIndex = nodes.size()/2;
-  }
-%>
+<div class="card">
+  <div class="card-header">
+    <span>Manage SNMP Data Collection per Interface</span>
+  </div>
+  <div class="card-body">
+    <p>
+      In the datacollection-config.xml file, for each different collection
+      scheme there is a parameter called <code>snmpStorageFlag</code>.  If
+      this value is set to "primary", then only values pertaining to the
+      node as a whole or the primary SNMP interface will be stored in the
+      system. If this value is set to "all", then all interfaces for which
+      values are collected will be stored.
+    </p>
 
-<h3>Manage SNMP Data Collection per Interface</h3>
+    <p>
+      If this parameter is set to "select", then the interfaces for which
+      data is stored can be selected.  By default, only information from
+      Primary and Secondary SNMP interfaces will be stored, but by using
+      this interface, other non-IP interfaces can be chosen.
+    </p>
 
-<p>
-  In the datacollection-config.xml file, for each different collection
-  scheme there is a parameter called <code>snmpStorageFlag</code>.  If
-  this value is set to "primary", then only values pertaining to the
-  node as a whole or the primary SNMP interface will be stored in the
-  system. If this value is set to "all", then all interfaces for which
-  values are collected will be stored.
-</p>
+    <p>
+      Simply select the node of interest below, and follow the instructions
+      on the following page.
+    </p>
 
-<p>
-  If this parameter is set to "select", then the interfaces for which
-  data is stored can be selected.  By default, only information from
-  Primary and Secondary SNMP interfaces will be stored, but by using
-  this interface, other non-IP interfaces can be chosen.
-</p>
+       <% if (nodes.size() > 0) { %>
+              <table class="table table-sm table-responsive">
+                  <thead>
+                <tr class="text-center">
+                  <th>Node ID</th>
+                  <th>Node Label</th>
+                </tr>
+                  </thead>
+                  <tbody>
+                <%=buildTableRows(nodes, 0, nodes.size())%>
+                  </tbody>
+              </table>
+      <% }else{ %>
+      <div class="alert alert-primary" role="alert">
+          There are no SNMP Nodes
+      </div>
+      <% } /*end if-else*/ %>
+  </div> <!-- card-body -->
+</div> <!-- panel -->
 
-<p>
-  Simply select the node of interest below, and follow the instructions
-  on the following page.
-</p>
-
-      
-   <% if (nodes.size() > 0) { %>
-	<div id="contentleft">
-          <table class="standardfirst">
-            <tr>
-              <td class="standardheader" width="5%" align="center">Node ID</td>
-              <td class="standardheader" width="10%" align="center">Node Label</td>
-            </tr>
-            <%=buildTableRows(nodes, 0, midNodeIndex)%>
-            
-          </table>
-	</div>
-          <% } /*end if*/ %>
-        
-      <!--see if there is a second column to draw-->
-      <% if (midNodeIndex < nodes.size()) { %>
-	<div id="contentright">
-          <table class="standardfirst">
-            <tr>
-              <td class="standardheader" width="5%" align="center">Node ID</td>
-              <td class="standardheader" width="10%" align="center">Node Label</td>
-            </tr>
-            
-            <%=buildTableRows(nodes, midNodeIndex, nodes.size())%>
-               
-          </table>
-	</div>
-        <% } /*end if */ %>
-
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
 
 <%!
-      public String buildTableRows(List nodes, int start, int stop)
+      public String buildTableRows(List<SnmpManagedNode> nodes, int start, int stop)
       	throws java.sql.SQLException
       {
           StringBuffer row = new StringBuffer();
@@ -145,16 +129,16 @@
           for (int i = start; i < stop; i++)
           {
                 
-                SnmpManagedNode curNode = (SnmpManagedNode)nodes.get(i);
+                SnmpManagedNode curNode = nodes.get(i);
                 String nodelabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(curNode.getNodeID());
 		int nodeid = curNode.getNodeID();
                  
           row.append("<tr>\n");
-          row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
+          row.append("<td class=\"text-center\">");
 	  row.append(nodeid);
           row.append("</td>\n");
-          row.append("<td class=\"standard\" width=\"10%\" align=\"left\">");
-          row.append("<a href=\"admin/snmpGetInterfaces?node=");
+          row.append("<td>");
+          row.append("<a href=\"admin/snmpInterfaces.jsp?node=");
 	  row.append(nodeid);
           row.append("&nodelabel=");
 	  row.append(nodelabel);

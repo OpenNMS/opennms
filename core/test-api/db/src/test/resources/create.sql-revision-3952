@@ -50,8 +50,6 @@ drop table vulnPlugins cascade;
 drop table serverMap cascade;
 drop table serviceMap cascade;
 drop table pathOutage cascade;
-drop table demandPolls cascade;
-drop table pollResults cascade;
 drop table reportLocator cascade;
 drop category_statusdef cascade;
 drop statusview_statusdef cascade;
@@ -267,7 +265,8 @@ create table ipInterface (
 	isManaged		char(1),
 	ipStatus		integer,
 	ipLastCapsdPoll		timestamp without time zone,
-	isSnmpPrimary           char(1),
+	isSnmpPrimary		char(1),
+	snmpInterfaceId		integer,
 
 	constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE
 );
@@ -1130,65 +1129,6 @@ create table pathOutage (
 create index pathoutage_nodeid_idx on pathOutage(nodeID);
 create index pathoutage_criticalpathip on pathOutage(criticalPathIp);
 create index pathoutage_criticalpathservicename_idx on pathOutage(criticalPathServiceName);
-
---########################################################################
---# demandPolls Table - contains a list of requested polls
---#
---# This table contains the following information:
---#
---#  id                      : Unique identifier of the demand poll
---#  requestTime             : the time the user requested the poll
---#  user                    : the user that requested the poll
---#  description             : ?
---#
---########################################################################
-create table demandPolls (
-	id			integer,
-	requestTime	timestamp without time zone,
-	username	varchar(32),
-	description varchar(128),
-	
-	constraint demandpoll_pkey primary key (id)
-	
-);
-
-create index demandpoll_request_time on demandPolls(requestTime);
-	
---########################################################################
---# pollResults Table - contains a list of requested polls
---#
---# This table contains the following information:
---#
---#  id			: unique identifier of the demand poll
---#  pollId		: unique identifier of this specific service poll
---#  nodeId		: node id of the polled service
---#  ipAddr		: ip address of the polled service
---#  ifIndex		: ifIndex of the polled service's interface
---#  serviceId		: serviceid of the polled service
---#  statusCode		: status code of the pollstatus returned by the monitor
---#  statusName		: status name of the pollstaus returnd by the monitor
---#  reason		: the reason of the pollstatus returned by the monitor
---#
---########################################################################
-create table pollResults (
-	id			integer,
-	pollId      integer,
-	nodeId		integer,
-	ipAddr		varchar(16),
-	ifIndex		integer,
-	serviceId	integer,
-	statusCode	integer,
-	statusName	varchar(32),
-	reason		varchar(128),
-	
-	constraint pollresult_pkey primary key (id),
-	constraint fk_demandPollId foreign key (pollID) references demandPolls (id) ON DELETE CASCADE
-
-);
-
-create index pollresults_poll_id on pollResults(pollId);
-create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, serviceId);
-
 
 --##################################################################
 --# The following commands set up automatic sequencing functionality

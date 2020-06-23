@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>spring-security-core-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Spring Security (Core)</name>
+  <name>OpenNMS :: Dependencies :: Spring Security (Core)</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the Spring Security library.

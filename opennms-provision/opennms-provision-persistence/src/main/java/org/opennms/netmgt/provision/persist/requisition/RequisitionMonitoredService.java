@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -58,12 +59,15 @@ import org.apache.commons.lang.builder.CompareToBuilder;
  * @version $Id: $
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name="", propOrder = { "m_categories" })
+@XmlType(name="", propOrder = { "m_categories", "m_metaData" })
 @XmlRootElement(name="monitored-service")
 public class RequisitionMonitoredService implements Comparable<RequisitionMonitoredService> {
 
     @XmlElement(name="category")
-    protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();;
+    protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();
+
+    @XmlElement(name="meta-data")
+    protected List<RequisitionMetaData> m_metaData = new ArrayList<>();
     
     @XmlAttribute(name="service-name", required=true)
     protected String m_serviceName;
@@ -111,7 +115,7 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
      */
     public List<RequisitionCategory> getCategories() {
         if (m_categories == null) {
-            m_categories = new ArrayList<RequisitionCategory>();
+            m_categories = new ArrayList<>();
         }
         return m_categories;
     }
@@ -177,6 +181,14 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
         m_categories.add(0, category);
     }
 
+    public List<RequisitionMetaData> getMetaData() {
+        return m_metaData;
+    }
+
+    public void setMetaData(List<RequisitionMetaData> metaData) {
+        m_metaData = metaData;
+    }
+
     /**
      * <p>getServiceName</p>
      *
@@ -195,11 +207,23 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
         m_serviceName = value;
     }
 
+    public void validate() throws ValidationException {
+        if (m_serviceName == null) {
+            throw new ValidationException("Requisition monitored-service 'service-name' is a required attribute!");
+        }
+        if (m_categories != null) {
+            for (final RequisitionCategory cat : m_categories) {
+                cat.validate();
+            }
+        }
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
+        result = prime * result + ((m_metaData == null) ? 0 : m_categories.hashCode());
         result = prime * result + ((m_serviceName == null) ? 0 : m_serviceName.hashCode());
         return result;
     }
@@ -215,6 +239,11 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
         } else if (!m_categories.equals(other.m_categories)) {
             return false;
         }
+        if (m_metaData == null) {
+            if (other.m_metaData != null) return false;
+        } else if (!m_metaData.equals(other.m_metaData)) {
+            return false;
+        }
         if (m_serviceName == null) {
             if (other.m_serviceName != null) return false;
         } else if (!m_serviceName.equals(other.m_serviceName)) {
@@ -226,6 +255,7 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
     @Override
     public String toString() {
         return "RequisitionMonitoredService [categories=" + m_categories
+                + ", metaData=" + m_metaData
                 + ", serviceName=" + m_serviceName + "]";
     }
 
@@ -234,6 +264,7 @@ public class RequisitionMonitoredService implements Comparable<RequisitionMonito
         return new CompareToBuilder()
             .append(m_serviceName, other.m_serviceName)
             .append(m_categories, other.m_categories)
+            .append(m_metaData, other.m_metaData)
             .toComparison();
     }
 }

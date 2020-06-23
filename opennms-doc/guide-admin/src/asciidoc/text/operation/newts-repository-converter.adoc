@@ -1,0 +1,88 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== newts-repository-converter: Rrd/Jrb to Newts migration utility
+
+This utility can be used to migrate existing _RRDTool-_ or _JRobin_-based data to a _Newts_ cluster.
+This will be achieved by traversing the `share/rrd` directory and its subdirectories, reading the data and properties files and persisting this data to _Newts_.
+
+==== Migration
+
+The following suggestions try to minimize the data collection gap that occur when reconfiguring _{opennms-product-name}_ for a different storage strategy.
+First, we determine the parameters needed for migration of the existing data.
+After that, we reconfigure _{opennms-product-name}_ to persists all new collected data to _Newts_ storage.
+Finally, the _Rrd_- or _JRobin_-based data will be converted and persisted to _Newts_ using the _newts-repository-converter_ utility.
+
+===== Prerequisites
+ * Working {opennms-product-name} installation with _RRDTool_- or _JRobin_-based storage strategy configured.
+ * Installed and working _Newts_ cluster reachable by the _{opennms-product-name}_ instance.
+
+===== Migration plan
+
+ . Check and write down the values for the following options in your `opennms.properties` file.
+   You will need these information later to invoke the _newts-repository-converter_ utility.
+   .. File `etc/opennms.properties`:
+   * Check for the entry `org.opennms.rrd.storeByGroup` whether `storeByGroup` is enabled.
+   * Check for the entry `rrd.base.dir` for the location where _Rrd_ or _Jrb_ files are stored.
+   * Check for the entry `rrd.binary` for the location of the _RRDTool_ binary.
+   .. File `etc/rrd-configuration.properties`:
+   * Check for the entry `org.opennms.rrd.strategyClass` whether `JRobinRrdStrategy` (_JRobin_) or `JniRrdStrategy` / `MultithreadedJniRrdStrategy` (_RRDTool_) is used.
+ . Stop your _{opennms-product-name}_ instance.
+ . Reconfigure _{opennms-product-name}_ to persist data to _Newts_ - so, when correctly configured all new samples will be persisted into _Newts_ after _{opennms-product-name}_ is started.
+   Note, that the converter assumes storeByForeignSource to be enabled.
+ . Start your _{opennms-product-name}_ instance.
+ . Use the _newts-repository-converter_ utility to convert the existing data to _Newts_ by specifying the options that correspond to the information gathered during step #1.
+
+This procedure will minimize the data collection gap to the time needed to reconfigure _{opennms-product-name}_ for _Newts_ storage.
+
+IMPORTANT: The _newts_converter_ utility needs the path to the base directory of your _{opennms-product-name}_ instance for reading the configuration files.
+For instance the utility needs the datasource configuration during the migration process to query the database to lookup node data.
+
+==== Usage
+The utility is installed by default and its wrapper script is located in the `${OPENNMS_HOME}/bin` directory.
+
+[source, shell]
+----
+$ cd /path/to/opennms/bin
+$ ./newts-repository-converter
+----
+
+TIP: When invoked without parameters the usage and help information is printed.
+
+The _newts-repository-converter_ tool provide the following options and parameters:
+
+[options="header, autowidth"]
+|===
+| Short-option | Long-option | Description | Default
+| `h` | `help`           | Prints help and usage information                                                      | false
+| `o` | `onms-home`      | _{opennms-product-name}_ Home Directory                                                | /opt/opennms
+| `r` | `rrd-dir`        | The path to the RRD data                                                               | ONMS-HOME/share/rrd
+| `t` | `rrd-tool`       | Whether to use rrdtool or JRobin                                                       |
+| `T` | `rrd-binary`     | The binary path to the rrdtool command (only used if rrd-tool is set)                  | /usr/bin/rrdtool
+| `s` | `store-by-group` | Whether store by group was enabled or not                                              |
+| `n` | `threads`        | Number of conversion threads                                                           | defaults to number of CPUs
+|===
+
+==== Example 1: convert Rrd-based data with storeByGroup enabled
+
+The following example shows how to convert _RRDTool_-based data that was stored with `storeByGroup` enabled.
+The {opennms-product-name} home is `/opt/opennms`, the data directory is `/opt/opennms/share/rrd` and the _RRDTool_ binary located at `/usr/local/bin/rrdtool`.
+This program call will use 16 concurrent threads to convert the _Rrd_ files.
+
+[source, shell]
+----
+$ ./newts-repository-converter -t true -s true -T /usr/local/bin/rrdtool -n 16
+<output omitted>
+----
+
+==== Example 2: convert JRobin-based data with storeByGroup disabled
+
+The following example shows how to convert _JRobin_-based data located in the directory `/mnt/opennms/rrd` that was collected with `storeByGroup` disabled.
+This program call will use 8 concurrent threads to convert the _Jrb_ files.
+
+[source, shell]
+----
+$ ./newts-repository-converter -t false -s false -r /mnt/opennms/rrd -n 8
+<output omitted>
+----

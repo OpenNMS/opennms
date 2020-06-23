@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -42,15 +42,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.OnmsMapDao;
-import org.opennms.netmgt.model.OnmsMap;
 import org.opennms.web.group.WebGroupRepository;
 import org.opennms.web.group.WebGroup;
 import org.slf4j.Logger;
@@ -71,10 +67,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
 public class GroupController extends AbstractController implements InitializingBean {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(GroupController.class);
-
-
-    @Autowired
-    private OnmsMapDao m_onmsMapDao;
     
     @Autowired
     private CategoryDao m_categoryDao;
@@ -176,7 +168,7 @@ public class GroupController extends AbstractController implements InitializingB
 
             updateGroup(request, group);
             
-            Vector<Object> newSchedule = new Vector<Object>();
+            Vector<Object> newSchedule = new Vector<>();
 
             int dutyAddCount = WebSecurityUtils.safeParseInt(request.getParameter("numSchedules"));
 
@@ -227,24 +219,13 @@ public class GroupController extends AbstractController implements InitializingB
     }
 
     private ModelAndView editGroup(HttpServletRequest request, WebGroup group)
-            throws IOException, MarshalException, ValidationException {
+            throws IOException {
         HttpSession userSession = request.getSession(true);
         userSession.setAttribute("group.modifyGroup.jsp", group);
         userSession.setAttribute("allCategories.modifyGroup.jsp", m_categoryDao.getAllCategoryNames().toArray(new String[0]));
         userSession.setAttribute("allUsers.modifyGroup.jsp", m_userManager.getUserNames().toArray(new String[0]));
-        userSession.setAttribute("allVisibleMaps.modifyGroup.jsp", getVisibleMapsName(group).toArray(new String[0]));
-            
+
         return new ModelAndView("admin/userGroupView/groups/modifyGroup");
-    }
-    
-    private Collection<String> getVisibleMapsName(WebGroup group) {
-      
-        Collection<OnmsMap> maps = m_onmsMapDao.findVisibleMapsByGroup(group.getName());
-        Collection<String> mapnames = new ArrayList<String>(maps.size());
-        for (OnmsMap map: maps) {
-            mapnames.add(map.getName());
-        }
-        return mapnames;
     }
 
     private ModelAndView saveGroup(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -277,12 +258,7 @@ public class GroupController extends AbstractController implements InitializingB
 
 
     private void updateGroup(HttpServletRequest request, WebGroup newGroup) {
-        // get the rest of the group information from the form
-        String defaultMap = request.getParameter("groupDefaultMap");
-        if (!defaultMap.equals(""))
-            newGroup.setDefaultMap(defaultMap);
-        
-        String users[] = request.getParameterValues("selectedUsers");
+        String[] users = request.getParameterValues("selectedUsers");
         
         List<String> userList = users == null ? Collections.<String>emptyList() : Arrays.asList(users);
         
@@ -294,7 +270,7 @@ public class GroupController extends AbstractController implements InitializingB
         
         newGroup.setAuthorizedCategories(new ArrayList<String>(categoryList));
         
-        Vector<Object> newSchedule = new Vector<Object>();
+        Vector<Object> newSchedule = new Vector<>();
         ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
 
         Collection<String> dutySchedules = newGroup.getDutySchedules();
@@ -353,7 +329,4 @@ public class GroupController extends AbstractController implements InitializingB
             return editGroup(request, newGroup);
         }
     }
-
-
-
 }

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <relativePath>../topology-map/poms/compiled/</relativePath>
+        <groupId>org.opennms.features.topology.build</groupId>
+        <artifactId>compiled-bundle-settings</artifactId>
+        <version>25.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.osgi</groupId>
+    <artifactId>opennms-osgi-core-rest</artifactId>
+    <name>OpenNMS :: Features :: OSGI :: Core :: Rest</name>
+    <description>
+        Core module which provides features to install to listen for rest related services,
+        such as @Path annotated interfaces.
+    </description>
+    <packaging>bundle</packaging>
+    <properties>
+        <bundle.namespace>org.opennms.osgi.core.rest</bundle.namespace>
+        <bundle.symbolicName>${bundle.namespace}</bundle.symbolicName>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.eclipsesource.jaxrs</groupId>
+            <artifactId>features</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <version>${osgiJaxRsVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.rest-provider</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.container.bridge</groupId>
+            <artifactId>org.opennms.container.bridge.rest</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <!-- Required for com.eclipsesource.jaxrs/* -->
+    <repositories>
+        <repository>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+            <id>opennms-repo</id>
+            <name>OpenNMS Maven Repository</name>
+            <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+        </repository>
+        <repository>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
+            <id>opennms-snapshots</id>
+            <name>OpenNMS Snapshot Maven Repository</name>
+            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+        </repository>
+    </repositories>
+</project>

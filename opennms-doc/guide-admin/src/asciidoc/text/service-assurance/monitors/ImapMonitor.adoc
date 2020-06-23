@@ -1,0 +1,64 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[poller-imap-monitor]]
+==== ImapMonitor
+
+This monitor checks if an _IMAP_ server is functional.
+The test is done by initializing a very simple _IMAP_ conversation.
+The ImapMonitor establishes a _TCP_ connection, sends a logout command and test the _IMAP_ server responses.
+
+The behavior can be simulated with `telnet`:
+
+ telnet mail.myserver.de 143
+ Trying 62.108.41.197...
+ Connected to mail.myserver.de.
+ Escape character is '^]'.
+ * OK [CAPABILITY IMAP4rev1 LITERAL+ SASL-IR LOGIN-REFERRALS ID ENABLE IDLE STARTTLS LOGINDISABLED] Dovecot ready. <1>
+ ONMSPOLLER LOGOUT <2>
+ * BYE Logging out <3>
+ ONMSPOLLER OK Logout completed.
+ Connection closed by foreign host.
+
+<1> Test IMAP server banner, it has to start `* OK` to be _up_
+<2> Sending a `ONMSPOLLER LOGOUT`
+<3> Test server responds with, it has to start with `* BYE` to be _up_
+
+If one of the tests in the sample above fails the service is marked _down_.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name      | `org.opennms.netmgt.poller.monitors.ImapMonitor`
+| Remote Enabled  | false
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the ImapMonitor
+[options="header, autowidth"]
+|===
+| Parameter   | Description                                                                                          | Required | Default value
+| `retry`     | Number of attempts to get a valid IMAP response                                                      | optional | `0`
+| `port`      | The port of the IMAP server.                                                                         | optional | `143`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+Some example configuration how to configure the monitor in the `poller-configuration.xml`
+
+[source, xml]
+----
+<!-- Test IMAP service on port 143 only -->
+<service name="IMAP" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="port" value="143"/>
+  <parameter key="timeout" value="3000"/>
+</service>
+
+<monitor service="IMAP" class-name="org.opennms.netmgt.poller.monitors.ImapMonitor" />
+----

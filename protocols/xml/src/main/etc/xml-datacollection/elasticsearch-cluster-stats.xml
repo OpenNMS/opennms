@@ -1,0 +1,156 @@
+<xml-groups>
+    <!--
+        Elasticsearch Performance metrics.
+
+        The idea to define this on a external file is to share the content between multiple XML sources
+
+        IMPORTANT: because of the current limitation for the data source inside RRDs/JRBs of 19
+                   characters, the XML objects are using a auto-generated ID to ensure the DS
+                   length. The real variable name is displayed as a comment after the XML object
+                   definition for information purposes. For graph templates use should refer to
+                   the performance metrics using the XML Object Name (auto-generated ID)
+    -->
+    <xml-group name="cluster" resource-type="node" resource-xpath="/">
+        <xml-object name="clusterName" type="STRING" xpath="cluster_name"/>
+    </xml-group>
+
+    <xml-group name="cluster-indices" resource-type="node" resource-xpath="/indices">
+        <xml-object name="indicesCount" type="GAUGE" xpath="count"/>
+    </xml-group>
+
+    <xml-group name="cluster-indices-shards-index-shards" resource-type="node" resource-xpath="/indices/shards/index/shards">
+        <xml-object name="shardsMin" type="GAUGE" xpath="min"/>
+        <xml-object name="shardsMax" type="GAUGE" xpath="max"/>
+        <xml-object name="shardsAvg" type="GAUGE" xpath="avg"/>
+    </xml-group>
+
+    <xml-group name="cluster-indices-shards-index-primaries" resource-type="node" resource-xpath="/indices/shards/index/primaries">
+        <xml-object name="primariesMin" type="GAUGE" xpath="min"/>
+        <xml-object name="primariesMax" type="GAUGE" xpath="max"/>
+        <xml-object name="primariesAvg" type="GAUGE" xpath="avg"/>
+    </xml-group>
+
+    <xml-group name="cluster-indices-shards-index-replication" resource-type="node" resource-xpath="/indices/shards/index/replication">
+        <xml-object name="replicationMin" type="GAUGE" xpath="min"/>
+        <xml-object name="replicationMax" type="GAUGE" xpath="max"/>
+        <xml-object name="replicationAvg" type="GAUGE" xpath="avg"/>
+    </xml-group>
+
+    <xml-group name="cluster-indices-docs" resource-type="node" resource-xpath="/indices/docs">
+        <xml-object name="docsCount" type="COUNTER" xpath="count"/>
+        <xml-object name="docsDeleted" type="COUNTER" xpath="deleted"/>
+    </xml-group>
+
+    <xml-group name="cluster-indices-store" resource-type="node" resource-xpath="/indices/store">
+        <xml-object name="storeSizeBytes" type="GAUGE" xpath="size_in_bytes"/>
+        <xml-object name="throttleTimeMillis" type="GAUGE" xpath="throttle_time_in_millis"/>
+    </xml-group>
+
+    <xml-group name="cluster-indices-fielddata" resource-type="node" resource-xpath="/indices/fielddata">
+        <xml-object name="memorySizeBytes" type="GAUGE" xpath="memory_size_in_bytes"/>
+        <xml-object name="memoryEvictions" type="GAUGE" xpath="evictions"/>
+    </xml-group>
+
+    <xml-group name="cluster-indices-filtercache" resource-type="node" resource-xpath="/indices/filter_cache">
+        <xml-object name="fltrCacheBytes" type="GAUGE" xpath="memory_size_in_bytes"/>
+        <xml-object name="fltrCacheEvictions" type="GAUGE" xpath="evictions"/>
+    </xml-group>
+
+    <xml-group name="cluster-indices-idcache" resource-type="node" resource-xpath="/indices/id_cache">
+        <xml-object name="idCacheBytes" type="GAUGE" xpath="memory_size_in_bytes"/>
+    </xml-group>
+
+    <xml-group name="cluster-indices-completion" resource-type="node" resource-xpath="/indices/completion">
+        <xml-object name="completionSizeBytes" type="GAUGE" xpath="memory_size_in_bytes"/>
+    </xml-group>
+
+    <xml-group name="cluster-indices-segments" resource-type="node" resource-xpath="/indices/segments">
+        <xml-object name="segCount" type="GAUGE" xpath="count"/>
+        <xml-object name="segMemory" type="GAUGE" xpath="memory_in_bytes"/>
+        <xml-object name="segWriterMem" type="GAUGE" xpath="index_writer_memory_in_bytes"/>
+        <xml-object name="segWriterMemMax" type="GAUGE" xpath="index_writer_max_memory_in_bytes"/>
+        <xml-object name="segVerMapMem" type="GAUGE" xpath="version_map_memory_in_bytes"/>
+        <xml-object name="segFixBitSetMem" type="GAUGE" xpath="fixed_bit_set_memory_in_bytes"/>
+    </xml-group>
+
+    <xml-group name="cluster-indices-percolate" resource-type="node" resource-xpath="/indices/percolate">
+        <xml-object name="percTotal" type="GAUGE" xpath="total"/>
+        <xml-object name="percTimeInMillis" type="GAUGE" xpath="time_in_millis"/>
+        <xml-object name="percCurrent" type="GAUGE" xpath="current"/>
+        <xml-object name="percMemSizeBytes" type="GAUGE" xpath="memory_size_in_bytes"/>
+        <xml-object name="percQueries" type="GAUGE" xpath="queries"/>
+    </xml-group>
+
+    <xml-group name="cluster-nodes-count" resource-type="node" resource-xpath="/nodes/count">
+        <xml-object name="nodesCntTotal" type="GAUGE" xpath="total"/>
+        <xml-object name="nodesCntMstOnly" type="GAUGE" xpath="master_only"/>
+        <xml-object name="nodesCntDataOnly" type="GAUGE" xpath="data_only"/>
+        <xml-object name="nodesCntMasterData" type="GAUGE" xpath="master_data"/>
+        <xml-object name="nodesClient" type="GAUGE" xpath="client"/>
+    </xml-group>
+
+    <xml-group name="cluster-nodes-os" resource-type="node" resource-xpath="/nodes/os">
+        <xml-object name="osAvailProc" type="GAUGE" xpath="available_processors"/>
+    </xml-group>
+
+    <xml-group name="cluster-nodes-os-mem" resource-type="node" resource-xpath="/nodes/os/mem">
+        <xml-object name="osMemTotalBytes" type="GAUGE" xpath="total_in_bytes"/>
+    </xml-group>
+
+    <xml-group name="cluster-nodes-os-cpu" resource-type="node" resource-xpath="/nodes/os/cpu">
+        <xml-object name="cpuVendor" type="STRING" xpath="vendor"/>
+        <xml-object name="cpuModel" type="STRING" xpath="model"/>
+        <xml-object name="cpuMhz" type="STRING" xpath="mhz"/>
+        <xml-object name="cpuCacheSize" type="STRING" xpath="cache_size"/>
+        <xml-object name="cpuTotalCores" type="GAUGE" xpath="total_cores"/>
+        <xml-object name="cpuTotalSockets" type="GAUGE" xpath="total_sockets"/>
+        <xml-object name="cpuCoresPerSocket" type="GAUGE" xpath="cores_per_socket"/>
+        <xml-object name="cpuCacheSizeBytes" type="STRING" xpath="cache_size_in_bytes"/>
+        <xml-object name="cpuCount" type="GAUGE" xpath="count"/>
+    </xml-group>
+
+    <xml-group name="cluster-nodes-process-cpu" resource-type="node" resource-xpath="/nodes/process/cpu">
+        <xml-object name="procCpuPercent" type="GAUGE" xpath="percent"/>
+    </xml-group>
+
+    <xml-group name="cluster-nodes-process-open-file-descriptors" resource-type="node" resource-xpath="/nodes/process/open_file_descriptors">
+        <xml-object name="openFileDescMin" type="GAUGE" xpath="min"/>
+        <xml-object name="openFileDescMax" type="GAUGE" xpath="max"/>
+        <xml-object name="openFileDescAvg" type="GAUGE" xpath="avg"/>
+    </xml-group>
+
+    <xml-group name="cluster-nodes-jvm" resource-type="node" resource-xpath="/nodes/jvm">
+        <xml-object name="jvmMaxUptimeMillis" type="GAUGE" xpath="max_uptime_in_millis"/>
+    </xml-group>
+
+    <xml-group name="cluster-nodes-jvm-versions" resource-type="node" resource-xpath="/nodes/jvm/versions">
+        <xml-object name="jvmVersion" type="STRING" xpath="version"/>
+        <xml-object name="jvmVmName" type="STRING" xpath="vm_name"/>
+        <xml-object name="jvmVmVersion" type="STRING" xpath="vm_version"/>
+        <xml-object name="jvmVmVendor" type="STRING" xpath="vm_vendor"/>
+        <xml-object name="jvmCount" type="GAUGE" xpath="count"/>
+    </xml-group>
+
+    <xml-group name="cluster-nodes-jvm-mem" resource-type="node" resource-xpath="/nodes/jvm/mem">
+        <xml-object name="jvmMemHeapBytes" type="GAUGE" xpath="heap_used_in_bytes"/>
+        <xml-object name="jvmMemMaxBytes" type="GAUGE" xpath="heap_max_in_bytes"/>
+    </xml-group>
+
+    <xml-group name="cluster-nodes-jvm-threads" resource-type="node" resource-xpath="/nodes/jvm">
+        <xml-object name="jvmThreads" type="GAUGE" xpath="threads"/>
+    </xml-group>
+
+    <xml-group name="cluster-nodes-fs" resource-type="node" resource-xpath="/nodes/fs">
+        <xml-object name="fsTotalBytes" type="GAUGE" xpath="total_in_bytes"/>
+        <xml-object name="fsFreeBytes" type="GAUGE" xpath="free_in_bytes"/>
+        <xml-object name="fsAvailBytes" type="GAUGE" xpath="available_in_bytes"/>
+        <xml-object name="fsDskReads" type="GAUGE" xpath="disk_reads"/>
+        <xml-object name="fsDskWrites" type="GAUGE" xpath="disk_writes"/>
+        <xml-object name="fsDskIoOp" type="GAUGE" xpath="disk_io_op"/>
+        <xml-object name="fsDskReadSizeBytes" type="GAUGE" xpath="disk_read_size_in_bytes"/>
+        <xml-object name="fsDskWriteSizeBytes" type="GAUGE" xpath="disk_write_size_in_bytes"/>
+        <xml-object name="fsDskIoSizeBytes" type="GAUGE" xpath="disk_io_size_in_bytes"/>
+        <xml-object name="fsDskQueue" type="GAUGE" xpath="disk_queue"/>
+        <xml-object name="fsDskSvcTime" type="GAUGE" xpath="disk_service_time"/>
+    </xml-group>
+</xml-groups>

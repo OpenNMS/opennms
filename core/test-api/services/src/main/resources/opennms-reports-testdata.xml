@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opennms-reports
+	xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<report id="defaultCalendarReport" 
+		type="calendar">
+		<logo>logo.gif</logo>
+		<svg-template>SVGAvailReport.xsl</svg-template>
+		<pdf-template>PDFAvailReport.xsl</pdf-template>
+		<html-template>HTMLAvailReport.xsl</html-template>
+		<parameters>
+			<string-parm name="reportCategory" display-name="report category" input-type="reportCategorySelector" />
+			<date-parm name="endDate" display-name="end date" use-absolute-date="false">
+				<default-interval>day</default-interval>
+				<default-count>1</default-count>
+				<default-time>
+					<hours>23</hours>
+					<minutes>59</minutes>
+				</default-time>
+			</date-parm>
+			<int-parm name="offenderCount" display-name="top offender count" input-type="freeText">
+				<default>20</default>
+			</int-parm>
+		</parameters>
+	</report>
+	<report id="defaultClassicReport" 
+		type="calendar">
+		<logo>logo.gif</logo>
+		<pdf-template>PDFAvailReport.xsl</pdf-template>
+		<html-template>HTMLAvailReport.xsl</html-template>
+		<parameters>
+			<string-parm name="reportCategory" display-name="report category" input-type="reportCategorySelector" />
+			<date-parm name="endDate" display-name="end date" use-absolute-date="false">
+				<default-interval>day</default-interval>
+				<default-count>1</default-count>
+				<default-time>
+					<hours>23</hours>
+					<minutes>59</minutes>
+				</default-time>
+			</date-parm>
+			<int-parm name="offenderCount" display-name="top offender count" input-type="freeText">
+				<default>20</default>
+			</int-parm>
+		</parameters>
+	</report>
+</opennms-reports>

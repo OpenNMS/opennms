@@ -8,6 +8,7 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-node">
+		<validCheckSum>3:8345c601959735c36d93e090acf19a39</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="node" /></not>
 		</preConditions> 
@@ -25,7 +26,7 @@
 			<column name="dpname" type="varchar(12)" />
 
 			<!-- Time node was added to the database -->
-			<column name="nodecreatetime" type="DATETIME">
+			<column name="nodecreatetime" type="TIMESTAMP WITH TIME ZONE">
 				<constraints nullable="false" />
 			</column>
 
@@ -74,7 +75,7 @@
 			<column name="operatingsystem" type="varchar(64)" />
 
 			<!-- Date and time of last Capsd scan. -->
-			<column name="lastcapsdpoll" type="DATETIME" />
+			<column name="lastcapsdpoll" type="TIMESTAMP WITH TIME ZONE" />
 
 			<!-- When importing nodes this contains the source of the nodes, null otherwise -->
 			<column name="foreignsource" type="varchar(64)" />

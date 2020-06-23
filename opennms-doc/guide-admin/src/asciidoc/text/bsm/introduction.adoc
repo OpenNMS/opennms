@@ -1,0 +1,29 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-bsm-introduction]]
+While _{opennms-product-name}_ detects issues in your network by device, interface or service, the _Business Service Monitoring (BSM)_ takes it one step further.
+The _BSM_ components allows you to monitor and model high level _Business Services (BS)_ and helps quickly identify the most critical problems affecting these.
+With the _BSM_ feature it is possible to model a high level _BS_ context around the technical _Service Monitors_ provided in _{opennms-product-name}_.
+To indicate which _BS_ is affected by events at the technical _Service Monitors_ level, a BS _Operational Status_ is calculated.
+
+As an example, let's assume a company runs an online store.
+Customers enter through a login system, select items, place them in the shopping cart and checkout using a payment system.
+The whole service is provided by a few web servers and access data from databases.
+To monitor the status of the databases, a _SQL_ service monitor on each database server is configured.
+For testing the web servers a _HTTP_ service monitor is used for each of them.
+Covering the overall functionality a _Page Sequence Monitor (PSM)_ is used to test the login, shop and payment workflow through the provided web portal.
+A possible representation of the whole system hierarchy is shown in figure <<ga-bsm-example-web-shop,Example scenario for a web shop>>.
+
+[[ga-bsm-example-web-shop]]
+.Example scenario for a web shop
+image:bsm/01_bsm-example-scenario.png[]
+
+To be able to model this scenarios the _BSM_ functions can be used.
+The _Business Service Monitoring (BSM)_ feature includes the following components:
+
+* _Business Service Monitoring Daemon (BSMD)_: Maintains and drives the state of all _BS_
+* _Business Service Editor_: Web application which allows you to create, update or delete _BS_
+* _Topology View for Business Services_: Visual representation of the _Business Service Hierarchy_ as a component of the _Topology User Interface_.
+* _BSM ReST API_: ReST based API to create, read, update or delete _BS_

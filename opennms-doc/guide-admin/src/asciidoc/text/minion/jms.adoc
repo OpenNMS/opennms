@@ -1,0 +1,104 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Using JMS
+
+By default, _{opennms-product-name}_ uses the _JMS_ protocol with an _ActiveMQ_ broker to communicate with _Minions_.
+This is used for both issuing remote procedure calls (RPCs, ie. ping this host) and for transporting unsolicited messages such as SNMP traps and syslog messages.
+_{opennms-product-name}_ provides an embedded _ActiveMQ_ broker to help simplify installation.
+
+
+TIP: It is also possible (and recommended for large installations) to use an external broker.
+
+==== Tuning the ActiveMQ broker
+
+The settings for the embedded _ActiveMQ_ broker are found in `$OPENNMS_HOME/etc/opennms-activemq.xml`.
+Memory and storage limits are conservative by default and should be tuned to accommodate your workload.
+Consider increasing the `memoryUsage` (defaults to 20MB) to `512MB` or greater, assuming you have enough heap available.
+
+TIP: If the memory limit is reached, https://activemq.apache.org/producer-flow-control.html[flow control] will prevent messages
+from being published to the broker.
+
+==== Monitoring the ActiveMQ broker using the Karaf shell
+
+The `opennms-activemq:stats` command available via the _Karaf shell_ can be used to show statistics about the embedded broker:
+
+[source]
+----
+opennms-activemq:stats
+----
+
+TIP: If the command is not available, try installing the feature using `feature:install opennms-activemq-shell`
+
+This command reports some high level broker statistics as well as message, enqueue and dequeue counts for the available queues.
+Pay close attention to the memory usage that is reported.
+If the usage is high, use the queue statistics to help isolate which queue is consuming most of the memory.
+
+The `opennms-activemq:purge-queue` command can be used to delete all of the available messages in a particular queue:
+
+[source]
+----
+opennms-activemq:purge-queue OpenNMS.Sink.Trap
+----
+
+==== Authentication and authorization with ActiveMQ
+
+The embedded ActiveMQ broker is pre-configured to authenticate clients using the same authentication mechanisms (JAAS) as the _{opennms-product-name}_ web application.
+
+Users associated with the `ADMIN` role can read, write or create any queue or topic.
+
+Users associated with the `MINION` role are restricted in such a way that prevents them from making RPC requests to other locations, but can otherwise read or write to the queues they need.
+
+See the `authorizationPlugin` section in `$OPENNMS_HOME/etc/opennms-activemq.xml` for details.
+
+==== Multi-tenancy with _{opennms-product-name}_ and ActiveMQ
+
+The queue names used by _{opennms-product-name}_ are prefixed with a constant value.
+If many _{opennms-product-name}_ are configured to use the same broker, then these queues would end up being shared amongst the instances, which is not desired.
+In order to isolate multiple instances on the same broker, you can customize the prefix by setting the value of the `org.opennms.instance.id` system property to something that is unique per instance.
+
+[source, sh]
+----
+echo 'org.opennms.instance.id=MyNMS' > "$OPENNMS_HOME/etc/opennms.properties.d/instance-id.properties"
+----
+
+CAUTION: If you change the instance id setting when using the embedded broker, you will need to update the authorization section in the broker's configuration to reflect the updated prefix.
+
+==== Tuning the RPC client in OpenNMS
+
+The following system properties can be used to tune the thread pool used to issue RPCs:
+
+===== General
+[options="header, autowidth"]
+|===
+| Name                              | Default  | Description
+| `org.opennms.ipc.rpc.threads`     | `10`     | Number of threads which are always active.
+| `org.opennms.ipc.rpc.threads.max` | `20`     | Maximum number of threads which can be active. These will exit after remaining unused for some period of time.
+| `org.opennms.ipc.rpc.queue.max`   | `1000`   | Maximum number of requests to queue. Set to `-1` to be unlimited.
+|===
+
+TIP: Use the `rpc:stress` _Karaf shell_ command to help evaluate and tune performance.
+
+==== Diagnosing RPC failures
+
+Symptoms of RPC failures may include missed polls, missed data collection attempts and the inability to provision or re-scan existing nodes.
+For these reasons, it is important to ensure that RPC related communication with Minion at the various monitoring locations remains healthy.
+
+If you want to verify that a specific location is operating correctly make sure that:
+
+1. Nodes exist and were automatically provisioned for all of the Minions at the location
+2. The `Minion-Heartbeat`, `Minion-RPC` and `JMX-Minion` services are online for one or more Minions at the location
+3. Response time graphs for the `Minion-RPC` service are populated and contain reasonable values
+  * These response time graphs can be found under the `127.0.0.1` response time resource on the Minion node
+  * Values should typically be under 100ms but may vary based on network latency
+4. Resource graphs for the `JMX-Minion` service are populated and reasonable values
+
+To interactively test RPC communication with a remote location use the `poller:poll` command from the _Karaf shell_:
+
+[source]
+----
+poller:poll -l LOCATION IcmpMonitor 127.0.0.1
+----
+
+TIP: Replace `LOCATION` in the command above with the name of the location you want to test.

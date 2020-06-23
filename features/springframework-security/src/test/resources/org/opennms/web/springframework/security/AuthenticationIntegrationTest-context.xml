@@ -4,10 +4,7 @@
 
  <bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
   <property name="usersConfigurationFile" value="src/test/resources/org/opennms/web/springframework/security/users.xml"/>
-  <property name="useGroups" value="false"/>
-  <property name="magicUsersConfigurationFile" value="src/test/resources/org/opennms/web/springframework/security/magic-users.properties"/>
   <property name="userManager" ref="userManager" />
-  <property name="groupManager" ref="groupManager" />
  </bean>
 
  <bean id="openNMSUserDaoImpl" class="org.opennms.web.springframework.security.OpenNMSUserDetailsService">
@@ -27,15 +24,5 @@
   <property name="userDao" ref="userDao" />
   <property name="userManager" ref="userManager" />
  </bean>
- 
- <!--
- <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-  <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
- </bean>
- 
- <bean id="locationMonitorConfigResourceLocation" class="java.lang.String">
-  <constructor-arg value="file:src/test/resources/monitoring-locations.xml" />
- </bean>
- -->
  
 </beans>

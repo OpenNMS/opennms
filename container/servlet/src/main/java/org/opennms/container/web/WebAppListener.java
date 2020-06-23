@@ -23,8 +23,12 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.karaf.main.Main;
+import org.opennms.core.soa.support.OnmsOSGiBridgeActivator;
 import org.osgi.framework.BundleContext;
 
+/**
+ * Listener which starts Apache Karaf as part of starting up the OpenNMS Webapp.
+ */
 public class WebAppListener implements ServletContextListener {
 
     private Main main;
@@ -55,22 +59,15 @@ public class WebAppListener implements ServletContextListener {
 
             m_servletContext.log("contextInitialized");
 
-            // log4j class instances will leak into the OSGi classloader so we
-            // need to tell log4j to ignore the thread context loader and to use
-            // the same classloader for all classloading.
-            //
-            // @see https://issues.apache.org/jira/browse/FELIX-2108
-            // @see http://www.mail-archive.com/announcements@jakarta.apache.org/msg00110.html
-            //
-            System.setProperty("log4j.ignoreTCL", "true");
-
             final String root = karafRoot.getAbsolutePath();
             m_servletContext.log("Root: " + root);
             System.setProperty("karaf.home", root);
             System.setProperty("karaf.base", root);
-            System.setProperty("karaf.data", root + "/data");
-            System.setProperty("karaf.history", root + "/data/history.txt");
-            System.setProperty("karaf.instances", root + "/instances");
+            System.setProperty("karaf.data", root + File.separator + "data");
+            System.setProperty("karaf.log", root + File.separator + "logs");
+            System.setProperty("karaf.etc", root + File.separator + "etc");
+            System.setProperty("karaf.history", root + File.separator + "data" + File.separator + "history.txt");
+            System.setProperty("karaf.instances", root + File.separator + "instances");
             System.setProperty("karaf.startLocalConsole", "false");
             System.setProperty("karaf.startRemoteShell", "true");
             System.setProperty("karaf.lock", "false");
@@ -87,6 +84,7 @@ public class WebAppListener implements ServletContextListener {
             m_bridge.start(m_framework);
 
         } catch (final Throwable e) {
+            m_servletContext.log("Unexpected exception while starting Karaf", e);
             main = null;
             e.printStackTrace();
         }

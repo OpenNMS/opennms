@@ -1,0 +1,81 @@
+<div>
+
+    <div class="jumbotron">
+        <p>
+            Nominatim is a search engine for OpenStreetMap data.
+            It allows to look up the coordinates for a given address (forward search).
+        </p>
+        <p>
+            For more information visit the <a href="https://wiki.openstreetmap.org/wiki/Nominatim" target="_blank">Nominatim Wiki Page</a>.
+        </p>
+        <p>
+            Please note, that all usage of the Nominatim Service must follow the <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank">Nominatim Usage Policy</a>.
+        </p>
+    </div>
+
+    <form class="form" name="form">
+        <div class="form-group">
+            <label for="nominatimEmail">Email</label>
+            <input id="nominatimEmail"
+                   name="nominatimEmail"
+                   class="form-control"
+                   type="email"
+                   ng-required="true"
+                   ng-model="geocoder.config.email"
+                   ng-class="{ 'is-invalid' : form.nominatimEmail.$invalid || configError.email }"
+            />
+            <p id="configError.email" class="invalid-feedback">{{configError.email || "Please provide a valid email address"}}</p>
+        </div>
+        <div class="form-group">
+            <label for="nominatimUserAgent">User Agent</label>
+            <input id="nominatimUserAgent"
+                   name="nominatimUserAgent"
+                   class="form-control"
+                   type="text"
+                   ng-model="geocoder.config.userAgent"
+                   ng-change="validateFieldsManually()"
+                   ng-class="{ 'is-invalid' : form.nominatimUserAgent.$invalid || configError.userAgent }"
+            />
+            <p id="configError.userAgent" class="invalid-feedback">{{configError.userAgent || "User Agent or Referer must be set"}}</p>
+        </div>
+        <div class="form-group">
+            <label for="nominatimReferer">Referer</label>
+            <input id="nominatimReferer"
+                   name="nominatimReferer"
+                   class="form-control"
+                   type="text"
+                   ng-model="geocoder.config.referer"
+                   ng-change="validateFieldsManually()"
+                   ng-class="{ 'is-invalid' : form.nominatimReferer.$invalid || configError.referer }"
+            />
+            <p id="configError.referer" class="invalid-feedback">{{configError.referer || "User Agent or Referer must be set"}}</p>
+        </div>
+        <div class="form-group">
+            <label style="width: 180px" for="nominatimAcceptUsageTerms">Accept <a href="https://operations.osmfoundation.org/policies/nominatim/" target="_blank">Usage Terms <i class="fa fa-share-square-o"/></a></label>
+            <toggle id="nominatimAcceptUsageTerms"
+                    name="nominatimAcceptUsageTerms"
+                    on="Yes"
+                    off="No"
+                    size="btn-sm"
+                    ng-model="geocoder.config.acceptUsageTerms"
+                    ng-class="{ 'is-invalid' : form.nominatimAcceptUsageTerms.$invalid || geocoder.config.acceptUsageTerms === false || configError.acceptUsageTerms }"
+            />
+            <p id="configError.acceptUsageTerms" class="invalid-feedback">{{configError.acceptUsageTerms || "Please accept the usage terms"}}</p>
+        </div>
+        <div class="form-group">
+            <label style="width: 180px" for="nominatimSystemProxy">Use System Proxy</label>
+            <toggle id="nominatimSystemProxy"
+                    name="nominatimSystemProxy"
+                    on="Yes"
+                    off="No"
+                    size="btn-sm"
+                    ng-model="geocoder.config.useSystemProxy"
+                    ng-class="{ 'is-invalid' : form.nominatimSystemProxy.$invalid || configError.useSystemProxy }"
+            />
+            <p id="configError.useSystemProxy" class="invalid-feedback">{{configError.useSystemProxy}}</p>
+        </div>
+
+        <p class="text-warning" ng-if="form.$dirty">You have unsaved changes</p>
+        <button id="saveButton" class="btn btn-primary" type="button" ng-click="save()" ng-disabled="!form.$dirty || form.$invalid || validateFieldsManually() !== true"><i class="fa fa-save"></i> Save</button>
+    </form>
+</div>

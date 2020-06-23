@@ -1,0 +1,72 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== MemcachedMonitor
+
+This monitor allows to monitor link:http://memcached.org[Memcached], a distributed memory object caching system.
+To monitor the service availability the monitor tests if the _Memcached_ statistics can be requested.
+The statistics are processed and stored in RRD files.
+The following metrics are collected:
+
+.Collected metrics using the MemcachedMonitor
+[options="header, autowidth"]
+|===
+| Metric                | Description
+| _uptime_              | Seconds the _Memcached_ server has been running since last restart.
+| _rusageuser_          | User time seconds for the server process.
+| _rusagesystem_        | System time seconds for the server process.
+| _curritems_           | Number of items in this servers cache.
+| _totalitems_          | Number of items stored on this server.
+| _bytes_               | Number of bytes currently used for caching items.
+| _limitmaxbytes_       | Maximum configured cache size.
+| _currconnections_     | Number of open connections to this _Memcached_.
+| _totalconnections_    | Number of successful connect attempts to this server since start.
+| _connectionstructure_ | Number of internal connection handles currently held by the server.
+| _cmdget_              | Number of _GET_ commands received since server startup.
+| _cmdset_              | Number of _SET_ commands received since server startup.
+| _gethits_             | Number of successful _GET_ commands (cache hits) since startup.
+| _getmisses_           | Number of failed _GET_ requests, because nothing was cached.
+| _evictions_           | Number of objects removed from the cache to free up memory.
+| _bytesread_           | Number of bytes received from the network.
+| _byteswritten_        | Number of bytes send to the network.
+| _threads_             | Number of threads used by this server.
+|===
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.MemcachedMonitor`
+| Remote Enabled | true
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the MemcachedMonitor
+[options="header, autowidth"]
+|===
+| Parameter       | Description                                                                    | Required | Default value
+| `retry`         | Number of attempts to establish the Memcached connnection.                     | optional | `0`
+| `port`          | TCP port connecting to Memcached.                                              | optional | `11211`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+The following example shows a configuration in the `poller-configuration.xml`.
+
+[source, xml]
+----
+<service name="Memcached" interval="300000" user-defined="false" status="on">
+  <parameter key="port" value="11211" />
+  <parameter key="retry" value="2" />
+  <parameter key="timeout" value="3000" />
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+  <parameter key="ds-name" value="memcached" />
+  <parameter key="rrd-base-name" value="memcached" />
+</service>
+
+<monitor service="Memcached" class-name="org.opennms.netmgt.poller.monitors.MemcachedMonitor" />
+----

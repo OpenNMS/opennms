@@ -3,34 +3,25 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>asterisk-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Asterisk</name>
+  <name>OpenNMS :: Dependencies :: Asterisk</name>
   <dependencies>
     <dependency>
       <groupId>org.asteriskjava</groupId>
       <artifactId>asterisk-java</artifactId>
-      <version>1.0.0-preview-20090427</version>
+      <version>1.0.0-final</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-  </repositories>
 </project>

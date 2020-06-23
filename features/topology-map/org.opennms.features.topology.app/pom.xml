@@ -6,12 +6,12 @@
         <relativePath>../poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>1.13.0-SNAPSHOT</version>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.topology</groupId>
-    <artifactId>app</artifactId>
+    <artifactId>org.opennms.features.topology.app</artifactId>
 
     <name>${bundle.symbolicName}</name>
 
@@ -36,37 +36,100 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <skip>${skipSurefire}</skip>
                     <excludes>
                         <exclude>**/*GwtTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Vaadin-Package-Version>1</Vaadin-Package-Version>
+                        <Vaadin-Widgetsets>org.opennms.features.topology.app.internal.gwt.TopologyAppWidgetSet</Vaadin-Widgetsets>
+                        <Include-Resource>{maven-resources},target/gwt</Include-Resource>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>${vaadin.plugin.version}</version>
+                <configuration>
+                    <extraJvmArgs>-XX:MaxMetaspaceSize=256m -Xmx${vaadinJavaMaxMemory} -Xss1024k</extraJvmArgs>
+                    <webappDirectory>${basedir}/target/gwt/VAADIN/widgetsets</webappDirectory>
+                    <hostedWebapp>${basedir}/target/gwt/VAADIN/widgetsets</hostedWebapp>
+                    <noServer>true</noServer>
+                    <draftCompile>false</draftCompile>
+                    <compileReport>false</compileReport>
+                    <style>OBF</style>
+                    <strict>true</strict>
+                    <runTarget>http://localhost:8980/opennms/topology</runTarget>
+                    <gwtSdkFirstInClasspath>true</gwtSdkFirstInClasspath>
+                    <localWorkers>${vaadinLocalWorkers}</localWorkers>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>goals</id>
+                        <configuration>
+                            <!-- if you don't specify any modules, the plugin will find them -->
+                            <!-- <modules> <module>com.vaadin.demo.mobilemail.gwt.ColorPickerWidgetSet</module>
+                                </modules> -->
+                        </configuration>
+                        <goals>
+                            <goal>resources</goal>
+                            <goal>update-widgetset</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-dev</artifactId>
+                        <version>${gwtVersion}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.google.gwt</groupId>
+                        <artifactId>gwt-user</artifactId>
+                        <version>${gwtVersion}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
-
-
     <dependencies>
         <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
+            <groupId>org.opennms.features</groupId>
             <artifactId>vaadin</artifactId>
-            <version>${project.version}</version>
             <type>pom</type>
         </dependency>
-        <dependency> <!-- Required by pax/vaadin -->
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>servlet-dependencies</artifactId>
-            <type>pom</type>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>graph</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.topology</groupId>
+            <artifactId>org.opennms.features.topology.link</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.topology</groupId>
+            <artifactId>org.opennms.features.topology.api</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.topology</groupId>
-            <artifactId>api</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.osgi</groupId>
-            <artifactId>opennms-osgi-core</artifactId>
+            <artifactId>org.opennms.features.topology.persistence.api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -108,8 +171,24 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.geolocation</groupId>
+            <artifactId>org.opennms.features.geolocation.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -128,13 +207,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.topology.plugins.topo</groupId>
-            <artifactId>simple</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
@@ -144,11 +216,30 @@
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-web-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.hubspot.jinjava</groupId>
+            <artifactId>jinjava</artifactId>
+            <version>2.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.sysprops</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+            <id>opennms-repo</id>
+            <name>OpenNMS Maven Repository</name>
+            <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+        </repository>
+    </repositories>
 </project>

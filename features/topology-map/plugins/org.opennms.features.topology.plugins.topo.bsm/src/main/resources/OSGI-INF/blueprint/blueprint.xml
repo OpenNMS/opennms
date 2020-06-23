@@ -1,0 +1,216 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+    <reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory" />
+
+    <!-- TransactionAwareBeanProxyFactory -->
+    <bean id="transactionAwareBeanProxyFactory" class="org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory">
+        <argument ref="transactionTemplate" />
+    </bean>
+
+    <bean id="bsmTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
+        <property name="name" value="BSM Topology Provider"/>
+        <property name="description" value="This Topology Provider displays the hierarchy of the defined Business Services and their computed operational states."/>
+        <property name="hierarchical" value="true" />
+    </bean>
+
+    <!-- Topology Provider -->
+    <bean id="bsmTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider">
+        <argument ref="transactionAwareBeanProxyFactory" />
+        <property name="businessServiceManager" ref="businessServiceManager" />
+        <property name="topologyProviderInfo" ref="bsmTopologyProviderInfo"/>
+    </bean>
+    <bean id="bsmTopologyHopProvider"
+        class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
+        <argument ref="bsmTopologyProvider" />
+    </bean>
+
+    <!-- Meta topology provider -->
+    <bean id="bsmMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+        <argument ref="bsmTopologyHopProvider" />
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="bsmMetaTopologyProvider">
+        <service-properties>
+            <entry key="label" value="Business Services" />
+        </service-properties>
+    </service>
+
+    <!-- Status provider Bean for Vertex and Edge Status Provider-->
+    <bean id="bsmStatusProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesStatusProvider">
+        <property name="businessServiceManager" ref="businessServiceManager" />
+    </bean>
+    <service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="bsmStatusProvider" />
+    <service interface="org.opennms.features.topology.api.topo.EdgeStatusProvider" ref="bsmStatusProvider"/>
+
+    <!-- Search Provider -->
+    <bean id="bsmSearchProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServiceSearchProvider">
+        <property name="businessServiceManager" ref="businessServiceManager" />
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="bsmSearchProvider" />
+
+    <!-- Business Services Table Table -->
+    <bean id="businessServiceSelectionLinkGenerator" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesSelectionLinkGenerator">
+        <argument value="id" />
+        <argument value="name" />
+    </bean>
+
+    <bean id="businessServicesContainer" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesContainer" scope="prototype">
+       <argument ref="businessServicesContainerDatasource"/>
+    </bean>
+    <bean id="businessServicesContainerDatasource" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServiceContainerDatasource" scope="prototype">
+        <argument ref="transactionAwareBeanProxyFactory" />
+        <property name="businessServiceManager" ref="businessServiceManager"/>
+    </bean>
+
+    <bean id="businessServicesTable" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesTable" scope="prototype">
+        <argument value="Business Services" />
+        <argument ref="businessServicesContainer" />
+        <property name="columnReorderingAllowed" value="true" />
+        <property name="columnCollapsingAllowed" value="true" />
+        <property name="cellStyleGenerator">
+            <bean class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesTableCellStyleGenerator">
+                <property name="businessServiceManager" ref="businessServiceManager" />
+            </bean>
+        </property>
+        <property name="sortContainerPropertyId" value="name" />
+        <property name="columnGenerators">
+            <map>
+                <entry key="id" value-ref="businessServiceSelectionLinkGenerator" />
+                <entry key="name" value-ref="businessServiceSelectionLinkGenerator" />
+            </map>
+        </property>
+        <property name="visibleColumns">
+            <array>
+                <value>id</value>
+                <value>name</value>
+            </array>
+        </property>
+        <property name="columnHeaders">
+            <array>
+                <value>ID</value>
+                <value>Name</value>
+            </array>
+        </property>
+    </bean>
+    <bean id="businessServiceContribution" class="org.opennms.features.topology.api.support.BlueprintIViewContribution">
+        <argument ref="blueprintContainer" />
+        <argument value="businessServicesTable" />
+        <property name="title" value="Business Services" />
+    </bean>
+    <service interface="org.opennms.features.topology.api.IViewContribution" ref="businessServiceContribution">
+        <description>Business Services table IViewContribution service.</description>
+        <service-properties>
+            <entry key="location" value="bottom" />
+            <entry key="name" value="businessServicesView" />
+        </service-properties>
+    </service>
+
+    <!-- Info Items -->
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexInfoPanelItemProvider" >
+            <argument ref="transactionAwareBeanProxyFactory" />
+            <property name="businessServiceManager" ref="businessServiceManager" />
+        </bean>
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexAttributesInfoPanelItemProvider" >
+            <argument ref="transactionAwareBeanProxyFactory" />
+            <property name="businessServiceManager" ref="businessServiceManager" />
+        </bean>
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexStatusInfoPanelItemProvider" >
+            <argument ref="transactionAwareBeanProxyFactory" />
+            <property name="businessServiceManager" ref="businessServiceManager" />
+            <property name="businessServicesTopologyProvider" ref="bsmTopologyProvider"/>
+        </bean>
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceEdgeInfoPanelItemProvider" />
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceEdgeStatusInfoPanelItemProvider" >
+            <argument ref="transactionAwareBeanProxyFactory" />
+            <property name="businessServiceManager" ref="businessServiceManager" />
+        </bean>
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.SimulationModeReductionKeyInfoPanelItemProvider" />
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.SimulationModeEnabledPanelItemProvider" />
+    </service>
+
+    <!-- Hide Leaf Elements Operation -->
+    <service interface="org.opennms.features.topology.api.CheckedOperation">
+        <service-properties>
+            <entry key="operation.menuLocation" value="View" />
+            <entry key="operation.label" value="Hide Leaf Elements?group=bsm" />
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.HideLeafElementToggleOperation"/>
+    </service>
+
+    <!-- Icon definition -->
+    <service>
+        <interfaces>
+            <value>org.opennms.features.topology.api.ConfigurableIconRepository</value>
+            <value>org.osgi.service.cm.ManagedService</value>
+        </interfaces>
+        <service-properties>
+            <entry key="service.pid" value="org.opennms.features.topology.app.icons.bsm"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository" />
+    </service>
+
+    <bean id="rootCauseAnalysisOperation" class="org.opennms.features.topology.plugins.topo.bsm.operations.RootCauseAnalysisOperation" >
+        <property name="businessServiceManager" ref="businessServiceManager" />
+    </bean>
+
+    <bean id="impactAnalysisOperation" class="org.opennms.features.topology.plugins.topo.bsm.operations.ImpactAnalysisOperation" >
+        <property name="businessServiceManager" ref="businessServiceManager" />
+    </bean>
+
+    <!-- RCA and IA Operations -->
+    <service interface="org.opennms.features.topology.api.Operation" ref="rootCauseAnalysisOperation">
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Root Cause Analysis"/>
+        </service-properties>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" ref="impactAnalysisOperation">
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Impact Analysis"/>
+        </service-properties>
+    </service>
+
+    <!-- Simulation -->
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Simulate"/>
+            <entry key="operation.label" value="Simulation Mode?group=mode"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.SimulationModeOperation"/>
+    </service>
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Simulate"/>
+            <entry key="operation.label" value="Inherit State?group=state"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.InheritStateOperation"/>
+    </service>
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Simulate"/>
+            <entry key="operation.label" value="Reset State?group=state"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.ResetStateOperation"/>
+    </service>
+</blueprint>

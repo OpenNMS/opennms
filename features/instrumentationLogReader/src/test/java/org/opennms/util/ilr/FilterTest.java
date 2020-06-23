@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -44,12 +44,12 @@ public class FilterTest {
     ServiceCollector svcCollector = new ServiceCollector(null);
 
     public void setup() {
-        c.addLog("2010-03-13 02:21:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:21:40,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/1.1.1.1/SNMP");
-        c.addLog("2010-03-13 02:22:20,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:22:50,976 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/2.2.2.2/SNMP");
-        c.addLog("2010-03-13 02:23:30,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: begin:0/3.3.3.3/SNMP");
-        c.addLog("2010-03-13 02:23:50,000 DEBUG [CollectdScheduler-400 Pool-fiber51] Collectd: collector.collect: end:0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:21:30,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: begin:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:21:40,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: end:example1/0/1.1.1.1/SNMP");
+        c.addLog("2010-03-13 02:22:20,976 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: begin:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:22:50,976 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: end:example1/0/2.2.2.2/SNMP");
+        c.addLog("2010-03-13 02:23:30,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: begin:example1/0/3.3.3.3/SNMP");
+        c.addLog("2010-03-13 02:23:50,000 INFO [CollectdScheduler-400 Pool-fiber51] collector.collect: end:example1/0/3.3.3.3/SNMP");
     }
 
     @Test
@@ -107,7 +107,7 @@ public class FilterTest {
     public void testFilterServiceCollectorsByServiceID () {
         setup();
         
-        final String serviceID = "0/3.3.3.3/SNMP";
+        final String serviceID = "example1/0/3.3.3.3/SNMP";
         
         Collection<ServiceCollector> filtered = filter(c.getServiceCollectors(), and(eq(serviceID(), serviceID), lessThan(collectionCount(), 2)));
         assertEquals(1, filtered.size());
@@ -118,9 +118,9 @@ public class FilterTest {
     @Test
     public void testCompoundFilters() {
         setup();
-        final String serviceID1 = "0/1.1.1.1/SNMP";
-        final String serviceID2 = "0/2.2.2.2/SNMP";
-        final String serviceID3 = "0/3.3.3.3/SNMP";
+        final String serviceID1 = "example1/0/1.1.1.1/SNMP";
+        final String serviceID2 = "example1/0/2.2.2.2/SNMP";
+        final String serviceID3 = "example1/0/3.3.3.3/SNMP";
         
         Collection<ServiceCollector> compoundOrFilter = filter(c.getServiceCollectors(), or(byServiceID(serviceID2), byServiceID(serviceID3)));
         assertEquals(2, compoundOrFilter.size());

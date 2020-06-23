@@ -1,0 +1,21 @@
+#!/bin/sh -
+
+JAVA_OPTIONS="-Xmx512m"
+OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
+RUNAS="root"
+
+myuser="`id -u -n`"
+if [ x"$myuser" = x"$RUNAS" ]; then
+	true # all is well
+else
+	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
+	exit 4 # According to LSB: 4 - user had insufficient privileges
+fi
+
+APP_CLASS=org.opennms.upgrade.support.Upgrade
+exec $OPENNMS_HOME/bin/runjava -r -- $JAVA_OPTIONS \
+	-Dopennms.home="$OPENNMS_HOME" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-Dopennms.manager.class="$APP_CLASS" \
+	-jar "$OPENNMS_HOME"/lib/opennms_bootstrap.jar $@

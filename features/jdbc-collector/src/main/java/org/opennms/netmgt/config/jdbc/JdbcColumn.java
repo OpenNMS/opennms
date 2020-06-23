@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.opennms.netmgt.collection.api.AttributeType;
 
 @XmlRootElement(name="column")
 public class JdbcColumn implements Serializable, Comparable<JdbcColumn> {
@@ -47,10 +48,10 @@ public class JdbcColumn implements Serializable, Comparable<JdbcColumn> {
     
     @XmlAttribute(name="data-source-name", required=false)
     private String m_dataSourceName;
-    
+
     @XmlAttribute(name="type", required=true)    
-    private String m_dataType;
-    
+    private AttributeType m_dataType;
+
     @XmlAttribute(name="alias", required=true)
     private String m_alias;
     
@@ -71,17 +72,16 @@ public class JdbcColumn implements Serializable, Comparable<JdbcColumn> {
     public void setDataSourceName(String dataSourceName) {
         m_dataSourceName = dataSourceName;
     }
-    
+
     @XmlTransient
-    public String getDataType() {
+    public AttributeType getDataType() {
         return m_dataType;
     }
-    
-    public void setDataType(String dataType) {
+
+    public void setDataType(AttributeType dataType) {
         m_dataType = dataType;
     }
-    
-    
+
     @XmlTransient
     public String getAlias() {
         return m_alias;

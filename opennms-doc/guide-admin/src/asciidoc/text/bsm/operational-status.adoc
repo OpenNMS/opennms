@@ -1,0 +1,42 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gu-bsm-op-status]]
+=== Operational status
+
+Every _Business Service_ maintains an _Operational Status_ that represents the overall status calculated by the _Map and Reduce Functions_ from the _Edges_.
+The _Operational Status_ uses the _Severities_ known from _Events_ and _Alarms_.
+
+.Operational Status representation
+[options="header, autowidth"]
+|===
+| Name            | Numerical code | Color       / Code   | Description
+| `Critical`      | _7_            | Purple      / `#c00` | This event means that a severe service affecting event has occurred.
+| `Major`         | _6_            | Red         / `#f30` | Indicates serious disruption or malfunction of a service or system.
+| `Minor`         | _5_            | Orange      / `#f90` | Used for troubles that have not immediate effect on service or system performance.
+| `Warning`       | _4_            | Yellow      / `#fc0` | An event has occurred that may require action.
+                                                            This severity can also be used to indicate a condition that should be noted (logged) but does not require immediate action.
+| `Normal`        | _3_            | Dark green  / `#360` | Informational message. No action required.
+| `Cleared`       | _2_            | Grey        / `#eee` | This severity is reserved for use in alarms to indicate that an alarm describes a self-clearing error condition has been corrected and service is restored.
+                                                            This severity should never be used in event definitions.
+                                                            Please use "Normal" severity for events that clear an alarm.
+| `Indeterminate` | _1_            | Light green / `#990` | No Severity could be associated with this event.
+|===
+
+If a _Business Service_ changes its _Operational Status_ an _OpenNMS_ event of the type `uei.opennms.org/bsm/serviceOperationalStatusChanged` is generated and sent to the _OpenNMS Event Bus_.
+In case the _Operational Status_ changed from _Normal_ to a higher _Severity_ an _Event_ of the type `uei.opennms.org/bsm/serviceProblem` is generated and has the _Severity_ of the _BS_.
+When the _BS_ goes back to normal a _Event_ of the type `uei.opennms.org/bsm/serviceProblemResolved` is generated.
+
+NOTE: The _Service Problem_ and _Service Problem Resolved_ events can be used for notifications or ticketing integration.
+
+The log message of the events have the following information:
+
+* _Business Service Name_: `businessServiceName`
+* _Business Service Identifier_: `id`
+* _Previous Severity Identifier_: `prevSeverityId`
+* _Previous Severity Label_: `prevSeverityLabel`
+* _New Severity Identifier_: `newSeverityId`
+* _New Severity Label_: `newSeverityLabel`
+
+NOTE: The _BSM_ events are not associated to a _Node_, _Interface_ or _Service_.

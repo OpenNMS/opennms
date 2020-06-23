@@ -1,0 +1,342 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+  <!-- Configuration properties for the API layer -->
+  <cm:property-placeholder id="org.opennms.features.apilayer"
+                           persistent-id="org.opennms.features.apilayer"
+                           update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="alarmFeedback.gracePeriodInMs" value="5000"/>
+      <cm:property name="alarmFeedback.sleepTimeInMs" value="1000"/>
+      <cm:property name="alarmFeedback.waitTimeMs" value="500"/>
+      <cm:property name="nodeIdToCriteriaMaxCacheSize" value="10000"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <!-- Service references -->
+  <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+  <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
+  <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+  <reference id="deployedForeignSourceRepository" interface="org.opennms.netmgt.provision.persist.ForeignSourceRepository" filter="(type=deployed)"/>
+  <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
+  <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
+  <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+  <reference id="userDefinedLinkDao" interface="org.opennms.netmgt.enlinkd.persistence.api.UserDefinedLinkDao" availability="mandatory"/>
+  <reference id="userDefinedLinkTopologyService" interface="org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService" availability="mandatory"/>
+  <reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
+  <reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" availability="optional"/>
+  <reference id="onmsTopologyDao" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao" availability="mandatory"/>
+  <reference id="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao" availability="mandatory"/>
+  <reference id="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao" availability="mandatory"/>
+  <reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" availability="optional"/>
+  <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory"/>
+
+  <bean id="nodeDaoImpl" class="org.opennms.features.apilayer.dao.NodeDaoImpl">
+    <argument ref="nodeDao"/>
+    <argument ref="sessionUtils"/>
+  </bean>
+  <service interface="org.opennms.integration.api.v1.dao.NodeDao" ref="nodeDaoImpl"/>
+
+  <bean id="nodeCriteriaCache" class="org.opennms.features.apilayer.utils.NodeCriteriaLoadingCacheImpl">
+    <argument ref="sessionUtils"/>
+    <argument ref="nodeDao"/>
+    <argument value="${nodeIdToCriteriaMaxCacheSize}"/>
+  </bean>
+  <service interface="org.opennms.features.apilayer.utils.NodeCriteriaCache" ref="nodeCriteriaCache"/>
+  
+  <!-- Runtime -->
+  <service interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" >
+    <bean class="org.opennms.features.apilayer.RuntimeInfoImpl" />
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.dao.AlarmDao" >
+    <bean class="org.opennms.features.apilayer.dao.AlarmDaoImpl">
+      <argument ref="alarmDao"/>
+      <argument ref="sessionUtils"/>
+    </bean>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.dao.SnmpInterfaceDao" >
+    <bean class="org.opennms.features.apilayer.dao.SnmpInterfaceDaoImpl">
+      <argument ref="snmpInterfaceDao"/>
+      <argument ref="sessionUtils"/>
+    </bean>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.dao.AlarmFeedbackDao">
+    <bean class="org.opennms.features.apilayer.dao.AlarmFeedbackDaoImpl">
+      <argument value="${alarmFeedback.gracePeriodInMs}"/>
+      <argument value="${alarmFeedback.sleepTimeInMs}"/>
+      <argument value="${alarmFeedback.waitTimeMs}"/>
+    </bean>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.dao.InterfaceToNodeCache">
+    <bean class="org.opennms.features.apilayer.dao.InterfaceToNodeCacheImpl">
+      <argument ref="interfaceToNodeCache"/>
+    </bean>
+  </service>
+
+  <!-- Events -->
+
+  <bean id="eventConfExtensionManager" class="org.opennms.features.apilayer.config.EventConfExtensionManager">
+    <argument ref="eventConfDao"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.config.events.EventConfExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="eventConfExtensionManager" />
+  </reference-list>
+
+  <service ref="eventConfExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.events.EventForwarder" >
+    <bean class="org.opennms.features.apilayer.events.EventForwarderImpl">
+      <argument ref="eventForwarder"/>
+    </bean>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.events.EventSubscriptionService" >
+    <bean class="org.opennms.features.apilayer.events.EventSubscriptionServiceImpl">
+      <argument ref="eventSubscriptionService"/>
+    </bean>
+  </service>
+
+  <!-- Syslog -->
+  <reference id="syslogdConfig" interface="org.opennms.netmgt.config.SyslogdConfig" availability="mandatory"/>
+
+  <bean id="syslogMatchExtensionManager" class="org.opennms.features.apilayer.config.SyslogMatchExtensionManager">
+    <argument ref="syslogdConfig"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.config.syslog.SyslogMatchExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="syslogMatchExtensionManager" />
+  </reference-list>
+
+  <service ref="syslogMatchExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+  <!-- Snmp Data Collection Config Extension-->
+  <reference id="dataCollectionConfigDao" interface="org.opennms.netmgt.config.api.DataCollectionConfigDao" availability="mandatory" />
+
+  <bean id="snmpCollectionExtensionManager" class="org.opennms.features.apilayer.config.SnmpCollectionExtensionManager">
+    <argument ref="dataCollectionConfigDao"/>
+  </bean>
+
+  <reference-list interface="org.opennms.integration.api.v1.config.datacollection.SnmpCollectionExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="snmpCollectionExtensionManager" />
+  </reference-list>
+
+  <service ref="snmpCollectionExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+  <!-- Resource types Config Extension -->
+  <bean id="resourceTypesExtensionManager" class="org.opennms.features.apilayer.config.ResourceTypesExtensionManager">
+  </bean>
+
+  <reference-list interface="org.opennms.integration.api.v1.config.datacollection.ResourceTypesExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="resourceTypesExtensionManager" />
+  </reference-list>
+
+  <service ref="resourceTypesExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+
+  <!-- Resource Graph Properties Extension -->
+  <bean id="graphPropertiesExtensionManager" class="org.opennms.features.apilayer.config.GraphPropertiesExtensionManager">
+  </bean>
+
+  <reference-list interface="org.opennms.integration.api.v1.config.datacollection.graphs.GraphPropertiesExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="graphPropertiesExtensionManager" />
+  </reference-list>
+
+  <service ref="graphPropertiesExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+  <!-- Alarm Persister Extension -->
+  <bean id="alarmPersisterExtensionManager" class="org.opennms.features.apilayer.alarms.AlarmPersisterExtensionManager">
+    <argument ref="blueprintBundleContext"/>
+    <argument ref="sessionUtils"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.alarms.AlarmPersisterExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="alarmPersisterExtensionManager" />
+  </reference-list>
+
+  <!-- Alarm Lifecycle Listener Extension -->
+  <bean id="alarmLifecycleListenerManager" class="org.opennms.features.apilayer.alarms.AlarmLifecycleListenerManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.alarms.AlarmLifecycleListener" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="alarmLifecycleListenerManager" />
+  </reference-list>
+
+  <!-- Health Checks -->
+  <bean id="healthCheckManager" class="org.opennms.features.apilayer.health.HealthCheckManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.health.HealthCheck" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="healthCheckManager" />
+  </reference-list>
+
+  <!-- Alarm Feedback Listener -->
+  <bean id="alarmFeedbackListener" class="org.opennms.features.apilayer.feedback.AlarmFeedbackListenerManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.feedback.AlarmFeedbackListener" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="alarmFeedbackListener" />
+  </reference-list>
+
+  <!-- Detectors -->
+  <bean id="detectorManager" class="org.opennms.features.apilayer.detectors.DetectorManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.detectors.ServiceDetectorFactory" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="detectorManager" />
+  </reference-list>
+
+  <reference id="locationAwareDetectorClient" interface="org.opennms.netmgt.provision.LocationAwareDetectorClient" availability="optional"/>
+  <service ref="detectorClient" interface="org.opennms.integration.api.v1.detectors.DetectorClient" >
+  </service>
+  <bean id="detectorClient" class="org.opennms.features.apilayer.detectors.DetectorClientImpl">
+    <argument ref="locationAwareDetectorClient"/>
+  </bean>
+
+  <!-- Poller -->
+  <bean id="servicePollerManager" class="org.opennms.features.apilayer.pollers.ServicePollerManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.pollers.ServicePollerFactory" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="servicePollerManager" />
+  </reference-list>
+
+  <reference id="locationAwarePollerClient" interface="org.opennms.netmgt.poller.LocationAwarePollerClient" availability="optional"/>
+  <service ref="pollerClient" interface="org.opennms.integration.api.v1.pollers.ServicePollerClient" >
+  </service>
+  <bean id="pollerClient" class="org.opennms.features.apilayer.pollers.ServicePollerClientImpl" >
+    <argument ref="locationAwarePollerClient"/>
+  </bean>
+  
+  <!-- Ticketer -->
+  <bean id="ticketingExtensionManager" class="org.opennms.features.apilayer.ticketing.TicketingPluginManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.ticketing.TicketingPlugin" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="ticketingExtensionManager" />
+  </reference-list>
+
+  <!-- Service Collectors -->
+  <bean id="serviceCollectorManager" class="org.opennms.features.apilayer.collectors.ServiceCollectorManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.collectors.ServiceCollectorFactory" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="serviceCollectorManager" />
+  </reference-list>
+
+  <reference id="locationAwareCollectorClient" interface="org.opennms.netmgt.collection.api.LocationAwareCollectorClient" availability="optional"/>
+
+  <service interface="org.opennms.integration.api.v1.collectors.ServiceCollectorClient" >
+    <bean class="org.opennms.features.apilayer.collectors.ServiceCollectorClientImpl">
+      <argument ref="locationAwareCollectorClient"/>
+      <argument ref="collectionAgentFactory" />
+      <argument ref="nodeDaoImpl" />
+    </bean>
+  </service>
+
+  <service interface="org.opennms.integration.api.v1.collectors.CollectionSetPersistenceService">
+    <bean class="org.opennms.features.apilayer.collectors.CollectionSetPersistenceServiceImpl">
+      <argument ref="collectionAgentFactory"/>
+      <argument ref="persisterFactory"/>
+    </bean>
+  </service>
+
+  <!-- Requisition Providers -->
+  <bean id="requisitionProviderManager" class="org.opennms.features.apilayer.requisition.RequisitionProviderManager">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.requisition.RequisitionProvider" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="requisitionProviderManager" />
+  </reference-list>
+
+  <service interface="org.opennms.integration.api.v1.requisition.RequisitionRepository" >
+    <bean class="org.opennms.features.apilayer.requisition.RequisitionRepositoryImpl">
+      <argument ref="deployedForeignSourceRepository"/>
+    </bean>
+  </service>
+
+  <!-- Topology -->
+  <service interface="org.opennms.integration.api.v1.topology.UserDefinedLinkDao" >
+    <bean class="org.opennms.features.apilayer.topology.UserDefinedLinkDaoImpl">
+      <argument ref="userDefinedLinkDao"/>
+      <argument ref="userDefinedLinkTopologyService"/>
+      <argument ref="sessionUtils"/>
+    </bean>
+  </service>
+
+  <!-- Topology Edge Consumers -->
+  <bean id="edgeMapper" class="org.opennms.features.apilayer.utils.EdgeMapper">
+    <argument ref="nodeCriteriaCache"/>
+  </bean>
+  
+  <bean id="topologyEdgeConsumerManager" class="org.opennms.features.apilayer.topology.TopologyEdgeConsumerManager">
+    <argument ref="blueprintBundleContext"/>
+    <argument ref="edgeMapper"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.topology.TopologyEdgeConsumer" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="topologyEdgeConsumerManager" />
+  </reference-list>
+
+  <!-- Edge DAO -->
+  <service interface="org.opennms.integration.api.v1.dao.EdgeDao">
+    <bean class="org.opennms.features.apilayer.topology.EdgeDaoImpl">
+      <argument ref="onmsTopologyDao"/>
+      <argument ref="edgeMapper"/>
+    </bean>
+  </service>
+  
+  <!-- Thresholding -->
+  <bean id="threhsoldingConfigExtensionManager" class="org.opennms.features.apilayer.config.ThresholdingConfigExtensionManager">
+    <argument ref="thresholdingDao"/>
+    <argument ref="thresholdingService"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.config.thresholding.ThresholdingConfigExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="threhsoldingConfigExtensionManager" />
+  </reference-list>
+
+  <service ref="threhsoldingConfigExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+  
+  <bean id="threshdConfigurationExtensionManager" class="org.opennms.features.apilayer.config.ThreshdConfigurationExtensionManager">
+    <argument ref="threshdDao"/>
+    <argument ref="thresholdingService"/>
+  </bean>
+  <reference-list interface="org.opennms.integration.api.v1.config.thresholding.ThreshdConfigurationExtension" availability="optional">
+    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="threshdConfigurationExtensionManager" />
+  </reference-list>
+
+  <service ref="threshdConfigurationExtensionManager" interface="org.opennms.core.config.api.ConfigurationProvider" >
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+</blueprint>

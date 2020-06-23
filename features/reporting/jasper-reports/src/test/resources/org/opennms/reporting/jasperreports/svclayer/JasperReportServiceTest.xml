@@ -2,19 +2,42 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-
-	<bean id="availabilityReportService"
-		class="org.opennms.reporting.jasperreports.svclayer.JasperReportService" />
-
-
-	<bean id="jasperReportConfigDao"
-		class="org.opennms.netmgt.dao.castor.DefaultJasperReportConfigDao">
-		<property name="configResource" ref="jasperReportConfigResourceLocation" />
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+	<bean id="jasperReportService" class="org.opennms.reporting.jasperreports.svclayer.JasperReportService">
+		<property name="globalReportRepository" ref="defaultGlobalReportRepository"/>
 	</bean>
-
 	<bean id="jasperReportConfigResourceLocation" class="java.lang.String">
 		<constructor-arg value="classpath:/etc/jasper-reports-testdata.xml" />
 	</bean>
-
+	<!-- Setup for GlobalReportRepository -->
+	<bean id="defaultRemoteRepositoryConfigDao" class="org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao">
+		<constructor-arg ref="defaultRemoteRepositoryConfigResource"/>
+	</bean>
+	<bean id="legacyLocalReportRepository" class="org.opennms.features.reporting.repository.local.LegacyLocalReportRepository">
+		<constructor-arg name="localReportsDao" ref="legacyLocalReportsDao"/>
+		<constructor-arg name="localJasperReportsDao" ref="legacyLocalJasperReportsDao"/>
+	</bean>
+	<bean id="defaultGlobalReportRepository" class="org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository">
+		<constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>
+		<constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
+	</bean>
+	<bean id="legacyLocalReportsDao" class="org.opennms.features.reporting.dao.LegacyLocalReportsDao">
+		<constructor-arg ref="legacyLocalReportsConfigResource"/>
+	</bean>
+	<bean id="legacyLocalReportsConfigResource" class="org.springframework.core.io.UrlResource">
+		<constructor-arg value="file:src/test/resources/etc/database-reports.xml"/>
+	</bean>
+	<bean id="legacyLocalJasperReportsConfigResource" class="org.springframework.core.io.UrlResource">
+		<constructor-arg value="file:src/test/resources/etc/jasper-reports.xml"/>
+	</bean>
+	<bean id="defaultRemoteRepositoryConfigResource" class="org.springframework.core.io.UrlResource">
+		<constructor-arg value="file:src/test/resources/etc/remote-repository.xml"/>
+	</bean>
+	<bean id="jrTemplateResource" class="org.springframework.core.io.UrlResource">
+		<constructor-arg value="file:src/test/resources/etc/report-templates"/>
+	</bean>
+	<bean id="legacyLocalJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao">
+		<constructor-arg ref="legacyLocalJasperReportsConfigResource"/>
+		<constructor-arg ref="jrTemplateResource"/>
+	</bean>
 </beans>

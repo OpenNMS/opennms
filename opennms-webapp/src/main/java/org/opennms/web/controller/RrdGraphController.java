@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,6 +32,7 @@ import org.jrobin.core.RrdException;
 import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.StreamUtils;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.RrdGraphService;
 import org.springframework.web.servlet.ModelAndView;
@@ -80,9 +81,9 @@ public class RrdGraphController extends AbstractController {
             }
         }
 
-        String resourceId = request.getParameter("resourceId");
+        ResourceId resourceId = ResourceId.fromString(request.getParameter("resourceId"));
         
-        long times[] = this.parseTimes(request);
+        long[] times = this.parseTimes(request);
         
         long startTime = times[0];
         long endTime = times[1];
@@ -195,7 +196,7 @@ public class RrdGraphController extends AbstractController {
 
         	TimeSpec specStart = startParser.parse();
         	TimeSpec specEnd = endParser.parse();
-        	long results[] = TimeSpec.getTimestamps(specStart, specEnd);
+        	long[] results = TimeSpec.getTimestamps(specStart, specEnd);
         	//Multiply by 1000.  TimeSpec returns timestamps in Seconds, not Milliseconds.  Gah.  
         	results[0] = results[0]*1000;
         	results[1] = results[1]*1000;

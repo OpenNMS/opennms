@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/notificationCommands"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/notificationCommands"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the notificationCommands.xml configuration
+    file. Version: $Id$.</documentation>
+  </annotation>
+
+  <element name="notification-commands">
+    <annotation>
+      <documentation>Top-level element for the notificationCommands.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="this:header"/>
+
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:command"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="header">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="ver" type="string"/>
+
+        <element maxOccurs="1" minOccurs="1" name="created" type="string">
+          <annotation>
+            <documentation>creation time in the 'dow mon dd hh:mm:ss zzz yyyy'
+            format</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="mstation" type="string"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="command">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="name" type="string"/>
+
+        <element maxOccurs="1" minOccurs="1" name="execute" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="comment" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="contact-type" type="string"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:argument"/>
+      </sequence>
+
+      <attribute default="true" name="binary" type="boolean"/>
+      <attribute default="false" name="service-registry" type="boolean"/>
+    </complexType>
+  </element>
+
+  <element name="argument">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" name="substitution" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="switch" type="string"/>
+      </sequence>
+
+      <attribute name="streamed" use="required" type="boolean"/>
+    </complexType>
+  </element>
+</schema>

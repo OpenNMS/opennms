@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -50,12 +50,14 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
 	private static final Logger LOG = LoggerFactory.getLogger(OpenNMSJUnit4ClassRunner.class);
 	
     private static final String[] STANDARD_LISTENER_CLASS_NAMES = new String[] {
+        "org.opennms.core.test.TestContextAwareExecutionListener",
+        "org.opennms.core.test.BeanUtilsTestContextInjectionExecutionListener",
         "org.opennms.test.OpenNMSConfigurationExecutionListener",
         "org.opennms.core.test.db.TemporaryDatabaseExecutionListener",
         "org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener",
         "org.opennms.core.test.http.JUnitHttpServerExecutionListener",
         "org.opennms.core.test.dns.JUnitDNSServerExecutionListener",
-        "org.opennms.netmgt.collectd.JUnitCollectorExecutionListener",
+        "org.opennms.core.collection.test.JUnitCollectorExecutionListener",
         "org.springframework.test.context.support.DependencyInjectionTestExecutionListener",
         "org.springframework.test.context.support.DirtiesContextTestExecutionListener",
         "org.springframework.test.context.transaction.TransactionalTestExecutionListener"
@@ -86,8 +88,8 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
             try {
                 final TestExecutionListener listener = (TestExecutionListener)Class.forName(className).newInstance();
                 getTestContextManager().registerTestExecutionListeners(listener);
-            } catch (final Throwable t) {
-            	LOG.info("Failed while attempting to load default unit test listener class {}: {}", className, t.getLocalizedMessage());
+            } catch (final Exception e) {
+            	LOG.info("Failed while attempting to load default unit test listener class {}: {}", className, e.getLocalizedMessage());
             }
         }
 

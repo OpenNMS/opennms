@@ -1,0 +1,22 @@
+version: 1
+update_configs:
+  - package_manager: "javascript"
+    directory: "/core/web-assets/"
+    update_schedule: "daily"
+    default_reviewers:
+      - "rangerrick"
+      - "j-white"
+    default_labels:
+      - "dependency update"
+    commit_message:
+      prefix: "build"
+      include_scope: true
+    allowed_updates:
+      - match:
+          update_type: security
+    ignored_updates:
+      - match:
+          dependency_name: "d3"
+      - match:
+          dependency_name: "ionicons"
+    target_branch: "foundation-2019"

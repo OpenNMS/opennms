@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>nrtg</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>nrtg-api</artifactId>
@@ -14,7 +14,7 @@
     <!-- TODO refactor code so namespace matches symbolic name -->
     <bundle.namespace>org.opennms.nrtg.api</bundle.namespace>
   </properties>
-  <name>OpenNMS Features NRTG API</name>
+  <name>OpenNMS :: Features :: NRTG :: API</name>
   <description>The API contains the models for the NRTG projects. It has models for collection jobs, measurements and protocol collectors.</description>
   <dependencies>
     <!-- Logging -->

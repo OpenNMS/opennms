@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -46,15 +46,21 @@ import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
+import org.opennms.web.alarm.filter.AlarmTextFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
+import org.opennms.web.alarm.filter.CategoryFilter;
 import org.opennms.web.alarm.filter.IPAddrLikeFilter;
+import org.opennms.web.alarm.filter.LocationFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
+import org.opennms.web.alarm.filter.NodeLocationFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
+import org.opennms.web.alarm.filter.SituationFilter;
 import org.opennms.web.api.Util;
+import org.opennms.web.controller.alarm.AlarmFilterController;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.servlet.MissingParameterException;
 
@@ -78,7 +84,7 @@ public class AlarmQueryServlet extends HttpServlet {
      * The list of parameters that are extracted by this servlet and not passed
      * on to the {@link AlarmFilterController AlarmFilterController}.
      */
-    protected static String[] IGNORE_LIST = new String[] { "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
+    protected static String[] IGNORE_LIST = new String[] { "alarmtext", "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear", "category" };
 
     /**
      * The URL for the {@link AlarmFilterController AlarmFilterController}. The
@@ -110,22 +116,28 @@ public class AlarmQueryServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Filter> filterArray = new ArrayList<Filter>();
+        List<Filter> filterArray = new ArrayList<>();
+
+        // convenient syntax for AlarmTextFilter
+        String alarmTextString = request.getParameter("alarmtext");
+        if (alarmTextString != null && alarmTextString.length() > 0) {
+            filterArray.add(new AlarmTextFilter(alarmTextString));
+        }
 
         // convenient syntax for LogMessageSubstringFilter
-        String msgSubstring = request.getParameter("msgsub");
+        String msgSubstring = WebSecurityUtils.sanitizeString(request.getParameter("msgsub"));
         if (msgSubstring != null && msgSubstring.length() > 0) {
             filterArray.add(new LogMessageSubstringFilter(msgSubstring));
         }
 
         // convenient syntax for LogMessageMatchesAnyFilter
-        String msgMatchAny = request.getParameter("msgmatchany");
+        String msgMatchAny = WebSecurityUtils.sanitizeString(request.getParameter("msgmatchany"));
         if (msgMatchAny != null && msgMatchAny.length() > 0) {
             filterArray.add(new LogMessageMatchesAnyFilter(msgMatchAny));
         }
 
         // convenient syntax for NodeNameContainingFilter
-        String nodeNameLike = request.getParameter("nodenamelike");
+        String nodeNameLike = WebSecurityUtils.sanitizeString(request.getParameter("nodenamelike"));
         if (nodeNameLike != null && nodeNameLike.length() > 0) {
             filterArray.add(new NodeNameLikeFilter(nodeNameLike));
         }
@@ -133,24 +145,24 @@ public class AlarmQueryServlet extends HttpServlet {
         // convenient syntax for ServiceFilter
         String service = request.getParameter("service");
         if (service != null && !service.equals(AlarmUtil.ANY_SERVICES_OPTION)) {
-            filterArray.add(new ServiceFilter(WebSecurityUtils.safeParseInt(service)));
+            filterArray.add(new ServiceFilter(WebSecurityUtils.safeParseInt(service), getServletContext()));
         }
 
         // convenient syntax for IPLikeFilter
-        String ipLikePattern = request.getParameter("iplike");
+        String ipLikePattern = WebSecurityUtils.sanitizeString(request.getParameter("iplike"));
         if (ipLikePattern != null && !ipLikePattern.equals("")) {
             filterArray.add(new IPAddrLikeFilter(ipLikePattern));
         }
 
         // convenient syntax for SeverityFilter
         String severity = request.getParameter("severity");
-        if (severity != null && !severity.equals(AlarmUtil.ANY_SEVERITIES_OPTION)) {
+        if (severity != null && !severity.equalsIgnoreCase(AlarmUtil.ANY_SEVERITIES_OPTION)) {
             filterArray.add(new SeverityFilter(OnmsSeverity.get(WebSecurityUtils.safeParseInt(severity))));
         }
 
         // convenient syntax for AfterDateFilter as relative to current time
         String relativeTime = request.getParameter("relativetime");
-        if (relativeTime != null && !relativeTime.equals(AlarmUtil.ANY_RELATIVE_TIMES_OPTION)) {
+        if (relativeTime != null && !relativeTime.equalsIgnoreCase(AlarmUtil.ANY_RELATIVE_TIMES_OPTION)) {
             try {
                 filterArray.add(AlarmUtil.getRelativeTimeFilter(WebSecurityUtils.safeParseInt(relativeTime)));
             } catch (IllegalArgumentException e) {
@@ -159,7 +171,7 @@ public class AlarmQueryServlet extends HttpServlet {
             }
         }
 
-        String useBeforeLastEventTime = request.getParameter("usebeforelasteventtime");
+        String useBeforeLastEventTime = WebSecurityUtils.sanitizeString(request.getParameter("usebeforelasteventtime"));
         if (useBeforeLastEventTime != null && useBeforeLastEventTime.equals("1")) {
             try {
                 filterArray.add(this.getBeforeLastEventTimeFilter(request));
@@ -171,7 +183,7 @@ public class AlarmQueryServlet extends HttpServlet {
             }
         }
 
-        String useAfterLastEventTime = request.getParameter("useafterlasteventtime");
+        String useAfterLastEventTime = WebSecurityUtils.sanitizeString(request.getParameter("useafterlasteventtime"));
         if (useAfterLastEventTime != null && useAfterLastEventTime.equals("1")) {
             try {
                 filterArray.add(this.getAfterLastEventTimeFilter(request));
@@ -183,7 +195,7 @@ public class AlarmQueryServlet extends HttpServlet {
             }
         }
 
-        String useBeforeFirstEventTime = request.getParameter("usebeforefirsteventtime");
+        String useBeforeFirstEventTime = WebSecurityUtils.sanitizeString(request.getParameter("usebeforefirsteventtime"));
         if (useBeforeFirstEventTime != null && useBeforeFirstEventTime.equals("1")) {
             try {
                 filterArray.add(this.getBeforeFirstEventTimeFilter(request));
@@ -195,7 +207,7 @@ public class AlarmQueryServlet extends HttpServlet {
             }
         }
 
-        String useAfterFirstEventTime = request.getParameter("useafterfirsteventtime");
+        String useAfterFirstEventTime = WebSecurityUtils.sanitizeString(request.getParameter("useafterfirsteventtime"));
         if (useAfterFirstEventTime != null && useAfterFirstEventTime.equals("1")) {
             try {
                 filterArray.add(this.getAfterFirstEventTimeFilter(request));
@@ -205,6 +217,26 @@ public class AlarmQueryServlet extends HttpServlet {
             } catch (MissingParameterException e) {
                 throw new ServletException(e);
             }
+        }
+
+        String location = WebSecurityUtils.sanitizeString(request.getParameter("location"));
+        if (location != null && !location.equalsIgnoreCase("any")) {
+            filterArray.add(new LocationFilter(WebSecurityUtils.sanitizeString(location)));
+        }
+
+        String nodelocation = WebSecurityUtils.sanitizeString(request.getParameter("nodelocation"));
+        if (nodelocation != null && !nodelocation.equalsIgnoreCase("any")) {
+            filterArray.add(new NodeLocationFilter(WebSecurityUtils.sanitizeString(nodelocation)));
+        }
+
+        String situation = WebSecurityUtils.sanitizeString(request.getParameter("situation"));
+        if (situation != null && !situation.equalsIgnoreCase("any")) {
+            filterArray.add(new SituationFilter(Boolean.valueOf(situation)));
+        }
+
+        String category = WebSecurityUtils.sanitizeString(request.getParameter("category"));
+        if (category != null && category.length() > 0) {
+            filterArray.add(new CategoryFilter(category));
         }
 
         String queryString = "";

@@ -1,4 +1,4 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
     <bean id="dashletSelector" class="org.opennms.features.vaadin.dashboard.config.DashletSelector" scope="singleton"/>
 
@@ -17,10 +17,10 @@
         <argument value="wallboardUI"/>
     </bean>
 
-    <service id="wallboardService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="wallboardUIFactory">
+    <service id="wallboardService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="wallboardUIFactory">
         <service-properties>
-            <entry key="alias" value="/vaadin-wallboard"/>
-            <entry key="widgetset" value="org.opennms.features.vaadin.dashboard.DashboardWidgetSet"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/vaadin-wallboard/*"/>
+            <entry key="servlet.init.widgetset" value="org.opennms.features.vaadin.dashboard.DashboardWidgetSet"/>
         </service-properties>
     </service>
 
@@ -28,9 +28,9 @@
         <property name="dashletSelector" ref="dashletSelector"/>
     </bean>
 
-    <bean id="wallboardConfigUILink" class="org.opennms.features.vaadin.dashboard.config.ui.AdminPageNavEntry">
+    <bean id="wallboardConfigUILink" class="org.opennms.netmgt.vaadin.core.AdminPageNavEntry">
         <property name="url" value="admin/wallboardConfig.jsp"/>
-        <property name="name" value="Wallboard Config Web UI"/>
+        <property name="name" value="Ops Board Configuration"/>
     </bean>
 
     <bean id="wallboardConfigUIFactory" class="org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUIFactory">
@@ -40,9 +40,10 @@
         <argument value="wallboardConfigUI"/>
     </bean>
 
-    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="wallboardConfigUIFactory">
+    <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="wallboardConfigUIFactory">
         <service-properties>
-            <entry key="alias" value="/wallboard-config"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/admin/wallboard-config/*"/>
+            <entry key="servlet.init.widgetset" value="org.opennms.features.vaadin.dashboard.DashboardWidgetSet"/>
         </service-properties>
     </service>
 
@@ -57,6 +58,7 @@
     <bean id="undefinedDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.UndefinedDashletFactory" scope="singleton">
         <property name="name" value="Undefined"/>
         <property name="boostable" value="false"/>
+        <property name="dashboardSuitable" value="true"/>
     </bean>
 
     <service ref="undefinedDashletFactory" interface="org.opennms.features.vaadin.dashboard.model.DashletFactory"/>

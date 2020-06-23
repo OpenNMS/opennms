@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/trend"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/trend"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+        elementFormDefault="qualified">
+    <element name="trend-configuration">
+        <complexType>
+            <sequence>
+                <element name="trend-definition" maxOccurs="unbounded" minOccurs="0">
+                    <complexType>
+                        <sequence>
+                            <element type="string" name="title"/>
+                            <element type="string" name="subtitle"/>
+                            <element type="string" name="visible"/>
+                            <element type="string" name="icon"/>
+                            <element name="trend-attributes">
+                                <complexType>
+                                    <sequence>
+                                        <element name="trend-attribute" maxOccurs="unbounded" minOccurs="0">
+                                            <complexType>
+                                                <simpleContent>
+                                                    <extension base="string">
+                                                        <attribute type="string" name="key" use="required"/>
+                                                        <attribute type="string" name="value" use="required"/>
+                                                    </extension>
+                                                </simpleContent>
+                                            </complexType>
+                                        </element>
+                                    </sequence>
+                                </complexType>
+                            </element>
+                            <element type="string" name="descriptionLink"/>
+                            <element type="string" name="description"/>
+                            <element type="string" name="query"/>
+                        </sequence>
+                        <attribute type="string" name="name" use="required"/>
+                    </complexType>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+</schema>

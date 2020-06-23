@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="http://xmlns.opennms.org/xsd/config/monitoring-locations"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/monitoring-locations"
+	elementFormDefault="qualified">
+
+  <element name="monitoring-locations-configuration">
+    <annotation>
+      <documentation>
+        Top-level element for configuration remote monitoring locations.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="locations">
+          <annotation>
+            <documentation>
+              The name and polling configuration for each monitoring location.  Note:
+              multiple monitors can use the same monitoring location, they will get assigned
+              and ID with the name of the location prepended (example: location name "SFO"
+              instance could be "SFO-1" or "SFO-Building A" as the instance is defined by
+              the user during registration of the distributed monitor).
+            </documentation>
+          </annotation>
+          <complexType>
+            <sequence>
+              <element ref="this:location" minOccurs="0" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="location" >
+    <annotation>
+      <documentation>
+        This element contains the name of the location, the name of the monitoring
+        area (used to aggregate locations, example: Area San Francisco, location name "SFO"
+        which becomes SFO-1 or SFO-BuildingA, etc.)  Additionally, a geolocation can be provided
+        (an address or other identifying location that can be looked up with a geolocation
+        API), as well as coordinates (latitude,longitude).  Finally, a priority can be assigned
+        to the location, for purposes of sorting (1 = highest, 100 = lowest).
+        The polling package name is used to associate with a polling configuration found in the
+        polling-configuration.xml file. 
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+         <element ref="this:foreign-source-names" minOccurs="0" maxOccurs="1" />
+         <element ref="this:polling-package-names" minOccurs="0" maxOccurs="1" />
+         <element ref="this:collection-package-names" minOccurs="0" maxOccurs="1" />
+         <element ref="this:tags" minOccurs="0" maxOccurs="1" />
+      </sequence>
+      <attribute name="location-name" type="string" use="required" />
+      <attribute name="monitoring-area" type="string" use="required" />
+      <attribute name="geolocation" type="string" use="optional" />
+      <attribute name="coordinates" type="string" use="optional" />
+      <attribute name="priority" type="integer" use="optional" default="100" />
+    </complexType>
+  </element>
+
+  <element name="foreign-source-names">
+    <annotation>
+      <documentation>Foreign sources associated with this location.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element minOccurs="1" maxOccurs="unbounded" ref="this:foreign-source-name" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="foreign-source-name" type="string">
+    <annotation>
+      <documentation>Foreign source name.</documentation>
+    </annotation>
+  </element>
+
+  <element name="polling-package-names">
+    <annotation>
+      <documentation>Polling packages associated with this location.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element minOccurs="1" maxOccurs="unbounded" ref="this:polling-package-name" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="polling-package-name" type="string">
+    <annotation>
+      <documentation>Polling package name.</documentation>
+    </annotation>
+  </element>
+
+  <element name="collection-package-names">
+    <annotation>
+      <documentation>Collection packages associated with this location.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element minOccurs="1" maxOccurs="unbounded" ref="this:collection-package-name" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="collection-package-name" type="string">
+    <annotation>
+      <documentation>Collection package name.</documentation>
+    </annotation>
+  </element>
+
+  <element name="tags">
+    <annotation>
+      <documentation>A collection of tags.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element minOccurs="1" maxOccurs="unbounded" ref="this:tag" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="tag">
+    <annotation>
+      <documentation>An arbitrary metadata "tag" that can be associated with other configs.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="name" type="string" />
+    </complexType>
+  </element>
+
+</schema>

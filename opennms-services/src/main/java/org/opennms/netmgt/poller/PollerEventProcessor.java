@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,30 +28,33 @@
 
 package org.opennms.netmgt.poller;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
-import org.opennms.netmgt.capsd.InsufficientInformationException;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.dao.api.DemandPollDao;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
-import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -63,9 +66,6 @@ final class PollerEventProcessor implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(PollerEventProcessor.class);
 
     private final Poller m_poller;
-	private volatile DemandPollDao m_demandPollDao;
-	
-	
 
     /**
      * Create message selector to set to the subscription
@@ -73,7 +73,7 @@ final class PollerEventProcessor implements EventListener {
     private void createMessageSelectorAndSubscribe() {
         // Create the selector for the UEIs this service is interested in
         //
-        List<String> ueiList = new ArrayList<String>();
+        List<String> ueiList = new ArrayList<>();
 
         // nodeGainedService
         ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
@@ -152,23 +152,25 @@ final class PollerEventProcessor implements EventListener {
 
         // resumePollingService
         ueiList.add(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI);
-	
+
         // scheduled outage configuration change
         ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
-        
-        // demand poll
-        ueiList.add(EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI);
-        
+
         // update threshold configuration
         ueiList.add(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
 
         // asset information updated
         ueiList.add(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI);
-        
+
         // categories updated
         ueiList.add(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI);
-        
-        
+
+        // node location change
+        ueiList.add(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI);
+
+        // for reloading poller configuration and re-scheduling pollers
+        ueiList.add(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
+
         // Subscribe to eventd
         getEventManager().addEventListener(this, ueiList);
     }
@@ -187,20 +189,34 @@ final class PollerEventProcessor implements EventListener {
     private void nodeGainedServiceHandler(final Event event) {
         // First make sure the service gained is in active state before trying to schedule
 
-    	final String ipAddr = event.getInterface();
-    	final Long nodeId = event.getNodeid();
-    	final String svcName = event.getService();
-        
-    	String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
-        
+        final String ipAddr = event.getInterface();
+        final Long nodeId = event.getNodeid();
+        final String svcName = event.getService();
+
+        String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
         try {
             nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
         } catch (final Exception e) {
             LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
         }
 
-        getPoller().scheduleService(nodeId.intValue(), nodeLabel, ipAddr, svcName);
-        
+        String nodeLocation = null;
+        try {
+            nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
+        } catch (final Exception e) {
+            LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
+        }
+
+        final PollableNode pnode = getNetwork().getNode(nodeId.intValue());
+        if (pnode != null) {
+            final PollableService service = pnode.getService(addr(ipAddr), svcName);
+            if (service != null) {
+                LOG.debug("Node {} gained service {} on IP {}, but it is already being polled!", nodeId, svcName, ipAddr);
+                return;
+            }
+        }
+        getPoller().scheduleService(nodeId.intValue(), nodeLabel, nodeLocation, ipAddr, svcName, pnode);
+
     }
 
     /**
@@ -219,7 +235,7 @@ final class PollerEventProcessor implements EventListener {
         // Verify that the event has an interface associated with it
         if (event.getInterfaceAddress() == null)
             return;
-        
+
         InetAddress ipAddr = event.getInterfaceAddress();
 
         // Extract the old and new nodeId's from the event parms
@@ -254,7 +270,7 @@ final class PollerEventProcessor implements EventListener {
             LOG.error("interfaceReparentedHandler: old and new nodeId parms are required, unable to process.");
             return;
         }
-        
+
         PollableNode oldNode;
         PollableNode newNode;
         try {
@@ -268,21 +284,21 @@ final class PollerEventProcessor implements EventListener {
                 LOG.error("interfaceReparentedHandler: Cannot locate new node {} to move interface to.  Also, grammar error: ended a sentence with a preposition.", newNodeIdStr);
                 return;
             }
-            
+
             PollableInterface iface = oldNode.getInterface(ipAddr);
             if (iface == null) {
                 LOG.error("interfaceReparentedHandler: Cannot locate interface with ipAddr {} to reparent.", ipAddr);
                 return;
             }
-            
+
             iface.reparentTo(newNode);
-            
-            
+
+
         } catch (final NumberFormatException nfe) {
             LOG.error("interfaceReparentedHandler: failed converting old/new nodeid parm to integer, unable to process.");
             return;
         } 
-        
+
     }
 
     /**
@@ -293,12 +309,12 @@ final class PollerEventProcessor implements EventListener {
         Long nodeId = event.getNodeid();
         InetAddress ipAddr = event.getInterfaceAddress();
         String svcName = event.getService();
-        
+
         if (svcName == null) {
             LOG.error("nodeRemovePollableServiceHandler: service name is null, ignoring event");
             return;
         }
-        
+
         PollableService svc = getNetwork().getService(nodeId.intValue(), ipAddr, svcName);
         svc.delete();
 
@@ -339,27 +355,18 @@ final class PollerEventProcessor implements EventListener {
             }
         }
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (ParseException e) {
-            closeDate = new Date();
-        }
-        
-        getPoller().closeOutagesForNode(closeDate, event.getDbid(), nodeId.intValue());
+        Date closeDate = event.getTime();
 
-        
+        getPoller().getQueryManager().closeOutagesForNode(closeDate, event.getDbid(), nodeId.intValue());
+
+
         PollableNode node = getNetwork().getNode(nodeId.intValue());
         if (node == null) {
-          LOG.error("Nodeid {} does not exist in pollable node map, unable to delete node.", nodeId);
-          if (isXmlRPCEnabled()) {
-              int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-              XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Node does not exist in pollable node map.", status, "OpenNMS.Poller");
-          }
-          return;
+            LOG.error("Nodeid {} does not exist in pollable node map, unable to delete node.", nodeId);
+            return;
         }
         node.delete();
-       
+
     }
 
     private void nodeLabelChangedHandler(Event event) {
@@ -372,7 +379,7 @@ final class PollerEventProcessor implements EventListener {
             if (parmValue == null) {
                 continue;
             } else {
-                if (parmName.equals(EventConstants.PARM_NODE_LABEL)) {
+                if (parmName.equals(EventConstants.PARM_NEW_NODE_LABEL)){
                     String label = parmValue.getContent();
                     LOG.debug("nodeLabelChangedHandler: parmName: {} /parmContent: {}", parmName, label);
                     PollableNode node = getNetwork().getNode(nodeId.intValue());
@@ -387,14 +394,11 @@ final class PollerEventProcessor implements EventListener {
         }
     }
 
-    /**
-     * 
-     */
     private void interfaceDeletedHandler(Event event) {
         Long nodeId = event.getNodeid();
         String sourceUei = event.getUei();
         InetAddress ipAddr = event.getInterfaceAddress();
-        
+
         // Extract node label and transaction No. from the event parms
         long txNo = -1L;
         String parmName = null;
@@ -422,24 +426,15 @@ final class PollerEventProcessor implements EventListener {
             }
         }
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (ParseException e) {
-            closeDate = new Date();
-        }
-        
-        getPoller().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), InetAddressUtils.str(ipAddr));
+        Date closeDate = event.getTime();
 
-        
+        getPoller().getQueryManager().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), str(ipAddr));
+
+
         PollableInterface iface = getNetwork().getInterface(nodeId.intValue(), ipAddr);
         if (iface == null) {
-          LOG.error("Interface {}/{} does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
-          if (isXmlRPCEnabled()) {
-              int status = EventConstants.XMLRPC_NOTIFY_FAILURE;
-              XmlrpcUtil.createAndSendXmlrpcNotificationEvent(txNo, sourceUei, "Interface does not exist in pollable node map.", status, "OpenNMS.Poller");
-          }
-          return;
+            LOG.error("Interface {}/{} does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
+            return;
         }
         iface.delete();
 
@@ -455,31 +450,62 @@ final class PollerEventProcessor implements EventListener {
         Long nodeId = event.getNodeid();
         InetAddress ipAddr = event.getInterfaceAddress();
         String service = event.getService();
-        
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (ParseException e) {
-            closeDate = new Date();
-        }
-        
-        getPoller().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), InetAddressUtils.str(ipAddr), service);
-        
+
+        Date closeDate = event.getTime();
+
+        getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), str(ipAddr), service);
+
         PollableService svc = getNetwork().getService(nodeId.intValue(), ipAddr, service);
         if (svc == null) {
-          LOG.error("Interface {}/{} does not exist in pollable node map, unable to delete node.", nodeId, event.getInterface());
-          return;
+            LOG.error("Service {}/{}/{} does not exist in pollable node map, unable to delete service.", nodeId, event.getInterface(), service);
+            return;
         }
-        
+
         svc.delete();
 
     }
-    
+
+    private void reloadConfigHandler(Event event) {
+        final String daemonName = "Pollerd";
+        boolean isPoller = false;
+        for (Parm parm : event.getParmCollection()) {
+            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && daemonName.equalsIgnoreCase(parm.getValue().getContent())) {
+                isPoller = true;
+                break;
+            }
+        }
+        if (isPoller) {
+            LOG.info("reloadConfigHandler: reloading poller configuration");
+            final String targetFile = ConfigFileConstants.getFileName(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+            EventBuilder ebldr = null;
+            try {
+                getPollerConfig().update();
+                rescheduleAllServices(event);
+                // Preparing successful event
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, daemonName);
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
+                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
+            } catch (Throwable e) {
+                // Preparing failed event
+                LOG.error("reloadConfigHandler: Error reloading/processing poller configuration: {}", e.getMessage(), e);
+                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, daemonName);
+                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, daemonName);
+                ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, targetFile);
+                ebldr.addParam(EventConstants.PARM_REASON, e.getMessage());
+            }
+            finally {
+                if (ebldr != null) {
+                    getEventManager().sendNow(ebldr.getEvent());
+                }
+            }
+        } else {
+            LOG.warn("reloadConfigHandler: invalid parameters");
+        }
+    }
+
     /**
      * Constructor
      * 
-     * @param pollableServices
-     *            List of all the PollableService objects scheduled for polling
      */
     PollerEventProcessor(Poller poller) {
 
@@ -497,9 +523,6 @@ final class PollerEventProcessor implements EventListener {
         getEventManager().removeEventListener(this);
     }
 
-    /**
-     * @return
-     */
     private EventIpcManager getEventManager() {
         return getPoller().getEventManager();
     }
@@ -520,17 +543,17 @@ final class PollerEventProcessor implements EventListener {
         // print out the uei
         LOG.debug("PollerEventProcessor: received event, uei = {}", event.getUei());
 
-	if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
-		LOG.info("Reloading poller config factory and polloutages config factory");
-        
-		scheduledOutagesChangeHandler();
-	} else if(event.getUei().equals(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI)) {
-        LOG.info("Reloading thresholding configuration in pollerd");
-        
-	    thresholdsConfigChangeHandler();
+        if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
+            LOG.info("Reloading poller config factory and polloutages config factory");
 
-	} else if(!event.hasNodeid()) {
-	    // For all other events, if the event doesn't have a nodeId it can't be processed.
+            scheduledOutagesChangeHandler();
+
+        } else if (event.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI))  {
+            LOG.info("Reloading poller configuration in pollerd");
+
+            reloadConfigHandler(event);
+        } else if(!event.hasNodeid()) {
+            // For all other events, if the event doesn't have a nodeId it can't be processed.
 
             LOG.info("PollerEventProcessor: no database node id found, discarding event");
         } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
@@ -586,102 +609,180 @@ final class PollerEventProcessor implements EventListener {
             } else {
                 serviceDeletedHandler(event);
             }
-        } else if (event.getUei().equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)){
-            if (!(event.getNodeid() < 0)) { 
-                
-                serviceReschedule(event);
+        } else if (event.getUei().equals(EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)) {
+            if (event.getNodeid() > 0) { 
+                serviceReschedule(event, false);
             }
-        } else if (event.getUei().equals(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI)){
-            if (!(event.getNodeid() < 0)) { 
-                serviceReschedule(event);
+        } else if (event.getUei().equals(EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI)) {
+            if (event.getNodeid() > 0) {
+                // Reschedule existing so that they can be polled at new location.
+                serviceReschedule(event, true);
             }
-            
+        } else if (event.getUei().equals(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI)) {
+            if (event.getNodeid() > 0) {
+                serviceReschedule(event, false);
+            }
         } // end single event process
 
     } // end onEvent()
-    
-    private void serviceReschedule(Event event)   {       
-       PollableNode pnode = getNetwork().getNode(event.getNodeid().intValue());
-       Long nodeId = event.getNodeid();
-       String nodeLabel = pnode.getNodeLabel();
-       
-       //pnode.delete();
-       //nodeDeletedHandler(event);
-       
-       /*while(pnode.isDeleted()==false){
-           
-           LOG.debug("Waiting for node to delete...");
-           
-       }*/
-       
-       List<String[]> list = getPoller().getQueryManager().getNodeServices(nodeId.intValue());
-       
-       for(String[] row : list){
-           LOG.debug(" Removing the following from the list: {}:{}", row[0],row[1]);
-           
-           InetAddress addr;
-           addr = InetAddressUtils.addr(row[0]);
-           if (addr == null) {
-               LOG.warn("Rescheduler: Could not convert {} to an InetAddress", row[0]);
-               return;
-           }
-           
-           Date closeDate;
-           try {
-               closeDate = EventConstants.parseToDate(event.getTime());
-           } catch (ParseException e) {
-               closeDate = new Date();
-           }
-           
-           getPoller().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), row[0], row[1]);
-           
-           PollableService svc = getNetwork().getService(nodeId.intValue(),addr,row[1]);
-           
-           if (svc != null) {
-           
-               svc.delete();
-           
-               while(svc.isDeleted()==false){
-                   LOG.debug("Waiting for the service to delete...");
-               }
-           
-           }
-           
-           else {
-               LOG.debug("Service Not Found");
-           }
-           
-       }
-       
-       getPoller().getPollerConfig().rebuildPackageIpListMap();
-       
-       for(String[] row : list){
-           LOG.debug(" Re-adding the following to the list: {}:{}", row[0],row[1]);
-           getPoller().scheduleService(nodeId.intValue(),nodeLabel,row[0],row[1]);
-       }
+
+    private void serviceReschedule(Event event, boolean rescheduleExisting)   {
+        final Long nodeId = event.getNodeid();
+
+        if (nodeId == null || nodeId <= 0) {
+            LOG.warn("Invalid node ID for event, skipping service reschedule: {}", event);
+            return;
+        }
+        String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
+        try {
+            nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
+        } catch (final Exception e) {
+            LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
+        }
+
+        String nodeLocation = null;
+        try {
+            nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
+        } catch (final Exception e) {
+            LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
+        }
+
+        getPollerConfig().rebuildPackageIpListMap();
+        serviceReschedule(nodeId, nodeLabel, nodeLocation, event, rescheduleExisting);
     }
 
-    @SuppressWarnings("unused")
-    private void demandPollServiceHandler(Event e) throws InsufficientInformationException {
-    	EventUtils.checkNodeId(e);
-    	EventUtils.checkInterface(e);
-    	EventUtils.checkService(e);
-    	EventUtils.requireParm(e, EventConstants.PARM_DEMAND_POLL_ID);
-    	m_demandPollDao.get(EventUtils.getIntParm(e, EventConstants.PARM_DEMAND_POLL_ID, -1));
+    private void rescheduleAllServices(Event event) {
+        LOG.info("Poller configuration has been changed, rescheduling services.");
+        getPollerConfig().rebuildPackageIpListMap();
+        for (Long nodeId : getNetwork().getNodeIds()) {
+            String nodeLabel = null;
+            try {
+                nodeLabel = getPoller().getQueryManager().getNodeLabel(nodeId.intValue());
+            } catch (final Exception e) {
+                LOG.error("Unable to retrieve nodeLabel for node {}", nodeId, e);
+            }
+
+            String nodeLocation = null;
+            try {
+                nodeLocation = getPoller().getQueryManager().getNodeLocation(nodeId.intValue());
+            } catch (final Exception e) {
+                LOG.error("Unable to retrieve nodeLocation for node {}", nodeId, e);
+            }
+
+            serviceReschedule(nodeId, nodeLabel, nodeLocation, event, true);
+        }
+    }
+
+    private void serviceReschedule(Long nodeId, String nodeLabel, String nodeLocation, Event sourceEvent, boolean rescheduleExisting) {
+        if (nodeId == null || nodeId <= 0) {
+            LOG.warn("Invalid node ID for event, skipping service reschedule: {}", sourceEvent);
+            return;
+        }
+
+        Date closeDate = sourceEvent.getTime();
+
+        final Set<Service> databaseServices = new HashSet<>();
+
+        for (final String[] s : getPoller().getQueryManager().getNodeServices(nodeId.intValue())) {
+            databaseServices.add(new Service(s));
+        }
+        LOG.debug("# of Services in Database: {}", databaseServices.size());
+        LOG.trace("Database Services: {}", databaseServices);
+
+        final Set<Service> polledServices = new HashSet<>();
+
+        final PollableNode pnode = getNetwork().getNode(nodeId.intValue());
+        if (pnode == null) {
+            LOG.debug("Node {} is not already being polled.", nodeId);
+        } else {
+            if (pnode.getNodeLabel() != null) {
+                nodeLabel = pnode.getNodeLabel();
+            }
+
+            for (final PollableInterface iface : pnode.getInterfaces()) {
+                for (final PollableService s : iface.getServices()) {
+                    polledServices.add(new Service(s.getIpAddr(), s.getSvcName()));
+                }
+            }
+            LOG.debug("# of Polled Services: {}", polledServices.size());
+            LOG.trace("Polled Services: {}", polledServices);
+        }
+
+        // polledServices contains the list of services that are currently being polled
+        // if any of these are no longer in the database, then remove them
+        for (final Iterator<Service> iter = polledServices.iterator(); iter.hasNext(); ) {
+            final Service polledService = iter.next();
+
+            if (!databaseServices.contains(polledService)) {
+                // We are polling the service, but it no longer exists.  Stop polling.
+                if (pnode != null) {
+                    final PollableService service = pnode.getService(polledService.getInetAddress(), polledService.getServiceName());
+                    // Delete the service
+                    service.delete();
+
+                    while (!service.isDeleted()) {
+                        try {
+                            Thread.sleep(20);
+                        } catch (final InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
+
+                // Close outages.
+                LOG.debug("{} should no longer be polled.  Resolving outages.", polledService);
+                closeOutagesForService(sourceEvent, nodeId, closeDate, polledService);
+                iter.remove();
+            }
+        }
+
+        // Delete the remaining services if we which to reschedule those that are already active
+        if (rescheduleExisting && pnode != null) {
+            for (final Iterator<Service> iter = polledServices.iterator(); iter.hasNext(); ) {
+                final Service polledService = iter.next();
+                final PollableService service = pnode.getService(polledService.getInetAddress(), polledService.getServiceName());
+                // Delete the service
+                service.delete();
+
+                while (!service.isDeleted()) {
+                    try {
+                        Thread.sleep(20);
+                    } catch (final InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+                iter.remove();
+            }
+        }
+
+        // Schedule all of the services, if they are not already
+        for (final Service databaseService : databaseServices) {
+            if (polledServices.contains(databaseService)) {
+                LOG.debug("{} is being skipped. Already scheduled.", databaseService);
+                continue;
+            }
+
+            LOG.debug("{} is being scheduled (or rescheduled) for polling.", databaseService);
+            getPoller().scheduleService(nodeId.intValue(), nodeLabel, nodeLocation, databaseService.getAddress(), databaseService.getServiceName(), pnode);
+            if (!getPollerConfig().isPolled(databaseService.getAddress(), databaseService.getServiceName())) {
+                LOG.debug("{} is no longer polled.  Closing any pending outages.", databaseService);
+                closeOutagesForService(sourceEvent, nodeId, closeDate, databaseService);
+            }
+        }
+    }
+
+    protected void closeOutagesForService(final Event event, final Long nodeId, final Date closeDate, final Service polledService) {
+        getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), polledService.getAddress(), polledService.getServiceName());
     }
 
     private void scheduledOutagesChangeHandler() {
         try {
             getPollerConfig().update();
-            getPoller().getPollOutagesConfig().update();
-		} catch (Throwable e) {
-			LOG.error("Failed to reload PollerConfigFactory", e);
-		}
+            getPoller().getPollOutagesDao().reload();
+        } catch (Throwable e) {
+            LOG.error("Failed to reload PollerConfigFactory", e);
+        }
         getPoller().refreshServicePackages();
-    }
-    
-    private void thresholdsConfigChangeHandler() {
-        getPoller().refreshServiceThresholds();
     }
 
     /**
@@ -692,16 +793,10 @@ final class PollerEventProcessor implements EventListener {
         return "Poller:PollerEventProcessor";
     }
 
-    /**
-     * @return
-     */
     private Poller getPoller() {
         return m_poller;
     }
 
-    /**
-     * @return
-     */
     private PollerConfig getPollerConfig() {
         return getPoller().getPollerConfig();
     }
@@ -710,11 +805,71 @@ final class PollerEventProcessor implements EventListener {
         return getPoller().getNetwork();
     }
 
-    /**
-     * @return Returns the XMLRPC.
-     */
-    private boolean isXmlRPCEnabled() {
-        return getPollerConfig().shouldNotifyXmlrpc();
-    }
+    public static class Service implements Comparable<Service> {
+        private final String m_addr;
+        private final String m_serviceName;
 
-} // end class
+        public Service(final String addr, final String serviceName) {
+            m_addr = addr;
+            m_serviceName = serviceName;
+        }
+
+        public Service(final String[] service) {
+            m_addr = service[0];
+            m_serviceName = service[1];
+        }
+
+        public InetAddress getInetAddress() {
+            return addr(m_addr);
+        }
+
+        public String getAddress() {
+            return m_addr;
+        }
+        public String getServiceName() {
+            return m_serviceName;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((m_addr == null) ? 0 : m_addr.hashCode());
+            result = prime * result + ((m_serviceName == null) ? 0 : m_serviceName.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) { return true; }
+            if (obj == null) { return false; }
+            if (!(obj instanceof Service)) { return false; }
+            final Service other = (Service) obj;
+            if (m_addr == null) {
+                if (other.m_addr != null) { return false; }
+            } else if (!m_addr.equals(other.m_addr)) {
+                return false;
+            }
+            if (m_serviceName == null) {
+                if (other.m_serviceName != null) { return false; }
+            } else if (!m_serviceName.equals(other.m_serviceName)) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return "Service [" + m_addr + ":" + m_serviceName + "]";
+        }
+
+        @Override
+        public int compareTo(final Service o) {
+            int ret = m_addr.compareTo(o.m_addr);
+            if (ret == 0) {
+                ret = m_serviceName.compareTo(o.m_serviceName);
+            }
+            return ret;
+        }
+    }
+}

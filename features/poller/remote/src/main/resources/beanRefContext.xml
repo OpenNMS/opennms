@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  default-lazy-init="true"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+">
+   
+   <bean id="pollerBackEndContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+     <constructor-arg>
+       <list>
+         <value>META-INF/opennms/applicationContext-pollerBackEnd.xml</value>
+         <value>META-INF/opennms/applicationContext-exportedPollerBackEnd-rmi.xml</value>
+         <value>META-INF/opennms/applicationContext-exportedPollerBackEnd-http.xml</value>
+         <!-- Not sure why this isn't included... it must not work yet. -->
+         <!-- <value>META-INF/opennms/applicationContext-exportedPollerBackEnd-https.xml</value> -->
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="daoContext" />
+   </bean>
+
+</beans>

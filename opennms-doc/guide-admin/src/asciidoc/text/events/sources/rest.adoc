@@ -1,0 +1,8 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-events-sources-rest]]
+==== ReST
+
+Posting an event in XML format to the appropriate endpoint in the {opennms-product-name} ReST API will cause the creation of a corresponding event, just as with the XML-TCP interface.

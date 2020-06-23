@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,25 +28,32 @@
 
 package org.opennms.web.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.jexl2.ExpressionImpl;
+import org.apache.commons.jexl2.JexlEngine;
 import org.jrobin.core.RrdException;
 import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
-
-import org.opennms.web.graph.GraphResults;
-import org.opennms.web.graph.RelativeTimePeriod;
+import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.web.servlet.MissingParameterException;
-import org.opennms.web.svclayer.GraphResultsService;
+import org.opennms.web.svclayer.api.GraphResultsService;
+import org.opennms.web.svclayer.model.GraphResults;
+import org.opennms.web.svclayer.model.RelativeTimePeriod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Calendar;
 
 
 /**
@@ -57,7 +64,7 @@ import java.util.Calendar;
  * @since 1.8.1
  */
 public class GraphResultsController extends AbstractController implements InitializingBean {
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + GraphResultsController.class);
+    private static Logger LOG = LoggerFactory.getLogger(GraphResultsController.class);
     
     private GraphResultsService m_graphResultsService;
     
@@ -66,20 +73,19 @@ public class GraphResultsController extends AbstractController implements Initia
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String[] requiredParameters = new String[] {
+        String[] requestedParameters = new String[] {
                 "resourceId",
-                "reports"
+                "generatedId",
+                "reports",
+                "nodeCriteria"
         };
-        
-        for (String requiredParameter : requiredParameters) {
-            if (request.getParameter(requiredParameter) == null) {
-                throw new MissingParameterException(requiredParameter,
-                                                    requiredParameters);
-            }
+        ResourceId[] resourceIds = new ResourceId[0];
+        if (request.getParameterValues("resourceId") != null) {
+            resourceIds = Arrays.stream(request.getParameterValues("resourceId")).map(ResourceId::fromString).toArray(ResourceId[]::new);
         }
-
-        String[] resourceIds = request.getParameterValues("resourceId");
         String[] reports = request.getParameterValues("reports");
+        String nodeCriteria = request.getParameter("nodeCriteria");
+        String generatedId = request.getParameter("generatedId");
         
         // see if the start and end time were explicitly set as params
         String start = request.getParameter("start");
@@ -152,7 +158,7 @@ public class GraphResultsController extends AbstractController implements Initia
 	
 	            	TimeSpec specStart = startParser.parse();
 	            	TimeSpec specEnd = endParser.parse();
-	            	long results[] = TimeSpec.getTimestamps(specStart, specEnd);
+	            	long[] results = TimeSpec.getTimestamps(specStart, specEnd);
 	            	//Multiply by 1000.  TimeSpec returns timestamps in Seconds, not Milliseconds.  
 	            	startLong = results[0]*1000;
 	            	endLong = results[1]*1000;
@@ -206,29 +212,82 @@ public class GraphResultsController extends AbstractController implements Initia
             endLong = endCal.getTime().getTime();
         } else {
             if (relativeTime == null) {
-                relativeTime = s_periods[0].getId();
+                relativeTime = RelativeTimePeriod.DEFAULT_RELATIVE_TIME_PERIOD.getId();
             }
 
-            RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(s_periods, relativeTime, s_periods[0]);
+            RelativeTimePeriod period = RelativeTimePeriod.getPeriodByIdOrDefault(s_periods, relativeTime, RelativeTimePeriod.DEFAULT_RELATIVE_TIME_PERIOD);
 
             long[] times = period.getStartAndEndTimes();
             startLong = times[0];
             endLong = times[1];
         }
-        
-        GraphResults model = m_graphResultsService.findResults(resourceIds, reports, startLong, endLong, relativeTime);
-        
-        ModelAndView modelAndView = new ModelAndView("/graph/results", "results", model);
 
+        // The 'matching' parameter is going to work only for one resource.
+        String matching = request.getParameter("matching");
+        if (matching != null && resourceIds.length != 0) {
+            reports = getSuggestedReports(resourceIds[0], matching);
+        }
+
+        ModelAndView modelAndView = null;
+        try {
+            GraphResults model = m_graphResultsService.findResults(resourceIds, reports, generatedId, nodeCriteria, startLong, endLong, relativeTime);
+            modelAndView = new ModelAndView("/graph/results", "results", model);
+        } catch (Exception e) {
+            LOG.warn("Can't get graph results", e);
+            modelAndView = new ModelAndView("/graph/results-error");
+        }
         modelAndView.addObject("loggedIn", request.getRemoteUser() != null);
 
         return modelAndView;
     }
 
     /**
+     * <p>getSuggestedReports</p>
+     *
+     * @return an array of {@link java.lang.String} objects.
+     */
+	public String[] getSuggestedReports(ResourceId resourceId, String matching) {
+		List<String> metricList = new ArrayList<>();
+		JexlEngine expressionParser = new JexlEngine();
+		try {
+		    ExpressionImpl e = (ExpressionImpl) expressionParser.createExpression(matching);
+		    for (List<String> list : e.getVariables()) {
+		        if (list.get(0).equalsIgnoreCase("math")) {
+		            continue;
+		        }
+		        if (list.get(0).equalsIgnoreCase("datasources")) {
+		            metricList.add(list.get(1).intern());
+		        } else {
+		            metricList.add(list.get(0).intern());
+		        }
+		    }
+		} catch (Exception e) {
+		}
+		if (!metricList.isEmpty()) {
+		    List<String> templates = new ArrayList<>();
+		    for (PrefabGraph graph : m_graphResultsService.getAllPrefabGraphs(resourceId)) {
+		        boolean found = false;
+		        for (String c : graph.getColumns()) {
+		            if (metricList.contains(c)) {
+		                found = true;
+		                continue;
+		            }
+		        }
+		        if (found) {
+		            templates.add(graph.getName());
+		        }
+		    }
+		    if (!templates.isEmpty()) {
+		        return templates.toArray(new String[templates.size()]);
+		    }
+		}
+		return new String[] { "all" };
+	}
+
+    /**
      * <p>getGraphResultsService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.GraphResultsService} object.
+     * @return a {@link org.opennms.web.svclayer.api.GraphResultsService} object.
      */
     public GraphResultsService getGraphResultsService() {
         return m_graphResultsService;
@@ -237,7 +296,7 @@ public class GraphResultsController extends AbstractController implements Initia
     /**
      * <p>setGraphResultsService</p>
      *
-     * @param graphResultsService a {@link org.opennms.web.svclayer.GraphResultsService} object.
+     * @param graphResultsService a {@link org.opennms.web.svclayer.api.GraphResultsService} object.
      */
     public void setGraphResultsService(GraphResultsService graphResultsService) {
         m_graphResultsService = graphResultsService;

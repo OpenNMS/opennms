@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+    <key id="label" for="node" attr.name="label" attr.type="string"></key>
+    <key id="description" for="graph" attr.name="description" attr.type="string"></key>
+    <key id="namespace" for="graph" attr.name="namespace" attr.type="string"></key>
+    <key id="preferred-layout" for="graph" attr.name="preferred-layout" attr.type="string"></key>
+    <key id="nodeID" for="node" attr.name="nodeID" attr.type="int"></key>
+    <key id="foreignSource" for="node" attr.name="foreignSource" attr.type="string"></key>
+    <key id="foreignID" for="node" attr.name="foreignID" attr.type="string"></key>
+    <graph id="regions" edgedefault="undirected">
+        <data key="namespace">acme:regions</data>
+        <node id="center">
+            <data key="label">Center</data>
+            <data key="nodeID">1</data>
+        </node>
+        <node id="north">
+            <data key="label">North</data>
+            <data key="nodeID">2</data>
+        </node>
+        <node id="west">
+            <data key="label">West</data>
+            <data key="foreignSource">imported:</data>
+            <data key="foreignID">4</data>
+        </node>
+        <node id="south">
+            <data key="label">South</data>
+        </node>
+        <node id="east">
+            <data key="label">East</data>
+        </node>
+        <edge id="center_north" source="center" target="north"/>
+        <edge id="center_south" source="center" target="south"/>
+        <edge id="center_east" source="center" target="east"/>
+        <edge id="center_west" source="center" target="west"/>
+    </graph>
+</graphml>

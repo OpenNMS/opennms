@@ -1,0 +1,25 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <bean id="topologyDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.TopologyDashletFactory" scope="singleton">
+        <property name="name" value="Topology"/>
+        <property name="boostable" value="false"/>
+        <property name="dashboardSuitable" value="true"/>
+
+        <property name="requiredParameters">
+            <map>
+                <entry key="focusNodes" value=""/>
+                <entry key="szl" value="1"/>
+                <entry key="provider" value="Enhanced Linkd"/>
+            </map>
+        </property>
+        <property name="requiredParameterDescriptions">
+            <map>
+                <entry key="focusNodes" value="List of nodes to be in focus of the topology map"/>
+                <entry key="szl" value="Semantic zoom level for the topology map"/>
+                <entry key="provider" value="Topology provider to be used"/>
+            </map>
+        </property>
+    </bean>
+
+    <service ref="topologyDashletFactory" interface="org.opennms.features.vaadin.dashboard.model.DashletFactory"/>
+</blueprint>

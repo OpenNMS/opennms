@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<snmp-config retry="3" timeout="3000" ttl="3000" read-community="public"
+             write-community="private" port="161" version="v1">
+
+  <definition version="v1" read-community="specificv1">
+    <specific>10.0.0.1</specific>
+  </definition>
+
+  <definition version="v1" read-community="specificv1"
+              max-request-size="484">
+    <specific>10.0.0.2</specific>
+  </definition>
+
+  <definition version="v1" read-community="specificv1"
+              proxy-host="${myLocalHost}">
+    <specific>10.0.0.3</specific>
+  </definition>
+
+  <definition version="v3" security-name="opennmsUser"
+              auth-passphrase="0p3nNMSv3">
+    <specific>20.20.20.20</specific>
+  </definition>
+  <definition version="v3" security-name="opennmsRangeUser"
+              auth-passphrase="0p3nNMSv3">
+    <range begin="1.1.1.1" end="1.1.1.100" />
+  </definition>
+
+  <definition version="v1" read-community="rangev1"
+              max-vars-per-pdu="55">
+    <range begin="10.0.0.101" end="10.0.0.200" />
+  </definition>
+
+  <definition version="v2c" read-community="rangev2c">
+    <range begin="10.0.1.100" end="10.0.5.100" />
+    <range begin="10.7.20.100" end="10.7.25.100" />
+  </definition>
+
+  <definition version="v2c" read-community="specificv2c">
+    <specific>192.168.0.50</specific>
+  </definition>
+
+  <definition version="v2c" read-community="ipmatch"
+              max-vars-per-pdu="128">
+    <ip-match>77.5-12,15.1-255.255</ip-match>
+  </definition>
+
+  <profiles>
+    <profile version="v3" read-community="power1" security-name="user1"
+             auth-passphrase="0p3nNMSv3">
+      <label>profile1-v3</label>
+      <filter>nodeLabel LIKE '%chandra%'</filter>
+    </profile>
+    <profile version="v2c" read-community="power2" security-name="user2"
+             auth-passphrase="0p3nNMSv2"
+             privacy-passphrase="Op3nNMS">
+      <label>profile1-v2c</label>
+      <filter>nodeLabel LIKE '%power%' AND nodeLocation LIKE '%Minion'</filter>
+    </profile>
+    <profile version="v1" read-community="power3" write-community="write1">
+      <label>profile1-v1</label>
+    </profile>
+    <profile version="v1" ttl="5000">
+      <label>profile2</label>
+    </profile>
+  </profiles>
+
+</snmp-config>

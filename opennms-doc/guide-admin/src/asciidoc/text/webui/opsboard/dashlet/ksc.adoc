@@ -1,0 +1,11 @@
+
+===== KSC
+
+This _Dashlet_ shows an existing link:http://www.opennms.org/wiki/KSC_Reports[KSC report].
+The view is exact the same as the _KSC report_ is build regarding order, columns and time spans.
+
+[options="autowidth"]
+|===
+| Boost support | false
+| `KSC-Report`  | Name of the KSC report to show in this _Dashlet_
+|===

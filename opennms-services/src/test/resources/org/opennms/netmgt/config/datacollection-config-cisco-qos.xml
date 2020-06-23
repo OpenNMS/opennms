@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<datacollection-config rrdRepository="%rrdRepository%">
+	<snmp-collection name="default" snmpStorageFlag="all">
+
+		<rrd step="300">
+			<rra>RRA:AVERAGE:0.5:1:2016</rra>
+			<rra>RRA:AVERAGE:0.5:12:1488</rra>
+			<rra>RRA:AVERAGE:0.5:288:366</rra>
+			<rra>RRA:MAX:0.5:288:366</rra>
+			<rra>RRA:MIN:0.5:288:366</rra>
+		</rrd>
+
+		<resourceType name="cbQosObjectsEntry" label="Cisco QoS Obects Entry" resourceLabel="${index}">
+			<persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+			<storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+		</resourceType>
+
+		<resourceType name="cbQosServicePolicyEntry" label="Cisco QoS Service Policy Entry" resourceLabel="${index}">
+			<persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+			<storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+		</resourceType>
+
+		<resourceType name="cbQosPolicyMapCfgEntry" label="Cisco QoS Policy Map Configuration Entry" resourceLabel="${index}">
+			<persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+			<storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+		</resourceType>
+
+		<resourceType name="cbQosCMCfgEntry" label="Cisco QoS Class Map Configuration Entry" resourceLabel="${index}">
+			<persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+			<storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+		</resourceType>
+
+		<resourceType name="cbQosCMStatsEntry" label="Cisco QoS Class Map"
+			resourceLabel="${ifAlias}::${cbQosClassMapPolicy}::${cbQosClassMapName} (index ${index})">
+			<persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+			<storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+		</resourceType>
+
+		<groups>
+
+			<!--  Required by org.opennms.netmgt.collectd.CiscoQoSPropertyExtender, in case mib2-interfaces and mib2-X-interfaces don't have the required fields -->
+			<group name="ifTable" ifType="all">
+				<mibObj oid=".1.3.6.1.2.1.31.1.1.1.1"  instance="ifIndex" alias="interfaceName"  type="string" />
+				<mibObj oid=".1.3.6.1.2.1.31.1.1.1.18" instance="ifIndex" alias="interfaceAlias" type="string" />
+				<mibObj oid=".1.3.6.1.2.1.2.2.1.10"    instance="ifIndex" alias="ifInOctets"     type="counter" />
+				<mibObj oid=".1.3.6.1.2.1.2.2.1.16"    instance="ifIndex" alias="ifOutOctets"    type="counter" />
+			</group>
+
+			<!--  Required by org.opennms.netmgt.collectd.CiscoQoSPropertyExtender -->
+			<group name="cbQosObjectsTable" ifType="all">
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.5.1.1.2" instance="cbQosObjectsEntry" alias="cbQosConfigIndex"        type="string" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.5.1.1.3" instance="cbQosObjectsEntry" alias="cbQosObjectsType"        type="string" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.5.1.1.4" instance="cbQosObjectsEntry" alias="cbQosParentObjectsIndex" type="string" />
+			</group>
+
+			<!--  Required by org.opennms.netmgt.collectd.CiscoQoSPropertyExtender -->
+			<group name="cbQosServicePolicyTable" ifType="all">
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.1.1.1.4" instance="cbQosServicePolicyEntry" alias="cbQosIfIndex" type="string" />
+			</group>
+
+			<!--  Required by org.opennms.netmgt.collectd.CiscoQoSPropertyExtender -->
+			<group name="cbQosPolicyMapCfgTable" ifType="all">
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.6.1.1.1" instance="cbQosPolicyMapCfgEntry" alias="cbQosPolicyMapName" type="string" />
+			</group>
+
+			<!--  Required by org.opennms.netmgt.collectd.CiscoQoSPropertyExtender -->
+			<group name="cbQosCMCfgTable" ifType="all">
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.7.1.1.1" instance="cbQosCMCfgEntry" alias="cbQosCMName" type="string" />
+			</group>
+
+			<group name="cbQosCMStatsTable" ifType="all">
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.1"  instance="cbQosCMStatsEntry" alias="ccmPrePolicyPktOF"   type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.2"  instance="cbQosCMStatsEntry" alias="ccmPrePolicyPkt"     type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.3"  instance="cbQosCMStatsEntry" alias="ccmPrePolicyPkt64"   type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.4"  instance="cbQosCMStatsEntry" alias="ccmPrePolicyByteOF"  type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.5"  instance="cbQosCMStatsEntry" alias="ccmPrePolicyByte"    type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.6"  instance="cbQosCMStatsEntry" alias="ccmPrePolicyByte64"  type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.7"  instance="cbQosCMStatsEntry" alias="ccmPrePolicyRate"    type="gauge" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.8"  instance="cbQosCMStatsEntry" alias="ccmPostPolicyByteOF" type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.9"  instance="cbQosCMStatsEntry" alias="ccmPostPolicyByte"   type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.10" instance="cbQosCMStatsEntry" alias="ccmPostPolicyByte64" type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.11" instance="cbQosCMStatsEntry" alias="ccmPostPolicyRate"   type="gauge" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.12" instance="cbQosCMStatsEntry" alias="ccmDropPktOF"        type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.13" instance="cbQosCMStatsEntry" alias="ccmDropPkt"          type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.14" instance="cbQosCMStatsEntry" alias="ccmDropPkt64"        type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.15" instance="cbQosCMStatsEntry" alias="ccmDropByteOF"       type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.16" instance="cbQosCMStatsEntry" alias="ccmDropByte"         type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.17" instance="cbQosCMStatsEntry" alias="ccmDropByte64"       type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.18" instance="cbQosCMStatsEntry" alias="ccmDropRate"         type="gauge" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.19" instance="cbQosCMStatsEntry" alias="ccmNoBufDropPktOF"   type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.20" instance="cbQosCMStatsEntry" alias="ccmNoBufDropPkt"     type="counter" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.166.1.15.1.1.21" instance="cbQosCMStatsEntry" alias="ccmNoBufDropPkt64"   type="counter" />
+				<property instance="cbQosCMStatsEntry" alias="cbQosClassMapPolicy" class-name="org.opennms.netmgt.collectd.CiscoQoSPropertyExtender">
+					<parameter key="target-property" value="policyName" />
+				</property>
+				<property instance="cbQosCMStatsEntry" alias="cbQosClassMapName" class-name="org.opennms.netmgt.collectd.CiscoQoSPropertyExtender">
+					<parameter key="target-property" value="classMapName" />
+				</property>
+				<property instance="cbQosCMStatsEntry" alias="ifAlias" class-name="org.opennms.netmgt.collectd.CiscoQoSPropertyExtender">
+					<parameter key="target-property" value="interfaceAlias" />
+				</property>
+				<property instance="cbQosCMStatsEntry" alias="ifName" class-name="org.opennms.netmgt.collectd.CiscoQoSPropertyExtender">
+					<parameter key="target-property" value="interfaceName" />
+				</property>
+			</group>
+
+		</groups>
+
+		<systems>
+			<systemDef name="Cisco 7200">
+				<sysoidMask>.1.3.6.1.4.1.9.1.</sysoidMask>
+				<collect>
+					<includeGroup>ifTable</includeGroup>
+					<includeGroup>cbQosObjectsTable</includeGroup>
+					<includeGroup>cbQosServicePolicyTable</includeGroup>
+					<includeGroup>cbQosPolicyMapCfgTable</includeGroup>
+					<includeGroup>cbQosCMCfgTable</includeGroup>
+					<includeGroup>cbQosCMStatsTable</includeGroup>
+				</collect>
+			</systemDef>
+		</systems>
+
+	</snmp-collection>
+</datacollection-config>

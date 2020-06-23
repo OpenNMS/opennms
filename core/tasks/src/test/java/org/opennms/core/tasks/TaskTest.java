@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -61,15 +61,16 @@ public class TaskTest {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(TaskTest.class);
     
-    ExecutorService m_executor;
-    DefaultTaskCoordinator m_coordinator;
+    private ExecutorService m_executor;
+    private TaskCoordinator m_coordinator;
     
     @Before
     public void setUp() {
         m_executor = Executors.newFixedThreadPool(50,
-            new LogPreservingThreadFactory(getClass().getSimpleName(), 50, false)
+            new LogPreservingThreadFactory(getClass().getSimpleName(), 50)
         );
-        m_coordinator = new DefaultTaskCoordinator("TaskTest", m_executor);
+        m_coordinator = new DefaultTaskCoordinator("TaskTest");
+        m_coordinator.addOrUpdateExecutor(TaskCoordinator.DEFAULT_EXECUTOR, m_executor);
     }
     
     @Test
@@ -84,7 +85,7 @@ public class TaskTest {
             }
         };
         
-        Task task = createTask(r);
+        AbstractTask task = createTask(r);
         
         task.schedule();
         
@@ -99,11 +100,11 @@ public class TaskTest {
     @Test
     public void testTaskWithSingleDependency() throws Exception {
         
-        final List<String> sequence = new Vector<String>();
+        final List<String> sequence = new Vector<>();
         
-        Task task1 = createTask(appender(sequence, "task1"));
-        Task task2 = createTask(appender(sequence, "task2"));
-        Task task3 = createTask(appender(sequence, "task3"));
+        AbstractTask task1 = createTask(appender(sequence, "task1"));
+        AbstractTask task2 = createTask(appender(sequence, "task2"));
+        AbstractTask task3 = createTask(appender(sequence, "task3"));
 
         task2.addPrerequisite(task1);
         task3.addPrerequisite(task2);
@@ -120,7 +121,7 @@ public class TaskTest {
         
     }
 
-    private Task createTask(final Runnable runnable) {
+    private AbstractTask createTask(final Runnable runnable) {
         return m_coordinator.createTask(null, runnable);
     }
     
@@ -128,11 +129,11 @@ public class TaskTest {
     public void testTaskWithCompletedDependencies() throws Exception {
         
         
-        final List<String> sequence = new Vector<String>();
+        final List<String> sequence = new Vector<>();
         
-        Task task1 = createTask(appender(sequence, "task1"));
-        Task task2 = createTask(appender(sequence, "task2"));
-        Task task3 = createTask(appender(sequence, "task3"));
+        AbstractTask task1 = createTask(appender(sequence, "task1"));
+        AbstractTask task2 = createTask(appender(sequence, "task2"));
+        AbstractTask task3 = createTask(appender(sequence, "task3"));
 
         task1.schedule();
         
@@ -168,8 +169,8 @@ public class TaskTest {
             }
         };
         
-        Task throwerTask = m_coordinator.createTask(null, thrower);
-        Task incrTask = m_coordinator.createTask(null, incr(count));
+        AbstractTask throwerTask = m_coordinator.createTask(null, thrower);
+        AbstractTask incrTask = m_coordinator.createTask(null, incr(count));
         
         incrTask.addPrerequisite(throwerTask);
         
@@ -191,15 +192,15 @@ public class TaskTest {
         Async<Integer> thrower = new Async<Integer>() {
 
             @Override
-            public void submit(Callback<Integer> cb) {
+            public void supplyAsyncThenAccept(Callback<Integer> cb) {
                 throw new RuntimeException("Intentionally failed for test purposes");
             }
             
         };
            
         
-        Task throwerTask = m_coordinator.createTask(null, thrower, setter(count));
-        Task incrTask = m_coordinator.createTask(null, incr(count));
+        AbstractTask throwerTask = m_coordinator.createTask(null, thrower, setter(count));
+        AbstractTask incrTask = m_coordinator.createTask(null, incr(count));
         
         incrTask.addPrerequisite(throwerTask);
         
@@ -217,7 +218,7 @@ public class TaskTest {
     public void testAsync() throws Exception {
         final AtomicInteger count = new AtomicInteger(0);
         
-        Task async = m_coordinator.createTask(null, timer(500, 17), setter(count));
+        AbstractTask async = m_coordinator.createTask(null, timer(500, 17), setter(count));
         
         async.schedule();
         
@@ -248,7 +249,7 @@ public class TaskTest {
     @Test
     public void testSequenceTask() throws Exception {
         
-        final List<String> sequence = new Vector<String>();
+        final List<String> sequence = new Vector<>();
         
         SequenceTask seq = createSequence();
 
@@ -268,10 +269,10 @@ public class TaskTest {
     public void testSequenceWithDependencies() throws Exception {
         
         
-        List<String> sequence = new Vector<String>();
+        List<String> sequence = new Vector<>();
         
-        Task task1 = createTask(appender(sequence, "task1"));
-        Task task2 = createTask(appender(sequence, "task2"));
+        AbstractTask task1 = createTask(appender(sequence, "task1"));
+        AbstractTask task2 = createTask(appender(sequence, "task2"));
 
         SequenceTask seq = createSequence();
 
@@ -310,9 +311,9 @@ public class TaskTest {
 
 
         // create the tasks and a simple prerequisite and schedule
-        Task a = createTask(waiter("A", aBlocker));
-        Task b = createTask(waiter("B", bBlocker));
-        Task c = createTask(waiter("C", cBlocker));
+        AbstractTask a = createTask(waiter("A", aBlocker));
+        AbstractTask b = createTask(waiter("B", bBlocker));
+        AbstractTask c = createTask(waiter("C", cBlocker));
 
         c.addPrerequisite(a);
         
@@ -342,7 +343,7 @@ public class TaskTest {
         bBlocker.countDown();
         aBlocker.countDown();
         
-        // we wait just to a litlte to make sure the two completes get added
+        // we wait just a little to make sure the two completes get added
         Thread.sleep(100);
 
         // not we add the prerequisite
@@ -469,7 +470,7 @@ public class TaskTest {
         
     }
     
-    private <T> Runnable appender(final List<T> list, final T value) {
+    private static <T> Runnable appender(final List<T> list, final T value) {
         return new Runnable() {
             @Override
             public void run() {
@@ -482,7 +483,7 @@ public class TaskTest {
         };
     }
     
-    private Runnable incr(final AtomicInteger counter) {
+    private static Runnable incr(final AtomicInteger counter) {
         return new Runnable() {
             @Override
             public void run() {
@@ -497,7 +498,7 @@ public class TaskTest {
         
     }
     
-    private Runnable addr(final AtomicLong accum, final long n) {
+    private static Runnable addr(final AtomicLong accum, final long n) {
         return new Runnable() {
           @Override
           public void run() {
@@ -524,7 +525,7 @@ public class TaskTest {
     }
     
     
-    private Runnable waiter(final String name, final CountDownLatch latch) {
+    private static Runnable waiter(final String name, final CountDownLatch latch) {
         return new Runnable() {
             @Override
             public void run() {
@@ -541,17 +542,17 @@ public class TaskTest {
         };
     }
     
-    private <T> Async<T> timer(final long millis, final T value) {
+    private static <T> Async<T> timer(final long millis, final T value) {
         final Timer timer = new Timer(true);
         return new Async<T>() {
             @Override
-            public void submit(final Callback<T> cb) {
+            public void supplyAsyncThenAccept(final Callback<T> cb) {
                 TimerTask timerTask = new TimerTask() {
                     @Override
                     public void run() {
                         try {
                             //System.err.println("Running");
-                            cb.complete(value);
+                            cb.accept(value);
                         } catch (Throwable t) {
                             cb.handleException(t);
                         }
@@ -563,23 +564,23 @@ public class TaskTest {
         };
     }
     
-    private Callback<Integer> setter(final AtomicInteger keeper) {
+    private static Callback<Integer> setter(final AtomicInteger keeper) {
         return new Callback<Integer>() {
 
             @Override
-            public void complete(Integer t) {
+            public void accept(Integer t) {
                 keeper.set(t);
             }
 
             @Override
-            public void handleException(Throwable t) {
-
+            public Integer apply(Throwable t) {
+                return null;
             }
             
         };
     }
     
-    private void sleep(long millis) {
+    private static void sleep(long millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {

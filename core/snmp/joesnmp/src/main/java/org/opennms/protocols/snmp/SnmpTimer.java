@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,6 +30,7 @@ package org.opennms.protocols.snmp;
 
 import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
@@ -45,7 +46,7 @@ class SnmpTimer extends Object {
     /**
      * The list of runnable objects (stored as TimeoutElement)
      */
-    private LinkedList<TimeoutElement> m_list;
+    private List<TimeoutElement> m_list = new LinkedList<>();
 
     /**
      * The thread doing the scheduling
@@ -66,7 +67,7 @@ class SnmpTimer extends Object {
      * Used to track the individual runnables and when the runnable "expires".
      * 
      */
-    private class TimeoutElement {
+    private static class TimeoutElement {
         /**
          * The runnable object
          */
@@ -106,7 +107,7 @@ class SnmpTimer extends Object {
          */
         @Override
         public void run() {
-            LinkedList<Runnable> toRun = new LinkedList<Runnable>();
+            LinkedList<Runnable> toRun = new LinkedList<>();
             while (true) {
                 //
                 // synchronize on the object
@@ -196,9 +197,9 @@ class SnmpTimer extends Object {
                             iter.remove();
                             runner.run();
                         }
-                    } catch (NoSuchElementException err) {
+                    } catch (final NoSuchElementException err) {
                         // do nothing
-                    } catch (Throwable err) {
+                    } catch (final RuntimeException e) {
                         //
                         // Bad, Bad Runnable!
                         //
@@ -219,7 +220,7 @@ class SnmpTimer extends Object {
     SnmpTimer() {
         m_exit = false;
         m_sync = new Object();
-        m_list = new LinkedList<TimeoutElement>();
+        m_list = new LinkedList<>();
         m_thread = new Thread(new Scheduler(), "SnmpTimer");
 
         m_thread.start();

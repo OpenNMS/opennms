@@ -1,0 +1,109 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+This chapter provides an example of the order to follow when shutting down and restarting a sample {opennms-product-name} system: {opennms-product-name} core layer, persistence and messaging layer, and database layer. 
+
+image::admin/restart-process.png[process]
+
+Note that restarting the whole stack is rare. 
+Usually, restarting the {opennms-product-name} core happens for reconfiguration or to run upgrades. 
+A core restart takes between 2–5 minutes depending on memory configuration. 
+Minion and Sentinel restart faster. 
+
+Keep in mind that when shutting down the {opennms-product-name} core, there will be no notifications, alarms, outage detection, performance data collection, thresholding, or flows. 
+After restarting there will be gaps in your performance graphs for the shutdown time. 
+
+Restarting components in the persistence and messaging layer normally happens only for upgrades or catastrophic failures. 
+Exercise caution with restarting components in this layer, since there is the risk of data loss.
+
+NOTE: The steps below are illustrative for a sample Linux setup. 
+Your {opennms-product-name} may be different. 
+Documenting procedures for each setup is beyond the scope of this document. 
+You must be root to run the commands listed below. 
+
+=== Shutdown
+
+Shutdown components in the following order:
+
+. Dashboard applications such as Grafana and Kibana.
+
++
+[source]
+----
+systemctl stop grafana-server
+systemctl stop kibana
+----
+
+. {opennms-product-name} Core application (Core, Sentinel, Minion), in any order.
+
+.. Turn off notifications first.
+... Login to the {opennms-product-name} UI.
+... In the top right corner choose *User name->Configure OpenNMS*:
++
+image::admin/login.png[login 200]
+
+... Under Event Management, turn off Notification Status and click *Update*. 
+
++
+image::admin/notification-status.png[status, 300]
+
+.. Access the {opennms-product-name} system via CLI (putty, SecureCRT, etc.).
+.. Become a root user via the following command: `sudo su -`
+.. Type the following commands:
+
++
+[source]
+----
+systemctl stop opennms
+systemctl stop minion
+systemctl stop sentinel
+----
+
+. Persistence and messaging components such as PostgreSQL, Cassandra, Kafka, etc., in any order:
+
+[source]
+----
+systemctl stop postgresql-12
+systemctl stop cassandra
+systemctl stop elasticsearch
+----
+
+NOTE: Neither Kafka nor Zookeeper have systemd definitions. 
+The way to control the processes depends on how they were installed, and is beyond the scope of this documentation. 
+
+=== Restart
+
+Restart components in the following order:
+
+. Persistence and messaging components such as PostgreSQL, Cassandra, Kafka, etc., in any order:
+
++
+[source]
+----
+systemctl start postgresql-12
+systemctl start cassandra
+systemctl start elasticsearch
+----
+
+. {opennms-product-name} Core application second, in any order.
+
++
+[source]
+----
+systemctl start opennms
+systemctl start minion
+systemctl start sentinel
+---- 
+
+.. In the UI, turn the Notification Status to *On* and click *Update*. 
+
+. Dashboard applications like Grafana and Kibana last so they function properly.
+
+[source]
+----
+systemctl start grafana-server
+systemctl start kibana
+----
+
+NOTE: You can restart dashboard applications at any time, but they will not show any useful information until all components in the persistence and {opennms-product-name} layers have started.

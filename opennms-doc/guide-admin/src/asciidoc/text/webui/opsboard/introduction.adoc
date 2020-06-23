@@ -1,0 +1,56 @@
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+In a network operation center _(NOC)_ the _Ops Board_ can be used to visualize monitoring information.
+The monitoring information for various use-cases are arranged in configurable _Dashlets_.
+To address different user groups it is possible to create multiple _Ops Boards_.
+
+There are two visualisation components to display _Dashlets_:
+
+ * _Ops Panel_: Shows multiple _Dashlets_ on one screen, e.g. on a NOC operators workstation
+ * _Ops Board_: Shows one _Dashlet_ at a time in rotation, e.g. for a screen wall in a NOC
+
+.Concept of _Dashlets_ displayed in _Ops Panel_
+image::webui/opsboard/01_opspanel-concept.png[]
+
+.Concept to show _Dashlets_ in rotation on the _Ops Board_
+image::webui/opsboard/02_opsboard-concept.png[]
+
+==== Configuration
+
+To create and configure _Ops Boards_ administration permissions are required.
+The configuration section is in admin area of {opennms-product-name} and named _Ops Board Config Web Ui_.
+
+.Navigation to the _Ops Board_ configuration
+image::webui/opsboard/03_admin-configure-opsboard.png[]
+
+Create or modify _Ops Boards_ is described in the following screenshot.
+
+.Adding a Dashlet to an existing _Ops Board_
+image::webui/opsboard/04_add-dashlet.png[]
+
+ 1. Create a new _Ops Board_ to organize and arrange different _Dashlets_
+ 2. The name to identify the _Ops Board_
+ 3. Add a _Dashlet_ to show {opennms-product-name} monitoring information
+ 4. Show a preview of the whole _Ops Board_
+ 5. List of available _Dashlets_
+ 6. _Priority_ for this _Dashlet_ in _Ops Board_ rotation, lower priority means it will be displayed more often
+ 7. _Duration_ in seconds for this _Dashlet_ in the _Ops Board_ rotation
+ 8. Change _Priority_ if the _Dashlet_ is in alert state, this is optional and maybe not available in all _Dashlets_
+ 9. Change _Duration_ if the _Dashlet_ is in alert state, it is optional and maybe not available in all _Dashlets_
+ 10. Configuration properties for this _Dashlet_
+ 11. Remove this _Dashlet_ from the _Ops Board_
+ 12. Order _Dashlets_ for the rotation on the _Ops Board_ and the tile view in the _Ops Panel_
+ 13. Show a preview for the whole _Ops Board_
+
+The configured _Ops Board_ can be used by navigating in the main menu to _Dashboard -> Ops Board_.
+
+.Navigation to use the _Ops Board_
+image::webui/opsboard/05_opsboard-user.png[]
+
+==== Dashlets
+
+Visualization of information is implemented in _Dashlets_.
+The different _Dashlets_ are described in this section with all available configuration parameter.
+
+To allow filter information the _Dashlet_ can be configured with a generic <<webui-opsboard-criteria-builder,Criteria Builder>>.

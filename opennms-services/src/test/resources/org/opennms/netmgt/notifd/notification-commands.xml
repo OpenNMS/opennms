@@ -51,4 +51,20 @@
             <switch>-tm</switch>
         </argument>
     </command>
+    <command binary="false">
+        <name>threadLockingNotifier</name>
+        <execute>org.opennms.netmgt.notifd.ThreadLockingNotificationStrategy</execute>
+        <comment>Mock class for testing notification concurrency</comment>
+        <argument streamed="false">
+            <switch>-subject</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-email</switch>
+        </argument>
+        <argument streamed="false">
+            <switch>-tm</switch>
+        </argument>
+    </command>
+
+
 </notification-commands>

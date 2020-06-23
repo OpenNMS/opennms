@@ -1,0 +1,39 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+Events are central to the operation of the {opennms-product-name} platform, so it's critical to have a firm grasp of this topic.
+
+IMPORTANT: Whenever something in {opennms-product-name} appears to work by magic, it's probably events working behind the curtain.
+
+[[ga-events-anatomy-of-an-event]]
+=== Anatomy of an Event
+
+Events are structured historical records of things that happen in {opennms-product-name} and the nodes, interfaces, and services it manages.
+Every event has a number of fixed *fields* and zero or more *parameters*.
+
+.Mandatory Fields
+UEI (Universal Event Identifier)::
+    A string uniquely identifying the event's type.
+    UEIs are typically formatted in the style of a URI, but the only requirement is that they start with the string `uei.`.
+Event Label::
+    A short, static label summarizing the gist of all instances of this event.
+Description::
+    A long-form description describing all instances of this event.
+Log Message::
+    A long-form log message describing this event, optionally including expansions of fields and parameters so that the value is tailored to the event at hand.
+Severity::
+    A severity for this event type.
+    Possible values range from `Cleared` to `Critical`.
+Event ID::
+    A numeric identifier used to look up a specific event in the {opennms-product-name} system.
+
+.Notable Optional Fields
+Operator Instruction::
+    A set of instructions for an operator to respond appropriately to an event of this type.
+Alarm Data::
+    If this field is provided for an event, {opennms-product-name} will create, update, or clear *alarms* for events of that type according to the alarm-data specifics.
+
+
+
+

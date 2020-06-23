@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms-tools</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>quickbase-troubleticketer</artifactId>
@@ -18,7 +18,7 @@
             <descriptor>src/main/assembly/quickbase-bundle.xml</descriptor>
           </descriptors>
           <appendAssemblyId>false</appendAssemblyId>
-          <tarLongFileMode>gnu</tarLongFileMode>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
       </plugin>
     </plugins>
@@ -27,11 +27,6 @@
     <dependency>
       <groupId>org.opennms.features.ticketing</groupId>
       <artifactId>org.opennms.features.ticketing.api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>

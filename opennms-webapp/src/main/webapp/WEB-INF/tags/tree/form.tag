@@ -6,7 +6,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib tagdir="/WEB-INF/tags/springx" prefix="springx" %>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 	function submitTreeForm(formName, target, action) {
 	    document[formName].formPath.value = target;
 	    document[formName].action.value = action;

@@ -1,53 +1,234 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="
-	http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+	xsi:schemaLocation="
+	http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+	http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 ">
 
 	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
-	<reference id="assetDao" interface="org.opennms.netmgt.dao.api.AssetRecordDao" availability="mandatory" />
 	<reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
-	<reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
+	<reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" availability="mandatory" />
+	<reference id="geolocationService" interface="org.opennms.features.geolocation.api.GeolocationService" availability="mandatory" />
+	<reference id="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration" availability="mandatory" />
 	<reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="optional" />
+	<reference id="timeformatService" interface="org.opennms.features.timeformat.api.TimeformatService" />
 
+	<bean id="alarmTableCellStyleGenerator" class="org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator" />
+	<bean id="selectionCheckboxGenerator" class="org.opennms.features.topology.plugins.browsers.CheckboxGenerator">
+		<argument value="id" />
+	</bean>
+	<bean id="severityGenerator" class="org.opennms.features.topology.plugins.browsers.SeverityGenerator" />
+	<bean id="nodeIdSelectionLinkGenerator" class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
+		<argument value="nodeId" />
+		<argument value="nodeLabel" />
+	</bean>
+	<bean id="alarmIdColumnLinkGenerator" class="org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator">
+		<argument ref="alarmDao" />
+		<argument value="id" />
+	</bean>
+	<bean id="serviceTypeGenerator" class="org.opennms.features.topology.plugins.browsers.OnmsServiceTypeGenerator" />
+	<bean id="inetAddressGenerator" class="org.opennms.features.topology.plugins.browsers.InetAddressGenerator" />
 
-    <bean id="mapWidget" class="org.opennms.features.vaadin.nodemaps.internal.MapWidgetComponent" scope="prototype" init-method="init">
-        <property name="nodeDao" ref="nodeDao" />
-        <property name="assetRecordDao" ref="assetDao" />
-        <property name="alarmDao" ref="alarmDao" />
-        <property name="geocoderService" ref="geocoderService" />
-        <property name="transactionOperations" ref="transactionTemplate" />
-    </bean>
+	<bean id="timeColumnGenerator" class="org.opennms.features.topology.plugins.browsers.TimeColumnGenerator">
+		<argument ref="timeformatService" />
+	</bean>
+
+	<!-- Wrap the DAO in a Vaadin container -->
+	<bean id="alarmDaoContainer" class="org.opennms.features.topology.plugins.browsers.AlarmDaoContainer" scope="prototype">
+		<argument ref="alarmDao" />
+        <argument ref="transactionTemplate" />
+	</bean>
+	
+	<bean id="alarmTable" class="org.opennms.features.topology.plugins.browsers.AlarmTable" scope="prototype">
+		<argument value="Alarms" />
+		<argument ref="alarmDaoContainer" />
+		<argument ref="alarmRepository" />
+		<property name="columnReorderingAllowed" value="true" />
+		<property name="columnCollapsingAllowed" value="true" />
+
+		<!-- Sort by default by ID, descending -->
+		<property name="sortContainerPropertyId" value="id" />
+		<property name="sortAscending" value="false" />
+
+		<property name="cellStyleGenerator" ref="alarmTableCellStyleGenerator" />
+
+		<property name="columnGenerators">
+			<map>
+				<entry key="selection" value-ref="selectionCheckboxGenerator" />
+				<entry key="severity" value-ref="severityGenerator" />
+				<entry key="nodeLabel" value-ref="nodeIdSelectionLinkGenerator" />
+				<entry key="id" value-ref="alarmIdColumnLinkGenerator" />
+				<entry key="lastEventTime" value-ref="timeColumnGenerator" />
+				<!--
+				<entry key="serviceType" value-ref="serviceTypeGenerator" />
+				<entry key="ipAddr" value-ref="inetAddressGenerator" />
+				-->
+			</map>
+		</property>
+		<property name="visibleColumns">
+			<array>
+				<value>selection</value>
+				<value>id</value>
+				<value>severity</value>
+				<value>nodeLabel</value>
+				<value>uei</value>
+				<value>counter</value>
+				<value>lastEventTime</value>
+				<value>logMsg</value>
+			</array>
+		</property>
+		<property name="columnHeaders">
+			<array>
+				<value></value>
+				<value>ID</value>
+				<value>Severity</value>
+				<value>Node</value>
+				<value>UEI</value>
+				<value>Count</value>
+				<value>Last Event Time</value>
+				<value>Log Message</value>
+			</array>
+		</property>
+		
+		<property name="nonCollapsibleColumns">
+			<list>
+	 			<value>selection</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- Wrap the DAO in a Vaadin container -->
+	<bean id="nodeDaoContainer" class="org.opennms.features.topology.plugins.browsers.NodeDaoContainer" scope="prototype">
+		<argument ref="nodeDao" />
+        <argument ref="transactionTemplate" />
+	</bean>
+
+	<bean id="nodeTableSelectionLinkGenerator" class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
+		<argument value="id" />
+		<argument value="label" />
+	</bean>
+	<bean id="ipInterfaceGenerator" class="org.opennms.features.topology.plugins.browsers.OnmsIpInterfaceGenerator" />
+
+	<bean id="nodeTable" class="org.opennms.features.topology.plugins.browsers.NodeTable" scope="prototype">
+		<argument value="Nodes" />
+		<argument ref="nodeDaoContainer" />
+		<property name="columnReorderingAllowed" value="true" />
+		<property name="columnCollapsingAllowed" value="true" />
+	<property name="cellStyleGenerator">
+			<bean class="org.opennms.features.topology.plugins.browsers.NodeTableCellStyleGenerator">
+				<property name="alarmDao" ref="alarmDao" />
+			</bean>
+		</property>
+
+		<!-- Sort by default by label -->
+		<property name="sortContainerPropertyId" value="label" />
+
+		<property name="columnGenerators">
+			<map>
+				<entry key="id" value-ref="nodeTableSelectionLinkGenerator" />
+				<entry key="label" value-ref="nodeTableSelectionLinkGenerator" />
+				<entry key="primaryInterface" value-ref="ipInterfaceGenerator" />
+				<entry key="lastCapsdPoll" value-ref="timeColumnGenerator" />
+			</map>
+		</property>
+		<property name="visibleColumns">
+			<array>
+				<value>id</value>
+				<value>foreignSource</value>
+				<value>foreignId</value>
+				<value>label</value>
+				<value>labelSource</value>
+				<value>lastCapsdPoll</value>
+				<value>primaryInterface</value>
+				<value>sysObjectId</value>
+				<value>sysName</value>
+				<value>sysDescription</value>
+				<value>sysContact</value>
+				<value>sysLocation</value>
+			</array>
+		</property>
+		<property name="columnHeaders">
+			<array>
+				<value>ID</value>
+				<value>Foreign Source</value>
+				<value>Foreign ID</value>
+				<value>Label</value>
+				<value>Label Source</value>
+				<value>Last Capabilities Scan</value>
+				<value>Primary Interface</value>
+				<value>sysObjectId</value>
+				<value>sysName</value>
+				<value>sysDescription</value>
+				<value>sysContact</value>
+				<value>sysLocation</value>
+			</array>
+		</property>
+	</bean>
+
+	<cm:property-placeholder id="mapWidgetConfig" persistent-id="org.opennms.features.vaadin.nodemaps" update-strategy="reload">
+		<cm:default-properties>
+			<cm:property name="groupByState" value="true" />
+		</cm:default-properties>
+	</cm:property-placeholder>
+
+	<bean id="configuration" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapConfiguration" >
+		<argument ref="geolocationConfiguration" />
+	</bean>
+
+	<bean id="nodeMapComponent" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapComponent" scope="prototype">
+		<property name="nodeDao" ref="nodeDao" />
+		<property name="geolocationService" ref="geolocationService" />
+		<property name="groupByState" value="${groupByState}" />
+		<property name="configuration" ref="configuration" />
+	</bean>
 
 	<bean id="nodeMapsApplication" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplication" scope="prototype">
 		<property name="headerProvider" ref="onmsHeaderProvider" />
-        <property name="mapWidgetComponent" ref="mapWidget" />
+		<property name="nodeMapComponent" ref="nodeMapComponent" />
+		<property name="alarmTable" ref="alarmTable" />
+		<property name="nodeTable" ref="nodeTable" />
+		<property name="configuration" ref="configuration" />
 	</bean>
 
-	<bean id="nodeMapsApplicationFactory" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplicationFactory" >
+	<bean id="nodeMapsApplicationFactory" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplicationFactory">
 		<!-- Blueprint container bean -->
-		<argument ref="blueprintContainer"/>
+		<argument ref="blueprintContainer" />
 		<!-- Bean id of the Vaadin application prototype -->
-		<argument value="nodeMapsApplication"/>
+		<argument value="nodeMapsApplication" />
 	</bean>
 
-	<service id="nodeMapsService" interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="nodeMapsApplicationFactory">
+	<service id="nodeMapsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="nodeMapsApplicationFactory">
 		<service-properties>
-			<entry key="alias" value="/node-maps" />
-			<entry key="widgetset" value="org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset"/>
+			<entry key="osgi.http.whiteboard.servlet.pattern" value="/node-maps/*" />
+			<entry key="servlet.init.widgetset" value="org.opennms.features.vaadin.nodemaps.internal.gwt.NodeMapsWidgetset" />
 		</service-properties>
 	</service>
 
 	<bean id="nodeMapsLink" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapNavEntry">
-	    <property name="url" value="node-maps#search/nodeId=%nodeid%" />
-	    <property name="name" value="View in Geographical Map" />
+		<property name="url" value="node-maps#search/nodeId=%25nodeid%25" />
+		<property name="name" value="View in Geographical Map" />
 	</bean>
-	
+
 	<service id="nodeMapsLinkService" interface="org.opennms.web.navigate.ConditionalPageNavEntry" ref="nodeMapsLink">
-	    <service-properties>
-	        <entry key="Page" value="node" />
-	        <entry key="registration.export" value="true" />
-	    </service-properties>
+		<service-properties>
+			<entry key="Page" value="node" />
+			<entry key="registration.export" value="true" />
+		</service-properties>
 	</service>
+
+	<bean id="nodeMapsQueryLink" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapQueryLink">
+		<property name="geoAssetProvider" ref="nodeMapComponent" />
+	</bean>
+
+	<service id="nodeMapsQueryLinkService" interface="org.opennms.features.topology.api.Operation" ref="nodeMapsQueryLink">
+		<service-properties>
+			<entry key="operation.menuLocation" value="Device" />
+			<entry key="operation.contextMenuLocation" value="" />
+			<entry key="operation.label" value="View in GeoMaps" />
+		</service-properties>
+	</service>
+
+	<service id="geoAssetProvider" interface="org.opennms.features.vaadin.nodemaps.internal.GeoAssetProvider" ref="nodeMapComponent" />
 </blueprint>

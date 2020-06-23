@@ -1,0 +1,12 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-events-sources-snmp-traps]]
+==== SNMP Traps
+
+If SNMP-capable devices in the network are configured to send *traps* to {opennms-product-name}, these traps are transformed into events according to pre-configured rules. The `Trapd` service daemon, which enables {opennms-product-name} to receive SNMP traps, is enabled by default.
+
+IMPORTANT: Disabling the `Trapd` service daemon will render {opennms-product-name} *incapable* of receiving SNMP traps.
+
+Event definitions are included with {opennms-product-name} for traps from many vendors' equipment.

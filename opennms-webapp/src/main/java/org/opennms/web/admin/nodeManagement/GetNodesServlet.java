@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -60,20 +60,7 @@ public class GetNodesServlet extends HttpServlet {
     // @ipv6 The regex in this statement is not IPv6-clean
     private static final String INTERFACE_QUERY = "SELECT nodeid, ipaddr, isManaged FROM ipinterface WHERE ismanaged in ('M','A','U','F') AND ipaddr <> '0.0.0.0' ORDER BY nodeid, case when (ipaddr ~ E'^([0-9]{1,3}\\.){3}[0-9]{1,3}$') then inet(ipaddr) else null end, ipaddr";
 
-    private static final String SERVICE_QUERY = "SELECT ifservices.serviceid, servicename, status FROM ifservices, service WHERE nodeid=? AND ipaddr=? AND status in ('A','U','F', 'S', 'R') AND ifservices.serviceid = service.serviceid ORDER BY servicename";
-
-    /**
-     * <p>init</p>
-     *
-     * @throws javax.servlet.ServletException if any.
-     */
-    @Override
-    public void init() throws ServletException {
-        try {
-            DataSourceFactory.init();
-        } catch (Throwable e) {
-        }
-    }
+    private static final String SERVICE_QUERY = "SELECT ifservices.serviceid, service.servicename, ifservices.status FROM ifservices, service, ipInterface, node WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND node.nodeid = ? AND ipInterface.ipaddr = ? AND ifservices.status in ('A','U','F','S','R') AND ifservices.serviceid = service.serviceid ORDER BY service.servicename";
 
     /** {@inheritDoc} */
     @Override
@@ -95,7 +82,7 @@ public class GetNodesServlet extends HttpServlet {
      */
     private List<ManagedInterface> getAllNodes(HttpSession userSession) throws SQLException {
         Connection connection = null;
-        List<ManagedInterface> allNodes = new ArrayList<ManagedInterface>();
+        List<ManagedInterface> allNodes = new ArrayList<>();
         int lineCount = 0;
 
         final DBUtils d = new DBUtils(getClass());

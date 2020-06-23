@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jcifs-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies JCIFS</name>
+  <name>OpenNMS :: Dependencies :: JCIFS</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use JCIFS.
@@ -18,19 +18,13 @@
     <dependency>
       <groupId>org.samba.jcifs</groupId>
       <artifactId>jcifs</artifactId>
-      <version>1.3.14</version>
+      <version>${jcifsVersion}</version>
     </dependency>
   </dependencies>
   <repositories>
     <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>

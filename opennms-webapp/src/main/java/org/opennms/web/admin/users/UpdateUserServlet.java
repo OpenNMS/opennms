@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,6 +30,7 @@ package org.opennms.web.admin.users;
 
 import java.io.IOException;
 import java.text.ChoiceFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -43,7 +44,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.UserFactory;
-import org.opennms.netmgt.config.UserManager.ContactType;
+import org.opennms.netmgt.config.api.UserConfig.ContactType;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
 import org.opennms.netmgt.config.users.Password;
@@ -77,15 +78,11 @@ public class UpdateUserServlet extends HttpServlet {
             // get the rest of the user information from the form
             newUser.setFullName(request.getParameter("fullName"));
             newUser.setUserComments(request.getParameter("userComments"));
-            newUser.setReadOnly(false);
-            if (request.getParameter("readOnly") != null && (request.getParameter("readOnly").equalsIgnoreCase("true") || request.getParameter("readOnly").equalsIgnoreCase("on"))) {
-                newUser.setReadOnly(true);
-            }
 
             String password = request.getParameter("password");
             if (password != null && !password.trim().equals("")) {
                 final Password pass = new Password();
-                pass.setContent(UserFactory.getInstance().encryptedPassword(password, true));
+                pass.setEncryptedPassword(UserFactory.getInstance().encryptedPassword(password, true));
                 pass.setSalt(true);
                 newUser.setPassword(pass);
             }
@@ -93,6 +90,13 @@ public class UpdateUserServlet extends HttpServlet {
             String tuiPin = request.getParameter("tuiPin");
             if (tuiPin != null && !tuiPin.trim().equals("")) {
                 newUser.setTuiPin(tuiPin);
+            }
+
+            String timeZoneId = request.getParameter("timeZoneId");
+            if (timeZoneId != null && !timeZoneId.trim().equals("")) {
+                newUser.setTimeZoneId(timeZoneId);
+            } else {
+                newUser.setTimeZoneId((ZoneId) null);
             }
 
             String email = request.getParameter(ContactType.email.toString());
@@ -107,7 +111,7 @@ public class UpdateUserServlet extends HttpServlet {
             String mobilePhone = request.getParameter(ContactType.mobilePhone.toString());
             String homePhone = request.getParameter(ContactType.homePhone.toString());
 
-            newUser.removeAllContact();
+            newUser.clearContacts();
 
             Contact tmpContact = new Contact();
             tmpContact.setInfo(email);
@@ -171,7 +175,7 @@ public class UpdateUserServlet extends HttpServlet {
                 if (deleteFlag == null) {
                     for (int i = 0; i < 7; i++) {
                         String curDayFlag = request.getParameter("duty" + duties + days.format(i));
-                        newSchedule.add(new Boolean(curDayFlag != null));
+                        newSchedule.add(Boolean.valueOf(curDayFlag != null));
                     }
 
                     int startTime = WebSecurityUtils.safeParseInt(request.getParameter("duty" + duties + "Begin"));
@@ -179,6 +183,17 @@ public class UpdateUserServlet extends HttpServlet {
 
                     DutySchedule newDuty = new DutySchedule(newSchedule, startTime, stopTime);
                     dutySchedules.add(newDuty.toString());
+                }
+            }
+
+            // The new list of roles will override the existing one.
+            // If the new list is empty or null, that means the user should not have roles, and the existing ones should be removed.
+            newUser.getRoles().clear();
+            String[] configuredRoles = request.getParameterValues("configuredRoles");
+            if (configuredRoles != null && configuredRoles.length > 0) {
+                newUser.getRoles().clear();
+                for (String role : configuredRoles) {
+                    newUser.addRole(role);
                 }
             }
 
@@ -191,7 +206,7 @@ public class UpdateUserServlet extends HttpServlet {
     }
 
     private List<String> getDutySchedulesForUser(User newUser) {
-        return newUser.getDutyScheduleCollection();
+        return newUser.getDutySchedules();
     }
     
 }

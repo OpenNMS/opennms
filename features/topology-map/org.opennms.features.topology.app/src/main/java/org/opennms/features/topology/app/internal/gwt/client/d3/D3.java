@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,8 +38,6 @@ import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.core.client.JsArrayNumber;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
-
-import java.util.List;
 
 public class D3 extends JavaScriptObject {
     
@@ -176,6 +174,9 @@ public class D3 extends JavaScriptObject {
 		  function transform(p) {
 		    var k = width / p[2];
 		    var retVal = "translate(" + (center[0] - p[0] * k) + "," + (center[1] - p[1] * k) + ")scale(" + k + ")";
+		    if (retVal.indexOf('NaN') > 0) {
+		      return "translate(0,0)scale(1)";
+		    }
 		    return retVal;
 		  }
 		}
@@ -275,7 +276,7 @@ public class D3 extends JavaScriptObject {
 		
     }-*/;
 
-    public final native <T extends JavaScriptObject> D3 data() /*-{
+    public final native <T extends JavaScriptObject> JsArray<T> data() /*-{
         return this.data();
     }-*/;
 
@@ -295,12 +296,16 @@ public class D3 extends JavaScriptObject {
 	
     }-*/;
 	
-	public final native void each(Handler<?> handler) /*-{
+	public final native D3 each(Handler<?> handler) /*-{
 	    var f = function(d, i){
 	        return handler.@org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler::call(Ljava/lang/Object;I)(d,i);
 	    }
 	    return this.each(f);
 	}-*/;
+
+    public final native D3 each(JavaScriptObject f) /*-{
+        return this.each(f);
+    }-*/;
 	
 	/**
 	 * Only used for transitions
@@ -341,6 +346,15 @@ public class D3 extends JavaScriptObject {
     
     public static final native void eventPreventDefault() /*-{
         $wnd.d3.event.preventDefault();
+    }-*/;
+
+    public static final native boolean eventDefaultPrevented() /*-{
+        console.log("d3.event:" + $wnd.d3.event);
+        if ($wnd.d3.event != undefined && $wnd.d3.event.defaultPrevented != undefined) {
+            console.log("d3.event:" + $wnd.d3.event.defaultPrevented);
+            return $wnd.d3.event.defaultPrevented;
+        }
+        return false;
     }-*/;
     
     public static final native D3 d3() /*-{
@@ -443,6 +457,11 @@ public class D3 extends JavaScriptObject {
         return this.style(style);
     }-*/;
 
+    /**
+     * HTTP GET the provided file and append it to the dom element "defs".
+     *
+     * @param file the file to GET
+     */
     public final native void injectSVGDef(String file) /*-{
          $wnd.d3.xml(file, function(svg){
 

@@ -1,0 +1,1145 @@
+version: 2.1
+
+
+executors:
+  centos-build-executor:
+    docker:
+      - image: opennms/build-env:1.8.0.252.b09-3.6.3-b4168
+  debian-build-executor:
+    docker:
+      - image: opennms/build-env:debian-jdk8-b5084
+  docker-executor:
+    docker:
+      - image: docker:19.03.0-git
+  integration-test-executor:
+    machine: true
+  smoke-test-executor:
+    machine:
+      image: ubuntu-1604:201903-01
+
+# NOTE: the "_label" versions of these are for the case when your source or target
+# branches have slashes in them, that way the merge branch gets created properly
+defaults: &defaults
+  parameters:
+    context_name:
+      description: the context to use for sensitive settings like GPG keys
+      type: string
+      default: "OpenNMS Build"
+    previous_branch:
+      description: the previous branch, if any
+      type: string
+      default: foundation-2018
+    previous_branch_label:
+      description: the previous branch, if any (escaped, no slashes)
+      type: string
+      default: foundation-2018
+    main_branch:
+      description: the auto-merge main branch
+      type: string
+      default: foundation-2019
+    main_branch_label:
+      description: the auto-merge main branch (escaped, no slashes)
+      type: string
+      default: foundation-2019
+    next_branch:
+      description: the auto-merge target branch
+      type: string
+      default: release-26.x
+    next_branch_label:
+      description: the auto-merge target branch (escaped, no slashes)
+      type: string
+      default: release-26.x
+
+docker_container_config: &docker_container_config
+  executor: docker-executor
+
+orbs:
+  cloudsmith: cloudsmith/cloudsmith@1.0.3
+  sign-packages: opennms/sign-packages@2.1.3
+
+commands:
+  extract-pom-version:
+      description: "Extracting Maven POM version"
+      steps:
+        - run:
+            name: Extract Maven POM version
+            command: opennms-container/pom2version.py pom.xml > pom-version-cache.key
+  cached-checkout:
+      description: "Checkout with caching"
+      steps:
+        - restore_cache:
+            keys:
+              - source-v1-{{ .Branch }}-{{ .Revision }}
+              - source-v1-{{ .Branch }}-
+              - source-v1-
+        - checkout
+        - run:
+            name: git config merge.renameLimit
+            command: git config merge.renameLimit 999999
+        - run:
+            name: git fetch origin
+            command: git fetch origin
+        - save_cache:
+            key: source-v1-{{ .Branch }}-{{ .Revision }}
+            paths:
+              - ".git"
+  cached-checkout-for-pushing:
+      description: "Configure a cached checkout that can push upstream"
+      steps:
+        - add_ssh_keys:
+            fingerprints:
+              - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+        - cached-checkout
+        - run:
+            name: Create git identity
+            command: |
+              git config user.email "cicd-system@opennms.com"
+              git config user.name "CI/CD System"
+  restore-maven-cache:
+      description: "Maven: Calculate cache key and restore cache"
+      steps:
+        - run:
+            name: Calculate cache key from pom files
+            command: find . -type f -name "pom.xml" | grep -v /target/ | sort -u | xargs cat > maven-dependency-pom-cache.key
+        - restore_cache:
+            keys:
+              - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
+              - maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-
+  update-maven-cache:
+      description: "Maven: Refresh local repository from POM files"
+      steps:
+        - run:
+            name: Remove old artifacts to keep workspace size down
+            command: .circleci/scripts/clean-m2.sh
+        - run:
+            name: Collect Maven Dependencies
+            command: |
+              ./compile.pl -t \
+                -Dbuild.skip.tarball=true \
+                -DupdatePolicy=never \
+                --update-plugins \
+                -Daether.connector.resumeDownloads=false \
+                -Daether.connector.basic.threads=8 \
+                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                -Pbuild-bamboo \
+                -Prun-expensive-tasks \
+                -Psmoke \
+                --legacy-local-repository \
+                --batch-mode \
+                dependency:resolve-plugins \
+                de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
+  save-maven-cache:
+    description: "Maven: Save cache"
+    steps:
+      - save_cache:
+          key: maven-dependencies-v3-{{ checksum "pom-version-cache.key" }}-{{ checksum "maven-dependency-pom-cache.key" }}
+          paths:
+            - ~/.m2
+  restore-nodejs-cache:
+      description: "NodeJS: Calculate cache key and restore cache"
+      steps:
+        - run:
+            name: Calculate cache key
+            command: find core/web-assets -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
+        - restore_cache:
+            keys:
+              - nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+              - nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-
+  save-nodejs-cache:
+    description: "NodeJS: Save cache"
+    steps:
+      - save_cache:
+          key: nodejs-dependencies-v2-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+          paths:
+            - core/web-assets/node_modules
+  restore-sonar-cache:
+      description: "Sonar: Restore sonar cache"
+      steps:
+        - restore_cache:
+            keys:
+              - sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
+  save-sonar-cache:
+      description: "Sonar: Save sonar cache"
+      steps:
+        - save_cache:
+            key: sonar-cache-v2-{{ checksum "pom-version-cache.key" }}
+            paths:
+              - ~/.sonar
+  dockerhub-login:
+    description: "Connect to DockerHub"
+    steps:
+      - run:
+          name: Login to DockerHub
+          command: |
+            docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASS}
+  run-smoke-tests:
+    description: "Run the smoke tests"
+    parameters:
+      minimal:
+        default: false
+        type: boolean
+    steps:
+      - run:
+          name: Enable swap
+          command: |
+            sudo fallocate -l 8G /swapfile
+            sudo chmod 600 /swapfile
+            sudo mkswap /swapfile
+            sudo swapon /swapfile
+            sudo sysctl vm.swappiness=5
+            cat /proc/sys/vm/swappiness
+      - load-oci:
+          key: horizon
+      - load-oci:
+          key: minion
+      - load-oci:
+          key: sentinel
+      - run:
+          name: Load Sentinel OCI image
+          command: |
+            cd opennms-container/sentinel
+            docker image load -i /tmp/oci-sentinel/container.oci
+      - run:
+          name: Monitor JVM processes
+          background: true
+          command: |
+            .circleci/scripts/jvmprocmon-start.sh
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
+      - run:
+          name: Smoke Tests
+          no_output_timeout: 30m
+          command: |
+            .circleci/scripts/smoke.sh << parameters.minimal >>
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/test-results/system-logs
+            (dmesg || :) > ~/test-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/test-results/system-logs/ps 2>&1
+            (free -m || :) > ~/test-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/test-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/test-results/system-logs/ || :
+            ls -alh ~/project/smoke-test/ || :
+      - run:
+          name: Gather test artifacts
+          when: always
+          command: |
+            mkdir -p ~/test-results/junit
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/failsafe-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+            mkdir -p ~/test-artifacts/recordings
+            cp -R ~/project/smoke-test/target/*.flv ~/test-artifacts/recordings || true
+            cp -R ~/project/smoke-test/target/screenshots ~/test-artifacts/ || true
+            cp -R ~/project/smoke-test/target/logs ~/test-artifacts/ || true
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-results
+          destination: test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-artifacts
+          destination: test-artifacts
+  run-build:
+    description: "Run the main build"
+    parameters:
+      number-vcpu:
+        default: 8
+        type: integer
+      node-memory:
+        default: echo "NODE_OPTIONS Not Set"
+        type: string
+      vaadin-javamaxmem:
+        default: 1g
+        type: string
+    steps:
+      - cached-checkout
+      - extract-pom-version
+      - restore-maven-cache
+      - restore-nodejs-cache
+      - run:
+          name: Compile OpenNMS
+          command: |
+            .circleci/scripts/configure-signing.sh
+            mvn clean -DskipTests=true
+            << parameters.node-memory >>
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=true \
+              -DupdatePolicy=never \
+              -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+              -DmaxCpus=<< parameters.number-vcpu >> \
+              -Psmoke \
+              install --batch-mode
+            pushd opennms-doc
+              ../compile.pl \
+                -DupdatePolicy=never \
+                -Daether.connector.resumeDownloads=false \
+                -Daether.connector.basic.threads=1 \
+                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+                -DskipPdfGeneration=false \
+                -P'!jdk7+' \
+                install --batch-mode
+            popd
+      - update-maven-cache
+      - run:
+          name: Remove Extra Maven Repository OpenNMS Files
+          command: |
+            # move these out of the way so they're not stored in the maven pre-cache
+            cd ~/.m2/repository/org/opennms
+            mkdir /tmp/maven-keep
+            mv $(ls -1 | grep -v -E '^(jicmp-api|jicmp6-api|jrrd-api|jrrd2-api|lib|maven)$') /tmp/maven-keep
+      - save-maven-cache
+      - run:
+          name: Restore Extra Maven Repository OpenNMS Files
+          command: |
+            # now move them back so they end up in the workspace for builds further down the workflow
+            mv /tmp/maven-keep/* ~/.m2/repository/org/opennms/
+      - save-nodejs-cache
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project
+            - .m2
+  run-integration-tests:
+    parameters:
+      run-code-coverage:
+        default: false
+        type: boolean
+      rerun-failtest-count:
+        default: 0
+        type: integer
+      failure-option:
+        default: -fae
+        type: string
+      changes-only:
+        default: true
+        type: boolean
+    steps:
+      - run:
+          name: Integration Tests
+          no_output_timeout: 1.0h
+          command: |
+            export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
+            export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
+            export CCI_FAILURE_OPTION=<< parameters.failure-option >>
+            export CCI_CHANGES_ONLY=<< parameters.changes-only >>
+            .circleci/scripts/itest.sh
+      - run:
+          name: Gather test results
+          when: always
+          command: |
+            mkdir -p ~/test-results/junit
+            find . -type f -regex ".*/target/surefire-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/target/failsafe-reports-[0-9]+/.*xml" -exec cp {} ~/test-results/junit/ \;
+      - run:
+          name: Gather tests
+          when: always
+          command: |
+            mkdir -p ~/generated-tests
+            cp ./surefire_classname* ~/generated-tests/
+            cp ./failsafe_classname* ~/generated-tests/
+            cp /tmp/this_node* ~/generated-tests/
+      - when:
+          condition: << parameters.run-code-coverage >>
+          steps:
+            - run:
+                name: Compress Target Directories (Code Coverage)
+                when: always
+                command: |
+                  .circleci/scripts/codecoverage-save.sh
+            - persist_to_workspace:
+                root: ~/
+                paths:
+                  - code-coverage
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          when: always
+          path: ~/test-results
+          destination: test-results
+      - store_artifacts:
+          when: always
+          path: ~/generated-tests
+          destination: generated-tests
+  cache-workflow-assets:
+    parameters:
+      cache_prefix:
+        description: the cache prefix
+        type: string
+      source_path:
+        description: the source directory to cache
+        type: string
+    steps:
+      - run:
+          name: Stowing Assets in << parameters.source_path >> to cache prefix << parameters.cache_prefix >>
+          command: |
+            TARGET_PATH="/tmp/<< parameters.cache_prefix >>"
+            rsync -ar "$(echo "<< parameters.source_path >>" | sed -e 's,/*$,,')/" "${TARGET_PATH}/"
+            find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
+            find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
+      - save_cache:
+          key: << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          paths:
+            - "/tmp/<< parameters.cache_prefix >>"
+  restore-workflow-assets:
+    parameters:
+      cache_prefix:
+        description: the cache prefix
+        type: string
+      target_path:
+        description: the target directory to restore into
+        type: string
+        default: ""
+    steps:
+      - restore_cache:
+          keys:
+            - << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+            - << parameters.cache_prefix >>-v2-{{ .Branch }}-{{ .Revision }}-
+      - when:
+          condition: << parameters.target_path >>
+          steps:
+            - run:
+                name: Restoring assets to << parameters.target_path >> from cached prefix << parameters.cache_prefix >>
+                command: |
+                  SOURCE_PATH="/tmp/<< parameters.cache_prefix >>"
+                  mkdir -p "<< parameters.target_path >>"
+                  rsync -ar "${SOURCE_PATH}/" "$(echo "<< parameters.target_path >>" | sed -e 's,/*$,,')/"
+  cache-oci:
+    parameters:
+      key:
+        description: the cache key for storing the OCI
+        type: string
+      path:
+        description: the path to the directory containing the OCI
+        type: string
+    steps:
+      - cache-workflow-assets:
+          cache_prefix: oci-<< parameters.key >>
+          source_path: << parameters.path >>
+  load-oci:
+    parameters:
+      key:
+        description: the OCI cache key to restore
+        type: string
+    steps:
+      - restore-workflow-assets:
+          cache_prefix: oci-<< parameters.key >>
+      - run:
+          name: Load Docker Image(s) in oci-<< parameters.key >>
+          command: |
+            cd "/tmp/oci-<< parameters.key >>"
+            if [ "$(ls -1 *.oci | wc -l)" -eq 0 ]; then
+              echo "ERROR: No OCI files to load. Something probably went wrong earlier."
+              exit 1
+            fi
+            for FILE in *.oci; do
+              echo "Loading ${FILE} into Docker..."
+              docker image load -i "$FILE"
+            done
+
+workflows:
+  weekly-coverage:
+    <<: *defaults
+    triggers:
+      - schedule:
+          # Saturday at 12:00 AM
+          cron: "0 0 * * 6"
+          filters:
+            branches:
+              only:
+                - develop
+    jobs:
+      - build:
+          context: << parameters.context_name >>
+      - integration-test-with-coverage:
+          context: << parameters.context_name >>
+          requires:
+            - build
+      - code-coverage:
+          context: << parameters.context_name >>
+          requires:
+            - integration-test-with-coverage
+  build-deploy:
+    <<: *defaults
+    jobs:
+      - build:
+          context: << parameters.context_name >>
+          filters:
+            branches:
+              ignore:
+                - /^from-foundation.*/
+      - horizon-rpm-build:
+          context: << parameters.context_name >>
+          requires:
+            - build
+      - minion-rpm-build:
+          context: << parameters.context_name >>
+          requires:
+            - build
+      - sentinel-rpm-build:
+          context: << parameters.context_name >>
+          requires:
+            - build
+      - integration-test:
+          context: << parameters.context_name >>
+          requires:
+            - build
+      - smoke-test-full:
+          context: << parameters.context_name >>
+          requires:
+            - horizon-rpm-build
+            - minion-rpm-build
+            - sentinel-rpm-build
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
+      - smoke-test-minimal:
+          context: << parameters.context_name >>
+          requires:
+            - horizon-rpm-build
+            - minion-rpm-build
+            - sentinel-rpm-build
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /.*smoke.*/
+      - horizon-publish-oci:
+          context: << parameters.context_name >>
+          requires:
+            - horizon-rpm-build
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - minion-publish-oci:
+          context: << parameters.context_name >>
+          requires:
+            - minion-rpm-build
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - sentinel-publish-oci:
+          context: << parameters.context_name >>
+          requires:
+            - sentinel-rpm-build
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      # These don't actually require `integration-test` but we shouldn't bother
+      # spending cycles unless everything else passed
+      - horizon-deb-build:
+          context: << parameters.context_name >>
+          requires:
+            - integration-test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /^merge-foundation\/.*/
+                - /.*smoke.*/
+      - minion-deb-build:
+          context: << parameters.context_name >>
+          requires:
+            - integration-test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /^merge-foundation\/.*/
+                - /.*smoke.*/
+      - sentinel-deb-build:
+          context: << parameters.context_name >>
+          requires:
+            - integration-test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /^merge-foundation\/.*/
+                - /.*smoke.*/
+      - create-merge-foundation-branch:
+          context: << parameters.context_name >>
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only: << parameters.main_branch >>
+      - merge-foundation-branch:
+          context: << parameters.context_name >>
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+      - create-merge-meridian-branch:
+          context: << parameters.context_name >>
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only: /^foundation.*/
+      - merge-poweredby-branch:
+          context: << parameters.context_name >>
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - smoke-test-minimal
+            - smoke-test-full
+            - integration-test
+          filters:
+            branches:
+              only:
+                - /^foundation.*/
+      - publish-cloudsmith:
+          context: << parameters.context_name >>
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - smoke-test-minimal
+            - smoke-test-full
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+                - /^release-.*/
+                - /^foundation.*/
+
+jobs:
+  build:
+    executor: centos-build-executor
+    # Building currently requires the xlarge containers in order for the webpack compilation
+    # in the core/web-assets module to complete reliably
+    resource_class: xlarge
+    steps:
+      - run-build:
+          number-vcpu: 8
+  horizon-rpm-build:
+    executor: centos-build-executor
+    # Larger memory footprint required to speed up builds using Takari smartbuilder
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
+      - sign-packages/setup-env:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+      - run:
+          name: Build RPMs
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=4
+            .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
+      - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/rpm/RPMS/noarch/*.rpm
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Fetch RPM artifacts and build Horizon container image
+          command: |
+            cd opennms-container/horizon
+            ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/horizon/images/container.oci
+          destination: horizon.oci
+      - store_artifacts:
+          path: ~/project/target/rpm/RPMS/noarch
+          destination: rpms
+      - cache-workflow-assets:
+          cache_prefix: rpm-horizon
+          source_path: target/rpm/RPMS/noarch
+      - cache-oci:
+          key: horizon
+          path: opennms-container/horizon/images/
+  minion-rpm-build:
+    executor: centos-build-executor
+    # Larger memory footprint required to speed up builds using Takari smartbuilder
+    # Will need to increase resource class if horizon-rpm-build is under 15 min
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
+      - sign-packages/setup-env:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+      - run:
+          name: Build RPMs
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=4
+            export CCI_VAADINJAVAMAXMEM=768m
+            .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
+      - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/rpm/RPMS/noarch/*.rpm
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Fetch RPM artifacts and build Minion container image
+          command: |
+            cd opennms-container/minion
+            ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/minion/images/container.oci
+          destination: minion.oci
+      - store_artifacts:
+          path: ~/project/target/rpm/RPMS/noarch
+          destination: rpms
+      - cache-workflow-assets:
+          cache_prefix: rpm-minion
+          source_path: target/rpm/RPMS/noarch
+      - cache-oci:
+          key: minion
+          path: opennms-container/minion/images/
+  sentinel-rpm-build:
+    executor: centos-build-executor
+    # Larger memory footprint required to speed up builds using Takari smartbuilder
+    # Will need to increase resource class if horizon-rpm-build is under 19 min
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - sign-packages/install-rpm-dependencies:
+          skip_if_forked_pr: true
+      - sign-packages/setup-env:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+      - run:
+          name: Build RPMs
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=4
+            export CCI_VAADINJAVAMAXMEM=768m
+            .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
+      - sign-packages/sign-rpms:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/rpm/RPMS/noarch/*.rpm
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Fetch RPM artifacts and build Sentinel container image
+          command: |
+            cd opennms-container/sentinel
+            ./build_container_image.sh
+      - store_artifacts:
+          path: ~/project/opennms-container/sentinel/images/container.oci
+          destination: sentinel.oci
+      - store_artifacts:
+          path: ~/project/target/rpm/RPMS/noarch
+          destination: rpms
+      - cache-workflow-assets:
+          cache_prefix: rpm-sentinel
+          source_path: target/rpm/RPMS/noarch
+      - cache-oci:
+          key: sentinel
+          path: opennms-container/sentinel/images/
+  horizon-deb-build:
+    executor: debian-build-executor
+    resource_class: xlarge
+    steps:
+      - attach_workspace:
+          at: ~/
+      - sign-packages/setup-env:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+      - run:
+          name: Monitor memory usage
+          background: true
+          command: |
+            free -m -c 500 -s 30
+      - run:
+          name: Build Debian Packages
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=2
+            .circleci/scripts/makedeb.sh opennms
+      - sign-packages/sign-debs:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/debs/*.deb
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/build-results/system-logs
+            (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
+            (free -m || :) > ~/build-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
+            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
+      - store_artifacts:
+          when: always
+          path: ~/build-results
+          destination: build-results
+      - store_artifacts:
+          path: ~/project/target/debs
+          destination: debs
+      - cache-workflow-assets:
+          cache_prefix: deb-horizon
+          source_path: target/debs
+  minion-deb-build:
+    executor: debian-build-executor
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - sign-packages/setup-env:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+      - run:
+          name: Build Debian Packages
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=4
+            export CCI_VAADINJAVAMAXMEM=768m
+            .circleci/scripts/makedeb.sh minion
+      - sign-packages/sign-debs:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/debs/*.deb
+      - store_artifacts:
+          path: ~/project/target/debs
+          destination: debs
+      - cache-workflow-assets:
+          cache_prefix: deb-minion
+          source_path: target/debs
+  sentinel-deb-build:
+    executor: debian-build-executor
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - sign-packages/setup-env:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+      - run:
+          name: Build Debian Packages
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=4
+            export CCI_VAADINJAVAMAXMEM=768m
+            .circleci/scripts/makedeb.sh sentinel
+      - sign-packages/sign-debs:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/debs/*.deb
+      - store_artifacts:
+          path: ~/project/target/debs
+          destination: debs
+      - cache-workflow-assets:
+          cache_prefix: deb-sentinel
+          source_path: target/debs
+  horizon-publish-oci:
+    executor: centos-build-executor
+    steps:
+      - cached-checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - dockerhub-login
+      - load-oci:
+          key: horizon
+      - run:
+          name: tag horizon Docker image and publish to registry
+          command: |
+            cd opennms-container/horizon
+            ./tag.sh
+            ./publish.sh
+  minion-publish-oci:
+    executor: centos-build-executor
+    steps:
+      - cached-checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - dockerhub-login
+      - load-oci:
+          key: minion
+      - run:
+          name: tag minion Docker image and publish to registry
+          command: |
+            cd opennms-container/minion
+            ./tag.sh
+            ./publish.sh
+  sentinel-publish-oci:
+    executor: centos-build-executor
+    steps:
+      - cached-checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - dockerhub-login
+      - load-oci:
+          key: sentinel
+      - run:
+          name: tag sentinel Docker image and publish to registry
+          command: |
+            cd opennms-container/sentinel
+            ./tag.sh
+            ./publish.sh
+  integration-test:
+    executor: integration-test-executor
+    parallelism: 4
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-integration-tests:
+          rerun-failtest-count: 1
+  integration-test-with-coverage:
+    executor: integration-test-executor
+    parallelism: 12
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-integration-tests:
+          run-code-coverage: true
+          rerun-failtest-count: 0
+          failure-option: -fn
+          changes-only: false
+  code-coverage:
+    executor: centos-build-executor
+    resource_class: medium
+    steps:
+      - attach_workspace:
+          at: ~/
+      - extract-pom-version
+      - restore-sonar-cache
+      - run:
+          name: Restore Target Directories (Code Coverage)
+          when: always
+          command: |
+            .circleci/scripts/codecoverage-restore.sh
+      - run:
+          name: Run SonarQube Code Analysis
+          when: always
+          command: |
+            export MAVEN_OPTS="-Xms3G -Xmx3G"
+            .circleci/scripts/sonar.sh
+      - save-sonar-cache
+  smoke-test-full:
+    executor: smoke-test-executor
+    parallelism: 8
+    # No resource class support for machine executors, we're constrained to use the default
+    # medium class which has 2 vCPUs and 8 GB RAM
+    #resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests
+  smoke-test-minimal:
+    executor: smoke-test-executor
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          minimal: true
+  create-merge-foundation-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - run:
+          name: "Branch Merge Parameters"
+          command: |
+            echo "previous: << parameters.previous_branch >>, main: << parameters.main_branch >>, next: << parameters.next_branch >>"
+      - when:
+          condition: << parameters.next_branch >>
+          steps:
+            - cached-checkout-for-pushing
+            - run:
+                name: Checkout target branch and merge from source
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git fetch --all
+                  git checkout << parameters.next_branch >>
+                  git reset --hard origin/<< parameters.next_branch >>
+                  git merge origin/<< parameters.main_branch >>
+            - run:
+                name: Push to github
+                command: git push -f origin << parameters.next_branch >>:merge-foundation/<< parameters.main_branch_label >>-to-<< parameters.next_branch_label >>
+
+  # note, this is always run as part of the _next_ branch
+  # for example, if main_branch is `foundation-2016` and next_branch is `foundation-2017`,
+  # it will include the contents of the `foundation-2017` branch, thus we need to actually
+  # look _backwards_ to the previous_branch and main_branch to merge the correct bits.
+  merge-foundation-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - run:
+          name: "Branch Merge Parameters"
+          command: |
+            echo "previous: << parameters.previous_branch >>, main: << parameters.main_branch >>, next: << parameters.next_branch >>"
+      - when:
+          condition: << parameters.previous_branch >>
+          steps:
+            - cached-checkout-for-pushing
+            - run:
+                name: Checkout target and merge with merge branch
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  git fetch --all
+                  git checkout << parameters.main_branch >>
+                  git reset --hard origin/<< parameters.main_branch >>
+                  git merge origin/merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+            - run:
+                name: Push to github
+                command: git push origin << parameters.main_branch >>:<< parameters.main_branch >>
+
+  create-merge-meridian-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - when:
+          condition: << parameters.main_branch >>
+          steps:
+            - restore_cache:
+                keys:
+                  - meridian-v1-{{ .Branch }}-{{ .Revision }}
+                  - meridian-v1-{{ .Branch }}-
+                  - meridian-v1-
+            - cached-checkout-for-pushing
+            - run:
+                name: Add Meridian remote if necessary
+                command: |
+                  REMOTE_MERIDIAN="$(git remote | grep -c -E '^meridian$' || :)"
+                  if [ "$REMOTE_MERIDIAN" -eq 0 ]; then
+                    git remote add meridian git@github.com:OpenNMS/opennms-prime.git
+                  fi
+            - run:
+                name: git fetch meridian
+                command: |
+                  git fetch meridian
+            - save_cache:
+                key: meridian-v1-{{ .Branch }}-{{ .Revision }}
+                paths:
+                  - ".git"
+            - run:
+                name: Checkout target branch and merge from source
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  if git rev-parse from-<< parameters.main_branch >> >/dev/null 2>&1; then
+                    git checkout from-<< parameters.main_branch >>
+                  else
+                    git checkout -b from-<< parameters.main_branch >> meridian/from-<< parameters.main_branch >>
+                  fi
+                  git reset --hard meridian/from-<< parameters.main_branch >>
+                  git merge origin/<< parameters.main_branch >>
+            - run:
+                name: Push to Meridian github
+                command: git push -f meridian from-<< parameters.main_branch >>:from-<< parameters.main_branch >>
+
+  merge-poweredby-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - when:
+          condition: << parameters.main_branch >>
+          steps:
+            - restore_cache:
+                keys:
+                  - poweredby-v1-{{ .Branch }}-{{ .Revision }}
+                  - poweredby-v1-{{ .Branch }}-
+                  - poweredby-v1-
+            - cached-checkout-for-pushing
+            - run:
+                name: Merge Foundation to PoweredBy
+                command: .circleci/scripts/merge-poweredby.sh
+            - save_cache:
+                key: poweredby-v1-{{ .Branch }}-{{ .Revision }}
+                paths:
+                  - ".git"
+
+  publish-cloudsmith:
+    executor: cloudsmith/default
+    resource_class: small
+    steps:
+      - checkout
+      - cloudsmith/ensure-api-key
+      - cloudsmith/install-cli
+      - restore-workflow-assets:
+          cache_prefix: deb-horizon
+      - restore-workflow-assets:
+          cache_prefix: deb-minion
+      - restore-workflow-assets:
+          cache_prefix: deb-sentinel
+      - restore-workflow-assets:
+          cache_prefix: rpm-horizon
+      - restore-workflow-assets:
+          cache_prefix: rpm-minion
+      - restore-workflow-assets:
+          cache_prefix: rpm-sentinel
+      - run:
+          name: Publish Packages
+          command: |
+            .circleci/scripts/publish-cloudsmith.sh
+

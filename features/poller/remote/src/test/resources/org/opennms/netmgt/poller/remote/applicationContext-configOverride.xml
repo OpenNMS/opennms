@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+    
+  <bean id="pollerConfigDao" class="org.opennms.netmgt.config.DefaultPollerConfigDao">
+    <property name="configResource" value="classpath:/org/opennms/netmgt/poller/remote/poller-configuration.xml"/>
+  </bean>
+
+  <bean id="pollerConfig" factory-bean="pollerConfigDao" factory-method="getPollerConfig"/>
+
+  <bean id="setupIpLike" class="java.lang.Boolean">
+    <constructor-arg><value>true</value></constructor-arg>
+  </bean>
+
+  <alias name="daemon" alias="pollerBackEnd" />
+
+</beans>

@@ -3,22 +3,45 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.assemblies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Assemblies</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
   <modules>
     <module>http-remoting</module>
-    <module>jmx-config-generator-onejar</module>
+    <module>minion</module>
+    <module>sentinel</module>
     <module>remote-poller-onejar</module>
     <module>remote-poller-standalone</module>
     <module>remote-poller-nsis</module>
-    <module>rxtx-assembly</module>
     <!-- <module>system-report-onejar</module> -->
     <module>version</module>
     <module>webapp-full</module>
     <module>xsds</module>
   </modules>
+
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+  </repositories>
+
 </project>

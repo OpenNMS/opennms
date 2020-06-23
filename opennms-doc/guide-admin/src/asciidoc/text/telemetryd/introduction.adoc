@@ -1,0 +1,102 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+The telemetry daemon (telemetryd) provides an extensible framework that can be used to handle sensor data pushed to _{opennms-product-name}_.
+The framework can be used to implement support for a variety of applications which use different protocols to transfer metrics.
+Using _telemetryd_, operators can define listeners supporting different protocols to receive the telemetry data and adapters transferring the received data into generic formats like flows or performance data.
+
+.Generic component overview of components in telemetryd
+image::telemetryd/telemetryd-overview.png[]
+
+The configuration is split in two parts.
+_Listeners_ and attached _Parsers_ on one side, are responsible for receiving telemetry data transported over a specific protocol and parse the protocol according to its specification.
+On the other side, _Adapters_ pick up the parsed data and enrich it before persisting it.
+
+_Queues_ are used to transport the parsed telemetry data from _Parsers_ to _Adapters_ by binding a specific _Parser_ to a specific _Adapter_.
+
+=== _Listeners_ and _Parsers_
+_Listeners_ are responsible for receiving sensor data from some external source and hand them off to _Parsers_ which handles the transport protocol format and extracts the transported data.
+
+A _Listener_ does the transport protocol handling like opening a socket and accepting incoming connections.
+The received messages are then passed to the parser configured for the _Listener_ which parses the concrete protocol implementation and extract all available information out of the received message.
+For further processing, the extracted data is handed over to the configured queue.
+
+For example: A _Listener_ may open a UDP socket for receiving packets and a assigned _Parser_ parses the incoming IPFix packets.
+
+_Parsers_ and _Listeners_ must work together in a tight manner.
+Therefore they can not be combined in any possible combination.
+Which _Parser_ is supported by which _Listener_ is described in the documentation of each _Parser_ accordingly.
+
+TIP: You can provide the parameter `maxClockSkew` in your parser definition to enable clock skew detection for exporters. It specifies the maximum delta in seconds between exporter and Minion timestamps. If violated an alarm will be generated for the exporting device. The default value is 0, so clock skew detection is disabled. Furthermore, a parameter `clockSkewEventRate` can be used to rate-limit clock skew events. The default is `3600` seconds, so every hour an event will be sent.
+
+=== _Adapters_
+_Adapters_ are responsible for enriching and processing the data dispatched over a queue.
+It receives the data from queue and transforms it into a format usable by _{opennms-product-name}_.
+Adapters can also be used to enrich the incoming data to attach node or interface information depending on information already available.
+
+For example: An _Adapter_ may be used to transform telemetry data received via SFlow into performance data and persist it to the according node.
+
+As an _Adapter_ must handle data dependent to a transport protocol, not all _Adapters_ can be used in combination with any possible
+_Parser_.
+Which _Parsers_ are supported by which _Adapters_ is described in the documentation of each _Adapter_ accordingly.
+
+TIP: In case you have multiple _Adapters_, the execution order is the same as defined in the `telemetryd-configuration.xml`.
+
+=== _Queues_
+_Queues_ are used to transfer data between _Parsers_ and _Adapters_ and are represented by a channel in the messaging system.
+
+==== Configuring _Queues_
+
+The following options are provided to help fine tune the behavior of the queues:
+
+[options="header, autowidth"]
+|===
+| Queue attribute (OpenNMS) | Key (Minion/Sentinel)  | Description | Default value
+| `threads`                 | `queue.threads`            | Number of threads used for consuming & dispatching messages | (2 * number of cores)
+| `queue-size`              | `queue.size`               | Maximum number of messages to keep in memory while waiting to be dispatched. | 10000
+| `use-routing-key`         | `queue.use-routing-key`    | Whether or not the routing key should be used when forwarding messages to the broker. This is used to enforce ordering of the messages. | true
+| `batch-size`              | `batch.size`               | Messages are aggregated in batches before being dispatched. When the batch reaches this size, it will be dispatched. | 1000
+| `batch-interval`          | `batch.interval`           | Messages are aggregated in batches before being dispatched. When the batch has been created for longer than this interval (ms) it will be dispatched, regardless of the current size. | 500
+|===
+
+TIP: When using Kafka as a message broker, setting `use-routing-key` to `false` will allow the messages to be balanced across all partitions.
+This can be safely done for flows, but is not supported for metrics when using thresholding (order is required).
+
+When setting these on OpenNMS they can be added as an attribute to the `<queue>` element.
+For example:
+[source, xml]
+----
+<queue name="IPFIX" use-routing-key="false">
+    ...
+</queue>
+----
+
+When setting these on Minion they can be added as `parser` properties, and on Sentinel as `adapter` properties:
+[source]
+----
+name=IPFIX-Listener
+class-name=org.opennms.netmgt.telemetry.listeners.UdpListener
+parameters.host=0.0.0.0
+parameters.port=4738
+parsers.0.name=IPFIX
+parsers.0.class-name=org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser
+parsers.0.queue.use-routing-key=false
+----
+
+=== Push Sensor Data through Minion
+_Listeners_ and its _Parsers_ may run on either _{opennms-product-name}_ or _Minion_, whereas adapters run on _{opennms-product-name}_ or _Sentinel_.
+If a _Listener_ its _Parsers_ is running on _Minion_, the received messages will be automatically dispatched to the associated _Adapters_ running in _{opennms-product-name}_ or _Sentinel_ via a _Queue_.
+
+.Running _Listener_ on a _Minion_ forwarding packets using the messaging system
+image::telemetryd/telemetryd-minion.png[]
+
+[[telemetryd-reverse-hostname-resolution]]
+=== Reverse hostname resolution
+Some _Parsers_ support reverse hostname resolution to annotate IP addresses with the actual hostname.
+The reverse name lookup will be performed by the _Minion_ while parsing the protocol data.
+The resolved hostname, if found, is attached to the address information and both will be sent to the _Adapter_ for further processing.
+
+For more information see <<ga-dnsresolver, DNS Resolver>>
+
+The following _Parsers_ currently support reverse hostname resolution: Netflow v5, Netflow v9, IPFIX and SFlow.

@@ -1,0 +1,55 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+    <bean id="adapterRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryAdapterRegistryImpl" />
+    <reference-list interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="adapterRegistry" />
+    </reference-list>
+
+    <bean id="listenerRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryListenerRegistryImpl" />
+    <reference-list interface="org.opennms.netmgt.telemetry.api.receiver.ListenerFactory" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="listenerRegistry" />
+    </reference-list>
+
+    <bean id="parserRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryParserRegistryImpl" />
+    <reference-list interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="parserRegistry" />
+    </reference-list>
+
+    <!-- Metrics -->
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="metricRegistry" interface="com.codahale.metrics.MetricSet">
+        <service-properties>
+            <entry key="name" value="Telemetryd" />
+            <entry key="description" value="Telemetryd related metrics" />
+        </service-properties>
+    </service>
+    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+        <argument ref="metricRegistry"/>
+    </bean>
+    <bean id="metricRegistryDomainedJmxReporterBuilder" factory-ref="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+        <argument value="org.opennms.netmgt.telemetry"/>
+    </bean>
+    <bean id="metricRegistryJmxReporter"
+          factory-ref="metricRegistryJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
+
+    <bean id="telemetryRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryRegistryImpl" >
+        <property name="adapterRegistryDelegate" ref="adapterRegistry"/>
+        <property name="listenerRegistryDelegate" ref="listenerRegistry"/>
+        <property name="parserRegistryDelegate" ref="parserRegistry"/>
+        <property name="metricRegistry" ref="metricRegistry"/>
+    </bean>
+    <service interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" ref="telemetryRegistry" />
+</blueprint>

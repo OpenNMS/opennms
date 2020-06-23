@@ -1,0 +1,39 @@
+<div id="groupModal">
+  <div class="modal-header">
+    <h5 class="modal-title" ng-show="group.id === undefined">Create Classification Group</h5>
+    <h5 class="modal-title" ng-show="group.id !== undefined">Edit Classification Group</h5>
+  </div>
+  <div class="modal-body">
+    <form name="groupForm" novalidate>
+      <div class="form-group">
+        <div ng-show="error.entity" class="form-text text-danger">{{error.entity}}</div>
+      </div>
+      <div class="form-group form-row">
+        <label class="col-form-label" for="group.position">Position</label>
+        <button class="btn btn-link"
+                uib-popover-html="'<div>Groups on low positions will be evaluated first:<br>position 0 -&gt; position 1 -&gt; position 2 -&gt; ...</div>'"
+                popover-trigger="'outsideClick'"><i class="fa fa-question-circle"/></button>
+        <input class="form-control" id="group.position" name="position" placeholder="{{maxPosition}}" type="number" min="0" max="{{maxPosition}}" step="1" pattern="[0-9]*" ng-model="group.position"
+               ng-class="{ 'is-invalid' : groupForm.position.$invalid || error.position }" />
+        <div ng-show="groupForm.position.$invalid" class="invalid-feedback">Position must be between 0 and {{maxPosition}}.</div>
+      </div>
+      <div class="form-group form-row">
+        <label class="col-form-label" for="group.name">Group Name</label>
+        <input class="form-control" type="text" id="group.name" name="name" placeholder="my classification group" ng-model="group.name"
+               ng-class="{ 'is-invalid' : groupForm.name.$invalid || error.name }" required/>
+        <div ng-show="groupForm.name.$invalid" class="invalid-feedback">The name is required.</div>
+        <div ng-show="error.name" class="invalid-feedback">{{error.name}}</div>
+      </div>
+      <div class="form-group form-row">
+        <label class="col-form-label" for="group.description">Group Description</label>
+        <input class="form-control" type="text" id="group.description" name="description" placeholder="my description" ng-model="group.description"
+               ng-class="{ 'is-invalid' : groupForm.description.$invalid || error.description }" required/>
+        <div ng-show="error.description" class="invalid-feedback">{{error.description}}</div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" id="save-group" ng-click="save()" ng-disabled="groupForm.$invalid">{{buttonName}}</button>
+    <button type="button" class="btn btn-secondary" id="cancel-group" ng-click="cancel()" >Cancel</button>
+  </div>
+</div>

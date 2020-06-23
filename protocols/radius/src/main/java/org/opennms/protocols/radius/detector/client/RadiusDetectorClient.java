@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,15 +31,19 @@ package org.opennms.protocols.radius.detector.client;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.opennms.netmgt.provision.support.Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.jradius.client.RadiusClient;
 import net.jradius.client.auth.MSCHAPv2Authenticator;
 import net.jradius.client.auth.RadiusAuthenticator;
 import net.jradius.packet.AccessRequest;
 import net.jradius.packet.RadiusPacket;
 import net.jradius.packet.attribute.AttributeFactory;
-import net.jradius.packet.attribute.AttributeList;
 
-import org.opennms.netmgt.provision.support.Client;
+
+
 
 /**
  * <p>RadiusDetectorClient class.</p>
@@ -47,7 +51,9 @@ import org.opennms.netmgt.provision.support.Client;
  * @author Donald Desloge
  * @version $Id: $
  */
-public class RadiusDetectorClient implements Client<AttributeList, RadiusPacket> {
+public class RadiusDetectorClient implements Client<CompositeAttributeLists, RadiusPacket> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(RadiusDetectorClient.class);
     /**
      * Default radius authentication port
      */
@@ -92,8 +98,8 @@ public class RadiusDetectorClient implements Client<AttributeList, RadiusPacket>
     }
 
     @Override
-    public RadiusPacket sendRequest(final AttributeList attributes) throws Exception {
-    	final AccessRequest request = new AccessRequest(m_radiusClient, attributes);
+    public RadiusPacket sendRequest(final CompositeAttributeLists parameters) throws Exception {
+    	AccessRequest request = parameters.createRadiusRequest(getAuthenticator());
     	return m_radiusClient.authenticate(request, getAuthenticator(), 0);
     }
 

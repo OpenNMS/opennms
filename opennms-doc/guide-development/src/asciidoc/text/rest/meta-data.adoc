@@ -1,0 +1,58 @@
+==== Meta-Data
+
+The actual Meta-Data of nodes, interfaces and services can be queried, added, modified or deleted via ReST endpoints.
+
+[[rest-api-meta-data-get]]
+===== GETs (Reading Meta-Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                                                   | Description
+| `api/v2/nodes/{id}/metadata`                                                               | Get the list of meta-data associated with this node.
+| `api/v2/nodes/{id}/metadata/{context}`                                                     | Get the list of meta-data associated with this node filtered by the given context.
+| `api/v2/nodes/{id}/metadata/{context}/{key}`                                               | Get the entry for the given context and key associated with this node.
+| `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/metadata`                                    | Get the list of meta-data associated with this interface.
+| `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/metadata/{context}`                          | Get the list of meta-data associated with this interface filtered by the given context.
+| `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/metadata/{context}/{key}`                    | Get the entry for the given context and key associated with this interface.
+| `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/services/{service}/metadata`                 | Get the list of meta-data associated with this service.
+| `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/services/{service}/metadata/{context}`       | Get the list of meta-data associated with this service filtered by the given context.
+| `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/services/{service}/metadata/{context}/{key}` | Get the entry for the given context and key associated with this service.
+|===
+
+[[rest-api-meta-data-post]]
+===== POSTs (Adding Meta-Data)
+
+POST requires XML using application/xml as its Content-Type.
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                      | Description
+| `api/v2/nodes/{id}/metadata`                                  | Adds a meta-data entry to the given node.
+| `api/v2/nodes/{id}/{ipInterface}/metadata`                    | Adds a meta-data entry to the given interface.
+| `api/v2/nodes/{id}/{ipInterface}/services/{service}/metadata` | Adds a meta-data entry to the given service.
+|===
+
+[[rest-api-meta-data-put]]
+===== PUTs (Modifying Meta-Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                                              | Description
+| `api/v2/nodes/{id}/metadata/{context}/{key}/{value}`                                  | Sets the given value for the node-level meta-data entry specified by the given context and key.
+| `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/metadata/{context}/{key}/{value}`                    | Sets the given value for the interface-level meta-data entry specified by the given context and key.
+| `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/services/{service}/metadata/{context}/{key}/{value}` | Sets the given value for the service-level meta-data entry specified by the given context and key.
+|===
+
+[[rest-api-meta-data-delete]]
+===== DELETEs (Removing Meta-Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                                                      | Description
+| `api/v2/nodes/{id}/metadata/{context}`                                        | Deletes node-level meta-data with the given context.
+| `api/v2/nodes/{id}/metadata/{context}/{key}`                                  | Deletes the node-level meta-data entry for the given context and key.
+| `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/metadata/{context}`                          | Deletes interface-level meta-data with the given context.
+| `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/metadata/{context}/{key}`                    | Deletes the interface-level meta-data entry for the given context and key.
+| `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/services/{service}/metadata/{context}`       | Deletes service-level meta-data with the given context.
+| `api/v2/nodes/{id}/ipinterfaces/{ipInterface}/services/{service}/metadata/{context}/{key}` | Deletes the service-level meta-data entry for the given context and key.
+|===

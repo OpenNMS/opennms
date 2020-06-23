@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+    <!--
+        Fix for NMS-7899
+    -->
+    <changeSet author="jwhite" id="16.0.4-useVarcharInsteadOfCharInAssetsTable">
+        <modifyDataType tableName="assets" columnName="userlastmodified" newDataType="varchar(20)"/>
+        <sql>UPDATE assets SET userlastmodified = TRIM(both from userlastmodified);</sql>
+
+        <rollback>
+            <modifyDataType tableName="assets" columnName="userlastmodified" newDataType="char(20)"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

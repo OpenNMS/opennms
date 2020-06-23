@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,16 +28,15 @@
 
 package org.opennms.reporting.core.svclayer.support;
 
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.api.reporting.parameter.ReportDateParm;
 import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
-import org.opennms.netmgt.config.reporting.DateParm;
-import org.opennms.netmgt.config.reporting.IntParm;
-import org.opennms.netmgt.config.reporting.StringParm;
+import org.opennms.netmgt.config.reporting.DefaultTime;
 import org.opennms.netmgt.config.reporting.Parameters;
 import org.opennms.reporting.core.svclayer.ParameterConversionService;
 
@@ -58,75 +57,61 @@ public class DefaultParameterConversionService implements
         }
         
         // add date parms to criteria
-        
-        ArrayList<ReportDateParm> dateParms = new ArrayList<ReportDateParm>();
-        DateParm[] dates = configParameters.getDateParm();
-        if (dates.length > 0) {
-            for (int i = 0 ; i < dates.length ; i++ ) {
-                ReportDateParm dateParm = new ReportDateParm();
-                dateParm.setUseAbsoluteDate(dates[i].getUseAbsoluteDate());
-                dateParm.setDisplayName(dates[i].getDisplayName());
-                dateParm.setName(dates[i].getName());
-                dateParm.setCount(new Integer((int) dates[i].getDefaultCount()));
-                dateParm.setInterval(dates[i].getDefaultInterval());
-                Calendar cal = Calendar.getInstance();
-                if (dates[i].getDefaultTime() != null) {
-                    dateParm.setHours(dates[i].getDefaultTime().getHours());
-                    cal.set(Calendar.HOUR_OF_DAY, dateParm.getHours());
-                    dateParm.setMinutes(dates[i].getDefaultTime().getMinutes());
-                    cal.set(Calendar.MINUTE, dateParm.getMinutes());
-                } else {
-                    cal.set(Calendar.HOUR_OF_DAY, 0);
-                    cal.set(Calendar.MINUTE, 0);
-                }
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MILLISECOND,0);
-                int amount = 0 - dates[i].getDefaultCount();
-                if (dates[i].getDefaultInterval().equals("year")) {
-                    cal.add(Calendar.YEAR, amount);
-                } else { 
-                    if (dates[i].getDefaultInterval().equals("month")) {
-                        cal.add(Calendar.MONTH, amount);
-                    } else {
-                        cal.add(Calendar.DATE, amount);
-                    }
-                }
-                dateParm.setDate(cal.getTime());
-                dateParms.add(dateParm);
+        final List<ReportDateParm> dateParms = configParameters.getDateParms().stream().map(dp -> {
+            final ReportDateParm dateParm = new ReportDateParm();
+            dateParm.setUseAbsoluteDate(dp.getUseAbsoluteDate().orElse(null));
+            dateParm.setDisplayName(dp.getDisplayName());
+            dateParm.setName(dp.getName());
+            dateParm.setCount(new Integer((int) dp.getDefaultCount()));
+            dateParm.setInterval(dp.getDefaultInterval());
+            Calendar cal = Calendar.getInstance();
+            if (dp.getDefaultTime().isPresent()) {
+                final DefaultTime defaultTime = dp.getDefaultTime().get();
+                dateParm.setHours(defaultTime.getHours());
+                cal.set(Calendar.HOUR_OF_DAY, dateParm.getHours());
+                dateParm.setMinutes(defaultTime.getMinutes());
+                cal.set(Calendar.MINUTE, dateParm.getMinutes());
+            } else {
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
             }
-        }
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND,0);
+            int amount = 0 - dp.getDefaultCount();
+            if (dp.getDefaultInterval().equals("year")) {
+                cal.add(Calendar.YEAR, amount);
+            } else { 
+                if (dp.getDefaultInterval().equals("month")) {
+                    cal.add(Calendar.MONTH, amount);
+                } else {
+                    cal.add(Calendar.DATE, amount);
+                }
+            }
+            dateParm.setDate(cal.getTime());
+            return dateParm;
+        }).collect(Collectors.toList());
         reportParameters.setDateParms(dateParms);
         
         // add string parms to criteria
-        
-        ArrayList<ReportStringParm> stringParms = new ArrayList<ReportStringParm>();
-        StringParm[] strings = configParameters.getStringParm();
-        if (strings.length > 0) {
-            for (int i = 0 ; i < strings.length ; i++ ) {
-                ReportStringParm stringParm = new ReportStringParm();
-                stringParm.setDisplayName(strings[i].getDisplayName());
-                stringParm.setName(strings[i].getName());
-                stringParm.setInputType(strings[i].getInputType());
-                stringParm.setValue(strings[i].getDefault());
-                stringParms.add(stringParm);
-            }
-        }
+        final List<ReportStringParm> stringParms = configParameters.getStringParms().stream().map(sp -> {
+            final ReportStringParm stringParm = new ReportStringParm();
+            stringParm.setDisplayName(sp.getDisplayName());
+            stringParm.setName(sp.getName());
+            stringParm.setInputType(sp.getInputType());
+            stringParm.setValue(sp.getDefault());
+            return stringParm;
+        }).collect(Collectors.toList());
         reportParameters.setStringParms(stringParms);
         
         // add int parms to criteria
-        
-        ArrayList<ReportIntParm> intParms = new ArrayList<ReportIntParm>();
-        IntParm[] integers = configParameters.getIntParm();
-        if (integers.length > 0) {
-            for (int i = 0 ; i < integers.length ; i++ ) {
-                ReportIntParm intParm = new ReportIntParm();
-                intParm.setDisplayName(integers[i].getDisplayName());
-                intParm.setName(integers[i].getName());
-                intParm.setInputType(integers[i].getInputType());
-                intParm.setValue(integers[i].getDefault());
-                intParms.add(intParm);
-            }
-        }
+        final List<ReportIntParm> intParms = configParameters.getIntParms().stream().map(ip -> {
+            final ReportIntParm intParm = new ReportIntParm();
+            intParm.setDisplayName(ip.getDisplayName());
+            intParm.setName(ip.getName());
+            intParm.setInputType(ip.getInputType());
+            intParm.setValue(ip.getDefault());
+            return intParm;
+        }).collect(Collectors.toList());
         reportParameters.setIntParms(intParms);
 
         return reportParameters;

@@ -1,0 +1,109 @@
+<blueprint
+	xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+">
+
+  <!-- Configuration properties -->
+  <cm:property-placeholder id="kafkaProducerProperties" persistent-id="org.opennms.features.kafka.producer" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="encoding" value="UTF8"/>
+      <cm:property name="eventTopic" value="events"/>
+      <cm:property name="alarmTopic" value="alarms"/>
+      <cm:property name="nodeTopic" value="nodes"/>
+      <cm:property name="topologyVertexTopic" value="vertices"/>
+      <cm:property name="topologyEdgeTopic" value="edges"/>
+      <cm:property name="alarmFeedbackTopic" value="alarmFeedback"/>
+      <cm:property name="metricTopic" value="metrics"/>
+      <cm:property name="forward.metrics" value="true"/>
+      <cm:property name="nodeRefreshTimeoutMs" value="300000"/> <!-- 5 minutes -->
+      <cm:property name="alarmSync" value="true"/>
+      <cm:property name="eventFilter" value=""/>
+      <cm:property name="alarmFilter" value=""/>
+      <cm:property name="nodeIdToCriteriaMaxCacheSize" value="10000"/>
+      <cm:property name="suppressIncrementalAlarms" value="true"/>
+      <cm:property name="kafkaSendQueueCapacity" value="1000"/>
+      <cm:property name="startAlarmSyncWithCleanState" value="false"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
+  <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" />
+  <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService" />
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
+  <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" />
+  <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" />
+  <reference id="hwEntityDao" interface="org.opennms.netmgt.dao.api.HwEntityDao" />
+  <reference id="onmsTopologyDao" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyDao" />
+
+  <bean id="protobufMapper" class="org.opennms.features.kafka.producer.ProtobufMapper">
+    <argument ref="eventConfDao"/>
+    <argument ref="hwEntityDao"/>
+    <argument ref="sessionUtils"/>
+    <argument ref="nodeDao"/>
+    <argument value="${nodeIdToCriteriaMaxCacheSize}"/>
+  </bean>
+
+  <bean id="nodeCache" class="org.opennms.features.kafka.producer.NodeCache">
+    <argument ref="nodeDao"/>
+    <argument ref="sessionUtils"/>
+    <property name="timeoutInMs" value="${nodeRefreshTimeoutMs}"/>
+  </bean>
+
+  <bean id="kafkaProducer" class="org.opennms.features.kafka.producer.OpennmsKafkaProducer"
+          init-method="init" destroy-method="destroy">
+    <argument ref="protobufMapper"/>
+    <argument ref="nodeCache"/>
+    <argument ref="configAdmin"/>
+    <argument ref="eventSubscriptionService"/>
+    <argument ref="onmsTopologyDao"/>
+
+    <property name="topologyVertexTopic" value="${topologyVertexTopic}"/>
+    <property name="topologyEdgeTopic" value="${topologyEdgeTopic}"/>
+    <property name="eventTopic" value="${eventTopic}"/>
+    <property name="alarmTopic" value="${alarmTopic}"/>
+    <property name="nodeTopic" value="${nodeTopic}"/>
+    <property name="alarmFeedbackTopic" value="${alarmFeedbackTopic}"/>
+    <property name="eventFilter" value="${eventFilter}"/>
+    <property name="alarmFilter" value="${alarmFilter}"/>
+    <property name="suppressIncrementalAlarms" value="${suppressIncrementalAlarms}"/>
+    <property name="kafkaSendQueueCapacity" value="${kafkaSendQueueCapacity}"/>
+    <property name="encoding" value="${encoding}"/>
+  </bean>
+
+  <service ref="kafkaProducer" interface="org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer">
+    <service-properties>
+      <entry key="type" value="kafkaProducer"/>
+    </service-properties>
+  </service>
+
+  <service ref="kafkaProducer" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
+
+  <bean id="alarmDataSync" class="org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync"
+		init-method="init" destroy-method="destroy">
+    <argument ref="configAdmin"/>
+    <argument ref="kafkaProducer"/>
+    <argument ref="protobufMapper" />
+    <property name="alarmTopic" value="${alarmTopic}"/>
+    <property name="alarmSync" value="${alarmSync}"/>
+    <property name="suppressIncrementalAlarms" value="${suppressIncrementalAlarms}"/>
+    <property name="startWithCleanState" value="${startAlarmSyncWithCleanState}"/>
+  </bean>
+
+  <bean factory-ref="kafkaProducer" factory-method="setDataSync">
+    <argument ref="alarmDataSync"/>
+  </bean>
+
+  <service ref="alarmDataSync" interface="org.opennms.features.kafka.producer.datasync.AlarmDataStore" />
+
+</blueprint>

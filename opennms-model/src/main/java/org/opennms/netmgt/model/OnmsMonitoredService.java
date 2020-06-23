@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,14 +33,21 @@ import static org.opennms.core.utils.InetAddressUtils.toInteger;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -57,23 +64,25 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonBackReference;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Where;
-import org.springframework.core.style.ToStringCreator;
+
+import com.google.common.base.MoreObjects;
 
 @XmlRootElement(name = "service")
 @Entity
 @Table(name="ifServices")
-public class OnmsMonitoredService extends OnmsEntity implements Serializable,
-Comparable<OnmsMonitoredService> {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -7106081378757872886L;
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class OnmsMonitoredService extends OnmsEntity implements Serializable, Comparable<OnmsMonitoredService> {
+    private static final long serialVersionUID = 7899180234592272274L;
 
     private Integer m_id;
 
@@ -104,13 +113,15 @@ Comparable<OnmsMonitoredService> {
      * be a model change were one service can be represented
      * by more than one outage.
      */
-    private Set<OnmsOutage> m_currentOutages = new LinkedHashSet<OnmsOutage>();
+    private Set<OnmsOutage> m_currentOutages = new LinkedHashSet<>();
 
-    private Set<OnmsApplication> m_applications = new LinkedHashSet<OnmsApplication>();
+    private Set<OnmsApplication> m_applications = new LinkedHashSet<>();
 
-	private static final Map<String, String> STATUS_MAP;
-	
-	static {
+    private List<OnmsMetaData> m_metaData = new ArrayList<>();
+
+    public static final Map<String, String> STATUS_MAP;
+
+    static {
         STATUS_MAP = new HashMap<String, String>();
         STATUS_MAP.put("A", "Managed");
         STATUS_MAP.put("U", "Unmanaged");
@@ -148,9 +159,9 @@ Comparable<OnmsMonitoredService> {
      */
     @Id
     @Column(nullable=false)
-    @XmlAttribute(name="id")
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
-    @GeneratedValue(generator="opennmsSequence")    
+    @GeneratedValue(generator="opennmsSequence")
+    @XmlTransient
     public Integer getId() {
         return m_id;
     }
@@ -165,12 +176,28 @@ Comparable<OnmsMonitoredService> {
     }
 
     /**
+     * This id is used for the serialized representation such as json, xml etc.
+     */
+    @XmlID
+    @XmlAttribute(name="id")
+    @Transient
+    @JsonIgnore
+    public String getXmlId() {
+        return getId() == null? null : getId().toString();
+    }
+
+    public void setXmlId(final String id) {
+        setId(Integer.valueOf(id));
+    }
+
+    /**
      * <p>getIpAddress</p>
      *
      * @return a {@link java.lang.String} object.
      */
     @XmlTransient
     @Transient
+    @JsonIgnore
     public InetAddress getIpAddress() {
         return m_ipInterface.getIpAddress();
     }
@@ -184,6 +211,7 @@ Comparable<OnmsMonitoredService> {
      */
     @XmlTransient
     @Transient
+    @JsonIgnore
     public String getIpAddressAsString() {
         return m_ipInterface.getIpAddressAsString();
     }
@@ -195,6 +223,7 @@ Comparable<OnmsMonitoredService> {
      */
     @XmlTransient
     @Transient
+    @JsonIgnore
     public Integer getIfIndex() {
         return m_ipInterface.getIfIndex();
     }
@@ -279,6 +308,7 @@ Comparable<OnmsMonitoredService> {
     }
     
     @Transient
+    @XmlAttribute
     public String getStatusLong() {
     	return STATUS_MAP.get(getStatus());
     }
@@ -322,12 +352,70 @@ Comparable<OnmsMonitoredService> {
         m_notify = notify;
     }
 
+    @JsonIgnore
+    @XmlTransient
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name="ifServices_metadata", joinColumns = @JoinColumn(name = "id"))
+    public List<OnmsMetaData> getMetaData() {
+        return m_metaData;
+    }
+
+    public void setMetaData(final List<OnmsMetaData> metaData) {
+        m_metaData = metaData;
+    }
+
+    public void addMetaData(final String context, final String key, final String value) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
+
+        final Optional<OnmsMetaData> entry = getMetaData().stream()
+                .filter(m -> m.getContext().equals(context))
+                .filter(m -> m.getKey().equals(key))
+                .findFirst();
+
+        // Update the value if present, otherwise create a new entry
+        if (entry.isPresent()) {
+            entry.get().setValue(value);
+        } else {
+            getMetaData().add(new OnmsMetaData(context, key, value));
+        }
+    }
+
+    public void removeMetaData(final String context, final String key) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(key);
+        final Iterator<OnmsMetaData> iterator = getMetaData().iterator();
+
+        while (iterator.hasNext()) {
+            final OnmsMetaData onmsNodeMetaData = iterator.next();
+
+            if (context.equals(onmsNodeMetaData.getContext()) && key.equals(onmsNodeMetaData.getKey())) {
+                iterator.remove();
+            }
+        }
+    }
+
+    public void removeMetaData(final String context) {
+        Objects.requireNonNull(context);
+        final Iterator<OnmsMetaData> iterator = getMetaData().iterator();
+
+        while (iterator.hasNext()) {
+            final OnmsMetaData onmsNodeMetaData = iterator.next();
+
+            if (context.equals(onmsNodeMetaData.getContext())) {
+                iterator.remove();
+            }
+        }
+    }
+
     /**
      * <p>getIpInterface</p>
      *
      * @return a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     @XmlIDREF
+    @JsonBackReference
     @XmlElement(name="ipInterfaceId")
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="ipInterfaceId")
@@ -351,6 +439,7 @@ Comparable<OnmsMonitoredService> {
      */
     @XmlTransient
     @Transient
+    @JsonIgnore
     public Integer getNodeId() {
         return m_ipInterface.getNode().getId();
     }
@@ -382,19 +471,19 @@ Comparable<OnmsMonitoredService> {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-        .append("id", m_id)
-        .append("lastGood", m_lastGood)
-        .append("lastFail", m_lastFail)
-        .append("qualifier", m_qualifier)
-        .append("status", m_status)
-        .append("source", m_source)
-        .append("notify", m_notify)
-        .append("serviceType", m_serviceType)
+        return MoreObjects.toStringHelper(this)
+        .add("id", m_id)
+        .add("lastGood", m_lastGood)
+        .add("lastFail", m_lastFail)
+        .add("qualifier", m_qualifier)
+        .add("status", m_status)
+        .add("source", m_source)
+        .add("notify", m_notify)
+        .add("serviceType", m_serviceType)
         // cannot include these since the require db queries
-//        .append("ipInterface", m_ipInterface)
-//        .append("currentOutages", m_currentOutages)
-//        .append("applications", m_applications)
+//        .add("ipInterface", m_ipInterface)
+//        .add("currentOutages", m_currentOutages)
+//        .add("applications", m_applications)
         .toString();
     }
 
@@ -404,11 +493,10 @@ Comparable<OnmsMonitoredService> {
      * @return a {@link java.lang.Integer} object.
      */
     @Transient
+    @JsonIgnore
     public Integer getServiceId() {
         return getServiceType().getId();
     }
-
-
 
     /** {@inheritDoc} */
     @Override
@@ -423,6 +511,7 @@ Comparable<OnmsMonitoredService> {
      * @return a {@link java.lang.String} object.
      */
     @Transient
+    @JsonIgnore
     public String getServiceName() {
         return getServiceType().getName();
     }
@@ -433,6 +522,7 @@ Comparable<OnmsMonitoredService> {
      * @return a boolean.
      */
     @Transient
+    @XmlAttribute(name="down")
     public boolean isDown() {
         boolean down = true;
         if (!"A".equals(getStatus()) || m_currentOutages.isEmpty()) {
@@ -450,6 +540,7 @@ Comparable<OnmsMonitoredService> {
     @XmlTransient
     @OneToMany(mappedBy="monitoredService", fetch=FetchType.LAZY)
     @Where(clause="ifRegainedService is null")
+    @JsonIgnore
     public Set<OnmsOutage> getCurrentOutages() {
         return m_currentOutages;
     }
@@ -476,6 +567,8 @@ Comparable<OnmsMonitoredService> {
                joinColumns={@JoinColumn(name="ifserviceid")},
                inverseJoinColumns={@JoinColumn(name="appid")}
     )
+    @XmlElementWrapper(name="applications")
+    @XmlElement(name="application")
     public Set<OnmsApplication> getApplications() {
         return m_applications;
     }
@@ -559,6 +652,12 @@ Comparable<OnmsMonitoredService> {
 
     }
 
+    public void mergeMetaData(OnmsMonitoredService scanned) {
+        if (!getMetaData().equals(scanned.getMetaData())) {
+            setMetaData(scanned.getMetaData());
+        }
+    }
+
 	private boolean hasNewStatusValue(String newStatus, String oldStatus) 
 	{
 		/*
@@ -567,4 +666,24 @@ Comparable<OnmsMonitoredService> {
 		 */
 		return !"N".equals(oldStatus) && newStatus != null && !newStatus.equals(oldStatus);
 	}
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public String getForeignSource() {
+        if (getIpInterface() != null) {
+            return getIpInterface().getForeignSource();
+        }
+        return null;
+    }
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public String getForeignId() {
+        if (getIpInterface() != null) {
+            return getIpInterface().getForeignId();
+        }
+        return null;
+    }
 }

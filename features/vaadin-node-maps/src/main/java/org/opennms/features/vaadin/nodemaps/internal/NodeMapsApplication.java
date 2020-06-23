@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,22 +28,48 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
-import com.github.wolfie.refresher.Refresher;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.HeaderUtil;
+import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
+import org.opennms.features.topology.api.browsers.SelectionAwareTable;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.browsers.AlarmTable;
+import org.opennms.features.topology.plugins.browsers.NodeTable;
+import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.VaadinApplicationContextImpl;
+import org.opennms.web.api.OnmsHeaderProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
+
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.event.UIEvents;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinServletRequest;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import org.opennms.web.api.OnmsHeaderProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import com.vaadin.ui.VerticalSplitPanel;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The Class Node Maps Application.
@@ -84,76 +110,213 @@ import java.io.InputStream;
 @Title("OpenNMS Node Maps")
 @Theme("opennms")
 @JavaScript({
-        "http://maps.google.com/maps/api/js?sensor=false",
-        "http://cdn.leafletjs.com/leaflet-0.5.1/leaflet-src.js",
-        "gwt/public/openlayers/OpenLayers.js",
-        "gwt/public/markercluster/leaflet.markercluster-src.js"
-        
+    "theme://../opennms/assets/node-maps-init.vaadin.js"
 })
 @StyleSheet({
-        "gwt/public/markercluster/MarkerCluster.css",
-        "gwt/public/markercluster/MarkerCluster.Default.css",
-        "gwt/public/node-maps.css"})
+    "theme://../opennms/assets/leaflet.css",
+    "gwt/public/node-maps.css"
+})
 public class NodeMapsApplication extends UI {
-
     private static final Logger LOG = LoggerFactory.getLogger(NodeMapsApplication.class);
-    private static final int REFRESH_INTERVAL = 5 * 60 * 1000;
+    private static final int REFRESH_INTERVAL = SystemProperties.getInteger("org.opennms.features.nodemaps.refresh", 30*1000);
     private VerticalLayout m_rootLayout;
+    private VerticalLayout m_layout;
 
-    private Logger m_log = LoggerFactory.getLogger(getClass());
-
-    private MapWidgetComponent m_mapWidgetComponent;
+    private NodeMapComponent m_nodeMapComponent;
     private OnmsHeaderProvider m_headerProvider;
     private String m_headerHtml;
+    private VaadinRequest m_request;
+    private AlarmTable m_alarmTable;
+    private NodeTable m_nodeTable;
+    private NodeMapConfiguration configuration;
 
     public void setHeaderProvider(final OnmsHeaderProvider headerProvider) {
         m_headerProvider = headerProvider;
     }
 
-    public void setMapWidgetComponent(MapWidgetComponent m_mapWidgetComponent) {
-        this.m_mapWidgetComponent = m_mapWidgetComponent;
+    public void setNodeMapComponent(final NodeMapComponent nodeMapComponent) {
+        m_nodeMapComponent = nodeMapComponent;
     }
 
     public void setHeaderHtml(final String headerHtml) {
         m_headerHtml = headerHtml;
-
-        /**
-         * Added some magic to hide search controls and header if displayed inside an iframe
-         */
-        m_headerHtml += "<script type='text/javascript'>if (window.location != window.parent.location) { document.getElementById('header').style.display = 'none'; var style = document.createElement(\"style\"); style.type = 'text/css'; style.innerHTML = '.leaflet-control-container { display: none; }'; document.body.appendChild(style); }</script>";
     }
 
+    public void setAlarmTable(final AlarmTable table) {
+        m_alarmTable = table;
+    }
+
+    public void setNodeTable(final NodeTable table) {
+        m_nodeTable = table;
+    }
+
+    private void updateWidgetView() {
+        final VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
+        bottomLayoutBar.setFirstComponent(m_nodeMapComponent);
+
+        // Split the screen 70% top, 30% bottom
+        bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
+        bottomLayoutBar.setSizeFull();
+        bottomLayoutBar.setSecondComponent(getTabSheet());
+        m_layout.addComponent(bottomLayoutBar);
+        m_layout.markAsDirty();
+    }
+
+    /**
+     * Gets a {@link TabSheet} view for all widgets in this manager.
+     * 
+     * @return TabSheet
+     */
+    private Component getTabSheet() {
+        // Use an absolute layout for the bottom panel
+        AbsoluteLayout bottomLayout = new AbsoluteLayout();
+        bottomLayout.setSizeFull();
+
+        final TabSheet tabSheet = new TabSheet();
+        tabSheet.setSizeFull();
+
+        for(final SelectionAwareTable view : new SelectionAwareTable[] { m_alarmTable, m_nodeTable }) {
+            // Icon can be null
+            tabSheet.addTab(view, (view == m_alarmTable? "Alarms":"Nodes"), null);
+
+            // If the component supports the HasExtraComponents interface, then add the extra 
+            // components to the tab bar
+            try {
+                final Component[] extras = ((HasExtraComponents)view).getExtraComponents();
+                if (extras != null && extras.length > 0) {
+                    // For any extra controls, add a horizontal layout that will float
+                    // on top of the right side of the tab panel
+                    final HorizontalLayout extraControls = new HorizontalLayout();
+                    extraControls.setHeight(32, Unit.PIXELS);
+                    extraControls.setSpacing(true);
+
+                    // Add the extra controls to the layout
+                    for (final Component component : extras) {
+                        extraControls.addComponent(component);
+                        extraControls.setComponentAlignment(component, Alignment.MIDDLE_RIGHT);
+                    }
+
+                    // Add a TabSheet.SelectedTabChangeListener to show or hide the extra controls
+                    tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+                        @Override
+                        public void selectedTabChange(final SelectedTabChangeEvent event) {
+                            final TabSheet source = (TabSheet) event.getSource();
+                            if (source == tabSheet) {
+                                // Bizarrely enough, getSelectedTab() returns the contained
+                                // Component, not the Tab itself.
+                                //
+                                // If the first tab was selected...
+                                if (source.getSelectedTab() == view) {
+                                    extraControls.setVisible(true);
+                                } else {
+                                    extraControls.setVisible(false);
+                                }
+                            }
+                        }
+                    });
+
+                    // Place the extra controls on the absolute layout
+                    bottomLayout.addComponent(extraControls, "top:0px;right:5px;z-index:100");
+                }
+            } catch (ClassCastException e) {}
+            view.setSizeFull();
+        }
+
+        // Add the tabsheet to the layout
+        bottomLayout.addComponent(tabSheet, "top: 0; left: 0; bottom: 0; right: 0;");
+
+        return bottomLayout;
+    }
 
     @Override
-    protected void init(VaadinRequest vaadinRequest) {
-        m_log.debug("initializing");
-        createMapPanel(vaadinRequest.getParameter("search"));
-        createRootLayout(vaadinRequest);
-        addRefresher();
+    protected void init(final VaadinRequest vaadinRequest) {
+        m_request = vaadinRequest;
+        LOG.debug("initializing");
+
+        final VaadinApplicationContextImpl context = new VaadinApplicationContextImpl();
+        final UI currentUI = UI.getCurrent();
+        context.setSessionId(currentUI.getSession().getSession().getId());
+        context.setUiId(currentUI.getUIId());
+        context.setUsername(vaadinRequest.getRemoteUser());
+
+        Assert.notNull(m_alarmTable);
+        Assert.notNull(m_nodeTable);
+
+        final String searchString = vaadinRequest.getParameter("search");
+        final Integer maxClusterRadius = SystemProperties.getInteger("gwt.maxClusterRadius", 350);
+        LOG.info("Starting search string: {}, max cluster radius: {}", searchString, maxClusterRadius);
+
+        m_alarmTable.setVaadinApplicationContext(context);
+        final EventProxy eventProxy = new EventProxy() {
+            @Override public <T> void fireEvent(final T eventObject) {
+                LOG.debug("got event: {}", eventObject);
+                if (eventObject instanceof VerticesUpdateEvent) {
+                    final VerticesUpdateEvent event = (VerticesUpdateEvent)eventObject;
+                    final List<Integer> nodeIds = new ArrayList<>();
+                    for (final VertexRef ref : event.getVertexRefs()) {
+                        if ("nodes".equals(ref.getNamespace()) && ref.getId() != null) {
+                            nodeIds.add(Integer.valueOf(ref.getId()));
+                        }
+                    }
+                    m_nodeMapComponent.setSelectedNodes(nodeIds);
+                    return;
+                }
+                LOG.warn("Unsure how to deal with event: {}", eventObject);
+            }
+            @Override public <T> void addPossibleEventConsumer(final T possibleEventConsumer) {
+                LOG.debug("(ignoring) add consumer: {}", possibleEventConsumer);
+                /* throw new UnsupportedOperationException("Not yet implemented!"); */
+            }
+        };
+
+        m_alarmTable.setEventProxy(eventProxy);
+        m_nodeTable.setEventProxy(eventProxy);
+
+        createMapPanel(searchString, maxClusterRadius);
+        createRootLayout();
+        setupAutoRefresher();
+
+        // Notify the user if no tileserver url or options are set
+        if (!configuration.isValid()) {
+            new InvalidConfigurationWindow(configuration).open();
+        }
     }
 
-    private void createMapPanel(String searchString) {
-        m_mapWidgetComponent.setSearchString(searchString);
-        m_mapWidgetComponent.setSizeFull();
+    public void setConfiguration(NodeMapConfiguration configuration) {
+        this.configuration = configuration;
     }
 
-    private void createRootLayout(VaadinRequest request) {
+    private void createMapPanel(final String searchString, final int maxClusterRadius) {
+        m_nodeMapComponent.setSearchString(searchString);
+        m_nodeMapComponent.setSizeFull();
+        m_nodeMapComponent.setMaxClusterRadius(maxClusterRadius);
+    }
+
+    private void createRootLayout() {
         m_rootLayout = new VerticalLayout();
         m_rootLayout.setSizeFull();
+        m_rootLayout.addStyleName("root-layout");
         setContent(m_rootLayout);
+        addHeader();
 
-        addHeader(request);
-        m_rootLayout.addComponent(m_mapWidgetComponent);
-        m_rootLayout.setExpandRatio(m_mapWidgetComponent, 1.0f);
+        addContentLayout();
     }
 
-    private void addHeader(VaadinRequest request) {
+    private void addContentLayout() {
+        m_layout = new VerticalLayout();
+        m_layout.setSizeFull();
+        m_rootLayout.addComponent(m_layout);
+        m_rootLayout.setExpandRatio(m_layout, 1);
+
+        updateWidgetView();
+    }
+
+    private void addHeader() {
         if (m_headerProvider != null) {
             try {
-                setHeaderHtml(m_headerProvider.getHeaderHtml(new HttpServletRequestVaadinImpl(request)));
+                setHeaderHtml(getHeader(((VaadinServletRequest) m_request).getHttpServletRequest()));
             } catch (final Exception e) {
-                LOG.warn("failed to get header HTML for request " + request.getPathInfo(), e.getCause());
-
+                LOG.error("failed to get header HTML for request " + m_request.getPathInfo(), e);
             }
         }
         if (m_headerHtml != null) {
@@ -163,21 +326,56 @@ public class NodeMapsApplication extends UI {
                 final CustomLayout headerLayout = new CustomLayout(is);
                 headerLayout.setWidth("100%");
                 headerLayout.addStyleName("onmsheader");
+
+                // check for header visibility when component is attached
+                headerLayout.addAttachListener(HeaderUtil.getAttachListener());
+
                 m_rootLayout.addComponent(headerLayout);
             } catch (final IOException e) {
-                try {
-                    is.close();
-                } catch (final IOException closeE) {
-                    m_log.debug("failed to close HTML input stream", closeE);
-                }
-                m_log.debug("failed to get header layout data", e);
+                closeQuietly(is);
+                LOG.debug("failed to get header layout data", e);
             }
         }
     }
 
-    private void addRefresher() {
-        final Refresher refresher = new Refresher();
-        refresher.setRefreshInterval(REFRESH_INTERVAL);
-        addExtension(refresher);
+    private String getHeader(final HttpServletRequest request) throws Exception {
+        if(m_headerProvider == null) {
+            return "";
+        } else {
+            return m_headerProvider.getHeaderHtml(request);
+        }
     }
+
+    private void closeQuietly(InputStream is) {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (final IOException closeE) {
+                LOG.debug("failed to close HTML input stream", closeE);
+            }
+        }
+    }
+
+    public void setupAutoRefresher(){
+        setPollInterval(REFRESH_INTERVAL); // Pull every n seconds for view updates
+        addPollListener((UIEvents.PollListener) event -> m_nodeMapComponent.refresh());
+    }
+
+    public void refresh() {
+        m_nodeMapComponent.refresh();
+    }
+
+    public void setFocusedNodes(final List<Integer> nodeIds) {
+        m_alarmTable.selectionChanged(new SelectionChangedListener.AlarmNodeIdSelection(nodeIds));
+        m_nodeTable.selectionChanged(new SelectionChangedListener.IdSelection<Integer>(nodeIds));
+
+        m_alarmTable.refreshRowCache();
+        m_nodeTable.refreshRowCache();
+    }
+
+    @Override
+    public String toString() {
+        return "NodeMapsApplication@" + hashCode();
+    }
+
 }

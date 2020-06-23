@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.dao.util;
 
-import org.opennms.netmgt.model.events.Constants;
+import org.opennms.netmgt.events.api.EventDatabaseConstants;
 import org.opennms.netmgt.xml.event.Logmsg;
 
 /**
@@ -41,7 +41,7 @@ import org.opennms.netmgt.xml.event.Logmsg;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version $Id: $
  */
-public final class LogMessage {
+public abstract class LogMessage {
     /**
      * Format the logmsg entry
      *
@@ -50,12 +50,12 @@ public final class LogMessage {
      * @return the formatted logmsg
      */
     public static String format(Logmsg msg) {
-        String txt = Constants.escape(msg.getContent(), Constants.DB_ATTRIB_DELIM);
+        String txt = EventDatabaseConstants.escape(msg.getContent(), EventDatabaseConstants.DB_ATTRIB_DELIM);
         String log = msg.getDest();
 
-        String fmsg = txt + Constants.DB_ATTRIB_DELIM + log;
+        String fmsg = txt + EventDatabaseConstants.DB_ATTRIB_DELIM + log;
         if (fmsg.length() >= 256)
-            fmsg = fmsg.substring(0, 252) + Constants.VALUE_TRUNCATE_INDICATOR;
+            fmsg = fmsg.substring(0, 252) + EventDatabaseConstants.VALUE_TRUNCATE_INDICATOR;
 
         return fmsg;
     }

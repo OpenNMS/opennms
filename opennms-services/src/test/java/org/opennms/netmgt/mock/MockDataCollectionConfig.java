@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,20 +30,23 @@ package org.opennms.netmgt.mock;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.netmgt.collectd.SnmpCollector;
+import org.opennms.netmgt.collectd.AbstractSnmpCollector;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.config.datacollection.MibObjProperty;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.ResourceType;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
 
 public class MockDataCollectionConfig implements DataCollectionConfigDao {
     
-    public static final String initalMibObjects[][] = {
+    public static final String[][] initalMibObjects = {
         {
             "sysLocation", ".1.3.6.1.2.1.1.6", "0", "string"
         },
@@ -134,7 +137,7 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
         mibObj.setType(type);
         mibObj.setInstance(instance);
         mibObj.setGroupName("ifIndex".equals(instance) ? "interface" : "node");
-        mibObj.setGroupIfType("ifIndex".equals(instance) ? "all" : "ignored");
+        mibObj.setGroupIfType("ifIndex".equals(instance) ? AttributeGroupType.IF_TYPE_ALL : AttributeGroupType.IF_TYPE_IGNORE);
         return mibObj;
     }
     public MibObject createAttributeType(String alias, String oid, String instance, String type) {
@@ -182,7 +185,7 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
 
     @Override
     public String getSnmpStorageFlag(String collectionName) {
-        return SnmpCollector.SNMP_STORAGE_PRIMARY;
+        return AbstractSnmpCollector.SNMP_STORAGE_PRIMARY;
     }
 
     @Override
@@ -193,6 +196,11 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
     @Override
     public List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType) {
         return getAttrList();
+    }
+
+    @Override
+    public List<MibObjProperty> getMibObjProperties(String cName, String aSysoid, String anAddress) {
+        return new ArrayList<>();
     }
 
     @Override
@@ -227,6 +235,13 @@ public class MockDataCollectionConfig implements DataCollectionConfigDao {
 
     @Override
     public List<String> getAvailableMibGroups() {
+        return null;
+    }
+
+    public void reload() {
+    }
+
+    public Date getLastUpdate() {
         return null;
     }
 

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<threshd-configuration 
+   threads="5">
+   
+   <package name="thresholding-visitor-test">
+       <filter>IPADDR != '0.0.0.0'</filter>
+       <service name="SNMP" interval="300000" user-defined="false" status="on">
+           <parameter key="thresholding-group" value="netsnmp-cpu-1core"/>
+           <parameter key="thresholding-group" value="netsnmp-disk90"/>
+           <parameter key="thresholding-group" value="netsnmp-disk-relchange"/>
+           <parameter key="thresholding-group" value="netsnmp-mem8"/>
+           <parameter key="thresholding-group" value="netsnmp-swap10"/>
+       </service>
+       <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+   </package>
+
+</threshd-configuration>

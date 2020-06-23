@@ -1,23 +1,31 @@
-/**
- * *****************************************************************************
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc. OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
- * OpenNMS(R) is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with OpenNMS(R). If not, see:
- * http://www.gnu.org/licenses/
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
- * For more information contact: OpenNMS(R) Licensing <license@opennms.org> http://www.opennms.org/ http://www.opennms.com/
- * *****************************************************************************
- */
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.nrtg.web.internal;
 
 import java.util.ArrayList;
@@ -29,18 +37,25 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
-import org.opennms.netmgt.config.SnmpAgentConfigFactory;
+import org.opennms.core.utils.TimeSeries;
+import org.opennms.core.utils.TimeSeries.Strategy;
+import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.dao.api.GraphDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourceId;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.model.CollectionJob;
@@ -55,13 +70,15 @@ import org.slf4j.LoggerFactory;
  */
 public class NrtController {
 
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtController.class);
+    private static Logger logger = LoggerFactory.getLogger(NrtController.class);
     private GraphDao m_graphDao;
+    private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
+    private ResourceStorageDao m_resourceStorageDao;
     private SnmpAgentConfigFactory m_snmpAgentConfigFactory;
     private NrtBroker m_nrtBroker;
 
-    protected class MetricTuple {
+    protected static class MetricTuple {
 
         private String m_metricId;
         private String m_onmsLogicMetricId;
@@ -96,7 +113,7 @@ public class NrtController {
         }
     }
 
-    public ModelAndView nrtStart(String resourceId, String report, HttpSession httpSession) {
+    public ModelAndView nrtStart(ResourceId resourceId, String report, HttpSession httpSession) {
 
         assert (resourceId != null);
         logger.debug("resourceId: '{}'", resourceId);
@@ -108,7 +125,8 @@ public class NrtController {
 
         PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
 
-        String nrtCollectionTaskId = "NrtCollectionTaskId_" + System.currentTimeMillis();
+        String nrtCollectionTaskId = String.format("NrtCollectionTaskId_%d_%d",
+                System.currentTimeMillis(), new Random().nextInt());
 
         List<CollectionJob> collectionJobs = createCollectionJobs(reportResource, prefabGraph, nrtCollectionTaskId);
         for (CollectionJob collectionJob : collectionJobs) {
@@ -116,7 +134,7 @@ public class NrtController {
             getCollectionJobMap(httpSession, true).put(nrtCollectionTaskId, collectionJob);
         }
 
-        ModelAndView modelAndView = new ModelAndView("nrt/realtime");
+        ModelAndView modelAndView = new ModelAndView("nrt/realtime.json");
         modelAndView.addObject("nrtCollectionTaskId", nrtCollectionTaskId);
 
         modelAndView.addObject("graphTitle", prefabGraph.getTitle());
@@ -171,7 +189,7 @@ public class NrtController {
     public String getMeasurementSetsForDestination(String nrtCollectionTaskId) {
         List<MeasurementSet> measurementSets = m_nrtBroker.receiveMeasurementSets(nrtCollectionTaskId);
 
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         for (MeasurementSet measurementSet : measurementSets) {
             if (buffer.length() > 0) {
@@ -190,6 +208,7 @@ public class NrtController {
      * @param create
      * @return Map of nrtCollectionTaskId to CollectionJob
      */
+    @SuppressWarnings("unchecked") // Since this is caused by the servlet API
     private Map<String, CollectionJob> getCollectionJobMap(HttpSession httpSession, boolean create) {
         if (create && httpSession.getAttribute("NrtCollectionTasks") == null) {
             httpSession.setAttribute("NrtCollectionTasks", new HashMap<String, CollectionJob>());
@@ -204,9 +223,8 @@ public class NrtController {
 
     private List<CollectionJob> createCollectionJobs(OnmsResource reportResource, PrefabGraph prefabGraph, String nrtCollectionTaskId) {
         List<CollectionJob> collectionJobs = new ArrayList<CollectionJob>();
-
         OnmsResource nodeResource = reportResource.getParent();
-        OnmsNode node = (OnmsNode) nodeResource.getEntity();
+        OnmsNode node = m_nodeDao.get(nodeResource.getName());
         Integer nodeId = node.getId();
         Date createTimestamp = new Date();
 
@@ -222,19 +240,25 @@ public class NrtController {
         resultDestinations.add(nrtCollectionTaskId);
         //resultDestinations.add("NrtPersistMe");
 
-        for (String protocol : metricsByProtocol.keySet()) {
-            CollectionJob collectionJob = new DefaultCollectionJob();
+        for (final Map.Entry<String,List<MetricTuple>> entry : metricsByProtocol.entrySet()) {
+            final String protocol = entry.getKey();
+            final List<MetricTuple> tuples = entry.getValue();
+
+            final CollectionJob collectionJob = new DefaultCollectionJob();
             collectionJob.setService(protocol);
             collectionJob.setNodeId(nodeId);
             collectionJob.setCreationTimestamp(createTimestamp);
 
-            for (MetricTuple metricTuple : metricsByProtocol.get(protocol)) {
+            for (final MetricTuple metricTuple : tuples) {
                 collectionJob.addMetric(metricTuple.getMetricId(), resultDestinations, metricTuple.getOnmsLogicMetricId());
             }
+
             //I know....
             if (protocol.equals("SNMP") || protocol.equals("TCA")) {
                 collectionJob.setNetInterface(protocol);
-                SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress());
+                OnmsMonitoringLocation location = node.getLocation();
+                String locationName = (location == null) ? null : location.getLocationName();
+                final SnmpAgentConfig snmpAgentConfig = m_snmpAgentConfigFactory.getAgentConfig(node.getPrimaryInterface().getIpAddress(), locationName);
                 collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
                 collectionJob.setNetInterface(node.getPrimaryInterface().getIpAddress().getHostAddress());
                 collectionJobs.add(collectionJob);
@@ -288,9 +312,12 @@ public class NrtController {
 
     private Map<String, String> getRrdGraphAttributesToMetricIds(Map<String, String> onmsResourceNamesToMetaDataLines) {
         Map<String, String> rrdGraphAttributesToMetricIds = new HashMap<String, String>();
-        for (String onmsResouceName : onmsResourceNamesToMetaDataLines.keySet()) {
-            String rrdGraphAttributeName = onmsResouceName.toString().substring(onmsResouceName.lastIndexOf(".") +1);
-            rrdGraphAttributesToMetricIds.put(rrdGraphAttributeName, getMetricIdFromMetaDataLine(onmsResourceNamesToMetaDataLines.get(onmsResouceName)));
+        for (final Map.Entry<String,String> entry : onmsResourceNamesToMetaDataLines.entrySet()) {
+            final String onmsResouceName = entry.getKey();
+            final String value = entry.getValue();
+
+            final String rrdGraphAttributeName = onmsResouceName.substring(onmsResouceName.lastIndexOf('.') +1);
+            rrdGraphAttributesToMetricIds.put(rrdGraphAttributeName, getMetricIdFromMetaDataLine(value));
         }
         return rrdGraphAttributesToMetricIds;
     }
@@ -302,10 +329,30 @@ public class NrtController {
 
         //get all metaData for RrdGraphAttributes from the meta files next to the RRD/JRobin files
         for (final RrdGraphAttribute attr : rrdGraphAttributes) {
-            final String rrdRelativePath = attr.getRrdRelativePath();
-            final String rrdName = rrdRelativePath.substring(0, rrdRelativePath.lastIndexOf('.'));
+            // Convert the "relative RRD path" from the RrdGraphAttribute to a ResourcePath used
+            // by the ResourceStorageDao.
+            ResourcePath pathToMetaFile;
+            if (TimeSeries.getTimeseriesStrategy() == Strategy.NEWTS) {
+                String path = attr.getRrdRelativePath();
+                if (path.startsWith("/")) {
+                    path = path.substring(1);
+                }
+                pathToMetaFile = ResourcePath.get(path.split(":"));
+            } else {
+                final String knownExtensions[] = new String[]{".rrd", ".jrb"};
+                String metaFileNameWithoutExtension = attr.getRrdFile();
+                for (final String ext : knownExtensions) {
+                    if (metaFileNameWithoutExtension.endsWith(ext)) {
+                        metaFileNameWithoutExtension = metaFileNameWithoutExtension.substring(0,
+                                metaFileNameWithoutExtension.lastIndexOf(ext));
+                        break;
+                    }
+                }
+                pathToMetaFile = ResourcePath.get(attr.getResource().getPath(), metaFileNameWithoutExtension);
+            }
 
-            final Set<Entry<String, String>> metaDataEntrySet = RrdUtils.readMetaDataFile(m_resourceDao.getRrdDirectory().getPath(), rrdName).entrySet();
+            final Set<Entry<String, String>> metaDataEntrySet = m_resourceStorageDao.getMetaData(pathToMetaFile).entrySet();
+            logger.debug("Meta-data for attribute '{}' at path '{}' contains: {}", attr, pathToMetaFile, metaDataEntrySet);
             if (metaDataEntrySet == null) continue;
 
             final String attrName = attr.getName();
@@ -322,17 +369,15 @@ public class NrtController {
         return metaData;
     }
 
-    private final String PROTOCOLDELIMITER = "_";
-    private final String METRICID_DELIMITER = "=";
+    private static final String PROTOCOLDELIMITER = "_";
+    private static final String METRICID_DELIMITER = "=";
     
     private String getProtocolFromMetaDataLine(String metaDataLine) {
-        String protocol = metaDataLine.substring(0, metaDataLine.indexOf(PROTOCOLDELIMITER));
-        return protocol;
+        return metaDataLine.substring(0, metaDataLine.indexOf(PROTOCOLDELIMITER));
     }
 
     private String getMetricIdFromMetaDataLine(String metaDataLine) {
-        String metricId = metaDataLine.substring(metaDataLine.indexOf(PROTOCOLDELIMITER) + 1, metaDataLine.lastIndexOf(METRICID_DELIMITER));
-        return metricId;
+        return metaDataLine.substring(metaDataLine.indexOf(PROTOCOLDELIMITER) + 1, metaDataLine.lastIndexOf(METRICID_DELIMITER));
     }
 
     /**
@@ -359,6 +404,10 @@ public class NrtController {
         return metricIdsByProtocol;
     }
 
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+    
     public void setGraphDao(GraphDao graphDao) {
         m_graphDao = graphDao;
     }
@@ -377,5 +426,13 @@ public class NrtController {
 
     public void setNrtBroker(NrtBroker nrtBroker) {
         this.m_nrtBroker = nrtBroker;
+    }
+
+    public ResourceStorageDao getResourceStorageDao() {
+        return m_resourceStorageDao;
+    }
+
+    public void setResourceStorageDao(ResourceStorageDao resourceStorageDao) {
+        m_resourceStorageDao = resourceStorageDao;
     }
 }

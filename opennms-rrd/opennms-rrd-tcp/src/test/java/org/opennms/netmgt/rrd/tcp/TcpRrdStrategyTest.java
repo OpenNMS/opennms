@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -45,9 +45,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.rrd.RrdAttributeType;
 import org.opennms.netmgt.rrd.RrdDataSource;
-import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition;
 import org.opennms.test.FileAnticipator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,10 +68,11 @@ import org.python.util.PythonInterpreter;
 public class TcpRrdStrategyTest {
     private static final Logger LOG = LoggerFactory.getLogger(TcpRrdStrategyTest.class);
 
-    private RrdStrategy<Object,Object> m_strategy;
+    private QueuingTcpRrdStrategy m_strategy;
     private FileAnticipator m_fileAnticipator;
     private static Thread m_listenerThread;
-    private static String m_tempDir;
+    private static int m_listenPort;
+    private static final String RRD_EXTENSION = ".rrd";
 
     @BeforeClass
     public static void startListenerThread() throws Exception {
@@ -79,8 +80,11 @@ public class TcpRrdStrategyTest {
             @Override
             public void run() {
                 this.setName("fail");
+                ServerSocket ssocket = null;
                 try {
-                    ServerSocket ssocket = new ServerSocket(8999);
+                    ssocket = new ServerSocket(0);
+                    m_listenPort = ssocket.getLocalPort();
+                    LOG.debug("Listener thread started on port {}", m_listenPort);
                     ssocket.setSoTimeout(500);
                     while (true) {
                         try {
@@ -104,16 +108,16 @@ public class TcpRrdStrategyTest {
 
                             Socket socket = ssocket.accept();
                             PerformanceDataProtos.PerformanceDataReadings messages = PerformanceDataProtos.PerformanceDataReadings.parseFrom(socket.getInputStream());
-                            System.out.println("Number of messages in current packet: " + messages.getMessageCount());
+                            LOG.debug("Number of messages in current packet: " + messages.getMessageCount());
                             for (PerformanceDataProtos.PerformanceDataReading message : messages.getMessageList()) {
-                                StringBuffer values = new StringBuffer();
+                                final StringBuilder values = new StringBuilder();
                                 values.append("{ ");
-                                for (int i = 0; i < message.getValueCount(); i++) {
+                                for (int i = 0; i < message.getDblValueCount(); i++) {
                                     if (i != 0) { values.append(", "); }
-                                    values.append(message.getValue(i));
+                                    values.append(message.getDblValue(i));
                                 }
                                 values.append(" }");
-                                System.out.println("Message received: { " + 
+                                LOG.debug("Message received: { " + 
                                         "path: \"" + message.getPath() + "\", " + 
                                         "owner: \"" + message.getOwner() + "\", " + 
                                         "timestamp: \"" + message.getTimestamp() + "\", " + 
@@ -138,6 +142,12 @@ public class TcpRrdStrategyTest {
                     LOG.error(e.getMessage(), e);
                 } catch (Throwable e) {
                     LOG.error(e.getMessage(), e);
+                } finally {
+                    try {
+                        if (ssocket != null) ssocket.close();
+                    } catch (IOException e) {
+                        LOG.warn(e.getMessage(), e);
+                    }
                 }
             }
         };
@@ -150,10 +160,11 @@ public class TcpRrdStrategyTest {
 
         MockLogAppender.setupLogging();
 
-        m_strategy = RrdUtils.getStrategy();
-        // m_strategy = new TcpRrdStrategy();
-        // ((TcpRrdStrategy)m_strategy).setHost("127.0.0.1");
-        // ((TcpRrdStrategy)m_strategy).setPort(8999);
+        //m_strategy = RrdUtils.getStrategy();
+        TcpRrdStrategy strategy = new TcpRrdStrategy();
+        strategy.setHost("127.0.0.1");
+        strategy.setPort(m_listenPort);
+        m_strategy = new QueuingTcpRrdStrategy(strategy, 44444);
 
         // Don't initialize by default since not all tests need it.
         m_fileAnticipator = new FileAnticipator(false);
@@ -161,9 +172,11 @@ public class TcpRrdStrategyTest {
 
     @After
     public void tearDown() throws Exception {
+        /*
         if (m_fileAnticipator.isInitialized()) {
             m_fileAnticipator.deleteExpected();
         }
+        */
         m_fileAnticipator.tearDown();
     }
 
@@ -183,7 +196,7 @@ public class TcpRrdStrategyTest {
     public void testCreate() throws Exception {
         File rrdFile = createRrdFile();
 
-        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        String openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
         //m_strategy.updateFile(openedFile, "huh?", "N:1,234234");
 
         m_strategy.closeFile(openedFile);
@@ -193,7 +206,7 @@ public class TcpRrdStrategyTest {
     public void testUpdate() throws Exception {
         File rrdFile = createRrdFile();
 
-        Object openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
+        String openedFile = m_strategy.openFile(rrdFile.getAbsolutePath());
         long currentTimeInSeconds = (long)(new Date().getTime() / 100);
         m_strategy.updateFile(openedFile, "huh?", String.valueOf(currentTimeInSeconds - 9) + ":1.234234");
         m_strategy.updateFile(openedFile, "oh  ", String.valueOf(currentTimeInSeconds - 8) + ":1.234234");
@@ -211,7 +224,6 @@ public class TcpRrdStrategyTest {
 
     public File createRrdFile() throws Exception {
         String rrdFileBase = "foo";
-        String rrdExtension = RrdUtils.getExtension();
 
         m_fileAnticipator.initialize();
 
@@ -220,18 +232,17 @@ public class TcpRrdStrategyTest {
         // properties.setProperty("org.opennms.rrd.fileExtension", rrdExtension);
         // RrdConfig.getInstance().setProperties(properties);
 
-        List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>();
-        dataSources.add(new RrdDataSource("bar", "GAUGE", 3000, "U", "U"));
-        List<String> rraList = new ArrayList<String>();
+        List<RrdDataSource> dataSources = new ArrayList<>();
+        dataSources.add(new RrdDataSource("bar", RrdAttributeType.GAUGE, 3000, "U", "U"));
+        List<String> rraList = new ArrayList<>();
         rraList.add("RRA:AVERAGE:0.5:1:2016");
         File tempDir = m_fileAnticipator.getTempDir(); 
-        m_tempDir = tempDir.getAbsolutePath();
         // Create an '/rrd/snmp/1' directory in the temp directory so that the
         // RRDs created by the test will have a realistic path
         File rrdDir = m_fileAnticipator.tempDir(m_fileAnticipator.tempDir(m_fileAnticipator.tempDir(tempDir, "rrd"), "snmp"), "1");
-        Object def = m_strategy.createDefinition("hello!", rrdDir.getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
-        m_strategy.createFile(def, null);
+        RrdDefinition def = m_strategy.createDefinition("hello!", rrdDir.getAbsolutePath(), rrdFileBase, 300, dataSources, rraList);
+        m_strategy.createFile(def);
 
-        return m_fileAnticipator.expecting(rrdDir, rrdFileBase + rrdExtension);
+        return m_fileAnticipator.expecting(rrdDir, rrdFileBase + RRD_EXTENSION);
     }
 }

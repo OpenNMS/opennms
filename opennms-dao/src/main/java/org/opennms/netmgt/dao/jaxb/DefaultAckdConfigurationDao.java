@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.dao.jaxb;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -69,8 +68,8 @@ public class DefaultAckdConfigurationDao extends AbstractJaxbConfigDao<AckdConfi
 
     /** {@inheritDoc} */
     @Override
-    public AckdConfiguration translateConfig(AckdConfiguration castorConfig) {
-        return castorConfig;
+    public AckdConfiguration translateConfig(AckdConfiguration config) {
+        return config;
     }
 
     /** {@inheritDoc} */
@@ -128,7 +127,7 @@ public class DefaultAckdConfigurationDao extends AbstractJaxbConfigDao<AckdConfi
     @Override
     public Reader getReader(String readerName) {
         Reader readerByName = null;
-        List<Reader> readers = getConfig().getReaders().getReaderCollection();
+        List<Reader> readers = getConfig().getReaders();
         for (Reader reader : readers) {
             if (readerName.equals(reader.getReaderName())) {
                 readerByName = reader;
@@ -154,7 +153,7 @@ public class DefaultAckdConfigurationDao extends AbstractJaxbConfigDao<AckdConfi
         boolean enabled = false;
         Reader reader = getReader(readerName);
         if (reader != null) {
-            enabled = reader.isEnabled();
+            enabled = reader.getEnabled();
         }
         return enabled;
     }
@@ -170,29 +169,15 @@ public class DefaultAckdConfigurationDao extends AbstractJaxbConfigDao<AckdConfi
         getContainer().reload();
     }
 
-    /**
-     * <p>getEnabledReaderCount</p>
-     *
-     * @return a int.
-     */
     @Override
     public int getEnabledReaderCount() {
-        int cnt = 0;
-        Iterator<Reader> it = getConfig().getReaders().getReaderCollection().iterator();
-
-        while (it.hasNext()) {
-            Reader reader = (Reader) it.next();
-            if (reader.isEnabled()) {
-                cnt++;
-            }
-        }
-        return cnt;
+        return Long.valueOf(getConfig().getReaders().stream().filter(Reader::getEnabled).count()).intValue();
     }
 
     /** {@inheritDoc} */
     @Override
     public List<Parameter> getParametersForReader(String name) {
-        return getReader(name).getParameterCollection();
+        return getReader(name).getParameters();
     }
     
 }

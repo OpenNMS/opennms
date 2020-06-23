@@ -1,0 +1,26 @@
+
+==== Step 2: Install OpenNMS with GUI installer
+
+For _Microsoft Windows_ environments download the _standalone-opennms-installer-{ONMS-VERSION}.zip_ file from the link:http://sourceforge.net/projects/opennms/files/OpenNMS/[OpenNMS SourceForge] repository.
+Extract the downloaded _ZIP_ file.
+
+NOTE: The `{ONMS-VERSION}` has to be replaced with the latest stable version number.
+
+Start the graphical installer and follow the on screen instructions.
+The following information has to be provided:
+
+* Path to _Oracle JDK_, e.g. `C:\Program Files\Java\jdk1.8.0_71`
+* Installation path for _OpenNMS_, e.g. `C:\Program Files\OpenNMS`
+* Select packages which has to be installed, the minimum default selection is _Core_ and _Docs_
+* PostgreSQL Database connection
+** Host: Server with _PostgreSQL_ running, e.g. `localhost`
+** Name: Database name for _OpenNMS_, e.g. `opennms`
+** Port: _TCP_ port connecting to _PostgreSQL_ server, e.g. `5432`
+** Username (administrative superuser): _PostgreSQL_ superuser, e.g. `postgres`
+** Password (administrative superuser): Password given during _PostgreSQL_ setup for the superuser
+** Username (runtime user for opennms): Username to connect to the _OpenNMS_ database, e.g. `opennms`
+** Password (runtime user for opennms): Password to connect to the _OpenNMS_ database, e.g. `opennms`
+* Configure a discovery range for an initial node discovery.
+  If you don't want any discovery set begin and end to the same unreachable address.
+
+IMPORTANT: Choose secure passwords for all database users and don't use the example passwords above in production.

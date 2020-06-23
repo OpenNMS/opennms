@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.Arrays;
@@ -32,14 +33,12 @@ import java.util.List;
 
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.converter.Converter.ConversionException;
-import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.v7.data.validator.RegexpValidator;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.OptionGroup;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * The System Definition Choice Field.
@@ -108,17 +107,18 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
      */
     @Override
     protected void setInternalValue(SystemDefChoice systemDef) {
-        super.setInternalValue(systemDef); // TODO Is this required ?
         boolean oidTypeState = oidType.isReadOnly();
         oidType.setReadOnly(false);
         oidType.select(systemDef.getSysoid() == null ? MASK : SINGLE);
-        if (oidTypeState)
+        if (oidTypeState) {
             oidType.setReadOnly(true);
+        }
         boolean oidValueState = oidValue.isReadOnly();
         oidValue.setReadOnly(false);
         oidValue.setValue(systemDef.getSysoid() == null ? systemDef.getSysoidMask() : systemDef.getSysoid());
-        if (oidValueState)
+        if (oidValueState) {
             oidValue.setReadOnly(true);
+        }
     }
 
     /* (non-Javadoc)
@@ -134,23 +134,6 @@ public class SystemDefChoiceField extends CustomField<SystemDefChoice> {
             systemDef.setSysoidMask((String) oidValue.getValue());
         }
         return systemDef;
-    }
-
-    /* (non-Javadoc)
-     * @see com.vaadin.ui.AbstractField#setPropertyDataSource(com.vaadin.data.Property)
-     */
-    @Override
-    @SuppressWarnings("rawtypes")
-    public void setPropertyDataSource(Property newDataSource) {
-        Object value = newDataSource.getValue();
-        if (value instanceof SystemDefChoice) {
-            SystemDefChoice dto = (SystemDefChoice) value;
-            oidType.select(dto.getSysoid() == null ? MASK : SINGLE);
-            oidValue.setValue(dto.getSysoid() == null ? dto.getSysoidMask() : dto.getSysoid());
-        } else {
-            throw new ConversionException("Invalid type");
-        }
-        super.setPropertyDataSource(newDataSource);
     }
 
     /* (non-Javadoc)

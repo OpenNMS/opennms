@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,12 +33,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.opennms.netmgt.snmp.proxy.WalkRequest;
+import org.opennms.netmgt.snmp.proxy.WalkResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TableTracker extends CollectionTracker implements RowCallback, RowResultFactory {
-	
+
 	private static final transient Logger LOG = LoggerFactory.getLogger(TableTracker.class);
 
     private final SnmpTableResult m_tableResult;
@@ -50,15 +53,15 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
     }
     
     public TableTracker(RowCallback rc, SnmpObjId... ids) {
-        this(rc, 2, ids);
+        this(rc, 2, 0, ids);
     }
 
-    public TableTracker(RowCallback rc, int maxRepetitions, SnmpObjId... columns) {
+    public TableTracker(RowCallback rc, int maxRepetitions, int maxRetries, SnmpObjId... columns) {
         m_tableResult = new SnmpTableResult(rc == null ? this : rc, this, columns);
 
         m_columnTrackers = new ArrayList<ColumnTracker>(columns.length);
         for (SnmpObjId id : columns) {
-            m_columnTrackers.add(new ColumnTracker(this, id, maxRepetitions));
+            m_columnTrackers.add(new ColumnTracker(this, id, maxRepetitions, maxRetries));
         }
     }
 
@@ -66,6 +69,13 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
     public void setMaxRepetitions(int maxRepetitions) {
         for(ColumnTracker child : m_columnTrackers) {
             child.setMaxRepetitions(maxRepetitions);
+        }
+    }
+
+    @Override
+    public void setMaxRetries(final int maxRetries) {
+        for(final ColumnTracker child : m_columnTrackers) {
+            child.setMaxRetries(maxRetries);
         }
     }
 
@@ -85,7 +95,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
     }
 
     @Override
-    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
+    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) throws SnmpException {
         if (pduBuilder.getMaxVarsPerPdu() < 1) {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
@@ -169,13 +179,13 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
 
             rp.processResponse(responseObjId, val);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.warn("Failed to process response", e);
             }
 
         }
 
         @Override
-        public boolean processErrors(int errorStatus, int errorIndex) {
+        public boolean processErrors(int errorStatus, int errorIndex) throws SnmpException {
             
             /*
              * errorIndex is varBind index (1 based array of vars)
@@ -192,7 +202,32 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
 
     }
 
-    
-    
+    @Override
+    public List<WalkRequest> getWalkRequests() {
+        return m_columnTrackers.stream()
+                .map(c -> {
+                    WalkRequest walkRequest = new WalkRequest(c.getBase());
+                    walkRequest.setMaxRepetitions(c.getMaxRepetitions());
+                    return walkRequest;
+                })
+                .collect(Collectors.toList());
+    }
 
+    @Override
+    public void handleWalkResponses(List<WalkResponse> responses) {
+        // Store each result
+        responses.stream()
+            .flatMap(res -> res.getResults().stream())
+            .forEach(this::storeResult);
+        // Mark all of the base columns as completed
+        m_columnTrackers.stream()
+            .map(ColumnTracker::getBase)
+            .forEach(m_tableResult::columnFinished);
+        // Mark all of the column trackers as completed
+        m_columnTrackers.stream()
+            .forEach(t -> t.setFinished(true));
+        // Mark the table as completed
+        m_tableResult.tableFinished();
+            
+    }
 }

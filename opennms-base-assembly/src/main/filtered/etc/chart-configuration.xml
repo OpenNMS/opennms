@@ -1,213 +1,178 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<tns:chart-configuration xmlns:tns="http://xmlns.opennms.org/xsd/config/charts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/charts ../src/services/org/opennms/netmgt/config/chart-configuration.xsd ">
-
-  <tns:bar-chart name="sample-bar-chart" 
-  	variation="2d" 
-  	domain-axis-label="Severity" 
-  	show-legend="true" 
-  	plot-orientation="vertical" 
-  	draw-bar-outline="true" 
-  	range-axis-label="Count"
-  	sub-label-class="org.opennms.netmgt.charts.SeveritySubLabels" 
-  	show-urls="false"
-    show-tool-tips="false">
-      
-    <tns:title font="SansSerif" style="" value="Alarms" pitch="12" />
-    <tns:image-size>
-      <tns:hz-size>
-        <tns:pixels>450</tns:pixels>
-      </tns:hz-size>
-      <tns:vt-size>
-        <tns:pixels>300</tns:pixels>
-      </tns:vt-size>
-    </tns:image-size>
-    <tns:sub-title position="top" horizontal-alignment="center">
-    		<tns:title font="SansSerif" style="" value="Severity Chart" pitch="10" />
-    </tns:sub-title>
-    <tns:grid-lines visible="true">
-        <tns:rgb>
-            <tns:red>
-                <tns:rgb-color>255</tns:rgb-color>
-            </tns:red>
-            <tns:green>
-                <tns:rgb-color>255</tns:rgb-color>
-            </tns:green>
-            <tns:blue>
-                <tns:rgb-color>255</tns:rgb-color>
-            </tns:blue>
-        </tns:rgb>
-    </tns:grid-lines>
-    <tns:series-def number="1" series-name="Events" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select eventseverity, count(*) as count from events where eventseverity &gt; 4 group by eventseverity order by count desc" />
-      <tns:rgb>
-        <tns:red>
-          <tns:rgb-color>255</tns:rgb-color>
-        </tns:red>
-        <tns:green>
-          <tns:rgb-color>255</tns:rgb-color>
-        </tns:green>
-        <tns:blue>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:blue>
-      </tns:rgb>
-    </tns:series-def>
-    <tns:series-def number="2" series-name="Alarms" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select severity, count(*) as count from alarms where severity &gt; 4 group by severity order by count desc" />
-      <tns:rgb>
-        <tns:red>
-          <tns:rgb-color>255</tns:rgb-color>
-        </tns:red>
-        <tns:green>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:green>
-        <tns:blue>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:blue>
-      </tns:rgb>
-    </tns:series-def>
-  </tns:bar-chart>
-
-
-
-  <tns:bar-chart name="sample-bar-chart2" 
-  	variation="2d" 
-  	domain-axis-label="Service" 
-  	show-legend="true" 
-  	plot-orientation="vertical" 
-  	draw-bar-outline="true" 
-  	range-axis-label="Count" 
-  	show-urls="false"
-    show-tool-tips="false">
-      
-    <tns:title font="SansSerif" style="" value="Last 7 Days Outages" pitch="12" />
-    <tns:image-size>
-      <tns:hz-size>
-        <tns:pixels>450</tns:pixels>
-      </tns:hz-size>
-      <tns:vt-size>
-        <tns:pixels>300</tns:pixels>
-      </tns:vt-size>
-    </tns:image-size>
-    <tns:sub-title position="top" horizontal-alignment="center">
-    		<tns:title font="SansSerif" style="" value="Outages Chart" pitch="10" />
-    </tns:sub-title>
-    <tns:grid-lines visible="true">
-        <tns:rgb>
-            <tns:red>
-                <tns:rgb-color>255</tns:rgb-color>
-            </tns:red>
-            <tns:green>
-                <tns:rgb-color>255</tns:rgb-color>
-            </tns:green>
-            <tns:blue>
-                <tns:rgb-color>255</tns:rgb-color>
-            </tns:blue>
-        </tns:rgb>
-    </tns:grid-lines>
-    <tns:series-def number="1" series-name="Current" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service where outages.serviceid=service.serviceid and ifregainedservice is NULL and iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;" />
-      <tns:rgb>
-        <tns:red>
-          <tns:rgb-color>255</tns:rgb-color>
-        </tns:red>
-        <tns:green>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:green>
-        <tns:blue>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:blue>
-      </tns:rgb>
-    </tns:series-def>
-    <tns:series-def number="2" series-name="Resolved" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service where outages.serviceid=service.serviceid and ifregainedservice is NOT NULL and iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;" />
-      <tns:rgb>
-        <tns:red>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:red>
-        <tns:green>
-          <tns:rgb-color>255</tns:rgb-color>
-        </tns:green>
-        <tns:blue>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:blue>
-      </tns:rgb>
-    </tns:series-def>
-  </tns:bar-chart>
-
-  <tns:bar-chart name="sample-bar-chart3" 
-  	variation="2d" 
-  	domain-axis-label="Nodes/Interfaces/Services" 
-  	show-legend="true" 
-  	plot-orientation="vertical" 
-  	draw-bar-outline="true" 
-  	range-axis-label="Count"
-  	show-urls="false"
-    show-tool-tips="false">
-      
-    <tns:title font="SansSerif" style="" value="Node Inventory" pitch="12" />
-    <tns:image-size>
-      <tns:hz-size>
-        <tns:pixels>450</tns:pixels>
-      </tns:hz-size>
-      <tns:vt-size>
-        <tns:pixels>300</tns:pixels>
-      </tns:vt-size>
-    </tns:image-size>
-    <tns:grid-lines visible="true">
-        <tns:rgb>
-            <tns:red>
-                <tns:rgb-color>255</tns:rgb-color>
-            </tns:red>
-            <tns:green>
-                <tns:rgb-color>255</tns:rgb-color>
-            </tns:green>
-            <tns:blue>
-                <tns:rgb-color>255</tns:rgb-color>
-            </tns:blue>
-        </tns:rgb>
-    </tns:grid-lines>
-    <tns:series-def number="1" series-name="Nodes" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select 'Nodes', count(*) from node" />
-      <tns:rgb>
-        <tns:red>
-          <tns:rgb-color>255</tns:rgb-color>
-        </tns:red>
-        <tns:green>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:green>
-        <tns:blue>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:blue>
-      </tns:rgb>
-    </tns:series-def>
-    <tns:series-def number="2" series-name="Interfaces" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select 'Interfaces', count(*) from ipinterface" />
-      <tns:rgb>
-        <tns:red>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:red>
-        <tns:green>
-          <tns:rgb-color>255</tns:rgb-color>
-        </tns:green>
-        <tns:blue>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:blue>
-      </tns:rgb>
-    </tns:series-def>
-    <tns:series-def number="3" series-name="Services" use-labels="true" >
-	  <tns:jdbc-data-set db-name="opennms" sql="select 'Services', count(*) from ifservices" />
-      <tns:rgb>
-        <tns:red>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:red>
-        <tns:green>
-          <tns:rgb-color>0</tns:rgb-color>
-        </tns:green>
-        <tns:blue>
-          <tns:rgb-color>255</tns:rgb-color>
-        </tns:blue>
-      </tns:rgb>
-    </tns:series-def>
-  </tns:bar-chart>
-
-</tns:chart-configuration>
+<chart-configuration xmlns="http://xmlns.opennms.org/xsd/config/charts">
+   <bar-chart name="sample-bar-chart" domain-axis-label="Severity" range-axis-label="Count" sub-label-class="org.opennms.web.charts.SeveritySubLabels" draw-bar-outline="true" show-legend="true" show-tool-tips="false" show-urls="false" variation="2d" plot-orientation="vertical">
+      <title value="Alarms" font="SansSerif" pitch="12" style=""/>
+      <image-size>
+         <hz-size>
+            <pixels>450</pixels>
+         </hz-size>
+         <vt-size>
+            <pixels>300</pixels>
+         </vt-size>
+      </image-size>
+      <sub-title position="top" horizontal-alignment="center">
+         <title value="Severity Chart" font="SansSerif" pitch="10" style=""/>
+      </sub-title>
+      <grid-lines visible="true">
+         <rgb>
+            <red>
+               <rgb-color>255</rgb-color>
+            </red>
+            <green>
+               <rgb-color>255</rgb-color>
+            </green>
+            <blue>
+               <rgb-color>255</rgb-color>
+            </blue>
+         </rgb>
+      </grid-lines>
+      <series-def number="1" series-name="Events" use-labels="true">
+         <jdbc-data-set db-name="opennms" sql="select eventseverity, count(*) as count from events where eventseverity > 4 group by eventseverity order by count desc"/>
+         <rgb>
+            <red>
+               <rgb-color>255</rgb-color>
+            </red>
+            <green>
+               <rgb-color>255</rgb-color>
+            </green>
+            <blue>
+               <rgb-color>0</rgb-color>
+            </blue>
+         </rgb>
+      </series-def>
+      <series-def number="2" series-name="Alarms" use-labels="true">
+         <jdbc-data-set db-name="opennms" sql="select severity, count(*) as count from alarms where severity > 4 group by severity order by count desc"/>
+         <rgb>
+            <red>
+               <rgb-color>255</rgb-color>
+            </red>
+            <green>
+               <rgb-color>0</rgb-color>
+            </green>
+            <blue>
+               <rgb-color>0</rgb-color>
+            </blue>
+         </rgb>
+      </series-def>
+   </bar-chart>
+   <bar-chart name="sample-bar-chart2" domain-axis-label="Service" range-axis-label="Count" draw-bar-outline="true" show-legend="true" show-tool-tips="false" show-urls="false" variation="2d" plot-orientation="vertical">
+      <title value="Last 7 Days Outages" font="SansSerif" pitch="12" style=""/>
+      <image-size>
+         <hz-size>
+            <pixels>450</pixels>
+         </hz-size>
+         <vt-size>
+            <pixels>300</pixels>
+         </vt-size>
+      </image-size>
+      <sub-title position="top" horizontal-alignment="center">
+         <title value="Outages Chart" font="SansSerif" pitch="10" style=""/>
+      </sub-title>
+      <grid-lines visible="true">
+         <rgb>
+            <red>
+               <rgb-color>255</rgb-color>
+            </red>
+            <green>
+               <rgb-color>255</rgb-color>
+            </green>
+            <blue>
+               <rgb-color>255</rgb-color>
+            </blue>
+         </rgb>
+      </grid-lines>
+      <series-def number="1" series-name="Current" use-labels="true">
+         <jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service, ifservices where service.serviceid = ifservices.serviceid and outages.ifserviceid = ifservices.id and outages.ifregainedservice is NULL and outages.iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;"/>
+         <rgb>
+            <red>
+               <rgb-color>255</rgb-color>
+            </red>
+            <green>
+               <rgb-color>0</rgb-color>
+            </green>
+            <blue>
+               <rgb-color>0</rgb-color>
+            </blue>
+         </rgb>
+      </series-def>
+      <series-def number="2" series-name="Resolved" use-labels="true">
+         <jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service, ifservices where service.serviceid = ifservices.serviceid and outages.ifserviceid = ifservices.id and outages.ifregainedservice is NOT NULL and outages.iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;"/>
+         <rgb>
+            <red>
+               <rgb-color>0</rgb-color>
+            </red>
+            <green>
+               <rgb-color>255</rgb-color>
+            </green>
+            <blue>
+               <rgb-color>0</rgb-color>
+            </blue>
+         </rgb>
+      </series-def>
+   </bar-chart>
+   <bar-chart name="sample-bar-chart3" domain-axis-label="Nodes/Interfaces/Services" range-axis-label="Count" draw-bar-outline="true" show-legend="true" show-tool-tips="false" show-urls="false" variation="2d" plot-orientation="vertical">
+      <title value="Node Inventory" font="SansSerif" pitch="12" style=""/>
+      <image-size>
+         <hz-size>
+            <pixels>450</pixels>
+         </hz-size>
+         <vt-size>
+            <pixels>300</pixels>
+         </vt-size>
+      </image-size>
+      <grid-lines visible="true">
+         <rgb>
+            <red>
+               <rgb-color>255</rgb-color>
+            </red>
+            <green>
+               <rgb-color>255</rgb-color>
+            </green>
+            <blue>
+               <rgb-color>255</rgb-color>
+            </blue>
+         </rgb>
+      </grid-lines>
+      <series-def number="1" series-name="Nodes" use-labels="true">
+         <jdbc-data-set db-name="opennms" sql="select 'Nodes', count(*) from node"/>
+         <rgb>
+            <red>
+               <rgb-color>255</rgb-color>
+            </red>
+            <green>
+               <rgb-color>0</rgb-color>
+            </green>
+            <blue>
+               <rgb-color>0</rgb-color>
+            </blue>
+         </rgb>
+      </series-def>
+      <series-def number="2" series-name="Interfaces" use-labels="true">
+         <jdbc-data-set db-name="opennms" sql="select 'Interfaces', count(*) from ipinterface"/>
+         <rgb>
+            <red>
+               <rgb-color>0</rgb-color>
+            </red>
+            <green>
+               <rgb-color>255</rgb-color>
+            </green>
+            <blue>
+               <rgb-color>0</rgb-color>
+            </blue>
+         </rgb>
+      </series-def>
+      <series-def number="3" series-name="Services" use-labels="true">
+         <jdbc-data-set db-name="opennms" sql="select 'Services', count(*) from ifservices"/>
+         <rgb>
+            <red>
+               <rgb-color>0</rgb-color>
+            </red>
+            <green>
+               <rgb-color>0</rgb-color>
+            </green>
+            <blue>
+               <rgb-color>255</rgb-color>
+            </blue>
+         </rgb>
+      </series-def>
+   </bar-chart>
+</chart-configuration>

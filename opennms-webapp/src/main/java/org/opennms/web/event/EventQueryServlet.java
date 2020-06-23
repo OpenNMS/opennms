@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -46,12 +46,18 @@ import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.api.Util;
 import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.BeforeDateFilter;
+import org.opennms.web.event.filter.EventIdFilter;
+import org.opennms.web.event.filter.EventTextFilter;
+import org.opennms.web.event.filter.ExactUEIFilter;
 import org.opennms.web.event.filter.IPAddrLikeFilter;
+import org.opennms.web.event.filter.LocationFilter;
 import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
 import org.opennms.web.event.filter.LogMessageSubstringFilter;
+import org.opennms.web.event.filter.NodeLocationFilter;
 import org.opennms.web.event.filter.NodeNameLikeFilter;
 import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
+import org.opennms.web.event.filter.SystemIdFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.servlet.MissingParameterException;
 
@@ -62,10 +68,6 @@ import org.opennms.web.servlet.MissingParameterException;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class EventQueryServlet extends HttpServlet {
     /**
@@ -77,7 +79,7 @@ public class EventQueryServlet extends HttpServlet {
      * The list of parameters that are extracted by this servlet and not passed
      * on to the servlet.
      */
-    protected static String[] IGNORE_LIST = new String[] { "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
+    protected static String[] IGNORE_LIST = new String[] { "eventid", "eventtext", "msgsub", "msgmatchany", "nodenamelike", "exactuei", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear" };
 
     /**
      * The URL for the servlet. The
@@ -109,7 +111,14 @@ public class EventQueryServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Filter> filterArray = new ArrayList<Filter>();
+        List<Filter> filterArray = new ArrayList<>();
+
+
+        // convenient syntax for EventTextFilter
+        String eventTextString = WebSecurityUtils.sanitizeString(request.getParameter("eventtext"));
+        if (eventTextString != null && eventTextString.length() > 0) {
+            filterArray.add(new EventTextFilter(eventTextString));
+        }
 
         // convenient syntax for LogMessageSubstringFilter
         String msgSubstring = WebSecurityUtils.sanitizeString(request.getParameter("msgsub"));
@@ -127,6 +136,30 @@ public class EventQueryServlet extends HttpServlet {
         String nodeNameLike = WebSecurityUtils.sanitizeString(request.getParameter("nodenamelike"));
         if (nodeNameLike != null && nodeNameLike.length() > 0) {
             filterArray.add(new NodeNameLikeFilter(nodeNameLike));
+        }
+
+        // convenient syntax for ExactUEIFilter
+        String exactUEI = WebSecurityUtils.sanitizeString(request.getParameter("exactuei"));
+        if (exactUEI != null && exactUEI.length() > 0) {
+            filterArray.add(new ExactUEIFilter(exactUEI));
+        }
+
+        // convenient syntax for LocationFilter
+        String location = WebSecurityUtils.sanitizeString(request.getParameter("location"));
+        if (location != null && !location.equalsIgnoreCase("any")) {
+            filterArray.add(new LocationFilter(WebSecurityUtils.sanitizeString(location)));
+        }
+
+        // convenient syntax for NodeLocationFilter
+        String nodeLocation = WebSecurityUtils.sanitizeString(request.getParameter("nodelocation"));
+        if (nodeLocation != null && !nodeLocation.equalsIgnoreCase("any")) {
+            filterArray.add(new NodeLocationFilter(WebSecurityUtils.sanitizeString(nodeLocation)));
+        }
+
+        // convenient syntax for SystemIdFilter
+        String systemId = WebSecurityUtils.sanitizeString(request.getParameter("systemId"));
+        if (systemId != null && !systemId.equalsIgnoreCase("any")) {
+            filterArray.add(new SystemIdFilter(WebSecurityUtils.sanitizeString(systemId)));
         }
 
         // convenient syntax for ServiceFilter
@@ -147,14 +180,25 @@ public class EventQueryServlet extends HttpServlet {
             filterArray.add(new SeverityFilter(WebSecurityUtils.safeParseInt(severity)));
         }
 
+        String eventId = WebSecurityUtils.sanitizeString(request.getParameter("eventid"));
+        if (eventId != null && !"".equals(eventId)) {
+            int eventIdInt = WebSecurityUtils.safeParseInt(eventId);
+            if (eventIdInt > 0) {
+                filterArray.add(new EventIdFilter(eventIdInt));
+            }
+        }
+
         // convenient syntax for AfterDateFilter as relative to current time
         String relativeTime = WebSecurityUtils.sanitizeString(request.getParameter("relativetime"));
         if (relativeTime != null && !relativeTime.equalsIgnoreCase("any")) {
-            try {
-                filterArray.add(EventUtil.getRelativeTimeFilter(WebSecurityUtils.safeParseInt(relativeTime)));
-            } catch (IllegalArgumentException e) {
-                // ignore the relative time if it is an illegal value
-                this.log("Illegal relativetime value", e);
+            int timeInt = WebSecurityUtils.safeParseInt(relativeTime);
+            if (timeInt > 0) {
+                try {
+                    filterArray.add(EventUtil.getRelativeTimeFilter(timeInt));
+                } catch (IllegalArgumentException e) {
+                    // ignore the relative time if it is an illegal value
+                    this.log("Illegal relativetime value", e);
+                }
             }
         }
 
@@ -195,9 +239,9 @@ public class EventQueryServlet extends HttpServlet {
             Map<String, Object> paramAdditions = new HashMap<String, Object>();
             paramAdditions.put("filter", filterStrings);
 
-            queryString = WebSecurityUtils.sanitizeString(Util.makeQueryString(request, paramAdditions, IGNORE_LIST));
+            queryString = Util.makeQueryString(request, paramAdditions, IGNORE_LIST);
         } else {
-            queryString = WebSecurityUtils.sanitizeString(Util.makeQueryString(request, IGNORE_LIST));
+            queryString = Util.makeQueryString(request, IGNORE_LIST);
         }
 
         response.sendRedirect(redirectUrl + "?" + queryString);
@@ -310,5 +354,4 @@ public class EventQueryServlet extends HttpServlet {
     protected String[] getRequiredDateFields(String prefix) {
         return new String[] { prefix + "hour", prefix + "minute", prefix + "ampm", prefix + "date", prefix + "month", prefix + "year" };
     }
-
 }

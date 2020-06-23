@@ -1,0 +1,8 @@
+#-----------------------------------------------------------------
+# Use this file to add customized Bnd instructions for the bundle
+#-----------------------------------------------------------------
+
+# Package format version - do not change
+Embed-Dependency: jung*|collections-generic|org.apache.commons
+Embed-Transitive: true
+Import-Package: !com.sun.jdi.*,*

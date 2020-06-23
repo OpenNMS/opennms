@@ -1,0 +1,2390 @@
+# The set of evaluator tests
+
+#######################################################
+# basic literals
+Expression: ${1}
+ExpectedType: int
+Evaluates to: 1
+With type: java.lang.Integer
+
+Expression: ${-12}
+ExpectedType: int
+Evaluates to: -12
+With type: java.lang.Integer
+
+Expression: ${true}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${false}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${null}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${4.2}
+ExpectedType: double
+Evaluates to: 4.2
+With type: java.lang.Double
+
+Expression: ${-21.3}
+ExpectedType: float
+Evaluates to: -21.3
+With type: java.lang.Float
+
+Expression: ${4.}
+ExpectedType: float
+Evaluates to: 4.0
+With type: java.lang.Float
+
+Expression: ${.21}
+ExpectedType: float
+Evaluates to: 0.21
+With type: java.lang.Float
+
+Expression: ${3e-1}
+ExpectedType: double
+Evaluates to: 0.3
+With type: java.lang.Double
+
+Expression: ${.2222222222}
+ExpectedType: double
+Evaluates to: 0.2222222222
+With type: java.lang.Double
+
+
+
+#######################################################
+# basic relationals between literals
+
+Expression: ${1 < 2}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${1 > 2}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${1 >= 2}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${1 <= 2}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${1 == 2}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${1 != 2}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${3 >= 3}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${3 <= 3}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${3 == 3}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${3 < 3}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${3 > 3}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${3 != 3}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+
+
+#######################################################
+# relationals between booleans
+
+Expression: ${false < true}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${false < true}": Attempt to apply operator "<" to arguments of type "java.lang.Boolean" and "java.lang.Boolean"
+With type: javax.servlet.jsp.JspException
+
+Expression: ${false > true}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${false > true}": Attempt to apply operator ">" to arguments of type "java.lang.Boolean" and "java.lang.Boolean"
+With type: javax.servlet.jsp.JspException
+
+Expression: ${true >= true}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${true <= true}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${true == true}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${true != true}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+
+#######################################################
+# looking up objects in scopes
+
+# val1a - defined in page scope
+Expression: ${pageScope.val1a}
+ExpectedType: class java.lang.String
+Evaluates to: page-scoped1
+With type: java.lang.String
+
+Expression: ${requestScope.val1a}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${sessionScope.val1a}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${applicationScope.val1a}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${val1a}
+ExpectedType: class java.lang.String
+Evaluates to: page-scoped1
+With type: java.lang.String
+
+
+# val1b - defined in request scope
+Expression: ${pageScope.val1b}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${requestScope.val1b}
+ExpectedType: class java.lang.String
+Evaluates to: request-scoped1
+With type: java.lang.String
+
+Expression: ${sessionScope.val1b}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${applicationScope.val1b}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${val1b}
+ExpectedType: class java.lang.String
+Evaluates to: request-scoped1
+With type: java.lang.String
+
+
+# val1c - defined in session scope
+Expression: ${pageScope.val1c}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${requestScope.val1c}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${sessionScope.val1c}
+ExpectedType: class java.lang.String
+Evaluates to: session-scoped1
+With type: java.lang.String
+
+Expression: ${applicationScope.val1c}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${val1c}
+ExpectedType: class java.lang.String
+Evaluates to: session-scoped1
+With type: java.lang.String
+
+
+# val1d - defined in application scope
+Expression: ${pageScope.val1d}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${requestScope.val1d}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${sessionScope.val1d}
+ExpectedType: class java.lang.String
+Evaluates to: 
+With type: java.lang.String
+
+Expression: ${applicationScope.val1d}
+ExpectedType: class java.lang.String
+Evaluates to: app-scoped1
+With type: java.lang.String
+
+Expression: ${val1d}
+ExpectedType: class java.lang.String
+Evaluates to: app-scoped1
+With type: java.lang.String
+
+
+#######################################################
+# accessing properties
+
+Expression: ${bean1a.int1}
+ExpectedType: int
+Evaluates to: 4
+With type: java.lang.Integer
+
+Expression: ${bean1a.boolean1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.string1}
+ExpectedType: class java.lang.String
+Evaluates to: hello
+With type: java.lang.String
+
+Expression: ${bean1a.bean1.int2}
+ExpectedType: int
+Evaluates to: -224
+With type: java.lang.Integer
+
+Expression: ${bean1a.bean1.bean2.string2}
+ExpectedType: class java.lang.String
+Evaluates to: bean3's string
+With type: java.lang.String
+
+
+#######################################################
+# test the entire conversion matrix
+
+Expression: ${bean1a.byte1}
+ExpectedType: byte
+Evaluates to: 12
+With type: java.lang.Byte
+
+Expression: ${bean1a.byte1}
+ExpectedType: char
+Evaluates to: 
+With type: java.lang.Character
+
+Expression: ${bean1a.byte1}
+ExpectedType: short
+Evaluates to: 12
+With type: java.lang.Short
+
+Expression: ${bean1a.byte1}
+ExpectedType: int
+Evaluates to: 12
+With type: java.lang.Integer
+
+Expression: ${bean1a.byte1}
+ExpectedType: long
+Evaluates to: 12
+With type: java.lang.Long
+
+Expression: ${bean1a.byte1}
+ExpectedType: float
+Evaluates to: 12.0
+With type: java.lang.Float
+
+Expression: ${bean1a.byte1}
+ExpectedType: double
+Evaluates to: 12.0
+With type: java.lang.Double
+
+
+Expression: ${bean1a.char1}
+ExpectedType: byte
+Evaluates to: 98
+With type: java.lang.Byte
+
+Expression: ${bean1a.char1}
+ExpectedType: char
+Evaluates to: b
+With type: java.lang.Character
+
+Expression: ${bean1a.char1}
+ExpectedType: short
+Evaluates to: 98
+With type: java.lang.Short
+
+Expression: ${bean1a.char1}
+ExpectedType: int
+Evaluates to: 98
+With type: java.lang.Integer
+
+Expression: ${bean1a.char1}
+ExpectedType: long
+Evaluates to: 98
+With type: java.lang.Long
+
+Expression: ${bean1a.char1}
+ExpectedType: float
+Evaluates to: 98.0
+With type: java.lang.Float
+
+Expression: ${bean1a.char1}
+ExpectedType: double
+Evaluates to: 98.0
+With type: java.lang.Double
+
+
+Expression: ${bean1a.short1}
+ExpectedType: byte
+Evaluates to: -124
+With type: java.lang.Byte
+
+Expression: ${bean1a.short1}
+ExpectedType: char
+Evaluates to: ?
+With type: java.lang.Character
+
+Expression: ${bean1a.short1}
+ExpectedType: short
+Evaluates to: -124
+With type: java.lang.Short
+
+Expression: ${bean1a.short1}
+ExpectedType: int
+Evaluates to: -124
+With type: java.lang.Integer
+
+Expression: ${bean1a.short1}
+ExpectedType: long
+Evaluates to: -124
+With type: java.lang.Long
+
+Expression: ${bean1a.short1}
+ExpectedType: float
+Evaluates to: -124.0
+With type: java.lang.Float
+
+Expression: ${bean1a.short1}
+ExpectedType: double
+Evaluates to: -124.0
+With type: java.lang.Double
+
+
+Expression: ${bean1a.int1}
+ExpectedType: byte
+Evaluates to: 4
+With type: java.lang.Byte
+
+Expression: ${bean1a.int1}
+ExpectedType: char
+Evaluates to: 
+With type: java.lang.Character
+
+Expression: ${bean1a.int1}
+ExpectedType: short
+Evaluates to: 4
+With type: java.lang.Short
+
+Expression: ${bean1a.int1}
+ExpectedType: int
+Evaluates to: 4
+With type: java.lang.Integer
+
+Expression: ${bean1a.int1}
+ExpectedType: long
+Evaluates to: 4
+With type: java.lang.Long
+
+Expression: ${bean1a.int1}
+ExpectedType: float
+Evaluates to: 4.0
+With type: java.lang.Float
+
+Expression: ${bean1a.int1}
+ExpectedType: double
+Evaluates to: 4.0
+With type: java.lang.Double
+
+
+Expression: ${bean1a.long1}
+ExpectedType: byte
+Evaluates to: -41
+With type: java.lang.Byte
+
+Expression: ${bean1a.long1}
+ExpectedType: char
+Evaluates to: ?
+With type: java.lang.Character
+
+Expression: ${bean1a.long1}
+ExpectedType: short
+Evaluates to: 25815
+With type: java.lang.Short
+
+Expression: ${bean1a.long1}
+ExpectedType: int
+Evaluates to: 222423
+With type: java.lang.Integer
+
+Expression: ${bean1a.long1}
+ExpectedType: long
+Evaluates to: 222423
+With type: java.lang.Long
+
+Expression: ${bean1a.long1}
+ExpectedType: float
+Evaluates to: 222423.0
+With type: java.lang.Float
+
+Expression: ${bean1a.long1}
+ExpectedType: double
+Evaluates to: 222423.0
+With type: java.lang.Double
+
+
+Expression: ${bean1a.float1}
+ExpectedType: byte
+Evaluates to: 12
+With type: java.lang.Byte
+
+Expression: ${bean1a.float1}
+ExpectedType: char
+Evaluates to: 
+With type: java.lang.Character
+
+Expression: ${bean1a.float1}
+ExpectedType: short
+Evaluates to: 12
+With type: java.lang.Short
+
+Expression: ${bean1a.float1}
+ExpectedType: int
+Evaluates to: 12
+With type: java.lang.Integer
+
+Expression: ${bean1a.float1}
+ExpectedType: long
+Evaluates to: 12
+With type: java.lang.Long
+
+Expression: ${bean1a.float1}
+ExpectedType: float
+Evaluates to: 12.4
+With type: java.lang.Float
+
+Expression: ${bean1a.float1}
+ExpectedType: double
+Evaluates to: 12.399999618530273
+With type: java.lang.Double
+
+
+Expression: ${bean1a.double1}
+ExpectedType: byte
+Evaluates to: 89
+With type: java.lang.Byte
+
+Expression: ${bean1a.double1}
+ExpectedType: char
+Evaluates to: Y
+With type: java.lang.Character
+
+Expression: ${bean1a.double1}
+ExpectedType: short
+Evaluates to: 89
+With type: java.lang.Short
+
+Expression: ${bean1a.double1}
+ExpectedType: int
+Evaluates to: 89
+With type: java.lang.Integer
+
+Expression: ${bean1a.double1}
+ExpectedType: long
+Evaluates to: 89
+With type: java.lang.Long
+
+Expression: ${bean1a.double1}
+ExpectedType: float
+Evaluates to: 89.224
+With type: java.lang.Float
+
+Expression: ${bean1a.double1}
+ExpectedType: double
+Evaluates to: 89.224
+With type: java.lang.Double
+
+
+#######################################################
+# test the entire relational comparison type promotion matrix
+
+Expression: ${bean1a.byte1 < bean1a.byte1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.byte1 < bean1a.char1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.byte1 < bean1a.short1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.byte1 < bean1a.int1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.byte1 < bean1a.long1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.byte1 < bean1a.float1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.byte1 < bean1a.double1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+
+Expression: ${bean1a.char1 < bean1a.byte1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.char1 < bean1a.char1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.char1 < bean1a.short1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.char1 < bean1a.int1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.char1 < bean1a.long1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.char1 < bean1a.float1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.char1 < bean1a.double1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+
+Expression: ${bean1a.short1 < bean1a.byte1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.short1 < bean1a.char1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.short1 < bean1a.short1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.short1 < bean1a.int1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.short1 < bean1a.long1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.short1 < bean1a.float1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.short1 < bean1a.double1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+
+Expression: ${bean1a.int1 < bean1a.byte1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.int1 < bean1a.char1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.int1 < bean1a.short1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.int1 < bean1a.int1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.int1 < bean1a.long1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.int1 < bean1a.float1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.int1 < bean1a.double1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+
+Expression: ${bean1a.long1 < bean1a.byte1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.long1 < bean1a.char1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.long1 < bean1a.short1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.long1 < bean1a.int1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.long1 < bean1a.long1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.long1 < bean1a.float1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.long1 < bean1a.double1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+
+Expression: ${bean1a.float1 < bean1a.byte1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.float1 < bean1a.char1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.float1 < bean1a.short1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.float1 < bean1a.int1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.float1 < bean1a.long1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.float1 < bean1a.float1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.float1 < bean1a.double1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+
+Expression: ${bean1a.double1 < bean1a.byte1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.double1 < bean1a.char1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.double1 < bean1a.short1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.double1 < bean1a.int1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.double1 < bean1a.long1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.double1 < bean1a.float1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.double1 < bean1a.double1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+
+#######################################################
+# test other relational comparison rules
+
+Expression: ${null == null}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${noSuchAttribute == noSuchAttribute}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${noSuchAttribute == null}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${null == noSuchAttribute}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a == null}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${null == bean1a}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a == bean1a}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a > "hello"}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.bean1 < 14}
+ExpectedType: boolean
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.bean1 < 14}": Attempt to coerce a value of type "org.apache.taglibs.standard.lang.jstl.test.Bean1" to type "java.lang.Long"
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.bean1 == "hello"}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+
+#######################################################
+# test String comparisons
+
+Expression: ${bean1a.string1 == "hello"}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.string1 != "hello"}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.string1 == "goodbye"}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${bean1a.string1 != "goodbye"}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${bean1a.string1 > "goodbye"}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${"hello" == bean1a.string1}
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${"goodbye" > bean1a.string1}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+
+#######################################################
+# test errors in property traversal
+
+Expression: ${noSuchAttribute.abc}
+ExpectedType: class java.lang.Object
+Evaluates to: null
+
+Expression: ${bean1a.bean2.byte1}
+ExpectedType: class java.lang.Object
+Evaluates to: null
+
+Expression: ${bean1a.noProperty}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.noProperty}": Unable to find a value for "noProperty" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.noGetter}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.noGetter}": Unable to find a value for "noGetter" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.errorInGetter}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.errorInGetter}": An error occurred while getting property "errorInGetter" from an instance of class org.apache.taglibs.standard.lang.jstl.test.Bean1
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.bean2.string2}
+ExpectedType: class java.lang.Object
+Evaluates to: null
+
+
+#######################################################
+# test accessing public properties from private classes
+
+Expression: ${pbean1.value}
+ExpectedType: class java.lang.Object
+Evaluates to: got the value
+With type: java.lang.String
+
+Expression: ${pbean2.value}
+ExpectedType: class java.lang.Object
+Evaluates to: got the value
+With type: java.lang.String
+
+Expression: ${pbean3.value}
+ExpectedType: class java.lang.Object
+Evaluates to: got the value
+With type: java.lang.String
+
+Expression: ${pbean4.value}
+ExpectedType: class java.lang.Object
+Evaluates to: got the value
+With type: java.lang.String
+
+Expression: ${pbean5.value}
+ExpectedType: class java.lang.Object
+Evaluates to: got the value
+With type: java.lang.String
+
+Expression: ${pbean6.value}
+ExpectedType: class java.lang.Object
+Evaluates to: got the value
+With type: java.lang.String
+
+Expression: ${pbean7.value}
+ExpectedType: class java.lang.Object
+Evaluates to: got the value
+With type: java.lang.String
+
+
+#######################################################
+# test literal conversions
+
+Expression: true
+ExpectedType: boolean
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: false
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: 12
+ExpectedType: byte
+Evaluates to: 12
+With type: java.lang.Byte
+
+Expression: 12
+ExpectedType: char
+Evaluates to: 1
+With type: java.lang.Character
+
+Expression: 12
+ExpectedType: short
+Evaluates to: 12
+With type: java.lang.Short
+
+Expression: 12
+ExpectedType: int
+Evaluates to: 12
+With type: java.lang.Integer
+
+Expression: 12
+ExpectedType: long
+Evaluates to: 12
+With type: java.lang.Long
+
+Expression: 12
+ExpectedType: float
+Evaluates to: 12.0
+With type: java.lang.Float
+
+Expression: 12
+ExpectedType: double
+Evaluates to: 12.0
+With type: java.lang.Double
+
+
+Expression: hello
+ExpectedType: class org.apache.taglibs.standard.lang.jstl.test.Bean2
+Evaluates to: Bean2[hello]
+With type: org.apache.taglibs.standard.lang.jstl.test.Bean2
+
+Expression: badvalue
+ExpectedType: class org.apache.taglibs.standard.lang.jstl.test.Bean2
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "badvalue": Unable to parse value "badvalue" into expected type "org.apache.taglibs.standard.lang.jstl.test.Bean2"
+With type: javax.servlet.jsp.JspException
+
+Expression: hello
+ExpectedType: class org.apache.taglibs.standard.lang.jstl.test.Bean1
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "hello": Attempt to convert String "hello" to type "org.apache.taglibs.standard.lang.jstl.test.Bean1", but there is no PropertyEditor for that type
+With type: javax.servlet.jsp.JspException
+
+
+#######################################################
+# test null values bumped up to constants
+
+Expression: ${null}
+ExpectedType: boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${null}
+ExpectedType: byte
+Evaluates to: 0
+With type: java.lang.Byte
+
+Expression: ${null}
+ExpectedType: short
+Evaluates to: 0
+With type: java.lang.Short
+
+Expression: ${null}
+ExpectedType: char
+Evaluates to: 
+With type: java.lang.Character
+
+Expression: ${null}
+ExpectedType: int
+Evaluates to: 0
+With type: java.lang.Integer
+
+Expression: ${null}
+ExpectedType: long
+Evaluates to: 0
+With type: java.lang.Long
+
+Expression: ${null}
+ExpectedType: float
+Evaluates to: 0.0
+With type: java.lang.Float
+
+Expression: ${null}
+ExpectedType: double
+Evaluates to: 0.0
+With type: java.lang.Double
+
+Expression: ${null}
+ExpectedType: class java.lang.Boolean
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${null}
+ExpectedType: class java.lang.Byte
+Evaluates to: 0
+With type: java.lang.Byte
+
+Expression: ${null}
+ExpectedType: class java.lang.Short
+Evaluates to: 0
+With type: java.lang.Short
+
+Expression: ${null}
+ExpectedType: class java.lang.Character
+Evaluates to: 
+With type: java.lang.Character
+
+Expression: ${null}
+ExpectedType: class java.lang.Integer
+Evaluates to: 0
+With type: java.lang.Integer
+
+Expression: ${null}
+ExpectedType: class java.lang.Long
+Evaluates to: 0
+With type: java.lang.Long
+
+Expression: ${null}
+ExpectedType: class java.lang.Float
+Evaluates to: 0.0
+With type: java.lang.Float
+
+Expression: ${null}
+ExpectedType: class java.lang.Double
+Evaluates to: 0.0
+With type: java.lang.Double
+
+
+
+#######################################################
+# test reserved words as identifiers
+
+Expression: ${and}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${and}": Encountered "and", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${or}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${or}": Encountered "or", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${not}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${not}": Encountered "}", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${eq}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${eq}": Encountered "eq", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${ne}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${ne}": Encountered "ne", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${lt}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${lt}": Encountered "lt", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${gt}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${gt}": Encountered "gt", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${le}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${le}": Encountered "le", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${ge}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${ge}": Encountered "ge", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${instanceof}
+ExpectedType: class java.lang.Object
+Evaluates to: null
+
+Expression: ${true}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${false}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${null}
+ExpectedType: class java.lang.Object
+Evaluates to: null
+
+
+
+#######################################################
+# test reserved words as property names
+
+Expression: ${bean1a.and}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.and}": Encountered "and", expected one of [<IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.or}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.or}": Encountered "or", expected one of [<IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.not}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.not}": Encountered "not", expected one of [<IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.eq}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.eq}": Encountered "eq", expected one of [<IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.ne}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.ne}": Encountered "ne", expected one of [<IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.lt}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.lt}": Encountered "lt", expected one of [<IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.gt}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.gt}": Encountered "gt", expected one of [<IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.le}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.le}": Encountered "le", expected one of [<IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.ge}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.ge}": Encountered "ge", expected one of [<IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.instanceof}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.instanceof}": Unable to find a value for "instanceof" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.page}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.page}": Unable to find a value for "page" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.request}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.request}": Unable to find a value for "request" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.session}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.session}": Unable to find a value for "session" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.application}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.application}": Unable to find a value for "application" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.true}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.true}": Encountered "true", expected one of [<IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.false}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.false}": Encountered "false", expected one of [<IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+Expression: ${bean1a.null}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${bean1a.null}": Encountered "null", expected one of [<IDENTIFIER>]
+With type: javax.servlet.jsp.JspException
+
+
+#######################################################
+# test arithmetic
+
+Expression: ${3+5}
+ExpectedType: class java.lang.Object
+Evaluates to: 8
+With type: java.lang.Long
+
+Expression: ${3-5}
+ExpectedType: class java.lang.Object
+Evaluates to: -2
+With type: java.lang.Long
+
+Expression: ${3/5}
+ExpectedType: class java.lang.Object
+Evaluates to: 0.6
+With type: java.lang.Double
+
+Expression: ${3*5}
+ExpectedType: class java.lang.Object
+Evaluates to: 15
+With type: java.lang.Long
+
+Expression: ${3*5.0}
+ExpectedType: class java.lang.Object
+Evaluates to: 15.0
+With type: java.lang.Double
+
+Expression: ${3.0*5}
+ExpectedType: class java.lang.Object
+Evaluates to: 15.0
+With type: java.lang.Double
+
+Expression: ${3.0*5.0}
+ExpectedType: class java.lang.Object
+Evaluates to: 15.0
+With type: java.lang.Double
+
+Expression: ${225 % 17}
+ExpectedType: class java.lang.Object
+Evaluates to: 4
+With type: java.lang.Long
+
+
+Expression: ${ 1 + 2 + 3 * 5 + 6}
+ExpectedType: class java.lang.Object
+Evaluates to: 24
+With type: java.lang.Long
+
+Expression: ${ 1 + (2 + 3) * 5 + 6}
+ExpectedType: class java.lang.Object
+Evaluates to: 32
+With type: java.lang.Long
+
+
+#######################################################
+# test logical operators
+
+Expression: ${ true}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ not true}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ not false}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ not not true}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ not not false}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ true and false}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ true and true}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ false and true}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ false and false}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ true or false}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ true or true}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ false or true}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ false or false}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+
+Expression: ${ false or false or false or true and false}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ false or false or false or true and false or true}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+
+#######################################################
+# test indexed access operator
+
+# Test as equivalent to property accessor
+Expression: ${ bean1a["double1"] }
+ExpectedType: class java.lang.Object
+Evaluates to: 89.224
+With type: java.lang.Double
+
+Expression: ${ bean1a["double1"].class }
+ExpectedType: class java.lang.Object
+Evaluates to: class java.lang.Double
+With type: java.lang.Class
+
+
+# Test as array accessor
+Expression: ${ bean1a.stringArray1[-1]}
+ExpectedType: class java.lang.Object
+Evaluates to: null
+
+Expression: ${ bean1a.stringArray1[0]}
+ExpectedType: class java.lang.Object
+Evaluates to: string1
+With type: java.lang.String
+
+Expression: ${ bean1a.stringArray1[1]}
+ExpectedType: class java.lang.Object
+Evaluates to: string2
+With type: java.lang.String
+
+Expression: ${ bean1a.stringArray1[2]}
+ExpectedType: class java.lang.Object
+Evaluates to: string3
+With type: java.lang.String
+
+Expression: ${ bean1a.stringArray1[3]}
+ExpectedType: class java.lang.Object
+Evaluates to: string4
+With type: java.lang.String
+
+Expression: ${ bean1a.stringArray1[4]}
+ExpectedType: class java.lang.Object
+Evaluates to: null
+
+
+# Test as list accessor
+Expression: ${ bean1a.list1 [0] }
+ExpectedType: class java.lang.Object
+Evaluates to: 14
+With type: java.lang.Integer
+
+Expression: ${ bean1a.list1 [1] }
+ExpectedType: class java.lang.Object
+Evaluates to: another value
+With type: java.lang.String
+
+Expression: ${ bean1a.list1 [2][2] }
+ExpectedType: class java.lang.Object
+Evaluates to: string3
+With type: java.lang.String
+
+
+# Test as indexed property accessor
+Expression: ${ bean1a.indexed1[-1]}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${ bean1a.indexed1[-1]}": Unable to find a value for "indexed1" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+Expression: ${ bean1a.indexed1[0]}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${ bean1a.indexed1[0]}": Unable to find a value for "indexed1" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+Expression: ${ bean1a.indexed1[1]}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${ bean1a.indexed1[1]}": Unable to find a value for "indexed1" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+Expression: ${ bean1a.indexed1[2]}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${ bean1a.indexed1[2]}": Unable to find a value for "indexed1" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+Expression: ${ bean1a.indexed1[3]}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${ bean1a.indexed1[3]}": Unable to find a value for "indexed1" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+Expression: ${ bean1a.indexed1[4]}
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${ bean1a.indexed1[4]}": Unable to find a value for "indexed1" in object of class "org.apache.taglibs.standard.lang.jstl.test.Bean1" using operator "."
+With type: javax.servlet.jsp.JspException
+
+
+# Test as map accessor
+Expression: ${ bean1a.map1.key1 }
+ExpectedType: class java.lang.Object
+Evaluates to: value1
+With type: java.lang.String
+
+Expression: ${ bean1a.map1 ["key1"] }
+ExpectedType: class java.lang.Object
+Evaluates to: value1
+With type: java.lang.String
+
+Expression: ${ bean1a.map1 [14] }
+ExpectedType: class java.lang.Object
+Evaluates to: value3
+With type: java.lang.String
+
+Expression: ${ bean1a.map1 [2 * 7] }
+ExpectedType: class java.lang.Object
+Evaluates to: value3
+With type: java.lang.String
+
+Expression: ${ bean1a.map1.recurse.list1[0] }
+ExpectedType: class java.lang.Object
+Evaluates to: 14
+With type: java.lang.Integer
+
+
+#######################################################
+# test String concatenation
+
+Expression: ${ "a" + "bcd" }
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${ "a" + "bcd" }": An exception occured trying to convert String "a" to type "java.lang.Long"
+With type: javax.servlet.jsp.JspException
+
+Expression: ${ "a" + (4*3) }
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${ "a" + (4*3) }": An exception occured trying to convert String "a" to type "java.lang.Long"
+With type: javax.servlet.jsp.JspException
+
+Expression: ${ bean1a.map1 ["key" + (5-4)] }
+ExpectedType: class java.lang.Object
+Evaluates to: javax.servlet.jsp.JspException: An error occurred while evaluating custom action attribute "test" with value "${ bean1a.map1 ["key" + (5-4)] }": An exception occured trying to convert String "key" to type "java.lang.Double"
+With type: javax.servlet.jsp.JspException
+
+
+#######################################################
+# test String comparisons
+
+Expression: ${ "30" < "4" }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ 30 < "4" }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ 30 > "4" }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ "0004" == "4" }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+
+#######################################################
+# test relational comparison with alternate symbols
+
+Expression: ${ 4 eq 3}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ 4 ne 3}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ 4 eq 4}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ 4 ne 4}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ 4 lt 3}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ 4 gt 3}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ 4 le 3}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ 4 ge 3}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ 4 le 4}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ 4 ge 4}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+
+#######################################################
+# test expressions on the left side of a value suffix
+
+Expression: ${(3).class}
+ExpectedType: class java.lang.Object
+Evaluates to: class java.lang.Long
+With type: java.lang.Class
+
+Expression: ${(bean1a.map1)["key1"]}
+ExpectedType: class java.lang.Object
+Evaluates to: value1
+With type: java.lang.String
+
+
+
+#######################################################
+# test String/boolean logical operators
+
+Expression: ${'true' and false}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${'true' or true}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${false and 'true'}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${false or 'true'}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+
+#######################################################
+# test empty operator
+
+Expression: ${ empty "A"}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ empty "" }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ empty null }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ empty false}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ empty 0}
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ not empty 0}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ not empty empty 0}
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ empty emptyTests.emptyArray }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ empty emptyTests.nonemptyArray }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ empty emptyTests.emptyList }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ empty emptyTests.nonemptyList }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ empty emptyTests.emptyMap }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ empty emptyTests.nonemptyMap }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ empty emptyTests.emptySet }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ empty emptyTests.nonemptySet }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+
+#######################################################
+# test String arithmetic
+
+Expression: ${ "6" / "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 2.0
+With type: java.lang.Double
+
+Expression: ${ 3 + "4" }
+ExpectedType: class java.lang.Object
+Evaluates to: 7
+With type: java.lang.Long
+
+Expression: ${ "4" + 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 7
+With type: java.lang.Long
+
+Expression: ${ 3 + "4.5" }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.5
+With type: java.lang.Double
+
+Expression: ${ "4.5" + 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.5
+With type: java.lang.Double
+
+Expression: ${ 3.0 + 6.0}
+ExpectedType: class java.lang.Object
+Evaluates to: 9.0
+With type: java.lang.Double
+
+Expression: ${ 31121.0 * 61553.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.915590913E9
+With type: java.lang.Double
+
+Expression: ${ 31121 * 61553 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1915590913
+With type: java.lang.Long
+
+Expression: ${ 65536 * 65536 * 65536 * 32759 }
+ExpectedType: class java.lang.Object
+Evaluates to: 9220838762064379904
+With type: java.lang.Long
+
+Expression: ${ 9220838762064379904.0 - 9220838762064379900.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 0.0
+With type: java.lang.Double
+
+Expression: ${ 9220838762064379904 - 9220838762064379900 }
+ExpectedType: class java.lang.Object
+Evaluates to: 4
+With type: java.lang.Long
+
+
+#######################################################
+# test relational operators involving null
+
+Expression: ${ null == null }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ null != null }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ null > null }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ null < null }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ null >= null }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ null <= null }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+
+Expression: ${ null == 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ null != 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ null > 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ null < 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ null >= 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ null <= 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+
+Expression: ${ 3 == null }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ 3 != null }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ 3 > null }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ 3 < null }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ 3 >= null }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ 3 <= null }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+
+Expression: ${ null == "" }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ null != "" }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+Expression: ${ "" == null }
+ExpectedType: class java.lang.Object
+Evaluates to: false
+With type: java.lang.Boolean
+
+Expression: ${ "" != null }
+ExpectedType: class java.lang.Object
+Evaluates to: true
+With type: java.lang.Boolean
+
+
+#######################################################
+# arithmetic operators involving Strings
+
+Expression: ${ 4 + 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 7
+With type: java.lang.Long
+
+Expression: ${ 4.0 + 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.0
+With type: java.lang.Double
+
+Expression: ${ 4 + 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.0
+With type: java.lang.Double
+
+Expression: ${ 4.0 + 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.0
+With type: java.lang.Double
+
+Expression: ${ "4" + 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 7
+With type: java.lang.Long
+
+Expression: ${ "4.0" + 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.0
+With type: java.lang.Double
+
+Expression: ${ "4" + 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.0
+With type: java.lang.Double
+
+Expression: ${ "4.0" + 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.0
+With type: java.lang.Double
+
+Expression: ${ 4 + "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 7
+With type: java.lang.Long
+
+Expression: ${ 4.0 + "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.0
+With type: java.lang.Double
+
+Expression: ${ 4 + "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.0
+With type: java.lang.Double
+
+Expression: ${ 4.0 + "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.0
+With type: java.lang.Double
+
+Expression: ${ "4" + "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 7
+With type: java.lang.Long
+
+Expression: ${ "4.0" + "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.0
+With type: java.lang.Double
+
+Expression: ${ "4" + "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.0
+With type: java.lang.Double
+
+Expression: ${ "4.0" + "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 7.0
+With type: java.lang.Double
+
+
+
+Expression: ${ 4 - 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1
+With type: java.lang.Long
+
+Expression: ${ 4.0 - 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ 4 - 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ 4.0 - 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ "4" - 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1
+With type: java.lang.Long
+
+Expression: ${ "4.0" - 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ "4" - 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ "4.0" - 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ 4 - "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1
+With type: java.lang.Long
+
+Expression: ${ 4.0 - "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ 4 - "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ 4.0 - "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ "4" - "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1
+With type: java.lang.Long
+
+Expression: ${ "4.0" - "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ "4" - "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ "4.0" - "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+
+
+Expression: ${ 4 * 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 12
+With type: java.lang.Long
+
+Expression: ${ 4.0 * 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 12.0
+With type: java.lang.Double
+
+Expression: ${ 4 * 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 12.0
+With type: java.lang.Double
+
+Expression: ${ 4.0 * 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 12.0
+With type: java.lang.Double
+
+Expression: ${ "4" * 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 12
+With type: java.lang.Long
+
+Expression: ${ "4.0" * 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 12.0
+With type: java.lang.Double
+
+Expression: ${ "4" * 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 12.0
+With type: java.lang.Double
+
+Expression: ${ "4.0" * 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 12.0
+With type: java.lang.Double
+
+Expression: ${ 4 * "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 12
+With type: java.lang.Long
+
+Expression: ${ 4.0 * "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 12.0
+With type: java.lang.Double
+
+Expression: ${ 4 * "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 12.0
+With type: java.lang.Double
+
+Expression: ${ 4.0 * "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 12.0
+With type: java.lang.Double
+
+Expression: ${ "4" * "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 12
+With type: java.lang.Long
+
+Expression: ${ "4.0" * "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 12.0
+With type: java.lang.Double
+
+Expression: ${ "4" * "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 12.0
+With type: java.lang.Double
+
+Expression: ${ "4.0" * "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 12.0
+With type: java.lang.Double
+
+
+
+Expression: ${ 4 / 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ 4.0 / 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ 4 / 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ 4.0 / 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ "4" / 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ "4.0" / 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ "4" / 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ "4.0" / 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ 4 / "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ 4.0 / "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ 4 / "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ 4.0 / "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ "4" / "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ "4.0" / "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ "4" / "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+Expression: ${ "4.0" / "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.3333333333333333
+With type: java.lang.Double
+
+
+
+Expression: ${ 4 % 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1
+With type: java.lang.Long
+
+Expression: ${ 4.0 % 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ 4 % 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ 4.0 % 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ "4" % 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1
+With type: java.lang.Long
+
+Expression: ${ "4.0" % 3 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ "4" % 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ "4.0" % 3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ 4 % "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1
+With type: java.lang.Long
+
+Expression: ${ 4.0 % "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ 4 % "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ 4.0 % "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ "4" % "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1
+With type: java.lang.Long
+
+Expression: ${ "4.0" % "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ "4" % "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+Expression: ${ "4.0" % "3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: 1.0
+With type: java.lang.Double
+
+
+
+Expression: ${ "8" / "2" }
+ExpectedType: class java.lang.Object
+Evaluates to: 4.0
+With type: java.lang.Double
+
+Expression: ${ "4e2" + "3" }
+ExpectedType: class java.lang.Object
+Evaluates to: 403.0
+With type: java.lang.Double
+
+Expression: ${ "4" + "3e2" }
+ExpectedType: class java.lang.Object
+Evaluates to: 304.0
+With type: java.lang.Double
+
+Expression: ${ "4e2" + "3e2" }
+ExpectedType: class java.lang.Object
+Evaluates to: 700.0
+With type: java.lang.Double
+
+
+
+#######################################################
+# unary minus operator involving Strings
+
+Expression: ${ -3 }
+ExpectedType: class java.lang.Object
+Evaluates to: -3
+With type: java.lang.Long
+
+Expression: ${ -3.0 }
+ExpectedType: class java.lang.Object
+Evaluates to: -3.0
+With type: java.lang.Double
+
+Expression: ${ -"3" }
+ExpectedType: class java.lang.Object
+Evaluates to: -3
+With type: java.lang.Long
+
+Expression: ${ -"3.0" }
+ExpectedType: class java.lang.Object
+Evaluates to: -3.0
+With type: java.lang.Double
+
+Expression: ${ -"3e2" }
+ExpectedType: class java.lang.Object
+Evaluates to: -300.0
+With type: java.lang.Double
+

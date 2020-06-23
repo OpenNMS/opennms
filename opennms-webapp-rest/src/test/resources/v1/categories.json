@@ -1,0 +1,37 @@
+{
+    "category": [
+        {
+            "authorizedGroups": [], 
+            "id": 1, 
+            "name": "Routers"
+        }, 
+        {
+            "authorizedGroups": [], 
+            "id": 2, 
+            "name": "Switches"
+        }, 
+        {
+            "authorizedGroups": [], 
+            "id": 3, 
+            "name": "Servers"
+        }, 
+        {
+            "authorizedGroups": [], 
+            "id": 4, 
+            "name": "Production"
+        }, 
+        {
+            "authorizedGroups": [], 
+            "id": 5, 
+            "name": "Test"
+        }, 
+        {
+            "authorizedGroups": [], 
+            "id": 6, 
+            "name": "Development"
+        } 
+    ], 
+    "count": 6, 
+    "offset": 0, 
+    "totalCount": 6
+}

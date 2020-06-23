@@ -1,0 +1,54 @@
+
+==== Step 4: Configure Sentinel to communicate with {opennms-product-name}
+
+.Login to the Karaf Shell on the system where your _Sentinel_ is installed with SSH
+[source, shell]
+----
+ssh -p 8301 admin@localhost
+----
+
+.Configure the Sentinel's location and endpoint URLs for communication with {opennms-product-name}
+[source]
+----
+[root@localhost /root]# $ ssh -p 8201 admin@localhost
+...
+admin@sentinel()> config:edit org.opennms.sentinel.controller
+admin@sentinel()> config:property-set location Office-Pittsboro
+admin@sentinel()> config:property-set http-url http://opennms-fqdn:8980/opennms
+admin@sentinel()> config:property-set broker-url failover:tcp://opennms-fqdn:61616
+admin@sentinel()> config:update
+----
+
+TIP:    Include the `failover:` portion of the broker URL to allow the _Sentinel_ to re-establish connectivity on failure.
+        For a reference on the different URL formats, see http://activemq.apache.org/uri-protocols.html[ActiveMQ URI Protocols].
+
+NOTE:   Even if the id, location and http-url must be set the same ways as for _Minion_, this may change in future
+        versions of _Sentinel_.
+
+.Configure the credentials to use when communicating with {opennms-product-name}
+[source]
+----
+admin@sentinel()> scv:set opennms.http minion minion
+admin@sentinel()> scv:set opennms.broker minion minion
+----
+Username and password is explicitly set to `minion` as it is assumed that they share the same credentials and roles.
+
+
+TIP: Another way to configure credentials is to use the `scvcli` utility in your _Sentinel_ `bin` directory.
+
+.Example of configuring credentials with the command line utility `scvcli`
+[source,subs="attributes"]
+----
+[root@localhost /root]# $ cd /opt/sentinel
+[root@localhost {sentinel-home}]# $ ./bin/scvcli set opennms.http minion minion
+[root@localhost {sentinel-home}]# $ ./bin/scvcli set opennms.broker minion minion
+----
+
+.Restart the Sentinel after updating the credentials
+[source]
+----
+[root@localhost /root]# $ systemctl restart sentinel
+----
+
+NOTE: The credentials are configured separately since they are encrypted on disk.
+

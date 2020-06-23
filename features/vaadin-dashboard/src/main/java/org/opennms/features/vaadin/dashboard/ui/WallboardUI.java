@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,18 +25,25 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.ui;
+
+import com.google.common.base.Strings;
+import org.opennms.features.vaadin.dashboard.config.DashletSelector;
+import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
+import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
+import org.opennms.features.vaadin.dashboard.model.Wallboard;
+import org.opennms.features.vaadin.dashboard.ui.dashboard.DashboardView;
+import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardView;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.dashboard.config.DashletSelector;
-import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
-import org.opennms.features.vaadin.dashboard.ui.dashboard.DashboardView;
-import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardView;
+import com.vaadin.v7.data.util.BeanItemContainer;
 
 /**
  * The wallboard application's "main" class
@@ -46,7 +53,7 @@ import org.opennms.features.vaadin.dashboard.ui.wallboard.WallboardView;
  */
 @SuppressWarnings("serial")
 @Theme("dashboard")
-@Title("OpenNMS Dashboard")
+@Title("OpenNMS Ops Board")
 public class WallboardUI extends UI implements DashletSelectorAccess {
     /**
      * The {@link DashletSelector} for querying configuration data
@@ -81,12 +88,13 @@ public class WallboardUI extends UI implements DashletSelectorAccess {
         VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSizeFull();
         rootLayout.setSpacing(true);
+        rootLayout.setMargin(false);
         HeaderLayout headerLayout = new HeaderLayout();
         rootLayout.addComponent(headerLayout);
 
         VerticalLayout portalWrapper = new VerticalLayout();
         portalWrapper.setSizeFull();
-        portalWrapper.setMargin(true);
+        portalWrapper.setMargin(false);
 
         rootLayout.addComponent(portalWrapper);
         rootLayout.setExpandRatio(portalWrapper, 1);
@@ -97,6 +105,29 @@ public class WallboardUI extends UI implements DashletSelectorAccess {
         navigator.addView("dashboard", DashboardView.class);
         navigator.addView("wallboard", WallboardView.class);
 
-        navigator.navigateTo("wallboard");
+        navigator.addViewChangeListener(new ViewChangeListener() {
+            @Override
+            public void afterViewChange(ViewChangeEvent viewChangeEvent) {
+                headerLayout.setWallboard(viewChangeEvent.getParameters());
+            }
+
+            @Override
+            public boolean beforeViewChange(ViewChangeEvent viewChangeEvent) {
+                return true;
+            }
+        });
+
+        BeanItemContainer<Wallboard> beanItemContainer = WallboardProvider.getInstance().getBeanContainer();
+
+        if (Strings.isNullOrEmpty(navigator.getState())) {
+            navigator.navigateTo("wallboard");
+
+            for (Wallboard wallboard : beanItemContainer.getItemIds()) {
+                if (wallboard.isDefault()) {
+                    headerLayout.gotoWallboard(wallboard);
+                    break;
+                }
+            }
+        }
     }
 }

@@ -1,0 +1,64 @@
+{
+  "took": 789,
+  "timed_out": false,
+  "_shards": {
+    "total": 5,
+    "successful": 5,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": 1,
+    "max_score": 0.0,
+    "hits": []
+  },
+  "aggregations": {
+    "alarms_by_id": {
+      "after_key": {
+        "alarm_id": 1
+      },
+      "buckets": [{
+        "key": {
+          "alarm_id": 1
+        },
+        "doc_count": 1,
+        "latest_alarm": {
+          "hits": {
+            "total": 1,
+            "max_score": null,
+            "hits": [{
+              "_index": "opennms-alarms-1970-01",
+              "_type": "alarm",
+              "_id": "HcsLj2cBX4bJUQHomMHP",
+              "_score": null,
+              "_source": {
+                "@first_event_time": 1,
+                "@last_event_time": 1,
+                "@update_time": 1,
+                "@version": 1,
+                "id": 1,
+                "reduction_key": "1",
+                "counter": 1,
+                "severity_id": 1,
+                "severity_label": "INDETERMINATE",
+                "last_event": {
+                  "id": 1
+                },
+                "attributes": {},
+                "related_alarm_ids": [],
+                "related_alarm_reduction_keys": [],
+                "situation": false,
+                "archived": false
+              },
+              "sort": [1]
+            }]
+          }
+        },
+        "any_deletes": {
+          "value": 0.0,
+          "value_as_string": "0"
+        }
+      }]
+    }
+  }
+}

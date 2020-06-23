@@ -1,63 +1,164 @@
-<?xml version="1.0"?>
-<?castor class-name="org.opennms.netmgt.collectd.CollectdConfiguration"?>
-<collectd-configuration 
-	threads="50">
-
-	<package name="example1">
-		<filter>catincMonitor_SNMP</filter>	 
-	    <include-range begin="1.1.1.1" end="254.254.254.254"/>
-		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
-		
-		<service name="SNMP" interval="900000" user-defined="false" status="on">
-			<parameter key="collection" value="default"/>
-			<parameter key="thresholding-enabled" value="true"/>
-		</service>
-
-		<service name="WMI" interval="900000" user-defined="false" status="off">
-			<parameter key="collection" value="default"/>
-			<parameter key="thresholding-enabled" value="true"/>
-		</service>
-
-
-
-		<service name="OpenNMS-JVM" interval="900000" user-defined="false" status="on">
-			<parameter key="port" value="18980"/>
-			<parameter key="retry" value="2"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="protocol" value="rmi"/>
-			<parameter key="urlPath" value="/jmxrmi"/>
-			<parameter key="rrd-base-name" value="java" />
-			<parameter key="ds-name" value="opennms-jvm"/>
-			<parameter key="friendly-name" value="opennms-jvm"/>
-			<parameter key="collection" value="jsr160"/>
-			<parameter key="thresholding-enabled" value="true"/>
-		</service>
-	</package>
-	<package name="TCA">
-		<filter>catincMonitor_TCA</filter>	 
-		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-		<include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
-
-        	<service name="TCA" interval="900000" user-defined="false" status="on">
-            		<parameter key="collection" value="default"/>
-            		<parameter key="thresholding-enabled" value="true"/>
-        	</service>
-		
-	</package>
-	
-    <package name="ejn">
-        <filter>IPADDR != '0.0.0.0'</filter>
-        <include-range begin="1.1.1.1" end="254.254.254.254"/>
-
-        <service name="SNMP" interval="180000" user-defined="false" status="on">
-            <parameter key="collection" value="ejn"/>
-            <parameter key="thresholding-enabled" value="true"/>
-        </service>
-    </package>
-    
-	<collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
-	<collector service="WMI"  class-name="org.opennms.netmgt.collectd.WmiCollector"/>
-	<collector service="OpenNMS-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
-    <collector service="TCA"  class-name="org.opennms.netmgt.collectd.tca.TcaCollector"/>
+<collectd-configuration xmlns="http://xmlns.opennms.org/xsd/config/collectd" threads="50">
+   <package name="cassandra-via-jmx" remote="false">
+      <filter>IPADDR != '0.0.0.0'</filter>
+      <service name="JMX-Cassandra" interval="300000" user-defined="false" status="on">
+         <parameter key="port" value="7199"/>
+         <parameter key="retry" value="2"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="protocol" value="rmi"/>
+         <parameter key="urlPath" value="/jmxrmi"/>
+         <parameter key="collection" value="jmx-cassandra30x"/>
+         <parameter key="friendly-name" value="cassandra"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="factory" value="PASSWORD-CLEAR"/>
+         <parameter key="username" value="cassandra-username"/>
+         <parameter key="password" value="cassandra-password"/>
+      </service>
+      <service name="JMX-Cassandra-Newts" interval="300000" user-defined="false" status="on">
+         <parameter key="port" value="7199"/>
+         <parameter key="retry" value="2"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="protocol" value="rmi"/>
+         <parameter key="urlPath" value="/jmxrmi"/>
+         <parameter key="collection" value="jmx-cassandra30x-newts"/>
+         <parameter key="friendly-name" value="cassandra-newts"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="factory" value="PASSWORD-CLEAR"/>
+         <parameter key="username" value="cassandra-username"/>
+         <parameter key="password" value="cassandra-password"/>
+      </service>
+   </package>
+   <package name="vmware3" remote="false">
+      <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware3')</filter>
+      <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-VirtualMachine3"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-HostSystem3"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-ESX-HostSystem"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+   </package>
+   <package name="vmware4" remote="false">
+      <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware4')</filter>
+      <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-VirtualMachine4"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-HostSystem4"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-ESX-HostSystem"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+   </package>
+   <package name="vmware5" remote="false">
+      <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware5')</filter>
+      <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-VirtualMachine5"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-HostSystem5"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-ESX-HostSystem"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+   </package>
+   <package name="vmware6" remote="false">
+      <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware6')</filter>
+      <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-VirtualMachine6"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-HostSystem6"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default-ESX-HostSystem"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+   </package>
+   <package name="example1" remote="false">
+      <filter>IPADDR != '0.0.0.0'</filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254"/>
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+      <service name="SNMP" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="WMI" interval="300000" user-defined="false" status="off">
+         <parameter key="collection" value="default"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="WS-Man" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="default"/>
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+      <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
+         <parameter key="port" value="18980"/>
+         <parameter key="retry" value="2"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="rrd-base-name" value="java"/>
+         <parameter key="collection" value="jsr160"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="ds-name" value="opennms-jvm"/>
+         <parameter key="friendly-name" value="opennms-jvm"/>
+      </service>
+      <service name="JMX-Minion" interval="300000" user-defined="false" status="on">
+         <parameter key="port" value="18980"/>
+         <parameter key="retry" value="2"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="rrd-base-name" value="java"/>
+         <parameter key="collection" value="jmx-minion"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="ds-name" value="jmx-minion"/>
+         <parameter key="friendly-name" value="jmx-minion"/>
+         <parameter key="use-foreign-id-as-system-id" value="true"/>
+      </service>
+      <service name="JMX-Kafka" interval="300000" user-defined="false" status="on">
+         <parameter key="port" value="9999"/>
+         <parameter key="retry" value="2"/>
+         <parameter key="timeout" value="3000"/>
+         <parameter key="rrd-base-name" value="java"/>
+         <parameter key="collection" value="jmx-kafka"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="ds-name" value="jmx-kafka"/>
+         <parameter key="friendly-name" value="jmx-kafka"/>
+      </service>
+      <service name="PostgreSQL" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="PostgreSQL"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="driver" value="org.postgresql.Driver"/>
+         <parameter key="user" value="postgres"/>
+         <parameter key="password" value="postgres"/>
+         <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
+      </service>
+      <service name="Elasticsearch" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="xml-elasticsearch-cluster-stats"/>
+         <parameter key="handler-class" value="org.opennms.protocols.json.collector.DefaultJsonCollectionHandler"/>
+      </service>
+   </package>
+   <collector service="Elasticsearch" class-name="org.opennms.protocols.xml.collector.XmlCollector"/>
+   <collector service="PostgreSQL" class-name="org.opennms.netmgt.collectd.JdbcCollector"/>
+   <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
+   <collector service="WMI" class-name="org.opennms.netmgt.collectd.WmiCollector"/>
+   <collector service="WS-Man" class-name="org.opennms.netmgt.collectd.WsManCollector"/>
+   <collector service="VMware-VirtualMachine" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
+   <collector service="VMware-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
+   <collector service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCimCollector"/>
+   <collector service="OpenNMS-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+   <collector service="JMX-Minion" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+   <collector service="JMX-Cassandra" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+   <collector service="JMX-Cassandra-Newts" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+   <collector service="JMX-Kafka" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
 </collectd-configuration>
-

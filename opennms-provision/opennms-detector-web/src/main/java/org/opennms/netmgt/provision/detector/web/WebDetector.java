@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,17 +35,16 @@ import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ResponseValidator;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>WebDetector class.</p>
  *
  * @author Alejandro Galue <agalue@opennms.org>
+ * @author <A HREF="mailto:cliles@capario.com">Chris Liles</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     private static final String DEFAULT_SERVICE_NAME = "WEB";
@@ -75,6 +74,12 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
     private String responseRange = "100-399";
     
     private String schema = "http";
+
+    private String queryString;
+
+    private boolean useSSLFilter = false;
+
+    private boolean useSystemProxy = false;
 
     /**
      * Default constructor
@@ -117,16 +122,19 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     @Override
     protected Client<WebRequest, WebResponse> getClient() {
-        final WebClient client = new WebClient();
+        final WebClient client = new WebClient(isUseSSLFilter());
+
         client.setPath(getPath());
         client.setSchema(getSchema());
         client.setUserAgent(getUserAgent());
-        client.setVirtualHost(getVirtualHost(), getPort());
+        client.setVirtualHost(getVirtualHost());
+        client.setQueryString(getQueryString());
         client.setUseHttpV1(isUseHttpV1());
         if (isAuthEnabled()) {
             client.setAuth(getAuthUser(), getAuthPassword());
             client.setAuthPreemtive(isAuthPreemtive());
         }
+        client.setUseSystemProxy(getUseSystemProxy());
         return client;
     }
 
@@ -160,6 +168,22 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     public void setVirtualHost(String virtualHost) {
         this.virtualHost = virtualHost;
+    }
+
+    public String getQueryString() {
+        return queryString;
+    }
+
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
+
+    public boolean isUseSSLFilter() {
+        return useSSLFilter;
+    }
+
+    public void setUseSSLFilter(boolean useSSLFilter) {
+        this.useSSLFilter = useSSLFilter;
     }
 
     public boolean isUseHttpV1() {
@@ -224,6 +248,14 @@ public class WebDetector extends BasicDetector<WebRequest, WebResponse> {
 
     public void setResponseRange(String responseRange) {
         this.responseRange = responseRange;
+    }
+
+    public void setUseSystemProxy(boolean useSystemProxy){
+        this.useSystemProxy = useSystemProxy;
+    }
+
+    public boolean getUseSystemProxy(){
+        return this.useSystemProxy;
     }
 
 }

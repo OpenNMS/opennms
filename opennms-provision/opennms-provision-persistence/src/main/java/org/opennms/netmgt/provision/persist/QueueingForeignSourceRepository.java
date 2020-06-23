@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -47,9 +47,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 public class QueueingForeignSourceRepository implements ForeignSourceRepository, InitializingBean {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(QueueingForeignSourceRepository.class);
-    
+
     private final ConcurrentMap<String,Requisition> m_pendingRequisitions     = new ConcurrentHashMap<String,Requisition>();
     private final ConcurrentMap<String,ForeignSource> m_pendingForeignSources = new ConcurrentHashMap<String,ForeignSource>();
     ForeignSourceRepository m_repository = null;
@@ -88,7 +88,7 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
     public ForeignSourceRepository getForeignSourceRepository() {
         return m_repository;
     }
-    
+
     public void setForeignSourceRepository(final ForeignSourceRepository fsr) {
         m_repository = fsr;
     }
@@ -116,6 +116,7 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
     @Override
     public void save(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         LOG.debug("Queueing save of foreign source {}", foreignSource.getName());
+        validate(foreignSource);
         m_pendingForeignSources.put(foreignSource.getName(), foreignSource);
         m_executor.execute(new QueuePersistRunnable());
     }
@@ -158,6 +159,7 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
     @Override
     public void save(final Requisition requisition) throws ForeignSourceRepositoryException {
         LOG.debug("Queueing save of requisition {} (containing {} nodes)", requisition.getForeignSource(), requisition.getNodeCount());
+        validate(requisition);
         m_pendingRequisitions.put(requisition.getForeignSource(), requisition);
         m_executor.execute(new QueuePersistRunnable());
     }
@@ -202,6 +204,19 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
     @Override
     public void validate(final Requisition requisition) throws ForeignSourceRepositoryException {
         m_repository.validate(requisition);
+    }
+
+    @Override
+    public void clear() throws ForeignSourceRepositoryException {
+        m_pendingForeignSources.clear();
+        m_pendingRequisitions.clear();
+        for (final Requisition req : getRequisitions()) {
+            if (req != null) delete(req);
+        }
+        for (final ForeignSource fs : getForeignSources()) {
+            if (fs != null) delete(fs);
+        }
+        m_executor.execute(new QueuePersistRunnable());
     }
 
     private final class QueuePersistRunnable implements Runnable {

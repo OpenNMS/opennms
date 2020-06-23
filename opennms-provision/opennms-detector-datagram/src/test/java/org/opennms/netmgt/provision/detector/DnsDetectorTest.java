@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -57,46 +57,46 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/empty-context.xml"})
 @TestExecutionListeners(JUnitDNSServerExecutionListener.class)
 @JUnitDNSServer(port=9153, zones={
-        @DNSZone(name="google.com.", entries={
-                @DNSEntry(hostname="www", address="72.14.204.99")
-        })
+    @DNSZone(name = "google.com.", entries = {
+        @DNSEntry(hostname = "www", data = "72.14.204.99")
+    })
 })
 public class DnsDetectorTest {
-    
+
     private DnsDetector m_detector;
-    
+
     @Before
     public void setUp() throws SocketException {
         MockLogAppender.setupLogging();
 
         m_detector = new DnsDetector();
         m_detector.setTimeout(500);
-        
+
         //m_socket = new DatagramSocket(4445);
         //m_serverThread = createThread();
         //m_serverThread.start();
-    } 
-    
+    }
+
     @After
     public void tearDown() {
         //m_serverThread.stop();
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorSuccess() throws UnknownHostException {
         m_detector.setPort(9153);
         m_detector.setLookup("www.google.com");
         m_detector.init();
-        
+
         assertTrue(m_detector.isServiceDetected(InetAddressUtils.addr("localhost")));
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout=20000)
     public void testDetectorFailWrongPort() throws UnknownHostException {
         m_detector.setPort(5000);
         m_detector.setLookup("www.google.com");
         m_detector.init();
-        
+
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("localhost")));
 
     }

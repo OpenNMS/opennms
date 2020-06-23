@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -104,7 +104,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
      * @return a {@link java.util.Set} object.
      */
     public Set<Integer> getIfIndices() {
-        Set<Integer> ifIndices = new TreeSet<Integer>();
+        Set<Integer> ifIndices = new TreeSet<>();
         for(IpAddressTableEntry entry : getEntries()) {
             Integer ifIndex = entry.getIpAddressIfIndex();
             if (ifIndex != null) {
@@ -195,7 +195,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
      */
     public void updateIpInterfaceData(final OnmsNode node) {
         for(final IpAddressTableEntry entry : getEntries()) {
-            updateIpInterfaceData(node, InetAddressUtils.str(entry.getIpAddress()));
+            updateIpInterfaceData(node, entry.getIpAddress());
         }
     }
 
@@ -205,10 +205,12 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
      * @param ipAddr a {@link java.lang.String} object.
      */
-    public void updateIpInterfaceData(final OnmsNode node, final String ipAddr) {
+    public boolean updateIpInterfaceData(final OnmsNode node, final InetAddress ipAddr) {
+        boolean newIpInterfaceCreated = false;
     	OnmsIpInterface ipIf = node.getIpInterfaceByIpAddress(ipAddr);
         if (ipIf == null) {
             ipIf = new OnmsIpInterface(ipAddr, node);
+            newIpInterfaceCreated = true;
         }
 
         final InetAddress inetAddr = ipIf.getIpAddress();
@@ -227,7 +229,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
 
             final InetAddress mask = getNetMask(inetAddr);
             if (mask != null) {
-                snmpIf.setNetMask(mask);
+                ipIf.setNetMask(mask);
             }
 
             snmpIf.setCollectionEnabled(true);
@@ -235,8 +237,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
             ipIf.setSnmpInterface(snmpIf);
 
         }
-
-        ipIf.setIpHostName(ipAddr);
+        return newIpInterfaceCreated;
     }
 
     /**
@@ -245,7 +246,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
      * @return a {@link java.util.Set} object.
      */
     public Set<String> getIpAddresses() {
-    	final Set<String> ipAddrs = new LinkedHashSet<String>();
+    	final Set<String> ipAddrs = new LinkedHashSet<>();
     	for (final InetAddress addr : m_addresses) {
     		ipAddrs.add(InetAddressUtils.str(addr));
     	}
@@ -258,7 +259,7 @@ public class IpAddressTable extends SnmpTable<IpAddressTableEntry> {
 	}
 
     public static Set<SnmpInstId> getInstanceIds(final Set<InetAddress> ipAddresses) {
-    	final Set<SnmpInstId> ids = new HashSet<SnmpInstId>();
+    	final Set<SnmpInstId> ids = new HashSet<>();
     	for (final InetAddress addr : ipAddresses) {
     		ids.add(getInstanceForAddress(addr));
     	}

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+	<context:annotation-config />
+
+    <!-- Build the registry and listen for RequisitionProvider types  -->
+    <bean id="defaultRequisitionProviderRegistry" class="org.opennms.netmgt.provision.service.requisition.DefaultRequisitionProviderRegistry" />
+    <onmsgi:list id="requisitionProviders" interface="org.opennms.netmgt.provision.persist.RequisitionProvider">
+        <onmsgi:listener ref="defaultRequisitionProviderRegistry" bind-method="onBind" unbind-method="onUnbind" />
+    </onmsgi:list>
+
+    <onmsgi:service interface="org.opennms.netmgt.provision.persist.RequisitionProviderRegistry" ref="defaultRequisitionProviderRegistry"/>
+
+    <!-- RPC Module -->
+    <bean id="requisitionRpcModule" class="org.opennms.netmgt.provision.persist.rpc.RequisitionRpcModule" />
+
+    <!-- Client -->
+    <bean id="locationAwareRequisitionClient" class="org.opennms.netmgt.provision.persist.rpc.LocationAwareRequisitionClientImpl" />
+    <onmsgi:service interface="org.opennms.netmgt.provision.persist.LocationAwareRequisitionClient" ref="locationAwareRequisitionClient"/>
+
+    <!-- Thread pool used to execute the requisition requests locally -->
+    <bean id="requisitionRequestExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
+
+    <!-- The 'file' provider -->
+    <bean id="fileRequisitionProvider" class="org.opennms.netmgt.provision.service.requisition.FileRequisitionProvider" />
+    <onmsgi:service interface="org.opennms.netmgt.provision.persist.RequisitionProvider" ref="fileRequisitionProvider">
+      <onmsgi:service-properties>
+        <entry key="type" value="file" />
+        <entry key="registration.export" value="true" />
+      </onmsgi:service-properties>
+    </onmsgi:service>
+
+    <!-- The 'http' provider -->
+    <bean id="httpRequisitionProvider" class="org.opennms.netmgt.provision.service.requisition.HttpRequisitionProvider" />
+    <onmsgi:service interface="org.opennms.netmgt.provision.persist.RequisitionProvider" ref="httpRequisitionProvider">
+      <onmsgi:service-properties>
+        <entry key="type" value="http" />
+        <entry key="registration.export" value="true" />
+      </onmsgi:service-properties>
+    </onmsgi:service>
+
+</beans>

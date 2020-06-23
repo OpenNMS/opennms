@@ -5,14 +5,14 @@
 
   <parent>
     <groupId>org.opennms</groupId>
-    <artifactId>container</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <artifactId>org.opennms.container</artifactId>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
 
     <groupId>org.opennms.container</groupId>
-    <artifactId>branding</artifactId>
+    <artifactId>org.opennms.container.branding</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS OSGi Container - Branding</name>
+    <name>OpenNMS :: OSGi Container :: Branding</name>
 
     <build>
         <resources>
@@ -28,10 +28,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>manual</Bundle-SymbolicName>
-                        <Import-Package>*</Import-Package>
-                        <Private-Package>!*</Private-Package>
                         <Export-Package>
                             org.apache.karaf.branding
                         </Export-Package>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,8 +35,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Schedule;
@@ -55,7 +53,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
     private GroupManager m_groupManager;
     private UserManager m_userManager;
     
-    private class InvalidUser extends WebUser {
+    private static class InvalidUser extends WebUser {
 
         public InvalidUser(String name) {
             super(name);
@@ -68,7 +66,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         
     }
     
-    private class InvalidGroup extends WebGroup {
+    private static class InvalidGroup extends WebGroup {
 
         public InvalidGroup(String name) {
             super(name);
@@ -86,10 +84,6 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
     private User getBackingUser(String name) {
         try {
             return m_userManager.getUser(name);
-        } catch (MarshalException e) {
-            throw new WebRolesException("Error marshalling users.xml config file", e);
-        } catch (ValidationException e) {
-            throw new WebRolesException("Error validating users.xml config file", e);
         } catch (IOException e) {
             throw new WebRolesException("Error reading users.xml config file", e);
         }
@@ -98,10 +92,6 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
     private Collection<User> getBackingUsers() {
         try {
             return m_userManager.getUsers().values();
-        } catch (MarshalException e) {
-            throw new WebRolesException("Error marshalling users.xml config file", e);
-        } catch (ValidationException e) {
-            throw new WebRolesException("Error validating users.xml config file", e);
         } catch (IOException e) {
             throw new WebRolesException("Error reading users.xml config file", e);
         }
@@ -114,10 +104,6 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
     private Group getBackingGroup(String groupName) {
         try {
             return m_groupManager.getGroup(groupName);
-        } catch (MarshalException e) {
-            throw new WebRolesException("Error marshalling groups.xml config file", e);
-        } catch (ValidationException e) {
-            throw new WebRolesException("Error validating groups.xml config file", e);
         } catch (IOException e) {
             throw new WebRolesException("Error reading groups.xml config file", e);
         }
@@ -126,10 +112,6 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
     private Collection<Group> getBackingGroups() {
         try {
             return m_groupManager.getGroups().values();
-        } catch (MarshalException e) {
-            throw new WebRolesException("Error marshalling groups.xml config file", e);
-        } catch (ValidationException e) {
-            throw new WebRolesException("Error validating groups.xml config file", e);
         } catch (IOException e) {
             throw new WebRolesException("Error reading groups.xml config file", e);
         }
@@ -144,11 +126,6 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
                 webUsers.add(getWebUser(user));
             }
             return webUsers;
-            
-        } catch (MarshalException e) {
-            throw new WebRolesException("Error marshalling users.xml config file", e);
-        } catch (ValidationException e) {
-            throw new WebRolesException("Error validating users.xml config file", e);
         } catch (IOException e) {
             throw new WebRolesException("Error reading users.xml config file", e);
         }
@@ -198,11 +175,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
             return (ManagedRole) webRole;
         }
         
-        ManagedRole mgdRole = new ManagedRole();
-        mgdRole.setName(webRole.getName());
-        mgdRole.setDescription(webRole.getDescription());
-        mgdRole.setDefaultUser(webRole.getDefaultUser());
-        mgdRole.setMembershipGroup(webRole.getMembershipGroup());
+        ManagedRole mgdRole = new ManagedRole(webRole);
         
         return mgdRole;
     }
@@ -217,29 +190,32 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         return new ManagedRole();
     }
     
-    class ManagedRole extends WebRole {
+    private class ManagedRole extends WebRole {
         private static final int DESCR=0;
         private static final int USER=1;
         private static final int GROUP=2;
         private static final int NAME=3;
-        BitSet m_flags = new BitSet();
-        Role m_role;
-        ManagedRole(String roleName) {
-            this(getBackingRole(roleName));
+        private final BitSet m_flags = new BitSet();
+        private Role m_role;
+
+        ManagedRole() {
         }
+
         ManagedRole(Role role) {
            super(role.getName());
            m_role = role;
-           super.setDescription(role.getDescription());
+           super.setDescription(role.getDescription().orElse(null));
            super.setDefaultUser(getWebUser(role.getSupervisor()));
            super.setMembershipGroup(getWebGroup(role.getMembershipGroup()));
         }
         
-        ManagedRole() {
-            super();
-            m_role = null;
-        }
-        
+        ManagedRole(WebRole webRole) {
+            super(webRole.getName());
+            super.setDescription(webRole.getDescription());
+            super.setDefaultUser(webRole.getDefaultUser());
+            super.setMembershipGroup(webRole.getMembershipGroup());
+         }
+         
         @Override
         public void setDescription(String description) {
             super.setDescription(description);
@@ -307,40 +283,27 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         }
         @Override
         public Schedule getSchedule(int schedIndex) {
-            return m_role.getSchedule(schedIndex);
+            final int index = schedIndex;
+            return m_role.getSchedules().get(index);
         }
         @Override
         public Time getTime(int schedIndex, int timeIndex) {
-            return getSchedule(schedIndex).getTime(timeIndex);
+            final int index = timeIndex;
+            return getSchedule(schedIndex).getTimes().get(index);
         }
-        public void addEntry(String user, Date startDate, Date endDate) {
-            // TODO Auto-generated method stub
-            
-        }
-        
-        
     }
     
-    class ManagedUser extends WebUser {
-        User m_user;
-        ManagedUser(String userId) {
-            this(getBackingUser(userId));
-        }
+    private class ManagedUser extends WebUser {
         ManagedUser(User user) {
             super(user.getUserId());
-            m_user = user;
         }
     }
     
-    class ManagedGroup extends WebGroup {
-        Group m_group;
-        ManagedGroup(String groupName) {
-            this(getBackingGroup(groupName));
-        }
+    private class ManagedGroup extends WebGroup {
         ManagedGroup(Group group) {
             super(group.getName());
             
-            List<WebUser> users = new ArrayList<WebUser>();
+            List<WebUser> users = new ArrayList<>();
             for (String userId : getUsers(group)) {
                 users.add(getWebUser(userId));
             }
@@ -348,9 +311,8 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
         }
         
         private List<String> getUsers(Group group) {
-            return group.getUserCollection();
+            return group.getUsers();
         }
-        
     }
 
     /**
@@ -414,7 +376,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
      */
     @Override
     public Collection<WebUser> getUsers() {
-        List<WebUser> users = new ArrayList<WebUser>();
+        List<WebUser> users = new ArrayList<>();
         for (User u : getBackingUsers()) {
             users.add(getWebUser(u));
         }
@@ -434,7 +396,7 @@ public class WebRoleManagerImpl implements WebRoleManager, WebUserManager, WebGr
      */
     @Override
     public Collection<WebGroup> getGroups() {
-        List<WebGroup> groups = new ArrayList<WebGroup>();
+        List<WebGroup> groups = new ArrayList<>();
         for (Group group : getBackingGroups()) {
             groups.add(getWebGroup(group));
         }

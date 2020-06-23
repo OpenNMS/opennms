@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,18 +28,22 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
+import static org.opennms.core.utils.LocationUtils.DEFAULT_LOCATION_NAME;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.service.HostnameResolver;
 import org.opennms.netmgt.provision.service.snmp.IfTable;
 import org.opennms.netmgt.provision.service.snmp.IfXTable;
 import org.opennms.netmgt.provision.service.snmp.IpAddrTable;
@@ -49,12 +53,16 @@ import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 public class ScanManager {
     private static final Logger LOG = LoggerFactory.getLogger(ScanManager.class);
     
+    private final LocationAwareSnmpClient m_locationAwareSnmpClient;
     private final InetAddress m_address;
     private SystemGroup m_systemGroup;
     private IfTable m_ifTable;
@@ -62,10 +70,11 @@ public class ScanManager {
     private IpAddressTable m_ipAddressTable;
     private IfXTable m_ifXTable;
 
-    ScanManager(InetAddress address) {
+    ScanManager(LocationAwareSnmpClient locationAwareSnmpClient, InetAddress address) {
+        m_locationAwareSnmpClient = Objects.requireNonNull(locationAwareSnmpClient);
         m_address = address;
     }
-    
+
     /**
      * <p>getSystemGroup</p>
      *
@@ -123,14 +132,14 @@ public class ScanManager {
         return !getSystemGroup().failed();
     }
 
-    void updateSnmpData(final OnmsNode node) {
+    void updateSnmpData(final OnmsNode node, final HostnameResolver hostnameResolver) {
         
         try {
 
             m_systemGroup = new SystemGroup(m_address);
 
-            final Set<SnmpInstId> ipAddrs = new TreeSet<SnmpInstId>();
-            final Set<InetAddress> ipAddresses = new HashSet<InetAddress>();
+            final Set<SnmpInstId> ipAddrs = new TreeSet<>();
+            final Set<InetAddress> ipAddresses = new HashSet<>();
 
             for(final OnmsIpInterface iface : node.getIpInterfaces()) {
             	final InetAddress addr = iface.getIpAddress();
@@ -145,13 +154,19 @@ public class ScanManager {
             m_ipAddrTable = new IpAddrTable(m_address, ipAddrs);
             m_ipAddressTable = IpAddressTable.createTable(m_address, ipAddresses);
 
-            final SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address);
-            SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "system/ipAddrTable/ipAddressTable", m_systemGroup, m_ipAddrTable, m_ipAddressTable);
+            AggregateTracker tracker = new AggregateTracker(Lists.newArrayList(m_systemGroup, m_ipAddrTable, m_ipAddressTable));
+            final SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_address, MonitoringLocationUtils.getLocationNameOrNullIfDefault(node));
+            try {
+                m_locationAwareSnmpClient.walk(agentConfig, tracker)
+                    .withDescription("system/ipAddrTable/ipAddressTable")
+                    .withLocation(node.getLocation() == null ? null : node.getLocation().getLocationName())
+                    .execute()
+                    .get();
+            } catch (ExecutionException e) {
+                // pass
+            }
 
-            walker.start();
-            walker.waitFor();
-
-            final Set<SnmpInstId> ifIndices = new TreeSet<SnmpInstId>();
+            final Set<SnmpInstId> ifIndices = new TreeSet<>();
 
             for(final Integer ifIndex : m_ipAddrTable.getIfIndices()) {
                 ifIndices.add(new SnmpInstId(ifIndex));
@@ -159,11 +174,16 @@ public class ScanManager {
 
             m_ifTable = new IfTable(m_address, ifIndices);
             m_ifXTable = new IfXTable(m_address, ifIndices);
-
-            walker = SnmpUtils.createWalker(agentConfig, "ifTable/ifXTable", m_ifTable, m_ifXTable);
-            walker.start();
-
-            walker.waitFor();
+            tracker = new AggregateTracker(Lists.newArrayList(m_systemGroup, m_ifTable, m_ifXTable));
+            try {
+                m_locationAwareSnmpClient.walk(agentConfig, tracker)
+                    .withDescription("ifTable/ifXTable")
+                    .withLocation(node.getLocation() == null ? null : node.getLocation().getLocationName())
+                    .execute()
+                    .get();
+            } catch (ExecutionException e) {
+                // pass
+            }
 
             m_systemGroup.updateSnmpDataForNode(node);
         
@@ -175,20 +195,37 @@ public class ScanManager {
                 m_ifXTable.updateSnmpInterfaceData(node, ifIndex.toInt());
             }
 
-            for(final SnmpInstId ipAddr : ipAddrs) {   
-                m_ipAddrTable.updateIpInterfaceData(node, ipAddr.toString());
+            for(final SnmpInstId ipAddr : ipAddrs) {
+                InetAddress inetAddress = InetAddressUtils.addr(ipAddr.toString());
+                boolean newIpInterfaceCreated = m_ipAddrTable.updateIpInterfaceData(node, inetAddress);
+                if(newIpInterfaceCreated) {
+                    setHostNameOnIpInterface(inetAddress, node, hostnameResolver);
+                }
             }
 
             for (final InetAddress addr : ipAddresses) {
-            	m_ipAddressTable.updateIpInterfaceData(node, InetAddressUtils.str(addr));
+                boolean newIpInterfaceCreated = m_ipAddressTable.updateIpInterfaceData(node, addr);
+                if(newIpInterfaceCreated) {
+                    setHostNameOnIpInterface(addr, node, hostnameResolver);
+                }
             }
         } catch (final InterruptedException e) {
             LOG.info("thread interrupted while updating SNMP data", e);
             Thread.currentThread().interrupt();
 
         }
-        
 
+    }
+
+    private void setHostNameOnIpInterface(InetAddress inetAddress, OnmsNode node, HostnameResolver hostnameResolver) {
+
+        OnmsIpInterface ipInterface = node.getIpInterfaceByIpAddress(inetAddress);
+        String location = DEFAULT_LOCATION_NAME;
+        if(node.getLocation() != null) {
+           location = node.getLocation().getLocationName();
+        }
+        String hostName = hostnameResolver.getHostname(inetAddress, location);
+        ipInterface.setIpHostName(hostName);
     }
 
     /**

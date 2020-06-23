@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,21 +29,29 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.FetchMode;
+import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Subqueries;
+import org.hibernate.type.FloatType;
+import org.hibernate.type.IntegerType;
+import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
+import org.hibernate.type.TimestampType;
 import org.opennms.core.criteria.AbstractCriteriaVisitor;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.Criteria.LockType;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.Order.OrderVisitor;
@@ -51,6 +59,7 @@ import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.AnyRestriction;
 import org.opennms.core.criteria.restrictions.BaseRestrictionVisitor;
 import org.opennms.core.criteria.restrictions.BetweenRestriction;
+import org.opennms.core.criteria.restrictions.EqPropertyRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.criteria.restrictions.GeRestriction;
 import org.opennms.core.criteria.restrictions.GtRestriction;
@@ -68,6 +77,8 @@ import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.RestrictionVisitor;
 import org.opennms.core.criteria.restrictions.SqlRestriction;
 import org.opennms.netmgt.dao.api.CriteriaConverter;
+
+import com.google.common.base.Strings;
 
 public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCriteria> {
     public org.hibernate.Criteria convert(final Criteria criteria, final Session session) {
@@ -117,9 +128,9 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
         private Class<?> m_class;
 
-        private Set<org.hibernate.criterion.Order> m_orders = new LinkedHashSet<org.hibernate.criterion.Order>();
+        private Set<org.hibernate.criterion.Order> m_orders = new LinkedHashSet<>();
 
-        private Set<org.hibernate.criterion.Criterion> m_criterions = new LinkedHashSet<org.hibernate.criterion.Criterion>();
+        private Set<org.hibernate.criterion.Criterion> m_criterions = new LinkedHashSet<>();
 
         private boolean m_distinct = false;
 
@@ -145,7 +156,18 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
                 m_criteria.add(criterion);
             }
 
+            /*
+             * By implementing distinct() as a subquery, we lose the ability to sort the
+             * results on any of the aliased columns. See bug NMS-7830 for more details.
+             * 
+             * @see http://issues.opennms.org/browse/NMS-7830
+             */
             if (m_distinct) {
+                /*
+                 * This technique is documented in the comments at:
+                 * 
+                 * @see http://floledermann.blogspot.com/2007/10/solving-hibernate-criterias-distinct.html?showComment=1262701416137#c529514229952853263
+                 */
                 m_criteria.setProjection(Projections.distinct(Projections.id()));
 
                 final DetachedCriteria newCriteria = DetachedCriteria.forClass(m_class);
@@ -161,10 +183,18 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
             return m_criteria;
         }
 
+        /**
+         * If {@code rootAlias} is null, then Hibernate will use a default
+         * alias of {@code this}.
+         */
         @Override
-        public void visitClass(final Class<?> clazz) {
+        public void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias) {
             m_class = clazz;
-            m_criteria = DetachedCriteria.forClass(clazz);
+            if (rootAlias == null) {
+                m_criteria = DetachedCriteria.forClass(clazz);
+            } else {
+                m_criteria = DetachedCriteria.forClass(clazz, rootAlias);
+            }
         }
 
         @Override
@@ -221,6 +251,41 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
         }
 
         @Override
+        public void visitLockType(final LockType lock) {
+            if (lock == null) return;
+
+            switch (lock) {
+            case NONE:
+                m_criteria.setLockMode(LockMode.NONE);
+                break;
+            case OPTIMISTIC:
+                m_criteria.setLockMode(LockMode.OPTIMISTIC);
+                break;
+            case OPTIMISTIC_FORCE_INCREMENT:
+                m_criteria.setLockMode(LockMode.OPTIMISTIC_FORCE_INCREMENT);
+                break;
+            case PESSIMISTIC_FORCE_INCREMENT:
+                m_criteria.setLockMode(LockMode.PESSIMISTIC_FORCE_INCREMENT);
+                break;
+            case PESSIMISTIC_READ:
+                m_criteria.setLockMode(LockMode.PESSIMISTIC_READ);
+                break;
+            case PESSIMISTIC_WRITE:
+                m_criteria.setLockMode(LockMode.PESSIMISTIC_WRITE);
+                break;
+            case READ:
+                m_criteria.setLockMode(LockMode.READ);
+                break;
+            case UPGRADE_NOWAIT:
+                m_criteria.setLockMode(LockMode.UPGRADE_NOWAIT);
+                break;
+            case WRITE:
+                m_criteria.setLockMode(LockMode.WRITE);
+                break;
+            }
+        }
+
+        @Override
         public void visitRestriction(final Restriction restriction) {
             final HibernateRestrictionVisitor visitor = new HibernateRestrictionVisitor();
             restriction.visit(visitor);
@@ -271,7 +336,7 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
     public static final class HibernateRestrictionVisitor extends BaseRestrictionVisitor implements RestrictionVisitor {
         private static final StringType STRING_TYPE = new StringType();
 
-        private List<Criterion> m_criterions = new ArrayList<Criterion>();
+        private List<Criterion> m_criterions = new ArrayList<>();
 
         public List<Criterion> getCriterions() {
             return m_criterions;
@@ -290,6 +355,11 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
         @Override
         public void visitEq(final EqRestriction restriction) {
             m_criterions.add(org.hibernate.criterion.Restrictions.eq(restriction.getAttribute(), restriction.getValue()));
+        }
+
+        @Override
+        public void visitEqProperty(final EqPropertyRestriction restriction) {
+            m_criterions.add(org.hibernate.criterion.Restrictions.eqProperty(restriction.getAttribute(), restriction.getValue().toString()));
         }
 
         @Override
@@ -384,12 +454,38 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
         @Override
         public void visitSql(final SqlRestriction restriction) {
-            m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(restriction.getAttribute()));
+            if (restriction.getParameters() != null && restriction.getParameters().length > 0) {
+                // Map our {@link Type} enum values to {@link org.hibernate.type.Type} equivalents 
+                org.hibernate.type.Type[] types = Arrays.stream(restriction.getTypes()).map(t -> { 
+                    switch(t) {
+                    case FLOAT:
+                        return new FloatType();
+                    case INTEGER:
+                        return new IntegerType();
+                    case LONG:
+                        return new LongType();
+                    case STRING:
+                        return new StringType();
+                    case TIMESTAMP:
+                        return new TimestampType();
+                    default: 
+                        throw new UnsupportedOperationException("Unsupported type specified in SqlRestriction");
+                    }
+                }).collect(Collectors.toList()).toArray(new org.hibernate.type.Type[restriction.getTypes().length]);
+                m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(restriction.getAttribute(), restriction.getParameters(), types));
+            } else {
+                m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(restriction.getAttribute()));
+            }
         }
 
         @Override
         public void visitIplike(final IplikeRestriction restriction) {
-            m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction("iplike({alias}.ipAddr, ?)", (String) restriction.getValue(), STRING_TYPE));
+            String attribute = restriction.getAttribute();
+            if (Strings.isNullOrEmpty(attribute)) {
+                attribute = "ipAddr";
+            }
+            final String sql = String.format("ipLike({alias}.%s, ?)", attribute);
+            m_criterions.add(org.hibernate.criterion.Restrictions.sqlRestriction(sql, restriction.getValue(), STRING_TYPE));
         }
     }
 }

@@ -1,11 +1,13 @@
 #!/bin/sh - 
 
 JAVA_OPTIONS="-Xmx256m"
-opennms_home="${install.dir}"
+OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
 
-app_class=org.opennms.netmgt.config.DataCollectionConfigFactory
+APP_CLASS=org.opennms.netmgt.config.DataCollectionConfigFactory
 
-exec $opennms_home/bin/runjava -r -- $JAVA_OPTIONS \
-    -Dopennms.home=$opennms_home \
-    -Dopennms.manager.class=$app_class \
-    -jar $opennms_home/lib/opennms_bootstrap.jar
+exec "$OPENNMS_BINDIR"/runjava -r -- $JAVA_OPTIONS \
+	-Dopennms.home="$OPENNMS_HOME" \
+	-Dopennms.manager.class="$APP_CLASS" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-jar $OPENNMS_HOME/lib/opennms_bootstrap.jar

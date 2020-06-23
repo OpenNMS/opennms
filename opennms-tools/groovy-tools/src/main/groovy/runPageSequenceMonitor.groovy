@@ -1,16 +1,47 @@
 #!/usr/bin/env groovy
 
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 @GrabResolver(name='opennms-repo', root='http://maven.opennms.org/content/groups/opennms.org-release')
 
-@Grab(group='org.opennms.dependencies', module='spring-dependencies', type='pom', version='1.8.10')
+@Grab(group='org.slf4j', module='slf4j-simple', version='1.7.5')
+
+@Grab(group='org.opennms.dependencies', module='spring-dependencies', type='pom', version='1.13.1')
 import org.springframework.util.*;
 
-@Grab(group='org.opennms', module='opennms-model', version='1.8.10')
+@Grab(group='org.opennms', module='opennms-model', version='1.13.1')
 import org.opennms.netmgt.model.*;
 
-@Grab(group='org.opennms', module='opennms-services', version='1.8.10')
+@Grab(group='org.opennms', module='opennms-services', version='1.13.1')
 import org.opennms.netmgt.poller.*;
 import org.opennms.netmgt.poller.monitors.*;
+
 
 public class runPageSequenceMonitor implements MonitoredService {
     private int m_nodeId = 21;
@@ -40,8 +71,10 @@ public class runPageSequenceMonitor implements MonitoredService {
     }
 
     public NetworkInterface getNetInterface() {
-        return new IPv4NetworkInterface(getAddress());
+        return new InetNetworkInterface(getAddress());
     }
+
+    public String getSvcUrl() { return null }
 
     public InetAddress getAddress() {
         return m_inetAddr;

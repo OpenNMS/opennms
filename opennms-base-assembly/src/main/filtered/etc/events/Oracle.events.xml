@@ -1,272 +1,252 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of Oracle Traps -->
-<!-- Start of Oracle MIB: RDBMS-MIB -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.2.1.39.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>1</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Oracle/traps/rdbmsStateChange</uei>
- <event-label>RDBMS-MIB defined trap event: rdbmsStateChange</event-label>
- <descr>&lt;p&gt;An rdbmsStateChange trap signifies that one of the database
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.39.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Oracle/traps/rdbmsStateChange</uei>
+      <event-label>RDBMS-MIB defined trap event: rdbmsStateChange</event-label>
+      <descr>&lt;p>An rdbmsStateChange trap signifies that one of the database
  server/databases managed by this agent has changed its
  rdbmsRelState in a way that makes it less accessible for use.
  For these purposes, both active(2) and available(3) are
  considered fully accessible.  The state sent with the trap is
- the new, less accessible state.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- rdbmsRelState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ the new, less accessible state.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ rdbmsRelState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>
  other(1) active(2) available(3) restricted(4) unavailable(5)
- &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Oracle Event: RDBMS State Change.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.2.1.39.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>2</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Oracle/traps/rdbmsOutOfSpace</uei>
- <event-label>RDBMS-MIB defined trap event: rdbmsOutOfSpace</event-label>
- <descr>&lt;p&gt;An rdbmsOutOfSpace trap signifies that one of the database
+ &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Oracle Event: RDBMS State Change.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.39.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Oracle/traps/rdbmsOutOfSpace</uei>
+      <event-label>RDBMS-MIB defined trap event: rdbmsOutOfSpace</event-label>
+      <descr>&lt;p>An rdbmsOutOfSpace trap signifies that one of the database
  servers managed by this agent has been unable to allocate
  space for one of the databases managed by this agent.  Care
  should be taken to avoid flooding the network with these
- traps.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- rdbmsSrvInfoDiskOutOfSpaces&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Oracle Event: RDBMS Out of Space.&lt;/p&gt;</logmsg>
- <severity>Major</severity>
-</event>
-<!-- End of Oracle MIB: RDBMS-MIB -->
-<!-- Start of Oracle MIB: ORALISTENER-MIB -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.111.5.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>1</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Oracle/traps/oraListenerStateChange</uei>
- <event-label>ORALISTENER-MIB defined trap event: oraListenerStateChange</event-label>
- <descr>&lt;p&gt;An rdbmsStateChange trap signifies that one of the generic
+ traps.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ rdbmsSrvInfoDiskOutOfSpaces&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Oracle Event: RDBMS Out of Space.&lt;/p></logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.111.5.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Oracle/traps/oraListenerStateChange</uei>
+      <event-label>ORALISTENER-MIB defined trap event: oraListenerStateChange</event-label>
+      <descr>&lt;p>An rdbmsStateChange trap signifies that one of the generic
  listeners managed by this agent has changed its oraListenerState
- in a way that makes it less accessible for use.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraListenerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ in a way that makes it less accessible for use.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ oraListenerState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>
  up(1) down(2)
- &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Oracle Event: Oracle Listener State Change.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-<!-- End of Oracle MIB: ORALISTENER-MIB -->
-<!-- Start of Oracle MIB: ORAINTERCHANGE-MIB -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.111.7.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>1</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Oracle/traps/oraNavigatorStateChange</uei>
- <event-label>ORAINTERCHANGE-MIB defined trap event: oraNavigatorStateChange</event-label>
- <descr>&lt;p&gt;A navigatorStateChange trap signifies that a Navigator state 
- has been changed.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraNavigatorState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Oracle Event: Oracle Listener State Change.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.111.7.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Oracle/traps/oraNavigatorStateChange</uei>
+      <event-label>ORAINTERCHANGE-MIB defined trap event: oraNavigatorStateChange</event-label>
+      <descr>&lt;p>A navigatorStateChange trap signifies that a Navigator state 
+ has been changed.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ oraNavigatorState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>
  up(1) down(2)
- &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Oracle Event: Navigator State Change.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.111.7.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>2</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Oracle/traps/oraCmanagerStateChange</uei>
- <event-label>ORAINTERCHANGE-MIB defined trap event: oraCmanagerStateChange</event-label>
- <descr>&lt;p&gt;A cmanagerStateChange trap signifies that a Connection Manager 
- state has been changed.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraCmanagerState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
- up(1) down(2)&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Oracle Event: Connection Manager State Change.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-<!-- End of Oracle MIB: ORAINTERCHANGE-MIB -->
-<!-- Start of Oracle MIB: ORACLE-AGENT-MIB -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.111.12.2</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>2</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Oracle/traps/oraAgentEventOcc</uei>
- <event-label>ORACLE-AGENT-MIB defined trap event: oraAgentEventOcc</event-label>
- <descr>&lt;p&gt;The Enterprise Manager agent has detected an occurrence of
- an event for which it has no specific trap.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraAgentEventName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraAgentEventID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraAgentEventService&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraAgentEventTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraAgentEventSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Oracle Event: Navigator State Change.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.111.7.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Oracle/traps/oraCmanagerStateChange</uei>
+      <event-label>ORAINTERCHANGE-MIB defined trap event: oraCmanagerStateChange</event-label>
+      <descr>&lt;p>A cmanagerStateChange trap signifies that a Connection Manager 
+ state has been changed.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ oraCmanagerState&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>
+ up(1) down(2)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Oracle Event: Connection Manager State Change.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.111.12.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Oracle/traps/oraAgentEventOcc</uei>
+      <event-label>ORACLE-AGENT-MIB defined trap event: oraAgentEventOcc</event-label>
+      <descr>&lt;p>The Enterprise Manager agent has detected an occurrence of
+ an event for which it has no specific trap.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ oraAgentEventName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ oraAgentEventID&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ oraAgentEventService&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ oraAgentEventTime&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ oraAgentEventSeverity&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>
  clear(-1) warning(1) alert(2)
- &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraAgentEventUser&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraAgentEventAppID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraAgentEventMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#8]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraAgentEventArguments&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#9]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- oraAgentEventResults&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#10]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Oracle Event: Enterprise Manager unknown event notification.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-<!-- End of Oracle MIB: ORACLE-AGENT-MIB -->
-<!-- Start of auto generated data from MIB: ORACLE-ENTERPRISE-MANAGER-4-MIB -->
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.111.15.2</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>1</mevalue>
-                </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/oracle/traps/oraEM4Alert</uei>
-        <event-label>ORACLE-ENTERPRISE-MANAGER-4-MIB defined trap event: oraEM4Alert</event-label>
-        <descr>
-&lt;p&gt;The variables included in the oraEM4Alert trap.&lt;/p&gt;&lt;table&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+ &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ oraAgentEventUser&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ oraAgentEventAppID&lt;/b>&lt;/td>&lt;td>%parm[#7]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ oraAgentEventMessage&lt;/b>&lt;/td>&lt;td>%parm[#8]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ oraAgentEventArguments&lt;/b>&lt;/td>&lt;td>%parm[#9]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ oraAgentEventResults&lt;/b>&lt;/td>&lt;td>%parm[#10]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Oracle Event: Enterprise Manager unknown event notification.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.111.15.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/oracle/traps/oraEM4Alert</uei>
+      <event-label>ORACLE-ENTERPRISE-MANAGER-4-MIB defined trap event: oraEM4Alert</event-label>
+      <descr>&lt;p>The variables included in the oraEM4Alert trap.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
 
-        oraEM4AlertTargetName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        oraEM4AlertTargetName&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        oraEM4AlertTargetType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        oraEM4AlertTargetType&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        oraEM4AlertHostName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        oraEM4AlertHostName&lt;/b>&lt;/td>&lt;td>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        oraEM4AlertMetricName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        oraEM4AlertMetricName&lt;/b>&lt;/td>&lt;td>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        oraEM4AlertKeyName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        oraEM4AlertKeyName&lt;/b>&lt;/td>&lt;td>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        oraEM4AlertKeyValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        oraEM4AlertKeyValue&lt;/b>&lt;/td>&lt;td>
+        %parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        oraEM4AlertTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        oraEM4AlertTimeStamp&lt;/b>&lt;/td>&lt;td>
+        %parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        oraEM4AlertSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        oraEM4AlertSeverity&lt;/b>&lt;/td>&lt;td>
+        %parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        oraEM4AlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        oraEM4AlertMessage&lt;/b>&lt;/td>&lt;td>
+        %parm[#9]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        oraEM4AlertRuleName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        oraEM4AlertRuleName&lt;/b>&lt;/td>&lt;td>
+        %parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        oraEM4AlertRuleOwner&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+        oraEM4AlertRuleOwner&lt;/b>&lt;/td>&lt;td>
+        %parm[#11]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
                         oraEM4Alert trap received 
                         oraEM4AlertTargetName=%parm[#1]% 
                         oraEM4AlertTargetType=%parm[#2]% 
@@ -278,36 +258,32 @@
                         oraEM4AlertSeverity=%parm[#8]% 
                         oraEM4AlertMessage=%parm[#9]% 
                         oraEM4AlertRuleName=%parm[#10]% 
-                        oraEM4AlertRuleOwner=%parm[#11]%&lt;/p&gt;
+                        oraEM4AlertRuleOwner=%parm[#11]%&lt;/p>
                 </logmsg>
-        <severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: ORACLE-ENTERPRISE-MANAGER-4-MIB -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.111.%</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Oracle/traps/EnterpriseDefault</uei>
- <event-label>OpenNMS-defined trap event: Oracle EnterpriseDefault</event-label>
- <descr>
- &lt;p&gt;This is the default event format used when an
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.111.%</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Oracle/traps/EnterpriseDefault</uei>
+      <event-label>OpenNMS-defined trap event: Oracle EnterpriseDefault</event-label>
+      <descr>&lt;p>This is the default event format used when an
  enterprise specific event (trap) is received from a Oracle device for which no
  format has been configured (i.e. no event definition
- exists).&lt;/p&gt;
- </descr>
- <logmsg dest='logndisplay'>
+ exists).&lt;/p></descr>
+      <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%
  </logmsg>
- <severity>Indeterminate</severity>
-</event>
-<!-- End of Oracle Traps -->
+      <severity>Indeterminate</severity>
+   </event>
 </events>

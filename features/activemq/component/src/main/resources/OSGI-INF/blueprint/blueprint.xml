@@ -1,0 +1,59 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+	xmlns:cb="http://camel.apache.org/schema/blueprint"
+	xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+
+        http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+
+        http://camel.apache.org/schema/blueprint
+        http://camel.apache.org/schema/blueprint/camel-blueprint-2.19.1.xsd
+">
+
+	<ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]" >
+		<ext:default-properties>
+			<ext:property name="org.opennms.activemq.broker.url" value="failover:tcp://localhost:61616" />
+			<ext:property name="org.opennms.activemq.broker.username" value="" />
+			<ext:property name="org.opennms.activemq.broker.password" value="" />
+			<ext:property name="org.opennms.activemq.client.max-connections" value="8" />
+			<ext:property name="org.opennms.activemq.client.concurrent-consumers" value="10" />
+			<ext:property name="org.opennms.activemq.client.idle-timeout" value="30000" />
+		</ext:default-properties>
+	</ext:property-placeholder>
+
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="$[org.opennms.activemq.broker.url]" />
+		<property name="userName" value="$[org.opennms.activemq.broker.username]" />
+		<property name="password" value="$[org.opennms.activemq.broker.password]" />
+	</bean>
+
+	<!-- Setup JMS connection pooling -->
+	<bean id="pooledConnectionFactory" class="org.opennms.features.activemq.PooledConnectionFactory"
+		init-method="start" destroy-method="stop">
+		<property name="maxConnections" value="$[org.opennms.activemq.client.max-connections]" />
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="idleTimeout" value="$[org.opennms.activemq.client.idle-timeout]" />
+	</bean>
+
+	<bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+		<property name="connectionFactory" ref="pooledConnectionFactory" />
+		<property name="concurrentConsumers" value="$[org.opennms.activemq.client.concurrent-consumers]" />
+	</bean>
+
+	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+		<property name="configuration" ref="jmsConfig" />
+	</bean>
+
+	<service id="queuingservice" ref="activemq" interface="org.apache.camel.Component">
+		<service-properties>
+			<entry key="alias" value="onms.broker" />
+		</service-properties>
+	</service>
+
+</blueprint>

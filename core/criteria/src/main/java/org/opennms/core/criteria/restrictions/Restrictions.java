@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,7 +30,9 @@ package org.opennms.core.criteria.restrictions;
 
 import java.util.Collection;
 
-public class Restrictions {
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
+
+public abstract class Restrictions {
 
     private static final Restriction[] EMPTY_RESTRICTION_ARRAY = new Restriction[0];
 
@@ -48,6 +50,10 @@ public class Restrictions {
 
     public static EqRestriction eq(final String attribute, final Object comparator) {
         return new EqRestriction(attribute, comparator);
+    }
+
+    public static EqPropertyRestriction eqProperty(final String attribute, final Object comparator) {
+        return new EqPropertyRestriction(attribute, comparator);
     }
 
     public static Restriction ne(final String attribute, final Object comparator) {
@@ -94,12 +100,12 @@ public class Restrictions {
         return new NotRestriction(restriction);
     }
 
-    public static AllRestriction and(final Restriction lhs, final Restriction rhs) {
-        return new AllRestriction(lhs, rhs);
+    public static AllRestriction and(final Restriction... restrictions) {
+        return new AllRestriction(restrictions);
     }
 
-    public static AnyRestriction or(final Restriction lhs, final Restriction rhs) {
-        return new AnyRestriction(lhs, rhs);
+    public static AnyRestriction or(final Restriction... restrictions) {
+        return new AnyRestriction(restrictions);
     }
 
     public static AllRestriction all(final Restriction... restrictions) {
@@ -122,4 +128,11 @@ public class Restrictions {
         return new SqlRestriction(sql);
     }
 
+    public static AttributeRestriction sql(final String sql, Object parameter, Type type) {
+        return new SqlRestriction(sql, parameter, type);
+    }
+
+    public static AttributeRestriction sql(final String sql, Object[] parameters, Type[] types) {
+        return new SqlRestriction(sql, parameters, types);
+    }
 }

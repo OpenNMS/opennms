@@ -1,0 +1,109 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Cisco Nexus">
+   <resourceType name="ciscoNXEnvMonStatusIndex" label="Cisco Nexus Environmental" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#entPhysicalName != null) and (#entSensorType != null)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ciscoNXProcessIndex" label="Cisco Nexus System Resourses" resourceLabel="${entPhysicalName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+         <parameter key="match-expression" value="(#cpmCPUTotalPhysicalIndex != null)"/>
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <group name="cisco-nx-environmental" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXEnvMonStatusIndex" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.1" instance="ciscoNXEnvMonStatusIndex" alias="entSensorType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.91.1.1.1.1.4" instance="ciscoNXEnvMonStatusIndex" alias="entSensorValue" type="gauge"/>
+   </group>
+   <group name="cisco-process" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.8" instance="1" alias="cpmCPUTotal5minRev" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.12" instance="1" alias="cpmCPUMemoryUsed" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.13" instance="1" alias="cpmCPUMemoryFree" type="Gauge32"/>
+   </group>
+   <group name="cisco-nx-process-index" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.8" instance="ciscoNXProcessIndex" alias="cpmCPUTotal5minRev" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.12" instance="ciscoNXProcessIndex" alias="cpmCPUMemoryUsed" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.13" instance="ciscoNXProcessIndex" alias="cpmCPUMemoryFree" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="ciscoNXProcessIndex" alias="entPhysicalName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.2" instance="ciscoNXProcessIndex" alias="cpmCPUTotalPhysicalIndex" type="string"/>
+   </group>
+   <systemDef name="Cisco Nexus 1000v">
+      <sysoid>.1.3.6.1.4.1.9.12.3.1.3.840</sysoid>
+      <collect>
+         <includeGroup>cisco-process</includeGroup>
+         <includeGroup>cisco-nx-environmental</includeGroup>
+      </collect>
+   </systemDef>
+   <systemDef name="Cisco Nexus 1010">
+      <sysoid>.1.3.6.1.4.1.9.12.3.1.3.907</sysoid>
+      <collect>
+         <includeGroup>cisco-process</includeGroup>
+         <includeGroup>cisco-nx-environmental</includeGroup>
+      </collect>
+   </systemDef>
+   <!-- Nexus 3000 Series 1 RU fixed chassis (Trident+) with  48 SFP+ and 4 QSFP ports, no power supply, no fan -->
+   <systemDef name="Cisco Nexus 3064-T">
+      <sysoid>.1.3.6.1.4.1.9.12.3.1.3.1239</sysoid>
+      <collect>
+         <includeGroup>cisco-process</includeGroup>
+         <includeGroup>cisco-nx-environmental</includeGroup>
+      </collect>
+   </systemDef>
+   <!-- N5000 2RU Chassis, No Power Supply, 5 Fan Modules, 40 Ports (requires SFP+) -->
+   <systemDef name="Cisco Nexus 5020">
+      <sysoid>.1.3.6.1.4.1.9.12.3.1.3.719</sysoid>
+      <collect>
+         <includeGroup>cisco-process</includeGroup>
+         <includeGroup>cisco-nx-environmental</includeGroup>
+      </collect>
+   </systemDef>
+   <!-- Nexus 5548 Switch with 2 Power Supplies, 2 Fan Modules, 32 Ethernet/FCoE ports and 1 module -->
+   <systemDef name="Cisco Nexus 5548">
+      <sysoid>.1.3.6.1.4.1.9.12.3.1.3.1008</sysoid>
+      <collect>
+         <includeGroup>cisco-process</includeGroup>
+         <includeGroup>cisco-nx-environmental</includeGroup>
+      </collect>
+   </systemDef>
+   <!-- Nexus 5598 Switch with 2 Power Supplies, 2 Fan Modules, 32 Ethernet/FCoE ports and 1 module -->
+   <systemDef name="Cisco Nexus 5596">
+      <sysoid>.1.3.6.1.4.1.9.12.3.1.3.1038</sysoid>
+      <collect>
+         <includeGroup>cisco-process</includeGroup>
+         <includeGroup>cisco-nx-environmental</includeGroup>
+      </collect>
+   </systemDef>
+   <!-- Nexus7000 4slot zonda n7k chassis N7K-C7004 -->
+   <systemDef name="Cisco Nexus 7004">
+      <sysoid>.1.3.6.1.4.1.9.12.3.1.3.1147</sysoid>
+      <collect>
+         <includeGroup>cisco-nx-process-index</includeGroup>
+         <includeGroup>cisco-nx-environmental</includeGroup>
+      </collect>
+   </systemDef>
+   <!-- Nexus7000 9 slot N7K chassis -->
+   <systemDef name="Cisco Nexus 7009">
+      <sysoid>.1.3.6.1.4.1.9.12.3.1.3.932</sysoid>
+      <collect>
+         <includeGroup>cisco-nx-process-index</includeGroup>
+         <includeGroup>cisco-nx-environmental</includeGroup>
+      </collect>
+   </systemDef>
+   <!-- Nexus7000 10 slot N7K chassis -->
+   <systemDef name="Cisco Nexus 7010">
+      <sysoid>.1.3.6.1.4.1.9.12.3.1.3.612</sysoid>
+      <collect>
+         <includeGroup>cisco-nx-process-index</includeGroup>
+         <includeGroup>cisco-nx-environmental</includeGroup>
+      </collect>
+   </systemDef>
+   <!-- Nexus7000 18 slot N7K chassis -->
+   <systemDef name="Cisco Nexus 7018">
+      <sysoid>.1.3.6.1.4.1.9.12.3.1.3.777</sysoid>
+      <collect>
+         <includeGroup>cisco-nx-process-index</includeGroup>
+         <includeGroup>cisco-nx-environmental</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

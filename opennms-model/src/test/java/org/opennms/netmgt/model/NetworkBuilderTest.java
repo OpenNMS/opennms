@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,8 +32,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.opennms.core.utils.InetAddressUtils.addr;
-
-import java.util.Date;
 
 import org.junit.Test;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
@@ -78,7 +76,7 @@ public class NetworkBuilderTest {
     
     @Test
     public void testIpInterface() {
-        final NetworkBuilder builder = new NetworkBuilder("localhost", "127.0.0.1");
+        final NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("node1");
         final InterfaceBuilder ib = builder.addSnmpInterface(1)
             .addIpInterface("192.168.1.1");
@@ -88,7 +86,7 @@ public class NetworkBuilderTest {
 
     @Test
     public void testDuplicateServiceAndCategoryNames() {
-        final NetworkBuilder builder = new NetworkBuilder("localhost", "127.0.0.1");
+        final NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("node1").setForeignSource("imported:").setForeignId("1").setType(NodeType.ACTIVE);
         builder.addCategory("DEV_AC");
         builder.addCategory("IMP_mid");
@@ -132,7 +130,7 @@ public class NetworkBuilderTest {
         assertEquals("imported:", node1.getForeignSource());
         assertEquals("1", node1.getForeignId());
         assertEquals(NodeType.ACTIVE, node1.getType());
-        assertEquals("127.0.0.1", node1.getDistPoller().getIpAddress());
+        //assertEquals("127.0.0.1", node1.getDistPoller().getIpAddress());
         assertNull(node1.getSysContact());
         assertEquals(4, node1.getSnmpInterfaces().size());
         assertEquals(4, node1.getIpInterfaces().size());
@@ -168,7 +166,6 @@ public class NetworkBuilderTest {
         builder.addService("HTTP");
         builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService("ICMP");
-        builder.addAtInterface(node1, "192.168.2.1", "AA:BB:CC:DD:EE:FF").setIfIndex(1).setLastPollTime(new Date()).setStatus('A');
         final OnmsNode node2 = builder.getCurrentNode();
         
         assertNotNull(node2);

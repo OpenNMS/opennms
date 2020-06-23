@@ -1,0 +1,44 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[webui-grafana-dashboard-box]]
+
+link:http://grafana.org/[Grafana] provides an API key which gives access for 3rd party application like _{opennms-product-name}_.
+The _Grafana Dashboard Box_ on the start page shows dashboards related to _{opennms-product-name}_.
+To filter relevant dashboards, you can use a _tag_ for dashboards and make them accessible.
+If no _tag_ is provided all dashboards from _Grafana_ will be shown.
+
+The feature is by default deactivated and is configured through `opennms.properties`. Please note that this feature
+works with the _Grafana API v2.5.0_.
+
+.Quick access to Grafana dashboards from the {opennms-product-name} start page
+image:webui/startpage/01_grafana-box.png[]
+
+.Grafana Dashboard configuration properties
+[options="header, autowidth"]
+|===
+| Name                                       | Type      | Description                                                  | Default
+| `org.opennms.grafanaBox.show`              | _Boolean_ | This setting controls whether a grafana box showing the
+                                                           available dashboards is placed on the landing page. The two
+                                                           valid options for this are `true` or `false`.                | `false`
+| `org.opennms.grafanaBox.hostname`          | _String_  | If the box is enabled you also need to specify hostname of
+                                                           the _Grafana_ server                                         | `localhost`
+| `org.opennms.grafanaBox.port`              | _Integer_ | The port of the _Grafana_ server ReST API                    | `3000`
+| `org.opennms.grafanaBox.basePath`          | _String_  | The _Grafana_ base path to be used                           |
+| `org.opennms.grafanaBox.apiKey`            | _String_  | The API key is needed for the ReST calls to work             |
+| `org.opennms.grafanaBox.tag`               | _String_  | When a _tag_ is specified only dashboards with this given _tag_
+                                                           will be displayed. When no _tag_ is given all dashboards will
+                                                           be displayed                                                 |
+| `org.opennms.grafanaBox.protocol`          | _String_  | The protocol for the ReST call can also be specified         | `http`
+| `org.opennms.grafanaBox.connectionTimeout` | _Integer_ | Timeout in milliseconds for getting information from the
+                                                           _Grafana_ server                                             | `500`
+| `org.opennms.grafanaBox.soTimeout`         | _Integer_ | Socket timeout                                               | `500`
+| `org.opennms.grafanaBox.dashboardLimit`    | _Integer_ | Maximum number of entries to be displayed (0 for unlimited)  | `0`
+|===
+
+TIP: If you have _Grafana_ behind a proxy it is important the `org.opennms.grafanaBox.hostname` is reachable.
+     This host name is used to generate links to the _Grafana_ dashboards.
+
+The process to generate an _Grafana API Key_ can be found in the link:http://docs.grafana.org/reference/http_api/#create-api-token[HTTP API documentation].
+Copy the API Key to `opennms.properties` as `org.opennms.grafanaBox.apiKey`.

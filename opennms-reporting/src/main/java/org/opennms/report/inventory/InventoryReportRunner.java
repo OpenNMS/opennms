@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,6 +31,7 @@ package org.opennms.report.inventory;
 import java.io.IOException;
 import java.util.Date;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.report.ReportMailer;
 import org.opennms.reporting.availability.render.ReportRenderException;
 import org.opennms.reporting.availability.render.ReportRenderer;
@@ -230,7 +231,7 @@ public class InventoryReportRunner implements Runnable {
     @Override
     public void run() {
 
-        LOG.debug("run: getting inventory report on Date [{}] for key [{}]. Requested by User: {}on Date {}", theDate, theField, user, reportRequestDate.toString());
+        LOG.debug("run: getting inventory report on Date [{}] for key [{}]. Requested by User: {}on Date {}", theDate, theField, user, StringUtils.toStringEfficiently(reportRequestDate));
         ReportRenderer renderer;
         calculator.setReportRequestDate(reportRequestDate);
         calculator.setTheDate(theDate);
@@ -301,7 +302,7 @@ public class InventoryReportRunner implements Runnable {
                 FileOutputStream hmtlFileWriter = new FileOutputStream(file);
                 PDFWriter htmlWriter = new PDFWriter(ConfigFileConstants.getFilePathString() + "/rws-nbinventoryreport.xsl");
                 File fileR = new File(xmlFileName);
-                Reader fileReader = new InputStreamReader(new FileInputStream(fileR), "UTF-8");
+                Reader fileReader = new InputStreamReader(new FileInputStream(fileR), StandardCharsets.UTF_8);
                 htmlWriter.generateHTML(fileReader, hmtlFileWriter);
                 log().debug("runNodeBaseInventoryReport html sending email");
                 ReportMailer mailer = new ReportMailer(reportEmail,htmlFileName,"OpenNMS Inventory Report");

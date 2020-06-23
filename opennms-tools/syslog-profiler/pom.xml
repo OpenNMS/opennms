@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-tools</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.opennms-tools</groupId>
@@ -14,6 +14,7 @@
     <module>profiler</module>
     <module>onejar</module>
   </modules>
+<!--
   <repositories>
     <repository>
       <snapshots>
@@ -24,7 +25,7 @@
       </releases>
       <id>maven-repo</id>
       <name>Maven Central</name>
-      <url>http://maven.opennms.org/content/groups/maven.org-release2</url>
+      <url>http://maven.opennms.org/content/repositories/central/</url>
     </repository>
     <repository>
       <snapshots>
@@ -38,4 +39,5 @@
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
+-->
 </project>

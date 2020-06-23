@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.model.discovery;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Iterator;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * <p>
@@ -43,11 +46,17 @@ import java.util.Iterator;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  */
-public class IPPollRange implements Iterable<IPPollAddress> {
+public class IPPollRange implements Iterable<IPPollAddress>, Serializable {
+    private static final long serialVersionUID = -287583115922481242L;
+
     /**
      * The range to cycle over.
      */
     private final IPAddrRange m_range;
+
+    private final String m_foreignSource;
+
+    private final String m_location;
 
     /**
      * The timeout in milliseconds (1/1000th)
@@ -112,7 +121,7 @@ public class IPPollRange implements Iterable<IPPollAddress> {
          */
         @Override
         public IPPollAddress nextElement() {
-            return new IPPollAddress((InetAddress) m_range.nextElement(), m_timeout, m_retries);
+            return new IPPollAddress(m_foreignSource, m_location, (InetAddress) m_range.nextElement(), m_timeout, m_retries);
         }
 
         /**
@@ -175,8 +184,10 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      * @see IPAddrRange
      * @throws java.net.UnknownHostException if any.
      */
-    public IPPollRange(String fromIP, String toIP, long timeout, int retries) throws java.net.UnknownHostException {
+    public IPPollRange(String foreignSource, String location, String fromIP, String toIP, long timeout, int retries) throws java.net.UnknownHostException {
         m_range = new IPAddrRange(fromIP, toIP);
+        m_foreignSource = foreignSource;
+        m_location = location;
         m_timeout = timeout;
         m_retries = retries;
     }
@@ -202,10 +213,8 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      * @see IPAddrRange
      * 
      */
-    IPPollRange(InetAddress start, InetAddress end, long timeout, int retries) {
-        m_range = new IPAddrRange(start, end);
-        m_timeout = timeout;
-        m_retries = retries;
+    public IPPollRange(String foreignSource, String location, InetAddress start, InetAddress end, long timeout, int retries) {
+        this(foreignSource, location, new IPAddrRange(start, end), timeout, retries);
     }
 
     /**
@@ -226,10 +235,26 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      * @see IPPollAddress
      * 
      */
-    IPPollRange(IPAddrRange range, long timeout, int retries) {
+    IPPollRange(String foreignSource, String location, IPAddrRange range, long timeout, int retries) {
         m_range = range;
+        m_foreignSource = foreignSource;
+        m_location = location;
         m_timeout = timeout;
         m_retries = retries;
+    }
+
+    /**
+     * Foreign source where this address should be persisted.
+     */
+    public String getForeignSource() {
+        return m_foreignSource;
+    }
+
+    /**
+     * Network location of this address.
+     */
+    public String getLocation() {
+        return m_location;
     }
 
     /**
@@ -290,5 +315,16 @@ public class IPPollRange implements Iterable<IPPollAddress> {
     @Override
     public Iterator<IPPollAddress> iterator() {
         return new IPPollRangeGenerator(m_range.elements());
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("foreignSource", m_foreignSource)
+            .append("location", m_location)
+            .append("range", m_range)
+            .append("timeout", m_timeout)
+            .append("retries", m_retries)
+            .toString();
     }
 }

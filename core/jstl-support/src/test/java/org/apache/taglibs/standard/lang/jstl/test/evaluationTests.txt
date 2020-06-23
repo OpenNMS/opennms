@@ -1,0 +1,1056 @@
+# The set of evaluator tests
+
+#######################################################
+# basic literals
+${1}
+int
+${-12}
+int
+${true}
+boolean
+${false}
+boolean
+${null}
+java.lang.String
+${4.2}
+double
+${-21.3}
+float
+${4.}
+float
+${.21}
+float
+${3e-1}
+double
+${.2222222222}
+double
+
+
+#######################################################
+# basic relationals between literals
+
+${1 < 2}
+boolean
+${1 > 2}
+boolean
+${1 >= 2}
+boolean
+${1 <= 2}
+boolean
+${1 == 2}
+boolean
+${1 != 2}
+boolean
+${3 >= 3}
+boolean
+${3 <= 3}
+boolean
+${3 == 3}
+boolean
+${3 < 3}
+boolean
+${3 > 3}
+boolean
+${3 != 3}
+boolean
+
+
+#######################################################
+# relationals between booleans
+
+${false < true}
+java.lang.Object
+${false > true}
+java.lang.Object
+${true >= true}
+java.lang.Object
+${true <= true}
+java.lang.Object
+${true == true}
+java.lang.Object
+${true != true}
+java.lang.Object
+
+#######################################################
+# looking up objects in scopes
+
+# val1a - defined in page scope
+${pageScope.val1a}
+java.lang.String
+${requestScope.val1a}
+java.lang.String
+${sessionScope.val1a}
+java.lang.String
+${applicationScope.val1a}
+java.lang.String
+${val1a}
+java.lang.String
+
+# val1b - defined in request scope
+${pageScope.val1b}
+java.lang.String
+${requestScope.val1b}
+java.lang.String
+${sessionScope.val1b}
+java.lang.String
+${applicationScope.val1b}
+java.lang.String
+${val1b}
+java.lang.String
+
+# val1c - defined in session scope
+${pageScope.val1c}
+java.lang.String
+${requestScope.val1c}
+java.lang.String
+${sessionScope.val1c}
+java.lang.String
+${applicationScope.val1c}
+java.lang.String
+${val1c}
+java.lang.String
+
+# val1d - defined in application scope
+${pageScope.val1d}
+java.lang.String
+${requestScope.val1d}
+java.lang.String
+${sessionScope.val1d}
+java.lang.String
+${applicationScope.val1d}
+java.lang.String
+${val1d}
+java.lang.String
+
+#######################################################
+# accessing properties
+
+${bean1a.int1}
+int
+${bean1a.boolean1}
+boolean
+${bean1a.string1}
+java.lang.String
+${bean1a.bean1.int2}
+int
+${bean1a.bean1.bean2.string2}
+java.lang.String
+
+#######################################################
+# test the entire conversion matrix
+
+${bean1a.byte1}
+byte
+${bean1a.byte1}
+char
+${bean1a.byte1}
+short
+${bean1a.byte1}
+int
+${bean1a.byte1}
+long
+${bean1a.byte1}
+float
+${bean1a.byte1}
+double
+
+${bean1a.char1}
+byte
+${bean1a.char1}
+char
+${bean1a.char1}
+short
+${bean1a.char1}
+int
+${bean1a.char1}
+long
+${bean1a.char1}
+float
+${bean1a.char1}
+double
+
+${bean1a.short1}
+byte
+${bean1a.short1}
+char
+${bean1a.short1}
+short
+${bean1a.short1}
+int
+${bean1a.short1}
+long
+${bean1a.short1}
+float
+${bean1a.short1}
+double
+
+${bean1a.int1}
+byte
+${bean1a.int1}
+char
+${bean1a.int1}
+short
+${bean1a.int1}
+int
+${bean1a.int1}
+long
+${bean1a.int1}
+float
+${bean1a.int1}
+double
+
+${bean1a.long1}
+byte
+${bean1a.long1}
+char
+${bean1a.long1}
+short
+${bean1a.long1}
+int
+${bean1a.long1}
+long
+${bean1a.long1}
+float
+${bean1a.long1}
+double
+
+${bean1a.float1}
+byte
+${bean1a.float1}
+char
+${bean1a.float1}
+short
+${bean1a.float1}
+int
+${bean1a.float1}
+long
+${bean1a.float1}
+float
+${bean1a.float1}
+double
+
+${bean1a.double1}
+byte
+${bean1a.double1}
+char
+${bean1a.double1}
+short
+${bean1a.double1}
+int
+${bean1a.double1}
+long
+${bean1a.double1}
+float
+${bean1a.double1}
+double
+
+#######################################################
+# test the entire relational comparison type promotion matrix
+
+${bean1a.byte1 < bean1a.byte1}
+boolean
+${bean1a.byte1 < bean1a.char1}
+boolean
+${bean1a.byte1 < bean1a.short1}
+boolean
+${bean1a.byte1 < bean1a.int1}
+boolean
+${bean1a.byte1 < bean1a.long1}
+boolean
+${bean1a.byte1 < bean1a.float1}
+boolean
+${bean1a.byte1 < bean1a.double1}
+boolean
+
+${bean1a.char1 < bean1a.byte1}
+boolean
+${bean1a.char1 < bean1a.char1}
+boolean
+${bean1a.char1 < bean1a.short1}
+boolean
+${bean1a.char1 < bean1a.int1}
+boolean
+${bean1a.char1 < bean1a.long1}
+boolean
+${bean1a.char1 < bean1a.float1}
+boolean
+${bean1a.char1 < bean1a.double1}
+boolean
+
+${bean1a.short1 < bean1a.byte1}
+boolean
+${bean1a.short1 < bean1a.char1}
+boolean
+${bean1a.short1 < bean1a.short1}
+boolean
+${bean1a.short1 < bean1a.int1}
+boolean
+${bean1a.short1 < bean1a.long1}
+boolean
+${bean1a.short1 < bean1a.float1}
+boolean
+${bean1a.short1 < bean1a.double1}
+boolean
+
+${bean1a.int1 < bean1a.byte1}
+boolean
+${bean1a.int1 < bean1a.char1}
+boolean
+${bean1a.int1 < bean1a.short1}
+boolean
+${bean1a.int1 < bean1a.int1}
+boolean
+${bean1a.int1 < bean1a.long1}
+boolean
+${bean1a.int1 < bean1a.float1}
+boolean
+${bean1a.int1 < bean1a.double1}
+boolean
+
+${bean1a.long1 < bean1a.byte1}
+boolean
+${bean1a.long1 < bean1a.char1}
+boolean
+${bean1a.long1 < bean1a.short1}
+boolean
+${bean1a.long1 < bean1a.int1}
+boolean
+${bean1a.long1 < bean1a.long1}
+boolean
+${bean1a.long1 < bean1a.float1}
+boolean
+${bean1a.long1 < bean1a.double1}
+boolean
+
+${bean1a.float1 < bean1a.byte1}
+boolean
+${bean1a.float1 < bean1a.char1}
+boolean
+${bean1a.float1 < bean1a.short1}
+boolean
+${bean1a.float1 < bean1a.int1}
+boolean
+${bean1a.float1 < bean1a.long1}
+boolean
+${bean1a.float1 < bean1a.float1}
+boolean
+${bean1a.float1 < bean1a.double1}
+boolean
+
+${bean1a.double1 < bean1a.byte1}
+boolean
+${bean1a.double1 < bean1a.char1}
+boolean
+${bean1a.double1 < bean1a.short1}
+boolean
+${bean1a.double1 < bean1a.int1}
+boolean
+${bean1a.double1 < bean1a.long1}
+boolean
+${bean1a.double1 < bean1a.float1}
+boolean
+${bean1a.double1 < bean1a.double1}
+boolean
+
+#######################################################
+# test other relational comparison rules
+
+${null == null}
+boolean
+${noSuchAttribute == noSuchAttribute}
+boolean
+${noSuchAttribute == null}
+boolean
+${null == noSuchAttribute}
+boolean
+${bean1a == null}
+boolean
+${null == bean1a}
+boolean
+${bean1a == bean1a}
+boolean
+${bean1a > "hello"}
+boolean
+${bean1a.bean1 < 14}
+boolean
+${bean1a.bean1 == "hello"}
+boolean
+
+#######################################################
+# test String comparisons
+
+${bean1a.string1 == "hello"}
+boolean
+${bean1a.string1 != "hello"}
+boolean
+${bean1a.string1 == "goodbye"}
+boolean
+${bean1a.string1 != "goodbye"}
+boolean
+${bean1a.string1 > "goodbye"}
+boolean
+${"hello" == bean1a.string1}
+boolean
+${"goodbye" > bean1a.string1}
+boolean
+
+#######################################################
+# test errors in property traversal
+
+${noSuchAttribute.abc}
+java.lang.Object
+${bean1a.bean2.byte1}
+java.lang.Object
+${bean1a.noProperty}
+java.lang.Object
+${bean1a.noGetter}
+java.lang.Object
+${bean1a.errorInGetter}
+java.lang.Object
+${bean1a.bean2.string2}
+java.lang.Object
+
+#######################################################
+# test accessing public properties from private classes
+
+${pbean1.value}
+java.lang.Object
+${pbean2.value}
+java.lang.Object
+${pbean3.value}
+java.lang.Object
+${pbean4.value}
+java.lang.Object
+${pbean5.value}
+java.lang.Object
+${pbean6.value}
+java.lang.Object
+${pbean7.value}
+java.lang.Object
+
+#######################################################
+# test literal conversions
+
+true
+boolean
+false
+boolean
+12
+byte
+12
+char
+12
+short
+12
+int
+12
+long
+12
+float
+12
+double
+
+hello
+org.apache.taglibs.standard.lang.jstl.test.Bean2
+badvalue
+org.apache.taglibs.standard.lang.jstl.test.Bean2
+hello
+org.apache.taglibs.standard.lang.jstl.test.Bean1
+
+#######################################################
+# test null values bumped up to constants
+
+${null}
+boolean
+${null}
+byte
+${null}
+short
+${null}
+char
+${null}
+int
+${null}
+long
+${null}
+float
+${null}
+double
+${null}
+java.lang.Boolean
+${null}
+java.lang.Byte
+${null}
+java.lang.Short
+${null}
+java.lang.Character
+${null}
+java.lang.Integer
+${null}
+java.lang.Long
+${null}
+java.lang.Float
+${null}
+java.lang.Double
+
+
+#######################################################
+# test reserved words as identifiers
+
+${and}
+java.lang.Object
+${or}
+java.lang.Object
+${not}
+java.lang.Object
+${eq}
+java.lang.Object
+${ne}
+java.lang.Object
+${lt}
+java.lang.Object
+${gt}
+java.lang.Object
+${le}
+java.lang.Object
+${ge}
+java.lang.Object
+${instanceof}
+java.lang.Object
+${true}
+java.lang.Object
+${false}
+java.lang.Object
+${null}
+java.lang.Object
+
+
+#######################################################
+# test reserved words as property names
+
+${bean1a.and}
+java.lang.Object
+${bean1a.or}
+java.lang.Object
+${bean1a.not}
+java.lang.Object
+${bean1a.eq}
+java.lang.Object
+${bean1a.ne}
+java.lang.Object
+${bean1a.lt}
+java.lang.Object
+${bean1a.gt}
+java.lang.Object
+${bean1a.le}
+java.lang.Object
+${bean1a.ge}
+java.lang.Object
+${bean1a.instanceof}
+java.lang.Object
+${bean1a.page}
+java.lang.Object
+${bean1a.request}
+java.lang.Object
+${bean1a.session}
+java.lang.Object
+${bean1a.application}
+java.lang.Object
+${bean1a.true}
+java.lang.Object
+${bean1a.false}
+java.lang.Object
+${bean1a.null}
+java.lang.Object
+
+#######################################################
+# test arithmetic
+
+${3+5}
+java.lang.Object
+${3-5}
+java.lang.Object
+${3/5}
+java.lang.Object
+${3*5}
+java.lang.Object
+${3*5.0}
+java.lang.Object
+${3.0*5}
+java.lang.Object
+${3.0*5.0}
+java.lang.Object
+${225 % 17}
+java.lang.Object
+
+${ 1 + 2 + 3 * 5 + 6}
+java.lang.Object
+${ 1 + (2 + 3) * 5 + 6}
+java.lang.Object
+
+#######################################################
+# test logical operators
+
+${ true}
+java.lang.Object
+${ not true}
+java.lang.Object
+${ not false}
+java.lang.Object
+${ not not true}
+java.lang.Object
+${ not not false}
+java.lang.Object
+${ true and false}
+java.lang.Object
+${ true and true}
+java.lang.Object
+${ false and true}
+java.lang.Object
+${ false and false}
+java.lang.Object
+${ true or false}
+java.lang.Object
+${ true or true}
+java.lang.Object
+${ false or true}
+java.lang.Object
+${ false or false}
+java.lang.Object
+
+${ false or false or false or true and false}
+java.lang.Object
+${ false or false or false or true and false or true}
+java.lang.Object
+
+#######################################################
+# test indexed access operator
+
+# Test as equivalent to property accessor
+${ bean1a["double1"] }
+java.lang.Object
+${ bean1a["double1"].class }
+java.lang.Object
+
+# Test as array accessor
+${ bean1a.stringArray1[-1]}
+java.lang.Object
+${ bean1a.stringArray1[0]}
+java.lang.Object
+${ bean1a.stringArray1[1]}
+java.lang.Object
+${ bean1a.stringArray1[2]}
+java.lang.Object
+${ bean1a.stringArray1[3]}
+java.lang.Object
+${ bean1a.stringArray1[4]}
+java.lang.Object
+
+# Test as list accessor
+${ bean1a.list1 [0] }
+java.lang.Object
+${ bean1a.list1 [1] }
+java.lang.Object
+${ bean1a.list1 [2][2] }
+java.lang.Object
+
+# Test as indexed property accessor
+${ bean1a.indexed1[-1]}
+java.lang.Object
+${ bean1a.indexed1[0]}
+java.lang.Object
+${ bean1a.indexed1[1]}
+java.lang.Object
+${ bean1a.indexed1[2]}
+java.lang.Object
+${ bean1a.indexed1[3]}
+java.lang.Object
+${ bean1a.indexed1[4]}
+java.lang.Object
+
+# Test as map accessor
+${ bean1a.map1.key1 }
+java.lang.Object
+${ bean1a.map1 ["key1"] }
+java.lang.Object
+${ bean1a.map1 [14] }
+java.lang.Object
+${ bean1a.map1 [2 * 7] }
+java.lang.Object
+${ bean1a.map1.recurse.list1[0] }
+java.lang.Object
+
+#######################################################
+# test String concatenation
+
+${ "a" + "bcd" }
+java.lang.Object
+${ "a" + (4*3) }
+java.lang.Object
+${ bean1a.map1 ["key" + (5-4)] }
+java.lang.Object
+
+#######################################################
+# test String comparisons
+
+${ "30" < "4" }
+java.lang.Object
+${ 30 < "4" }
+java.lang.Object
+${ 30 > "4" }
+java.lang.Object
+${ "0004" == "4" }
+java.lang.Object
+
+#######################################################
+# test relational comparison with alternate symbols
+
+${ 4 eq 3}
+java.lang.Object
+${ 4 ne 3}
+java.lang.Object
+${ 4 eq 4}
+java.lang.Object
+${ 4 ne 4}
+java.lang.Object
+${ 4 lt 3}
+java.lang.Object
+${ 4 gt 3}
+java.lang.Object
+${ 4 le 3}
+java.lang.Object
+${ 4 ge 3}
+java.lang.Object
+${ 4 le 4}
+java.lang.Object
+${ 4 ge 4}
+java.lang.Object
+
+#######################################################
+# test expressions on the left side of a value suffix
+
+${(3).class}
+java.lang.Object
+${(bean1a.map1)["key1"]}
+java.lang.Object
+
+
+#######################################################
+# test String/boolean logical operators
+
+${'true' and false}
+java.lang.Object
+${'true' or true}
+java.lang.Object
+${false and 'true'}
+java.lang.Object
+${false or 'true'}
+java.lang.Object
+
+#######################################################
+# test empty operator
+
+${ empty "A"}
+java.lang.Object
+${ empty "" }
+java.lang.Object
+${ empty null }
+java.lang.Object
+${ empty false}
+java.lang.Object
+${ empty 0}
+java.lang.Object
+${ not empty 0}
+java.lang.Object
+${ not empty empty 0}
+java.lang.Object
+${ empty emptyTests.emptyArray }
+java.lang.Object
+${ empty emptyTests.nonemptyArray }
+java.lang.Object
+${ empty emptyTests.emptyList }
+java.lang.Object
+${ empty emptyTests.nonemptyList }
+java.lang.Object
+${ empty emptyTests.emptyMap }
+java.lang.Object
+${ empty emptyTests.nonemptyMap }
+java.lang.Object
+${ empty emptyTests.emptySet }
+java.lang.Object
+${ empty emptyTests.nonemptySet }
+java.lang.Object
+
+#######################################################
+# test String arithmetic
+
+${ "6" / "3" }
+java.lang.Object
+${ 3 + "4" }
+java.lang.Object
+${ "4" + 3 }
+java.lang.Object
+${ 3 + "4.5" }
+java.lang.Object
+${ "4.5" + 3 }
+java.lang.Object
+${ 3.0 + 6.0}
+java.lang.Object
+${ 31121.0 * 61553.0 }
+java.lang.Object
+${ 31121 * 61553 }
+java.lang.Object
+${ 65536 * 65536 * 65536 * 32759 }
+java.lang.Object
+${ 9220838762064379904.0 - 9220838762064379900.0 }
+java.lang.Object
+${ 9220838762064379904 - 9220838762064379900 }
+java.lang.Object
+
+#######################################################
+# test relational operators involving null
+
+${ null == null }
+java.lang.Object
+${ null != null }
+java.lang.Object
+${ null > null }
+java.lang.Object
+${ null < null }
+java.lang.Object
+${ null >= null }
+java.lang.Object
+${ null <= null }
+java.lang.Object
+
+${ null == 3 }
+java.lang.Object
+${ null != 3 }
+java.lang.Object
+${ null > 3 }
+java.lang.Object
+${ null < 3 }
+java.lang.Object
+${ null >= 3 }
+java.lang.Object
+${ null <= 3 }
+java.lang.Object
+
+${ 3 == null }
+java.lang.Object
+${ 3 != null }
+java.lang.Object
+${ 3 > null }
+java.lang.Object
+${ 3 < null }
+java.lang.Object
+${ 3 >= null }
+java.lang.Object
+${ 3 <= null }
+java.lang.Object
+
+${ null == "" }
+java.lang.Object
+${ null != "" }
+java.lang.Object
+${ "" == null }
+java.lang.Object
+${ "" != null }
+java.lang.Object
+
+#######################################################
+# arithmetic operators involving Strings
+
+${ 4 + 3 }
+java.lang.Object
+${ 4.0 + 3 }
+java.lang.Object
+${ 4 + 3.0 }
+java.lang.Object
+${ 4.0 + 3.0 }
+java.lang.Object
+${ "4" + 3 }
+java.lang.Object
+${ "4.0" + 3 }
+java.lang.Object
+${ "4" + 3.0 }
+java.lang.Object
+${ "4.0" + 3.0 }
+java.lang.Object
+${ 4 + "3" }
+java.lang.Object
+${ 4.0 + "3" }
+java.lang.Object
+${ 4 + "3.0" }
+java.lang.Object
+${ 4.0 + "3.0" }
+java.lang.Object
+${ "4" + "3" }
+java.lang.Object
+${ "4.0" + "3" }
+java.lang.Object
+${ "4" + "3.0" }
+java.lang.Object
+${ "4.0" + "3.0" }
+java.lang.Object
+
+
+${ 4 - 3 }
+java.lang.Object
+${ 4.0 - 3 }
+java.lang.Object
+${ 4 - 3.0 }
+java.lang.Object
+${ 4.0 - 3.0 }
+java.lang.Object
+${ "4" - 3 }
+java.lang.Object
+${ "4.0" - 3 }
+java.lang.Object
+${ "4" - 3.0 }
+java.lang.Object
+${ "4.0" - 3.0 }
+java.lang.Object
+${ 4 - "3" }
+java.lang.Object
+${ 4.0 - "3" }
+java.lang.Object
+${ 4 - "3.0" }
+java.lang.Object
+${ 4.0 - "3.0" }
+java.lang.Object
+${ "4" - "3" }
+java.lang.Object
+${ "4.0" - "3" }
+java.lang.Object
+${ "4" - "3.0" }
+java.lang.Object
+${ "4.0" - "3.0" }
+java.lang.Object
+
+
+${ 4 * 3 }
+java.lang.Object
+${ 4.0 * 3 }
+java.lang.Object
+${ 4 * 3.0 }
+java.lang.Object
+${ 4.0 * 3.0 }
+java.lang.Object
+${ "4" * 3 }
+java.lang.Object
+${ "4.0" * 3 }
+java.lang.Object
+${ "4" * 3.0 }
+java.lang.Object
+${ "4.0" * 3.0 }
+java.lang.Object
+${ 4 * "3" }
+java.lang.Object
+${ 4.0 * "3" }
+java.lang.Object
+${ 4 * "3.0" }
+java.lang.Object
+${ 4.0 * "3.0" }
+java.lang.Object
+${ "4" * "3" }
+java.lang.Object
+${ "4.0" * "3" }
+java.lang.Object
+${ "4" * "3.0" }
+java.lang.Object
+${ "4.0" * "3.0" }
+java.lang.Object
+
+
+${ 4 / 3 }
+java.lang.Object
+${ 4.0 / 3 }
+java.lang.Object
+${ 4 / 3.0 }
+java.lang.Object
+${ 4.0 / 3.0 }
+java.lang.Object
+${ "4" / 3 }
+java.lang.Object
+${ "4.0" / 3 }
+java.lang.Object
+${ "4" / 3.0 }
+java.lang.Object
+${ "4.0" / 3.0 }
+java.lang.Object
+${ 4 / "3" }
+java.lang.Object
+${ 4.0 / "3" }
+java.lang.Object
+${ 4 / "3.0" }
+java.lang.Object
+${ 4.0 / "3.0" }
+java.lang.Object
+${ "4" / "3" }
+java.lang.Object
+${ "4.0" / "3" }
+java.lang.Object
+${ "4" / "3.0" }
+java.lang.Object
+${ "4.0" / "3.0" }
+java.lang.Object
+
+
+${ 4 % 3 }
+java.lang.Object
+${ 4.0 % 3 }
+java.lang.Object
+${ 4 % 3.0 }
+java.lang.Object
+${ 4.0 % 3.0 }
+java.lang.Object
+${ "4" % 3 }
+java.lang.Object
+${ "4.0" % 3 }
+java.lang.Object
+${ "4" % 3.0 }
+java.lang.Object
+${ "4.0" % 3.0 }
+java.lang.Object
+${ 4 % "3" }
+java.lang.Object
+${ 4.0 % "3" }
+java.lang.Object
+${ 4 % "3.0" }
+java.lang.Object
+${ 4.0 % "3.0" }
+java.lang.Object
+${ "4" % "3" }
+java.lang.Object
+${ "4.0" % "3" }
+java.lang.Object
+${ "4" % "3.0" }
+java.lang.Object
+${ "4.0" % "3.0" }
+java.lang.Object
+
+
+${ "8" / "2" }
+java.lang.Object
+${ "4e2" + "3" }
+java.lang.Object
+${ "4" + "3e2" }
+java.lang.Object
+${ "4e2" + "3e2" }
+java.lang.Object
+
+
+#######################################################
+# unary minus operator involving Strings
+
+${ -3 }
+java.lang.Object
+${ -3.0 }
+java.lang.Object
+${ -"3" }
+java.lang.Object
+${ -"3.0" }
+java.lang.Object
+${ -"3e2" }
+java.lang.Object

@@ -1,0 +1,21 @@
+
+===== Alarms
+
+This _Alarms Dashlet_ shows a table with a short alarm description.
+
+.Information of the alarm
+[options="header, autowidth"]
+|===
+| Field        | Description
+| _Time_       | Absolute time since the alarm appeared
+| _Node label_ | Node label of the node where the alarm occurred
+| _UEI_        | {opennms-product-name} _Unique Event Identifier_ for this alarm
+|===
+
+The _Alarms Dashlet_ can be configured with the following parameters.
+
+[options="autowidth"]
+|===
+| Boost support | <<webui-opsboard-dashlet-boosting,Boosted Severity>>
+| Configuration | <<webui-opsboard-criteria-builder,Criteria Builder>>
+|===

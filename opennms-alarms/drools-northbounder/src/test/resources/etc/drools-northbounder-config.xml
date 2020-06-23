@@ -1,0 +1,14 @@
+<drools-northbounder-config>
+
+	<enabled>true</enabled>
+	<nagles-delay>1000</nagles-delay>
+	<batch-size>100</batch-size>
+	<queue-size>300000</queue-size>
+
+	<engine>
+		<name>JUnit</name>
+		<global name="owner" value="agalue" type="java.lang.String"/>
+		<ruleFile>src/test/resources/etc/test-rules.drl</ruleFile>
+	</engine>
+
+</drools-northbounder-config>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xsi:schemaLocation="
+        http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd
+">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.features</artifactId>
+    <version>25.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.distributed</groupId>
+  <artifactId>distributed-parent</artifactId>
+  <name>OpenNMS :: Features :: Distributed (Parent)</name>
+  <description>All features shared by distributed containers such as minion or sentinel</description>
+  <packaging>pom</packaging>
+  <modules>
+    <module>collection</module>
+    <module>core</module>
+    <module>dao</module>
+    <module>datasource</module>
+    <module>coordination</module>
+    <module>opennms-identity</module>
+    <module>service-registry</module>
+    <module>kv-store</module>
+    <module>distributed-cassandra</module>
+  </modules>
+</project>

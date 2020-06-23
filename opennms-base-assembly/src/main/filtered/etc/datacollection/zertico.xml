@@ -1,0 +1,21 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Zertico">
+   <resourceType name="intSenAnId" label="Zertico Internal Sensors Analog" resourceLabel="${intSenAnName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <group name="internalSensorsAnalog" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.39052.5.2.1.4" instance="intSenAnId" alias="intSenAnType" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.39052.5.2.1.5" instance="intSenAnId" alias="intSenAnName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.39052.5.2.1.7" instance="intSenAnId" alias="intSenAnValue" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.39052.5.2.1.10" instance="intSenAnId" alias="intSenLowAlarm" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.39052.5.2.1.11" instance="intSenAnId" alias="intSenLowWarn" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.39052.5.2.1.12" instance="intSenAnId" alias="intSenHighWarn" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.39052.5.2.1.13" instance="intSenAnId" alias="intSenHighAlarm" type="Gauge32"/>
+   </group>
+   <systemDef name="Zertico-Net-SNMP">
+      <sysoidMask>.1.3.6.1.4.1.8072.3.</sysoidMask>
+      <collect>
+         <includeGroup>internalSensorsAnalog</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

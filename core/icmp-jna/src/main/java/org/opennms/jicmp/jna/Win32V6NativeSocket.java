@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,10 +28,10 @@
 
 package org.opennms.jicmp.jna;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-
 
 import com.sun.jna.LastErrorException;
 import com.sun.jna.Native;
@@ -47,12 +47,16 @@ public class Win32V6NativeSocket extends NativeDatagramSocket {
         Native.register((String)null);
     }
 
-    private int m_sock;     
+    private final int m_sock;
 
-    public Win32V6NativeSocket(int family, int type, int protocol) throws Exception {
+    public Win32V6NativeSocket(int family, int type, int protocol, final int listenPort) throws Exception {
         m_sock = socket(family, type, protocol);
+        final sockaddr_in6 addr_in = new sockaddr_in6(listenPort);
+        bind(m_sock, addr_in, addr_in.size());
     }
-    
+
+    public native int bind(int socket, sockaddr_in6 address, int address_len) throws LastErrorException;
+
     public native int socket(int domain, int type, int protocol) throws LastErrorException;
 
     public native int sendto(int socket, Buffer buffer, int buflen, int flags, sockaddr_in6 dest_addr, int dest_addr_len) throws LastErrorException;
@@ -60,6 +64,16 @@ public class Win32V6NativeSocket extends NativeDatagramSocket {
     public native int recvfrom(int socket, Buffer buffer, int buflen, int flags, sockaddr_in6 in_addr, int[] in_addr_len) throws LastErrorException;
 
     public native int closesocket(int socket) throws LastErrorException;
+
+    @Override
+    public void setTrafficClass(final int tc) throws LastErrorException {
+        // it appears that IP_TOS and IPV6_TCLASS do not exist in Win32 anymore
+    }
+
+    @Override
+    public void allowFragmentation(final boolean frag) throws IOException {
+        allowFragmentation(IPPROTO_IPV6, IPV6_DONTFRAG, frag);
+    }
 
     @Override
     public int receive(NativeDatagramPacket p) throws UnknownHostException {
@@ -84,11 +98,12 @@ public class Win32V6NativeSocket extends NativeDatagramSocket {
     }
 
     @Override
-    public int close() {
-        return closesocket(getSock());
+    public void close() {
+        closesocket(getSock());
     }
 
-    protected int getSock() {
+    @Override
+    public int getSock() {
         return m_sock;
     }
 

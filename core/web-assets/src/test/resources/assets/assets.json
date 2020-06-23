@@ -1,0 +1,11 @@
+{
+  "test-asset": {
+    "js": "assets/test.js"
+  },
+  "": {
+    "js": [
+      "assets/foo.js",
+      "assets/bar.js"
+    ]
+  }
+}

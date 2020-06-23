@@ -8,6 +8,7 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
     c_rulework text;
     c_ruletemp text;
     c_scopeid text;
+    c_rulescope text;
 
     i integer;
 
@@ -47,7 +48,7 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
                 c_r := c_rulework;
             end if;
 
-            if not check_rule(c_i, c_r) then
+            if check_rule(c_i, c_r) is not true then
                 return 'f';
             end if;
 
@@ -56,11 +57,9 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
             i := i + 1;
         end loop;
     -- IPv6
-    elsif i_ipaddress ~ E'^[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+(%[0-9]+)?$' and i_rule ~ E'^[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+(%[0-9*,-]+)?$' then
+    elsif i_ipaddress ~ E'^[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+:[0-9a-f]+(%.+)?$' and i_rule ~ E'^[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+:[0-9a-f*,-]+(%.+)?$' then
         c_addrwork := i_ipaddress;
         c_rulework := i_rule;
-
-        -- TODO Add support for scope identifiers
 
         i := 0;
         while i < 8 loop
@@ -87,11 +86,17 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
 
             if (strpos(c_rulework, ':') > 0) then
                 c_r := substr(c_rulework, 0, strpos(c_rulework, ':'));
+            elsif (strpos(c_rulework, '%') > 0) then
+                c_rulescope := substr(c_rulework, strpos(c_rulework, '%') + 1);
+                c_r := substr(c_rulework, 0, strpos(c_rulework, '%'));
             else
                 c_r := c_rulework;
             end if;
 
-            if not check_hex_rule(c_i, c_r) then
+            if check_hex_rule(c_i, c_r) is not true then
+                return 'f';
+            end if;
+            if (c_rulescope is not null) and ((c_scopeid = c_rulescope) is not true) then
                 return 'f';
             end if;
 
@@ -101,7 +106,7 @@ create or replace function iplike(i_ipaddress text, i_rule text) returns boolean
         end loop;
     else
         return 'f';
-    end if;	
+    end if;
 
   return 't';
 end;
@@ -149,7 +154,7 @@ $$ language plpgsql;
 create or replace function check_rule (i_octet integer, i_rule text) returns boolean as $$
 declare
     c_element text;
-    c_work	text;
+    c_work    text;
 begin
     if i_rule = '*' then   -- * matches anything!
         return 't';
@@ -171,7 +176,9 @@ begin
                 return 't';
             end if;
         else
-            if i_octet = to_number(c_element, '99999') then
+            if c_element = '*' then
+                return 't';
+            elsif i_octet = to_number(c_element, '99999') then
                 return 't';
             end if;
         end if;

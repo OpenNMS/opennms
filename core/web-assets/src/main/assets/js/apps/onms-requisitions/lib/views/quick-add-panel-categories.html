@@ -1,0 +1,24 @@
+<div>
+
+<button class="btn btn-secondary my-2" id="add-category" ng-click="addCategory()"><i class="fa fa-plus"/> Add Category</button>
+<br/>
+<ng-form name="categoryForm" ng-repeat="category in node.categories">
+  <div class="form-group">
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <div class="input-group-text"><i class="fa fa-pencil"></i></div>
+      </div>
+      <input class="form-control" type="text" name="categoryName" placeholder="Category Name" ng-model="category.name"
+             typeahead-min-length="0" typeahead-editable="true" uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue" required
+             ng-class="{ 'is-invalid' : categoryForm.categoryName.$invalid }">
+      <div class="input-group-append">
+        <button class="btn btn-secondary" type="button" ng-click="removeCategory($index)">
+          <span class="fa fa-trash"></span>
+        </button>
+      </div>
+      <p ng-show="categoryForm.categoryName.$invalid" class="invalid-feedback">Category name is required and should be unique on the node.</p>
+    </div>
+  </div>
+</ng-form>
+
+</div>

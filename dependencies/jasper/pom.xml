@@ -3,18 +3,65 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jasper-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Jasper Report</name>
+  <name>OpenNMS :: Dependencies :: Jasper Report</name>
   <dependencies>
     <dependency>
       <groupId>net.sf.jasperreports</groupId>
       <artifactId>jasperreports</artifactId>
       <version>${jasperreportsVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.castor</groupId>
+          <artifactId>castor-xml</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>eclipse</groupId>
+          <artifactId>jdtcore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.lowagie</groupId>
+          <artifactId>itext</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- if we can't get rid of castor completely, at least we can update it to the latest version -->
+    <dependency>
+      <groupId>org.codehaus.castor</groupId>
+      <artifactId>castor-xml</artifactId>
+      <version>1.4.1</version>
+      <exclusions>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
+      <version>2.1.7.js4</version>
       <exclusions>
         <exclusion>
           <groupId>eclipse</groupId>
@@ -25,6 +72,10 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bctsp-jdk14</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>bouncycastle</groupId>
           <artifactId>bcmail-jdk14</artifactId>
         </exclusion>
@@ -33,22 +84,6 @@
           <artifactId>bcprov-jdk14</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>jasperreports</groupId>
-      <artifactId>iText</artifactId>
-      <version>2.1.7</version>
-      <exclusions>
-        <exclusion>
-          <groupId>eclipse</groupId>
-          <artifactId>jdtcore</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jdt.core.compiler</groupId>
-      <artifactId>ecj</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -68,21 +103,32 @@
       <groupId>commons-digester</groupId>
       <artifactId>commons-digester</artifactId>
     </dependency>
-    <!-- yes, we really depend on this at runtime, for the compiler stuff -->
     <dependency>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>jasperreports-maven-plugin</artifactId>
-      <version>1.0-beta-3-OPENNMS-20120424-1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>backport-util-concurrent</groupId>
-          <artifactId>backport-util-concurrent</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.eclipse.jdt.core.compiler</groupId>
+      <artifactId>ecj</artifactId>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>jasperreports</id>
+      <name>Jasper Reports Maven Repository</name>
+      <url>http://maven.opennms.org/content/repositories/jasperreports</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>jaspersoft-third-party</id>
+      <name>JasperSoft Third Party Maven Repository</name>
+      <url>http://maven.opennms.org/content/repositories/jaspersoft-third-party</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+  </repositories>
 </project>

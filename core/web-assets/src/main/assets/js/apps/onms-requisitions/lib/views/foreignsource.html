@@ -1,0 +1,175 @@
+<div>
+<!-- Alejandro Galue (agalue@opennms.org) -->
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item"><a href="/opennms/index.jsp">Home</a></li>
+  <li class="breadcrumb-item"><a href="/opennms/admin/index.jsp">Admin</a></li>
+  <li class="breadcrumb-item"><a href="" ng-click="goTop()">Provisioning Requisitions</a></li>
+  <li class="breadcrumb-item" ng-hide="foreignSource == 'default'"><a href="" ng-click="goBack()">{{ foreignSource }}</a></li>
+  <li class="breadcrumb-item active" ng-hide="foreignSource == 'default'">Foreign Source Definition</li>
+  <li class="breadcrumb-item active" ng-show="foreignSource == 'default'">Default Definition</li>
+</ol>
+
+
+<!-- Toolbar -->
+
+<div class="row toolbar">
+  <div class="col-md-6">
+    <h4 ng-show="foreignSource == 'default'" class="d-none d-sm-block">Default Foreign Source Definition</h4>
+    <h4 ng-hide="foreignSource == 'default'" class="d-none d-sm-block">Foreign Source Definition for Requisition {{ foreignSource }}</h4>
+    <h4 class="visible-xs">FS Definition</h4>
+  </div>
+  <div class="col-md-6">
+    <div class="pull-right">
+      <button type="button" id="reset-default" class="btn btn-secondary" ng-click="reset()">
+        <span class="fa fa-retweet"></span> Reset to Default
+      </button>
+      <button type="button" id="save-foreign-source" class="btn btn-primary" ng-click="save()" ng-show="fsForm.$dirty" ng-disabled="fsForm.$invalid" ng-disabled="timingStatus.isRunning">
+        <span class="fa fa-save"></span> Save
+      </button>
+      <button type="button" id="go-back" class="btn btn-secondary" ng-click="goBack()">
+        <i class="fa fa-reply" aria-hidden="true"></i> Return
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Common - Content -->
+<form name="fsForm" class="mt-4 row" novalidate>
+  <div class="col-md-6">
+    <div class="form-group">
+      <label class="control-label">Last Modified</label>
+      <span class="col-form-label">{{ foreignSourceDef['date-stamp'] | onmsDate }}</span>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="form-group">
+      <label class="col-form-label" for="scanInterval">Scan Interval</label>
+      <input class="form-control" type="text" id="scanInterval" name="scanInterval" placeholder="Scan Interval" ng-model="foreignSourceDef['scan-interval']" required
+             ng-class="{ 'is-invalid' : fsForm.scanInterval.$invalid }">
+      <div ng-show="fsForm.scanInterval.$invalid" class="invalid-feedback">Scan Interval is required.</div>
+    </div>
+  </div>
+</form>
+
+<!-- Content -->
+
+<div class="row">
+  <div class="col-md-12">
+
+    <!-- Tab Panel -->
+    <uib-tabset>
+
+        <!-- Detectors Tab -->
+        <uib-tab heading="Detectors" id="tab-detectors">
+          <div class="btn-toolbar my-4 pull-right" role="toolbar" aria-label="Toolbar for detectors">
+              <div class="input-group input-group-sm mr-2">
+                <div class="input-group-prepend">
+                  <div class="input-group-text"><span class="fa fa-search"></span></div>
+                </div>
+                <input class="form-control" type="text" placeholder="Search/Filter Detectors" ng-model="filters.detector"></input>
+              </div>
+              <button type="button" id="add-detector" class="btn btn-secondary btn-sm" ng-click="addDetector()">
+                <span class="fa fa-plus"></span> Add Detector
+              </button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped table-sm">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Parameters</th>
+                  <th><span class="pull-right">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="detector in filteredDetectors | startFrom:(detectorsCurrentPage-1)*detectorsPageSize | limitTo:detectorsPageSize ">
+                  <td>{{ detector.name }}</td>
+                  <td>{{ detector.class }}</td>
+                  <td>
+                    <div ng-hide="detector.parameter.length > 0">[No parameters]</div>
+                    <div ng-repeat="parm in detector.parameter">
+                      <p><b>{{ parm.key }} : </b> {{ parm.value }}</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="pull-right">
+                      <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Edit the detector" ng-click="editDetector(detector)">
+                        <span class="fa fa-pencil"></span>
+                      </button>
+                      <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Move the detector" ng-click="moveDetector(detector)">
+                        <span class="fa fa-arrows"></span>
+                      </button>
+                      <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Remove the detector" ng-click="removeDetector(detector)">
+                        <span class="fa fa-trash"></span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <ul uib-pagination total-items="detectorsTotalItems" num-pages="detectorsNumPages" ng-model="detectorsCurrentPage" max-size="detectorsMaxSize" boundary-links="true" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-show="filteredDetectors.length > detectorsPageSize"></ul>
+            </div>
+        </uib-tab>
+
+        <!-- Policies Tab -->
+        <uib-tab heading="Policies" id="tab-policies">
+          <div class="btn-toolbar my-4 pull-right" role="toolbar" aria-label="Toolbar for policies">
+            <div class="input-group input-group-sm mr-2">
+              <div class="input-group-prepend">
+                <div class="input-group-text"><span class="fa fa-search"></span></div>
+              </div>
+              <input class="form-control" type="text" placeholder="Search/Filter Policies" ng-model="filters.policy" />
+            </div>
+            <div class="btn-group">
+              <button type="button" id="add-policy" class="btn btn-secondary btn-sm" ng-click="addPolicy()">
+                <span class="fa fa-plus"></span> Add Policy
+              </button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped table-sm">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Class</th>
+                  <th>Parameters</th>
+                  <th><span class="pull-right">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="policy in filteredPolicies | startFrom:(policiesCurrentPage-1)*policiesPageSize | limitTo:policiesPageSize ">
+                  <td>{{ policy.name }}</td>
+                  <td>{{ policy.class }}</td>
+                  <td>
+                    <div ng-hide="policy.parameter.length > 0">[No parameters]</div>
+                    <div ng-repeat="parm in policy.parameter">
+                      <p><b>{{ parm.key }} : </b> {{ parm.value }}</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="pull-right">
+                      <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Edit the policy" ng-click="editPolicy(policy)">
+                        <span class="fa fa-pencil"></span>
+                      </button>
+                      <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Move the policy" ng-click="movePolicy(policy)">
+                        <span class="fa fa-arrows"></span>
+                      </button>
+                      <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Remove the policy" ng-click="removePolicy(policy)">
+                        <span class="fa fa-trash"></span>
+                      </button>
+                      </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <ul uib-pagination total-items="policiesTotalItems" num-pages="policiesNumPages" ng-model="policiesCurrentPage" max-size="policiesMaxSize" boundary-links="true" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-show="filteredPolicies.length > policiesPageSize"></ul>
+          </div>
+        </uib-tab>
+  </uib-tabset>
+
+  </div> <!-- column -->
+</div> <!-- row -->
+
+</div>

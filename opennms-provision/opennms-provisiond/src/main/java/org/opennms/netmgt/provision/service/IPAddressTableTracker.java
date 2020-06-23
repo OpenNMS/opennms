@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,15 +29,12 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.getInetAddress;
-import static org.opennms.core.utils.InetAddressUtils.normalize;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 import java.util.Arrays;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.RowCallback;
@@ -47,6 +44,8 @@ import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * PhysInterfaceTableTracker
@@ -85,8 +84,8 @@ public class IPAddressTableTracker extends TableTracker {
         IP_ADDRESS_PREFIX_INDEX,
         IP_ADDRESS_TYPE_INDEX
     };
-    
-    class IPAddressRow extends SnmpRowResult {
+
+    public static class IPAddressRow extends SnmpRowResult {
 
         public IPAddressRow(final int columnCount, final SnmpInstId instance) {
             super(columnCount, instance);
@@ -100,6 +99,11 @@ public class IPAddressTableTracker extends TableTracker {
         
         public String getIpAddress() {
             final SnmpResult result = getResult(IP_ADDRESS_IF_INDEX);
+            if (result == null) {
+                LOG.warn("BAD AGENT: Device is missing IP-MIB::ipAddressIfIndex. Skipping.");
+                return null;
+            }
+
             SnmpInstId instance = result.getInstance();
             final int[] instanceIds = instance.getIds();
 
@@ -208,17 +212,16 @@ public class IPAddressTableTracker extends TableTracker {
                 return null;
             }
 
-            final OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
-            snmpIface.setNetMask(netMask);
-            snmpIface.setCollectionEnabled(true);
+            final InetAddress inetAddress = InetAddressUtils.addr(ipAddr);
+            final OnmsIpInterface iface = new OnmsIpInterface(inetAddress, null);
+            iface.setNetMask(netMask);
 
-            final OnmsIpInterface iface = new OnmsIpInterface(ipAddr, null);
-            iface.setSnmpInterface(snmpIface);
-
-            iface.setIfIndex(ifIndex);
-            final String hostName = normalize(ipAddr);
-            LOG.debug("setIpHostName: {}", hostName);
-            iface.setIpHostName(hostName == null? ipAddr : hostName);
+            if (ifIndex != null) {
+                final OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
+                snmpIface.setCollectionEnabled(true);
+                iface.setSnmpInterface(snmpIface);
+                iface.setIfIndex(ifIndex);
+            }
 
             return iface;
         }

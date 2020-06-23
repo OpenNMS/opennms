@@ -6,6 +6,6 @@
     <mstation>master.nmanage.com</mstation>
   </header>
   <users>
-  <!-- Leave out users so that Castor throws an exception -->
+  <!-- Leave out users so that JAXB throws an exception -->
   </users>
 </userinfo>

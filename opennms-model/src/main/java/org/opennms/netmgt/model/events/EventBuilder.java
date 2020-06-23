@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,17 +29,24 @@
 package org.opennms.netmgt.model.events;
 
 import java.net.InetAddress;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.core.time.ZonedDateTimeBuilder;
+import org.opennms.core.utils.StringUtils;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Snmp;
@@ -49,18 +56,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.util.StringUtils;
 
 /**
  * <p>EventBuilder class.</p>
  */
 public class EventBuilder {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(EventBuilder.class);
 
-    
+    private static final Logger LOG = LoggerFactory.getLogger(EventBuilder.class);
+
     private Event m_event;
-    
+
+    private ZonedDateTimeBuilder zonedDateTimeBuilder = null;
+
+    /**
+     * <p>Constructor for EventBuilder.</p>
+     *
+     * @param uei a {@link java.lang.String} object.
+     * @param source a {@link java.lang.String} object.
+     */
+    public EventBuilder() {
+        m_event = new Event();
+    }
+
     /**
      * <p>Constructor for EventBuilder.</p>
      *
@@ -82,42 +99,77 @@ public class EventBuilder {
         m_event = new Event();
         setUei(uei);
         setTime(date);
-        setCreationTime(date);
         setSource(source);
+        checkForIllegalUei();
     }
-    
+
     /**
      * <p>Constructor for EventBuilder.</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public EventBuilder(final Event event) {
-        this(event, new Date());
+        m_event = event;
+        Date now = new Date();
+        setTime(now);
+        checkForIllegalUei();
+    }
+
+
+    protected void checkForIllegalUei(){
+        if(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI.equals(this.m_event.getUei())){
+            LOG.warn("The use of EventBuilder is deprecated for UEI="+EventConstants.NODE_LABEL_CHANGED_EVENT_UEI
+                    +", use NodeLabelChangedEventBuilder instead");
+        }
+    }
+
+    public Date currentEventTime() {
+        if (m_event.getTime() == null && zonedDateTimeBuilder != null) {
+            ZonedDateTime time = zonedDateTimeBuilder.build();
+            return Date.from(time.toInstant());
+        } else {
+            return m_event.getTime();
+        }
     }
 
     /**
-     * <p>Constructor for EventBuilder.</p>
+     * <p>getEvent</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
-     * @param date a {@link java.util.Date} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public EventBuilder(final Event event, final Date date) {
-    	m_event = event;
-	    setTime(date);
-	    setCreationTime(date);
-	}
+    public Event getEvent() {
+        if (m_event.getTime() == null && zonedDateTimeBuilder != null) {
+            ZonedDateTime time = zonedDateTimeBuilder.build();
+            m_event.setTime(Date.from(time.toInstant()));
+        }
 
-	/**
-	 * <p>getEvent</p>
-	 *
-	 * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-	 */
-	public Event getEvent() {
+        if (m_event.getCreationTime() == null) {
+            // The creation time has been used as the time when the event
+            // is stored in the database so update it right before we return
+            // the event object.
+            m_event.setCreationTime(new Date());
+        }
         return m_event;
     }
-	
+
+    public Log getLog() {
+        Event event = getEvent();
+
+        Events events = new Events();
+        events.setEvent(new Event[]{event});
+
+        Header header = new Header();
+        header.setCreated(StringUtils.toStringEfficiently(event.getCreationTime()));
+
+        Log log = new Log();
+        log.setHeader(header);
+        log.setEvents(events);
+        return log;
+    }
+
     public EventBuilder setUei(final String uei) {
         m_event.setUei(uei);
+        checkForIllegalUei();
         return this;
     }
 
@@ -129,18 +181,57 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
     public EventBuilder setTime(final Date date) {
-       m_event.setTime(EventConstants.formatToString(date));
+       m_event.setTime(date);
        return this;
     }
-    
-    /**
-     * <p>setCreationTime</p>
-     *
-     * @param date a {@link java.util.Date} object.
-     * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
-     */
-    public EventBuilder setCreationTime(final Date date) {
-        m_event.setCreationTime(EventConstants.formatToString(date));
+
+    protected ZonedDateTimeBuilder getZonedDateTimeBuilder() {
+        if (zonedDateTimeBuilder == null) {
+            zonedDateTimeBuilder = new ZonedDateTimeBuilder();
+        }
+        return zonedDateTimeBuilder;
+    }
+
+    public EventBuilder setYear(final int value) {
+        getZonedDateTimeBuilder().setYear(value);
+        return this;
+    }
+
+    public EventBuilder setMonth(final int value) {
+        // Note that java.time.Month values are 1-based
+        // unlike java.util.Calendar.MONTH values which
+        // are zero-based
+        getZonedDateTimeBuilder().setMonth(value);
+        return this;
+    }
+
+    public EventBuilder setDayOfMonth(final int value) {
+        getZonedDateTimeBuilder().setDayOfMonth(value);
+        return this;
+    }
+
+    public EventBuilder setHourOfDay(final int value) {
+        getZonedDateTimeBuilder().setHourOfDay(value);
+        return this;
+    }
+
+    public EventBuilder setMinute(final int value) {
+        getZonedDateTimeBuilder().setMinute(value);
+        return this;
+    }
+
+    public EventBuilder setSecond(final int value) {
+        getZonedDateTimeBuilder().setSecond(value);
+        return this;
+    }
+
+    public EventBuilder setMillisecond(final int value) {
+        getZonedDateTimeBuilder().setNanosecond(value * 1000);
+        return this;
+    }
+
+    public EventBuilder setZoneId(final ZoneId value) {
+        getZonedDateTimeBuilder().setZoneId(value);
         return this;
     }
 
@@ -297,7 +388,7 @@ public class EventBuilder {
         }
 
         for(final Parm parm : m_event.getParmCollection()) {
-            if (parm.getParmName().equals(val)) {
+            if (parm.getParmName().equals(parmName)) {
             	final Value value = new Value();
                 value.setContent(val);
                 parm.setValue(value);
@@ -306,6 +397,17 @@ public class EventBuilder {
         }
 
         return addParam(parmName, val);
+    }
+
+    /**
+     * <p>setParam</p>
+     *
+     * @param parmName a {@link java.lang.String} object.
+     * @param val a int.
+     * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
+     */
+    public EventBuilder setParam(final String parmName, final int val) {
+        return setParam(parmName, Integer.toString(val));
     }
 
     /**
@@ -360,7 +462,7 @@ public class EventBuilder {
      * @return a {@link org.opennms.netmgt.model.events.EventBuilder} object.
      */
     public EventBuilder addParam(final String parmName, final Collection<String> vals) {
-    	final String val = StringUtils.collectionToCommaDelimitedString(vals);
+        final String val = org.springframework.util.StringUtils.collectionToCommaDelimitedString(vals);
         return addParam(parmName, val);
         
     }

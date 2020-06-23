@@ -1,0 +1,101 @@
+
+NORTEL-GENERIC-MIB 
+
+DEFINITIONS ::= BEGIN
+
+   IMPORTS
+       nortel
+           FROM NORTEL-MIB
+       MODULE-IDENTITY, OBJECT-IDENTITY
+           FROM SNMPv2-SMI;
+
+
+   nortelGenericMIBs  MODULE-IDENTITY
+       LAST-UPDATED "9906240000Z"
+       ORGANIZATION "Nortel Networks"
+       CONTACT-INFO
+              "   Jingdong Liu 
+
+                Postal: Nortel Networks
+                        P. O. Box 3511, Station C
+                        Ottawa, Ontario
+                        CANADA
+                        K1Y 4H7
+
+                Email:  jingdong@nortelnetworks.com"
+
+       DESCRIPTION
+               "This module represents the top-level MIB branch for some 
+                of the generic MIBs that are common to NortelNetworks products." 
+
+       -- Revision history
+
+       REVISION "9906240000Z"
+       DESCRIPTION
+                " The fourth version of this MIB module. 
+                  Module name changed.
+                  
+                  Revisions introduced by Shobana Sundaram."
+
+    
+       REVISION "9905310000Z"
+       DESCRIPTION
+                " The third version of this MIB module. 
+                  Contact info updated and Revision history added."
+                  
+
+ 
+       REVISION "9904120000Z"
+       DESCRIPTION
+                " The second version of this MIB module. 
+                  Contact info introduced and Revision history added.
+                  Object description improved."
+
+
+       REVISION "9903220000Z"
+       DESCRIPTION
+                " The first version of this MIB module."
+
+
+       ::= { nortel 29 }
+
+
+       nortelNetworkManagementInterfaceMIBs  OBJECT-IDENTITY
+           STATUS         current
+           DESCRIPTION    
+                  "This OID represents the Network Management Interface (NMI)
+                   branch for the Nortel Networks's generic MIBs suite. 
+                   Nortel NMI is an umbrella to include various generic MIBs 
+                   that can be implemented by Nortel devices to 
+                   interface to a carrier grade Network Management System (NMS). 
+
+                   This branch currently consists of MIBs to support carrier
+                   grade alarm surveillance. Characteristics of such a system
+                   as applicable to this interface are 
+                         - reliable and accurate alarm service 
+                         - capability to summarise currently outstanding alarms
+                         - no stuck alarms, no need to age out / manually clear alarms
+                         - standards based open interface to alarms 
+
+                   For future revisions of the Nortel NMI MIBs, it is 
+                   mandatory to ensure that the changes are backward 
+                   compatible. It is very IMPORTANT to follow the 
+                   SMI rules at RFC 1902 to ensure that no 
+                   non-backward compatible changes are made
+                   as multiple applications use this for various purposes.
+                   This MIB is entensible, but the current set of variables
+                   cannot be modified. 
+
+
+                   "
+
+           ::=  { nortelGenericMIBs 1 }
+
+
+ -- additional generic MIBs can be registered here
+
+
+
+END
+
+

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -39,7 +39,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Ping {
+public abstract class Ping {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Ping.class);
 
@@ -69,7 +69,7 @@ public class Ping {
                     if (reply.isEchoReply()
                         && reply.getThreadId() == m_icmpId) {
                         double rtt = reply.elapsedTime(TimeUnit.MILLISECONDS);
-                        System.out.println(ICMPEchoPacket.getNetworkSize()
+                        System.out.println(pkt.getData().length
                                            + " bytes from "
                                            + InetAddressUtils.str(pkt.getAddress())
                                            + ": icmp_seq="
@@ -100,10 +100,12 @@ public class Ping {
     
         String host = argv[0];
     
+        short m_icmpId = 2;
+        
         IcmpSocket m_socket = null;
     
         try {
-            m_socket = new IcmpSocket();
+            m_socket = new IcmpSocket(m_icmpId);
     } catch (UnsatisfiedLinkError e) {
             System.err.println("UnsatisfiedLinkError while creating an "
                                + "IcmpSocket.  Most likely failed to load "
@@ -138,8 +140,6 @@ public class Ping {
         }
     
         System.out.println("PING " + host + " (" + InetAddressUtils.str(addr) + "): 56 data bytes");
-    
-    short m_icmpId = 2;
     
         Ping.Stuff s = new Ping.Stuff(m_socket, m_icmpId);
         Thread t = new Thread(s, Ping.class.getSimpleName());

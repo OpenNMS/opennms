@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<thresholding-config>
+    <group name="mock" rrdRepository="${install.share.dir}/rrd/snmp/">
+        <threshold type="high" ds-name="freeMem" ds-type="node" value="10000" rearm="5000" trigger="1"/>
+    </group>
+</thresholding-config>

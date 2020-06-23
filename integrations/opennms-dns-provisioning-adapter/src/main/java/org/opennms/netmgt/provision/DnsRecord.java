@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -42,8 +42,10 @@ class DnsRecord {
     private String m_hostname;
     private String m_zone;
     
-    DnsRecord(OnmsNode node) {
-        
+    DnsRecord(OnmsNode node, int level) {
+
+        LOG.debug("Constructor: set level: {}", level);
+
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
         
         
@@ -61,7 +63,18 @@ class DnsRecord {
         LOG.debug("Constructor: set ip address: {}", m_ip);
         m_hostname = node.getLabel() + ".";
         LOG.debug("Constructor: set hostname: {}", m_hostname);
-        m_zone = m_hostname.substring(m_hostname.indexOf('.') + 1);
+
+        String[] singlestat = m_hostname.split("\\.");
+        if ( level == 0 || level >= singlestat.length){
+            m_zone = m_hostname.substring(m_hostname.indexOf('.') + 1);
+        } else {
+        	String domain="";
+        	for (int i=singlestat.length-level;i < singlestat.length;i++ ) {
+        		domain+=singlestat[i];
+        		domain+=".";
+        	}
+        	m_zone=domain;
+        }
         LOG.debug("Constructor: set zone: {}", m_zone);
 
     }
@@ -92,4 +105,5 @@ class DnsRecord {
     public String getHostname() {
         return m_hostname;
     }
+        
 }

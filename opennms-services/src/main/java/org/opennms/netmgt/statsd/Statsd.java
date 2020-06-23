@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,26 +29,28 @@
 package org.opennms.netmgt.statsd;
 
 import java.text.ParseException;
-import java.util.List;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.dao.api.RrdDao;
-import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.quartz.CronTriggerBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -68,15 +70,29 @@ public class Statsd implements SpringServiceDaemon {
 
     private static final String LOG4J_CATEGORY = "statsd";
 
+    @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
     private ResourceDao m_resourceDao;
-    private RrdDao m_rrdDao;
+
+    private MeasurementFetchStrategy m_fetchStrategy;
+
+    @Autowired
     private FilterDao m_filterDao;
+
+    @Autowired
     private TransactionTemplate m_transactionTemplate;
+
     private ReportPersister m_reportPersister;
     private Scheduler m_scheduler;
     private ReportDefinitionBuilder m_reportDefinitionBuilder;
     private volatile EventForwarder m_eventForwarder;
+    
+    private long m_reportsStarted = 0;
+    private long m_reportsCompleted = 0;
+    private long m_reportsPersisted = 0;
+    private long m_reportRunTime = 0;
 
     /**
      * <p>handleReloadConfigEvent</p>
@@ -120,13 +136,8 @@ public class Statsd implements SpringServiceDaemon {
     private boolean isReloadConfigEventTarget(Event event) {
         boolean isTarget = false;
         
-        List<Parm> parmCollection = event.getParmCollection();
-
-        for (Parm parm : parmCollection) {
-            if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Statsd".equalsIgnoreCase(parm.getValue().getContent())) {
-                isTarget = true;
-                break;
-            }
+        if ("Statsd".equalsIgnoreCase(EventUtils.getParm(event, EventConstants.PARM_DAEMON_NAME))) {
+            isTarget = true;
         }
         
         LOG.debug("isReloadConfigEventTarget: Statsd was target of reload event: {}", isTarget);
@@ -153,7 +164,7 @@ public class Statsd implements SpringServiceDaemon {
                 LOG.debug("start: scheduling Report: {}", reportDef);
                 scheduleReport(reportDef);
             }
-            LOG.info("start: {} jobs scheduled.", m_scheduler.getJobNames(Scheduler.DEFAULT_GROUP).length);
+            LOG.info("start: {} jobs scheduled.", m_scheduler.getJobKeys(GroupMatcher.<JobKey>groupEquals(Scheduler.DEFAULT_GROUP)).size());
         }
         LOG.debug("start: lock released (unless reentrant).");
     }
@@ -176,7 +187,7 @@ public class Statsd implements SpringServiceDaemon {
         
         synchronized (m_scheduler) {
             for (ReportDefinition reportDef : m_reportDefinitionBuilder.buildReportDefinitions()) {
-                m_scheduler.deleteJob(reportDef.getDescription(), Scheduler.DEFAULT_GROUP);
+                m_scheduler.deleteJob(new JobKey(reportDef.getDescription(), Scheduler.DEFAULT_GROUP));
             }
         }
     }
@@ -195,13 +206,13 @@ public class Statsd implements SpringServiceDaemon {
             jobFactory.afterPropertiesSet();
             JobDetail jobDetail = (JobDetail) jobFactory.getObject();
             
-            CronTriggerBean cronReportTrigger = new CronTriggerBean();
+            CronTriggerFactoryBean cronReportTrigger = new CronTriggerFactoryBean();
             cronReportTrigger.setBeanName(reportDef.getDescription());
             cronReportTrigger.setJobDetail(jobDetail);
             cronReportTrigger.setCronExpression(reportDef.getCronExpression());
             cronReportTrigger.afterPropertiesSet();
             
-            m_scheduler.scheduleJob(cronReportTrigger.getJobDetail(), cronReportTrigger);
+            m_scheduler.scheduleJob(jobDetail, cronReportTrigger.getObject());
             LOG.debug("Schedule report {}", cronReportTrigger);
             
         }
@@ -216,21 +227,27 @@ public class Statsd implements SpringServiceDaemon {
     public void runReport(ReportDefinition reportDef) throws Throwable {
         final ReportInstance report;
         try {
-            report = reportDef.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
+            report = reportDef.createReport(m_nodeDao, m_resourceDao, m_fetchStrategy, m_filterDao);
         } catch (Throwable t) {
             LOG.error("Could not create a report instance for report definition {}", reportDef, t);
             throw t;
         }
         
+        // FIXME What if the walker or the persister throws an exception ?
         getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
+                long reportStartTime = System.currentTimeMillis();
                 LOG.debug("Starting report {}", report);
+                accountReportStart();
                 report.walk();
                 LOG.debug("Completed report {}", report);
+                accountReportComplete();
                 
                 m_reportPersister.persist(report);
                 LOG.debug("Report {} persisted", report);
+                accountReportPersist();
+                accountReportRunTime(System.currentTimeMillis() - reportStartTime);
             }
         });
     }
@@ -245,7 +262,7 @@ public class Statsd implements SpringServiceDaemon {
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_nodeDao != null, "property nodeDao must be set to a non-null value");
         Assert.state(m_resourceDao != null, "property resourceDao must be set to a non-null value");
-        Assert.state(m_rrdDao != null, "property rrdDao must be set to a non-null value");
+        Assert.state(m_fetchStrategy != null, "property fetchStrategy must be set to a non-null value");
         Assert.state(m_filterDao != null, "property filterDao must be set to a non-null value");
         Assert.state(m_transactionTemplate != null, "property transactionTemplate must be set to a non-null value");
         Assert.state(m_reportPersister != null, "property reportPersister must be set to a non-null value");
@@ -262,13 +279,6 @@ public class Statsd implements SpringServiceDaemon {
     }
 
     /**
-     * @param nodeDao the nodeDao to set
-     */
-    public void setNodeDao(NodeDao nodeDao) {
-        this.m_nodeDao = nodeDao;
-    }
-
-    /**
      * <p>getResourceDao</p>
      *
      * @return a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
@@ -277,31 +287,12 @@ public class Statsd implements SpringServiceDaemon {
         return m_resourceDao;
     }
 
-    /**
-     * <p>setResourceDao</p>
-     *
-     * @param resourceDao a {@link org.opennms.netmgt.dao.api.ResourceDao} object.
-     */
-    public void setResourceDao(ResourceDao resourceDao) {
-        m_resourceDao = resourceDao;
+    public MeasurementFetchStrategy getFetchStrategy() {
+        return m_fetchStrategy;
     }
 
-    /**
-     * <p>getRrdDao</p>
-     *
-     * @return a {@link org.opennms.netmgt.dao.api.RrdDao} object.
-     */
-    public RrdDao getRrdDao() {
-        return m_rrdDao;
-    }
-
-    /**
-     * <p>setRrdDao</p>
-     *
-     * @param rrdDao a {@link org.opennms.netmgt.dao.api.RrdDao} object.
-     */
-    public void setRrdDao(RrdDao rrdDao) {
-        m_rrdDao = rrdDao;
+    public void setFetchStrategy(final MeasurementFetchStrategy fetchStrategy) {
+        this.m_fetchStrategy = fetchStrategy;
     }
 
     /**
@@ -313,15 +304,6 @@ public class Statsd implements SpringServiceDaemon {
         return m_transactionTemplate;
     }
 
-    /**
-     * <p>setTransactionTemplate</p>
-     *
-     * @param transactionTemplate a {@link org.springframework.transaction.support.TransactionTemplate} object.
-     */
-    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
-        m_transactionTemplate = transactionTemplate;
-    }
-    
     /**
      * <p>getReportPersister</p>
      *
@@ -379,25 +361,16 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>getFilterDao</p>
      *
-     * @return a {@link org.opennms.netmgt.filter.FilterDao} object.
+     * @return a {@link org.opennms.netmgt.filter.api.FilterDao} object.
      */
     public FilterDao getFilterDao() {
         return m_filterDao;
     }
 
     /**
-     * <p>setFilterDao</p>
-     *
-     * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
-     */
-    public void setFilterDao(FilterDao filterDao) {
-        m_filterDao = filterDao;
-    }
-
-    /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
@@ -406,7 +379,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
@@ -414,5 +387,37 @@ public class Statsd implements SpringServiceDaemon {
 
     public static String getLoggingCategory() {
         return LOG4J_CATEGORY;
+    } 
+
+    private synchronized void accountReportStart() {
+        m_reportsStarted++;
+    }
+
+    private synchronized void accountReportComplete() {
+        m_reportsCompleted++;
+    }
+
+    private synchronized void accountReportPersist() {
+        m_reportsPersisted++;
+    }
+
+    private synchronized void accountReportRunTime(long runtime) {
+        m_reportRunTime += runtime;
+    }
+
+    public long getReportsStarted() {
+        return m_reportsStarted;
+    }
+
+    public long getReportsCompleted() {
+        return m_reportsCompleted;
+    }
+
+    public long getReportsPersisted() {
+        return m_reportsPersisted;
+    }
+
+    public long getReportRunTime() {
+        return m_reportRunTime;
     }
 }

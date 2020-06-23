@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,8 +35,8 @@ import java.nio.ByteBuffer;
 import org.opennms.core.logging.Logging;
 import org.opennms.jicmp.ip.ICMPEchoPacket;
 import org.opennms.jicmp.ip.ICMPPacket;
-import org.opennms.jicmp.ip.IPPacket;
 import org.opennms.jicmp.ip.ICMPPacket.Type;
+import org.opennms.jicmp.ip.IPPacket;
 import org.opennms.jicmp.jna.NativeDatagramPacket;
 import org.opennms.jicmp.jna.NativeDatagramSocket;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
     
 
     public V4Pinger(final int pingerId) throws Exception {
-        super(pingerId, NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, Platform.isMac() ? NativeDatagramSocket.SOCK_DGRAM : NativeDatagramSocket.SOCK_RAW, NativeDatagramSocket.IPPROTO_ICMP));
+        super(pingerId, NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.IPPROTO_ICMP, pingerId));
         
         // Windows requires at least one packet sent before a receive call can be made without error
         // so we send a packet here to make sure...  This one should not match the normal ping requests
@@ -74,8 +74,8 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
         Logging.putPrefix("icmp");
         try {
             final int pingerId = getPingerId();
-            final NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
             while (!isFinished()) {
+                final NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
                 getPingSocket().receive(datagram);
                 final long received = System.nanoTime();
     
@@ -86,9 +86,9 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
                     notifyPingListeners(datagram.getAddress(), echoReply);
                 }
             }
-        } catch(final Throwable t) {
-            setThrowable(t);
-            LOG.debug("Error caught while processing ping packets: {}", t.getMessage(), t);
+        } catch(final Throwable e) {
+            setThrowable(e);
+            LOG.debug("Error caught while processing ping packets: {}", e.getMessage(), e);
         }
     }
 

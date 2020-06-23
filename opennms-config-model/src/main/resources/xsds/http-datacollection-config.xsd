@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/http-datacollection"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  xmlns:http-dc="http://xmlns.opennms.org/xsd/config/http-datacollection"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>
+      XML Schema for the http-datacollection-config.xml configuration file.
+      
+      Collections:
+      - As in SNMP data collection, multiple collections can be defined
+      - RRD definition is defined here, by as with the other data collection
+        configurations (SNMP, JMX) it should be moved to the package specification.
+      - Multiple URIs can be defined and is synonymous with groups defined in
+        SNMP data collection.
+      URLs:
+      - Initial use case for this collector's configuration is to support multiple schemes (i.e. http,
+      (ftp, file, etc.) but initial use will be for http only and is configured by default.
+      - URLs have many attributes (authority, scheme, user-agent, virtual-host, etc.)
+      - URLs support query strings as well as post fields. 
+    </documentation>
+  </annotation>
+
+  <element name="http-datacollection-config">
+    <annotation>
+      <documentation>Top-level element for the datacollection-config.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element ref="http-dc:http-collection" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="rrdRepository" type="string" use="required">
+        <annotation>
+          <documentation>full path to the RRD repository for collected SNMP data</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  
+  <element name="http-collection" >
+    <complexType>
+      <sequence>
+        <element ref="http-dc:rrd"  minOccurs="1" maxOccurs="1" />
+        <element ref="http-dc:uris" minOccurs="1" maxOccurs="1" />
+      </sequence>
+      <attribute name="name" type="string" use="optional" default="default" />
+    </complexType>
+  </element>
+  
+  <element name="uris" >
+    <complexType>
+      <sequence>
+        <element ref="http-dc:uri" minOccurs="0" maxOccurs="unbounded" >
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="uri" >
+    <complexType>
+      <sequence>
+        <element ref="http-dc:url" minOccurs="1" maxOccurs="1" />
+        <element ref="http-dc:attributes" minOccurs="0" maxOccurs="1" />
+      </sequence>
+      <attribute name="name" type="string" use="required" />
+    </complexType>
+  </element>
+  
+  <element name="attributes" >
+    <complexType>
+      <sequence>
+        <element ref="http-dc:attrib" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="url" >
+    <complexType>
+      <sequence>
+        <element ref="http-dc:parameters" minOccurs="0" maxOccurs="1" />
+      </sequence>
+      <attribute name="method" type="http-dc:allowed-methods" use="optional" default="GET" />
+      <attribute name="http-version" type="http-dc:allowed-versions" use="optional" default="1.1" />
+      <attribute name="user-agent" type="string" use="optional" />
+      <attribute name="virtual-host" type="string" use="optional" />
+      <attribute name="scheme" type="string" use="optional" default="http" />
+      <attribute name="user-info" type="string" use="optional" />
+      <attribute name="host" type="string" use="optional" default="${ipaddr}" />
+      <attribute name="port" use="optional" default="80" >
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="path" type="string" use="required" />
+      <attribute name="query" type="string" use="optional" />
+      <attribute name="fragment" type="string" use="optional" />
+      <attribute name="matches" type="string" use="optional" default="(.*)" />
+      <attribute name="response-range" type="string" use="optional" default="100-399" />
+
+      <!-- regex fields http://java.sun.com/j2se/1.5.0/docs/api/java/util/regex/Pattern.html#field_summary -->
+      <attribute name="canonical-equivalence" type="boolean" use="optional" default="false" />
+      <attribute name="case-insensitive" type="boolean" use="optional" default="false" />
+      <attribute name="comments" type="boolean" use="optional" default="false" />
+      <attribute name="dotall" type="boolean" use="optional" default="false" />
+      <attribute name="literal" type="boolean" use="optional" default="false" />
+      <attribute name="multiline" type="boolean" use="optional" default="false" />
+      <attribute name="unicode-case" type="boolean" use="optional" default="false" />
+      <attribute name="unix-lines" type="boolean" use="optional" default="false" />
+    </complexType>
+  </element>
+  
+  <simpleType name="allowed-versions" >
+    <restriction base="string" >
+      <pattern value="1\.0|1\.1" />
+    </restriction>
+  </simpleType>
+  
+  <simpleType name="allowed-methods" >
+    <restriction base="string" >
+      <pattern value="GET|POST" />
+    </restriction>
+  </simpleType>
+  
+  <element name="parameters" >
+    <complexType>
+      <sequence>
+        <element ref="http-dc:parameter" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="attrib" >
+    <complexType>
+      <attribute name="alias" type="string" use="required" />
+      <attribute name="match-group" use="required" >
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="type" type="http-dc:allowed-types" use="required" />
+    </complexType>
+  </element>
+
+  <simpleType name="allowed-types" >
+    <annotation>
+      <documentation>Collected data types: counter, gauge,
+          timeticks, integer, octetstring, string. The SNMP type is mapped to
+          one of two RRD supported data types COUNTER or GAUGE, or the
+          string.properties file. The mapping is as follows: SNMP counter
+          -&gt; RRD COUNTER; SNMP gauge, timeticks, integer, octetstring -&gt;
+          RRD GAUGE; SNMP string -&gt; String properties file
+      </documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="([Cc](ounter|OUNTER)(32|64)?|[Gg](auge|AUGE)(32|64)?|[Tt](ime|IME)[Tt](icks|ICKS)|[Ii](nteger|NTEGER)(32|64)?|[Oo](ctet|CTET)[Ss](tring|TRING))|[Ss](tring|TRING)"/>
+    </restriction>
+  </simpleType>
+
+  <element name="rrd">
+    <annotation>
+      <documentation>RRD parms</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions</documentation>
+          </annotation>
+
+          <simpleType>
+            <restriction base="string">
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+      <attribute name="step" use="required">
+        <annotation>
+          <documentation>step size for the RRD</documentation>
+        </annotation>
+        
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+  
+  <element name="post" >
+    <complexType>
+      <attribute name="parm" type="string" use="required" />
+      <attribute name="value" type="string" use="required" />
+    </complexType>
+  </element>
+  
+  <element name="parameter">
+    <annotation>
+      <documentation>Parameters to be used for configuration this strategy.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="key" type="string" use="required"/>
+      <attribute name="value" type="string" use="required"/>
+    </complexType>
+  </element>
+  
+</schema>

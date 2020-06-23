@@ -1,0 +1,10 @@
+Service detectors allow to bind a service to an interface automatically if it is detected during provisioning of a requisition.
+
+[[ga-provisioning-detectors-meta-data]]
+==== Meta-Data-DSL
+Service detectors can leverage dynamic configuration by using the link:#ga-meta-data-dsl[Meta-Data-DSL] in each possible parameter.
+
+During evaluation of an expression the following scopes are available:
+
+* Node meta-data
+* Interface meta-data

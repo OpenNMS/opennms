@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -11,6 +11,9 @@
   <packaging>war</packaging>
   <name>OpenNMS Web Application (Full)</name>
   <url>http://maven.apache.org</url>
+  <properties>
+    <build.skip.tarball>false</build.skip.tarball>
+  </properties>
   <build>
     <plugins>
       <plugin>
@@ -31,19 +34,13 @@
               <artifactId>opennms-webapp</artifactId>
             </overlay>
             <overlay>
-              <groupId>org.opennms.features</groupId>
-              <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
-              <excludes>
-                <exclude>includes/header.jsp</exclude>
-                <exclude>includes/footer.jsp</exclude>
-              </excludes>
-            </overlay>
-            <overlay>
-              <groupId>org.opennms.features.ncs</groupId>
-              <artifactId>ncs-alarm-gui</artifactId>
+              <groupId>org.opennms</groupId>
+              <artifactId>opennms-webapp-rest</artifactId>
               <excludes>
                 <exclude>META-INF/MANIFEST.MF</exclude>
                 <exclude>WEB-INF/web.xml</exclude>
+                <!-- We can exclude the svclayer context because all of its services are also defined in the main webapp -->
+                <exclude>WEB-INF/applicationContext-svclayer.xml</exclude>
               </excludes>
             </overlay>
           </overlays>
@@ -52,7 +49,7 @@
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>opennms-warmerge-plugin</artifactId>
-        <version>0.4</version>
+        <version>0.5</version>
         <executions>
           <execution>
             <goals>
@@ -65,21 +62,129 @@
           <primaryWar>org.opennms:opennms-webapp</primaryWar>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>cleanup-after-integration-tests</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
+              <filesets>
+                <fileset>
+                    <directory>${project.build.directory}/warmerge-temp</directory>
+                </fileset>
+              </filesets>
+          </configuration>
+        </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>enable.tarball</id>
+      <activation>
+        <property>
+          <name>build.skip.tarball</name>
+          <value>!true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals><goal>copy</goal></goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.opennms</groupId>
+                      <artifactId>opennms</artifactId>
+                      <version>${project.version}</version>
+                      <type>tar.gz</type>
+                      <classifier>source</classifier>
+                    </artifactItem>
+                  </artifactItems>
+                  <outputDirectory>${project.build.directory}/warmerge-temp/source</outputDirectory>
+                  <overWriteReleases>false</overWriteReleases>
+                  <overWriteSnapshots>true</overWriteSnapshots>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <dependencies>
     <dependency>
-      <groupId>org.opennms.features.ncs</groupId>
-      <artifactId>ncs-alarm-gui</artifactId>
-      <type>war</type>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.rest.api</artifactId>
       <version>${project.version}</version>
-      <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.remote-poller-gwt</artifactId>
-      <type>war</type>
-      <scope>runtime</scope>
+      <artifactId>org.opennms.features.rest-provider</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- The bsm.rest.api uses org.reflections, manually copy it to the web app -->
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.rest.impl</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.geolocation</groupId>
+      <artifactId>org.opennms.features.geolocation.rest</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.status</groupId>
+      <artifactId>org.opennms.features.status.rest</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
@@ -90,9 +195,27 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-webapp-rest</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-webapp</artifactId>
       <type>war</type>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </pluginRepository>
+  </pluginRepositories>
+
 </project>

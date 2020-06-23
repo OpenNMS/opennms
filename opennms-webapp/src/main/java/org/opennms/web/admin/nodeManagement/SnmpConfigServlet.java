@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,6 +29,7 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -39,14 +40,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
-import org.opennms.web.snmpinfo.SnmpInfo;
+import org.opennms.web.svclayer.model.SnmpInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 
@@ -104,6 +104,7 @@ public class SnmpConfigServlet extends HttpServlet {
 		String firstIPAddress = request.getParameter("firstIPAddress");
 		String lastIPAddress = request.getParameter("lastIPAddress");
 		String ipAddress = request.getParameter("ipAddress");
+	    String location = request.getParameter("location");
 		LOG.debug("doPost: snmpInfo:{}, firstIpAddress:{}, lastIpAddress:{}", snmpInfo.toString(), firstIPAddress, lastIPAddress);
 
 		final SnmpConfigServletAction action = determineAction(request);
@@ -113,15 +114,16 @@ public class SnmpConfigServlet extends HttpServlet {
 			case GetConfigForIp:
 				request.setAttribute("snmpConfigForIp",
 						new SnmpInfo(
-								SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipAddress))));
+								SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipAddress), location)));
 				request.setAttribute("firstIPAddress", ipAddress);
+				request.setAttribute("location", location);
 				break;
 			case Save:
 				boolean success = false;
 				SnmpEventInfo eventInfo = snmpInfo.createEventInfo(firstIPAddress, lastIPAddress);
 				if (saveLocally) {
 					SnmpPeerFactory.getInstance().define(eventInfo);
-					SnmpPeerFactory.saveCurrent();
+					SnmpPeerFactory.getInstance().saveCurrent();
 					success |= true;
 				}
 				if (sendEvent) {
@@ -133,7 +135,7 @@ public class SnmpConfigServlet extends HttpServlet {
 			case Default:
 				break;
 		}
-		request.setAttribute("snmpConfig", Files.toString(SnmpPeerFactory.getFile(), Charsets.UTF_8));
+		request.setAttribute("snmpConfig", Files.toString(SnmpPeerFactory.getFile(), StandardCharsets.UTF_8));
 
 		RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/snmpConfig.jsp");
 		dispatcher.forward(request, response);
@@ -179,6 +181,8 @@ public class SnmpConfigServlet extends HttpServlet {
 		String maxVarsPerPdu = request.getParameter("maxVarsPerPdu");
 		String maxRepetitions = request.getParameter("maxRepetitions");
 		String proxyHost = request.getParameter("proxyHost");
+		String location = request.getParameter("location");
+		String ttl = request.getParameter("ttl");
 		
 		// v1/v2c specifics
 		String readCommunityString = request.getParameter("readCommunityString");
@@ -217,6 +221,8 @@ public class SnmpConfigServlet extends HttpServlet {
 		if (!Strings.isNullOrEmpty(timeout)) snmpInfo.setTimeout(Integer.parseInt(timeout));
 		if (!Strings.isNullOrEmpty(version)) snmpInfo.setVersion(version);
 		if (!Strings.isNullOrEmpty(writeCommunityString)) snmpInfo.setWriteCommunity(writeCommunityString);
+	    if (!Strings.isNullOrEmpty(location)) snmpInfo.setLocation(location);
+	    if (!Strings.isNullOrEmpty(ttl)) snmpInfo.setTTL(Long.parseLong(ttl));
 
 		return snmpInfo;
 	}

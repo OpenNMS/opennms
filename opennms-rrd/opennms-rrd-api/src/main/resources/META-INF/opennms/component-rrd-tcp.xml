@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       ">
+
+    <context:annotation-config />
+
+    <bean id="rrdConfigurationPropertiesDefaults" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+            <props>
+                <!-- General configuration -->
+                <prop key="org.opennms.rrd.strategyClass">org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy</prop>
+                <prop key="org.opennms.rrd.usequeue">true</prop>
+                <prop key="org.opennms.rrd.usetcp">false</prop>
+                <prop key="org.opennms.rrd.fileExtension" />
+
+                <!-- Queuing properties -->
+                <prop key="org.opennms.rrd.queuing.queueSize">50000</prop>
+                <prop key="org.opennms.rrd.queuing.writethreads">2</prop>
+                <prop key="org.opennms.rrd.queuing.queuecreates">false</prop>
+                <prop key="org.opennms.rrd.queuing.prioritizeSignificantUpdates">false</prop>
+                <prop key="org.opennms.rrd.queuing.inSigHighWaterMark">0</prop>
+                <prop key="org.opennms.rrd.queuing.sigHighWaterMark">0</prop>
+                <prop key="org.opennms.rrd.queuing.queueHighWaterMark">0</prop>
+                <prop key="org.opennms.rrd.queuing.modulus">10000</prop>
+                <prop key="org.opennms.rrd.queuing.category">queued</prop>
+                <prop key="org.opennms.rrd.queuing.maxInsigUpdateSeconds">0</prop>
+                <prop key="org.opennms.rrd.queuing.writethread.sleepTime">50</prop>
+                <prop key="org.opennms.rrd.queuing.writethread.exitDelay">60000</prop>
+
+                <!-- JRobinRrdStrategy-specific properties -->
+                <prop key="org.jrobin.core.RrdBackendFactory">FILE</prop>
+
+                <!-- TcpRrdStrategy-specific properties, blank by default to disable this output -->
+                <prop key="org.opennms.rrd.tcp.host" />
+                <prop key="org.opennms.rrd.tcp.port">0</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="rrdConfigurationProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="propertiesArray">
+            <list>
+                <ref bean="rrdConfigurationPropertiesDefaults" />
+                <!-- Use the rrd-configuration.properties as a source of configuration parameters for this context -->
+                <bean class="org.opennms.netmgt.rrd.RrdConfig" factory-method="getProperties" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="tcpRrdStrategy" class="org.opennms.netmgt.rrd.tcp.TcpRrdStrategy" lazy-init="true">
+        <property name="host" value="${org.opennms.rrd.tcp.host}" />
+        <property name="port" value="${org.opennms.rrd.tcp.port}" />
+    </bean>
+
+    <bean id="tcpAndBasicRrdStrategy" class="org.opennms.netmgt.rrd.MultiOutputRrdStrategy" lazy-init="true">
+        <property name="delegates">
+            <list>
+                <ref bean="basicRrdStrategy" />
+                <bean class="org.opennms.netmgt.rrd.tcp.QueuingTcpRrdStrategy" lazy-init="true">
+                    <constructor-arg ref="tcpRrdStrategy" />
+                    <constructor-arg value="${org.opennms.rrd.queuing.queueSize}" />
+                </bean>
+            </list>
+        </property>
+        <!-- Use JRobinRrdStrategy for all graphing calls -->
+        <property name="graphStrategyIndex" value="0" />
+        <!-- Use JRobinRrdStrategy for all value fetching calls -->
+        <property name="fetchStrategyIndex" value="0" />
+    </bean>
+
+    <bean id="tcpAndQueuingRrdStrategy" class="org.opennms.netmgt.rrd.MultiOutputRrdStrategy" lazy-init="true">
+        <property name="delegates">
+            <list>
+                <ref bean="queuingRrdStrategy" />
+                <bean class="org.opennms.netmgt.rrd.tcp.QueuingTcpRrdStrategy" lazy-init="true">
+                    <constructor-arg ref="tcpRrdStrategy" />
+                    <constructor-arg value="${org.opennms.rrd.queuing.queueSize}" />
+                </bean>
+            </list>
+        </property>
+        <!-- Use JRobinRrdStrategy for all graphing calls -->
+        <property name="graphStrategyIndex" value="0" />
+        <!-- Use JRobinRrdStrategy for all value fetching calls -->
+        <property name="fetchStrategyIndex" value="0" />
+    </bean>
+
+</beans>

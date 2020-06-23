@@ -1,0 +1,128 @@
+{
+    "section": [
+        {
+            "categories": {
+                "category": [
+                    {
+                        "availability": 0.0, 
+                        "availability-class": "Indeterminate", 
+                        "availability-text": "Calculating...", 
+                        "name": "Network Interfaces", 
+                        "nodes": [], 
+                        "normal-threshold": 0.0, 
+                        "outage-class": "Indeterminate", 
+                        "outage-text": "Calculating...", 
+                        "service-down-count": 0, 
+                        "service-percentage": 0.0, 
+                        "warning-threshold": 0.0
+                    }, 
+                    {
+                        "availability": 0.0, 
+                        "availability-class": "Indeterminate", 
+                        "availability-text": "Calculating...", 
+                        "name": "Web Servers", 
+                        "nodes": [], 
+                        "normal-threshold": 0.0, 
+                        "outage-class": "Indeterminate", 
+                        "outage-text": "Calculating...", 
+                        "service-down-count": 0, 
+                        "service-percentage": 0.0, 
+                        "warning-threshold": 0.0
+                    }, 
+                    {
+                        "availability": 0.0, 
+                        "availability-class": "Indeterminate", 
+                        "availability-text": "Calculating...", 
+                        "name": "Email Servers", 
+                        "nodes": [], 
+                        "normal-threshold": 0.0, 
+                        "outage-class": "Indeterminate", 
+                        "outage-text": "Calculating...", 
+                        "service-down-count": 0, 
+                        "service-percentage": 0.0, 
+                        "warning-threshold": 0.0
+                    }, 
+                    {
+                        "availability": 0.0, 
+                        "availability-class": "Indeterminate", 
+                        "availability-text": "Calculating...", 
+                        "name": "DNS and DHCP Servers", 
+                        "nodes": [], 
+                        "normal-threshold": 0.0, 
+                        "outage-class": "Indeterminate", 
+                        "outage-text": "Calculating...", 
+                        "service-down-count": 0, 
+                        "service-percentage": 0.0, 
+                        "warning-threshold": 0.0
+                    }, 
+                    {
+                        "availability": 0.0, 
+                        "availability-class": "Indeterminate", 
+                        "availability-text": "Calculating...", 
+                        "name": "Database Servers", 
+                        "nodes": [], 
+                        "normal-threshold": 0.0, 
+                        "outage-class": "Indeterminate", 
+                        "outage-text": "Calculating...", 
+                        "service-down-count": 0, 
+                        "service-percentage": 0.0, 
+                        "warning-threshold": 0.0
+                    }, 
+                    {
+                        "availability": 0.0, 
+                        "availability-class": "Indeterminate", 
+                        "availability-text": "Calculating...", 
+                        "name": "JMX Servers", 
+                        "nodes": [], 
+                        "normal-threshold": 0.0, 
+                        "outage-class": "Indeterminate", 
+                        "outage-text": "Calculating...", 
+                        "service-down-count": 0, 
+                        "service-percentage": 0.0, 
+                        "warning-threshold": 0.0
+                    }, 
+                    {
+                        "availability": 0.0, 
+                        "availability-class": "Indeterminate", 
+                        "availability-text": "Calculating...", 
+                        "name": "Other Servers", 
+                        "nodes": [], 
+                        "normal-threshold": 0.0, 
+                        "outage-class": "Indeterminate", 
+                        "outage-text": "Calculating...", 
+                        "service-down-count": 0, 
+                        "service-percentage": 0.0, 
+                        "warning-threshold": 0.0
+                    }
+                ], 
+                "count": 7, 
+                "offset": 0, 
+                "totalCount": 7
+            }, 
+            "name": "Categories"
+        }, 
+        {
+            "categories": {
+                "category": [
+                    {
+                        "availability": 0.0, 
+                        "availability-class": "Indeterminate", 
+                        "availability-text": "Calculating...", 
+                        "name": "Overall Service Availability", 
+                        "nodes": [], 
+                        "normal-threshold": 0.0, 
+                        "outage-class": "Indeterminate", 
+                        "outage-text": "Calculating...", 
+                        "service-down-count": 0, 
+                        "service-percentage": 0.0, 
+                        "warning-threshold": 0.0
+                    }
+                ], 
+                "count": 1, 
+                "offset": 0, 
+                "totalCount": 1
+            }, 
+            "name": "Total"
+        }
+    ]
+}

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>nrtg</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>nrtg-web</artifactId>
@@ -13,7 +13,7 @@
     <bundle.symbolicName>org.opennms.features.nrtg.web</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.web</bundle.namespace>
   </properties>
-  <name>OpenNMS Features NRTG Web Interface</name>
+  <name>OpenNMS :: Features :: NRTG :: Web Interface</name>
   <description>
     The Web Interfaces for NRTG data collection.  This provides the
     servlets used to generate the web ui.  This provides two
@@ -51,7 +51,7 @@
         <!--  Servlet API -->
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
     

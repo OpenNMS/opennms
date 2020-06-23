@@ -1,0 +1,313 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-threshd-introduction]]
+_{opennms-product-name}_ has the ability to monitor the performance of a managed entity's resource(s) by using various thresholding techniques.
+These techniques, or algorithms, can be applied against any performance data (telemetry) that has been collected by <<ga-performance-mgmt,collectd>> or has been pushed to <<ga-telemetryd, telemetryd>>.
+This includes, but is not limited to metrics such as: CPU Load, Bandwidth, Disk space, etc.
+
+There are a few basic thresholding algorithms available within OpenNMS:
+
+* High
+* Low
+* Absolute Value
+* Relative Change
+
+=== How Thresholding Works in {opennms-product-name} 
+
+{opennms-product-name} uses _collectors_ to implement data collection for a particular protocol or family of protocols (SNMP, JMX, HTTP, XML/JSON, WS-Management/WinRM, JDBC, etc.).
+You can specify configuration for a particular collector in a _collection package_: essentially the set of instructions that drives the behavior of the collector. 
+
+The _collectd_ daemon gathers and stores performance data from these collectors. 
+This is the data against which {opennms-product-name} applies thresholds. 
+Thresholds trigger events when a specified threshold value is met. 
+You can further create notifications and alarms for threshold events. 
+
+image:thresholding/thresholding-flow.png[]
+
+=== What Triggers a Thresholding Event?
+
+_{opennms-product-name}_ uses four thresholding algorithms that trigger an event when the datasource value:
+
+* *Low* - equals or drops below the threshold value and re-arms when it equals or comes back up above the re-arm value (e.g., available disk space falls under the specified value)
+* *High* - equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value (e.g., bandwidth use exceeds the specified amount)
+* *Absolute* - changes by the specified amount (e.g., on a fiber-optic link, a change in loss of anything greater than 3 dB is a problem regardless of what the original or final value is)
+* *Relative* - changes by percent (e.g., available disk space changes more than 5% from the last poll)
+
+These thresholds can be *basic* (tested against a single value) or an *expression* (evaluated against multiple values in an expression). 
+
+_{opennms-product-name}_ applies these algorithms against any performance data (telemetry) collected by <<ga-performance-mgmt,collectd>> or pushed to <<ga-telemetryd, telemetryd>>. 
+This includes, but is not limited to, metrics such as CPU load, bandwidth, disk space, etc. 
+
+NOTE: The basic walkthrough focuses on how to set simple thresholds using default values in the {opennms-product-name} setup. 
+For information on setting and configuring collectors, collectd, and the  _collectd-configuration.xml_ file, see xref:performance-data-collection/introduction.adoc[Performance Management].
+
+[[threshold-bw]]
+=== Basic Walk-through – Thresholding
+
+This section describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users. 
+Our threshold will tell {opennms-product-name} to create an event when the number of logged-in users on the device exceeds two, and re-arm when it falls below two. 
+
+Before creating a threshold, you need to make sure you are collecting the metric against which you want to threshold. 
+
+[[metric-collect]]
+==== Determine You are Collecting Metric
+In this case, we have chosen a metric (number of logged-in users) that is collected by default. 
+We are also using data collected via SNMP. (For information on other collectors, see xref:xref:performance-data-collection/collectors[Collectors].)
+
+. In the {opennms-product-name} UI, choose `Reports>Resource Graphs`.
+. Select one of the listed resources. 
+. Under `SNMP Node Data`, select `Node-level Performance Data` and choose `Graph Selection`.
+. Scroll to find the `Number of Users` graph. 
+.. You can click the binoculars icon to display only this graph. 
+
+[[threshold-create]]
+==== Create a Threshold
+
+. Select `<User_Name>>Configure OpenNMS` from the top-right menu. 
+. Under `Performance Measurement`, choose `Configure Thresholds`.
+.. A screen with a list of preconfigured threshold groups appears.
+We will work with `netsnmp`.
+For information on how to create a threshold group, see <<threshold-group, Creating a Threshold Group>>. 
+. Click `Edit` beside the `netsnmp` group. 
+. Click `Create New Threshold` at the bottom of the `Basic Thresholds` area of the screen. 
+. Set the following information and click `Save`:
+
+|===
+
+| *Field* | *Value* | *Description*
+
+| Type | high | Triggers an event when the datasource value equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value
+
+| Datasource | hrSystemNumUsers| Name of the datasource you want to threshold against.
+For this tutorial, we have provided the datasource for logged-in users.  
+
+For information on how to determine a metric's datasource, see <<datasource-determine, Determine the Datasource>>.
+
+| Datasource label| leave blank | Optional text label. 
+Not required for this tutorial.
+
+| Value| 2 | The value above which we want to trigger an event. 
+In this case, we want to trigger an event when the number of logged-in users exceeds two. 
+
+| Re-arm | 2 | The value below which we want the system to re-arm. 
+In this case, once the number of logged-in users falls below two. 
+
+| Trigger | 3 | The number of consecutive times the threshold value can occur before the system triggers an event. 
+Since our default polling period is 5 minutes, a value of 3 means {opennms-product-name} would create a threshold event if there are more than 2 users for 15 minutes.
+
+| Description | leave blank | Optional text to describe your threshold. 
+
+| Triggered UEI| leave blank | A custom uniform event identifier (UEI) sent into the events system when the threshold is triggered. 
+A custom UEI for each threshold makes it easier to <<threshold-notification, create notifications>>. 
+If left blank, it defaults to the standard thresholds UEIs. 
+
+| Re-armed UEI | leave blank | A custom uniform event identifier (UEI) sent into the events system when the threshold is re-armed.
+
+|===
+
+[[threshold-test]]
+==== Testing the Threshold
+
+To test the threshold we just created, log a second person into the node you are monitoring. 
+Navigate to the `Events` page.
+You should see an event that indicates your threshold triggered when more than one user logged in. 
+
+Log out the second user. 
+The `Events` page should indicate that the system has re-armed. 
+
+[[thresh-cpu]]
+==== Creating a Threshold for CPU Usage
+This procedure describes how to create an expression-based threshold when the five-minute CPU load average metric reaches or goes above 70% for two consecutive measurement intervals.
+Expression-based thresholds are useful when you need to threshold on a percentage, not the actual value of the data collected. 
+
+NOTE: Expression-based thresholds work only if the data sources in question lie in the same directory.
+
+. Select `<User_Name>>Configure OpenNMS` from the top-right menu. 
+. Under `Performance Measurement`, choose `Configure Thresholds`.
+. Click `Edit` beside the `netsnmp` group. 
+. Click `Create New Expression-based Threshold`. 
+. Fill in the following information:
+
++
+
+|===
+
+| *Field* | *Value* | *Description*
+
+| Type | high | Triggers an event when the datasource value equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value
+
+| Expression | ((loadavg5 / 100) / CpuNumCpus) * 100| Divides the five-minute CPU load average by 100 (to obtain the effective load average^*^), which is then divided by the number of CPUs. 
+This value is then multiplied by 100 to provide a percentage. 
+
+(* SNMP does not report in decimals, which is why the expression divides the loadavg5 by 100.) 
+
+| Datasource type | node | The type of datasource from which you are collecting data. 
+
+| Datasource label| leave blank | Optional text label. 
+Not required for this tutorial.
+
+| Value| 70 | Trigger an event when the five-minute CPU load average goes above 70%. 
+
+| Re-arm | 50 | Re-arm the system when the five-minute CPU load average drops below 50%
+
+| Trigger | 2 | The number of consecutive times the threshold value can occur before the system triggers an event. 
+In this case, when the five-minute CPU load average goes above 70% for two consecutive polling periods. 
+
+| Description | Trigger an alert when the five-minute CPU load average metric reaches or goes above 70% for two consecutive measurement intervals | Optional text to describe your threshold. 
+
+| Triggered UEI| leave blank | See the table in xref:threshold-create[Create a Threshold] for details. 
+
+| Re-armed UEI | leave blank | See the table in xref:threshold-create[Create a Threshold] for details. 
+
+|===
+
+. Click `Save`.
+
+[[datasource-determine]]
+==== Determining the Datasource
+Creating a threshold requires the name of the datasource generating the metrics on which you want to threshold. 
+Datasource names for the SNMP protocol appear in `etc/snmp-graph.properties.d/`.
+
+. To determine the name of the datasource, navigate to the `Resource Graphs` screen.
+For example,
+.. `Reports>Resource Graphs`.
+.. Select one of the listed resources.
+.. Under `SNMP Node Data`, select `Node-level Performance Data` and choose `Graph Selection`.
+. Scroll through the graphs to find the title of the graph that displays the metric on which you want to threshold. 
+For example, "Number of Processes" or "System Uptime":
++
+image:thresholding/Graphs.png[]
+
+. Go to `etc/snmp-graph.properties.d/` and search for the title of the graph (for example, "System Uptime").
+
+. Note the name of the datasource, and enter it in the `Datasource` field when you <<threshold-create, create your threshold>>.  
+
+[[threshold-group]]
+==== Create a Threshold Group
+A threshold group associates a set of thresholds to a service (e.g., thresholds that apply to all Cisco devices). 
+_{opennms-product-name}_ includes seven preconfigured, editable threshold groups:
+
+* mib2 
+* cisco 
+* hrstorage 
+* netsnmp 
+* juniper-srx 
+* netsnmp-memory-linux 
+* netsnmp-memory-nonlinux 
+
+You can edit an existing group (through the UI) or create a new one (in the _thresholds.xml_ file located in `$OPENNMS_HOME/etc/thresholds.xml`). 
+Once you create the group, you can then define it in the _thresholds.xml_ file or define it in the UI. 
+
+We will create a threshold group called "demo_group".
+
+. Type the following in the _thresholds.xml_ file.
+
++
+[source]
+----
+
+<group name="demo_group" rrdRepository="/opt/opennms/share/rrd/snmp/">
+</group>
+
+----
+
+. Once you have created the group in the _thresholds.xml_ file, switch to the UI, go to the threshold screen and click `Request a reload threshold packages configuration`.
+
+.. The group you created should appear in the UI.
+
+. Click `Edit` to edit it. 
+
+The following is a sample of how the threshold appears in the _thresholds.xml_ file: 
+
+[source]
+-----
+
+<group name="demo_group" rrdRepository="/opt/opennms/share/rrd/snmp/"> <1>
+  <expression type="high" ds-type="hrStorageIndex" value="90.0"
+    rearm="75.0" trigger="2" ds-label="hrStorageDescr"
+    filterOperator="or" expression="hrStorageUsed / hrStorageSize * 100.0">
+    <resource-filter field="hrStorageType">^\.1\.3\.6\.1\.2\.1\.25\.2\.1\.4$</resource-filter> <2>
+  </expression>
+</group>
+
+-----
+<1> The name of the group and the directory of the stored data.  
+<2>  The details of the threshold including type, datasource type, threshold value, rearm value, etc. 
+
+[[threshold-notification]]
+==== Create a Notification on a Threshold Event
+A custom UEI for each threshold makes it easier to xref:notificatioins/introduction.adoc[create notifications]. 
+
+=== Thresholding Service
+
+The Thresholding Service is the component responsible for maintaining the state of the performance metrics and for generating alarms from these when thresholds are triggered (armed) or cleared (unarmed).
+
+The thresholding services listens for and visits performance metrics _after_ they are persisted to the time series database.
+
+The state of the thresholds are held in memory and pushed to persistent storage only when they are changed.
+
+==== Distributed Thresholding with Sentinel
+
+Thresholding for streaming telemetry with <<ga-telemetryd, telemetryd>> is supported on Sentinel when using <<ga-opennms-operation-newts, Newts>>.
+When running on Sentinel, the thresholding state can be stored in either Cassandra or PostgreSQL.
+Given that Newts already requires Cassandra, we recommend using Casssandra in order to help minimize the load on PostgreSQL.
+
+Thresholding on Sentinel uses the same configuration files as _{opennms-product-name}_ and operates similarly.
+When a thresholding changes to/from trigger or cleared, and event is published which is processed by _{opennms-product-name}_ and the alarm is created or updated.
+
+=== Shell Commands
+
+The following shell commands are made available to help debug and manage thresholding.
+
+Enumerate the persisted threshold states using `opennms-threshold-states:enumerate`:
+
+[source]
+----
+admin@opennms> opennms-threshold-states:enumerate 
+Index   State Key
+1       23-127.0.0.1-hrStorageIndex-hrStorageUsed / hrStorageSize * 100.0-/opt/opennms/share/rrd/snmp-RELATIVE_CHANGE
+2       23-127.0.0.1-if-ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100-/opt/opennms/share/rrd/snmp-HIGH
+3       23-127.0.0.1-node-((loadavg5 / 100) / CpuNumCpus) * 100.0-/opt/opennms/share/rrd/snmp-HIGH
+4       23-127.0.0.1-if-ifInDiscards + ifOutDiscards-/opt/opennms/share/rrd/snmp-HIGH
+----
+
+Each state is uniquely identified by a `state key` and aliased by the given `index`.
+Indexes are scoped to the particular shell session and provided as an alternative to specifying the complete state key in subsequent commands.
+
+Display state details using `opennms-threshold-states:details`:
+
+[source]
+----
+admin@opennms> opennms-threshold-states:details 1
+multiplier=1.333
+lastSample=64.77758166043765
+previousTriggeringSample=28.862826722171075
+interpolatedExpression='hrStorageUsed / hrStorageSize * 100.0'
+----
+
+[source]
+----
+admin@opennms> opennms-threshold-states:details 2
+exceededCount=0
+armed=true
+interpolatedExpression='ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100'
+----
+
+NOTE: Different types of thresholds will display different properties.
+
+Clear a particular persisted state using `opennms-threshold-states:clear`:
+
+[source]
+----
+admin@opennms> opennms-threshold-states:clear 2
+----
+
+Or clear all the persisted states with `opennms-threshold-states:clear-all`:
+
+[source]
+----
+admin@opennms> opennms-threshold-states:clear-all 
+Clearing all thresholding states....done
+----

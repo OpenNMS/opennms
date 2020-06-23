@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
  * @author ranger
  * @version $Id: $
  */
-public class AsyncTask<T> extends Task {
+public class AsyncTask<T> extends AbstractTask {
     
     private final Async<T> m_async;
     private final Callback<T> m_callback;
@@ -44,24 +44,24 @@ public class AsyncTask<T> extends Task {
     /**
      * <p>Constructor for AsyncTask.</p>
      *
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      * @param async a {@link org.opennms.core.tasks.Async} object.
      * @param <T> a T object.
      */
-    public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Async<T> async) {
+    public AsyncTask(TaskCoordinator coordinator, ContainerTask<?> parent, Async<T> async) {
         this(coordinator, parent, async, null);
     }
     
     /**
      * <p>Constructor for AsyncTask.</p>
      *
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      * @param async a {@link org.opennms.core.tasks.Async} object.
      * @param callback a {@link org.opennms.core.tasks.Callback} object.
      */
-    public AsyncTask(DefaultTaskCoordinator coordinator, ContainerTask<?> parent, Async<T> async, Callback<T> callback) {
+    public AsyncTask(TaskCoordinator coordinator, ContainerTask<?> parent, Async<T> async, Callback<T> callback) {
         super(coordinator, parent);
         Assert.notNull(async, "async parameter must not be null");
         m_async = async;
@@ -79,33 +79,41 @@ public class AsyncTask<T> extends Task {
     protected void doSubmit() {
         Callback<T> callback = callback();
         try {
-            m_async.submit(callback);
+            m_async.supplyAsyncThenAccept(callback);
         } catch (Throwable t) {
             callback.handleException(t);
         }
     }
-    
+
+    /**
+     * <p>markTaskAsCompleted</p>
+     */
+    private final void markTaskAsCompleted() {
+        getCoordinator().markTaskAsCompleted(this);
+    }
+
     private Callback<T> callback() {
         return new Callback<T>() {
             @Override
-            public void complete(T t) {
-		try {
-		    if (m_callback != null) {
-			m_callback.complete(t);
-		    }
-		} finally {
-		    markTaskAsCompleted();
-		}
+            public void accept(T t) {
+                try {
+                    if (m_callback != null) {
+                        m_callback.accept(t);
+                    }
+                } finally {
+                    markTaskAsCompleted();
+                }
             }
             @Override
-            public void handleException(Throwable t) {
-		try {
-		    if (m_callback != null) {
-			m_callback.handleException(t);
-		    }
-		} finally {
-		    markTaskAsCompleted();
-		}
+            public T apply(Throwable t) {
+                try {
+                    if (m_callback != null) {
+                        m_callback.handleException(t);
+                    }
+                } finally {
+                    markTaskAsCompleted();
+                }
+                return null;
             }
         };
     }

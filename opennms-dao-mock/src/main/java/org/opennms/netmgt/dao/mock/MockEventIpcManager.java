@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,33 +38,33 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.netmgt.config.EventConfDao;
-import org.opennms.netmgt.config.EventExpander;
-import org.opennms.netmgt.config.EventdConfigManager;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.EventIpcBroadcaster;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerProxy;
-import org.opennms.netmgt.model.events.EventListener;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
-import org.opennms.netmgt.model.events.EventWriter;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.config.api.EventdConfig;
+import org.opennms.netmgt.dao.api.EventExpander;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.EventIpcBroadcaster;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.events.api.EventWriter;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
-import org.springframework.util.Assert;
 
-public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpcManager, EventIpcBroadcaster, InitializingBean {
+public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpcManager, EventIpcBroadcaster {
     private static final Logger LOG = LoggerFactory.getLogger(MockEventIpcManager.class);
+
+    private static final AtomicInteger m_eventId = new AtomicInteger();
 
     static class ListenerKeeper {
     	final EventListener m_listener;
@@ -109,7 +109,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     /**
      * This class implements {@link EventConfDao} but every call returns null.
      */
-    private static class EmptyEventConfDao implements EventConfDao {
+    public static class EmptyEventConfDao implements EventConfDao {
         @Override
         public void addEvent(final org.opennms.netmgt.xml.eventconf.Event event) {}
 
@@ -173,18 +173,26 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         }
     }
 
+    public static interface SendNowHook {
+        public void beforeBroadcast(Event event);
+
+        public void afterBroadcast(Event event);
+
+        void finishProcessingEvents();
+    }
+
     private EventAnticipator m_anticipator;
     
     private EventWriter m_eventWriter = new EventWriter() {
         @Override
         public void writeEvent(final Event e) {
-            
+            e.setDbid(m_eventId.incrementAndGet());
         }
     };
 
-    private List<ListenerKeeper> m_listeners = new ArrayList<ListenerKeeper>();
+    private List<ListenerKeeper> m_listeners = new ArrayList<>();
 
-    private int m_pendingEvents;
+    private AtomicInteger m_pendingEvents = new AtomicInteger();
 
     private volatile int m_eventDelay = 20;
 
@@ -192,7 +200,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     
     private ScheduledExecutorService m_scheduler = null;
 
-    private EventIpcManagerProxy m_proxy;
+	private EventExpander m_expander = null;
+
+	private SendNowHook m_sendNowHook;
+
+	private int m_numSchedulerThreads = 1;
 
     public MockEventIpcManager() {
         m_anticipator = new EventAnticipator();
@@ -213,9 +225,16 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         m_listeners.add(new ListenerKeeper(listener, Collections.singleton(uei)));
     }
 
-    @Override
+    public int getEventListenerCount() {
+        return m_listeners.size();
+    }
+
     public void broadcastNow(final Event event) {
-    	
+        broadcastNow(event, false);
+    }
+
+    @Override
+    public void broadcastNow(final Event event, boolean synchronous) {
     	LOG.debug("Sending: {}", new EventWrapper(event));
         final List<ListenerKeeper> listeners = new ArrayList<ListenerKeeper>(m_listeners);
         for (final ListenerKeeper k : listeners) {
@@ -231,6 +250,10 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         return m_anticipator;
     }
     
+    public void setEventExpander(final EventExpander expander) {
+        m_expander  = expander;
+    }
+
     public void setEventAnticipator(final EventAnticipator anticipator) {
         m_anticipator = anticipator;
     }
@@ -259,7 +282,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
      */
     public void sendEventToListeners(final Event event) {
         m_eventWriter.writeEvent(event);
-        broadcastNow(event);
+        broadcastNow(event, false);
     }
 
     public void setSynchronous(final boolean syncState) {
@@ -269,14 +292,34 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     public boolean isSynchronous() {
         return m_synchronous;
     }
-    
+
+    public void setSendNowHook(SendNowHook hook) {
+        m_sendNowHook = hook;
+    }
+
+    public SendNowHook getSendNowHook() {
+        return m_sendNowHook;
+    }
+
+    public void setNumSchedulerThreads(int numThreads) {
+        m_numSchedulerThreads = numThreads;
+    }
+
+    public int getNumSchedulerTheads() {
+        return m_numSchedulerThreads;
+    }
+
     @Override
-    public synchronized void sendNow(final Event event) {
+    public void sendNow(final Event event) {
+        sendNow(event, isSynchronous());
+    }
+
+    public synchronized void sendNow(final Event event, boolean synchronous) {
         // Expand the event parms
-        final EventExpander expander = new EventExpander();
-        expander.setEventConfDao(new EmptyEventConfDao());
-        expander.expandEvent(event);
-        m_pendingEvents++;
+        if (m_expander != null) {
+            m_expander.expandEvent(event);
+        }
+        m_pendingEvents.incrementAndGet();
         LOG.debug("StartEvent processing ({} remaining)", m_pendingEvents);
         LOG.debug("Received: {}", new EventWrapper(event));
         m_anticipator.eventReceived(event);
@@ -285,30 +328,40 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
             @Override
             public void run() {
                 try {
+                    // Allows external classes to alter the timing/order of events
+                    if (m_sendNowHook != null) {
+                        m_sendNowHook.beforeBroadcast(event);
+                    }
+
                     m_eventWriter.writeEvent(event);
-                    broadcastNow(event);
+                    broadcastNow(event, synchronous);
                     m_anticipator.eventProcessed(event);
                 } finally {
                     synchronized(MockEventIpcManager.this) {
-                        m_pendingEvents--;
+                        m_pendingEvents.decrementAndGet();
                         LOG.debug("Finished processing event ({} remaining)", m_pendingEvents);
                         MockEventIpcManager.this.notifyAll();
+                    }
+
+                    // Allows external classes to alter the timing/order of events
+                    if (m_sendNowHook != null) {
+                        m_sendNowHook.afterBroadcast(event);
                     }
                 }
             }
         };
-        
-        if (isSynchronous()) {
+
+        if (synchronous) {
             r.run();
         } else {
             getScheduler().schedule(r, m_eventDelay, TimeUnit.MILLISECONDS);
         }
     }
-    
+
     ScheduledExecutorService getScheduler() {
         if (m_scheduler == null) {
-            m_scheduler = Executors.newSingleThreadScheduledExecutor(
-                new LogPreservingThreadFactory(getClass().getSimpleName(), 1, false)
+            m_scheduler = Executors.newScheduledThreadPool(getNumSchedulerTheads(),
+                new LogPreservingThreadFactory(getClass().getSimpleName(), getNumSchedulerTheads())
             );
         }
         return m_scheduler;
@@ -321,11 +374,28 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         }
     }
 
+    @Override
+    public void sendNowSync(Event event) {
+        sendNow(event, true);
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        for (final Event event : eventLog.getEvents().getEventCollection()) {
+            sendNow(event, true);
+        }
+    }
+
     /**
      * 
      */
     public synchronized void finishProcessingEvents() {
-        while (m_pendingEvents > 0) {
+        // Allow the hook to unblock any pending events
+        if (m_sendNowHook != null) {
+            m_sendNowHook.finishProcessingEvents();
+        }
+
+        while (m_pendingEvents.get() > 0) {
         	LOG.debug("Waiting for event processing: ({} remaining)", m_pendingEvents);
             try {
                 wait();
@@ -335,14 +405,13 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         }
     }
 
-    public EventdConfigManager getEventdConfigMgr() {
+    public EventdConfig getEventdConfig() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public void setEventdConfigMgr(final EventdConfigManager eventdConfigMgr) {
+    public void setEventdConfig(final EventdConfig eventdConfig) {
         // TODO Auto-generated method stub
-        
     }
 
     public void setDataSource(final DataSource instance) {
@@ -353,19 +422,12 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
     
     
 
+    /**
+     * Resets the event listeners and resets the event anticipator.
+     */
     public void reset() {
-        m_listeners = new ArrayList<ListenerKeeper>();
+        m_listeners = new ArrayList<>();
         m_anticipator.reset();
-    }
-
-    public void setEventIpcManagerProxy(final EventIpcManagerProxy proxy) {
-        m_proxy = proxy;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        Assert.notNull(m_proxy, "expected to have proxy set");
-        m_proxy.setDelegate(this);
     }
 
     @Override
@@ -378,4 +440,14 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         sendNow(eventLog);
     }
 
+    @Override
+    public boolean hasEventListener(final String uei) {
+        for (final ListenerKeeper keeper : this.m_listeners) {
+            if (keeper.m_ueiList.contains(uei)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

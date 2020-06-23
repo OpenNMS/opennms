@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.config;
 
 import java.io.File;
@@ -32,27 +33,27 @@ import java.io.FileWriter;
 import java.util.Iterator;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.vaadin.dialogs.ConfirmDialog;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.datacollection.DataCollectionGroupPanel;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.util.FilesystemContainer;
+import com.vaadin.v7.data.Property.ValueChangeEvent;
+import com.vaadin.v7.data.util.FilesystemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The Class Data Collection Group Administration Panel.
@@ -151,8 +152,8 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                                     File configFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
                                     DatacollectionConfig config = JaxbUtils.unmarshal(DatacollectionConfig.class, configFile);
                                     boolean modified = false;
-                                    for (SnmpCollection collection : config.getSnmpCollectionCollection()) {
-                                        for (Iterator<IncludeCollection> it = collection.getIncludeCollectionCollection().iterator(); it.hasNext();) {
+                                    for (SnmpCollection collection : config.getSnmpCollections()) {
+                                        for (Iterator<IncludeCollection> it = collection.getIncludeCollections().iterator(); it.hasNext();) {
                                             IncludeCollection ic = it.next();
                                             if (m_selectedGroup != null && m_selectedGroup.equals(ic.getDataCollectionGroup())) {
                                                 it.remove();
@@ -193,7 +194,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
      * @param dcGroup the data collection group object
      */
     private void addDataCollectionGroupPanel(final DataCollectionConfigDao dataCollectionDao, final File file, final DatacollectionGroup dcGroup) {
-        DataCollectionGroupPanel panel = new DataCollectionGroupPanel(dataCollectionDao, dcGroup, new SimpleLogger()) {
+        DataCollectionGroupPanel panel = new DataCollectionGroupPanel(dataCollectionDao, dcGroup, new SimpleLogger(), file) {
             @Override
             public void cancel() {
                 this.setVisible(false);
@@ -209,7 +210,7 @@ public class DataCollectionGroupAdminPanel extends VerticalLayout {
                 Notification.show("Data collection group file " + file.getName() + " cannot be saved" + msg, Notification.Type.ERROR_MESSAGE);
             }
         };
-        panel.setCaption("Data Collection from " + file.getName());
+        panel.setCaption("Data Collection Group from " + file.getName());
         removeDataCollectionGroupPanel();
         addComponent(panel);
     }

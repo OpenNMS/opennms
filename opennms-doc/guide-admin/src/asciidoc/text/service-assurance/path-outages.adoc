@@ -1,0 +1,46 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-service-assurance-path-outage]]
+=== Path Outages
+
+An outage of a central network component can cause a lot of node outages.
+_Path Outages_ can be used to suppress _Notifications_ based on how _Nodes_ depend on each other in the network which are defined in a _Critical Path_.
+The _Critical Path_ needs to be configured from the network perspective of the monitoring system.
+By default the _Path Outage_ feature is disabled and has to be enabled in the `poller-configuration.xml`.
+
+The following image shows an example network topology.
+
+[[path-outage-example]]
+.Path Outage example
+image::service-assurance/02_path-outage.png[width=600]
+
+From the perspective of the monitoring system, a Router named _default-gw-01_ is on the _Critical Path_ to reach two networks.
+If Router _default-gw-01_ is down, it is not possible to reach any node in the two networks behind and they will be all unreachable as well.
+In this case an administrator would like to have just one notification for _default-gw-01_ and not for all the other _Nodes_ behind.
+Building this configuration in _{opennms-product-name}_ requires the following information:
+
+* _Parent Foreign Source_: The _Foreign Source_ where the parent node is defined.
+* _Parent Foreign ID_: The _Foreign ID_ of the parent _Node_ where this node depends on.
+* The _IP Interface_ selected as _Primary_ is used as _Critical IP_
+
+In this example we have created all _Nodes_ in a _Provisioning Requisition_ named `Network-ACME` and we use as the _Foreign ID_ the same as the _Node Label_.
+
+In the Web UI go to _Admin -> Configure OpenNMS -> Manage Provisioning Requisitions -> Edit the Requisition -> Edit the Node -> Path Outage_ to configure the network path by setting the _Parent Foreign Source_, _Parent Foreign ID_ and _Provisioned Node_.
+
+.Provisioning for Topology Example
+[options="header, autowidth"]
+|===
+| Parent Foreign Source | Parent Foreign ID | Provisioned Node
+| _not defined_         | _not defined_     | `default-gw-01`
+| `Network-ACME`        | `default-gw-01`   | `node-01`
+| `Network-ACME`        | `default-gw-01`   | `node-02`
+| `Network-ACME`        | `default-gw-01`   | `default-gw02`
+| `Network-ACME`        | `default-gw-02`   | `node-03`
+| `Network-ACME`        | `default-gw-02`   | `node-04`
+|===
+
+IMPORTANT: The _IP Interface_ which is set to _Primary_ is selected as the _Critical IP_.
+           In this example it is important the _IP interface_ on _default-gw-01_ in the network _192.168.1.0/24_ is set as _Primary_ interface.
+           The IP interface in the network _172.23.42.0/24_ on _default-gw-02_ is set as _Primary_ interface.

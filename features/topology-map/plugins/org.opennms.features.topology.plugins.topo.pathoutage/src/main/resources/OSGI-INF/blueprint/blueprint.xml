@@ -1,0 +1,55 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+    <reference id="persistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory"/>
+
+    <bean id="pathOutageProvider" class="org.opennms.features.topology.plugins.topo.pathoutage.PathOutageProvider">
+        <argument ref="nodeDao"></argument>
+        <argument ref="pathOutageStatusProvider"></argument>
+        <property name="topologyProviderInfo" ref="pathoutageTopologyProviderInfo" />
+    </bean>
+    <bean id="pathOutageHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
+        <argument ref="pathOutageProvider"/>
+    </bean>
+    <bean id="pathOutageMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+        <argument ref="pathOutageHopProvider"/>
+    </bean>
+
+    <service ref="pathOutageMetaTopologyProvider" interface="org.opennms.features.topology.api.topo.MetaTopologyProvider">
+        <service-properties>
+            <entry key="label" value="Path Outage" />
+        </service-properties>
+    </service>
+
+    <bean id="pathOutageStatusProvider" class="org.opennms.features.topology.plugins.topo.pathoutage.PathOutageStatusProvider">
+        <argument ref="persistenceAccessor"/>
+    </bean>
+    <service ref="pathOutageStatusProvider" interface="org.opennms.features.topology.api.topo.StatusProvider"/>
+
+    <!-- Search provider -->
+    <bean id="pathOutageSearchProvider" class="org.opennms.features.topology.plugins.topo.pathoutage.PathOutageSearchProvider">
+        <argument ref="pathOutageProvider"/>
+    </bean>
+    <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="pathOutageSearchProvider" />
+
+    <bean id="pathoutageTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
+        <property name="name" value="Path Outage Provider"/>
+        <property name="description" value="This Topology Provider builds a topology from the information about the path outage relations between various nodes"/>
+        <property name="hierarchical" value="true" />
+    </bean>
+
+    <!-- Icon definition -->
+    <service>
+        <interfaces>
+            <value>org.opennms.features.topology.api.ConfigurableIconRepository</value>
+            <value>org.osgi.service.cm.ManagedService</value>
+        </interfaces>
+        <service-properties>
+            <entry key="service.pid" value="org.opennms.features.topology.app.icons.pathoutage"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository" />
+    </service>
+
+</blueprint>

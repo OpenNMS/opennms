@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features 
+  name="minion-${project.version}"
+  xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
+>
+    <!-- OpenNMS Features -->
+    <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
+
+    <feature name="minion-core-api" description="OpenNMS :: Distributed :: Core :: API" version="${project.version}">
+      <feature>opennms-distributed-core-api</feature>
+    </feature>
+
+    <feature name="opennms-dao-minion" description="OpenNMS :: DAO :: Minion" version="${project.version}">
+      <feature>minion-core-api</feature>
+      <feature>opennms-dao-api</feature>
+      <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-distributed/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-trapd-listener" description="OpenNMS :: Trapd :: Listener" version="${project.version}">
+      <feature>minion-core-api</feature>
+      <feature>opennms-dao-minion</feature>
+      <feature>opennms-trapd</feature>
+      <feature>opennms-core-ipc-sink-api</feature>
+    </feature>
+
+    <feature name="minion-heartbeat-producer" description="OpenNMS :: Minion :: Heartbeat Producer" version="${project.version}">
+      <feature version="${guavaVersion}">guava</feature>
+      <feature>minion-core-api</feature>
+      <feature>opennms-core</feature>
+      <feature>opennms-core-ipc-sink-api</feature>
+      <bundle>mvn:org.opennms.features.minion.heartbeat/org.opennms.features.minion.heartbeat.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.minion.heartbeat/org.opennms.features.minion.heartbeat.producer/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-snmp-proxy" description="OpenNMS :: Minion :: SNMP Proxy" version="${project.version}">
+      <feature>opennms-core-ipc-rpc-api</feature>
+      <feature>opennms-config-api</feature>
+      <feature>opennms-model</feature>
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.proxy.rpc-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-icmp-proxy" description="OpenNMS :: Minion :: ICMP Proxy" version="${project.version}">
+        <feature>opennms-core-ipc-rpc-api</feature>
+        <feature>opennms-model</feature>
+
+        <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms/org.opennms.icmp.proxy.rpc-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-provisiond-detectors" description="Minion :: Provisond :: Detectors" version="${project.version}">
+      <feature>opennms-config</feature>
+      <feature>opennms-dao-api</feature>
+      <feature>opennms-icmp-best</feature>
+      <feature>opennms-provisioning-detectors</feature>
+      <feature>opennms-core-ipc-rpc-api</feature>
+      <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-detectorclient-rpc/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-provisiond-requisitions" description="Minion :: Provisond :: Requisitions" version="${project.version}">
+      <feature>opennms-core-web</feature>
+      <feature>opennms-dao-api</feature>
+      <feature>opennms-provisioning</feature>
+      <feature>opennms-core-ipc-rpc-api</feature>
+      <bundle>mvn:org.opennms/opennms-requisition-service/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-requisition-dns/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-shell" description="Minion :: Shell" version="${project.version}">
+      <feature>minion-shell-provision</feature>
+      <feature>minion-shell-poller</feature>
+      <feature>minion-shell-collection</feature>
+    </feature>
+
+    <feature name="minion-shell-provision" description="Minion :: Shell :: Provision" version="${project.version}">
+      <feature>commons-lang</feature>
+      <feature>opennms-core</feature>
+      <feature>opennms-model</feature>
+      <feature>opennms-provisioning-api</feature>
+      <bundle>mvn:org.opennms/opennms-detector-registry/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.provision/${project.version}</bundle>
+    </feature>
+    
+    <feature name="minion-shell-poller" description="Minion :: Shell :: Poller" version="${project.version}">
+      <feature>minion-poller</feature>
+      <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.poller/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-poller" description="Minion :: Poller" version="${project.version}">
+      <feature>opennms-core-ipc-rpc-api</feature>
+      <feature>opennms-config-jaxb</feature>
+      <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.client-rpc/${project.version}</bundle>
+      <feature>opennms-poller-monitors-core</feature>
+    </feature>
+    
+    <feature name="minion-collection" description="Minion :: Collection" version="${project.version}">
+      <feature>commons-cli</feature>
+
+      <feature>opennms-config</feature>
+      <feature>opennms-config-jaxb</feature>
+      <feature>opennms-core-web</feature>
+      <!-- System classpath dependency of opennms-vmware -->
+      <feature>opennms-provisioning</feature>
+      <feature>opennms-vmware</feature>
+      <feature>opennms-xml-collector</feature>
+      <feature>wmi-integration</feature>
+      <feature>wsman-integration</feature>
+
+      <feature>opennms-core-ipc-rpc-api</feature>
+
+      <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.jmx/org.opennms.core.jmx.impl/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.client-rpc/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.collectors/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features/org.opennms.features.jdbc-collector/${project.version}</bundle>
+      <bundle>mvn:org.opennms.protocols/org.opennms.protocols.nsclient/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-shell-collection" description="Minion :: Shell :: Collection" version="${project.version}">
+      <feature>minion-collection</feature>
+      <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.collection/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-telemetryd-receivers" description="Minion :: Telemetry :: Receivers" version="${project.version}">
+      <feature version="${netty4Version}">netty4</feature>
+      <feature>opennms-dnsresolver-api</feature>
+      <feature>dropwizard-metrics</feature>
+      <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+      <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
+      <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.registry/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.parser/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.parser/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.minion/${project.version}</bundle>
+    </feature>
+
+</features>

@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.dao.mock;
 
 import java.io.Serializable;
@@ -16,19 +44,23 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.LegacyOnmsDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsCriteria;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-public abstract class AbstractMockDao<T, K extends Serializable> implements OnmsDao<T, K>, InitializingBean {
+public abstract class AbstractMockDao<T, K extends Serializable> implements LegacyOnmsDao<T, K>, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMockDao.class);
 
     @Autowired
@@ -38,6 +70,7 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Onms
     private SnmpInterfaceDao m_snmpInterfaceDao;
     private AssetRecordDao m_assetRecordDao;
     private CategoryDao m_categoryDao;
+    private MonitoringLocationDao m_locationDao;
     private DistPollerDao m_distPollerDao;
     private MonitoredServiceDao m_monitoredServiceDao;
     private ServiceTypeDao m_serviceTypeDao;
@@ -79,7 +112,7 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Onms
 
     @Override
     public int countAll() {
-        LOG.debug("countAll()");
+        //LOG.debug("countAll()");
         return findAll().size();
     }
 
@@ -131,29 +164,33 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Onms
 
     @Override
     public T get(final K id) {
-        LOG.debug("get({})", id);
-        return m_entries.get(id);
+        T retval = m_entries.get(id);
+        LOG.debug("get({}: {})", retval == null ? "null" : retval.getClass().getSimpleName(), id);
+        return retval;
     }
 
     @Override
     public T load(K id) {
-        LOG.debug("load({})", id);
-        return m_entries.get(id);
+        T retval = m_entries.get(id);
+        LOG.debug("load({}: {})", retval == null ? "null" : retval.getClass().getSimpleName(), id);
+        return retval;
     }
 
     @Override
-    public void save(final T entity) {
-        if (entity == null) return;
+    public K save(final T entity) {
+        if (entity == null) return null;
         K id = getId(entity);
         if (id == null) {
             generateId(entity);
             id = getId(entity);
         }
-        LOG.debug("save({})", entity);
         if (m_entries.containsKey(id)) {
-            LOG.debug("save({}): id exists: {}", entity, id);
+            LOG.debug("save({}): id already exists: {}", entity, id);
+        } else {
+            LOG.debug("save({})", entity);
         }
         m_entries.put(id, entity);
+        return id;
     }
 
     @Override
@@ -208,7 +245,15 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Onms
         }
         return m_categoryDao;
     }
-    
+
+    protected MonitoringLocationDao getMonitoringLocationDao() {
+        if (m_locationDao == null) {
+            m_locationDao = getServiceRegistry().findProvider(MonitoringLocationDao.class);
+            Assert.notNull(m_locationDao);
+        }
+        return m_locationDao;
+    }
+
     protected DistPollerDao getDistPollerDao() {
         if (m_distPollerDao == null) {
             m_distPollerDao = getServiceRegistry().findProvider(DistPollerDao.class);
@@ -255,5 +300,19 @@ public abstract class AbstractMockDao<T, K extends Serializable> implements Onms
             Assert.notNull(m_nodeDao);
         }
         return m_nodeDao;
+    }
+
+    public static final class NullEventForwarder implements EventForwarder {
+        @Override
+        public void sendNow(Event event) { }
+
+        @Override
+        public void sendNow(Log eventLog) { }
+
+        @Override
+        public void sendNowSync(Event event) { }
+
+        @Override
+        public void sendNowSync(Log eventLog) { }
     }
 }

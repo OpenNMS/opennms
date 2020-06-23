@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+  xmlns:beans="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd"> 
+  
+  <beans:bean id="ldapTemplate" class="org.springframework.ldap.core.LdapTemplate">
+    <beans:constructor-arg ref="contextSource"/>
+    <beans:property name="ignorePartialResultException" value="true"/>
+  </beans:bean>
+  <beans:bean id="contextSource" class="org.springframework.ldap.core.support.LdapContextSource">
+    <beans:property name="urls">
+      <beans:list>
+        <!-- List one or more of your Active Directory domain controllers here -->
+        <beans:value>ldap://ad-dc1.example.org:389/</beans:value>
+        <beans:value>ldap://ad-dc2.example.org:389/</beans:value>
+      </beans:list>
+    </beans:property>
+    <!-- An optional base DN. Every user and group below is relative to this. -->
+    <beans:property name="base" value="dc=example,dc=org" />
+    <beans:property name="authenticationSource" ref="authenticationSource" />
+  </beans:bean>
+  <beans:bean id="authenticationSource" class="org.springframework.ldap.authentication.DefaultValuesAuthenticationSourceDecorator">
+    <beans:property name="target" ref="springSecurityAuthenticationSource"/>
+    <!-- Identify an unprivileged user for initial binding to the directory -->
+    <!-- In some cases, expressing the user as an LDAP DN is the right way -->
+    <beans:property name="defaultUser" value="CN=opennms_bind"/>
+    <!-- In other cases, it's necessary to express it in user@domain format -->
+    <!-- <beans:property name="defaultUser" value="opennms_bind@example.org"/> -->
+    <!-- Specify the unprivileged bind user's password here -->
+    <beans:property name="defaultPassword" value="ulfsentme"/>
+  </beans:bean>
+
+  <beans:bean id="springSecurityAuthenticationSource" class="org.springframework.security.ldap.authentication.SpringSecurityAuthenticationSource">
+  </beans:bean>
+
+  <beans:bean id="externalAuthenticationProvider" class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">
+    <beans:constructor-arg ref="ldapAuthenticator"/>
+    <beans:constructor-arg ref="userGroupLdapAuthoritiesPopulator"/>
+  </beans:bean>
+
+  <beans:bean id="ldapAuthenticator" class="org.springframework.security.ldap.authentication.BindAuthenticator">
+    <beans:constructor-arg ref="contextSource"/>
+    <beans:property name="userSearch" ref="userSearch"></beans:property>
+  </beans:bean>
+  <!-- userSearch (alt.: userDnPatterns) -->
+
+  <beans:bean id="userSearch" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
+    <beans:constructor-arg index="0" value="ou=Users" />
+
+    <!-- More complex filters are possible depending on the layout of your directory -->
+    <beans:constructor-arg index="1" value="(sAMAccountName={0})" />
+    <beans:constructor-arg index="2" ref="contextSource" />
+    <beans:property name="searchSubtree" value="true" />
+  </beans:bean>
+
+  <beans:bean id="userGroupLdapAuthoritiesPopulator" class="org.opennms.web.springframework.security.UserGroupLdapAuthoritiesPopulator">
+    <beans:constructor-arg ref="contextSource"/>
+    <!-- Common LDAP container for the user and admin groups listed below -->
+    <beans:constructor-arg value="ou=Groups,ou=Application Groups" />
+    <beans:property name="searchSubtree" value="true" />
+    <beans:property name="convertToUpperCase" value="true" />
+    <beans:property name="groupRoleAttribute" value="cn" />
+    <beans:property name="groupSearchFilter" value="member={0}" />
+    <!-- If using nested AD groups, try the following groupSearchFilter instead  -->
+    <!-- <beans:property name="groupSearchFilter" value="member:1.2.840.113556.1.4.1941:={0}" /> -->
+    <beans:property name="groupToRoleMap">
+      <beans:map>
+        <!-- If the is an empty string, the roles are applied to all users -->
+        <!--
+        <beans:entry>
+          <beans:key><beans:value></beans:value></beans:key>
+          <beans:list>
+            <beans:value>ROLE_USER</beans:value>
+          </beans:list>
+        </beans:entry>
+        -->
+        <beans:entry>
+          <!-- Name of the AD group for normal (non-admin) OpenNMS users -->
+          <beans:key><beans:value>OpenNMS-Users</beans:value></beans:key>
+          <beans:list>
+            <beans:value>ROLE_USER</beans:value>
+            <!-- <beans:value>ROLE_DASHBOARD</beans:value> -->
+          </beans:list>
+        </beans:entry>
+        <beans:entry>
+          <!-- Name of the AD group for OpenNMS administrators -->
+          <beans:key><beans:value>OpenNMS-Admins</beans:value></beans:key>
+          <beans:list>
+            <beans:value>ROLE_USER</beans:value>
+            <beans:value>ROLE_ADMIN</beans:value>
+          </beans:list>
+        </beans:entry>
+      </beans:map>
+    </beans:property>
+  </beans:bean>
+
+</beans:beans>

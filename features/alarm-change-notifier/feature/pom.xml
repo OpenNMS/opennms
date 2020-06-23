@@ -1,0 +1,95 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.opennms.plugins</groupId>
+    <artifactId>alarm-change-notifier.parent</artifactId>
+    <version>25.0.0-SNAPSHOT</version>
+  </parent>
+
+  <!-- Feature Definition -->
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>alarm-change-notifier</artifactId>
+  <name>alarm-change-notifier</name>
+  <description>Feature definition for alarm-change-notifier</description>
+  <packaging>pom</packaging>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>com.impossibl.pgjdbc-ng</groupId>
+      <artifactId>pgjdbc-ng</artifactId>
+      <version>${pgjdbc-ng-version}</version>
+      <!-- <classifier>complete</classifier> -->
+      <exclusions>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-all</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- OSGi netty dependencies for pgjdbc-ng -->
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-common</artifactId>
+      <version>${netty4Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-transport</artifactId>
+      <version>${netty4Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-buffer</artifactId>
+      <version>${netty4Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-handler</artifactId>
+      <version>${netty4Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-resolver</artifactId>
+      <version>${netty4Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-codec</artifactId>
+      <version>${netty4Version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>${productName}.pg-jdbc-utils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>${productName}.main-module</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>${json-simpleVersion}</version>
+    </dependency>
+
+  </dependencies>
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>

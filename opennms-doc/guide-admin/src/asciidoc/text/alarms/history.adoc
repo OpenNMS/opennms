@@ -1,0 +1,138 @@
+
+[[ga-alarm-history]]
+=== Alarm History
+
+The _Alarm History_ feature integrates with _Elasticsearch_ to provide long term storage and maintain a history of alarm state changes.
+
+When enabled, alarms are indexed in _Elasticsearch_ when they are created, deleted, or when any of the "interesting" fields on the alarm are updated (more on this below.)
+
+Alarms are indexed in such a fashion that allows operators to answer the following questions:
+
+1. What were all the state changes of a particular alarm?
+2. What was the last known state of an alarm at a given point in time?
+3. Which alarms were present (i.e. not deleted) on the system at a given point in time?
+4. Which alarms are currently present on the system?
+
+A simple _REST_ API is also made available for the purposes of evaluating the results, verifying the data that is stored and providing examples on how to query the data.
+
+[[ga-alarm-history-requirements]]
+==== Requirements
+
+This feature requires _Elasticsearch_ v6.3.x or greater.
+
+[[ga-alarm-history-setup]]
+==== Setup
+
+Alarm history indexing can be enabled as follows:
+
+First, login to the _Karaf_ shell of your _{opennms-product-name}_ instance and configure the _Elasticsearch_ client settings to point to your _Elasticsearch_ cluster.
+See <<ga-elasticsearch-integration-configuration, Elasticsearch Integration Configuration>> for a complete list of available options.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.alarms.history.elastic
+admin@opennms()> config:property-set elasticUrl http://es:9200
+admin@opennms()> config:update
+----
+
+Next, install the `opennms-alarm-history-elastic` feature from that same shell using:
+
+[source]
+----
+admin@opennms()> feature:install opennms-alarm-history-elastic
+----
+
+In order to ensure that the feature continues to be installed as subsequent restarts, add `opennms-alarm-history-elastic` to the `featuresBoot` property in the `${OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
+
+[[ga-alarm-history-indexing]]
+==== Alarm indexing
+
+When alarms are initially created, we push a document to _Elasticsearch_ that includes all of the alarm fields as well as additional details on some of the related objects (i.e. the node.)
+
+In order to avoid pushing a new document every time a new event is reduced on to an existing alarm, we only push a new document when (at least) one of these conditions are met:
+
+1. We have not recently pushed a document for that alarm. (See `alarmReindexDurationMs`.)
+2. The severity of the alarm has changed.
+3. The alarm has been acknowledged or unacknowledged.
+4. Either of the associated sticky or journal memos have changed.
+5. The state of the associated ticket has changed.
+6. The alarm has been associated with, or removed, from a situation.
+7. A related alarm has been added or removed from the situation.
+
+NOTE: To change this behaviour and push a new document for *every* change, you can set `indexAllUpdates` to `true`.
+
+When alarms are deleted, we push a new document that contains the alarm id, reduction key, and deletion time.
+
+The following table describes a subset of the fields in the alarm document:
+
+[options="header, autowidth"]
+|===
+| Field | Description
+
+|`@first_event_time`
+| Timestamp in milliseconds associated with the first event that triggered this alarm.
+
+|`@first_event_time`
+| Timestamp in milliseconds associated with the last event that triggered this alarm.
+
+|`@update_time`
+| Timestamp in milliseconds at which the document was created.
+
+|`@deleted_time`
+| Timestamp in milliseconds when the alarm was deleted.
+
+|`id`
+| Database ID associated with the alarm.
+
+|`reduction_key`
+| Key used to reduce events on to the alarm.
+
+|`severity_label`
+| Severity of the alarm.
+
+|`severity_id`
+| Numerical ID used to represent the severity.
+
+|===
+
+[[ga-alarm-history-options]]
+==== Options
+
+In addition to those mentioned in <<ga-elasticsearch-integration-configuration, Elasticsearch Integration Configuration>>, the following properties can be set in `${OPENNMS_HOME}/etc/org.opennms.features.alarms.history.elastic.cfg`:
+
+[options="header, autowidth"]
+|===
+| Property | Description | Required | default
+
+| _indexAllUpdates_
+| Index every alarm update, including simple event reductions.
+| optional
+| `false`
+
+| _alarmReindexDurationMs_
+| Number of milliseconds to wait before re-indexing an alarm if nothing "interesting" has changed.
+| optional
+| `3600000`
+
+| _lookbackPeriodMs_
+| Number of milliseconds to go back when searching for alarms.
+| optional
+| `604800000`
+
+| _batchIndexSize_
+| Maximum number of records inserted in a single batch insert.
+| optional
+| `200`
+
+| _bulkRetryCount_
+| Number of retries until a bulk operation is considered failed.
+| optional
+| `3`
+
+| _taskQueueCapacity_
+| Maximum number of tasks to hold in memory.
+| optional
+| `5000`
+|===

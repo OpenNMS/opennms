@@ -1,0 +1,20 @@
+
+==== Step 3: Starting the Minion and test access to Karaf Shell
+
+.Configure systemd to start _Minion_ on system boot
+[source, shell]
+----
+systemctl enable minion
+----
+
+.Startup _Minion_
+[source, shell]
+----
+systemctl start minion
+----
+
+.Test access to Karaf shell with user admin and password admin and exit with <ctrl-d>
+[source, shell]
+----
+ssh -p 8201 admin@localhost
+----

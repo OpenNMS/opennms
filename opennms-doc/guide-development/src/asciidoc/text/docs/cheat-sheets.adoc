@@ -1,0 +1,24 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+[[doc-guidelines-cheat-sheets]]
+=== Cheat Sheets and additional hints
+
+The documentation uses the AsciiDoc format.
+There are a number of guides that will help you to get started with using AsciiDoc:
+
+* http://www.microjaja.com/docs/asciidoc-writers-guide.pdf[AsciiDoc Writers Guide]
+* http://www.methods.co.nz/asciidoc/[Aciidoc Reference]
+* http://www.methods.co.nz/asciidoc/faq.html[AsciiDoc FAQ]
+* http://powerman.name/doc/asciidoc[Powerman AsciiDoc Cheatsheet]
+* http://xpt.sourceforge.net/techdocs/nix/tool/asciidoc-syn/ascs01-AsciiDocMarkupSyntaxQuickSummary/single/[XPT AsciiDoc Cheatsheet]
+
+For other resources, to gain familiarity with AsciiDoc, you can visit:
+
+ * http://asciidoctor.org/docs/user-manual[AsciiDoc User Manual]
+ * http://asciidoctor.org/docs/install-and-use-asciidoctor-maven-plugin/[AsciiDoc Maven Plugin]
+ * https://groups.google.com/forum/?fromgroups#!forum/asciidoc[AsciiDoc discussion list]
+ * http://code.google.com/p/asciidoc/issues/list[AsciiDoc issue tracker]
+ * https://github.com/oreillymedia/docbook2asciidoc[Docbook to AsciiDoc]
+ * http://blog.rainwebs.net/2010/02/25/how-to-create-handsome-pdf-documents-without-frustration/[How to create handsome PDF documents without frustration]

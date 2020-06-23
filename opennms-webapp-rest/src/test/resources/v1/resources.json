@@ -1,0 +1,47 @@
+{
+    "count": 1, 
+    "offset": 0, 
+    "resource": [
+        {
+            "children": {
+                "count": 1, 
+                "offset": 0, 
+                "resource": [
+                    {
+                        "externalValueAttributes": {}, 
+                        "id": "node[imported::1].nodeSnmp[]",
+                        "label": "Node-level Performance Data", 
+                        "link": null, 
+                        "name": "", 
+                        "parentId": "node[imported::1]",
+                        "rrdGraphAttributes": {
+                            "SwapIn": {
+                                "name": "SwapIn", 
+                                "relativePath": "snmp/1", 
+                                "rrdFile": "SwapIn.jrb"
+                            }, 
+                            "SwapOut": {
+                                "name": "SwapOut", 
+                                "relativePath": "snmp/1", 
+                                "rrdFile": "SwapOut.jrb"
+                            }
+                        }, 
+                        "typeLabel": "SNMP Node Data", 
+                        "stringPropertyAttributes": {}
+                    }
+                ], 
+                "totalCount": 1
+            }, 
+            "externalValueAttributes": {}, 
+            "id": "node[imported::1]",
+            "label": "node1", 
+            "link": "element/node.jsp?node=imported::1",
+            "name": "imported::1",
+            "parentId": null, 
+            "rrdGraphAttributes": {}, 
+            "typeLabel": "Node", 
+            "stringPropertyAttributes": {}
+        }
+    ], 
+    "totalCount": 1
+}

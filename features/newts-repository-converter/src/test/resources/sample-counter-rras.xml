@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE rrd SYSTEM "http://oss.oetiker.ch/rrdtool/rrdtool.dtd">
+<!-- Round Robin Database Dump -->
+<rrd>
+	<version>0003</version>
+	<step>300</step> <!-- Seconds -->
+	<lastupdate>1441836600</lastupdate> <!-- 2015-09-09 18:10:00 EDT -->
+
+	<ds>
+		<name> v1 </name>
+		<type> COUNTER </type>
+		<minimal_heartbeat>600</minimal_heartbeat>
+		<min>NaN</min>
+		<max>NaN</max>
+
+		<!-- PDP Status -->
+		<last_ds>200100</last_ds>
+		<value>0.0000000000e+00</value>
+		<unknown_sec> 0 </unknown_sec>
+	</ds>
+
+	<ds>
+		<name> v2 </name>
+		<type> GAUGE </type>
+		<minimal_heartbeat>600</minimal_heartbeat>
+		<min>NaN</min>
+		<max>NaN</max>
+
+		<!-- PDP Status -->
+		<last_ds>37</last_ds>
+		<value>0.0000000000e+00</value>
+		<unknown_sec> 0 </unknown_sec>
+	</ds>
+
+	<!-- Round Robin Archives -->
+	<rra>
+		<cf>AVERAGE</cf>
+		<pdp_per_row>1</pdp_per_row> <!-- 300 seconds -->
+
+		<params>
+		<xff>5.0000000000e-01</xff>
+		</params>
+		<cdp_prep>
+			<ds>
+			<primary_value>3.6000000000e+01</primary_value>
+			<secondary_value>NaN</secondary_value>
+			<value>NaN</value>
+			<unknown_datapoints>0</unknown_datapoints>
+			</ds>
+			<ds>
+			<primary_value>3.7000000000e+01</primary_value>
+			<secondary_value>NaN</secondary_value>
+			<value>NaN</value>
+			<unknown_datapoints>0</unknown_datapoints>
+			</ds>
+		</cdp_prep>
+		<database>
+			<!-- 2015-09-09 17:15:00 EDT / 1441833300 --> <row><v>2.5000000000e+01</v><v>2.6000000000e+01</v></row>
+			<!-- 2015-09-09 17:20:00 EDT / 1441833600 --> <row><v>2.6000000000e+01</v><v>2.7000000000e+01</v></row>
+			<!-- 2015-09-09 17:25:00 EDT / 1441833900 --> <row><v>2.7000000000e+01</v><v>2.8000000000e+01</v></row>
+			<!-- 2015-09-09 17:30:00 EDT / 1441834200 --> <row><v>2.8000000000e+01</v><v>2.9000000000e+01</v></row>
+			<!-- 2015-09-09 17:35:00 EDT / 1441834500 --> <row><v>2.9000000000e+01</v><v>3.0000000000e+01</v></row>
+			<!-- 2015-09-09 17:40:00 EDT / 1441834800 --> <row><v>3.0000000000e+01</v><v>3.1000000000e+01</v></row>
+			<!-- 2015-09-09 17:45:00 EDT / 1441835100 --> <row><v>3.1000000000e+01</v><v>3.2000000000e+01</v></row>
+			<!-- 2015-09-09 17:50:00 EDT / 1441835400 --> <row><v>3.2000000000e+01</v><v>3.3000000000e+01</v></row>
+			<!-- 2015-09-09 17:55:00 EDT / 1441835700 --> <row><v>3.3000000000e+01</v><v>3.4000000000e+01</v></row>
+			<!-- 2015-09-09 18:00:00 EDT / 1441836000 --> <row><v>3.4000000000e+01</v><v>3.5000000000e+01</v></row>
+			<!-- 2015-09-09 18:05:00 EDT / 1441836300 --> <row><v>3.5000000000e+01</v><v>3.6000000000e+01</v></row>
+			<!-- 2015-09-09 18:10:00 EDT / 1441836600 --> <row><v>3.6000000000e+01</v><v>3.7000000000e+01</v></row>
+		</database>
+	</rra>
+	<rra>
+		<cf>AVERAGE</cf>
+		<pdp_per_row>4</pdp_per_row> <!-- 1200 seconds -->
+
+		<params>
+		<xff>5.0000000000e-01</xff>
+		</params>
+		<cdp_prep>
+			<ds>
+			<primary_value>3.2500000000e+01</primary_value>
+			<secondary_value>3.4000000000e+01</secondary_value>
+			<value>7.1000000000e+01</value>
+			<unknown_datapoints>0</unknown_datapoints>
+			</ds>
+			<ds>
+			<primary_value>3.3500000000e+01</primary_value>
+			<secondary_value>3.5000000000e+01</secondary_value>
+			<value>7.3000000000e+01</value>
+			<unknown_datapoints>0</unknown_datapoints>
+			</ds>
+		</cdp_prep>
+		<database>
+			<!-- 2015-09-09 16:40:00 EDT / 1441831200 --> <row><v>1.6500000000e+01</v><v>1.7500000000e+01</v></row>
+			<!-- 2015-09-09 17:00:00 EDT / 1441832400 --> <row><v>2.0500000000e+01</v><v>2.1500000000e+01</v></row>
+			<!-- 2015-09-09 17:20:00 EDT / 1441833600 --> <row><v>2.4500000000e+01</v><v>2.5500000000e+01</v></row>
+			<!-- 2015-09-09 17:40:00 EDT / 1441834800 --> <row><v>2.8500000000e+01</v><v>2.9500000000e+01</v></row>
+			<!-- 2015-09-09 18:00:00 EDT / 1441836000 --> <row><v>3.2500000000e+01</v><v>3.3500000000e+01</v></row>
+		</database>
+	</rra>
+</rrd>

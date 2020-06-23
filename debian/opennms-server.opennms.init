@@ -9,10 +9,10 @@
 
 ### BEGIN INIT INFO
 # Provides:          opennms
-# Required-Start:    $network $time $postgresql
-# Required-Stop:     $network $postgresql
-# Should-Start:      $local_fs
-# Should-Stop:       $local_fs
+# Required-Start:    $network $time
+# Required-Stop:     $network
+# Should-Start:      $local_fs postgresql
+# Should-Stop:       $local_fs postgresql
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: OpenNMS - Open Source Network Management System
@@ -21,6 +21,7 @@
 #                    and notification management
 ### END INIT INFO
 
+OPENNMS_HOME=/usr/share/opennms
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/sbin/opennms
 NAME=opennms
@@ -37,31 +38,38 @@ fi
 
 # Check for JAVA_HOME
 if [ -z "$JAVA_HOME" ]; then
-	for dir in /usr/lib/jvm/java-6-sun; do
-		if [ -d "$dir" -a -f "$dir/lib/tools.jar" ]; then
+	for dir in `find /usr/lib/jvm/* -maxdepth 0 -type d | grep -E "java-(8|11)" | sort -u -r`; do
+		if [ -d "$dir" -a -x "$dir/bin/javac" ]; then
 			JAVA_HOME="$dir"
 			break
 		fi
-	done
+    done
+fi
 
-	if [ -z "$JAVA_HOME" ]; then
-		echo "You need to set a valid JAVA_HOME in /etc/default/$NAME" >&2
-		exit 1
-	fi
+# Check for JAVA_HOME
+if [ -z "$JAVA_HOME" ]; then
+	echo "\$JAVA_HOME is not set.  Set it in /etc/default/$NAME or run \`$OPENNMS_HOME/bin/runjava -s\` to autoconfigure." >&2
+	exit 1
 fi
 export JAVA_HOME
 
 case "$1" in
   start)
 	echo -n "Starting $DESC: $NAME"
-	$DAEMON start > /dev/null
+	DAEMON_MESSAGES="$($DAEMON start)"
+	__ret="$?"
+	# hide message if opennms says it's ok
+	echo "$DAEMON_MESSAGES" | grep -v "Starting OpenNMS: ok"
 	echo "."
+	exit "$__ret"
 	;;
   stop)
 	echo -n "Stopping $DESC: $NAME"
-	$DAEMON stop > /dev/null
+	DAEMON_MESSAGES="$($DAEMON stop)"
+	__ret="$?"
 	rm -f /var/run/$NAME.pid
 	echo "."
+	exit "$__ret"
 	;;
   restart|force-reload)
 	$0 stop

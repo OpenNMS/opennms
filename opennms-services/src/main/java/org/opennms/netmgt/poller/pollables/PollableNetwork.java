@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,24 +29,23 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-
 
 /**
  * Represents a PollableNetwork
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public class PollableNetwork extends PollableContainer {
-    
+    private static final Logger LOG = LoggerFactory.getLogger(PollableNetwork.class);
+
     private final PollContext m_context;
 
     /**
@@ -74,29 +73,30 @@ public class PollableNetwork extends PollableContainer {
      *
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param nodeLocation a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableNode} object.
      */
-    public PollableNode createNode(int nodeId, String nodeLabel) {
-        PollableNode node = new PollableNode(this, nodeId, nodeLabel);
+    public PollableNode createNode(int nodeId, String nodeLabel, String nodeLocation) {
+        PollableNode node = new PollableNode(this, nodeId, nodeLabel, nodeLocation);
         addMember(node);
         return node;
     }
-    
+
     /**
      * <p>createNodeIfNecessary</p>
      *
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param nodeLocation a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableNode} object.
      */
-    public PollableNode createNodeIfNecessary(int nodeId, String nodeLabel) {
+    public PollableNode createNodeIfNecessary(int nodeId, String nodeLabel, String nodeLocation) {
         synchronized (this) {
             PollableNode node = getNode(nodeId);
-            return (node != null ? node : createNode(nodeId, nodeLabel));
+            return (node != null ? node : createNode(nodeId, nodeLabel, nodeLocation));
         }
-
     }
-    
+
     /**
      * <p>getNode</p>
      *
@@ -105,6 +105,15 @@ public class PollableNetwork extends PollableContainer {
      */
     public PollableNode getNode(int nodeId) {
         return (PollableNode)getMember(Integer.valueOf(nodeId));
+    }
+
+    public List<Long> getNodeIds() {
+        List<Long> nodeIds = new ArrayList<>();
+        for (PollableElement e : getMembers()) {
+            int nodeId = ((PollableNode)e).getNodeId();
+            nodeIds.add(new Long(nodeId));
+        }
+        return nodeIds;
     }
 
     /**
@@ -121,11 +130,12 @@ public class PollableNetwork extends PollableContainer {
      *
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param nodeLocation a {@link java.lang.String} object.
      * @param addr a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableInterface} object.
      */
-    public PollableInterface createInterface(int nodeId, String nodeLabel, InetAddress addr) {
-        return createNodeIfNecessary(nodeId, nodeLabel).createInterface(addr);
+    public PollableInterface createInterface(int nodeId, String nodeLabel, String nodeLocation, InetAddress addr) {
+        return createNodeIfNecessary(nodeId, nodeLabel, nodeLocation).createInterface(addr);
     }
 
     /**
@@ -145,12 +155,13 @@ public class PollableNetwork extends PollableContainer {
      *
      * @param nodeId a int.
      * @param nodeLabel a {@link java.lang.String} object.
+     * @param nodeLocation a {@link java.lang.String} object.
      * @param addr a {@link java.net.InetAddress} object.
      * @param svcName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      */
-    public PollableService createService(int nodeId, String nodeLabel, InetAddress addr, String svcName) {
-        return createNodeIfNecessary(nodeId, nodeLabel).createService(addr, svcName);
+    public PollableService createService(int nodeId, String nodeLabel, String nodeLocation, InetAddress addr, String svcName) {
+        return createNodeIfNecessary(nodeId, nodeLabel, nodeLocation).createService(addr, svcName);
     }
 
     /**
@@ -246,8 +257,9 @@ public class PollableNetwork extends PollableContainer {
      */
     @Override
     public void delete() {
-        throw new UnsupportedOperationException("Can't delete the entire network");
+        LOG.debug("Can't delete the entire network.");
     }
+
     /** {@inheritDoc} */
     @Override
     public PollStatus poll(PollableElement elem) {
@@ -294,19 +306,25 @@ public class PollableNetwork extends PollableContainer {
      * @return a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      */
     @Override
-    public PollableElement getLockRoot() {
+    protected PollableElement getLockRoot() {
         return this;
     }
     
     /** {@inheritDoc} */
     @Override
-    public void obtainTreeLock(long timeout) {
+    protected void obtainTreeLock() {
     }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void obtainTreeLock(long timeout) {
+    }
+
     /**
      * <p>releaseTreeLock</p>
      */
     @Override
-    public void releaseTreeLock() {
+    protected void releaseTreeLock() {
     }
 
     /** {@inheritDoc} */

@@ -1,0 +1,25 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== Reverse-DNS-Lookup Detector
+
+This detector tries to detect if a given IP Address can be found in PTR records.
+
+===== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.rdns.ReverseDNSLookupDetector`
+|===
+
+===== Configuration and Usage
+
+.Parameters for the Reverse-DNS-Lookup Detector
+
+Reverse DNS Lookup Detector doesn't take any parameters.
+
+
+===== Examples
+
+Reverse-DNS-Lookup Detector can be used in link:#ga-provisioning-auto-discovery-detectors[auto discovery with detectors] to discover IP Addresses that only resolve FQDN.

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,62 +33,89 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.netmgt.config.tester.checks.ConfigCheckValidationException;
+import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.test.DaoTestConfigBean;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 
+import com.google.common.io.Files;
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ConfigTesterTest {
-    private static Set<String> m_filesTested = new HashSet<String>();
-    private static Set<String> m_filesIgnored = new HashSet<String>();
-    //private ConfigTesterDataSource m_dataSource;
+
+    private final static String OPENNMS_HOME_NAME = "opennms.home";
+    private static File opennmsHomeDir;
+    private static Set<String> m_filesTested = new HashSet<>();
+    private static Set<String> m_filesIgnored = new HashSet<>();
+    private ConfigTesterDataSource m_dataSource;
+    private Set<File> filesToDelete = new HashSet<>();
+
+    @BeforeClass
+    public static void beforeAll() throws IOException {
+        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
+        daoTestConfig.afterPropertiesSet(); // sets home dir in assembly
+        // it is important to set opennms.home before the first call of BeanUtils.getBean() (done in ConfigTester).
+        // once that is done the home dir cannot be changed via a property since the application context has been loaded
+        // already in a static way.
+        setUpOpennmsHomeInTmpDir();
+    }
+
+    private static void setUpOpennmsHomeInTmpDir() throws IOException {
+        String opennmsHomeOriginal = System.getProperty(OPENNMS_HOME_NAME);
+        opennmsHomeDir = Files.createTempDir();
+        System.setProperty(OPENNMS_HOME_NAME, opennmsHomeDir.getAbsolutePath());
+        FileSystemUtils.copyRecursively(new File(opennmsHomeOriginal, "etc"), new File(opennmsHomeDir, "etc"));
+        FileSystemUtils.copyRecursively(new File(opennmsHomeOriginal, "../../../../protocols/xml/src/main/etc"), new File(opennmsHomeDir, "etc"));
+    }
 
     @Before
     public void init() {
-        DaoTestConfigBean daoTestConfig = new DaoTestConfigBean();
-        daoTestConfig.afterPropertiesSet();
+        m_dataSource = new ConfigTesterDataSource();
+        DataSourceFactory.setInstance(m_dataSource);
+        FilterDaoFactory.setInstance(new ConfigTesterFilterDao());
     }
 
     @After
-    public void done() {
-        ConfigTesterDataSource dataSource = (ConfigTesterDataSource) DataSourceFactory.getDataSource();
+    public void afterTest() {
+        filesToDelete.forEach(File::delete);
+        filesToDelete.clear();
+    }
 
-        if (dataSource != null && dataSource.getConnectionGetAttempts().size() > 0) {
-            StringWriter writer = new StringWriter();
-            PrintWriter printWriter = new PrintWriter(writer);
-            for (SQLException e : dataSource.getConnectionGetAttempts()) {
-                e.printStackTrace(printWriter);
-            }
-            fail(dataSource.getConnectionGetAttempts().size()
-                 + " DataSource.getConnection attempts were made: \n"
-                 + writer.toString());
-        }
+    @AfterClass
+    public static void afterAll() {
+        FileSystemUtils.deleteRecursively(opennmsHomeDir);
     }
 
     @Test
     public void testSystemProperties() {
         assertEquals("false", System.getProperty("distributed.layoutApplicationsVertically"));
-        assertEquals("target/test/logs", System.getProperty("opennms.webapplogs.dir"));
-    }
-
-    @Test
-    public void testAccessPointMonitorConfiguration() {
-        ignoreConfigFile("access-point-monitor-configuration.xml");
     }
 
     @Test
@@ -120,16 +147,16 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testBSFNorthbounderConfiguration() {
+        testConfigFile("bsf-northbounder-configuration.xml");
+    }
+
+    @Test
     /**
      * This file isn't read directly by OpenNMS.
      */
     public void testC3p0Properties() {
         ignoreConfigFile("c3p0.properties");
-    }
-
-    @Test
-    public void testCapsdConfiguration() {
-        testConfigFile("capsd-configuration.xml");
     }
 
     @Test
@@ -143,11 +170,8 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * Database access.
-     */
     public void testCollectdConfiguration() {
-        ignoreConfigFile("collectd-configuration.xml");
+        testConfigFile("collectd-configuration.xml");
     }
 
     @Test
@@ -176,6 +200,16 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testDroolsNorthbounderConfiguration() {
+        testConfigFile("drools-northbounder-configuration.xml");
+    }
+
+    @Test
+    public void testEmailNorthbounderConfiguration() {
+        testConfigFile("email-northbounder-configuration.xml");
+    }
+
+    @Test
     public void testEventConf() {
         testConfigFile("eventconf.xml");
     }
@@ -183,11 +217,6 @@ public class ConfigTesterTest {
     @Test
     public void testEventdConfiguration() {
         testConfigFile("eventd-configuration.xml");
-    }
-
-    @Test
-    public void testEventsArchiverConfiguration() {
-        testConfigFile("events-archiver-configuration.xml");
     }
 
     @Test
@@ -203,6 +232,11 @@ public class ConfigTesterTest {
     @Test
     public void testHttpDatacollectionConfig() {
         testConfigFile("http-datacollection-config.xml");
+    }
+
+    @Test
+    public void testIfTttConfig() {
+        ignoreConfigFile("ifttt-config.xml");
     }
 
     @Test
@@ -226,6 +260,16 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testJmxConfig() {
+        testConfigFile("jmx-config.xml");
+    }
+
+    @Test
+    public void testJmsNorthbounderConfiguration() {
+        ignoreConfigFile("jms-northbounder-configuration.xml");
+    }
+
+    @Test
     public void testJmxDatacollectionConfig() {
         testConfigFile("jmx-datacollection-config.xml");
     }
@@ -236,31 +280,13 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Database access.
-     */
-    public void testLinkdConfiguration() {
-        ignoreConfigFile("linkd-configuration.xml");
+    public void testEnLinkdConfiguration() {
+        ignoreConfigFile("enlinkd-configuration.xml");
     }
 
     @Test
     public void testLog4j2Config() {
         ignoreConfigFile("log4j2.xml");
-    }
-
-    @Test
-    public void testLog4j2ArchiveEventsConfig() {
-        ignoreConfigFile("log4j2-archive-events.xml");
-    }
-
-    @Test
-    public void testMagicUsers() {
-        testConfigFile("magic-users.properties");
-    }
-
-    @Test
-    public void testMap() {
-        testConfigFile("map.properties");
     }
 
     @Test
@@ -277,11 +303,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testModelImporter() {
-        testConfigFile("model-importer.properties");
-    }
-
-    @Test
     /**
      * FIXME: Don't know why this is ignored.
      * 
@@ -289,14 +310,6 @@ public class ConfigTesterTest {
      */
     public void testModemConfig() {
         ignoreConfigFile("modemConfig.properties");
-    }
-
-    @Test
-    /**
-     * FIXME: Use LocationMonitorDaoHibernate to parse the config file
-     */
-    public void testMonitoringLocations() {
-        ignoreConfigFile("monitoring-locations.xml");
     }
 
     @Test
@@ -310,11 +323,8 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Database access.
-     */
     public void testNotifications() {
-        ignoreConfigFile("notifications.xml");
+        testConfigFile("notifications.xml");
     }
 
     @Test
@@ -329,27 +339,30 @@ public class ConfigTesterTest {
         testConfigFile("nsclient-datacollection-config.xml");
     }
 
+    /**
+     * Used by the ActiveMQ broker embedded inside applicationContext-daemon.xml.
+     */
+    @Test
+    public void testOpennmsActivemq() {
+        ignoreConfigFile("opennms-activemq.xml");
+    }
+
     @Test
     public void testOpennmsDatasources() {
         testConfigFile("opennms-datasources.xml");
     }
 
     @Test
-    public void testOpennmsServer() {
-        testConfigFile("opennms-server.xml");
+    public void testOpennms() {
+        testConfigFile("opennms.properties");
     }
 
     @Test
     /**
-     * FIXME: Don't know why this is off.
+     * FIXME: Not part of the standard build?
      */
-    public void testOpennms() {
-        ignoreConfigFile("opennms.properties");
-    }
-
-    @Test
     public void testOtrs() {
-        testConfigFile("otrs.properties");
+        ignoreConfigFile("otrs.properties");
     }
 
     @Test
@@ -358,16 +371,8 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testPollerConfig() {
-        testConfigFile("poller-config.properties");
-    }
-
-    @Test
-    /**
-     * FIXME: Database access.
-     */
     public void testPollerConfiguration() {
-        ignoreConfigFile("poller-configuration.xml");
+        testConfigFile("poller-configuration.xml");
     }
 
     @Test
@@ -405,7 +410,7 @@ public class ConfigTesterTest {
 
     @Test
     public void testRt() {
-        testConfigFile("rt.properties");
+        ignoreConfigFile("rt.properties");
     }
 
     @Test
@@ -416,6 +421,11 @@ public class ConfigTesterTest {
     @Test
     public void testRwsConfiguration() {
         testConfigFile("rws-configuration.xml");
+    }
+
+    @Test
+    public void testTelemetrydConfiguration() {
+        testConfigFile("telemetryd-configuration.xml");
     }
 
     @Test
@@ -434,11 +444,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testSmsPhonebook() {
-        testConfigFile("smsPhonebook.properties");
-    }
-
-    @Test
     public void testSnmpAdhocGraph() {
         testConfigFile("snmp-adhoc-graph.properties");
     }
@@ -449,6 +454,14 @@ public class ConfigTesterTest {
      */
     public void testSnmpAssetAdapterConfiguration() {
         ignoreConfigFile("snmp-asset-adapter-configuration.xml");
+    }
+
+    @Test
+    /**
+     * FIXME: Not part of the standard build?
+     */
+    public void testWsManAssetAdapterConfiguration() {
+        ignoreConfigFile("wsman-asset-adapter-configuration.xml");
     }
 
     @Test
@@ -467,6 +480,11 @@ public class ConfigTesterTest {
      */
     public void testSnmpInterfacePollerConfiguration() {
         ignoreConfigFile("snmp-interface-poller-configuration.xml");
+    }
+
+    @Test
+    public void testSnmpTrapNorthbounderConfiguration() {
+        testConfigFile("snmptrap-northbounder-configuration.xml");
     }
 
     @Test
@@ -490,11 +508,8 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Database access.
-     */
     public void testThreshdConfiguration() {
-        ignoreConfigFile("threshd-configuration.xml");
+        testConfigFile("threshd-configuration.xml");
     }
 
     @Test
@@ -515,6 +530,11 @@ public class ConfigTesterTest {
     @Test
     public void testTrapdConfiguration() {
         testConfigFile("trapd-configuration.xml");
+    }
+
+    @Test
+    public void testTrendConfiguration() {
+        ignoreConfigFile("trend-configuration.xml");
     }
 
     @Test
@@ -543,12 +563,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testXmlrpcdConfiguration() {
-        testConfigFile("xmlrpcd-configuration.xml");
-    }
-
-
-    @Test
     public void testVMwareCimDatacollectionConfig() {
         testConfigFile("vmware-cim-datacollection-config.xml");
     }
@@ -561,6 +575,12 @@ public class ConfigTesterTest {
     @Test
     public void testVMwareDatacollectionConfig() {
         testConfigFile("vmware-datacollection-config.xml");
+    }
+
+    @Test
+    public void testWSManConfigFiles() {
+        testConfigFile("wsman-config.xml");
+        testConfigFile("wsman-datacollection-config.xml");
     }
 
     @Test
@@ -591,7 +611,17 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testAllConfigs() {
+    public void testHardwareInventoryAdapterConfiguration() {
+        ignoreConfigFile("snmp-hardware-inventory-adapter-configuration.xml");
+    }
+
+    @Test
+    public void testElasticCredentialsConfig() {
+        ignoreConfigFile("elastic-credentials.xml");
+    }
+
+    @Test
+    public void zz001testAllConfigs() {
         ConfigTester.main(new String[] { "-a" });
     }
 
@@ -611,7 +641,7 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testCheckAllDaemonXmlConfigFilesTested() {
+    public void zz002testCheckAllDaemonXmlConfigFilesTested() {
         File someConfigFile = ConfigurationTestUtils.getFileForConfigFile("discovery-configuration.xml");
         File configDir = someConfigFile.getParentFile();
         assertTrue("daemon configuration directory exists at " + configDir.getAbsolutePath(), configDir.exists());
@@ -623,15 +653,118 @@ public class ConfigTesterTest {
                 return name.endsWith(".xml");
             } });
 
-        Set<String> allXml = new HashSet<String>(Arrays.asList(configFiles));
+        Set<String> allXml = new HashSet<>(Arrays.asList(configFiles));
 
         allXml.removeAll(m_filesTested);
         allXml.removeAll(m_filesIgnored);
 
         if (allXml.size() > 0) {
-            List<String> files = new ArrayList<String>(allXml);
+            List<String> files = new ArrayList<>(allXml);
             Collections.sort(files);
             fail("These files in " + configDir.getAbsolutePath() + " were not tested: \n\t" + StringUtils.collectionToDelimitedString(files, "\n\t"));
         }
+    }
+
+    @Test
+    public void testOpennmsPropertiesD() throws IOException {
+
+        // create valid properties file in opennms.properties.d:
+        Properties properties = new Properties();
+        properties.setProperty("key", "value");
+        savePropertiesToPropertiesD(properties);
+
+        // create valid xml file in opennms.properties.d:
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><element></element>";
+        saveXmlToPropertiesD(xml);
+
+        // test it => shouldn't complain
+        testConfigFile("opennms.properties.d");
+    }
+
+    private void testXmlFile(final String directory, final String xml) throws IOException {
+        final Path etcDir = java.nio.file.Files.createDirectories(Paths.get(opennmsHomeDir.getPath(), "etc/" + directory));
+        final File file = new File(etcDir.toFile(), "ABC.xml");
+        Files.write(xml, file, StandardCharsets.UTF_8);
+        testConfigFile(directory);
+    }
+
+    @Test
+    public void testValidImports() throws IOException {
+        final String validXml = "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2019-04-04T07:49:24.053+02:00\" foreign-source=\"ABC\" last-import=\"2019-04-04T07:49:30.777+02:00\"/>";
+        testXmlFile("imports", validXml);
+    }
+
+    @Test(expected = ConfigCheckValidationException.class)
+    public void testInvalidImports() throws IOException {
+        final String invalidXml = "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2019-04-04T07:49:24.053+02:00\" foreign-source=\"ABC\" last-import=\"2019-04-04T07:49:30.777+02:00\"><foo></foo></model-import>";
+        testXmlFile("imports", invalidXml);
+    }
+
+    @Test
+    public void testValidForeignSources() throws IOException {
+        final String validXml = "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"DHCP\" date-stamp=\"2019-01-24T13:57:44.250+01:00\">\n" +
+                "   <scan-interval>1d</scan-interval>\n" +
+                "   <detectors>\n" +
+                "      <detector name=\"ICMP\" class=\"org.opennms.netmgt.provision.detector.icmp.IcmpDetector\"/>\n" +
+                "   </detectors>\n" +
+                "   <policies/>\n" +
+                "</foreign-source>";
+        testXmlFile("foreign-sources", validXml);
+    }
+
+    @Test(expected = ConfigCheckValidationException.class)
+    public void testInvalidForeignSources() throws IOException {
+        final String invalidXml = "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"DHCP\" date-stamp=\"2019-01-24T13:57:44.250+01:00\">\n" +
+                "   <scan-interval>1d</scan-interval>\n" +
+                "   <detectors>\n" +
+                "      <detector name=\"ICMP\" class=\"org.opennms.netmgt.provision.detector.icmp.IcmpDetector\"/>\n" +
+                "   </detectors>\n" +
+                "   <foo/>\n" +
+                "   <policies/>\n" +
+                "</foreign-source>";
+        testXmlFile("foreign-sources", invalidXml);
+    }
+
+    @Test(expected = ConfigCheckValidationException.class)
+    public void testDetectionOfMalformedPropertiesFile() throws IOException {
+
+        // create broken properties file in opennms.properties.d:
+        File file = createFileInPropertiesD("properties");
+        String invalidCharacter="'\\u0zb9";
+        Files.write(invalidCharacter, file, StandardCharsets.UTF_8);
+
+        // test it => should complain
+        testConfigFile("opennms.properties.d");
+    }
+
+    @Test(expected = ConfigCheckValidationException.class)
+    public void testDetectionOfMalformedXmlFile() throws IOException {
+
+        // create broken xml file in opennms.properties.d:
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><elementThatIsNotClosed>";
+        saveXmlToPropertiesD(xml);
+
+        // test it => should complain
+        testConfigFile("opennms.properties.d");
+    }
+
+    private void saveXmlToPropertiesD(String xml) throws IOException{
+        File file = createFileInPropertiesD("xml");
+        Files.write(xml, file, StandardCharsets.UTF_8);
+    }
+
+    private void savePropertiesToPropertiesD(Properties properties) throws IOException{
+        File file = createFileInPropertiesD("properties");
+        try(OutputStream out = new FileOutputStream(file)){
+            properties.store(out, "");
+        }
+    }
+
+    private File createFileInPropertiesD(String sufffix) throws IOException{
+        Path etcDir = java.nio.file.Files.createDirectories(Paths.get(this.opennmsHomeDir.getPath(), "etc/opennms.properties.d"));
+        File file = new File(etcDir.toFile(), this.getClass().getSimpleName() + "_" + UUID.randomUUID() + "." + sufffix);
+        file.createNewFile();
+        this.filesToDelete.add(file);
+        return file;
     }
 }

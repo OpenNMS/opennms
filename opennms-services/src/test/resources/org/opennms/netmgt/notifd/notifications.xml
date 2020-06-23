@@ -119,8 +119,24 @@
     <notification name="noticeId Expansion Test" status="on">
         <uei>uei.opennms.org/test/noticeIdExpansion</uei>
         <description>Test for noticeId expansion</description>
+        <rule strict="true">IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>NoEscalate</destinationPath>
+        <text-message>Notification '%noticeid%'</text-message>
+        <subject>notification '%noticeid%'</subject>
+    </notification>
+    <notification name="Notice Without Node Test" status="on">
+        <uei>uei.opennms.org/test/NoticeWithoutNode</uei>
+        <description>Test for notice without node</description>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
         <destinationPath>NoEscalate</destinationPath>
+        <text-message>Notification '%noticeid%'</text-message>
+        <subject>notification '%noticeid%'</subject>
+    </notification>
+    <notification name="notification concurrency test" status="on">
+        <uei>uei.opennms.org/test/notificationConcurrencyTest</uei>
+        <description>Test for notification concurrency</description>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>LockThread</destinationPath>
         <text-message>Notification '%noticeid%'</text-message>
         <subject>notification '%noticeid%'</subject>
     </notification>

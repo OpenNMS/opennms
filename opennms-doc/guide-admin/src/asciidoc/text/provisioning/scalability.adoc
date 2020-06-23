@@ -1,0 +1,87 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+==== Addressing Scalability
+
+The explosive growth and density of the IT systems being deployed today to support not traditional IP services is impacting management systems like never before and is demanding from them tremendous amounts of scalability.
+The scalability of a management system is defined by its capacity for maintaining large numbers of managing entities coupled with its efficiency of managing the entities.
+
+Today, It is not uncommon for {opennms-product-name} deployments to find node entities with tens of thousands of physical interfaces being reported by SNMP agents due to virtualization (virtual hosts, interfaces, as well as networks).
+An NMS must be capable of using the full capacity every resource of its computing platform (hardware and OS) as effectively as possible in order to manage these environments.
+The days of writing scripts or single threaded applications will just no longer be able to do the work required an NMS when dealing with the scalability challenges facing systems and systems administrators working in this domain.
+
+===== Parallelization and Non-Blocking I/O
+
+Squeezing out every ounce of power from a management system’s platform (hardware and OS) is absolutely required to complete all the work of a fully functional NMS such as {opennms-product-name}.
+Fortunately, the hardware and CPU architecture of a modern computing platform provides multiple CPUs with multiple cores having instruction sets that include support for atomic operations.
+While these very powerful resources are being provided by commodity systems, it makes the complexity of developing applications to use them vs. not using them, orders of magnitude more complex.
+However, because of scalability demands of our complex IT environments, multi-threaded NMS applications are now essential and this has fully exposed the complex issues of concurrency in software development.
+
+{opennms-product-name} has stepped up to this challenge with its new concurrency strategy.
+This strategy is based on a technique that combines the efficiency of parallel (asynchronous) operations (traditionally used by most effectively by single threaded applications) with the power of a fully current, non-blocking, multi-threaded design.
+The non-blocking component of this new concurrency strategy added greater complexity but {opennms-product-name} gained orders of magnitude in increased scalability.
+
+NOTE: Java Runtimes, based on the Sun JVM, have provided implementations for processor based atomic operations and is the basis for {opennms-product-name}’ non-blocking concurrency algorithms.
+
+===== Provisioning Policies
+
+Just because you can, doesn’t mean you should!
+Because the massively parallel operations being created for _Provisiond_ allows tremendous numbers of nodes, interfaces, and services to be very rapidly discovered and persisted, doesn’t mean it should.
+A _policy API_ was created for _Provisiond_ that allows implementations to be developed that can be applied to control the behavior of _Provisiond_.
+The 1.8 release includes a set of flexible provisioning policies that control the persistence of entities and their attributes constrain monitoring behavior.
+
+When nodes are imported or re-scanned, there is, potentially, a set of zero or more provisioning policies that are applied.
+The policies are defined in the foreign source’s definition.
+The policies for an auto-discovered node or nodes from provisioning groups that don’t have a foreign source definition, are the policies defined in the default foreign source definition.
+
+===== The Default Foreign Source Definition
+
+Contained in the libraries of the Provisioning service is the "template" or default foreign source.
+The template stored in the library is used until the {opennms-product-name} admin user alters the default from the _Provisioning Groups_ WebUI.
+Upon edit, this template is exported to the {opennms-product-name} `etc/` directory with the file name: `default-foreign-source.xml`.
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<foreign-source date-stamp="2009-10-16T18:04:12.844-05:00"
+                name="default"
+                xmlns="http://xmlns.opennms.org/[http://xmlns.opennms.org/xsd/config/foreign-source">
+    <scan-interval>1d</scan-interval>
+    <detectors>
+      <detector class="org.opennms.netmgt.provision.detector.datagram.DnsDetector" name="DNS"/>
+      <detector class="org.opennms.netmgt.provision.detector.simple.FtpDetector" name="FTP"/>
+      <detector class="org.opennms.netmgt.provision.detector.simple.HttpDetector" name="HTTP"/>
+      <detector class="org.opennms.netmgt.provision.detector.simple.HttpsDetector" name="HTTPS"/>
+      <detector class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector" name="ICMP"/>
+      <detector class="org.opennms.netmgt.provision.detector.simple.ImapDetector" name="IMAP"/>
+      <detector class="org.opennms.netmgt.provision.detector.simple.LdapDetector" name="LDAP"/>
+      <detector class="org.opennms.netmgt.provision.detector.simple.NrpeDetector" name="NRPE"/>
+      <detector class="org.opennms.netmgt.provision.detector.simple.Pop3Detector" name="POP3"/>
+      <detector class="org.opennms.netmgt.provision.detector.radius.RadiusAuthDetector" name="Radius"/>
+      <detector class="org.opennms.netmgt.provision.detector.simple.SmtpDetector" name="SMTP"/>
+      <detector class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" name="SNMP"/>
+      <detector class="org.opennms.netmgt.provision.detector.ssh.SshDetector" name="SSH"/>
+  </detectors>
+  <policies/>
+</foreign-source>
+----
+
+===== Automatic Rescanning
+
+The default foreign source defines a `scan-interval` of `1d`, which will cause all nodes in the requisition to be scanned daily.  You may set the scan interval using any combination of the following signifiers:
+
+* w: Weeks
+* d: Days
+* h: Hours
+* m: Minutes
+* s: Seconds
+* ms: Milliseconds
+
+For example, to rescan every 6 days and 53 minutes, you would set the `scan-interval` to `6d 53m`.
+
+Don't forget, for the new scan interval to take effect, you will need to import the requisition one more time so that the foreign source becomes active.
+
+===== Disabling Rescan
+
+For a large number of devices, you may want to set the `scan-interval` to `0` to disable automatic rescan altogether.  {opennms-product-name} will not attempt to rescan the nodes in the requisition unless you trigger a manual (forced) rescan through the web UI or Provisioning ReST API.

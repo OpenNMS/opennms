@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -357,7 +357,7 @@ public class Constraint {
      */
     @Override
     public String toString() {
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
 
         b.append("constraint ");
         b.append(m_name);
@@ -440,12 +440,12 @@ public class Constraint {
         }
 
         //Finally, check if the constraint is a foreign key constraint (the most complex)
-        m = Pattern.compile("(?i)constraint (\\S+)\\s+"
-                + "foreign key\\s+\\(([^\\(\\)]+)\\)\\s+"
-                + "references\\s+(\\S+)"
-                + "(?:\\s+\\(([^\\(\\)]+)\\))?"
-                + "(\\s+on\\s+delete\\s+(?:(cascade)|(restrict)|(set\\s+null)|(set\\s+default)))?"
-                + "(\\s+on\\s+update\\s+cascade)?").matcher(constraintSQL);
+        m = Pattern.compile("(?i)constraint (\\S+)\\s+" // 1
+                + "foreign key\\s+\\(([^\\(\\)]+)\\)\\s+" // 2
+                + "references\\s+(\\S+)" // 3
+                + "(?:\\s+\\(([^\\(\\)]+)\\))?" // 4
+                + "(\\s+on\\s+delete\\s+(?:(cascade)|(restrict)|(set\\s+null)|(set\\s+default)))?" // 5,6,7,8,9
+                + "(\\s+on\\s+update\\s+cascade)?").matcher(constraintSQL); // 10
         if (!m.matches()) {
             throw new Exception("Cannot parse constraint: " + constraintSQL);
         }

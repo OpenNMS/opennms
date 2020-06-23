@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -39,8 +39,8 @@
 
 <%
 	UserManager userFactory;
-  	Map users = null;
-	HashMap usersHash = new HashMap();
+  	Map<String,User> users = null;
+	HashMap<String,String> usersHash = new HashMap<String,String>();
 	String curUserName = null;
 	
 	try
@@ -54,27 +54,26 @@
 		throw new ServletException("User:list " + e.getMessage());
 	}
 
-	Iterator i = users.keySet().iterator();
-	while (i.hasNext()) {
-		User curUser = (User)users.get(i.next());
-		usersHash.put(curUser.getUserId(), curUser.getFullName());
+	for (User curUser : users.values()) {
+		usersHash.put(curUser.getUserId(), curUser.getFullName().orElse(null));
 	}
 
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 
-<jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Role Configuration" />
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+	<jsp:param name="title" value="On-Call Role Configuration" />
 	<jsp:param name="headTitle" value="View" />
-	<jsp:param name="headTitle" value="Roles" />
+	<jsp:param name="headTitle" value="On-Call Roles" />
 	<jsp:param name="headTitle" value="Admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/roles'>Role List</a>" />
-	<jsp:param name="breadcrumb" value="View Role" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and On-Call Roles</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/roles'>On-Call Role List</a>" />
+	<jsp:param name="breadcrumb" value="View On-Call Role" />
 </jsp:include>
 
 
@@ -121,75 +120,77 @@
 
 </script>
 
-<h3>View Role</h3>
+<div class="card">
+  <div class="card-header">
+    <span>View On-Call Role</span>
+  </div>
+  <table class="table table-sm">
+    <tr>
+      <th>Name</th>
+        <td><c:out value="${role.name}"/></td>
+      <th>Currently On Call</th>
+  	<td>
+  	  <c:forEach var="scheduledUser" items="${role.currentUsers}">
+  		<c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("scheduledUser").toString()) %></c:set>
+  		<span title="${fullName}">${scheduledUser}</span>
+  	  </c:forEach>
+  	</td>
+    </tr>
 
-<table>
-  <tr>
-    <th>Name</th>
-	<td>${role.name}</td>
-    <th>Currently On Call</th>
-	<td>
-	  <c:forEach var="scheduledUser" items="${role.currentUsers}">
-		<c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("scheduledUser").toString()) %></c:set>
-		<span title="${fullName}">${scheduledUser}</span>
-	  </c:forEach>	
-	</td>
-  </tr>
-  
-  <tr>
-    <th>Supervisor</th>
-	<td>
-	  <c:set var="supervisorUser">${role.defaultUser}</c:set>
-	  <c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set>
-	  <span title="${fullName}">${role.defaultUser}</span></td>
-    <th>Membership Group</th>
-	<td>${role.membershipGroup}</td>
-  </tr>
-  
-  <tr>
-    <th>Description</th>
-	<td colspan="3">${role.description}</td>
-  </tr>
-</table>
+    <tr>
+      <th>Supervisor</th>
+  	<td>
+  	  <c:set var="supervisorUser">${role.defaultUser}</c:set>
+  	  <c:set var="fullName"><%= usersHash.get(pageContext.getAttribute("supervisorUser").toString()) %></c:set>
+  	  <span title="${fullName}">${role.defaultUser}</span></td>
+      <th>Membership Group</th>
+  	<td>${role.membershipGroup}</td>
+    </tr>
 
+    <tr>
+      <th>Description</th>
+  	<td colspan="3"><c:out value="${role.description}"/></td>
+    </tr>
+  </table>
+</div> <!-- panel -->
 
-		<form action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
-			<input type="hidden" name="operation" value="editDetails"/>
-			<input type="hidden" name="role" value="${role.name}"/>
-			<input type="submit" value="Edit Details" />
-		</form>
+<form action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
+  <input type="hidden" name="operation" value="editDetails"/>
+  <input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
+  <button type="submit" class="btn btn-secondary">Value Details</button>
+</form>
 
-		<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
-			<input type="submit" value="Done" />
-		</form>
+<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm" class="my-4">
+  <button type="submit" class="btn btn-secondary">Done</button>
+</form>
 
-<h3>Role Schedule</h3>
-
-
+<div class="card top-buffer">
+  <div class="card-header">
+    <span>On-Call Role Schedule</span>
+  </div>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">
 					<input type="hidden" name="operation" value="view"/>
-					<input type="hidden" name="role" value="${role.name}"/>
+					<input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.previousMonth}' type='date' pattern='MM-yyyy'/>"/>
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="nextMonthForm">
 					<input type="hidden" name="operation" value="view"/>
-					<input type="hidden" name="role" value="${role.name}"/>
+					<input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.nextMonth}' type='date' pattern='MM-yyyy'/>"/>
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="addEntryForm">
 					<input type="hidden" name="operation" value="addEntry"/>
-					<input type="hidden" name="role" value="${role.name}"/>
+					<input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
 					<input type="hidden" name="date"/>
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="editEntryForm">
 					<input type="hidden" name="operation" value="editEntry"/>
-					<input type="hidden" name="role" value="${role.name}"/>
+					<input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
 					<input type="hidden" name="schedIndex"/>
 					<input type="hidden" name="timeIndex"/>
 				</form>
-
-			<table>
-			  <caption>
+			<table class="table table-bordered">
+			  <caption class="text-center">
 				<a href="javascript:prevMonth()">&#139;&#139;&#139;</a>&nbsp;
 				<b>${calendar.monthAndYear}</b>&nbsp;
 				<a href="javascript:nextMonth()">&#155;&#155;&#155;</a>
@@ -216,10 +217,10 @@
 				  </tr>
 				</c:forEach>
 			</table>
+</div>
 
-		<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
-			<input type="submit" value="Done" />
-		</form>
+<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm" class="mb-4">
+  <button type="submit" class="btn btn-secondary">Done</button>
+</form>
 
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

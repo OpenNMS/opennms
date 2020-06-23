@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,11 +33,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.net.InetAddress;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.snmp.SnmpWalkCallback;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.ColumnTracker;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
@@ -59,6 +63,9 @@ public class MockSnmpStrategyTest {
     private InetAddress m_agentAddress = InetAddressUtils.addr("127.0.0.1");
     private int m_agentPort = 1691;
     private String m_oldProperty;
+
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -216,7 +223,10 @@ public class MockSnmpStrategyTest {
     public void testTracker() throws Exception {
         final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
 
-        walk(ct, 10, 3);
+        try(SnmpWalker walker = walk(ct, 10, 3)) {
+            walker.start();
+            walker.waitFor();
+        }
         assertEquals("number of columns returned must match test data", Long.valueOf(9).longValue(), ct.getCount());
     }
 
@@ -225,13 +235,54 @@ public class MockSnmpStrategyTest {
         final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
         final SnmpAgentConfig sac = getAgentConfig();
         sac.setPort(12345);
-        final SnmpWalker walker = SnmpUtils.createWalker(sac, "test", ct);
-        assertNotNull(walker);
-        walker.start();
-        walker.waitFor();
+        try(final SnmpWalker walker = SnmpUtils.createWalker(sac, "test", ct)) {
+            assertNotNull(walker);
+            walker.start();
+            walker.waitFor();
+        }
         assertEquals("it should match no columns (timeout)", Long.valueOf(0).longValue(), ct.getCount());
     }
-    
+
+    @Test
+    public void testCallbackOnTrackerSuccess() throws Exception {
+        final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
+        try(final SnmpWalker walker = walk(ct, 10, 3)) {
+            final CompletableFuture<Long> future = toCompletableFuture(ct, walker);
+            walker.start();
+            assertEquals("number of columns returned must match test data", Long.valueOf(9), future.get());
+        }
+    }
+
+    @Test
+    public void testCallbackOnTrackerTimeout() throws Exception {
+        // Expect an exception on get
+        expectedEx.expect(Exception.class);
+        expectedEx.expectMessage("Timeout retrieving 'test' for 127.0.0.1");
+        final CountingColumnTracker ct = new CountingColumnTracker(SnmpObjId.get(".1.3.5.1.1"));
+        final SnmpAgentConfig sac = getAgentConfig();
+        sac.setPort(12345);
+        try(final SnmpWalker walker = SnmpUtils.createWalker(sac, "test", ct)) {
+            walker.start();
+            final CompletableFuture<Long> future = toCompletableFuture(ct, walker);
+            future.get();
+        }
+    }
+
+    private static CompletableFuture<Long> toCompletableFuture(CountingColumnTracker ct, SnmpWalker walker) {
+        final CompletableFuture<Long> future = new CompletableFuture<>();
+        walker.setCallback(new SnmpWalkCallback() {
+            @Override
+            public void complete(SnmpWalker tracker, Throwable t) {
+                if (t != null) {
+                    future.completeExceptionally(t);
+                } else {
+                    future.complete(ct.getCount());
+                }
+            }
+        });
+        return future;
+    }
+
     private void assertSnmpValueEquals(final String message, final int expectedType, final int expectedValue, final SnmpValue value) {
         assertEquals(message + " getType()", expectedType, value.getType());
         assertEquals(message + " toInt()", expectedValue, value.toInt());
@@ -244,15 +295,15 @@ public class MockSnmpStrategyTest {
         config.setVersion(SnmpAgentConfig.VERSION1);
         config.setMaxVarsPerPdu(20);
         config.setMaxRepetitions(20);
+        config.setRetries(3);
         return config;
     }
 
-    private void walk(final CollectionTracker c, final int maxVarsPerPdu, final int maxRepetitions) throws Exception {
+    private SnmpWalker walk(final CollectionTracker c, final int maxVarsPerPdu, final int maxRepetitions) throws Exception {
         final SnmpAgentConfig config = getAgentConfig();
         final SnmpWalker walker = SnmpUtils.createWalker(config, "test", c);
         assertNotNull(walker);
-        walker.start();
-        walker.waitFor();
+        return walker;
     }
 
     static private class CountingColumnTracker extends ColumnTracker {
@@ -260,8 +311,8 @@ public class MockSnmpStrategyTest {
         public CountingColumnTracker(final SnmpObjId base) {
             super(base);
         }
-        public CountingColumnTracker(final SnmpObjId base, final int maxRepetitions) {
-            super(base, maxRepetitions);
+        public CountingColumnTracker(final SnmpObjId base, final int maxRepetitions, final int maxRetries) {
+            super(base, maxRepetitions, maxRetries);
         }
         public long getCount() {
             return m_count;

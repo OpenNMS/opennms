@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+  <context:annotation-config />
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <!-- 
+      We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+      preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+      the issue documented here:
+
+      https://jira.springsource.org/browse/SPR-6428
+
+      TODO: Fix this behavior after upgrading to Spring 3.1.
+    -->
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    <property name="properties">
+      <props>
+        <prop key="opennms.poller.server.serverPort">1199</prop>
+        <prop key="opennms.poller.server.registryPort">1099</prop>
+        <prop key="opennms.poller.server.serverHost">localhost</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="rmiSocketFactory" class="org.opennms.bootstrap.HostRMIServerSocketFactory">
+    <property name="host" value="${opennms.poller.server.serverHost}" />
+  </bean>
+
+  <bean id="pollerBackEnd-rmi" class="org.springframework.remoting.rmi.RmiServiceExporter">
+    <qualifier value="rmi" />
+    <property name="service" ref="backend" />
+    <property name="serviceInterface" value="org.opennms.netmgt.poller.remote.PollerBackEnd" />
+    <property name="serviceName" value="pollerBackEnd" />
+    <property name="servicePort" value="${opennms.poller.server.serverPort}" />
+    <property name="registryPort" value="${opennms.poller.server.registryPort}" />
+    <property name="clientSocketFactory" ref="rmiSocketFactory" />
+  </bean>
+</beans>

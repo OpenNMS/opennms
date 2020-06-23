@@ -1,0 +1,7 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <reference id="dataSource" interface="javax.sql.DataSource"/>
+    <bean id="postgresJsonStore" class="org.opennms.features.distributed.kvstore.json.postgres.PostgresJsonStore">
+        <argument ref="dataSource"/>
+    </bean>
+    <service ref="postgresJsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
+</blueprint>

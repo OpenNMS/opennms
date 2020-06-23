@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,8 +29,8 @@
 package org.opennms.netmgt.rtc.datablock;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.opennms.netmgt.config.categories.Category;
@@ -48,12 +48,12 @@ public class RTCCategory extends Category {
     /**
      * The 'effective' rule
      */
-    private String m_effectiveRule;
+    private final String m_effectiveRule;
 
     /**
      * The nodes list - list of node IDs
      */
-    private List<Long> m_nodes;
+    private final List<Integer> m_nodes = Collections.synchronizedList(new ArrayList<Integer>());
 
     /**
      * The default constructor - initializes the values
@@ -63,15 +63,13 @@ public class RTCCategory extends Category {
      */
     public RTCCategory(Category cat, String commonRule) {
         setLabel(cat.getLabel());
-        setComment(cat.getComment());
+        setComment(cat.getComment().orElse(null));
         setRule(cat.getRule());
-        setNormal(cat.getNormal());
-        setWarning(cat.getWarning());
-        setService(cat.getService());
+        setNormalThreshold(cat.getNormalThreshold());
+        setWarningThreshold(cat.getWarningThreshold());
+        setServices(cat.getServices());
 
         m_effectiveRule = "(" + commonRule + ") & (" + cat.getRule() + ")";
-
-        m_nodes = Collections.synchronizedList(new ArrayList<Long>());
     }
 
     /**
@@ -81,7 +79,7 @@ public class RTCCategory extends Category {
      *            the node to add
      */
     public void addNode(RTCNode node) {
-        Long longnodeid = node.getNodeID();
+        Integer longnodeid = node.getNodeID();
 
         if (!m_nodes.contains(longnodeid))
             m_nodes.add(longnodeid);
@@ -93,11 +91,10 @@ public class RTCCategory extends Category {
      * @param nodeid
      *            the node ID to add
      */
-    public void addNode(long nodeid) {
-        Long longnodeid = Long.valueOf(nodeid);
-
-        if (!m_nodes.contains(longnodeid))
-            m_nodes.add(longnodeid);
+    public void addNode(int nodeid) {
+        if (!m_nodes.contains(nodeid)) {
+            m_nodes.add(nodeid);
+        }
     }
 
     /**
@@ -106,10 +103,22 @@ public class RTCCategory extends Category {
      * @param nodeid
      *            the node ID to delete
      */
-    public void deleteNode(long nodeid) {
-        Long longnodeid = Long.valueOf(nodeid);
+    public void deleteNode(int nodeid) {
+        m_nodes.remove(Integer.valueOf(nodeid));
+    }
 
-        m_nodes.remove(longnodeid);
+    /**
+     * Delete all nodes in this category
+     */
+    public void clearNodes() {
+        m_nodes.clear();
+    }
+
+    /**
+     * Delete all nodes in this category
+     */
+    public void addAllNodes(Collection<Integer> nodes) {
+        m_nodes.addAll(nodes);
     }
 
     /**
@@ -121,23 +130,13 @@ public class RTCCategory extends Category {
      * @param svcname a {@link java.lang.String} object.
      */
     public boolean containsService(String svcname) {
-        if (getServiceCount() <= 0) {
-            // service list is null - so include all services
+        final List<String> services = getServices();
+
+        // if there are no services listed, include all services
+        if (services.size() == 0) {
             return true;
         }
-
-        boolean found = false;
-
-        Enumeration<String> en = enumerateService();
-        while (en.hasMoreElements()) {
-            String svc = en.nextElement();
-            if (svc.equals(svcname)) {
-                found = true;
-                break;
-            }
-        }
-
-        return found;
+        return services.contains(svcname);
     }
 
     /**
@@ -154,7 +153,7 @@ public class RTCCategory extends Category {
      *
      * @return the list of node IDs in this category
      */
-    public List<Long> getNodes() {
+    public List<Integer> getNodes() {
         return m_nodes;
     }
 }

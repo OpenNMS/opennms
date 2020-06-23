@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.core.soa.support;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -42,6 +43,8 @@ import org.opennms.core.soa.RegistrationHook;
 import org.opennms.core.soa.RegistrationListener;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.soa.filter.FilterParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DefaultServiceRegistry
@@ -50,13 +53,15 @@ import org.opennms.core.soa.filter.FilterParser;
  * @version $Id: $
  */
 public class DefaultServiceRegistry implements ServiceRegistry {
-    
+
+    private static Logger LOG = LoggerFactory.getLogger(DefaultServiceRegistry.class);
+
     /**
      * AnyFilter
      *
      * @author brozow
      */
-    public class AnyFilter implements Filter {
+    public static class AnyFilter implements Filter {
 
         @Override
         public boolean match(Map<String, String> properties) {
@@ -78,7 +83,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
         public ServiceRegistration(Object provider, Map<String, String> properties, Class<?>[] serviceInterfaces) {
             m_provider = provider;
             m_properties = properties;
-            m_serviceInterfaces = serviceInterfaces;
+            m_serviceInterfaces = Arrays.copyOf(serviceInterfaces, serviceInterfaces.length);
         }
         
 
@@ -132,7 +137,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     
     private MultivaluedMap<Class<?>, ServiceRegistration> m_registrationMap = MultivaluedMapImpl.synchronizedMultivaluedMap();
     private MultivaluedMap<Class<?>, RegistrationListener<?>> m_listenerMap = MultivaluedMapImpl.synchronizedMultivaluedMap();
-    private List<RegistrationHook> m_hooks = new CopyOnWriteArrayList<RegistrationHook>();
+    private List<RegistrationHook> m_hooks = new CopyOnWriteArrayList<>();
     
     /** {@inheritDoc} */
     @Override
@@ -207,7 +212,8 @@ public class DefaultServiceRegistry implements ServiceRegistry {
             fireProviderRegistered(serviceInterface, registration);
         }
 
-        
+        LOG.debug("Registered {} as instance of {}", serviceProvider, services);
+
         return registration;
 
     }
@@ -325,9 +331,16 @@ public class DefaultServiceRegistry implements ServiceRegistry {
 	public void removeRegistrationHook(RegistrationHook hook) {
 		m_hooks.remove(hook);
 	}
-	
+
+	@Override
+	public void unregisterAll(Class<?> clazz) {
+		for (ServiceRegistration registration : getRegistrations(clazz)) {
+			unregister(registration);
+		}
+	}
+
 	private Set<ServiceRegistration> getAllRegistrations() {
-		Set<ServiceRegistration> registrations = new LinkedHashSet<ServiceRegistration>();
+		Set<ServiceRegistration> registrations = new LinkedHashSet<>();
 		
 		for(Set<ServiceRegistration> registrationSet: m_registrationMap.values()) {
 			registrations.addAll(registrationSet);

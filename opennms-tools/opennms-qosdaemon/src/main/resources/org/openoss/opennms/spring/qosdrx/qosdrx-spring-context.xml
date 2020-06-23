@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+<!-- 
+	<import resource="applicationContext-dao.xml" />
+ -->
+
+	<bean id="qosdConfigProperty" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+		<property name="properties">
+			<props>
+				<prop key="qosd.config.directory">${opennms.home}/etc</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="propertyConfigurerRx" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" depends-on="qosdConfigProperty">
+		<property name="location" value="file:${qosd.config.directory}/qosdrx.properties"/>
+	</bean>
+
+	<bean id="QoSDrx" class="org.openoss.opennms.spring.qosdrx.QoSDrx">
+			<property name="nodeDao" ref="nodeDao" />
+			<property name="alarmDao" ref="alarmDao" />
+			<property name="assetRecordDao" ref="assetRecordDao" />
+			<property name="initialOssBeanRunner" ref="QoSDrxOssBeanRunner" />
+	</bean>
+	
+	<bean id="QoSDrxOssBeanRunner"
+		class="org.openoss.ossj.fm.monitor.spring.OssBeanRunnerImpl">
+		<property name="ossBeanRunnerSpringContextXml">
+		<list>
+			<value>file:${qosd.config.directory}/QoSDrxOssBeanRunnerSpringContext.xml</value>
+		</list>
+		</property>
+	</bean>
+	
+	<!--  Simple method for local instance of ossDao
+	<bean id="ossDao"
+		class="org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl">
+	   <property name="nodeDao" ref="nodeDao" />
+	   <property name="alarmDao" ref="alarmDao" />
+	   <property name="assetRecordDao" ref="assetRecordDao" />
+	   <property name="dataSource" ref="dataSource" />
+	</bean>
+	-->
+	
+	<!--  Method for sharing DAO across application contexts as a single instance -->
+	<bean id="ossDao-init" 		
+	    class="org.openoss.opennms.spring.dao.OssDaoOpenNMSImplSingleton" >
+		<property name="nodeDao" ref="nodeDao" />
+	    <property name="alarmDao" ref="alarmDao" />
+	    <property name="assetRecordDao" ref="assetRecordDao" />
+	    <property name="dataSource" ref="dataSource" />
+	    <property name="transTemplate" ref="transactionTemplate" />
+	</bean>
+
+	<bean id="ossDao" 
+		class="org.openoss.opennms.spring.dao.OssDaoOpenNMSImplSingleton"
+		depends-on="ossDao-init"
+		factory-method="getInstance"/>
+	
+	<bean id="onmsAlarmOssjMapper"
+		class="org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper">
+		<property name="nodeDao" ref="nodeDao" />
+		<property name="assetRecordDao" ref="assetRecordDao" />
+		<property name="ossDao" ref="ossDao" />
+		<property name="distPollerDao" ref="distPollerDao" />
+	</bean>	
+	
+	<bean id="QoSDrxAlarmEventReceiverEventHandler"
+	   class="org.openoss.opennms.spring.qosdrx.QoSDrxAlarmEventReceiverEventHandlerImpl2"
+	   depends-on="propertyConfigurerRx">
+	   <property name="alarmUpdateBehaviour" value="${org.openoss.opennms.qosdrx.alarmupdatebehaviour}" />
+	   <property name="nodeDao" ref="nodeDao" />
+	   <property name="alarmDao" ref="alarmDao" />
+	   <property name="assetRecordDao" ref="assetRecordDao" />
+	   <property name="ossDao" ref="ossDao" />
+	   <property name="distPollerDao" ref="distPollerDao" />
+	   <property name="onmsAlarmOssjMapper" ref="onmsAlarmOssjMapper"/>
+	</bean>
+	
+	
+	<!-- this works as a simple receiver
+	<bean id="QoSDrxAlarmEventReceiverEventHandler"
+	   class="org.openoss.opennms.spring.qosdrx.QoSDrxAlarmEventReceiverEventHandlerImpl">
+	   <property name="nodeDao" ref="nodeDao" />
+	   <property name="alarmDao" ref="alarmDao" />
+	   <property name="assetRecordDao" ref="assetRecordDao" />
+	</bean>
+	-->
+	
+	<!-- 
+	
+	<bean id="alarmDao"
+		class="org.opennms.netmgt.dao.jdbc.AlarmDaoJdbc">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	 -->
+
+</beans>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -69,7 +69,7 @@ public class NotificationFilterController extends AbstractController implements 
 
     /** Constant <code>DEFAULT_MULTIPLE=0</code> */
     public static final int DEFAULT_MULTIPLE = 0;
-    
+
     private String m_successView;
     private Integer m_defaultShortLimit;
     private Integer m_defaultLongLimit;
@@ -113,7 +113,7 @@ public class NotificationFilterController extends AbstractController implements 
 
         // handle the filter parameters
         String[] filterStrings = request.getParameterValues("filter");
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         if (filterStrings != null) {
             for (String filterString : filterStrings) {
                 Filter filter = NoticeUtil.getFilter(filterString, getServletContext());
@@ -159,7 +159,7 @@ public class NotificationFilterController extends AbstractController implements 
 
         // put the parameters in a convenient struct
         Filter[] filters = filterList.toArray(new Filter[0]);
-        
+
         NoticeQueryParms parms = new NoticeQueryParms();
         parms.ackType = ackType;
         parms.display = display;
@@ -173,48 +173,70 @@ public class NotificationFilterController extends AbstractController implements 
 
         Notification[] notices = m_webNotificationRepository.getMatchingNotifications(queryCriteria);
         int noticeCount = m_webNotificationRepository.countMatchingNotifications(countCriteria);
-        Map<Integer,String[]> nodeLabels = new HashMap<Integer,String[]>();
-        Set<Integer> eventIds = new TreeSet<Integer>();
-        
+        final Map<Integer,String[]> nodeLabels = new HashMap<Integer,String[]>();
+        final Map<Integer,String[]> nodeLocations = new HashMap<Integer,String[]>();
+        Set<Integer> eventIds = new TreeSet<>();
+
         // really inefficient, is there a better way to do this?
         for (Notification notice : notices) {
-            eventIds.add(notice.getEventId());
-            if (!nodeLabels.containsKey(notice.getNodeId())) {
-                String[] labels = null;
-                OnmsNode node = m_nodeDao.get(notice.getNodeId());
-                if (node != null) {
-                    String longLabel = node.getLabel();
-                    if( longLabel == null ) {
-                        labels = new String[] { "&lt;No Node Label&gt;", "&lt;No Node Label&gt;" };
-                    } else {
-                        if ( longLabel.length() > 32 ) {
-                            String shortLabel = longLabel.substring( 0, 31 ) + "...";                        
-                            labels = new String[] { shortLabel, longLabel };
+            if (notice.getEventId() > 0) {
+                eventIds.add(notice.getEventId());
+            }
+            if (notice.getNodeId() > 0) {
+                if (!nodeLabels.containsKey(notice.getNodeId())) {
+                    String[] labels = null;
+                    String[] locations = null;
+                    OnmsNode node = m_nodeDao.get(notice.getNodeId());
+                    if (node != null) {
+                        String longLabel = node.getLabel();
+                        if( longLabel == null ) {
+                            labels = new String[] { "&lt;No Node Label&gt;", "&lt;No Node Label&gt;" };
                         } else {
-                            labels = new String[] { longLabel, longLabel };
+                            if ( longLabel.length() > 32 ) {
+                                String shortLabel = longLabel.substring( 0, 31 ) + "&hellip;";
+                                labels = new String[] { shortLabel, longLabel };
+                            } else {
+                                labels = new String[] { longLabel, longLabel };
+                            }
+                        }
+
+                        if (node.getLocation() != null) {
+                            String location = node.getLocation().getLocationName();
+                            if ( location == null ) {
+                                locations = new String[] { "&lt;No Node Location&gt;", "&lt;No Node Location&gt;" };
+                            } else {
+                                if ( location.length() > 32 ) {
+                                    String shortLocation = location.substring(0, 31) + "&hellip;";
+                                    locations = new String[] { shortLocation, location };
+                                } else {
+                                    locations = new String[] { location, location };
+                                }
+                            }
                         }
                     }
+                    nodeLabels.put( notice.getNodeId(), labels );
+                    nodeLocations.put( notice.getNodeId() , locations );
                 }
-                nodeLabels.put( notice.getNodeId(), labels );
             }
         }
-        
+
         Map<Integer,Event> events = new HashMap<Integer,Event>();
         if (eventIds.size() > 0) {
             for (Event e : m_webEventRepository.getMatchingEvents(new EventCriteria(new EventIdListFilter(eventIds)))) {
                 events.put(e.getId(), e);
             }
         }
-    
+
         ModelAndView modelAndView = new ModelAndView(m_successView);
         modelAndView.addObject("notices", notices);
         modelAndView.addObject("noticeCount", noticeCount);
         modelAndView.addObject("nodeLabels", nodeLabels);
+        modelAndView.addObject("nodeLocations", nodeLocations);
         modelAndView.addObject("events", events);
         modelAndView.addObject("parms", parms);
         return modelAndView;
     }
-    
+
     /**
      * <p>setDefaultShortLimit</p>
      *
@@ -250,7 +272,7 @@ public class NotificationFilterController extends AbstractController implements 
     public void setSuccessView(String successView) {
         m_successView = successView;
     }
-    
+
     /**
      * <p>setWebEventRepository</p>
      *

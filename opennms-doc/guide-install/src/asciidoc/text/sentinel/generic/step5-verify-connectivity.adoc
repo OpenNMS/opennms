@@ -1,0 +1,25 @@
+
+==== Step 5: Verifying Connectivity
+
+.Connect to Karaf Shell of the Sentinel
+[source]
+----
+ssh -p 8301 admin@localhost
+----
+
+.Verify connectivity with the _{opennms-product-name}_
+[source]
+----
+admin@sentinel()> feature:install sentinel-core
+admin@sentinel> health:check
+Verifying the health of the container
+
+Verifying installed bundles      [ Success  ]
+Connecting to OpenNMS ReST API   [ Success  ]
+
+=> Everything is awesome
+admin@sentinel()>
+----
+
+NOTE:   The `health:check` command is a newer and more flexibel version of the original `minion:ping` command.
+        Therefore on _Sentinel_ there is no equivalent such as `sentinel:ping`.

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,34 +28,41 @@
 
 package org.opennms.netmgt.snmp;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.opennms.netmgt.snmp.proxy.WalkRequest;
+import org.opennms.netmgt.snmp.proxy.WalkResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ColumnTracker extends CollectionTracker {
-	
-	private static final transient Logger LOG = LoggerFactory.getLogger(ColumnTracker.class);
+    private static final transient Logger LOG = LoggerFactory.getLogger(ColumnTracker.class);
     
     private SnmpObjId m_base;
     private SnmpObjId m_last;
     private int m_maxRepetitions;
+    private int m_maxRetries;
+    private Integer m_retries;
 
     public ColumnTracker(SnmpObjId base) {
         this(null, base);
     }
 
-    public ColumnTracker(SnmpObjId base, int maxRepititions) {
-        this(null, base, maxRepititions);
+    public ColumnTracker(SnmpObjId base, int maxRepititions, int maxRetries) {
+        this(null, base, maxRepititions, maxRetries);
     }
     
     public ColumnTracker(CollectionTracker parent, SnmpObjId base) {
-        this(parent, base, 2);
+        this(parent, base, 2, 0);
     }
 
-    public ColumnTracker(CollectionTracker parent, SnmpObjId base, int maxRepititions) {
+    public ColumnTracker(CollectionTracker parent, SnmpObjId base, int maxRepititions, int maxRetries) {
         super(parent);
         m_base = base;
         m_last = base;
         m_maxRepetitions = maxRepititions;
+        m_maxRetries = maxRetries;
     }
 
     public SnmpObjId getBase() {
@@ -71,10 +78,11 @@ public class ColumnTracker extends CollectionTracker {
             .append("finished?", isFinished())
             .toString();
     }
-        @Override
-    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
+
+    @Override
+    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) throws SnmpException {
         if (pduBuilder.getMaxVarsPerPdu() < 1) {
-            throw new IllegalArgumentException("maxVarsPerPdu < 1");
+            throw new SnmpException("maxVarsPerPdu < 1");
         }
 
         LOG.debug("Requesting oid following: {}", m_last);
@@ -83,7 +91,6 @@ public class ColumnTracker extends CollectionTracker {
         pduBuilder.setMaxRepetitions(getMaxRepetitions());
         
         ResponseProcessor rp = new ResponseProcessor() {
-
             @Override
             public void processResponse(SnmpObjId responseObjId, SnmpValue val) {
                 if (val.isEndOfMib()) {
@@ -92,6 +99,17 @@ public class ColumnTracker extends CollectionTracker {
                 }
                 LOG.debug("Processing varBind: {} = {}", responseObjId, val);
 
+                // We requested OIDs following the m_last
+                // If the response OID is not a successor of m_last, then we have received an invalid response
+                // and should stop processing
+                // See NMS-10621 for details
+                if (!responseObjId.isSuccessorOf(m_last)) {
+                    LOG.info("Received varBind: {} = {} after requesting an OID following: {}. "
+                            + "The received varBind is not a successor! Marking tracker as finished.",
+                            responseObjId, val, m_last);
+                    setFinished(true);
+                    return;
+                }
 
                 m_last = responseObjId;
                 if (m_base.isPrefixOf(responseObjId) && !m_base.equals(responseObjId)) {
@@ -108,22 +126,41 @@ public class ColumnTracker extends CollectionTracker {
             }
 
             @Override
-            public boolean processErrors(int errorStatus, int errorIndex) {
-                if (errorStatus == NO_ERR) {
-                    return false;
-                } else if (errorStatus == TOO_BIG_ERR) {
-                    throw new IllegalArgumentException("Unable to handle tooBigError for next oid request after "+m_last);
-                } else if (errorStatus == GEN_ERR) {
+            public boolean processErrors(int errorStatus, int errorIndex) throws SnmpException {
+                if (m_retries == null) m_retries = getMaxRetries();
+                //LOG.trace("processErrors: errorStatus={}, errorIndex={}, retries={}", errorStatus, errorIndex, m_retries);
+
+                final ErrorStatus status = ErrorStatus.fromStatus(errorStatus);
+                if (status == ErrorStatus.TOO_BIG) {
+                    throw new SnmpException("Unable to handle tooBigError for next oid request after "+m_last);
+                } else if (status == ErrorStatus.GEN_ERR) {
                     reportGenErr("Received genErr requesting next oid after "+m_last+". Marking column is finished.");
                     errorOccurred();
                     return true;
-                } else if (errorStatus == NO_SUCH_NAME_ERR) {
+                } else if (status == ErrorStatus.NO_SUCH_NAME) {
                     reportNoSuchNameErr("Received noSuchName requesting next oid after "+m_last+". Marking column is finished.");
                     errorOccurred();
                     return true;
-                } else {
-                    throw new IllegalArgumentException("Unexpected error processing next oid after "+m_last+". Aborting!");
+                } else if (status.isFatal()) {
+                    final ErrorStatusException ex = new ErrorStatusException(status, "Unexpected error processing next oid after "+m_last+". Aborting!");
+                    reportFatalErr(ex);
+                    throw ex;
+                } else if (status != ErrorStatus.NO_ERROR) {
+                    reportNonFatalErr(status);
                 }
+
+                if (status.retry()) {
+                    if (m_retries-- <= 0) {
+                        final ErrorStatusException ex = new ErrorStatusException(status, "Non-fatal error met maximum number of retries. Aborting!");
+                        reportFatalErr(ex);
+                        throw ex;
+                    }
+                } else {
+                    // On success, reset the retries
+                    m_retries = getMaxRetries();
+                }
+
+                return status.retry();
             }
         };
         
@@ -137,6 +174,16 @@ public class ColumnTracker extends CollectionTracker {
     @Override
     public void setMaxRepetitions(int maxRepetitions) {
         m_maxRepetitions = maxRepetitions;
+    }
+
+    public int getMaxRetries() {
+        return m_maxRetries;
+    }
+    
+    @Override
+    public void setMaxRetries(final int maxRetries) {
+        LOG.debug("setMaxRetries({})", maxRetries);
+        m_maxRetries = maxRetries;
     }
 
     protected void receivedEndOfMib() {
@@ -154,5 +201,24 @@ public class ColumnTracker extends CollectionTracker {
             return null;
         }
     }
-    
+
+    @Override
+    public List<WalkRequest> getWalkRequests() {
+        final WalkRequest walkRequest = new WalkRequest(m_base);
+        walkRequest.setMaxRepetitions(m_maxRepetitions);
+        return Collections.singletonList(walkRequest);
+    }
+
+    @Override
+    public void handleWalkResponses(List<WalkResponse> responses) {
+        // Store the result
+        responses.stream()
+            .flatMap(res -> res.getResults().stream())
+            .filter(res -> {
+                SnmpObjId responseOid = SnmpObjId.get(res.getBase(), res.getInstance());
+                return m_base.isPrefixOf(responseOid) && !m_base.equals(responseOid);
+            })
+            .forEach(this::storeResult);
+        setFinished(true);
+    }
 }

@@ -1,1103 +1,1049 @@
-<!-- Start of auto generated data from MIB: RADLAN-MIB -->
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rxOverflowHWFault</uei>
-	<event-label>RADLAN-MIB defined trap event: rxOverflowHWFault</event-label>
-	<descr>
-&lt;p&gt;An RX buffer overflow has occurred in one of the LAN or link
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rxOverflowHWFault</uei>
+      <event-label>RADLAN-MIB defined trap event: rxOverflowHWFault</event-label>
+      <descr>&lt;p>An RX buffer overflow has occurred in one of the LAN or link
 interfaces. The bound variable rndErrorDesc provides the
-interface number.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+interface number.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rxOverflowHWFault trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/txOverflowHWFault</uei>
-	<event-label>RADLAN-MIB defined trap event: txOverflowHWFault</event-label>
-	<descr>
-&lt;p&gt;Interport queue overflow has occurred in one of the LAN or link interfaces.
-The bound variable rndErrorDesc provides the interface number.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/txOverflowHWFault</uei>
+      <event-label>RADLAN-MIB defined trap event: txOverflowHWFault</event-label>
+      <descr>&lt;p>Interport queue overflow has occurred in one of the LAN or link interfaces.
+The bound variable rndErrorDesc provides the interface number.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			txOverflowHWFault trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/routeTableOverflow</uei>
-	<event-label>RADLAN-MIB defined trap event: routeTableOverflow</event-label>
-	<descr>
-&lt;p&gt;An overflow condition has occurred in the Routing Table. The Routing
-Table is used for IP routing algorithm (RIP).&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/routeTableOverflow</uei>
+      <event-label>RADLAN-MIB defined trap event: routeTableOverflow</event-label>
+      <descr>&lt;p>An overflow condition has occurred in the Routing Table. The Routing
+Table is used for IP routing algorithm (RIP).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			routeTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>10</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/resetRequired</uei>
-	<event-label>RADLAN-MIB defined trap event: resetRequired</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that in order to perform the last SET request, a reset operation
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/resetRequired</uei>
+      <event-label>RADLAN-MIB defined trap event: resetRequired</event-label>
+      <descr>&lt;p>This trap indicates that in order to perform the last SET request, a reset operation
 of the router/bridge is required. This occurs when the layer 2 routing algorithm is
 changed between SPF and Spanning Tree. The reset can be performed manually or
-using the variable rndAction.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+using the variable rndAction.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			resetRequired trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>12</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/endTftp</uei>
-	<event-label>RADLAN-MIB defined trap event: endTftp</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that in the device finished a TFTP
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/endTftp</uei>
+      <event-label>RADLAN-MIB defined trap event: endTftp</event-label>
+      <descr>&lt;p>This trap indicates that in the device finished a TFTP
 transaction with the management station.
 variable rndErrorDesc and rndErrorSeverity provides the actual message
-text and severity respectively.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+text and severity respectively.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			endTftp trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>13</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/abortTftp</uei>
-	<event-label>RADLAN-MIB defined trap event: abortTftp</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that in the device aborted a TFTP session with
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/abortTftp</uei>
+      <event-label>RADLAN-MIB defined trap event: abortTftp</event-label>
+      <descr>&lt;p>This trap indicates that in the device aborted a TFTP session with
 the management station. Variable rndErrorDesc  and rndErrorSeverity
-provides the actual  message text  and severity  respectively.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+provides the actual  message text  and severity  respectively.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			abortTftp trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>14</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/startTftp</uei>
-	<event-label>RADLAN-MIB defined trap event: startTftp</event-label>
-	<descr>
-&lt;p&gt;Informational trap indicating that the device has intiated a
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/startTftp</uei>
+      <event-label>RADLAN-MIB defined trap event: startTftp</event-label>
+      <descr>&lt;p>Informational trap indicating that the device has intiated a
 TFTP session. rndErrorDesc will contain the file type in
-question&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+question&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			startTftp trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>23</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/faultBackUp</uei>
-	<event-label>RADLAN-MIB defined trap event: faultBackUp</event-label>
-	<descr>
-&lt;p&gt;Automantic switchover to backup link because of main link fault.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/faultBackUp</uei>
+      <event-label>RADLAN-MIB defined trap event: faultBackUp</event-label>
+      <descr>&lt;p>Automantic switchover to backup link because of main link fault.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			faultBackUp trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>24</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/mainLinkUp</uei>
-	<event-label>RADLAN-MIB defined trap event: mainLinkUp</event-label>
-	<descr>
-&lt;p&gt;Communication returened to main link.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>24</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/mainLinkUp</uei>
+      <event-label>RADLAN-MIB defined trap event: mainLinkUp</event-label>
+      <descr>&lt;p>Communication returened to main link.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			mainLinkUp trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>36</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/ipxRipTblOverflow</uei>
-	<event-label>RADLAN-MIB defined trap event: ipxRipTblOverflow</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that in an OpenGate IPX RIP table overflow.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>36</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/ipxRipTblOverflow</uei>
+      <event-label>RADLAN-MIB defined trap event: ipxRipTblOverflow</event-label>
+      <descr>&lt;p>This trap indicates that in an OpenGate IPX RIP table overflow.
 The bound variable rndErrorDesc, rndErrorSeverity
-provides the actual  message text and severity respectively.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+provides the actual  message text and severity respectively.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			ipxRipTblOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>37</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/ipxSapTblOverflow</uei>
-	<event-label>RADLAN-MIB defined trap event: ipxSapTblOverflow</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that in an OpenGate IPX SAP table overflow.
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>37</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/ipxSapTblOverflow</uei>
+      <event-label>RADLAN-MIB defined trap event: ipxSapTblOverflow</event-label>
+      <descr>&lt;p>This trap indicates that in an OpenGate IPX SAP table overflow.
 The bound variable rndErrorDesc, rndErrorSeverity
-provides the actual  message text and severity respectively.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+provides the actual  message text and severity respectively.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			ipxSapTblOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>49</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/facsAccessVoilation</uei>
-	<event-label>RADLAN-MIB defined trap event: facsAccessVoilation</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that message that fits FACS statenebt with
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>49</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/facsAccessVoilation</uei>
+      <event-label>RADLAN-MIB defined trap event: facsAccessVoilation</event-label>
+      <descr>&lt;p>This trap indicates that message that fits FACS statenebt with
 operation blockAndReport was forward to the interface. The bound
 variable rndErrorDesc, rndErrorSeverity(== info ) and
-interface Number.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+interface Number.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			facsAccessVoilation trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>50</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/autoConfigurationCompleted</uei>
-	<event-label>RADLAN-MIB defined trap event: autoConfigurationCompleted</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that auto comfiguration completetd succssefully.
-The bound variable rndErrorDesc, rndErrorSeverity(== info )&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>50</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/autoConfigurationCompleted</uei>
+      <event-label>RADLAN-MIB defined trap event: autoConfigurationCompleted</event-label>
+      <descr>&lt;p>This trap indicates that auto comfiguration completetd succssefully.
+The bound variable rndErrorDesc, rndErrorSeverity(== info )&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			autoConfigurationCompleted trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>51</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/forwardingTabOverflow</uei>
-	<event-label>RADLAN-MIB defined trap event: forwardingTabOverflow</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that an overflow condition has occurred in the
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>51</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/forwardingTabOverflow</uei>
+      <event-label>RADLAN-MIB defined trap event: forwardingTabOverflow</event-label>
+      <descr>&lt;p>This trap indicates that an overflow condition has occurred in the
 layer II Forward Table.
-The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			forwardingTabOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>53</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/framRelaySwitchConnectionUp</uei>
-	<event-label>RADLAN-MIB defined trap event: framRelaySwitchConnectionUp</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that a connection establish between the Frame
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>53</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/framRelaySwitchConnectionUp</uei>
+      <event-label>RADLAN-MIB defined trap event: framRelaySwitchConnectionUp</event-label>
+      <descr>&lt;p>This trap indicates that a connection establish between the Frame
 relay Switch and the WanGate.
-The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			framRelaySwitchConnectionUp trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>54</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/framRelaySwitchConnectionDown</uei>
-	<event-label>RADLAN-MIB defined trap event: framRelaySwitchConnectionDown</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that a connection between the Frame Relay Switch
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>54</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/framRelaySwitchConnectionDown</uei>
+      <event-label>RADLAN-MIB defined trap event: framRelaySwitchConnectionDown</event-label>
+      <descr>&lt;p>This trap indicates that a connection between the Frame Relay Switch
 and the WanGate failed.
-The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			framRelaySwitchConnectionDown trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>61</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/errorsDuringInit</uei>
-	<event-label>RADLAN-MIB defined trap event: errorsDuringInit</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that the an error occured during initialization
-The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>61</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/errorsDuringInit</uei>
+      <event-label>RADLAN-MIB defined trap event: errorsDuringInit</event-label>
+      <descr>&lt;p>This trap indicates that the an error occured during initialization
+The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			errorsDuringInit trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>66</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/vlanDynPortAdded</uei>
-	<event-label>RADLAN-MIB defined trap event: vlanDynPortAdded</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>66</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/vlanDynPortAdded</uei>
+      <event-label>RADLAN-MIB defined trap event: vlanDynPortAdded</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			vlanDynPortAdded trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>67</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/vlanDynPortRemoved</uei>
-	<event-label>RADLAN-MIB defined trap event: vlanDynPortRemoved</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>67</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/vlanDynPortRemoved</uei>
+      <event-label>RADLAN-MIB defined trap event: vlanDynPortRemoved</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			vlanDynPortRemoved trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>68</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rsSDclientsTableOverflow</uei>
-	<event-label>RADLAN-MIB defined trap event: rsSDclientsTableOverflow</event-label>
-	<descr>
-&lt;p&gt;This warning is generated when an overflow occurs in the clients table.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>68</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rsSDclientsTableOverflow</uei>
+      <event-label>RADLAN-MIB defined trap event: rsSDclientsTableOverflow</event-label>
+      <descr>&lt;p>This warning is generated when an overflow occurs in the clients table.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rsSDclientsTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>69</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rsSDinactiveServer</uei>
-	<event-label>RADLAN-MIB defined trap event: rsSDinactiveServer</event-label>
-	<descr>
-&lt;p&gt;This warning is generated when a server does not respond to the dispatchers polling
-and is thought to be inactive.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>69</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rsSDinactiveServer</uei>
+      <event-label>RADLAN-MIB defined trap event: rsSDinactiveServer</event-label>
+      <descr>&lt;p>This warning is generated when a server does not respond to the dispatchers polling
+and is thought to be inactive.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rsSDinactiveServer trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>70</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rsIpZhrConnectionsTableOverflow</uei>
-	<event-label>RADLAN-MIB defined trap event: rsIpZhrConnectionsTableOverflow</event-label>
-	<descr>
-&lt;p&gt;The Zero Hop Routing connections Table has been overflown.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>70</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rsIpZhrConnectionsTableOverflow</uei>
+      <event-label>RADLAN-MIB defined trap event: rsIpZhrConnectionsTableOverflow</event-label>
+      <descr>&lt;p>The Zero Hop Routing connections Table has been overflown.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rsIpZhrConnectionsTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>71</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rsIpZhrReqStaticConnNotAccepted</uei>
-	<event-label>RADLAN-MIB defined trap event: rsIpZhrReqStaticConnNotAccepted</event-label>
-	<descr>
-&lt;p&gt;The requested static connection was not accepted because there is
-no available IP virtual address to allocate to it.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>71</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rsIpZhrReqStaticConnNotAccepted</uei>
+      <event-label>RADLAN-MIB defined trap event: rsIpZhrReqStaticConnNotAccepted</event-label>
+      <descr>&lt;p>The requested static connection was not accepted because there is
+no available IP virtual address to allocate to it.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rsIpZhrReqStaticConnNotAccepted trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>72</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rsIpZhrVirtualIpAsSource</uei>
-	<event-label>RADLAN-MIB defined trap event: rsIpZhrVirtualIpAsSource</event-label>
-	<descr>
-&lt;p&gt;The virtual IP address appeared as a source IP.
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>72</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rsIpZhrVirtualIpAsSource</uei>
+      <event-label>RADLAN-MIB defined trap event: rsIpZhrVirtualIpAsSource</event-label>
+      <descr>&lt;p>The virtual IP address appeared as a source IP.
 All the connections using it will be deleted and
-it will not be further allocated to new connections.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+it will not be further allocated to new connections.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rsIpZhrVirtualIpAsSource trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>73</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rsIpZhrNotAllocVirtualIp</uei>
-	<event-label>RADLAN-MIB defined trap event: rsIpZhrNotAllocVirtualIp</event-label>
-	<descr>
-&lt;p&gt;The source IP address sent an ARP specifying a virtual IP
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>73</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rsIpZhrNotAllocVirtualIp</uei>
+      <event-label>RADLAN-MIB defined trap event: rsIpZhrNotAllocVirtualIp</event-label>
+      <descr>&lt;p>The source IP address sent an ARP specifying a virtual IP
 which was not allocated for this source.
 This virtual IP will not be allocated to connections of this
-specific source IP.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+specific source IP.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rsIpZhrNotAllocVirtualIp trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>74</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rsSnmpSetRequestInSpecialCfgState</uei>
-	<event-label>RADLAN-MIB defined trap event: rsSnmpSetRequestInSpecialCfgState</event-label>
-	<descr>
-&lt;p&gt;An incoming SNMP SET request was rejected because no such
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>74</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rsSnmpSetRequestInSpecialCfgState</uei>
+      <event-label>RADLAN-MIB defined trap event: rsSnmpSetRequestInSpecialCfgState</event-label>
+      <descr>&lt;p>An incoming SNMP SET request was rejected because no such
 requests (except action requests) are accepted after start of
 new configuration reception or during sending the current
-configuration to an NMS.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+configuration to an NMS.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rsSnmpSetRequestInSpecialCfgState trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>136</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rsPingCompletion</uei>
-	<event-label>RADLAN-MIB defined trap event: rsPingCompletion</event-label>
-	<descr>
-&lt;p&gt;A rsPingCompleted trap is sent at the completion
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>136</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rsPingCompletion</uei>
+      <event-label>RADLAN-MIB defined trap event: rsPingCompletion</event-label>
+      <descr>&lt;p>A rsPingCompleted trap is sent at the completion
 of a sequence of pings if such a trap was requested
 when the sequence was initiated. The trap severity is info.
 The trap text will specify the following information:
@@ -1107,1715 +1053,1631 @@ the message will also specify the following quantities:
 if any responses were received:
    rsPingMinReturnTime
    rsPingAvgReturnTime
-   rsPingMaxReturnTime&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+   rsPingMaxReturnTime&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rsPingCompletion trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>137</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/pppSecurityViolation</uei>
-	<event-label>RADLAN-MIB defined trap event: pppSecurityViolation</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that a PPP link got an unrecognized secret.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>137</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/pppSecurityViolation</uei>
+      <event-label>RADLAN-MIB defined trap event: pppSecurityViolation</event-label>
+      <descr>&lt;p>This trap indicates that a PPP link got an unrecognized secret.
 The bound variables rndErrorDesc,
-rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			pppSecurityViolation trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>138</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/frDLCIStatudChange</uei>
-	<event-label>RADLAN-MIB defined trap event: frDLCIStatudChange</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>138</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/frDLCIStatudChange</uei>
+      <event-label>RADLAN-MIB defined trap event: frDLCIStatudChange</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			frDLCIStatudChange trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>139</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/papFailedCommunication</uei>
-	<event-label>RADLAN-MIB defined trap event: papFailedCommunication</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>139</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/papFailedCommunication</uei>
+      <event-label>RADLAN-MIB defined trap event: papFailedCommunication</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			papFailedCommunication trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>140</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/chapFailedCommunication</uei>
-	<event-label>RADLAN-MIB defined trap event: chapFailedCommunication</event-label>
-	<descr>
-&lt;p&gt;&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>140</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/chapFailedCommunication</uei>
+      <event-label>RADLAN-MIB defined trap event: chapFailedCommunication</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			chapFailedCommunication trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>141</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rsWSDRedundancySwitch</uei>
-	<event-label>RADLAN-MIB defined trap event: rsWSDRedundancySwitch</event-label>
-	<descr>
-&lt;p&gt;Whenever main server fails and backup takes over or server comes
-up after failure a trap of this type is issued.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>141</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rsWSDRedundancySwitch</uei>
+      <event-label>RADLAN-MIB defined trap event: rsWSDRedundancySwitch</event-label>
+      <descr>&lt;p>Whenever main server fails and backup takes over or server comes
+up after failure a trap of this type is issued.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rsWSDRedundancySwitch trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>142</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rsDhcpAllocationFailure</uei>
-	<event-label>RADLAN-MIB defined trap event: rsDhcpAllocationFailure</event-label>
-	<descr>
-&lt;p&gt;DHCP failed to allocate an IP address to a requesting host
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>142</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rsDhcpAllocationFailure</uei>
+      <event-label>RADLAN-MIB defined trap event: rsDhcpAllocationFailure</event-label>
+      <descr>&lt;p>DHCP failed to allocate an IP address to a requesting host
 because of memory shortage or inadequate configuration of
-available IP addresses.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+available IP addresses.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rsDhcpAllocationFailure trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>145</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlIpFftStnOverflow</uei>
-	<event-label>RADLAN-MIB defined trap event: rlIpFftStnOverflow</event-label>
-	<descr>
-&lt;p&gt;The IP SFFT overflow.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>145</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlIpFftStnOverflow</uei>
+      <event-label>RADLAN-MIB defined trap event: rlIpFftStnOverflow</event-label>
+      <descr>&lt;p>The IP SFFT overflow.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlIpFftStnOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>146</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlIpFftSubOverflow</uei>
-	<event-label>RADLAN-MIB defined trap event: rlIpFftSubOverflow</event-label>
-	<descr>
-&lt;p&gt;The IP NFFT overflow.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>146</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlIpFftSubOverflow</uei>
+      <event-label>RADLAN-MIB defined trap event: rlIpFftSubOverflow</event-label>
+      <descr>&lt;p>The IP NFFT overflow.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlIpFftSubOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>147</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlIpxFftStnOverflow</uei>
-	<event-label>RADLAN-MIB defined trap event: rlIpxFftStnOverflow</event-label>
-	<descr>
-&lt;p&gt;The IPX SFFT overflow.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>147</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlIpxFftStnOverflow</uei>
+      <event-label>RADLAN-MIB defined trap event: rlIpxFftStnOverflow</event-label>
+      <descr>&lt;p>The IPX SFFT overflow.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlIpxFftStnOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>148</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlIpxFftSubOverflow</uei>
-	<event-label>RADLAN-MIB defined trap event: rlIpxFftSubOverflow</event-label>
-	<descr>
-&lt;p&gt;The IPX NFFT overflow.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>148</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlIpxFftSubOverflow</uei>
+      <event-label>RADLAN-MIB defined trap event: rlIpxFftSubOverflow</event-label>
+      <descr>&lt;p>The IPX NFFT overflow.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlIpxFftSubOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>149</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlIpmFftOverflow</uei>
-	<event-label>RADLAN-MIB defined trap event: rlIpmFftOverflow</event-label>
-	<descr>
-&lt;p&gt;The IPM FFT overflow.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>149</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlIpmFftOverflow</uei>
+      <event-label>RADLAN-MIB defined trap event: rlIpmFftOverflow</event-label>
+      <descr>&lt;p>The IPM FFT overflow.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlIpmFftOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>150</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlPhysicalDescriptionChanged</uei>
-	<event-label>RADLAN-MIB defined trap event: rlPhysicalDescriptionChanged</event-label>
-	<descr>
-&lt;p&gt;Indicates that the physical decription of the device has
-changed&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>150</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlPhysicalDescriptionChanged</uei>
+      <event-label>RADLAN-MIB defined trap event: rlPhysicalDescriptionChanged</event-label>
+      <descr>&lt;p>Indicates that the physical decription of the device has
+changed&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlPhysicalDescriptionChanged trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>151</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rldot1dStpPortStateForwarding</uei>
-	<event-label>RADLAN-MIB defined trap event: rldot1dStpPortStateForwarding</event-label>
-	<descr>
-&lt;p&gt;The trap is sent by a bridge when any of its configured ports
-transitions from the Learning state to the Forwarding state.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>151</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rldot1dStpPortStateForwarding</uei>
+      <event-label>RADLAN-MIB defined trap event: rldot1dStpPortStateForwarding</event-label>
+      <descr>&lt;p>The trap is sent by a bridge when any of its configured ports
+transitions from the Learning state to the Forwarding state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rldot1dStpTrapVrblifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rldot1dStpTrapVrblifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rldot1dStpTrapVrblVID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	rldot1dStpTrapVrblVID&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rldot1dStpPortStateForwarding trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]% 
 			rldot1dStpTrapVrblifIndex=%parm[#3]% 
-			rldot1dStpTrapVrblVID=%parm[#4]%&lt;/p&gt;
+			rldot1dStpTrapVrblVID=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>152</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rldot1dStpPortStateNotForwarding</uei>
-	<event-label>RADLAN-MIB defined trap event: rldot1dStpPortStateNotForwarding</event-label>
-	<descr>
-&lt;p&gt;The trap is sent by a bridge when any of its configured ports
-transitions from the Forwarding state to the Blocking state.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>152</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rldot1dStpPortStateNotForwarding</uei>
+      <event-label>RADLAN-MIB defined trap event: rldot1dStpPortStateNotForwarding</event-label>
+      <descr>&lt;p>The trap is sent by a bridge when any of its configured ports
+transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rldot1dStpTrapVrblifIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rldot1dStpTrapVrblifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rldot1dStpTrapVrblVID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	rldot1dStpTrapVrblVID&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rldot1dStpPortStateNotForwarding trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]% 
 			rldot1dStpTrapVrblifIndex=%parm[#3]% 
-			rldot1dStpTrapVrblVID=%parm[#4]%&lt;/p&gt;
+			rldot1dStpTrapVrblVID=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>153</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlPolicyDropPacketTrap</uei>
-	<event-label>RADLAN-MIB defined trap event: rlPolicyDropPacketTrap</event-label>
-	<descr>
-&lt;p&gt;Indicates that the packet drop due to the policy &lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>153</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlPolicyDropPacketTrap</uei>
+      <event-label>RADLAN-MIB defined trap event: rlPolicyDropPacketTrap</event-label>
+      <descr>&lt;p>Indicates that the packet drop due to the policy &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlPolicyDropPacketTrap trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>154</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlPolicyForwardPacketTrap</uei>
-	<event-label>RADLAN-MIB defined trap event: rlPolicyForwardPacketTrap</event-label>
-	<descr>
-&lt;p&gt;Indicates that the packet has forward based on policy&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>154</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlPolicyForwardPacketTrap</uei>
+      <event-label>RADLAN-MIB defined trap event: rlPolicyForwardPacketTrap</event-label>
+      <descr>&lt;p>Indicates that the packet has forward based on policy&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlPolicyForwardPacketTrap trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>156</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlIgmpProxyTableOverflow</uei>
-	<event-label>RADLAN-MIB defined trap event: rlIgmpProxyTableOverflow</event-label>
-	<descr>
-&lt;p&gt;An IGMP PROXY Table overflow.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>156</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlIgmpProxyTableOverflow</uei>
+      <event-label>RADLAN-MIB defined trap event: rlIgmpProxyTableOverflow</event-label>
+      <descr>&lt;p>An IGMP PROXY Table overflow.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlIgmpProxyTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>157</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlIgmpV1MsgReceived</uei>
-	<event-label>RADLAN-MIB defined trap event: rlIgmpV1MsgReceived</event-label>
-	<descr>
-&lt;p&gt;An IGMP Message of v1 received on ifIndex. &lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>157</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlIgmpV1MsgReceived</uei>
+      <event-label>RADLAN-MIB defined trap event: rlIgmpV1MsgReceived</event-label>
+      <descr>&lt;p>An IGMP Message of v1 received on ifIndex. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlIgmpV1MsgReceived trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>158</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlVrrpEntriesDeleted</uei>
-	<event-label>RADLAN-MIB defined trap event: rlVrrpEntriesDeleted</event-label>
-	<descr>
-&lt;p&gt;One or more VRRP entries deleted due to IP interface deletion or transition. &lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>158</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlVrrpEntriesDeleted</uei>
+      <event-label>RADLAN-MIB defined trap event: rlVrrpEntriesDeleted</event-label>
+      <descr>&lt;p>One or more VRRP entries deleted due to IP interface deletion or transition. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlVrrpEntriesDeleted trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>159</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlHotSwapTrap</uei>
-	<event-label>RADLAN-MIB defined trap event: rlHotSwapTrap</event-label>
-	<descr>
-&lt;p&gt;Hot swap trap.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>159</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlHotSwapTrap</uei>
+      <event-label>RADLAN-MIB defined trap event: rlHotSwapTrap</event-label>
+      <descr>&lt;p>Hot swap trap.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlHotSwapTrap trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>160</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlTrunkPortAddedTrap</uei>
-	<event-label>RADLAN-MIB defined trap event: rlTrunkPortAddedTrap</event-label>
-	<descr>
-&lt;p&gt;Informational trap indicating that a port is added to a trunk&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>160</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlTrunkPortAddedTrap</uei>
+      <event-label>RADLAN-MIB defined trap event: rlTrunkPortAddedTrap</event-label>
+      <descr>&lt;p>Informational trap indicating that a port is added to a trunk&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlTrunkPortAddedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>161</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlTrunkPortRemovedTrap</uei>
-	<event-label>RADLAN-MIB defined trap event: rlTrunkPortRemovedTrap</event-label>
-	<descr>
-&lt;p&gt;This warning is generated when a port removed from a trunk.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>161</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlTrunkPortRemovedTrap</uei>
+      <event-label>RADLAN-MIB defined trap event: rlTrunkPortRemovedTrap</event-label>
+      <descr>&lt;p>This warning is generated when a port removed from a trunk.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlTrunkPortRemovedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>162</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlTrunkPortNotCapableTrap</uei>
-	<event-label>RADLAN-MIB defined trap event: rlTrunkPortNotCapableTrap</event-label>
-	<descr>
-&lt;p&gt;Informational trap indicating that a port can not be added to
-a trunk because of device limitations or diffrent swIfType.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>162</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlTrunkPortNotCapableTrap</uei>
+      <event-label>RADLAN-MIB defined trap event: rlTrunkPortNotCapableTrap</event-label>
+      <descr>&lt;p>Informational trap indicating that a port can not be added to
+a trunk because of device limitations or diffrent swIfType.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlTrunkPortNotCapableTrap trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>170</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlLockPortTrap</uei>
-	<event-label>RADLAN-MIB defined trap event: rlLockPortTrap</event-label>
-	<descr>
-&lt;p&gt;Informational trap indicating that a locked port receive
-a frame with new source Mac Address.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>170</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlLockPortTrap</uei>
+      <event-label>RADLAN-MIB defined trap event: rlLockPortTrap</event-label>
+      <descr>&lt;p>Informational trap indicating that a locked port receive
+a frame with new source Mac Address.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlLockPortTrap trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>171</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/vlanDynVlanAdded</uei>
-	<event-label>RADLAN-MIB defined trap event: vlanDynVlanAdded</event-label>
-	<descr>
-&lt;p&gt;add gvrp dynamic vlan&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>171</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/vlanDynVlanAdded</uei>
+      <event-label>RADLAN-MIB defined trap event: vlanDynVlanAdded</event-label>
+      <descr>&lt;p>add gvrp dynamic vlan&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			vlanDynVlanAdded trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>172</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/vlanDynVlanRemoved</uei>
-	<event-label>RADLAN-MIB defined trap event: vlanDynVlanRemoved</event-label>
-	<descr>
-&lt;p&gt;remove gvrp dynamic vlan&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>172</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/vlanDynVlanRemoved</uei>
+      <event-label>RADLAN-MIB defined trap event: vlanDynVlanRemoved</event-label>
+      <descr>&lt;p>remove gvrp dynamic vlan&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			vlanDynVlanRemoved trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>173</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/vlanDynamicToStatic</uei>
-	<event-label>RADLAN-MIB defined trap event: vlanDynamicToStatic</event-label>
-	<descr>
-&lt;p&gt;vlan status was changed from dynamic to static&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>173</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/vlanDynamicToStatic</uei>
+      <event-label>RADLAN-MIB defined trap event: vlanDynamicToStatic</event-label>
+      <descr>&lt;p>vlan status was changed from dynamic to static&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			vlanDynamicToStatic trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>174</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/vlanStaticToDynamic</uei>
-	<event-label>RADLAN-MIB defined trap event: vlanStaticToDynamic</event-label>
-	<descr>
-&lt;p&gt;vlan status was changed from static to dynamic&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>174</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/vlanStaticToDynamic</uei>
+      <event-label>RADLAN-MIB defined trap event: vlanStaticToDynamic</event-label>
+      <descr>&lt;p>vlan status was changed from static to dynamic&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			vlanStaticToDynamic trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>175</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/dstrSysLog</uei>
-	<event-label>RADLAN-MIB defined trap event: dstrSysLog</event-label>
-	<descr>
-&lt;p&gt;Master receive trap from slave , and forward it as trap&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>175</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/dstrSysLog</uei>
+      <event-label>RADLAN-MIB defined trap event: dstrSysLog</event-label>
+      <descr>&lt;p>Master receive trap from slave , and forward it as trap&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			dstrSysLog trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>176</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlEnvMonFanStateChange</uei>
-	<event-label>RADLAN-MIB defined trap event: rlEnvMonFanStateChange</event-label>
-	<descr>
-&lt;p&gt;Trap indicating the fan state.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>176</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlEnvMonFanStateChange</uei>
+      <event-label>RADLAN-MIB defined trap event: rlEnvMonFanStateChange</event-label>
+      <descr>&lt;p>Trap indicating the fan state.
 rndErrorSeverity will be:
        0 for fan state  nomal, notPresent
        1 for fan state warning, notFunctioning
        2 for fan state critical
        3 for fan state fatal
-The error text will specify the fan index, fan description and the exact fan state&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The error text will specify the fan index, fan description and the exact fan state&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlEnvMonFanStateChange trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>177</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlEnvMonPowerSupplyStateChange</uei>
-	<event-label>RADLAN-MIB defined trap event: rlEnvMonPowerSupplyStateChange</event-label>
-	<descr>
-&lt;p&gt;Trap indicating the power supply state.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>177</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlEnvMonPowerSupplyStateChange</uei>
+      <event-label>RADLAN-MIB defined trap event: rlEnvMonPowerSupplyStateChange</event-label>
+      <descr>&lt;p>Trap indicating the power supply state.
 rndErrorSeverity will be:
        0 for power supply state  nomal, notPresent
        1 for power supply state warning, notFunctioning
        2 for power supply state critical
        3 for power supply state fatal
-The error text will specify the power supply index, power supply description and the exact power supply state&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The error text will specify the power supply index, power supply description and the exact power supply state&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlEnvMonPowerSupplyStateChange trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>178</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlStackStateChange</uei>
-	<event-label>RADLAN-MIB defined trap event: rlStackStateChange</event-label>
-	<descr>
-&lt;p&gt;Trap indicating the stack connection state
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>178</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlStackStateChange</uei>
+      <event-label>RADLAN-MIB defined trap event: rlStackStateChange</event-label>
+      <descr>&lt;p>Trap indicating the stack connection state
 0 for stack state connected,
-1 for stack state disconnected &lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+1 for stack state disconnected &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlStackStateChange trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>179</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlEnvMonTemperatureRisingAlarm</uei>
-	<event-label>RADLAN-MIB defined trap event: rlEnvMonTemperatureRisingAlarm</event-label>
-	<descr>
-&lt;p&gt;Trap indicating that the temperature in the device has exceeded the
-device specific safe temperature threshold.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>179</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlEnvMonTemperatureRisingAlarm</uei>
+      <event-label>RADLAN-MIB defined trap event: rlEnvMonTemperatureRisingAlarm</event-label>
+      <descr>&lt;p>Trap indicating that the temperature in the device has exceeded the
+device specific safe temperature threshold.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlEnvMonTemperatureRisingAlarm trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>180</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlCopyFinished</uei>
-	<event-label>RADLAN-MIB defined trap event: rlCopyFinished</event-label>
-	<descr>
-&lt;p&gt;Informational trap indicating that the device has finished
-a copy operation successfully.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>180</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlCopyFinished</uei>
+      <event-label>RADLAN-MIB defined trap event: rlCopyFinished</event-label>
+      <descr>&lt;p>Informational trap indicating that the device has finished
+a copy operation successfully.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlCopyFinished trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>181</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlCopyFailed</uei>
-	<event-label>RADLAN-MIB defined trap event: rlCopyFailed</event-label>
-	<descr>
-&lt;p&gt;Informational trap indicating that the copy operation has failed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>181</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlCopyFailed</uei>
+      <event-label>RADLAN-MIB defined trap event: rlCopyFailed</event-label>
+      <descr>&lt;p>Informational trap indicating that the copy operation has failed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlCopyFailed trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>183</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlBrgMacAddFailedTrap</uei>
-	<event-label>RADLAN-MIB defined trap event: rlBrgMacAddFailedTrap</event-label>
-	<descr>
-&lt;p&gt;Informational trap indicating that adding dynamic mac/s
-failed due to full hash chain.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>183</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlBrgMacAddFailedTrap</uei>
+      <event-label>RADLAN-MIB defined trap event: rlBrgMacAddFailedTrap</event-label>
+      <descr>&lt;p>Informational trap indicating that adding dynamic mac/s
+failed due to full hash chain.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlBrgMacAddFailedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>184</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rldot1xPortStatusAuthorizedTrap</uei>
-	<event-label>RADLAN-MIB defined trap event: rldot1xPortStatusAuthorizedTrap</event-label>
-	<descr>
-&lt;p&gt;Informational trap indicating that port 802.1x status is authorized.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>184</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rldot1xPortStatusAuthorizedTrap</uei>
+      <event-label>RADLAN-MIB defined trap event: rldot1xPortStatusAuthorizedTrap</event-label>
+      <descr>&lt;p>Informational trap indicating that port 802.1x status is authorized.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rldot1xPortStatusAuthorizedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>185</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rldot1xPortStatusUnauthorizedTrap</uei>
-	<event-label>RADLAN-MIB defined trap event: rldot1xPortStatusUnauthorizedTrap</event-label>
-	<descr>
-&lt;p&gt;Warning trap is indicating that port 802.1x status is unAuthorized.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>185</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rldot1xPortStatusUnauthorizedTrap</uei>
+      <event-label>RADLAN-MIB defined trap event: rldot1xPortStatusUnauthorizedTrap</event-label>
+      <descr>&lt;p>Warning trap is indicating that port 802.1x status is unAuthorized.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rldot1xPortStatusUnauthorizedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>192</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/swIfTablePortLock</uei>
-	<event-label>RADLAN-MIB defined trap event: swIfTablePortLock</event-label>
-	<descr>
-&lt;p&gt;Warning trap is indicating port lock hase began.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>192</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/swIfTablePortLock</uei>
+      <event-label>RADLAN-MIB defined trap event: swIfTablePortLock</event-label>
+      <descr>&lt;p>Warning trap is indicating port lock hase began.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			swIfTablePortLock trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>193</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/swIfTablePortUnLock</uei>
-	<event-label>RADLAN-MIB defined trap event: swIfTablePortUnLock</event-label>
-	<descr>
-&lt;p&gt;Warning trap is indicating port lock has ended.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>193</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/swIfTablePortUnLock</uei>
+      <event-label>RADLAN-MIB defined trap event: swIfTablePortUnLock</event-label>
+      <descr>&lt;p>Warning trap is indicating port lock has ended.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			swIfTablePortUnLock trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.89</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>194</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/radlan/traps/rlAAAUserLocked</uei>
-	<event-label>RADLAN-MIB defined trap event: rlAAAUserLocked</event-label>
-	<descr>
-&lt;p&gt;Warning trap indicating that the user was locked after
-number of consecutives unsuccessful login attempts.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.89</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>194</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/radlan/traps/rlAAAUserLocked</uei>
+      <event-label>RADLAN-MIB defined trap event: rlAAAUserLocked</event-label>
+      <descr>&lt;p>Warning trap indicating that the user was locked after
+number of consecutives unsuccessful login attempts.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorDesc&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rndErrorDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rndErrorSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	rndErrorSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		info(0)
 		warning(1)
 		error(2)
 		fatal-error(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rlAAAUserLocked trap received 
 			rndErrorDesc=%parm[#1]% 
-			rndErrorSeverity=%parm[#2]%&lt;/p&gt;
+			rndErrorSeverity=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: RADLAN-MIB -->
+      <severity>Warning</severity>
+   </event>
 </events>

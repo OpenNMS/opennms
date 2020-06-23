@@ -5,7 +5,7 @@
     <parameter key="j_password" value="${adminPassword}"/>
   </page>
   <page virtual-host="${virtualHost}" path="/opennms/index.jsp" port="${port}" response-range="200"/>
-  <page virtual-host="${virtualHost}" path="/opennms/alarm/index.jsp" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/alarm/index.htm" port="${port}" response-range="200"/>
 
   <!-- Valid query params: display, sortby, acktype, filter, limit, multiple -->
   <page virtual-host="${virtualHost}" path="/opennms/alarm/list.htm" port="${port}" response-range="200"/>
@@ -89,7 +89,7 @@
   <page virtual-host="${virtualHost}" path="/opennms/element/nodeList.htm" port="${port}" response-range="200"/>
 
   <page virtual-host="${virtualHost}" path="/opennms/event/advsearch.jsp" port="${port}" response-range="200"/>
-  <page virtual-host="${virtualHost}" path="/opennms/event/index.jsp" port="${port}" response-range="200"/>
+  <page virtual-host="${virtualHost}" path="/opennms/event/index" port="${port}" response-range="200"/>
   <page virtual-host="${virtualHost}" path="/opennms/event/list" port="${port}" response-range="200"/>
 
   <!-- Valid query params: display, sortby, acktype, filter, limit, multiple -->

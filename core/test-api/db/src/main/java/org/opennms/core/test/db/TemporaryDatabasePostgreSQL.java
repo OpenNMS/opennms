@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -39,19 +39,25 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.postgresql.xa.PGXADataSource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.util.StringUtils;
 
 /**
@@ -59,8 +65,10 @@ import org.springframework.util.StringUtils;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
+    private static final String OPENNMS_UNIT_TEST_PROPERTY = "opennms.unit.test";
+
     protected static final int MAX_DATABASE_DROP_ATTEMPTS = 10;
-    protected static final String DRIVER_PROPERTY = "mock.db.driver";
+
     private static final Object TEMPLATE1_MUTEX = new Object();
 
     private final String m_testDatabase;
@@ -73,10 +81,10 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     private DataSource m_dataSource;
     private DataSource m_adminDataSource;
+    private PGXADataSource m_xaDataSource;
+    private PGXADataSource m_adminXaDataSource;
 
     private InstallerDb m_installerDb;
-
-    private ByteArrayOutputStream m_outputStream;
 
     private boolean m_setupIpLike = true;
 
@@ -84,10 +92,22 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     private boolean m_destroyed = false;
 
-    private SimpleJdbcTemplate m_jdbcTemplate;
+    private JdbcTemplate jdbcTemplate; // this does not have a m_ per our naming conventions to make it similar to Spring.
+
+    private static Set<TemporaryDatabasePostgreSQL> s_toDestroy = new HashSet<>();
+
+    private static boolean s_shutdownHookInstalled = false;
+
+    private String m_className = "?";
+
+    private String m_methodName = "?";
+
+    private String m_testDetails = "?";
+
+    private String m_blame = null;
 
     public TemporaryDatabasePostgreSQL() throws Exception {
-        this(TEST_DB_NAME_PREFIX + System.currentTimeMillis());
+        this(null);
     }
 
     public TemporaryDatabasePostgreSQL(String testDatabase) throws Exception {
@@ -107,9 +127,9 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     }
 
     public TemporaryDatabasePostgreSQL(String testDatabase, String driver, String url,
-                             String adminUser, String adminPassword, boolean useExisting) throws Exception {
+                             String adminUser, String adminPassword, boolean useExisting) {
         // Append the current object's hashcode to make this value truly unique
-        m_testDatabase = testDatabase;
+        m_testDatabase = testDatabase != null ? testDatabase : getDatabaseName(this);
         m_driver = driver;
         m_url = url;
         m_adminUser = adminUser;
@@ -117,11 +137,27 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         m_useExisting = useExisting;
     }
 
+    protected static void failIfUnitTest() throws TemporaryDatabaseException {
+        if ("true".equals(System.getProperty(OPENNMS_UNIT_TEST_PROPERTY))) {
+            throw new TemporaryDatabaseException("The '" + OPENNMS_UNIT_TEST_PROPERTY + "' property is set to true, " +
+                    "however this class is only suitable for integration tests, not unit tests. " +
+                    "Please refactor to not use a database or move to an integration test (name your test class *IT.java). " +
+                    "See http://wiki.opennms.org/wiki/Test_conventions for details");
+        }
+    }
+
+    protected static String getDatabaseName(Object hashMe) {
+        // Append the current object's hashcode to make this value truly unique
+        return String.format("opennms_test_%s_%06d_%s", System.currentTimeMillis(), System.nanoTime(), Math.abs(hashMe.hashCode()));
+    }
+
     public void setPopulateSchema(boolean populateSchema) {
         m_populateSchema = populateSchema;
     }
 
     public void create() throws TemporaryDatabaseException {
+        failIfUnitTest();
+
         setupDatabase();
 
         if (m_populateSchema) {
@@ -160,6 +196,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             }
 
             m_installerDb.createTables();
+            m_installerDb.createViews();
             m_installerDb.insertData();
         } catch (final Exception e) {
             throw new TemporaryDatabaseException("Error while initializing up database.", e);
@@ -259,8 +296,8 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     }
 
     private void resetOutputStream() {
-        m_outputStream = new ByteArrayOutputStream();
-        m_installerDb.setOutputStream(new PrintStream(m_outputStream));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        m_installerDb.setOutputStream(new PrintStream(outputStream));
     }
 
     public void setupDatabase() throws TemporaryDatabaseException {
@@ -268,6 +305,16 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         try {
             setDataSource(new SimpleDataSource(m_driver, m_url + getTestDatabase(), m_adminUser, m_adminPassword));
             setAdminDataSource(new SimpleDataSource(m_driver, m_url + "template1", m_adminUser, m_adminPassword));
+            m_xaDataSource = new PGXADataSource();
+            m_xaDataSource.setServerName("localhost");
+            m_xaDataSource.setDatabaseName(getTestDatabase());
+            m_xaDataSource.setUser(m_adminUser);
+            m_xaDataSource.setPassword(m_adminPassword);
+            m_adminXaDataSource = new PGXADataSource();
+            m_adminXaDataSource.setServerName("localhost");
+            m_adminXaDataSource.setDatabaseName("template1");
+            m_adminXaDataSource.setUser(m_adminUser);
+            m_adminXaDataSource.setPassword(m_adminPassword);
         } catch (final ClassNotFoundException e) {
             throw new TemporaryDatabaseException("Failed to initialize driver " + m_driver, e);
         }
@@ -280,13 +327,30 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             }
         }
 
-        // Test connecting to test database.
+        setJdbcTemplate(new JdbcTemplate(this));
+
+        // Test connecting to test database and ensuring we can do a basic query
         try {
-            getConnection().close();
-        } catch (final SQLException e) {
-            throw new TemporaryDatabaseException("Error occurred while testing database is connectable.", e);
+            getJdbcTemplate().queryForObject("SELECT now()", Date.class);
+        } catch (DataAccessException e) {
+            throw new TemporaryDatabaseException("Error occurred while testing database is connectable: " + e.getMessage(), e);
         }
-        setJdbcTemplate(new SimpleJdbcTemplate(this));
+
+        if (!m_useExisting) {
+            setupBlame(getJdbcTemplate(), getBlame());
+        }
+    }
+
+    protected static void setupBlame(JdbcTemplate jdbcTemplate, String blame) {
+        jdbcTemplate.update("CREATE TABLE blame (blame TEXT)");
+        jdbcTemplate.update("INSERT INTO blame VALUES (?)", blame);
+    }
+
+    private String getBlame() {
+        if (m_blame == null) {
+            m_blame = getClassName() + "." + getMethodName() + ": " + getTestDetails();
+        }
+        return m_blame;
     }
 
     private void createTestDatabase() throws TemporaryDatabaseException {
@@ -321,25 +385,48 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             }
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
+        setupShutdownHook();
+        s_toDestroy.add(this);
+    }
 
+    private static void setupShutdownHook() {
+        if (s_shutdownHookInstalled) {
+            return;
+        }
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
+                System.err.println("Running " + TemporaryDatabasePostgreSQL.class + " shutdown hook for " + s_toDestroy.size() + " temporary databases");
+
+                if (s_toDestroy.isEmpty()) {
+                    return;
+                }
+
                 try {
-                    Thread.sleep(100);
-                    destroyTestDatabase();
-                } catch (Throwable e) {
-                    e.printStackTrace();
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+                for (TemporaryDatabasePostgreSQL db : s_toDestroy) {
+                    try {
+                        System.err.println("Blame for temporary database being removed late: " + db.getBlame());
+                        db.destroyTestDatabase();
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-
         });
 
+        s_shutdownHookInstalled = true;
     }
 
     public void drop() throws TemporaryDatabaseException {
         if (!m_useExisting) {
             destroyTestDatabase();
+            s_toDestroy.remove(this);
         }
     }
 
@@ -378,6 +465,19 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
                 try {
                     st = adminConnection.createStatement();
+
+                    // Attempt to forcefully terminate all connections to the test database
+                    // before we issue the DROP DATABASE command
+                    try {
+                        st.execute("SELECT pg_terminate_backend(procpid) FROM pg_stat_activity WHERE datname = '" + getTestDatabase() + "'");
+                    } catch (final SQLException e) {
+                        // Eat the exception; this version of the call only works on PostgreSQL 9.1 and earlier
+                    }
+                    try {
+                        st.execute("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '" + getTestDatabase() + "'");
+                    } catch (final SQLException e) {
+                        // Eat the exception; this version of the call only works on PostgreSQL 9.2 and later
+                    }
                     st.execute("DROP DATABASE " + getTestDatabase());
                     break;
                 } catch (final SQLException e) {
@@ -432,6 +532,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         }
 
         m_destroyed = true;
+        //System.err.println("Database '" + getTestDatabase() + "' destroyed");
     }
     
     public static void dumpThreads() {
@@ -482,7 +583,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     public int countRows(String sql, Object... values) {
         RowCountCallbackHandler counter = new RowCountCallbackHandler();
-        getJdbcTemplate().getJdbcOperations().query(sql, values, counter);
+        getJdbcTemplate().query(sql, values, counter);
         return counter.getRowCount();
     }
 
@@ -491,7 +592,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     }
 
     protected Integer getNextId(String nxtIdStmt) {
-        return getJdbcTemplate().queryForInt(nxtIdStmt);
+        return getJdbcTemplate().queryForObject(nxtIdStmt, Integer.class);
     }
 
     @Override
@@ -524,16 +625,20 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
-    public SimpleJdbcTemplate getJdbcTemplate() {
-        return m_jdbcTemplate;
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
     }
 
-    public void setJdbcTemplate(SimpleJdbcTemplate jdbcTemplate) {
-        m_jdbcTemplate = jdbcTemplate;
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public DataSource getAdminDataSource() {
         return m_adminDataSource;
+    }
+
+    public XADataSource getAdminXADataSource() {
+        return m_adminXaDataSource;
     }
 
     public void setAdminDataSource(DataSource adminDataSource) {
@@ -542,6 +647,10 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     public DataSource getDataSource() {
         return m_dataSource;
+    }
+
+    public XADataSource getXADataSource() {
+        return m_xaDataSource;
     }
 
     public void setDataSource(DataSource dataSource) {
@@ -602,6 +711,30 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         return m_url;
     }
     
+    public String getClassName() {
+        return m_className;
+    }
+
+    public void setClassName(String className) {
+        m_className = className;
+    }
+
+    public String getMethodName() {
+        return m_methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        m_methodName = methodName;
+    }
+
+    public String getTestDetails() {
+        return m_testDetails;
+    }
+
+    public void setTestDetails(String testDetails) {
+        m_testDetails = testDetails;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
@@ -615,5 +748,15 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             .append("adminDataSource", m_adminDataSource)
             .append("adminUser", m_adminUser)
             .toString();
+    }
+
+    @Override
+    public XAConnection getXAConnection() throws SQLException {
+        return m_xaDataSource.getXAConnection();
+    }
+
+    @Override
+    public XAConnection getXAConnection(String user, String password) throws SQLException {
+        return m_xaDataSource.getXAConnection(user, password);
     }
 }

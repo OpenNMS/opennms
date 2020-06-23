@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,21 +29,25 @@
 package org.opennms.netmgt.provision.service;
 
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
-import org.opennms.core.utils.BeanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.impl.JobDetailImpl;
+import org.quartz.impl.matchers.GroupMatcher;
+import org.quartz.impl.triggers.CronTriggerImpl;
 import org.quartz.spi.JobFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -195,12 +199,11 @@ public class ImportScheduler implements InitializingBean {
         printCurrentSchedule();
         synchronized (m_lock) {
             
-            Iterator<String> it = Arrays.asList(m_scheduler.getJobNames(JOB_GROUP)).iterator();
-            while (it.hasNext()) {
-                String jobName = it.next();
+            for (JobKey key : m_scheduler.getJobKeys(GroupMatcher.<JobKey>groupEquals(JOB_GROUP))) {
+                String jobName = key.getName();
                 try {
                     
-                    getScheduler().deleteJob(jobName, JOB_GROUP);
+                    getScheduler().deleteJob(new JobKey(jobName, JOB_GROUP));
                 } catch (SchedulerException e) {
                     LOG.error("removeCurrentJobsFromSchedule: {}", e.getLocalizedMessage(), e);
                 }
@@ -221,13 +224,14 @@ public class ImportScheduler implements InitializingBean {
             while (it.hasNext()) {
                 RequisitionDef def = it.next();
                 JobDetail detail = null;
-                Trigger trigger = null;
+                CronTriggerImpl trigger = null;
                 
                 try {
-                    detail = new JobDetail(def.getImportName(), JOB_GROUP, ImportJob.class, false, false, false);
-                    detail.getJobDataMap().put(ImportJob.KEY, def.getImportUrlResource());
+                    detail = new JobDetailImpl(def.getImportName().orElse(null), JOB_GROUP, ImportJob.class, false, false);
+                    detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource().orElse(null));
+                    detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
                     
-                    trigger = new CronTrigger(def.getImportName(), JOB_GROUP, def.getCronSchedule());
+                    trigger = new CronTriggerImpl(def.getImportName().orElse(null), JOB_GROUP, def.getCronSchedule().orElse(null));
                     trigger.setMisfireInstruction(CronTrigger.MISFIRE_INSTRUCTION_DO_NOTHING);
                     getScheduler().scheduleJob(detail, trigger);
                     
@@ -292,22 +296,25 @@ public class ImportScheduler implements InitializingBean {
     private void printCurrentSchedule() {
         
         try {
-            LOG.info("calendarNames: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getCalendarNames()));
+            LOG.info("calendarNames: {}", String.join(", ", getScheduler().getCalendarNames().toArray(new String[0])));
             LOG.info("current executing jobs: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getCurrentlyExecutingJobs().toArray()));
-            LOG.info("current job names: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getJobNames(JOB_GROUP)));
+            LOG.info("current job names: {}", getScheduler().getJobKeys(GroupMatcher.<JobKey>groupEquals(JOB_GROUP)).stream().map(JobKey::getName).collect(Collectors.joining(", ")));
             LOG.info("scheduler metadata: {}", getScheduler().getMetaData());
-            LOG.info("trigger names: {}", StringUtils.arrayToCommaDelimitedString(getScheduler().getTriggerNames(JOB_GROUP)));
+            LOG.info("trigger names: {}", getScheduler().getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(JOB_GROUP)).stream().map(TriggerKey::getName).collect(Collectors.joining(", ")));
             
-            Iterator<String> it = Arrays.asList(getScheduler().getTriggerNames(JOB_GROUP)).iterator();
-            while (it.hasNext()) {
-                String triggerName = it.next();
-                CronTrigger t = (CronTrigger) getScheduler().getTrigger(triggerName, JOB_GROUP);
-                LOG.info("trigger: {}, calendar name: {}, cron expression: {}, URL: {}, next fire time: {}, time zone: {}, priority: {}",
-                         triggerName, t.getCalendarName(),
+            for (TriggerKey key : getScheduler().getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(JOB_GROUP))) {
+                String triggerName = key.getName();
+                CronTrigger t = (CronTrigger) getScheduler().getTrigger(key);
+                LOG.info("trigger: {}, calendar name: {}, cron expression: {}, URL: {}, rescanExisting: {}, next fire time: {}, previous fire time: {}, time zone: {}, priority: {}",
+                         triggerName,
+                         t.getCalendarName(),
                          t.getCronExpression(),
-                         t.getJobDataMap().get(ImportJob.KEY),
-                         t.getNextFireTime(), t.getPreviousFireTime(),
-                         t.getTimeZone(), t.getPriority());
+                         t.getJobDataMap().get(ImportJob.URL),
+                         t.getJobDataMap().get(ImportJob.RESCAN_EXISTING),
+                         t.getNextFireTime(),
+                         t.getPreviousFireTime(),
+                         t.getTimeZone(),
+                         t.getPriority());
             }
             
         } catch (Throwable e) {

@@ -1,26 +1,26 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
- * Additional permission under GNU GPL version 3 section 7
+ * Additional permission under GNU AGPL version 3 section 7
  *
  * If you modify this Program, or any covered work, by linking or
  * combining it with SBLIM (or a modified version of that library),
@@ -38,30 +38,75 @@
 
 package org.opennms.netmgt.collectd.vmware;
 
-import com.vmware.vim25.*;
-import com.vmware.vim25.mo.*;
-import com.vmware.vim25.mo.util.MorUtil;
-import com.vmware.vim25.ws.WSClient;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
-import org.opennms.protocols.vmware.VmwareViJavaAccess;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.sblim.wbem.cim.*;
-import org.sblim.wbem.client.CIMClient;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.expect;
+import static org.powermock.api.easymock.PowerMock.createMock;
+import static org.powermock.api.easymock.PowerMock.createPartialMock;
+import static org.powermock.api.easymock.PowerMock.expectNew;
+import static org.powermock.api.easymock.PowerMock.method;
+import static org.powermock.api.easymock.PowerMock.mockStatic;
+import static org.powermock.api.easymock.PowerMock.replay;
+import static org.powermock.api.easymock.PowerMock.suppress;
+import static org.powermock.api.easymock.PowerMock.verify;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.expect;
-import static org.powermock.api.easymock.PowerMock.*;
+import javax.net.ssl.SSLSocketFactory;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
+import org.opennms.protocols.vmware.ServiceInstancePool;
+import org.opennms.protocols.vmware.VmwareViJavaAccess;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
+import org.sblim.wbem.cim.CIMDataType;
+import org.sblim.wbem.cim.CIMInstance;
+import org.sblim.wbem.cim.CIMNameSpace;
+import org.sblim.wbem.cim.CIMObject;
+import org.sblim.wbem.cim.CIMObjectPath;
+import org.sblim.wbem.cim.CIMProperty;
+import org.sblim.wbem.cim.CIMValue;
+import org.sblim.wbem.client.CIMClient;
+import org.sblim.wbem.util.SessionProperties;
+
+import com.vmware.vim25.AboutInfo;
+import com.vmware.vim25.ElementDescription;
+import com.vmware.vim25.HostIpConfig;
+import com.vmware.vim25.HostNetworkInfo;
+import com.vmware.vim25.HostServiceTicket;
+import com.vmware.vim25.HostVirtualNic;
+import com.vmware.vim25.HostVirtualNicSpec;
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.PerfCounterInfo;
+import com.vmware.vim25.PerfEntityMetric;
+import com.vmware.vim25.PerfEntityMetricBase;
+import com.vmware.vim25.PerfMetricId;
+import com.vmware.vim25.PerfMetricIntSeries;
+import com.vmware.vim25.PerfProviderSummary;
+import com.vmware.vim25.PerfQuerySpec;
+import com.vmware.vim25.PerfSummaryType;
+import com.vmware.vim25.VimPortType;
+import com.vmware.vim25.mo.HostNetworkSystem;
+import com.vmware.vim25.mo.HostSystem;
+import com.vmware.vim25.mo.ManagedEntity;
+import com.vmware.vim25.mo.PerformanceManager;
+import com.vmware.vim25.mo.ServerConnection;
+import com.vmware.vim25.mo.ServiceInstance;
+import com.vmware.vim25.mo.VirtualMachine;
+import com.vmware.vim25.mo.util.MorUtil;
+import com.vmware.vim25.ws.WSClient;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ServiceInstance.class, PerformanceManager.class, VmwareViJavaAccess.class, MorUtil.class, PerfProviderSummary.class, HostSystem.class, HostNetworkSystem.class, CIMClient.class})
@@ -120,7 +165,12 @@ public class VmwareViJavaAccessTest {
         mockServiceInstance = createMock(ServiceInstance.class);
 
         // setup ServerConnection
-        mockServerConnection = new ServerConnection(new URL("https://hostname/sdk"), new VimPortType(new WSClient("https://hostname/sdk")), mockServiceInstance);
+        mockServerConnection = new ServerConnection(new URL("https://hostname/sdk"), new VimPortType(new WSClient("https://hostname/sdk") {
+            @Override
+            protected SSLSocketFactory getTrustAllSocketFactory(boolean ignoreCert) throws RemoteException {
+                return null;
+            }
+        }), mockServiceInstance);
 
         // setup AboutInfo
         mockAboutInfo = createMock(AboutInfo.class);
@@ -133,6 +183,13 @@ public class VmwareViJavaAccessTest {
         managedEntity = new ManagedEntity(null, managedObjectReferenceManagedEntity);
         virtualMachine = new VirtualMachine(null, managedObjectReferenceVirtualMachine);
         hostSystem = new HostSystem(null, managedObjectReferenceHostSystem);
+
+        Whitebox.setInternalState(VmwareViJavaAccess.class, "m_serviceInstancePool", new ServiceInstancePool(){
+            @Override
+            public synchronized ServiceInstance retain(String host, String username, String password) throws MalformedURLException, RemoteException {
+                return mockServiceInstance;
+            }
+        });
 
         // setup MorUtil
 
@@ -255,11 +312,11 @@ public class VmwareViJavaAccessTest {
         mockHostNetworkSystem = createMock(HostNetworkSystem.class);
 
         // setup CIMClient
-        mockCIMClient = createPartialMock(CIMClient.class, "enumerateInstances");
+        mockCIMClient = createPartialMock(CIMClient.class, "enumerateInstances", "getSessionProperties");
 
         // setup the cim objects
 
-        cimObjects = new ArrayList<CIMObject>();
+        cimObjects = new ArrayList<>();
 
         int cimObjectCount = 5;
 
@@ -269,6 +326,7 @@ public class VmwareViJavaAccessTest {
             cimObjects.add(cimInstance);
         }
 
+        expect(mockHostSystem.getName()).andReturn("mockesxi01.local").anyTimes();
         expect(mockHostSystem.getHostNetworkSystem()).andReturn(mockHostNetworkSystem).anyTimes();
         expect(mockHostSystem.acquireCimServicesTicket()).andReturn(hostServiceTicket).anyTimes();
         expect(mockHostNetworkSystem.getNetworkInfo()).andReturn(hostNetworkInfo).anyTimes();
@@ -277,6 +335,9 @@ public class VmwareViJavaAccessTest {
         suppress(method(CIMClient.class, "useMPost"));
 
         expect(mockCIMClient.enumerateInstances(new CIMObjectPath("cimClass"))).andReturn(Collections.enumeration(cimObjects)).anyTimes();
+
+        SessionProperties sessionProperties = new SessionProperties();
+        expect(mockCIMClient.getSessionProperties()).andReturn(sessionProperties).anyTimes();
     }
 
     @Test
@@ -420,7 +481,8 @@ public class VmwareViJavaAccessTest {
 
         try {
             returnedCimObjects = vmwareViJavaAccess.queryCimObjects(mockHostSystem, "cimClass");
-        } catch (RemoteException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             Assert.fail(e.getMessage());
         }
 

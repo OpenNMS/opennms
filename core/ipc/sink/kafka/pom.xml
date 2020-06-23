@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms.core.ipc</groupId>
+    <artifactId>org.opennms.core.ipc.sink</artifactId>
+    <version>25.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.core.ipc.sink</groupId>
+  <artifactId>org.opennms.core.ipc.sink.kafka</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS :: Core :: IPC :: Sink :: Kafka</name>
+  <modules>
+    <module>client</module>
+    <module>server</module>
+    <module>itests</module>
+  </modules>
+</project>

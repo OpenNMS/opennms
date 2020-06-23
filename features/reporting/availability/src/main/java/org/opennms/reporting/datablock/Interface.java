@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,7 +41,7 @@ public class Interface extends StandardNamedObject {
     /**
      * List of services.
      */
-    private ArrayList<Service> m_services;
+    private List<Service> m_services;
 
     private static class ServiceComparator {
         private String m_svcname;
@@ -78,7 +78,7 @@ public class Interface extends StandardNamedObject {
      * Default Constructor.
      */
     public Interface() {
-        m_services = new ArrayList<Service>();
+        m_services = new ArrayList<>();
     }
 
     /**
@@ -89,10 +89,10 @@ public class Interface extends StandardNamedObject {
      * @param services
      *            Services to be set for this interface.
      */
-    public Interface(String name, ArrayList<Service> services) {
+    public Interface(String name, List<Service> services) {
         setName(name);
         if (services == null)
-            m_services = new ArrayList<Service>();
+            m_services = new ArrayList<>();
         else
             m_services = services;
     }
@@ -109,7 +109,7 @@ public class Interface extends StandardNamedObject {
      */
     public Interface(String name, String service) {
         setName(name);
-        m_services = new ArrayList<Service>();
+        m_services = new ArrayList<>();
         Service svc;
         if (service != null) {
             svc = new Service(service);
@@ -133,7 +133,7 @@ public class Interface extends StandardNamedObject {
     public Interface(String name, String service, long losttime) {
         setName(name);
         Service svc;
-        m_services = new ArrayList<Service>();
+        m_services = new ArrayList<>();
         if (service != null) {
             svc = new Service(service);
             if (losttime > 0)
@@ -159,7 +159,7 @@ public class Interface extends StandardNamedObject {
      */
     public Interface(String name, String service, long losttime, long regainedtime) {
         setName(name);
-        m_services = new ArrayList<Service>();
+        m_services = new ArrayList<>();
         Service svc;
         if (service != null) {
             svc = new Service(service);
@@ -180,7 +180,7 @@ public class Interface extends StandardNamedObject {
      *            Name of the interface.
      */
     public Interface(String name) {
-        m_services = new ArrayList<Service>();
+        m_services = new ArrayList<>();
         setName(name);
     }
 
@@ -190,9 +190,9 @@ public class Interface extends StandardNamedObject {
      * @param services
      *            Services for this interface to be set.
      */
-    public Interface(ArrayList<Service> services) {
+    public Interface(List<Service> services) {
         if (services == null)
-            m_services = new ArrayList<Service>();
+            m_services = new ArrayList<>();
         else
             m_services = services;
     }

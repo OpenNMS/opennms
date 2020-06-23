@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -56,7 +56,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     /**
      * Logging
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + DefaultGlobalReportRepository.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(DefaultGlobalReportRepository.class);
 
     /**
      * Configuration DAO to get configured remote-repositories.
@@ -71,7 +71,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
     /**
      * Separator for repositoryId and reportId.
      */
-    private final String REPOSITORY_REPORT_SEP = "_";
+    private static final String REPOSITORY_REPORT_SEP = "_";
 
     /**
      * List of repositories managed by this class.
@@ -94,7 +94,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         // Get the jasper report version from opennms.properties
         m_jasperReportVersion = System.getProperty("org.opennms.jasperReportsVersion");
 
-        this.m_repositoryList = new ArrayList<ReportRepository>();
+        this.m_repositoryList = new ArrayList<>();
 
         try {
             logger.debug("Config resource is set to '{}'", m_remoteRepositoryConfigDao.toString());
@@ -120,7 +120,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     @Override
     public List<BasicReportDefinition> getAllReports() {
-        List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> results = new ArrayList<>();
         for (ReportRepository repository : m_repositoryList) {
             results.addAll(repository.getReports());
         }
@@ -133,7 +133,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     @Override
     public List<BasicReportDefinition> getReports(String repositoryId) {
-        List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> results = new ArrayList<>();
         ReportRepository repository = this.getRepositoryById(repositoryId);
         if (repository != null) {
             results.addAll(repository.getReports());
@@ -147,7 +147,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     @Override
     public List<BasicReportDefinition> getAllOnlineReports() {
-        List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> results = new ArrayList<>();
         for (ReportRepository repository : m_repositoryList) {
             results.addAll(repository.getOnlineReports());
         }
@@ -160,7 +160,7 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      */
     @Override
     public List<BasicReportDefinition> getOnlineReports(String repositoryId) {
-        List<BasicReportDefinition> results = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> results = new ArrayList<>();
         ReportRepository repository = this.getRepositoryById(repositoryId);
         if (repository != null) {
             results.addAll(repository.getOnlineReports());
@@ -272,7 +272,8 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      * @return report repository as {@link org.opennms.features.reporting.repository.ReportRepository} object
      */
     protected ReportRepository getRepositoryForReport(String reportId) {
-        String repositoryId = reportId.substring(0, reportId.indexOf(REPOSITORY_REPORT_SEP));
+        int idx = reportId.indexOf(REPOSITORY_REPORT_SEP);
+        String repositoryId = idx > -1 ? reportId.substring(0, idx) : "local";
         logger.debug("getRepositoryForReport was called for: '{}' result repository: '{}'", reportId, repositoryId);
         return this.getRepositoryById(repositoryId);
     }

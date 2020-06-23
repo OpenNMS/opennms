@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -76,7 +76,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
      * @throws java.lang.Exception if any.
      */
     public Collection<ReportDefinition> buildReportDefinitions() throws Exception {
-        Set<ReportDefinition> reportDefinitions = new HashSet<ReportDefinition>();
+        Set<ReportDefinition> reportDefinitions = new HashSet<>();
         
         for (StatsdPackage pkg : m_statsdConfigDao.getPackages()) {
             for (PackageReport packageReport : pkg.getReports()) {
@@ -84,6 +84,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
 
                 if (!packageReport.isEnabled()) {
                     LOG.debug("skipping report '{}' in package '{}' because the report is not enabled", report.getName(), pkg.getName());
+                    continue;
                 }
                 
                 Class<? extends AttributeStatisticVisitorWithResults> clazz;

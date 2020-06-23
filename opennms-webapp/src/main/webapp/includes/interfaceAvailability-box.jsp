@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -43,9 +43,11 @@
 	import="org.opennms.web.category.*,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.web.element.*,
-		java.util.*
+		java.util.Date
 	"
 %>
+<%@ page import="org.opennms.web.outage.Outage" %>
+<%@ page import="org.opennms.web.outage.OutageModel" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
@@ -65,12 +67,6 @@
         catch( java.io.IOException e ) {
             throw new ServletException("Could not instantiate the CategoryModel", e);
         }
-        catch( org.exolab.castor.xml.MarshalException e ) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        }
-        catch( org.exolab.castor.xml.ValidationException e ) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        }        
     }
 %>
 
@@ -92,46 +88,85 @@
     //get the interface's overall service level availiability for the last 24 hrs
     double overallRtcValue = this.model.getInterfaceAvailability(nodeId, ipAddr);
 
-	if (overallRtcValue > 0) {
-    	if (services.length < 1) {
-        	overallStatusString = "Not Monitored";
-    	} else {
-        	overallStatus = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue);
-        	overallStatusString = CategoryUtil.formatValue(overallRtcValue) + "%";
-    	}
-	}
+    if (services.length < 1) {
+    	overallStatusString = "Not Monitored";
+ 	} else {
+     	overallStatus = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue);
+     	overallStatusString = CategoryUtil.formatValue(overallRtcValue) + "%";
+ 	}
+
+    long timelineEnd = new Date().getTime() / 1000;
+    long timelineStart = timelineEnd - 3600 * 24;
+    String timelineHeaderUrl = "/opennms/rest/timeline/header/" + timelineStart + "/" + timelineEnd + "/";
+    String timelineEmptyUrl = "/opennms/rest/timeline/empty/" + timelineStart + "/" + timelineEnd + "/";
+
+    Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 %>
 
-<h3>Availability</h3>
-<table>
-  <tr class="<%= overallStatus %>">
-    <td class="divider" width="35%">Overall Availability</td>
-    <td class="divider bright"><%= overallStatusString %></td>
+<div id="availability-box" class="card">
+<div class="card-header">
+<span>Availability</span>
+</div>
+<table class="table table-sm severity">
+  <tr class="CellStatus">
+    <td class="severity-Cleared nobright" colspan="2"><%=ipAddr%></td>
+    <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
+    <td class="severity-<%= overallStatus %> nobright"><%= overallStatusString %></td>
   </tr>
 
   <% for( int i=0; i < services.length; i++ ) { %>
+    <tr class="CellStatus">
+
     <% Service service = services[i]; %>
-    <% double svcValue = 0; %>
-    <% if( service.isManaged() ) { %>
-      <% svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId()); %>     
-      <tr class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue)%>">
-    <% } else { %>
-      <tr class="Indeterminate">
-    <% } %>
+    <%
+        if (i==0) {
+    %>
+    <td class="severity-Cleared nobright" rowspan="<%=services.length%>"></td>
+    <%
+        }
+        double svcValue = 0;
+
+        String warnClass = service.isManaged() ? "Normal" : "Indeterminate";
+
+        for(int o=0;o<outages.length;o++) {
+            if (outages[o].getIpAddress().equals(ipAddr) && outages[o].getServiceName().equals(service.getServiceName())) {
+                warnClass = "Critical";
+                break;
+            }
+        }
+
+        String timelineUrl = "/opennms/rest/timeline/html/" + String.valueOf(nodeId) + "/" + java.net.URLEncoder.encode(ipAddr, "UTF-8") + "/" + java.net.URLEncoder.encode(service.getServiceName(), "UTF-8") + "/" + timelineStart + "/" + timelineEnd + "/";
+    %>
+    <%
+      String serviceClass;
+
+      if( service.isManaged() ) {
+        svcValue = CategoryModel.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
+        serviceClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue);
+      } else {
+        serviceClass = "Indeterminate";
+      }
+    %>
     <c:url var="serviceLink" value="element/service.jsp">
       <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
       <c:param name="intf" value="<%=ipAddr%>"/>
       <c:param name="service" value="<%=String.valueOf(service.getServiceId())%>"/>
     </c:url>
-    <td class="divider"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a></td>
+    <td class="severity-<%=warnClass%> bright"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a></td>
     <% if( service.isManaged() ) { %>
-      <td class="divider bright"><%=CategoryUtil.formatValue(svcValue)%>%</td>
+      <td class="severity-Cleared nobright">
+        <span data-src="<%=timelineUrl%>"></span>
+      </td>
+      <td class="severity-<%=serviceClass%> nobright"><%=CategoryUtil.formatValue(svcValue)%>%</td>
     <% } else { %>
-      <td class="divider bright"><%=ElementUtil.getServiceStatusString(service)%></td>
+      <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
+      <td class="severity-<%=serviceClass%> nobright"><%=ElementUtil.getServiceStatusString(service)%></td>
     <% } %>
     </tr>
   <% } %>
-  <tr>
-    <td colspan="2" style="text-align: right;">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%>
-  </tr>   
-</table>   
+</table>
+</div>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="timeline-resize" />
+</jsp:include>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,6 +29,7 @@
 package org.opennms.web.event;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 
@@ -38,10 +39,6 @@ import org.opennms.netmgt.model.OnmsSeverity;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class Event {
     /** Unique identifier for the event, cannot be null */
@@ -73,7 +70,7 @@ public class Event {
     protected String dpName;
 
     /** The &lt;parms&gt; element from the Event Data Stream DTD */
-    protected String parms;
+    protected Map<String, String> parms;
 
     /** Unique integer identifier for node, can be null */
     protected Integer nodeID;
@@ -204,7 +201,13 @@ public class Event {
      * Whether the event is displayable.
      */
     protected Boolean eventDisplay;
-    
+
+    protected String systemId;
+
+    protected String location;
+
+    protected String nodeLocation;
+
     /**
      * Empty constructor to create an empty <code>Event</code> instance. All
      * fields will hold the default values.
@@ -268,7 +271,7 @@ public class Event {
      * @param acknowledgeUser a {@link java.lang.String} object.
      * @param acknowledgeTime a {@link java.util.Date} object.
      */
-    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime) {
+    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, Map<String, String> parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime) {
         this(id, uei, time, dpName, createTime, severityId, snmp, host, snmphost, parms, nodeID, serviceID, ipAddr, description, logMessage, logGroup, operatorInstruction, autoAction, operatorAction, operatorActionMenuText, notification, troubleTicket, troubleTicketState, forward, mouseOverText, acknowledgeUser, acknowledgeTime, null, null, null, null);
     }
 
@@ -306,46 +309,15 @@ public class Event {
      * @param serviceName a {@link java.lang.String} object.
      * @param alarmId a {@link java.lang.Integer} object.
      */
-    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId) {
+    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, Map<String, String> parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId) {
         this(id, uei, time, dpName, createTime, severityId, snmp, host, snmphost, parms, nodeID, serviceID, ipAddr, description, logMessage, logGroup, operatorInstruction, autoAction, operatorAction, operatorActionMenuText, notification, troubleTicket, troubleTicketState, forward, mouseOverText, acknowledgeUser, acknowledgeTime, nodeLabel, serviceName, alarmId, null);
     }
+
     /**
      * Create an event that represents a real network event with all the
      * parameters.
-     *
-     * @param id a int.
-     * @param uei a {@link java.lang.String} object.
-     * @param time a {@link java.util.Date} object.
-     * @param dpName a {@link java.lang.String} object.
-     * @param createTime a {@link java.util.Date} object.
-     * @param severityId a int.
-     * @param snmp a {@link java.lang.String} object.
-     * @param host a {@link java.lang.String} object.
-     * @param snmphost a {@link java.lang.String} object.
-     * @param parms a {@link java.lang.String} object.
-     * @param nodeID a {@link java.lang.Integer} object.
-     * @param serviceID a {@link java.lang.Integer} object.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param description a {@link java.lang.String} object.
-     * @param logMessage a {@link java.lang.String} object.
-     * @param logGroup a {@link java.lang.String} object.
-     * @param operatorInstruction a {@link java.lang.String} object.
-     * @param autoAction a {@link java.lang.String} object.
-     * @param operatorAction a {@link java.lang.String} object.
-     * @param operatorActionMenuText a {@link java.lang.String} object.
-     * @param notification a {@link java.lang.String} object.
-     * @param troubleTicket a {@link java.lang.String} object.
-     * @param troubleTicketState a {@link java.lang.Integer} object.
-     * @param forward a {@link java.lang.String} object.
-     * @param mouseOverText a {@link java.lang.String} object.
-     * @param acknowledgeUser a {@link java.lang.String} object.
-     * @param acknowledgeTime a {@link java.util.Date} object.
-     * @param nodeLabel a {@link java.lang.String} object.
-     * @param serviceName a {@link java.lang.String} object.
-     * @param alarmId a {@link java.lang.Integer} object.
-     * @param eventDisplay a {@link java.lang.Boolean} object.
      */
-    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, String parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId, Boolean eventDisplay) {
+    public Event(int id, String uei, Date time, String dpName, Date createTime, int severityId, String snmp, String host, String snmphost, Map<String, String> parms, Integer nodeID, Integer serviceID, String ipAddr, String description, String logMessage, String logGroup, String operatorInstruction, String autoAction, String operatorAction, String operatorActionMenuText, String notification, String troubleTicket, Integer troubleTicketState, String forward, String mouseOverText, String acknowledgeUser, Date acknowledgeTime, String nodeLabel, String serviceName, Integer alarmId, Boolean eventDisplay) {
 
         if (uei == null || time == null || dpName == null || createTime == null) {
             throw new IllegalArgumentException("Cannot take null values for the following parameters: uei, time, dpName, createTime.");
@@ -473,7 +445,7 @@ public class Event {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getParms() {
+    public Map<String, String> getParms() {
         return (parms);
     }
 
@@ -673,5 +645,17 @@ public class Event {
      */
     public Boolean getEventDisplay() {
         return (eventDisplay);
+    }
+
+    public String getSystemId() {
+        return systemId;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+    
+    public String getNodeLocation() {
+        return nodeLocation;
     }
 }

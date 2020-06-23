@@ -11,7 +11,8 @@ use vars qw(
 $PREFIX = abs_path(dirname($0));
 require(File::Spec->catfile($PREFIX, 'bin', 'functions.pl'));
 
-@profiles = ('default', 'full', 'dir');
+# profiles are dynamically loaded from opennms-full-assembly/pom.xml file
+@profiles = ();
 my $assembly = File::Spec->catdir($PREFIX, 'opennms-full-assembly');
 my $pomfile = File::Spec->catfile($assembly, 'pom.xml');
 if (-f $pomfile) {
@@ -44,7 +45,20 @@ if (not grep { $_ =~ /^[^-]/ } @ARGS) {
 }
 
 my @command = ($MVN, @ARGS);
-info("changing working directory to $assembly");
+
+my $corebuilddir = File::Spec->catdir($PREFIX, 'core', 'build');
+info("building in $corebuilddir");
+chdir($corebuilddir);
+info("running:", @command);
+handle_errors(system(@command));
+
+my $containerdir = File::Spec->catdir($PREFIX, 'container', 'features');
+info("building in $containerdir");
+chdir($containerdir);
+info("running:", @command);
+handle_errors(system(@command));
+
+info("building in $assembly");
 chdir($assembly);
 info("running:", @command);
 handle_errors_and_exit(system(@command));

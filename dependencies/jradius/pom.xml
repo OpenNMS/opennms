@@ -3,16 +3,16 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jradius-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies RADIUS</name>
+  <name>OpenNMS :: Dependencies :: JRadius</name>
   <description>
-    This module is used to provide a single artifact that the opennms project
-    can depend on to use the JRadius library
+    This module is used to provide a single artifact that the OpenNMS project
+    can depend on to use the JRadius library.
   </description>
   <dependencies>
     <!-- add this commons stuff to keep JNLP app from getting confused by versions -->
@@ -39,10 +39,6 @@
       <artifactId>commons-beanutils</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils-core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-chain</groupId>
       <artifactId>commons-chain</artifactId>
     </dependency>
@@ -53,19 +49,15 @@
     <dependency>
       <groupId>net.jradius</groupId>
       <artifactId>jradius-core</artifactId>
-      <version>1.1.4</version>
+      <version>1.1.5</version>
       <exclusions>
+        <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils-core</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>net.sf.ehcache</groupId>
-          <artifactId>ehcache-terracotta</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.terracotta</groupId>
-          <artifactId>terracotta-toolkit-1.0-runtime</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.slf4j</groupId>
@@ -80,19 +72,15 @@
     <dependency>
       <groupId>net.jradius</groupId>
       <artifactId>jradius-dictionary</artifactId>
-      <version>1.1.4</version>
+      <version>1.1.5</version>
       <exclusions>
+        <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils-core</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>net.sf.ehcache</groupId>
-          <artifactId>ehcache-terracotta</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.terracotta</groupId>
-          <artifactId>terracotta-toolkit-1.0-runtime</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.slf4j</groupId>
@@ -104,6 +92,12 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- Use our shaded package for jradius-extended instead of the original artifact-->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>org.opennms.dependencies.jradius-extended</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
@@ -111,23 +105,16 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
-      <version>${project.version}</version>
       <type>pom</type>
     </dependency>
   </dependencies>
   <repositories>
     <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <id>coova</id>
       <name>Coova Repository</name>
-      <url>http://maven.opennms.org/content/groups/coova-release</url>
+      <url>http://maven.opennms.org/content/repositories/coova/</url>
     </repository>
   </repositories>
 </project>

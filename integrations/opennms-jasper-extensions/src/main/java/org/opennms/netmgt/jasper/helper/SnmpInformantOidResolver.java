@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,11 +28,12 @@
 
 package org.opennms.netmgt.jasper.helper;
 
-import net.sf.jasperreports.engine.JRDefaultScriptlet;
+import java.util.StringTokenizer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.StringTokenizer;
+import net.sf.jasperreports.engine.JRDefaultScriptlet;
 
 /**
  * <p>SnmpInformantOidResolver class.</p>
@@ -41,10 +42,10 @@ import java.util.StringTokenizer;
  * @version $Id: $
  * @since 1.0-SNAPSHOT
  */
-public class SnmpInformantOidResolver extends JRDefaultScriptlet {
+public abstract class SnmpInformantOidResolver extends JRDefaultScriptlet {
 
     // Logging to reporting log
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + SnmpInformantOidResolver.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(SnmpInformantOidResolver.class);
 
     /**
      * Convert a name of specific device to a decimal ASCII string as
@@ -55,14 +56,14 @@ public class SnmpInformantOidResolver extends JRDefaultScriptlet {
      * @param string2convert String which as to be converted in ASCII integer OID
      * @return converted ASCII OID path
      */
-    public String stringToAsciiOid(String string2convert) {
-        StringBuilder stringBuilder = new StringBuilder();
+    public static String stringToAsciiOid(String string2convert) {
+        final StringBuilder stringBuilder = new StringBuilder();
         int length = 0;
 
         if (string2convert.length() > 0) {
             length = string2convert.length();
         } else {
-            logger.error("String to convert ['{}'] has no length and is forced to 0.");
+            logger.error("String to convert ['{}'] has no length and is forced to 0.", string2convert);
         }
 
         char[] origin = string2convert.toCharArray();
@@ -78,8 +79,8 @@ public class SnmpInformantOidResolver extends JRDefaultScriptlet {
         return stringBuilder.toString();
     }
 
-    public String asciiOidToString(String string2convert) {
-        StringBuilder stringBuilder = new StringBuilder();
+    public static String asciiOidToString(String string2convert) {
+        final StringBuilder stringBuilder = new StringBuilder();
         StringTokenizer st = new StringTokenizer(string2convert, ".");
 
         // Skip the first token it is the amount characters

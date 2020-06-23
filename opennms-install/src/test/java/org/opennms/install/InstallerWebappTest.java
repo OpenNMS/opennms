@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -60,8 +60,6 @@ public class InstallerWebappTest extends TestCase {
         File web_inf = m_anticipator.tempDir(opennms_webapp, "WEB-INF");
         File lib = m_anticipator.tempDir(web_inf, "lib");
         m_anticipator.tempFile(lib, "log4j.jar");
-        m_anticipator.tempFile(lib, "castor-0.9.3.9.jar");
-        m_anticipator.tempFile(lib, "castor-0.9.3.9-xml.jar");
         m_anticipator.tempFile(lib, "opennms_core.jar");
         m_anticipator.tempFile(lib, "opennms_services.jar");
         m_anticipator.tempFile(lib, "opennms_web.jar");
@@ -74,8 +72,6 @@ public class InstallerWebappTest extends TestCase {
 
         m_anticipator.expecting(m_tomcat_webapps, "opennms.xml");
         m_anticipator.expecting(tomcat_lib, "log4j.jar");
-        m_anticipator.expecting(tomcat_lib, "castor-0.9.3.9.jar");
-        m_anticipator.expecting(tomcat_lib, "castor-0.9.3.9-xml.jar");
         m_anticipator.expecting(tomcat_lib, "opennms_core.jar");
         m_anticipator.expecting(tomcat_lib, "opennms_services.jar");
         m_anticipator.expecting(tomcat_lib, "opennms_web.jar");

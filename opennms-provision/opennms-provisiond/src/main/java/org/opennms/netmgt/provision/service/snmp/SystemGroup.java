@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,12 +31,16 @@ package org.opennms.netmgt.provision.service.snmp;
 
 import java.net.InetAddress;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.operations.ScanResource;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpResult;
+import org.opennms.netmgt.snmp.SnmpStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -56,27 +60,27 @@ public final class SystemGroup extends AggregateTracker {
     // Lookup strings for specific table entries
     //
     /** Constant <code>SYS_OBJECTID_ALIAS="sysObjectID"</code> */
-    public final static String SYS_OBJECTID_ALIAS = "sysObjectID";
+    public static final String SYS_OBJECTID_ALIAS = "sysObjectID";
     private static final String SYS_OBJECTID = ".1.3.6.1.2.1.1.2";
 
     /** Constant <code>SYS_UPTIME_ALIAS="sysUptime"</code> */
-    public final static String SYS_UPTIME_ALIAS = "sysUptime";
+    public static final String SYS_UPTIME_ALIAS = "sysUptime";
     private static final String SYS_UPTIME = ".1.3.6.1.2.1.1.3";
 
     /** Constant <code>SYS_NAME_ALIAS="sysName"</code> */
-    public final static String SYS_NAME_ALIAS = "sysName";
+    public static final String SYS_NAME_ALIAS = "sysName";
     private static final String SYS_NAME = ".1.3.6.1.2.1.1.5";
 
     /** Constant <code>SYS_DESCR_ALIAS="sysDescr"</code> */
-    public final static String SYS_DESCR_ALIAS = "sysDescr";
+    public static final String SYS_DESCR_ALIAS = "sysDescr";
     private static final String SYS_DESCR = ".1.3.6.1.2.1.1.1";
 
     /** Constant <code>SYS_LOCATION_ALIAS="sysLocation"</code> */
-    public final static String SYS_LOCATION_ALIAS = "sysLocation";
+    public static final String SYS_LOCATION_ALIAS = "sysLocation";
     private static final String SYS_LOCATION = ".1.3.6.1.2.1.1.6";
 
     /** Constant <code>SYS_CONTACT_ALIAS="sysContact"</code> */
-    public final static String SYS_CONTACT_ALIAS = "sysContact";
+    public static final String SYS_CONTACT_ALIAS = "sysContact";
     private static final String SYS_CONTACT = ".1.3.6.1.2.1.1.4";
     
     /**
@@ -269,13 +273,23 @@ public final class SystemGroup extends AggregateTracker {
     /** {@inheritDoc} */
     @Override
     protected void reportGenErr(String msg) {
-        LOG.warn("Error retrieving systemGroup from {}. {}", msg, m_address);
+        LOG.warn("Error retrieving systemGroup from {}. {}", m_address, msg);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void reportNoSuchNameErr(String msg) {
-        LOG.info("Error retrieving systemGroup from {}. {}", msg, m_address);
+        LOG.info("Error retrieving systemGroup from {}. {}", m_address, msg);
+    }
+
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Error retrieving systemGroup from {}. {}", m_address, ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("Error ({}) retrieving systemGroup from {}. {}", status, m_address, status.retry()? "Retrying." : "Giving up.");
     }
 
     /**

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-	http://www.springframework.org/schema/beans/spring-beans.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.2.xsd http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
 	<bean id="reportServiceLocator" class="org.opennms.reporting.core.svclayer.support.DefaultReportServiceLocator">
         <property name="globalReportRepository" ref="defaultGlobalReportRepository" />
@@ -10,20 +11,22 @@
 	
 	<bean id="reportWrapperService" class="org.opennms.reporting.core.svclayer.support.DefaultReportWrapperService">
 		<property name="reportServiceLocator">
-			<ref local="reportServiceLocator" />
+			<ref bean="reportServiceLocator" />
 		</property>
 		<property name="reportStoreService">
-			<ref local="reportStoreService" />
+			<ref bean="reportStoreService" />
 		</property>
 	</bean>
+	<onmsgi:service interface="org.opennms.reporting.core.svclayer.ReportWrapperService" ref="reportWrapperService"/>
 
 	<bean id="reportStoreService" class="org.opennms.reporting.core.svclayer.support.DefaultReportStoreService" >
 		<property name="reportCatalogDao" ref="reportCatalogDao" />
 		<property name="reportServiceLocator">
-		 <ref local="reportServiceLocator" />
+		 <ref bean="reportServiceLocator" />
 		</property>
         <property name="globalReportRepository" ref="defaultGlobalReportRepository" />
 	</bean>
+	<onmsgi:service interface="org.opennms.reporting.core.svclayer.ReportStoreService" ref="reportStoreService"/>
 
 	<bean id="parameterConversionService" class="org.opennms.reporting.core.svclayer.support.DefaultParameterConversionService" />
 </beans>

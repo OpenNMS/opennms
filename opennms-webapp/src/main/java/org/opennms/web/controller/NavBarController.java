@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,14 +28,23 @@
 
 package org.opennms.web.controller;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.web.api.Authentication;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.opennms.web.navigate.DisplayStatus;
 import org.opennms.web.navigate.NavBarEntry;
@@ -44,39 +53,93 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.view.AbstractView;
+
+import freemarker.ext.beans.StringModel;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateExceptionHandler;
+import freemarker.template.TemplateMethodModelEx;
+import freemarker.template.TemplateModelException;
 
 /**
- * <p>NavBarController class.</p>
+ * This controller uses Freemarker to render the view.
+ * This allows for the same code to be used to process calls via the OnmsHeaderProvider interface.
  *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
+ * @author jwhite
  */
 public class NavBarController extends AbstractController implements InitializingBean, OnmsHeaderProvider {
     private List<NavBarEntry> m_navBarItems;
-    
+    private CentralizedDateTimeFormat dateTimeFormat;
+    private Configuration cfg;
+
     /**
      * <p>afterPropertiesSet</p>
+     * @throws IOException
      */
     @Override
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws IOException {
         Assert.state(m_navBarItems != null, "navBarItems property has not been set");
+
+        dateTimeFormat = new CentralizedDateTimeFormat();
+
+        // Initialize the Freemarker engine
+        cfg = new Configuration(Configuration.VERSION_2_3_21);
+        cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
+        cfg.setServletContextForTemplateLoading(getServletContext(), "WEB-INF/templates");
+        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
     }
 
     /** {@inheritDoc} */
     @Override
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return new ModelAndView("navBar", "model", createNavBarModel(request));
+    protected ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+        return new ModelAndView(createView(), createModel(request));
     }
 
-    private NavBarModel createNavBarModel(HttpServletRequest request) {
-        Map<NavBarEntry, DisplayStatus> navBar = new LinkedHashMap<NavBarEntry, DisplayStatus>();
-        
-        for (NavBarEntry entry : getNavBarItems()) {
+    private Map<String, Object> createModel(final HttpServletRequest request) {
+        Map<String, Object> model = new HashMap<String, Object>();
+
+        // Create the NavBarModel
+        final Map<NavBarEntry, DisplayStatus> navBar = new LinkedHashMap<NavBarEntry, DisplayStatus>();
+        for (final NavBarEntry entry : getNavBarItems()) {
             navBar.put(entry, entry.evaluate(request));
         }
+        model.put("model", new NavBarModel(request, navBar));
 
-        return new NavBarModel(navBar);
+        // Add additional facts required to render the menu
+        model.put("request", request);
+        model.put("baseHref",
+                org.opennms.web.api.Util.calculateUrlBase(request));
+        model.put("isProvision", request.isUserInRole(Authentication.ROLE_PROVISION));
+        model.put("isFlow", request.isUserInRole(Authentication.ROLE_FLOW_MANAGER));
+        model.put("isAdmin", request.isUserInRole(Authentication.ROLE_ADMIN));
+        model.put("formattedTime", this.dateTimeFormat.format(Instant.now(), extractUserTimeZone(request)));
+
+        String noticeStatus = "Unknown";
+        try {
+            noticeStatus = NotifdConfigFactory.getPrettyStatus();
+        } catch (final Throwable t) {
+        }
+        model.put("noticeStatus", noticeStatus);
+
+        // Helper functions
+        model.put("shouldDisplay", new ShouldDisplayEntryMethod(request));
+
+        return model;
+    }
+
+    private ZoneId extractUserTimeZone(HttpServletRequest request){
+        ZoneId timeZoneId = (ZoneId) request.getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID);
+        if(timeZoneId == null){
+            timeZoneId = ZoneId.systemDefault();
+        }
+        return timeZoneId;
+    }
+
+    private FreemarkerView createView() throws IOException { // Fetches the template using the Freemarker Engine. It is not instatiated by default, as otherwise it is never reloaded if changed
+        final Template template = cfg.getTemplate("navbar.ftl");
+        final FreemarkerView view = new FreemarkerView(template);
+        return view;
     }
 
     /**
@@ -98,63 +161,76 @@ public class NavBarController extends AbstractController implements Initializing
     }
 
     @Override
-    public String getHeaderHtml(HttpServletRequest request) {
-        return createHeaderHtml(request);
-    }
-    
-    private String createHeaderHtml(HttpServletRequest request) {
-        return "<div id='header'>" +
-              "<h1 id='headerlogo'><a href='index.jsp'><img src=\"../images/logo.png\" alt='OpenNMS Web Console Home'></a></h1>" +
-          "<div id='headerinfo'>" +
-          "<h2>Topology Map</h2>" +
-          "<p align=\"right\" >" + 
-          "User: <a href=\"/opennms/account/selfService/index.jsp\" title=\"Account self-service\"><strong>" + request.getRemoteUser() + "</strong></a>" +
-          "&nbsp;(Notices " + getNoticeStatus() + " )" + 
-          " - <a href=\"opennms/j_spring_security_logout\">Log out</a><br></p>"+
-          "</div>" +
-          "<div id='headernavbarright'>" +
-          "<div class='navbar'>" +
-          createNavBarHtml(request) +
-          "</div>" +
-          "</div>" +
-          "<div class='spacer'><!-- --></div>" +
-          "</div>";
+    public String getHeaderHtml(HttpServletRequest request) throws Exception {
+        return createView().renderMergedOutputModel(createModel(request), request);
     }
 
-    private String getNoticeStatus() {
-        String noticeStatus;
-        try {
-            noticeStatus = NotifdConfigFactory.getPrettyStatus();
-            if ("Off".equals(noticeStatus)) {
-              noticeStatus="<b id=\"notificationOff\">Off</b>";
+    /**
+     * Spring MVC view generated by a Freemarker template with convenience
+     * methods for rendering the view directly to a string.
+     *
+     * @author jwhite
+     */
+    private static class FreemarkerView extends AbstractView {
+        private final Template template;
+
+        public FreemarkerView(final Template template) {
+            this.template = template;
+        }
+
+        public String renderMergedOutputModel(Map<String, Object> model,
+                HttpServletRequest request) throws Exception {
+            StringWriter writer = new StringWriter();
+            renderMergedOutputModel(model, request, writer);
+            return writer.toString();
+        }
+
+        public void renderMergedOutputModel(Map<String, Object> model,
+                HttpServletRequest request, Writer writer) throws Exception {
+            template.process(model, writer);
+        }
+
+        @Override
+        protected void renderMergedOutputModel(Map<String, Object> model,
+                HttpServletRequest request, HttpServletResponse response)
+                throws Exception {
+            renderMergedOutputModel(model, request, response.getWriter());
+        }
+    }
+
+    /**
+     * Used to determine whether or not a particular NavBarEntry should be
+     * displayed.
+     *
+     * @author jwhite
+     */
+    public static class ShouldDisplayEntryMethod implements TemplateMethodModelEx {
+        private final HttpServletRequest request;
+
+        public ShouldDisplayEntryMethod(HttpServletRequest request) {
+            this.request = request;
+        }
+
+        @Override
+        @SuppressWarnings("rawtypes")
+        public Boolean exec(List arguments) throws TemplateModelException {
+            DisplayStatus entryDisplayStatus;
+            if (arguments.size() == 1) {
+                /*
+                 * Evaluate the NavBarEntry's display status based on the
+                 * current request.
+                 */
+                NavBarEntry entry = (NavBarEntry) ((StringModel) arguments
+                        .get(0)).getWrappedObject();
+                entryDisplayStatus = entry.evaluate(request);
+            } else if (arguments.size() == 2) {
+                /* Use the given display status */
+                entryDisplayStatus = (DisplayStatus) ((StringModel) arguments
+                        .get(1)).getWrappedObject();
             } else {
-              noticeStatus="<b id=\"notificationOn\">On</b>";
+                throw new TemplateModelException("Wrong arguments");
             }
-        } catch (Throwable t) {
-            noticeStatus = "<b id=\"notificationOff\">Unknown</b>";
+            return entryDisplayStatus != DisplayStatus.NO_DISPLAY;
         }
-        return noticeStatus;
-    }
-
-    private String createNavBarHtml(HttpServletRequest request) {
-        StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("<ul>");
-
-        for (final NavBarEntry entry : getNavBarItems()) {
-            final DisplayStatus displayStatus = entry.evaluate(request);
-            switch(displayStatus) {
-                case DISPLAY_LINK:
-                    strBuilder.append("<li><a href=\"" + entry.getUrl() +  "\" >" + entry.getName() + "</a></li>");
-                    break;
-                case DISPLAY_NO_LINK:
-                    strBuilder.append("<li>" + entry.getName() + "</li>");
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        strBuilder.append("</ul>");
-        return strBuilder.toString();
     }
 }

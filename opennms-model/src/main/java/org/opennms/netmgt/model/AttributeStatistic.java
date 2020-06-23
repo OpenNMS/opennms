@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,20 +36,20 @@ package org.opennms.netmgt.model;
  * @version $Id: $
  */
 public class AttributeStatistic implements Comparable<AttributeStatistic> {
-    private OnmsAttribute m_attribute;
-    private Double m_statistic;
-    
+    private final OnmsAttribute m_attribute;
+    private final Double m_statistic;
+
     /**
      * <p>Constructor for AttributeStatistic.</p>
      *
      * @param attribute a {@link org.opennms.netmgt.model.OnmsAttribute} object.
      * @param statistic a {@link java.lang.Double} object.
      */
-    public AttributeStatistic(OnmsAttribute attribute, Double statistic) {
+    public AttributeStatistic(final OnmsAttribute attribute, final Double statistic) {
         m_attribute = attribute;
         m_statistic = statistic;
     }
-    
+
     /**
      * <p>getAttribute</p>
      *
@@ -58,7 +58,7 @@ public class AttributeStatistic implements Comparable<AttributeStatistic> {
     public OnmsAttribute getAttribute() {
         return m_attribute;
     }
-    
+
     /**
      * <p>getStatistic</p>
      *
@@ -76,19 +76,19 @@ public class AttributeStatistic implements Comparable<AttributeStatistic> {
      * @return a int.
      */
     @Override
-    public int compareTo(AttributeStatistic o) {
+    public int compareTo(final AttributeStatistic o) {
         int diff;
-        
+
         diff = getStatistic().compareTo(o.getStatistic()); 
         if (diff != 0) {
             return diff;
         }
-        
-        diff = getAttribute().getResource().getId().compareToIgnoreCase(o.getAttribute().getResource().getId());
+
+        diff = getAttribute().getResource().getId().toString().compareToIgnoreCase(o.getAttribute().getResource().getId().toString());
         if (diff != 0) {
             return diff;
         }
-        
-        return new Integer(getAttribute().hashCode()).compareTo(o.getAttribute().hashCode());
+
+        return Integer.valueOf(getAttribute().hashCode()).compareTo(o.getAttribute().hashCode());
     }
 }

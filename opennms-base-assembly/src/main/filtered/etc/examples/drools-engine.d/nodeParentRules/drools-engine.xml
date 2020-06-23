@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<engine-configuration 
+	xmlns="http://xmlns.opennms.org/xsd/drools-engine" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://xmlns.opennms.org/xsd/drools-engine ${install.share.dir}/xsds/drools-engine.xsd ">
+  <rule-set name="locationMonitorRules">
+    <rule-file>LocationMonitorRules.drl</rule-file>
+    <event>uei.opennms.org/remote/nodes/nodeLostService</event>
+    <event>uei.opennms.org/remote/nodes/nodeRegainedService</event>
+    <global name="WIDE_SPREAD_THRESHOLD" type="java.lang.Integer" value="3"/>
+    <global name="FLAP_INTERVAL" type="java.lang.Long" value="1000" />
+    <global name="FLAP_COUNT" type="java.lang.Integer" value="3" />
+    <app-context>locationMonitorRules-context.xml</app-context>
+    <global name="LOG" ref="slf4jLogger"/>
+  </rule-set>
+  <rule-set name="nodeParentRules">
+    <rule-file>NodeParentRules.drl</rule-file>
+    <event>uei.opennms.org/nodes/nodeDown</event>
+    <event>uei.opennms.org/nodes/nodeUp</event>
+    <app-context>nodeParentRules-context.xml</app-context>
+    <global name="POLL_INTERVAL" type="java.lang.Long" value="3000" />
+    <global name="nodeService" type="org.opennms.netmgt.correlation.drools.NodeService" ref="nodeService" />
+    <global name="LOG" ref="slf4jLogger"/>
+  </rule-set>
+</engine-configuration>

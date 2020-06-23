@@ -1,0 +1,36 @@
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-elasticsearch-integration-situation-feedback]]
+==== Situation Feedback
+
+NOTE: Full documentation on _Situation Feedback_ is available  <<ga-situation-feedback, here>>.
+
+When persisting `Situation Feedback`, feedback on each related alarm  is represented by a document as follows:
+
+[options="header, autowidth"]
+|===
+| Field | Description
+
+|`@timestamp`
+| Timestamp in milliseconds when the feedback was submitted.
+
+|`situation_key`
+| The reduction key of the situation.
+
+|`alarm_key`
+| The reduction key of the related alarm.
+
+|`feedback_type`
+| One of `CORRECT`, `FALSE_POSITIVE` or `FALSE_NEGATIVE`
+
+|`situation_fingerprint`
+| A hash calculated on the situation when the feedback was submitted.
+
+|`reason`
+| A text string provided with the feedback.
+
+|`user`
+| The user that submitted the feedback.
+
+|===

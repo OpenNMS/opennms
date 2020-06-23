@@ -1,7 +1,0 @@
-<DhcpdConfiguration
-	port="5818"
-	macAddress="00:06:0D:BE:9C:B2"
-        myIpAddress="127.0.0.1"
-        extendedMode="false"
-        requestIpAddress="127.0.0.1"> 
-</DhcpdConfiguration>

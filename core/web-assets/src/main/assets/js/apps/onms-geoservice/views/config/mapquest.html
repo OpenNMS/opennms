@@ -1,0 +1,41 @@
+<div>
+
+    <div class="jumbotron">
+        <p>
+            In order to use Mapquest, you must register and sign up for an API Key.
+        </p>
+        <p>
+            For more information visit the <a href="https://developer.mapquest.com/documentation/geocoding-api/" target="_blank">Mapquest Geocoding API Page</a>.
+        </p>
+    </div>
+
+    <form class="form" name="form">
+        <div class="form-group">
+            <label for="mapquestApiKey">API Key</label>
+            <input id="mapquestApiKey"
+                   name="mapquestApiKey"
+                   class="form-control"
+                   type="text"
+                   ng-required="true"
+                   ng-model="geocoder.config.apiKey"
+                   ng-class="{ 'is-invalid' : form.mapquestApiKey.$invalid || configError.apiKey }"
+            />
+            <p id="configError.apiKey" class="invalid-feedback">{{configError.apiKey || "Please provide a value"}}</p>
+        </div>
+        <div class="form-group">
+            <label for="mapquestSystemProxy" class="mr-2">Use System Proxy</label>
+            <toggle id="mapquestSystemProxy"
+                    name="mapquestSystemProxy"
+                    ng-model="geocoder.config.useSystemProxy"
+                    on="Yes"
+                    off="No"
+                    size="btn-sm"
+                    ng-class="{ 'is-invalid' : form.mapquestSystemProxy.$invalid || configError.useSystemProxy }"
+            />
+            <p id="configError.useSystemProxy" class="invalid-feedback">{{configError.useSystemProxy}}</p>
+        </div>
+
+        <p class="text-warning" ng-if="form.$dirty">You have unsaved changes</p>
+        <button id="saveButton" class="btn btn-primary" type="button" ng-click="save()" ng-disabled="!form.$dirty || form.$invalid || validateFieldsManually() !== true"><i class="fa fa-save"></i> Save</button>
+    </form>
+</div>

@@ -68,7 +68,7 @@ Running a Client
 ----------------
 To test the example, you can use the Apache Karaf client
 to connect to the server and issue a Karaf command. For example,
-try executing the "features:list" command as follows:
+try executing the "feature:list" command as follows:
 
 1. In a command prompt/shell, change to your product
    installation directory.
@@ -76,13 +76,13 @@ try executing the "features:list" command as follows:
 2. Run the following commands:
 
     Unix:
-        ${KARAF_HOME}/bin/client features:list
+        ${KARAF_HOME}/bin/client feature:list
 
     Windows:
-        %KARAF_HOME%\bin\client.bat features:list
+        %KARAF_HOME%\bin\client.bat feature:list
 
     Using JDK:
-        java -jar lib/bin/karaf-client.jar features:list
+        java -jar lib/bin/karaf-client.jar feature:list
 
 In this case, you should see output similar to the following:
 

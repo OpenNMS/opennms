@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,8 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File,
-		java.util.*,
+	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.admin.nodeManagement.*
 	"
@@ -46,20 +45,18 @@
 
 <%
     HttpSession userSession = request.getSession(false);
-    List nodes = null;
-    Integer lineItems= new Integer(0);
+    List<ManagedNode> nodes = null;
     
     interfaceIndex = 0;
     serviceIndex = 0;
     
     if (userSession != null)
     {
-  	nodes = (List)userSession.getAttribute("listAll.delete.jsp");
-        lineItems = (Integer)userSession.getAttribute("lineItems.delete.jsp");
+        nodes = (List<ManagedNode>)userSession.getAttribute("listAll.delete.jsp");
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Delete Nodes" />
   <jsp:param name="headTitle" value="Delete Nodes" />
   <jsp:param name="headTitle" value="Admin" />
@@ -140,8 +137,11 @@
   }
 %>
 
-    <h3>Delete Nodes</h3>
-
+<div class="card">
+  <div class="card-header">
+    <span>Delete Nodes</span>
+  </div>
+  <div class="card-body">
 	<P>The nodes present in the system are listed below. To permanently delete a node (and all associated
 	   interfaces, services, outages, events and notifications), check the "Delete?" box beside the node's ID and
            select "Delete Nodes". You may check more than one.
@@ -156,65 +156,64 @@
            from the discovery range or unmanage the device instead of deleting it.
         </P>
 
-	<br/>
-
-          <input type="button" value="Delete Nodes" onClick="applyChanges()">
-          <input type="button" value="Cancel" onClick="cancel()">
-          <input type="button" value="Select All" onClick="checkAll()">
-          <input type="button" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset"><br/>&nbsp;
-
-	<br/>
+        <div class="form-group">
+          <input type="button" class="btn btn-secondary" value="Delete Nodes" onClick="applyChanges()">
+          <input type="button" class="btn btn-secondary" value="Cancel" onClick="cancel()">
+          <input type="button" class="btn btn-secondary" value="Select All" onClick="checkAll()">
+          <input type="button" class="btn btn-secondary" value="Unselect All" onClick="uncheckAll()">
+          <input type="reset" class="btn btn-secondary">
+        </div>
       
+      <div class="row form-group">
    <% if (nodes.size() > 0) { %>
-	<div id="contentleft">
-          <table class="standardfirst">
+	<div class="col-md-6" id="contentleft">
+          <table class="table table-sm">
             <tr>
-              <td class="standardheader" width="5%" align="center">Delete?</td>
-              <td class="standardheader" width="5%" align="center">Data?</td>
-              <td class="standardheader" width="5%" align="center">Node ID</td>
-              <td class="standardheader" width="10%" align="center">Node Label</td>
+              <th class="text-center" width="5%">Delete?</th>
+              <th class="text-center" width="5%">Data?</th>
+              <th class="text-center" width="5%">Node ID</th>
+              <th width="10%">Node Label</th>
             </tr>
-            
+
             <%=buildTableRows(nodes, 0, midNodeIndex)%>
-            
           </table>
 	</div>
           <% } /*end if*/ %>
 
       <!--see if there is a second column to draw-->
       <% if (midNodeIndex < nodes.size()) { %>
-	<div id="contentright">
-          <table class="standardfirst">
+	<div class="col-md-6" id="contentright">
+          <table class="table table-sm">
             <tr>
-              <td class="standardheader" width="5%" align="center">Delete?</td>
-              <td class="standardheader" width="5%" align="center">Data?</td>
-              <td class="standardheader" width="5%" align="center">Node ID</td>
-              <td class="standardheader" width="10%" align="center">Node Label</td>
+              <th class="text-center" width="5%">Delete?</th>
+              <th class="text-center" width="5%">Data?</th>
+              <th class="text-center" width="5%">Node ID</th>
+              <th width="10%">Node Label</th>
             </tr>
-            
+
             <%=buildTableRows(nodes, midNodeIndex, nodes.size())%>
-               
+
           </table>
 	</div>
         <% } /*end if */ %>
+      </div> <!-- row -->
 
-	<div class="spacer"><!-- --></div>
+      <div class="form-group">
+          <input type="button" class="btn btn-secondary" value="Delete Nodes" onClick="applyChanges()">
+          <input type="button" class="btn btn-secondary" value="Cancel" onClick="cancel()">
+          <input type="button" class="btn btn-secondary" value="Select All" onClick="checkAll()">
+          <input type="button" class="btn btn-secondary" value="Unselect All" onClick="uncheckAll()">
+          <input type="reset" class="btn btn-secondary">
+      </div>
+  </div> <!-- card-body -->
+</div> <!-- panel -->
 
-	<br/>
-
-          <input type="button" value="Delete Nodes" onClick="applyChanges()">
-          <input type="button" value="Cancel" onClick="cancel()"> 
-          <input type="button" value="Select All" onClick="checkAll()">
-          <input type="button" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset">
 </form>
 
-
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
 
 <%!
-      public String buildTableRows(List nodes, int start, int stop)
+      public String buildTableRows(List<ManagedNode> nodes, int start, int stop)
       	throws java.sql.SQLException
       {
           StringBuffer row = new StringBuffer();
@@ -222,7 +221,7 @@
           for (int i = start; i < stop; i++)
           {
                 
-                ManagedNode curNode = (ManagedNode)nodes.get(i);
+                ManagedNode curNode = nodes.get(i);
                 String nodelabel = NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(curNode.getNodeID());
 		int nodeid = curNode.getNodeID();
                  

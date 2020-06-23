@@ -1,0 +1,12 @@
+
+===== Charts
+
+This _Dashlet_ displays an existing link:http://www.opennms.org/wiki/Chart-configuration.xml[Chart].
+
+[options="autowidth"]
+|===
+| Boost support     | false
+| `Chart`           | Name of the existing chart to display
+| `Maximize Width`  | Rescale the image to fill display width
+| `Maximize Height` | Rescale the image to fill display height
+|===

@@ -1,0 +1,88 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== DnsMonitor
+
+This monitor is build to test the availability of the _DNS service_ on remote IP interfaces.
+The monitor tests the service availability by sending a DNS query for A resource record types against the DNS server to test.
+
+The monitor is marked as _up_ if the _DNS Server_ is able to send a valid response to the monitor.
+For multiple records it is possible to test if the number of responses are within a given boundary.
+
+The monitor can be simulated with the command line tool `host`:
+
+[source]
+----
+~ % host -v -t a www.google.com 8.8.8.8
+Trying "www.google.com"
+Using domain server:
+Name: 8.8.8.8
+Address: 8.8.8.8#53
+Aliases:
+
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9324
+;; flags: qr rd ra; QUERY: 1, ANSWER: 5, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;www.google.com.			IN	A
+
+;; ANSWER SECTION:
+www.google.com.		283	IN	A	74.125.232.17
+www.google.com.		283	IN	A	74.125.232.20
+www.google.com.		283	IN	A	74.125.232.19
+www.google.com.		283	IN	A	74.125.232.16
+www.google.com.		283	IN	A	74.125.232.18
+
+Received 112 bytes from 8.8.8.8#53 in 41 ms
+----
+
+TIP:
+This monitor is intended for testing the availability of a DNS service.
+If you want to monitor the DNS resolution of some of your nodes from a client's perspective, please use the <<poller-dns-resolution-monitor,DNSResolutionMonitor>>.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.DnsMonitor`
+| Remote Enabled | true
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the DnsMonitor
+[options="header, autowidth"]
+|===
+| Parameter              | Description                                                                                  | Required | Default value
+| `retry`                | Number of retries before the service is marked as _down_                                     | optional | `0`
+| `timeout`              | Time in milliseconds to wait for the _A Record_ response from the server                     | optional | `5000`
+| `port`                 | UDP Port for the DNS server                                                                  | optional | `53`
+| `lookup`               | DNS _A Record_ for lookup test                                                               | optional | `localhost`
+| `fatal-response-codes` | A comma-separated list of numeric DNS response codes that will be considered fatal if
+                           present in the server's response. Default value is `2` corresponds to _Server Failed_. A
+                           list of codes and their meanings is found in http://tools.ietf.org/html/rfc2929[RFC 2929]    | optional | `2`
+| `min-answers`          | Minmal number of records in the DNS server respone for the given lookup                      | optional | `-`
+| `max-answers`          | Maximal number of records in the DNS server respone for the given lookup                     | optional | `-`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+The given examples shows how to monitor if the IP interface from a given DNS server resolves a DNS request.
+This service should be bound to a DNS server which should be able to give a valid DNS respone for DNS request _www.google.com_.
+The service is _up_ if the DNS server gives between `1` and `10` _A record_ responses.
+
+.Example configuration monitoring DNS request for a given server for www.google.com
+[source, xml]
+----
+<service name="DNS-www.google.com" interval="300000" user-defined="false" status="on">
+    <parameter key="lookup" value="www.google.com" />
+    <parameter key="fatal-response-code" value="2" />
+    <parameter key="min-answers" value="1" />
+    <parameter key="max-answers" value="10" />
+</service>
+
+<monitor service="DNS-www.google.com" class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
+----

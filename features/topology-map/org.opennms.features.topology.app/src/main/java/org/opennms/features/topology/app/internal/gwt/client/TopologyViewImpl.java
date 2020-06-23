@@ -1,10 +1,35 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal.gwt.client;
 
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
-import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
-import org.opennms.features.topology.app.internal.gwt.client.d3.D3Transform;
-import org.opennms.features.topology.app.internal.gwt.client.d3.Tween;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
@@ -13,15 +38,11 @@ import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.VTooltip;
 
 public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer>, GraphUpdateListener {
 
@@ -59,15 +80,10 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     
     @UiField
     Element m_marginContainer;
-    
+
     @UiField
     HTMLPanel m_widgetContainer;
     
-    TopologyViewRenderer m_topologyViewRenderer;
-
-    private boolean m_isRefresh;
-
-
     public int getLeftMargin() {
         return LEFT_MARGIN;
     }
@@ -80,11 +96,8 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     protected void onLoad() {
         super.onLoad();
         m_widgetContainer.setSize("100%", "100%");
-        sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
-        m_topologyViewRenderer = m_presenter.getViewRenderer();
-        
+        m_svg.setId("TopologyComponent");
     }
-
 
     @Override
     public void setPresenter(Presenter<TopologyViewRenderer> presenter) {
@@ -95,10 +108,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     @Override
     public SVGElement getSVGElement() {
         return m_svg.cast();
-    }
-    
-    private SVGGElement getMarginContainer() {
-        return m_marginContainer.cast();
     }
     
     @Override
@@ -117,47 +126,8 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     }
 
     @Override
-    public Element getReferenceViewPort() {
-        return m_referenceMapViewport;
-    }
-
-    @Override
     public Element getMarqueeElement() {
         return m_marquee;
-    }
-
-    @Override
-    public void repaintNow(GWTGraph graph) {
-        m_presenter.getViewRenderer().draw(graph, this, graph.getBoundingBox());
-    }
-
-    @Override
-    public void onBrowserEvent(final Event event) {
-        super.onBrowserEvent(event);
-        switch(DOM.eventGetType(event)) {
-            case Event.ONCONTEXTMENU:
-
-                EventTarget target = event.getEventTarget();
-                
-                if (target.equals( getSVGElement() )) {
-                    m_presenter.onContextMenu(null, event.getClientX(), event.getClientY(), "map");
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                break;
-                
-    
-            case Event.ONCLICK:
-                if(event.getEventTarget().equals(getSVGElement())) {
-                    m_presenter.onBackgroundClick();
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                break;
-                
-        }
-
-
     }
 
     @Override

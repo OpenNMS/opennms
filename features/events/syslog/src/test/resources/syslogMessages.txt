@@ -1,0 +1,287 @@
+# Integration tests
+<190>Mar 11 08:35:17 aaa_host 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet
+<11>Jul 19 15:55:21 otrs-test OTRS-CGI-76[14364]: [Error][Kernel::System::ImportExport::ObjectBackend::CI2CILink::ImportDataSave][Line:468]: CILink: Could not create link between CIs!
+<31>main: Jan 7 12:42:46 192.168.0.1 su[25856]: pam_unix(su:auth): authentication failure; logname=jeffg uid=1004 euid=0 tty=pts/1 ruser=jeffg rhost= user=root
+<31>main: Jan 7 12:42:48 cartman su[25856]: pam_authenticate: Authentication failure
+<31>main: 2010-08-19 localhost foo%d: load test %d on tty1
+<34>1 2010-08-19T22:14:15.000Z localhost - - - - \uFEFFfoo0: load test 0 on tty1\u0000
+<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\u0000
+<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\u0000
+#<34>monkeysatemybrain!\u0000
+<31>main: 2007-01-01 127.0.0.1 A SyslogNG style message
+<26>main: 2007-01-01 127.0.0.1 beer - Not just for dinner anymore
+<140>main: 2007-01-01 127.0.0.1 beer - Not just for lunch anymore
+<135>main: 2007-01-01 127.0.0.1 beer - Not just for lunch anymore
+<140>maltd: 2007-01-01 127.0.0.1 maltd: beer - Not just for lunch anymore
+<31>beerd: 2007-01-01 127.0.0.1 beerd: beer - Not just for breakfast anymore
+<31>main: 2007-01-01 127.0.0.1 A SyslogNG style message
+<6>test: 2007-01-01 127.0.0.1 OpenNMS[1234]: A SyslogNG style message
+<0>Mar 14 17:10:25 petrus sudo:  cyrille : user NOT in sudoers ; TTY=pts/2 ; PWD=/home/cyrille ; USER=root ; COMMAND=/usr/bin/vi /etc/aliases
+<6>test: 2007-01-01 127.0.0.1 OpenNMS[1234]: A SyslogNG style message
+<6>test: 2007-01-01 127.0.0.1 A SyslogNG style message
+<173>Dec  7 12:02:06 10.13.110.116 mgmtd[8326]: [mgmtd.NOTICE]: Configuration saved to database initial
+<34>1 2003-10-11T22:14:15.000Z mymachine.example.com su - ID47 - \uFEFF'su root' failed for lonvick on /dev/pts/8
+<165>1 2003-10-11T22:14:15.000003-00:00 192.0.2.1 myproc 8710 - - %% It's time to make the do-nuts.
+<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"] \uFEFFAn application event log entry...
+<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"][examplePriority@32473 class="high"]
+<85>1 2011-11-15T14:42:18+01:00 hostname sudo - - - pam_unix(sudo:auth): authentication failure; logname=username uid=0 euid=0 tty=/dev/pts/0 ruser=username rhost= user=username
+<27>1 2012-04-20T12:33:13.946Z junos-mx80-2-space cfmd 1317 CFMD_CCM_DEFECT_RMEP - CFM defect: Remote CCM timeout detected by MEP on Level: 6 MD: MD_service_level MA: PW_126 Interface: ge-1/3/2.1
+<34>1 2010-08-19T22:14:15.000Z 127.0.0.1 - - - - \uFEFFfoo0: load test 0 on tty1\u0000
+
+# Other
+<14> Mar 16 00:01:25 localhost postfix/smtpd[1713]: connect from www.opennms.org[10.1.1.1]
+<191>1 2017-03-06T18:30:00+05:00 localhost myprocess 5231 - [id1 foo="bar"][id2 baz="something"] Hello, syslog
+<191>1 2017-03-06T18:30:00+05:00 localhost myprocess - - [id1 foo="bar"] No process ID
+<191>1 2017-03-06T18:30:00+05:00 localhost myprocess 5231 - - No structured data
+<191>1 2017-03-06T18:30:00+05:00 localhost myprocess - - - No PID or structured data
+<191>1 2017-03-06T18:30:00+05:00 localhost myprocess 5231 -  Missing structured data
+<191>1 2017-03-06T18:30:00+05:00 localhost myprocess  5231 - - Additional whitespace
+<191>1 2017-03-06T18:30:00+05:00 localhost myprocess  5231 -  Additional whitespace and missing structured data
+<30>1 2017-04-04T16:44:07+05:00 localhost dnsmasq-dhcp 15634 - -  Application name contains a dash
+<30>1 2017-04-04T16:44:07+05:00 localhost - 5231 - -  No application name
+
+# NMS-6730
+<14> 2015-01-22T12:38:32.503365-05:00 hostname procname[35474]: this is my message
+<14> 2015-01-22T12:38:53.525708-05:00 hostname procname: this is my message
+<14> 2015-01-22T12:39:25.093684-05:00 hostname procname[37183]: this is [my] message
+<14> 2015-01-22T12:39:43.908767-05:00 hostname procname: this is [my] message
+
+# monitorware.com Cisco firewalls
+<14> Mar 29 2004 09:54:18: %PIX-6-302005: Built UDP connection for faddr 198.207.223.240/53337 gaddr 10.0.0.187/53 laddr 192.168.0.2/53
+<14> Mar 29 2004 09:54:26: %PIX-4-106023: Deny icmp src outside:Some-Cisco dst inside:10.0.0.187 (type 3, code 1) by access-group "outside_access_in"
+<14> Mar 29 2004 09:54:30: %PIX-6-106015: Deny TCP (no connection) from 192.168.0.2/2794 to 192.168.216.1/2357 flags SYN ACK on interface inside
+<14> Mar 29 2004 09:54:32: %PIX-6-302006: Teardown UDP connection for faddr 192.168.245.1/137 gaddr 10.0.0.187/2789 laddr 192.168.0.2/2789 ()
+<14> Mar 29 2004 09:55:03: %PIX-6-305003: Teardown translation for global 10.0.0.188 local 192.168.0.6
+<14> Mar 29 2004 09:55:31: %PIX-6-302001: Built outbound TCP connection 152017 for faddr 212.56.240.37/9200 gaddr 10.0.0.187/2795 laddr 192.168.0.2/2795 ()
+<14> Mar 29 2004 09:55:32: %PIX-6-302001: Built inbound TCP connection 152022 for faddr 217.160.131.171/4336 gaddr 10.0.0.187/53 laddr 192.168.0.2/53
+<14> Mar 29 2004 09:56:04: %PIX-6-302002: Teardown TCP connection 152022 faddr 217.160.131.171/4336 gaddr 10.0.0.187/53 laddr 192.168.0.2/53 duration 0:00:32 bytes 68 (TCP FINs)
+<14> Mar 29 2004 09:56:08: %PIX-5-109012: Authen Session End: user '', sid 1, elapsed 313 seconds
+<14> Mar 29 2004 09:56:17: %PIX-6-302001: Built outbound TCP connection 152054 for faddr 66.102.9.99/80 gaddr 10.0.0.187/56669 laddr 192.168.0.2/56669
+<14> Mar 29 2004 09:56:17: %PIX-5-304001: 192.168.0.2 Accessed URL 66.102.9.99:/
+<14> Mar 29 2004 09:56:24: %PIX-5-304001: 192.168.0.2 Accessed URL 130.57.4.27:/inc/hdr_script_common.js
+<14> Mar 29 2004 09:56:26: %PIX-6-302002: Teardown TCP connection 152060 faddr 130.57.4.27/80 gaddr 10.0.0.187/56673 laddr 192.168.0.2/56673 duration 0:00:01 bytes 11143 (TCP Reset-I)
+<14> Mar 29 2004 09:56:26: %PIX-5-304001: 192.168.0.2 Accessed URL 130.57.4.27:/de-de/
+<14> Mar 29 2004 09:56:27: %PIX-5-304001: 192.168.0.2 Accessed URL 130.57.4.27:/common/inc/novell_style.css
+<14> Mar 29 2004 09:56:35: %PIX-6-302002: Teardown TCP connection 152017 faddr 212.56.240.37/9200 gaddr 10.0.0.187/2795 laddr 192.168.0.2/2795 duration 0:01:03 bytes 33424 (TCP FINs)
+<14> Mar 29 2004 09:56:38: %PIX-5-304001: 192.168.0.2 Accessed URL 216.52.17.116:/b/ss/novellcom/0/G.1-XP-R/s14102280031206?[AQB]&ndh=1&t=29/2/2004%2012%3A20%3A20%201%20-120&ch=www.novell.com/de-de/&server=www.novell.com&eVarCFG=200-200-200--&c5=de-de%3Ad
+<14> Mar 29 2004 09:56:39: %PIX-5-304001: 192.168.0.2 Accessed URL 216.52.17.116:/b/ss/novellcom/0/G.1-XP-R/s14102280031206?[AQB]purl=http%3A%2F%2Fwww.novell.com%2Fde-de%2F&pccr=true&&ndh=1&t=29/2/2004%2012%3A20%3A20%201%20-120&ch=www.novell.com/de-de/&se
+<14> Mar 29 2004 09:57:04: %PIX-5-304001: 192.168.0.2 Accessed URL 212.227.109.224:/stylelib/Microsites.css
+<14> Mar 29 2004 09:57:04: %PIX-5-304001: 192.168.0.2 Accessed URL 212.227.109.224:/scriptlib/ClientStdScripts.js
+
+# monitorware.com Netgear firewalls (?)
+# Comment these out for now because they confuse the legacy parsers
+#<14> Sun, 2004-03-28 13:52:46 - TCP packet - Source:81.248.19.27,60001 ,WAN - Destination:217.224.147.21,4467 ,LAN [Drop] - [TCP preconnect traffic dropped]
+#<14> Sun, 2004-03-28 14:01:08 - TCP packet - Source:80.144.81.26,0 ,WAN - Destination:217.224.147.21,0 ,LAN [Drop] - [Fragment Attack]
+#<14> Sun, 2004-03-28 15:30:45 - TCP packet - Source:172.21.0.1,4662 ,LAN - Destination:80.142.227.227,4662 ,WAN [Drop] - [TCP preconnect traffic dropped]
+#<14> Sun, 2004-03-28 17:34:08 - TCP packet - Source:218.2.178.243,3746 ,WAN - Destination:217.224.147.21,1122 ,LAN [Drop] - [TCP Flood]
+#<14> Mon, 2004-03-29 00:46:36 - Administrator login successful - IP:172.21.0.1
+
+# monitorware.com
+<14> Mar 12 12:00:08 server2 rcd[308]: Loaded 12 packages in 'ximian-red-carpet|351' (0.01878 seconds) 
+<14> Mar 12 12:00:08 server2 rcd[308]: id=304 COMPLETE 'Downloading https://server2/data/red-carpet.rdf' time=0s (failed) 
+<14> Mar 12 12:00:08 server2 rcd[308]: Unable to downloaded licenses info: Unable to authenticate - Authorization Required (https://server2/data/red-carpet.rdf)
+<14> Mar 12 12:10:00 server2 /USR/SBIN/CRON[6808]: (root) CMD ( /usr/lib/sa/sa1 )
+<14> Mar 12 12:27:00 server3 named[32172]: lame server resolving 'jakarta5.wasantara.net.id' (in 'wasantara.net.id'?): 202.159.65.171#53 
+<14> Mar 12 12:01:02 server4 snort: alert_multiple_requests: ACTIVE
+<14> Mar 12 12:01:02 server4 snort: telnet_decode arguments:
+<14> Mar 12 12:01:02 server4 snort: snort startup succeeded
+<14> Mar 12 12:01:02 server4 snort: Ports to decode telnet on: 21 23 25 119
+<14> Mar 12 12:01:03 server4 snort: Snort initialization completed successfully
+<14> Mar 10 03:19:48 server5 syslog: su : + tty?? root-informix 
+<14> Mar 12 09:27:20 server5 syslog: su : - ttyp1 user-informix 
+<14> Mar 12 08:24:51 server6 sshd[24742]: Accepted password for netscape from 111.222.333.444 port 1420 ssh2 
+<14> Mar 12 08:25:15 server6 tftpd[24241]: Timeout (no requests in 10 minutes)
+<14> Mar 12 08:49:53 server6 ftpd[27281]: FTP LOGIN FROM 111.222.333.444 [111.222.333.444], netscape 
+<14> Mar 12 09:05:22 server6 ftpd[27281]: exiting on signal 14 
+<14> Mar 12 12:32:24 server6 sshd[11187]: Accepted password for jfalgout from 111.222.333.444 port 34138 ssh2
+<14> Mar 12 11:44:20 server7 ftpd[25306]: command: QUIT^M 
+<14> Mar 12 11:44:20 server7 ftpd[25306]: <--- 221 
+<14> Mar 12 11:44:20 server7 ftpd[25306]: Goodbye.
+<14> Mar 12 11:44:35 server7 tftpd[24955]: Timeout (no requests in 10 minutes)
+<14> Mar 12 12:17:03 server7 sshd[26501]: pam_authenticate: error Authentication failed 
+<14> Mar 12 12:17:03 server7 sshd[26501]: Accepted publickey for user from 111.222.333.444 port 32774 ssh2
+<14> Mar 16 00:00:08 evita postfix/smtpd[1713]: connect from dialpool-210-214-5-215.maa.sify.net[210.214.5.215]
+<14> Mar 16 00:00:09 evita postfix/smtpd[1713]: NOQUEUE: reject: RCPT from dialpool-210-214-5-215.maa.sify.net[210.214.5.215]: 554 Service unavailable; Client host [210.214.5.215] blocked using dnsbl.sorbs.net; Dynamic IP Address See: http://www.dnsbl.sorbs.net/cgi-bin/lookup?IP=210.214.5.215; from= to= proto=SMTP helo= 
+<14> Mar 16 00:00:11 evita postfix/smtpd[1713]: disconnect from dialpool-210-214-5-215.maa.sify.net[210.214.5.215]
+<14> Mar 16 00:01:25 evita postfix/smtpd[1713]: connect from camomile.cloud9.net[168.100.1.3] 
+<14> Mar 16 00:01:28 evita postfix/smtpd[1713]: EA11834022: client=camomile.cloud9.net[168.100.1.3]
+<14> Mar 16 00:01:29 evita postfix/cleanup[1820]: EA11834022: message-id=
+<14> Mar 16 00:01:29 evita postfix/qmgr[1106]: EA11834022: from=, size=3514, nrcpt=1 (queue active) 
+<14> Mar 16 00:01:29 evita postfix/local[1821]: EA11834022: to=, relay=local, delay=4, status=sent (delivered to command: /usr/bin/procmail) 
+<14> Mar 16 00:01:29 evita postfix/qmgr[1106]: EA11834022: removed Mar 16 00:01:29 evita postfix/smtpd[1713]: disconnect from camomile.cloud9.net[168.100.1.3]
+<14> Mar 1 00:00:00 avas postfix/smtpd[2410]: A1CE861A83: reject: RCPT from unknown[218.246.34.68]: 557 Service unavailable; Client host [218.246.34.68] blocked using list.dsbl.org; http://dsbl.org/listing?ip=218.246.34.68; from= to= proto=SMTP helo=
+<14> Mar 1 00:00:02 avas postfix/smtpd[2410]: lost connection after RCPT from unknown[218.246.34.68]
+<14> Mar 1 00:00:02 avas postfix/smtpd[2410]: disconnect from unknown[218.246.34.68]
+<14> Mar 1 00:00:02 avas postfix/smtpd[1822]: connect from unknown[62.113.122.52]
+<14> Mar 1 00:00:03 avas postfix/smtpd[1822]: 4EC6561A83: client=unknown[62.113.122.52]
+<14> Mar 1 00:00:03 avas postfix/smtpd[2314]: connect from host81-153-11-97.range81-153.btcentralplus.com[81.153.11.97]
+<14> Mar 1 00:00:03 avas postfix/smtpd[1822]: 4EC6561A83: reject: RCPT from unknown[62.113.122.52]: 450 : Sender address rejected: Domain not found; from= to= proto=ESMTP helo=
+<14> Mar 1 00:00:03 avas postfix/smtpd[2314]: C0E5861AA4: client=host81-153-11-97.range81-153.btcentralplus.com[81.153.11.97]
+<14> Mar 1 00:00:04 avas postfix/smtpd[2314]: C0E5861AA4: reject: RCPT from host81-153-11-97.range81-153.btcentralplus.com[81.153.11.97]: 450 : Sender address rejected: Domain not found; from= to= proto=ESMTP helo=
+<14> Mar 1 00:00:05 avas postfix/pickup[1473]: 445C261AA4: uid=0 from=
+<14> Mar 1 00:00:05 avas postfix/cleanup[2400]: 445C261AA4: message-id=<20040301080005.445C261AA4@avas.example.com>
+<14> Mar 1 00:00:05 avas postfix/qmgr[23698]: 445C261AA4: from=, size=704, nrcpt=1 (queue active)
+<14> Mar 1 00:00:05 avas postfix/smtpd[2314]: disconnect from host81-153-11-97.range81-153.btcentralplus.com[81.153.11.97]
+<14> Mar 1 00:00:06 avas postfix/smtpd[2579]: connect from avas.example.com[127.0.0.1]
+<14> Mar 1 00:00:06 avas postfix/smtpd[2579]: 4391461A83: client=avas.example.com[127.0.0.1]
+<14> Mar 1 00:00:06 avas postfix/cleanup[1666]: 4391461A83: message-id=<20040301080005.445C261AA4@avas.example.com>
+<14> Mar 1 00:00:06 avas postfix/qmgr[23698]: 4391461A83: from=, size=1048, nrcpt=1 (queue active)
+<14> Mar 1 00:00:06 avas postfix/smtpd[2579]: disconnect from avas.example.com[127.0.0.1]
+<14> Mar 1 00:00:06 avas amavis[2430]: (02430-01) Passed,  -> , Message-ID: <20040301080005.445C261AA4@avas.example.com>, Hits: 0
+<14> Mar 1 00:00:06 avas postfix/smtp[2573]: 445C261AA4: to=, relay=127.0.0.1[127.0.0.1], delay=1, status=sent (250 2.6.0 Ok, id=02430-01, from MTA: 250 Ok: queued as 4391461A83)
+<14> Mar 1 00:00:06 avas postfix/smtp[2580]: 4391461A83: to=, relay=10.0.0.251[10.0.0.251], delay=0, status=sent (250 Command DATA Processed mail data Ok)
+<14> Mar 1 00:00:13 avas postfix/smtpd[2411]: warning: 208.37.192.234: address not listed for hostname mail.globrite.com
+<14> Mar 1 00:00:13 avas postfix/smtpd[2411]: connect from unknown[208.37.192.234]
+<14> Mar 1 00:00:14 avas postfix/smtpd[2411]: disconnect from unknown[208.37.192.234]
+<14> Mar 1 00:01:31 avas postfix/smtpd[2410]: connect from user-0c99au7.cable.mindspring.com[24.148.171.199]
+<14> Mar 1 00:01:34 avas postfix/smtpd[2410]: AA8F561A83: client=user-0c99au7.cable.mindspring.com[24.148.171.199]
+<14> Mar 1 00:01:36 avas postfix/smtpd[2410]: AA8F561A83: reject: RCPT from user-0c99au7.cable.mindspring.com[24.148.171.199]: 557 Service unavailable; Client host [24.148.171.199] blocked using list.dsbl.org; http://dsbl.org/listing?ip=24.148.171.199; from= to= proto=SMTP helo=
+<14> Mar 1 00:01:36 avas postfix/smtpd[2314]: connect from unknown[218.149.178.173]
+<14> Mar 1 00:01:38 avas postfix/smtpd[2314]: 2B34C61AA4: client=unknown[218.149.178.173]
+<14> Mar 1 00:01:38 avas postfix/smtpd[1822]: connect from host76-117.pool80180.interbusiness.it[80.180.117.76]
+<14> Mar 1 00:01:39 avas postfix/smtpd[2410]: lost connection after RCPT from user-0c99au7.cable.mindspring.com[24.148.171.199]
+<14> Mar 1 00:01:39 avas postfix/smtpd[2410]: disconnect from user-0c99au7.cable.mindspring.com[24.148.171.199]
+<14> Mar 1 00:01:43 avas postfix/smtpd[1822]: 0141A61A83: client=host76-117.pool80180.interbusiness.it[80.180.117.76]
+<14> Mar 1 00:01:44 avas postfix/smtpd[2411]: warning: 208.37.192.234: address not listed for hostname mail.globrite.com
+<14> Mar 1 00:01:44 avas postfix/smtpd[2411]: connect from unknown[208.37.192.234]
+<14> Mar 1 00:01:44 avas postfix/smtpd[2411]: disconnect from unknown[208.37.192.234]
+<14> Mar 1 00:01:47 avas postfix/smtpd[2314]: 2B34C61AA4: reject: RCPT from unknown[218.149.178.173]: 557 Service unavailable; Client host [218.149.178.173] blocked using dnsbl.sorbs.net; Dynamic IP Address See: http://www.dnsbl.sorbs.net/cgi-bin/lookup?IP=218.149.178.173; from= to= proto=SMTP helo=<10.0.0.214>
+<14> Mar 1 00:01:49 avas postfix/smtpd[2314]: disconnect from unknown[218.149.178.173]
+<14> Mar 1 00:01:54 avas postfix/smtpd[1822]: 0141A61A83: reject: RCPT from host76-117.pool80180.interbusiness.it[80.180.117.76]: 557 Service unavailable; Client host [80.180.117.76] blocked using dnsbl.sorbs.net; Dynamic IP Address See: http://www.dnsbl.sorbs.net/cgi-bin/lookup?IP=80.180.117.76; from=<00rkug3ytgb83@cyberlink.com> to= proto=SMTP helo=
+<14> Mar 1 00:01:57 avas postfix/smtpd[1822]: lost connection after RCPT from host76-117.pool80180.interbusiness.it[80.180.117.76]
+<14> Mar 1 00:01:57 avas postfix/smtpd[1822]: disconnect from host76-117.pool80180.interbusiness.it[80.180.117.76]
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: starting. amavisd at avas.example.com amavisd-new-20030616-p6, Unicode aware, LANG=en_US.iso885915
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Perl version 5.008001
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Amavis::Conf 1.15
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Archive::Tar 1.07
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Archive::Zip 1.08
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Compress::Zlib 1.31
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Convert::TNEF 0.17
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Convert::UUlib 0.31
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module MIME::Entity 5.404 
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module MIME::Parser 5.406 
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module MIME::Tools 5.411 
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Mail::Header 1.60
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Mail::Internet 1.60
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Mail::SpamAssassin 2.63
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Net::Cmd 2.24
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Net::DNS 0.42
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Net::SMTP 2.26
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Net::Server 0.86
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Time::HiRes 1.52
+<14> Feb 2 09:00:14 avas.example.com amavisd[11568]: Module Unix::Syslog 0.99
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: Found $file at /usr/local/bin/file
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: No $arc, not using it
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: Found $gzip at /usr/bin/gzip
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: Found $bzip2 at /usr/bin/bzip2
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: No $lzop, not using it
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: No $lha, not using it
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: No $unarj, not using it
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: Found $uncompress at /usr/bin/uncompress
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: No $unfreeze, not using it
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: No $unrar, not using it
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: No $zoo, not using it
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: Found $cpio at /bin/cpio
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: Using internal av scanner code for (primary) Clam Antivirus-clamd
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: Found primary av scanner NAI McAfee AntiVirus (uvscan) at /usr/local/bin/uvscan
+<14> Feb 2 09:00:14 avas.example.com amavisd[11569]: Found secondary av scanner Clam Antivirus - clamscan at /usr/local/bin/clamscan
+<14> Feb 2 09:00:29 avas.example.com amavisd[11599]: (11599-01) Passed,  -> , Message-ID: <01L64VNZ9OH68WWF3X@CATHY.IJS.SI>, Hits: -
+<14> Feb 2 09:00:31 avas.example.com amavisd[11601]: (11601-01) Passed,  -> , Message-ID: <7BEFD9ACD7E4174EABE9A6B3D23B47676B5CB2@cacmail.example.com>, Hits: 0.422
+<14> Feb 2 09:00:31 avas.example.com amavisd[11600]: (11600-01) Passed,  -> , Message-ID: <7BEFD9ACD7E4174EABE9A6B3D23B476703DAF49D@cacmail.example.com>, Hits: 1.219
+<14> Feb 2 09:00:33 avas.example.com amavisd[11599]: (11599-02) Not-Delivered,  -> , quarantine spam-8b8880d575b664542bf8c045ac28c220-20040202-090033-11599-02, Message-ID: <1075739741.3557@cbn.net.id>, Hits: 13.621
+<14> Feb 2 09:00:33 avas.example.com amavisd[11600]: (11600-02) Not-Delivered,  -> , quarantine spam-efde75c38625bba7f05e2f4a93cd9263-20040202-090033-11600-02, Message-ID: <705a01c3e9aa$b3cc09f0$48677b4c@cdu-saar.de>, Hits: 15.376
+<14> Feb 2 09:00:35 avas.example.com amavisd[11599]: (11599-03) Passed,  -> , Message-ID: , Hits: 5.353
+<14> Feb 2 09:00:36 avas.example.com amavisd[11601]: (11601-02) Passed,  -> , Message-ID: , Hits: 0.194
+<14> Feb 2 09:00:36 avas.example.com amavisd[11600]: (11600-03) Passed,  -> , Message-ID: <20040202164028.4185861B05@avas.example.com>, Hits: 0
+<14> Feb 2 09:00:38 avas.example.com amavisd[11600]: (11600-04) Not-Delivered,  -> , quarantine spam-33f14e0d35a02c88714201b11984a1c6-20040202-090038-11600-04, Message-ID: <401E7F65.0FA4B9AC@tiscali.co.uk>, Hits: 15.23
+<14> Feb 2 09:00:39 avas.example.com amavisd[11601]: (11601-03) Passed,  -> , Message-ID: , Hits: 0.156
+<14> Feb 2 09:00:41 avas.example.com amavisd[11602]: (11602-01) Passed,  -> , Message-ID: <970613513.1075739667242.JavaMail.ebayapp@sj-v3offer22>, Hits: 2.172
+<14> Feb 2 09:00:41 avas.example.com amavisd[11599]: (11599-04) Not-Delivered, <> -> , quarantine spam-6234502ce990e93fd0f5c8c6c5eb37c8-20040202-090041-11599-04, Message-ID: , Hits: 10.844
+<14> Feb 2 09:00:44 avas.example.com amavisd[11599]: (11599-05) Passed,  -> , Message-ID: , Hits: 0
+<14> Feb 2 09:00:44 avas.example.com amavisd[11600]: (11600-05) Not-Delivered, <67dkmsca@hanmir.com> -> ,, quarantine spam-a7bd8bbb40d860656ba8bec5df04e007-20040202-090044-11600-05, Message-ID: <1l$l$r$6494gk-679-l7j2-fy3xx9@lkj5z.l8ml>, Hits: 31.578
+<14> Feb 2 09:00:46 avas.example.com amavisd[11599]: (11599-06) Passed,  -> , Message-ID: <401e7cf6.171.7f8.20446@example.com>, Hits: 1.587
+<14> Mar 7 04:05:00 avas CROND[11233]: (cronjob) CMD (/usr/bin/mrtg /etc/mrtg/mrtg.cfg) 
+<14> Mar 7 04:05:00 avas CROND[11234]: (mailman) CMD (/usr/local/bin/python -S /usr/local/mailman/cron/gate_news) 
+<14> Mar 7 04:10:00 avas CROND[11254]: (cronjob) CMD (/usr/lib/sa/sa1 1 1) 
+<14> Mar 7 04:10:00 avas CROND[11257]: (cronjob) CMD (/sbin/dcccollect.sh) 
+<14> Mar 7 04:22:00 avas CROND[11460]: (cronjob) CMD (run-parts /etc/cron.weekly) 
+<14> Mar 7 04:22:00 avas anacron[11464]: Updated timestamp for job `cron.weekly' to 2004-03-07
+<14> Mar 7 04:30:00 avas CROND[19687]: (cronjob) CMD ((cd /home/dcc/libexec; ./fetchblack)) 
+<14> Mar 7 05:00:00 avas CROND[20094]: (cronjob) CMD (/sbin/uv.sh) 
+<14> Mar 7 05:01:01 avas CROND[20187]: (cronjob) CMD (run-parts /etc/cron.hourly) 
+<14> Mar 6 03:48:24 avas dccd[19972]: automatic dbclean; starting `dbclean -DPq -i 1189 -L info,local5.notice -L error,local5.err`
+<14> Mar 6 03:48:24 avas dbclean[19972]: 1.2.32 cleaning dcc_db
+<14> Mar 6 03:48:24 avas dccd[13284]: database cleaning begun
+<14> Mar 6 03:49:26 avas dbclean[19972]: expired 3899900 records and 11994010 checksums in /home/dcc/dcc_db
+<14> Mar 6 03:51:25 avas dbclean[19972]: hashed 9753301 records containing 21909874 checksums, compressed 1316498 records
+<14> Mar 6 03:51:25 avas dbclean[19972]: 27432960 hash entries total, 15545121 or 56% used
+<14> Mar 6 03:52:07 avas dccd[13284]: 1.2.32 database /home/dcc/dcc_db reopened with 997 MByte window
+<14> Mar 6 04:12:03 avas dccd[13284]: "packet length 44 too small for REPORT" sent to client 1 at 80.8.131.68,41000
+<14> Mar 6 19:01:12 avas dccd[13284]: no incoming flood connection from dcc1.example.no, server-ID XXXX
+<14> Mar 6 19:01:42 avas dccd[13284]: no outgoing flood connection to dcc1.example.no, server-ID XXXX
+<14> Mar 6 20:06:37 avas dccd[13284]: "packet length 44 too small for REPORT" sent to client 1 at 194.63.250.215,56007
+<14> Mar 7 00:00:00 avas dccifd[13451]: 1.2.32 rejected messages to 0 targets and discarded messages to 0 targets among 1552 total since 03/06/04 00:00:00
+<14> Mar 7 00:07:21 avas dccifd[7292]: write(MTA socket,4): Broken pipe
+<14> Mar 7 03:48:25 avas dccd[10491]: automatic dbclean; starting `dbclean -DPq -i 1189 -L info,local5.notice -L error,local5.err`
+<14> Mar 7 03:48:25 avas dbclean[10491]: 1.2.32 cleaning dcc_db
+<14> Mar 7 03:48:25 avas dccd[13284]: database cleaning begun
+<14> Mar 7 03:49:11 avas dbclean[10491]: expired 4432643 records and 12824643 checksums in /home/dcc/dcc_db
+<14> Mar 7 03:50:02 avas dbclean[10491]: hashed 8581350 records containing 18023228 checksums, compressed 1468188 records
+<14> Mar 7 03:50:02 avas dbclean[10491]: 22763520 hash entries total, 12827182 or 56% used
+<14> Mar 7 03:50:38 avas dccd[13284]: 1.2.32 database /home/dcc/dcc_db reopened with 997 MByte window
+<14> Mar 7 04:11:15 avas dccifd[11335]: write(MTA socket,4): Broken pipe
+<14> Mar 7 11:14:35 avas dccd[13284]: 20 requests/sec are too many from anonymous 205.201.1.56,2215
+<14> Mar 7 16:50:58 avas dccifd[998]: missing message body
+<14> Mar 7 19:01:28 avas dccd[13284]: no incoming flood connection from dcc1.example.no, server-ID XXXX
+<14> Mar 7 19:01:58 avas dccd[13284]: no outgoing flood connection to dcc1.example.no, server-ID XXXX
+<14> Mar 7 21:23:22 avas dccifd[6191]: missing message body
+<14> Mar 8 00:00:00 avas dccifd[13451]: 1.2.32 rejected messages to 0 targets and discarded messages to 0 targets among 1775 total since 03/07/04 00:00:00
+<14> Mar 8 00:22:57 avas dccifd[9933]: write(MTA socket,4): Broken pipe
+<14> Mar 8 02:50:26 avas dccifd[12385]: no answer from 127.0.0.1 (127.0.0.1,6277) after 16016 ms
+<14> Mar 8 02:50:26 avas dccifd[12385]: write(MTA socket,4): Broken pipe
+<14> Mar 8 03:48:05 avas dccd[13362]: automatic dbclean; starting `dbclean -DPq -i 1189 -L info,local5.notice -L error,local5.err`
+<14> Mar 8 03:48:05 avas dbclean[13362]: 1.2.32 cleaning dcc_db
+<14> Mar 8 03:48:05 avas dccd[13284]: database cleaning begun
+<14> Mar 8 03:50:40 avas dbclean[13362]: expired 3741033 records and 10305510 checksums in /home/dcc/dcc_db
+<14> Mar 8 03:51:27 avas dbclean[13362]: hashed 8238442 records containing 17108406 checksums, compressed 1272157 records
+<14> Mar 8 03:51:27 avas dbclean[13362]: 21596160 hash entries total, 12649013 or 58% used
+<14> Mar 8 03:52:04 avas dccd[13284]: 1.2.32 database /home/dcc/dcc_db reopened with 997 MByte window
+<14> Mar 8 08:24:29 avas dccifd[19670]: write(MTA socket,4): Broken pipe
+<14> Mar 7 04:02:08 avas syslogd 1.4.1: restart.
+<14> Mar 7 04:02:16 avas clamd[11165]: /var/amavis/amavis-20040307T033734-10329/parts/part-00003: Worm.Mydoom.F FOUND 
+<14> Mar 7 04:05:55 avas clamd[11240]: /var/amavis/amavis-20040307T035901-10615/parts/part-00002: Worm.SomeFool.Gen-1 FOUND 
+<14> Mar 7 04:11:15 avas dccifd[11335]: write(MTA socket,4): Broken pipe
+<14> Mar 7 04:14:12 avas clamd[11346]: /var/amavis/amavis-20040307T033734-10329/parts/part-00002: Worm.SomeFool.Gen-2 FOUND 
+<14> Mar 7 04:58:25 avas clamd[27173]: SelfCheck: Database status OK. 
+<14> Mar 7 05:20:01 avas clamd[20434]: /var/amavis/amavis-20040307T051352-20223/parts/part-00003: Worm.Mydoom.F FOUND 
+<14> Mar 7 05:59:01 avas clamd[27173]: SelfCheck: Database modification detected. Forcing reload. 
+<14> Mar 7 05:59:01 avas clamd[27173]: Reading databases from /usr/local/share/clamav 
+<14> Mar 7 05:59:02 avas clamd[27173]: Database correctly reloaded (20400 viruses) 
+<14> Mar 7 06:16:58 avas clamd[21205]: /var/amavis/amavis-20040307T055611-20898/parts/part-00003: Worm.SomeFool.Gen-2 FOUND 
+<14> Mar 7 07:09:16 avas clamd[21960]: /var/amavis/amavis-20040307T070505-21901/parts/part-00003: Worm.Mydoom.F FOUND 
+<14> Mar 7 07:11:40 avas clamd[22051]: /var/amavis/amavis-20040307T063459-21378/parts/part-00002: Worm.SomeFool.Gen-1 FOUND 
+<14> Mar 7 11:14:35 avas dccd[13284]: 20 requests/sec are too many from anonymous 205.201.1.56,2215
+<14> Mar 7 12:09:33 avas clamd[28096]: /var/amavis/amavis-20040307T115141-27791/parts/part-00004: Worm.SomeFool.Gen-2 FOUND 
+<14> Mar 7 13:38:49 avas sshd[29707]: Accepted password for tom from 24.70.69.74 port 64035
+<14> Mar 8 12:06:00 avas sshd[29619]: Accepted publickey for tom from 10.0.0.251 port 4242 ssh2
+<14> Mar 8 12:06:00 avas sshd[29619]: subsystem request for sftp
+<14> Mar 8 15:15:06 avas sshd[3749]: Could not reverse map address 10.0.0.153.
+<14> Mar 8 23:05:11 avas sshd[14340]: Did not receive identification string from 210.150.142.17
+<14> Mar 12 13:23:48 avas sshd[23510]: input_userauth_request: illegal user avas.cnc.bc.ca
+<14> Mar 12 13:23:48 avas sshd[23510]: Failed none for illegal user phil from 10.0.0.153 port 2006 ssh2
+<14> Mar 12 13:23:48 avas sshd[23510]: Failed keyboard-interactive for illegal user phil from 10.0.0.153 port 2006 ssh2
+<14> Mar 12 13:23:51 avas sshd[23510]: Failed password for illegal user phil from 10.0.0.153 port 2006 ssh2
+<14> Mar 12 13:23:51 avas sshd[23510]: Failed none for illegal user phil from 10.0.0.153 port 2006 ssh2
+<14> Mar 12 13:23:51 avas sshd[23510]: Failed keyboard-interactive for illegal user phil from 10.0.0.153 port 2006 ssh2
+<14> Mar 12 13:23:58 avas sshd[23510]: Failed password for illegal user phil from 10.0.0.153 port 2006 ssh2
+<14> Mar 12 13:23:58 avas sshd[23510]: Failed none for illegal user phil from 10.0.0.153 port 2006 ssh2
+<14> Mar 12 13:23:58 avas sshd[23510]: Failed keyboard-interactive for illegal user phil from 10.0.0.153 port 2006 ssh2
+<14> Mar 12 13:23:58 avas sshd[23510]: Disconnecting: Too many authentication failures for avas.cnc.bc.ca
+<14> Mar 10 12:03:36 azul pbs: pbs_sched startup failed 
+<14> Mar 10 12:03:36 azul pbs_server: pbs_server: another server running 
+<14> Mar 10 12:03:36 azul pbs: pbs_server startup failed
+<14> Mar 12 12:15:06 azul pbs: pbs_server shutdown succeeded 
+<14> Mar 12 12:15:06 azul pbs: pbs_sched shutdown succeeded 
+<14> Mar 12 12:15:06 azul pbs: pbs_sched startup succeeded 
+<14> Mar 12 12:16:33 azul01 pbs: pbs_mom shutdown succeeded 
+<14> Mar 12 12:16:33 azul01 pbs: pbs_mom startup succeeded

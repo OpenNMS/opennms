@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,18 +28,18 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.config.eventd.EventdConfiguration;
 
 /**
@@ -47,7 +47,7 @@ import org.opennms.netmgt.config.eventd.EventdConfiguration;
  *
  * @author david
  */
-public class EventdConfigManager {
+public class EventdConfigManager implements EventdConfig {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -61,32 +61,21 @@ public class EventdConfigManager {
      * <p>Constructor for EventdConfigManager.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    protected EventdConfigManager(final InputStream stream) throws MarshalException, ValidationException, IOException {
-        m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);
-
+    public EventdConfigManager() throws IOException {
+        reload();
     }
     
-    /**
-     * <p>Constructor for EventdConfigManager.</p>
-     *
-     * @param configFile a {@link java.lang.String} object.
-     * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public EventdConfigManager(final String configFile) throws FileNotFoundException, MarshalException, ValidationException {
-        InputStream stream = null;
-        try {
-            stream = new FileInputStream(configFile);
-            m_config = CastorUtils.unmarshal(EventdConfiguration.class, stream);
-        } finally {
-            if (stream != null) {
-                IOUtils.closeQuietly(stream);
-            }
+    EventdConfigManager(final InputStream stream) throws IOException {
+        try (final InputStreamReader isr = new InputStreamReader(stream)) {
+            m_config = JaxbUtils.unmarshal(EventdConfiguration.class, isr);
+        }
+    }
+    
+    private void reload() throws IOException {
+        try (final Reader r = new FileReader(ConfigFileConstants.getFile(ConfigFileConstants.EVENTD_CONFIG_FILE_NAME))) {
+            m_config = JaxbUtils.unmarshal(EventdConfiguration.class, r);           
         }
     }
 
@@ -106,7 +95,7 @@ public class EventdConfigManager {
     public String getTCPIpAddress() {
         getReadLock().lock();
         try {
-            return m_config.getTCPAddress();
+            return m_config.getTCPAddress().orElse(null);
         } finally {
             getReadLock().unlock();
         }
@@ -134,7 +123,7 @@ public class EventdConfigManager {
     public String getUDPIpAddress() {
         getReadLock().lock();
         try {
-            return m_config.getUDPAddress();
+            return m_config.getUDPAddress().orElse(null);
         } finally {
             getReadLock().unlock();
         }
@@ -176,7 +165,7 @@ public class EventdConfigManager {
     public int getQueueLength() {
         getReadLock().lock();
         try {
-            return m_config.hasQueueLength() ? m_config.getQueueLength() : Integer.MAX_VALUE;
+            return m_config.getQueueLength().orElse(Integer.MAX_VALUE);
         } finally {
             getReadLock().unlock();
         }
@@ -204,7 +193,7 @@ public class EventdConfigManager {
     public int getSocketSoTimeoutPeriod() {
         getReadLock().lock();
         try {
-            return m_config.getSocketSoTimeoutPeriod();
+            return m_config.getSocketSoTimeoutPeriod().orElse(0);
         } finally {
             getReadLock().unlock();
         }
@@ -213,12 +202,24 @@ public class EventdConfigManager {
     /**
      * Return flag indicating if timeout to be set on the socket is specified.
      *
-     * @return flag indicating if timeout to be set on the socket is specified <
+     * @return flag indicating if timeout to be set on the socket is specified
      */
     public boolean hasSocketSoTimeoutPeriod() {
         getReadLock().lock();
         try {
-            return m_config.hasSocketSoTimeoutPeriod();
+            return m_config.getSocketSoTimeoutPeriod().isPresent();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+    
+    /**
+     * Whether or not Eventd should log event summaries.
+     */
+    public boolean shouldLogEventSummaries() {
+        getReadLock().lock();
+        try {
+            return m_config.getLogEventSummaries() == null? false : m_config.getLogEventSummaries();
         } finally {
             getReadLock().unlock();
         }
@@ -227,12 +228,60 @@ public class EventdConfigManager {
     /**
      * Return the SQL statement to get the next event ID.
      *
+     * @deprecated This is only used when using {@link JdbcEventWriter}
+     * so when we remove the JDBC implementation, we can get rid of this
+     * class.
+     * 
      * @return the SQL statement to get the next event ID
      */
     public String getGetNextEventID() {
         getReadLock().lock();
         try {
-            return m_config.getGetNextEventID();
+            return m_config.getGetNextEventID().orElse(null);
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+    
+    @Override
+    public int getNumThreads() {
+        getReadLock().lock();
+        try {
+            if (m_config.getNumThreads() <= 0) {
+                return Runtime.getRuntime().availableProcessors() * 2;
+            } else {
+                return m_config.getNumThreads();
+            }
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public int getQueueSize() {
+        getReadLock().lock();
+        try {
+            return m_config.getQueueSize();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public int getBatchSize() {
+        getReadLock().lock();
+        try {
+            return m_config.getBatchSize();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public int getBatchIntervalMs() {
+        getReadLock().lock();
+        try {
+            return m_config.getBatchInterval();
         } finally {
             getReadLock().unlock();
         }

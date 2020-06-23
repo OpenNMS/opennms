@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,11 +29,17 @@
 package org.opennms.web.category;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
+import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.opennms.netmgt.xml.rtc.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,13 +53,18 @@ import org.slf4j.LoggerFactory;
  * {@link org.opennms.netmgt.config.CategoryFactory CategoryFactory}. The RTC
  * category updates are periodically sent from the RTC to the WebUI.
  * </p>
+ * 
+ * @deprecated This is awful... a 3rd Category model object that combines the other
+ * two model objects???? These all need to be merged into a single object.
  *
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
+
+@XmlRootElement(name="category")
+@XmlAccessorType(XmlAccessType.NONE)
 public class Category {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Category.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Category.class);
 
     /** The category definition (from the categories.xml file). */
     protected final org.opennms.netmgt.config.categories.Category m_categoryDef;
@@ -90,6 +101,12 @@ public class Category {
      */
     protected Double m_servicePercentage;
 
+    protected Category() {
+        m_categoryDef = new org.opennms.netmgt.config.categories.Category();
+        m_rtcCategory = null;
+        m_lastUpdated = null;
+    }
+
     /**
      * Create an empty category with nothing other than a name. This represents
      * a category with no RTC data.
@@ -99,6 +116,8 @@ public class Category {
     protected Category(String categoryName) {
         m_categoryDef = new org.opennms.netmgt.config.categories.Category();
         m_categoryDef.setLabel(categoryName);
+        m_categoryDef.setNormalThreshold(0d);
+        m_categoryDef.setWarningThreshold(0d);
         m_rtcCategory = null;
         m_lastUpdated = null;
     }
@@ -135,8 +154,9 @@ public class Category {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlAttribute(name="name")
     public String getName() {
-        return m_categoryDef.getLabel();
+        return m_categoryDef == null? null : m_categoryDef.getLabel();
     }
 
     /**
@@ -144,8 +164,9 @@ public class Category {
      *
      * @return a double.
      */
+    @XmlAttribute(name="normal-threshold")
     public double getNormalThreshold() {
-        return m_categoryDef.getNormal();
+        return m_categoryDef == null? null : m_categoryDef.getNormalThreshold();
     }
 
     /**
@@ -155,8 +176,9 @@ public class Category {
      *
      * @return a double.
      */
+    @XmlAttribute(name="warning-threshold")
     public double getWarningThreshold() {
-        return m_categoryDef.getWarning();
+        return m_categoryDef == null? null : m_categoryDef.getWarningThreshold();
     }
 
     /**
@@ -164,8 +186,9 @@ public class Category {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlElement(name="comment")
     public String getComment() {
-        return m_categoryDef.getComment();
+        return m_categoryDef == null? null : m_categoryDef.getComment().orElse(null);
     }
 
     /**
@@ -173,6 +196,7 @@ public class Category {
      *
      * @return a {@link java.util.Date} object.
      */
+    @XmlElement(name="last-updated")
     public Date getLastUpdated() {
         return m_lastUpdated;
     }
@@ -182,6 +206,7 @@ public class Category {
      *
      * @return a double.
      */
+    @XmlElement(name="availability")
     public double getValue() {
         if (m_rtcCategory == null) {
             return 0.0;
@@ -192,8 +217,8 @@ public class Category {
 
     /**
      * Package protected implementation method that exposes the internal
-     * representation (a Castor-generated object) of the data from the RTC,
-     * strictly for use in marshalling the data back to XML (via Castor). In
+     * representation (a JAXB-generated object) of the data from the RTC,
+     * strictly for use in marshalling the data back to XML (via JAXB). In
      * other words, this method is only for debugging purposes, please do not
      * use in normal situations. Instead please use the public methods of this
      * class.
@@ -236,6 +261,7 @@ public class Category {
      *
      * @return a long.
      */
+    @XmlElement(name="service-down-count")
     public synchronized long getServiceDownCount() {
         if (m_serviceDownCount == null) {
             // This will initialize m_serviceDownCount
@@ -256,6 +282,7 @@ public class Category {
      *
      * @return a double.
      */
+    @XmlElement(name="service-percentage")
     public synchronized double getServicePercentage() {
         if (m_servicePercentage == null) {
             // This will initialize m_servicePercentage
@@ -271,48 +298,15 @@ public class Category {
     }
 
     /**
-     * Returns the outage background color for this category.
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public String getOutageColor() throws IOException, MarshalException, ValidationException {
-        if (m_lastUpdated == null) {
-            return "lightblue";
-        } else {
-            return CategoryUtil.getCategoryColor(this, getServicePercentage());
-        }
-    }
-
-    /**
-     * Returns the availability background color for this category.
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     */
-    public String getAvailColor() throws IOException, MarshalException, ValidationException {
-        if (m_lastUpdated == null) {
-            return "lightblue";
-        } else {
-            return CategoryUtil.getCategoryColor(this);
-        }
-    }
-
-    /**
      * Returns the outage CSS class for this category.
      *
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getOutageClass() throws IOException, MarshalException, ValidationException {
+    @XmlElement(name="outage-class")
+    public String getOutageClass() throws IOException {
         if (m_lastUpdated == null) {
-            return "lightblue";
+            return "Indeterminate";
         } else {
             return CategoryUtil.getCategoryClass(this, getServicePercentage());
         }
@@ -323,12 +317,11 @@ public class Category {
      *
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getAvailClass() throws IOException, MarshalException, ValidationException {
+    @XmlElement(name="availability-class")
+    public String getAvailClass() throws IOException {
         if (m_lastUpdated == null) {
-            return "lightblue";
+            return "Indeterminate";
         } else {
             return CategoryUtil.getCategoryClass(this);
         }
@@ -339,6 +332,7 @@ public class Category {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlElement(name="outage-text")
     public String getOutageText() {
         if (m_lastUpdated == null) {
             return "Calculating...";
@@ -352,6 +346,7 @@ public class Category {
      *
      * @return a {@link java.lang.String} object.
      */
+    @XmlElement(name="availability-text")
     public String getAvailText() {
         if (m_lastUpdated == null) {
             return "Calculating...";
@@ -373,22 +368,38 @@ public class Category {
         }
     }
 
-    /**
-     * Returns an enumeration of the Castor-generated Node objects tied to this
-     * category.
-     *
-     * <p>
-     * Note, LJK Dec 5,2001: I'm not really happy about exposing the Castor
-     * objects this way. We do it all over the place, but I've already started
-     * hiding them in this particular case (the rtceui.xsd objects). I'm not
-     * very pleased with this half approach. I'd rather hide them completely or
-     * not at all, but I don't want to introduce a new pass-through object.
-     * </p>
-     *
-     * @return a {@link java.util.Enumeration} object.
-     */
-    public Enumeration<Node> enumerateNode() {
-        return m_rtcCategory.enumerateNode();
+    @XmlElementWrapper(name="nodes")
+    @XmlElement(name="node")
+    public List<Long> getNodeIds() {
+        final List<Long> nodeIds = new ArrayList<>();
+        if (m_rtcCategory != null) {
+            for (final Node node : m_rtcCategory.getNode()) {
+                nodeIds.add(node.getNodeid());
+            }
+        }
+        return nodeIds;
+    }
+
+    public List<Node> getNode() {
+        return m_rtcCategory.getNode();
+    }
+
+    public NodeList getNodes() {
+        if (m_rtcCategory != null) {
+            return NodeList.forNodes(m_rtcCategory.getNode());
+        }
+        return new NodeList();
+    }
+
+    public AvailabilityNode getNode(final Long nodeId) {
+        if (m_rtcCategory != null) {
+            for (final Node node : m_rtcCategory.getNode()) {
+                if (node.getNodeid() == nodeId) {
+                    return new AvailabilityNode(node);
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -406,11 +417,7 @@ public class Category {
         long count = 0;
         long downCount = 0;
 
-        Enumeration<Node> nodeEnum = category.enumerateNode();
-
-        while (nodeEnum.hasMoreElements()) {
-            org.opennms.netmgt.xml.rtc.Node node = nodeEnum.nextElement();
-
+        for (Node node : category.getNode()) {
             count += node.getNodesvccount();
             downCount += node.getNodesvcdowncount();
         }

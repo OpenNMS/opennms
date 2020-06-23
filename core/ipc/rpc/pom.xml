@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms.core</groupId>
+    <artifactId>org.opennms.core.ipc</artifactId>
+    <version>25.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.core.ipc</groupId>
+  <artifactId>org.opennms.core.ipc.rpc</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS :: Core :: IPC :: RPC</name>
+  <modules>
+    <module>api</module>
+    <module>aws-sqs-impl</module>
+    <module>camel</module>
+    <module>common</module>
+    <module>jms-impl</module>
+    <module>kafka</module>
+    <module>mock-impl</module>
+    <module>shell-commands</module>
+    <module>utils</module>
+    <module>xml</module>
+  </modules>
+</project>

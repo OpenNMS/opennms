@@ -1,0 +1,89 @@
+<blueprint
+	xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+	xmlns:camel="http://camel.apache.org/schema/blueprint"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+
+		http://camel.apache.org/schema/blueprint
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.19.1.xsd
+">
+
+  <!-- Configuration properties -->
+  <cm:property-placeholder id="eventForwarderProperties" persistent-id="org.opennms.features.amqp.eventforwarder" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="connectionUrl" value="amqp://localhost:5672"/>
+      <cm:property name="username" value="guest"/>
+      <cm:property name="password" value="guest"/>
+      <!-- amqp:[queue:|topic:]destinationName[?options] -->
+      <cm:property name="destination" value="amqp:topic:opennms-events"/>
+      <cm:property name="processorName" value="default-event-forwarder-processor"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
+
+  <bean id="eventListener" class="org.opennms.features.amqp.eventforwarder.ForwardingEventListener" init-method="init" destroy-method="destroy">
+    <property name="eventIpcManager" ref="eventIpcManager" />
+    <property name="eventForwarder" ref="eventForwarder" />
+  </bean>
+
+  <!-- Event listener that connects the EventIpcManager to this Camel context -->
+  <bean id="eventForwarder" class="org.opennms.features.amqp.eventforwarder.internal.DefaultEventForwarder">
+    <argument value="seda:forwardEvent"/>
+  </bean>
+
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+
+  <bean id="defaultEventProcessor" class="org.opennms.features.amqp.eventforwarder.internal.DefaultEventProcessor">
+    <property name="nodeDao" ref="nodeDao"/>
+  </bean>
+
+  <service id="defaultEventProcessorService" ref="defaultEventProcessor" interface="org.apache.camel.Processor">
+    <service-properties>
+      <entry key="name" value="default-event-forwarder-processor"/>
+    </service-properties>
+  </service>
+
+  <bean id="dynamicallyTrackedProcessor" class="org.opennms.features.amqp.common.DynamicallyTrackedProcessor" destroy-method="destroy">
+    <property name="context" ref="blueprintBundleContext"/>
+    <property name="processorName" value="${processorName}"/>
+  </bean>
+
+  <!--
+        Reduces the graceful shutdown time from 300 to 15 seconds.
+   -->
+  <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+    <property name="timeout" value="15"/>
+  </bean>
+
+  <camelContext autoStartup="true" id="amqpEventForwarderCamelContext" xmlns="http://camel.apache.org/schema/blueprint" allowUseOriginalMessage="false">
+    <propertyPlaceholder id="properties" location="blueprint:eventForwarderProperties" />
+
+    <route id="forwardEvent">
+      <from uri="seda:forwardEvent"/>
+      <convertBodyTo type="org.opennms.netmgt.xml.event.Event"/>
+      <log message="blueprint-event-forwarder.xml: Forwarding event: ${body.getUei()}"/>
+      <!-- Filter and/or transform the event -->
+      <bean ref="dynamicallyTrackedProcessor"/>
+      <!-- Send the event via AMQP -->
+      <to uri="{{destination}}" pattern="InOnly" />
+    </route>
+  </camelContext>
+
+  <bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent" factory-method="amqpComponent">
+    <argument value="${connectionUrl}"/>
+    <argument value="${username}"/>
+    <argument value="${password}"/>
+  </bean>
+
+</blueprint>

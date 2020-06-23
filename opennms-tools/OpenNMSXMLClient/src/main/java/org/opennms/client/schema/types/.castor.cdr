@@ -1,0 +1,2 @@
+#Mon Mar 20 15:33:46 EDT 2017
+org.opennms.client.schema.types.InterfaceSnmpPrimaryType=org.opennms.client.schema.types.descriptors.InterfaceSnmpPrimaryTypeDescriptor

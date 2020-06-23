@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -85,6 +85,7 @@ package org.opennms.netmgt.provision.support.ntp;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 public class NtpMessage {
@@ -282,7 +283,7 @@ public class NtpMessage {
         this.precision = precision;
         this.rootDelay = rootDelay;
         this.rootDispersion = rootDispersion;
-        this.referenceIdentifier = referenceIdentifier;
+        this.referenceIdentifier = Arrays.copyOf(referenceIdentifier, referenceIdentifier.length);
         this.referenceTimestamp = referenceTimestamp;
         this.originateTimestamp = originateTimestamp;
         this.receiveTimestamp = receiveTimestamp;
@@ -380,7 +381,7 @@ public class NtpMessage {
         double r = 0.0;
 
         for (int i = 0; i < 8; i++) {
-            r += unsignedByteToShort(array[pointer + i]) * Math.pow(2, (3 - i) * 8);
+            r += unsignedByteToShort(array[pointer + i]) * Math.pow(2d, (3d - i) * 8d);
         }
 
         return r;
@@ -397,7 +398,7 @@ public class NtpMessage {
         // Converts a double into a 64-bit fixed point
         for (int i = 0; i < 8; i++) {
             // 2^24, 2^16, 2^8, .. 2^-32
-            final double base = Math.pow(2, (3 - i) * 8);
+            final double base = Math.pow(2d, (3d - i) * 8d);
 
             // Capture byte value
             array[pointer + i] = (byte) (timestamp / base);

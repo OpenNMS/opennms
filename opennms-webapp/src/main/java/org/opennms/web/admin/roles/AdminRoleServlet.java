@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,11 +41,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.config.WebRoleContext;
 import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.WebCalendar;
 import org.opennms.netmgt.config.WebGroupManager;
 import org.opennms.netmgt.config.WebRole;
+import org.opennms.netmgt.config.WebRoleContext;
 import org.opennms.netmgt.config.WebRoleManager;
 import org.opennms.netmgt.config.WebSchedEntry;
 import org.opennms.netmgt.config.WebUserManager;
@@ -83,7 +83,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException;
     }
     
-    private class ListAction implements Action {
+    private static class ListAction implements Action {
         @Override
         public String execute(HttpServletRequest request, HttpServletResponse response) {
             return LIST;
@@ -162,7 +162,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
 
             request.setAttribute("scheduledUser", schedule.getName());
 
-            final org.opennms.netmgt.config.Time basicTime = new org.opennms.netmgt.config.Time(time.getId(), time.getDay(), time.getBegins(), time.getEnds());
+            final org.opennms.netmgt.config.Time basicTime = new org.opennms.netmgt.config.Time(time.getId().orElse(null), time.getDay().orElse(null), time.getBegins(), time.getEnds());
 			if (BasicScheduleUtils.isWeekly(basicTime))
                 return EDIT_WEEKLY;
             else if (BasicScheduleUtils.isMonthly(basicTime))
@@ -225,7 +225,7 @@ public class AdminRoleServlet extends HttpServlet implements Servlet {
         }
 
         private Date getDateParameters(String prefix, HttpServletRequest request) throws ParseException {
-            StringBuffer buf = new StringBuffer();
+            final StringBuilder buf = new StringBuilder();
             buf.append(request.getParameter(prefix+"Month"));
             buf.append('-');
             buf.append(request.getParameter(prefix+"Date"));

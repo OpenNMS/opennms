@@ -1,48 +1,22 @@
-<div align="center">
-  <form name="reltimeform" action="">
-  <p>
-    <br/>
-    Time period <select name="rtstatus" onchange="relativeTimeFormChange();">
-	  <c:forEach var="period"
-                 items="${requestScope.results.relativeTimePeriods}">
-        <c:set var="relativeTimeChecked"></c:set>
-        <c:if test="${period.id == requestScope.results.relativeTime}">
-		  <c:set var="relativeTimeChecked">selected</c:set>
-	    </c:if>
-	    <option value="${period.id}" ${relativeTimeChecked}>${period.name}</option>
-	  </c:forEach>
-	  
-      <c:set var="relativeTimeChecked"></c:set>
-      <c:if test="${'custom' == requestScope.results.relativeTime}">
-		<c:set var="relativeTimeChecked">selected</c:set>
-	  </c:if>
-	  <option value="custom" ${relativeTimeChecked}>Custom</option>
-	</select>
-  </p>
-<%--
-    <table class="periods">
-      <tbody>
-        <tr>
-	  <c:forEach var="period"
-                     items="${requestScope.results.relativeTimePeriods}">
-	    <td><c:out value="${period.name}"/></td>
-	  </c:forEach>
-        </tr>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<form role="form" class="form" name="reltimeform" action="">
+    <div class="form-group form-row">
+        <label for="input_rtstatus" class="col-form-label col-lg-1 col-md-2 col-4">Time period</label>
+        <select id="input_rtstatus" name="rtstatus" class="form-control custom-select col-lg-4 col-md-4 col-8" onchange="relativeTimeFormChange();">
+            <c:forEach var="period"
+                       items="${requestScope.results.relativeTimePeriods}">
+                <c:set var="relativeTimeChecked"></c:set>
+                <c:if test="${period.id == requestScope.results.relativeTime}">
+                    <c:set var="relativeTimeChecked">selected</c:set>
+                </c:if>
+                <option value="${period.id}" ${relativeTimeChecked}>${period.name}</option>
+            </c:forEach>
 
-        <tr>
-	  <c:forEach var="period"
-                     items="${requestScope.results.relativeTimePeriods}">
-	    <td>
-	      <input type="radio" name="rtstatus"
-	        <c:if test="${period.id == requestScope.results.relativeTime}">
-		  checked="checked"
-	        </c:if>
-                onclick="goRelativeTime('<c:out value="${period.id}"/>');"/>
-	    </td>
-	  </c:forEach>
-        </tr>
-      </tbody>
-    </table>
---%>
-  </form>
-</div>
+            <c:set var="relativeTimeChecked"></c:set>
+            <c:if test="${'custom' == requestScope.results.relativeTime}">
+                <c:set var="relativeTimeChecked">selected</c:set>
+            </c:if>
+            <option value="custom" ${relativeTimeChecked}>Custom</option>
+        </select>
+    </div> <!-- form-group -->
+</form>

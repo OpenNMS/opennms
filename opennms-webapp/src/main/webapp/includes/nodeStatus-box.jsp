@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -43,16 +43,15 @@
         import="
           org.opennms.web.alarm.*,
           org.opennms.web.alarm.AcknowledgeType,
-          org.opennms.web.alarm.SortStyle,org.opennms.netmgt.dao.api.AlarmRepository,
-          org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate,
           org.opennms.web.alarm.filter.AlarmCriteria,
           org.opennms.web.alarm.filter.NodeFilter,
-          org.opennms.web.alarm.filter.SeverityFilter,
           org.opennms.web.filter.Filter,
           org.opennms.web.servlet.MissingParameterException,
+          org.opennms.core.spring.BeanUtils,
           org.opennms.core.utils.WebSecurityUtils,
           org.opennms.netmgt.model.OnmsAlarm,
-          org.opennms.netmgt.model.OnmsSeverity
+          org.opennms.netmgt.model.OnmsSeverity,
+          org.opennms.netmgt.dao.api.AlarmRepository
         "
 %>
 
@@ -71,7 +70,10 @@
         nodeId = WebSecurityUtils.safeParseInt(nodeIdStr);
         NodeFilter filter = new NodeFilter(nodeId, getServletContext());
         AlarmCriteria criteria = new AlarmCriteria(new Filter[] { filter }, SortStyle.ID, AcknowledgeType.BOTH, AlarmCriteria.NO_LIMIT, AlarmCriteria.NO_OFFSET);
-        alarms = new AlarmRepositoryHibernate().getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
+        AlarmRepository repository = BeanUtils.getBean("daoContext", "alarmRepository", AlarmRepository.class);
+        if (repository != null) {
+            alarms = repository.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
+        }
     }
 
     boolean nodeDown = false;
@@ -95,7 +97,7 @@
         } else {
             unackCount++;
         }
-        if (alarm.getSeverity().getId() > maxSeverity) {
+        if (alarm.getSeverity().getId() > maxSeverity && alarm.getAckTime() == null) {
             maxSeverity = alarm.getSeverity().getId();
         }
     }
@@ -120,9 +122,9 @@
     }
 %>
 
-<table class="o-box">
-  <tr class="CellStatus">
-    <td align="left" class="<%=status%>">
+<table class="table table-sm severity">
+  <tr class="severity-<%=status%>">
+    <td align="left" class="bright">
       <b><%=message%></b><%=details%>
     </td>
   </tr>

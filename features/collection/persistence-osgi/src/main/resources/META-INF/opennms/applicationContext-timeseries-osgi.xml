@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <context:annotation-config />
+      <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory">
+          <!-- Block and wait for an implementation -->
+          <constructor-arg index="0" value="true"/>
+      </bean>
+      <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="osgiPersisterFactory">
+		<onmsgi:service-properties>
+          <entry>
+            <key><value>strategy</value></key>
+            <value>delegate</value>
+          </entry>
+		</onmsgi:service-properties>
+      </onmsgi:service>
+
+	  <!-- Some beans still require an RrdStrategy and resourceStorageDao -->
+      <bean id="rrdStrategy" primary="true" class="org.opennms.netmgt.rrd.NullRrdStrategy" />
+
+      <onmsgi:service ref="rrdStrategy" interface="org.opennms.netmgt.rrd.RrdStrategy" />
+      
+      <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.api.EmptyResourceStorageDao" />
+
+      <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
+
+</beans>

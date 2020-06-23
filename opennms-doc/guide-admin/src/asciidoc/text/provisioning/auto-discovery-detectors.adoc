@@ -1,0 +1,65 @@
+[[ga-provisioning-auto-discovery-detectors]]
+=== Auto Discovery with Detectors
+
+Currently {opennms-product-name} uses ICMP ping sweep to find IP address on the network.
+The IP Ranges and specifics can be defined in `discovery-configuration.xml` as shown below.
+
+[source, xml]
+.Sample discovery configuration
+----
+<discovery-configuration xmlns="http://xmlns.opennms.org/xsd/config/discovery" packets-per-second="1"
+                  initial-sleep-time="30000" restart-sleep-time="86400000" retries="1" timeout="2000">
+   <!-- see examples/discovery-configuration.xml for options -->
+	 <specific>10.0.0.5</specific>
+   <include-range>
+      <begin>192.168.0.1</begin>
+      <end>192.168.0.254</end>
+   </include-range>
+   <include-url>file:/opt/opennms/etc/include.txt</include-url>
+</discovery-configuration>
+----
+
+Auto Discovery with Detectors allows users to specify the services that needs to be detected apart from ICMP ping for the IP Addresses to be discovered.
+Only when specified detectors succeeds, auto discovery will send new suspect event.
+
+Sample Configuration with detectors is shown below.
+
+[source, xml]
+.Sample discovery configuration with detectors
+----
+<discovery-configuration xmlns="http://xmlns.opennms.org/xsd/config/discovery" packets-per-second="1"
+                  initial-sleep-time="30000" restart-sleep-time="86400000" retries="1" timeout="2000">
+
+  <definition location="MINION" foreign-source="ApexOffice">
+
+		<detectors>
+			<detector name="reverse-dns-lookup" class-name="org.opennms.netmgt.provision.detector.rdns.ReverseDNSLookupDetector"/>
+			<detector name="SNMP" class-name="org.opennms.netmgt.provision.detector.snmp.SnmpDetector">
+				<parameter key="timeout" value="5000"/>
+				<parameter key="ttl" value="120000"/>
+			</detector>
+		</detectors>
+
+		<specific>10.0.0.5</specific>
+
+		<include-range>
+			<begin>192.168.0.1</begin>
+			<end>192.168.0.254</end>
+		</include-range>
+
+    <exclude-range>
+			<begin>192.168.0.120</begin>
+			<end>192.168.0.125</end>
+		</exclude-range>
+
+		<include-url>file:/opt/opennms/etc/include.txt</include-url>
+
+	</definition>
+
+</discovery-configuration>
+----
+
+In above configuration, specifics and ranges are moved into definition with SNMP and reverse-dns-lookup detectors.
+When all of the detectors succeeeds at a given location, then only the specific IP Address considered to be discovered.
+
+A definition without any detectors will fall back to ICMP ping for discovery.

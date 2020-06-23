@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,19 +25,19 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.datacollection;
 
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.Rrd;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * The Class SNMP Collection Form.
@@ -48,26 +48,22 @@ import com.vaadin.ui.TextField;
 public class SnmpCollectionForm extends CustomComponent {
 
     /** The name. */
-    @PropertyId("name")
     final TextField name = new TextField("SNMP Collection Name");
 
-    /** The snmp storage flag. */
-    @PropertyId("snmpStorageFlag")
+    /** The SNMP storage flag. */
     final ComboBox snmpStorageFlag = new ComboBox("SNMP Storage Flag");
 
-    /** The rrd. */
-    @PropertyId("rrd")
+    /** The RRD. */
     final RrdField rrd = new RrdField("RRD");
 
     /** The include collections. */
-    @PropertyId("includeCollectionCollection") 
     final IncludeCollectionField includeCollections;
 
     /** The Event editor. */
-    private final FieldGroup snmpCollectionEditor = new FieldGroup();
+    final BeanFieldGroup<SnmpCollection> snmpCollectionEditor = new BeanFieldGroup<SnmpCollection>(SnmpCollection.class);
 
     /** The event layout. */
-    private final FormLayout snmpCollectionLayout = new FormLayout();
+    final FormLayout snmpCollectionLayout = new FormLayout();
 
     /**
      * Instantiates a new SNMP collection form.
@@ -95,7 +91,11 @@ public class SnmpCollectionForm extends CustomComponent {
         snmpCollectionLayout.addComponent(includeCollections);
 
         setSnmpCollection(createBasicSnmpCollection());
-        snmpCollectionEditor.bindMemberFields(this);
+
+        snmpCollectionEditor.bind(name, "name");
+        snmpCollectionEditor.bind(snmpStorageFlag, "snmpStorageFlag");
+        snmpCollectionEditor.bind(rrd, "rrd");
+        snmpCollectionEditor.bind(includeCollections, "includeCollections");
 
         setCompositionRoot(snmpCollectionLayout);
     }
@@ -105,9 +105,8 @@ public class SnmpCollectionForm extends CustomComponent {
      *
      * @return the SNMP Collection
      */
-    @SuppressWarnings("unchecked")
     public SnmpCollection getSnmpCollection() {
-        return ((BeanItem<SnmpCollection>) snmpCollectionEditor.getItemDataSource()).getBean();
+        return snmpCollectionEditor.getItemDataSource().getBean();
     }
 
     /**
@@ -116,7 +115,7 @@ public class SnmpCollectionForm extends CustomComponent {
      * @param snmpCollection the new SNMP collection
      */
     public void setSnmpCollection(SnmpCollection snmpCollection) {
-        snmpCollectionEditor.setItemDataSource(new BeanItem<SnmpCollection>(snmpCollection));
+        snmpCollectionEditor.setItemDataSource(snmpCollection);
     }
 
     /**
@@ -140,12 +139,19 @@ public class SnmpCollectionForm extends CustomComponent {
     }
 
     /**
-     * Gets the field group.
-     *
-     * @return the field group
+     * Discard.
      */
-    public FieldGroup getFieldGroup() {
-        return snmpCollectionEditor;
+    public void discard() {
+        snmpCollectionEditor.discard();
+    }
+
+    /**
+     * Commit.
+     *
+     * @throws CommitException the commit exception
+     */
+    public void commit() throws CommitException {
+        snmpCollectionEditor.commit();
     }
 
     /* (non-Javadoc)
@@ -153,7 +159,6 @@ public class SnmpCollectionForm extends CustomComponent {
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         snmpCollectionEditor.setReadOnly(readOnly);
     }
 
@@ -162,7 +167,24 @@ public class SnmpCollectionForm extends CustomComponent {
      */
     @Override
     public boolean isReadOnly() {
-        return super.isReadOnly() && snmpCollectionEditor.isReadOnly();
+        return snmpCollectionEditor.isReadOnly();
     }
 
+    /**
+     * Gets the SNMP collection name.
+     *
+     * @return the SNMP collection name
+     */
+    public String getSnmpCollectionName() {
+        return name.getValue();
+    }
+
+    /**
+     * Gets the RRD step.
+     *
+     * @return the RRD step
+     */
+    public Integer getRrdStep() {
+        return rrd.getStepValue();
+    }
 }

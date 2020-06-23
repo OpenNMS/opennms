@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,7 +33,7 @@ package org.opennms.web.servlet;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -62,13 +62,12 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
      *
      * @param req a {@link javax.servlet.http.HttpServletRequest} object.
      */
-    @SuppressWarnings("unchecked")
     public XssRequestWrapper(HttpServletRequest req) 
     {
         super(req);
-        original_parameters = req.getParameterMap();   
+        original_parameters = req.getParameterMap();
         sanitized_parameters = getParameterMap();
-            snzLogger();
+        snzLogger();
     }       
 
     /** {@inheritDoc} */
@@ -129,18 +128,18 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
         return super.getRequest().getCharacterEncoding();
     }
 
-    private  Map<String, String[]> sanitizeParamMap(Map<String, String[]> raw) 
+    private static Map<String, String[]> sanitizeParamMap(Map<String, String[]> raw) 
     {       
         Map<String, String[]> res = new HashMap<String, String[]>();
-        if (raw==null)
+        if (raw==null) {
             return res;
+        }
     
-        for (String key : (Set<String>) raw.keySet())
-        {           
-            String[] rawVals = raw.get(key);
-            String[] snzVals = new String[rawVals.length];
-            for (int i=0; i < rawVals.length; i++) 
-            {
+        for (final Entry<String, String[]> entry : raw.entrySet()) {
+            final String key = entry.getKey();
+            final String[] rawVals = entry.getValue();
+            final String[] snzVals = new String[rawVals.length];
+            for (int i=0; i < rawVals.length; i++) {
                 snzVals[i] = WebSecurityUtils.sanitizeString(rawVals[i]);
             }
             res.put(key, snzVals);
@@ -149,24 +148,22 @@ public class XssRequestWrapper extends HttpServletRequestWrapper
     }
 
 
-    private void snzLogger()
-    {
-        for (String key : (Set<String>) original_parameters.keySet())
-        {
-            String[] rawVals = original_parameters.get(key);
-            String[] snzVals = sanitized_parameters.get(key);
+    private void snzLogger() {
+        for (final Entry<String,String[]> entry : original_parameters.entrySet()) {
+            final String key = entry.getKey();
+            final String[] rawVals = entry.getValue();
+            final String[] snzVals = sanitized_parameters.get(key);
             if (rawVals !=null && rawVals.length>0)
             {
                 for (int i=0; i < rawVals.length; i++) 
                 {
                     if (rawVals[i].equals(snzVals[i]))                                                          
-                        LOG.debug("Sanitization. Param seems safe: {}[{}]={}", key, i, snzVals[i]);               
+                        LOG.debug("Sanitization. Param seems safe: {}[{}]={}", key, i, snzVals[i]);
                     else
                         LOG.debug("Sanitization. Param modified: {}[{}]={}", key, i, snzVals[i]);
                 }       
             }
         }
     }
-
 
 }

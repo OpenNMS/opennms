@@ -8,6 +8,8 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="jsartin" id="1.7.10-reportcatalog">
+		<validCheckSum>3:4af78bb208e4e8aa26ca513cb66d137b</validCheckSum>
+
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="reportcatalog" /></not>
 		</preConditions> 
@@ -31,7 +33,7 @@
 			</column>
 			
 			<!-- Date that the report was run -->
-			<column name="date" type="DATETIME">
+			<column name="date" type="TIMESTAMP WITH TIME ZONE">
 				<constraints nullable="false" />
 			</column>
 

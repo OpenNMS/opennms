@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,29 +30,26 @@ package org.opennms.netmgt.mock;
 
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.QueryManager;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
 import org.opennms.netmgt.xml.event.Event;
+
+import junit.framework.TestCase;
 
 /**
  * Test the MockNetwork and related classes
@@ -74,6 +71,8 @@ public class MockNetworkTest extends TestCase {
         private int nodeCount = 0;
 
         private int serviceCount = 0;
+
+        private int outageCount = 0;
 
         public int getContainerCount() {
             return containerCount;
@@ -128,6 +127,12 @@ public class MockNetworkTest extends TestCase {
         public void visitService(MockService s) {
             serviceCount++;
         }
+
+		@Override
+		public void visitPathOutage(MockPathOutage m_currentOutage) {
+			outageCount++;
+			
+		}
     }
 
     class StatusChecker extends MockVisitorAdapter {
@@ -155,7 +160,7 @@ public class MockNetworkTest extends TestCase {
         public void visitService(MockService service) {
             m_serviceCount++;
             ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(service.getSvcName());
-            PollStatus pollResult = monitor.poll(service, new HashMap<String, Object>());
+            PollStatus pollResult = monitor.poll(service, Collections.emptyMap());
             assertEquals(m_expectedStatus, pollResult);
         }
     }
@@ -274,8 +279,8 @@ public class MockNetworkTest extends TestCase {
         assertEquals("HTTP", httpSvc.getSvcName());
         assertEquals(svrIface, httpSvc.getInterface());
 
-        assertTrue(icmpSvc.getId() == icmpSvc2.getId());
-        assertFalse(icmpSvc.getId() == httpSvc.getId());
+        assertTrue(icmpSvc.getSvcId() == icmpSvc2.getSvcId());
+        assertFalse(icmpSvc.getSvcId() == httpSvc.getSvcId());
     }
 
     public void testEventListeners() {
@@ -379,7 +384,7 @@ public class MockNetworkTest extends TestCase {
 
         m_eventMgr.finishProcessingEvents();
         assertEquals(0, anticipator.waitForAnticipated(0).size());
-        assertEquals(0, anticipator.unanticipatedEvents().size());
+        assertEquals(0, anticipator.getUnanticipatedEvents().size());
 
         MockNode node = m_network.getNode(1);
         Event nodeEvent = MockEventUtil.createNodeDownEvent("Test", node);
@@ -388,7 +393,7 @@ public class MockNetworkTest extends TestCase {
         m_eventMgr.sendNow(nodeEvent);
         m_eventMgr.finishProcessingEvents();
         assertEquals(0, anticipator.waitForAnticipated(0).size());
-        assertEquals(1, anticipator.unanticipatedEvents().size());
+        assertEquals(1, anticipator.getUnanticipatedEvents().size());
 
     }
     
@@ -396,9 +401,8 @@ public class MockNetworkTest extends TestCase {
         m_network.resetInvalidPollCount();
         MonitoredService svc = new MockMonitoredService(99, "InvalidNode", InetAddressUtils.addr("1.1.1.1"), "ICMP");
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
-        monitor.poll(svc, new HashMap<String, Object>());
+        monitor.poll(svc, Collections.emptyMap());
         assertEquals(1, m_network.getInvalidPollCount());
-
     }
 
     public void testLookupNotThere() {
@@ -437,16 +441,13 @@ public class MockNetworkTest extends TestCase {
         // ensure a sample interface is in the package
         assertTrue(pollerConfig.isInterfaceInPackage("192.168.1.1", pkg));
 
-        Enumeration<Service> svcs = pkg.enumerateService();
-        assertNotNull(svcs);
-        while (svcs.hasMoreElements()) {
-            Service svc = (Service) svcs.nextElement();
+        for (final Service svc : pkg.getServices()) {
             if ("ICMP".equals(svc.getName()))
-                assertEquals(500L, svc.getInterval());
+                assertEquals(Long.valueOf(500L), svc.getInterval());
             else if ("HTTP".equals(svc.getName()))
-                assertEquals(750L, svc.getInterval());
+                assertEquals(Long.valueOf(750L), svc.getInterval());
             else
-                assertEquals(1000L, svc.getInterval());
+                assertEquals(Long.valueOf(1000L), svc.getInterval());
         }
 
         // ensure that setting the thread worked
@@ -461,8 +462,7 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testPollOutageConfig() {
-        PollOutagesConfig pollOutagesConfig = m_pollerConfig;
-        assertNotNull(pollOutagesConfig);
+        assertNotNull(m_pollerConfig);
     }
 
     public void testPollStatus() {
@@ -482,7 +482,7 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testQueryManager() throws Exception {
-        QueryManager queryManager = new MockQueryManager(m_network);
+        MockQueryManager queryManager = new MockQueryManager(m_network);
         assertNotNull(queryManager);
 
         assertTrue(queryManager.activeServiceExists("Test", 1, "192.168.1.1", "ICMP"));
@@ -494,7 +494,7 @@ public class MockNetworkTest extends TestCase {
         List<Integer> svcs = queryManager.getActiveServiceIdsForInterface("192.168.1.2");
 
         for (MockService svc : expectedSvcs) {
-            assertTrue(svcs.contains(Integer.valueOf(svc.getId())));
+            assertTrue(svcs.contains(Integer.valueOf(svc.getSvcId())));
         }
 
         List<IfKey> ifKeys = queryManager.getInterfacesWithService("HTTP");
@@ -552,7 +552,7 @@ public class MockNetworkTest extends TestCase {
         Package pkg = m_pollerConfig.getPackage("TestPackage");
         assertNotNull(pkg);
 
-        Collection<String> outages = pkg.getOutageCalendarCollection();
+        Collection<String> outages = pkg.getOutageCalendars();
         assertTrue(outages.contains("outage1"));
         assertTrue(outages.contains("outage2"));
 
@@ -660,7 +660,7 @@ public class MockNetworkTest extends TestCase {
 
         assertEquals(1, anticipator.waitForAnticipated(1500).size());
         assertEquals(0, anticipator.waitForAnticipated(1000).size());
-        assertEquals(1, anticipator.unanticipatedEvents().size());
+        assertEquals(1, anticipator.getUnanticipatedEvents().size());
 
     }
 

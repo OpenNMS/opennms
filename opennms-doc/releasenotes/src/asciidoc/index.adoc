@@ -1,0 +1,25 @@
+// Global settings
+:ascii-ids:
+:encoding: UTF-8
+:lang: en
+:icons: font
+:toc: left
+:toclevels: 3
+:numbered!:
+
+= OpenNMS Release Notes
+:author: Copyright (c) 2016-2019 The OpenNMS Group, Inc.
+:revnumber: {opennms-product-name} v{opennms-version}
+:revdate: {last-update-label} {docdatetime}
+:version-label!:
+
+:numbered:
+// Global header
+include::common/copyright.adoc[]
+
+include::common/legalnotice.adoc[]
+include::common/preface.adoc[]
+
+:numbered!:
+include::releasenotes/whatsnew.adoc[]
+include::releasenotes/changelog.adoc[]

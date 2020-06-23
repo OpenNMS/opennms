@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,32 +25,39 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.model;
 
-import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
 
 /**
  * This interface defines the required methods for implementing a dashlet.
  *
  * @author Christian Pape
  */
-public interface Dashlet extends Component {
+public interface Dashlet {
     /**
      * This method returns the name of this dashlet.
      *
      * @return the dashlet's name
      */
-    public String getName();
+    String getName();
+
+    DashletSpec getDashletSpec();
 
     /**
      * Checks whether this dashlet is boosted.
      *
      * @return true, if boosted, false otherwise
      */
-    public boolean isBoosted();
+    boolean isBoosted();
 
     /**
      * Updates the dashlet contents and computes new boosted state
+     * @param ui The {@link UI} which holds the component.
      */
-    public void update();
+
+    DashletComponent getWallboardComponent(final UI ui);
+
+    DashletComponent getDashboardComponent(final UI ui);
 }

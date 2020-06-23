@@ -4,23 +4,12 @@
   xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
   http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
 
-  <!-- 
-    Available implementations:
-	   org.opennms.core.db.C3P0ConnectionFactory
-		  - Uses C3P0 (http://sourceforge.net/projects/c3p0/)  This is the default.
-      org.opennms.netmgt.config.DBPoolConnectionFactory
-		  - Uses DBPool (http://www.snaq.net/java/DBPool/)  An alternate high-performance pool.
-          Extremely experimental.
-		org.opennms.netmgt.config.TomcatJdbcPoolConnectionFactory
-		  - Uses Tomcat DBCP (http://people.apache.org/~fhanik/jdbc-pool/jdbc-pool.html)  A
-          highly concurrent pooling API.  Extremely experimental.
-  -->
-  <connection-pool factory="org.opennms.core.db.C3P0ConnectionFactory"
+  <connection-pool factory="org.opennms.core.db.HikariCPConnectionFactory"
     idleTimeout="600"
     loginTimeout="3"
-    minPool="10"
+    minPool="50"
     maxPool="50"
-    maxSize="500" />
+    maxSize="50" />
 
   <jdbc-data-source name="opennms" 
                     database-name="${install.database.name}" 

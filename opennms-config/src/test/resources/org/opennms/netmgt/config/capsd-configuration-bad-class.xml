@@ -6,8 +6,7 @@
   max-suspect-thread-pool-size="6"
   max-rescan-thread-pool-size="3" 
   abort-protocol-scans-if-no-route="false" 
-  delete-propagation-enabled="true" 
-  xmlrpc="false">
+  delete-propagation-enabled="true">
 
   <protocol-plugin protocol="ICMP" class-name="org.opennms.netmgt.capsd.something.totally.bogus.IcmpPlugin" scan="on" user-defined="false">
     <property key="timeout" value="2000" />

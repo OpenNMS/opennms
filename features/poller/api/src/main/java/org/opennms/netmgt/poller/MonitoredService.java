@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -40,50 +40,44 @@ import java.net.InetAddress;
 public interface MonitoredService {
 
     /**
-     * Returns a URL representation of the service to monitor and its parameters
-     */
-    String getSvcUrl();
-
-    /**
-     * Returns the svcName associated with this monitored service
+     * Returns the svcName associated with this monitored service.
      *
      * @return the svcName
      */
     String getSvcName();
 
     /**
-     * Returns the ipAddr string associated with this monitored service
+     * Returns the ipAddr string associated with this monitored service.
      *
      * @return the ipAddr string
      */
     String getIpAddr();
 
     /**
-     * Returns the nodeId of the node that this service is associated with
+     * Returns the nodeId of the node that this service is associated with.
      *
      * @return the nodeid
      */
     int getNodeId();
 
     /**
-     * Returns the label of the node that this service is associated with
+     * Returns the label of the node that this service is associated with.
      *
      * @return the nodelabel
      */
     String getNodeLabel();
 
     /**
-     * Returns the Netinterface object for this service.  This netinterface object is
-     * guarenteed to be the same each time init or poll is called
+     * Returns the name of the location of the node that this service is associated with.
      *
-     * @return the Netinterface
+     * @return the nodelocation
      */
-    NetworkInterface<InetAddress> getNetInterface();
+    String getNodeLocation();
 
     /**
-     * Returns the InetAddress associated with the service
+     * Returns the {@link InetAddress} associated with the service
      *
-     * @return the InetAddress
+     * @return the {@link InetAddress}
      */
     InetAddress getAddress();
 

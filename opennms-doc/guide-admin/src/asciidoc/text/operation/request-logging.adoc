@@ -1,0 +1,53 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-operation-request-logging]]
+=== Request Logging
+
+HTTP requests logs for _Jetty_ can be enabled by uncommenting the following snippet in `etc/jetty.xml`:
+
+[source,xml]
+----
+<!-- NCSA Request Logging
+ <Item>
+     <New id="RequestLog" class="org.eclipse.jetty.server.handler.RequestLogHandler">
+       <Set name="requestLog">
+         <New id="RequestLogImpl" class="org.eclipse.jetty.server.NCSARequestLog">
+           <Arg>logs/jetty-requests-yyyy_mm_dd.log</Arg>
+           <Set name="retainDays">90</Set>
+           <Set name="append">true</Set>
+           <Set name="extended">true</Set>
+           <Set name="logTimeZone">US/Central</Set>
+         </New>
+       </Set>
+     </New>
+ </Item>
+-->
+----
+
+NOTE: If you do not have a `jetty.xml` in the `etc` directory, you can start by copying the example from `etc/examples/jetty.xml`.
+
+If you would like the include the usernames associated with the requests in the log file,  you must also uncomment the following snippet in `jetty-webapps/opennms/WEB-INF/web.xml`:
+
+[source,xml]
+----
+<!-- Enable this filter mapping when using NCSA request logging
+<filter-mapping>
+  <filter-name>jettyUserIdentityFilter</filter-name>
+  <url-pattern>/*</url-pattern>
+</filter-mapping>
+-->
+----
+
+After restarting _{opennms-product-name}_, requests logs of the following form should be available in `logs/jetty-requests-*.log`:
+
+[source]
+----
+127.0.0.1 - - [02/Jun/2017:09:16:38 -0500] "GET / HTTP/1.1" 302 0 "-" "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/5
+8.0.3029.110 Safari/537.36"
+127.0.0.1 - anonymousUser [02/Jun/2017:09:16:39 -0500] "GET /opennms/ HTTP/1.1" 302 0 "-" "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
+127.0.0.1 - admin [02/Jun/2017:09:16:46 -0500] "POST /opennms/rest/datachoices?action=enable HTTP/1.1" 200 0 "http://127.0.0.1:8980/opennms/index.jsp" "Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
+127.0.0.1 - rtc [02/Jun/2017:09:16:45 -0500] "POST /opennms/rtc/post/DNS+and+DHCP+Servers HTTP/1.1" 200 35 "-" "Java/1.8.0_121"
+----
+

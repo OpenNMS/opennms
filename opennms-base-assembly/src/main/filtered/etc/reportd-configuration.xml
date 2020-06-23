@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <reportd-configuration 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/reportd-configuration"
   storage-location="${install.share.dir}/reports/"
   persist-reports="yes"
 > 
   <!--  
-    http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
+    http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger
         Field Name     Allowed Values      Allowed Special Characters
         Seconds        0-59                , - * /
         Minutes        0-59                , - * /

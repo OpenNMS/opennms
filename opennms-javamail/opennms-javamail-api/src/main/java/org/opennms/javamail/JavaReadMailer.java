@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -47,6 +47,8 @@ import javax.mail.search.SearchTerm;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.config.javamail.JavamailProperty;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
+import org.opennms.netmgt.config.javamail.ReadmailHost;
+import org.opennms.netmgt.config.javamail.UserAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,9 +100,8 @@ public class JavaReadMailer extends JavaMailer2 {
         if (m_store.isConnected()) {
             m_store.close();
         }
-        
-        super.finalize();
         LOG.debug("finalize: Mail folder and store connections closed.");
+        super.finalize();
     }
     
     //TODO figure out why need this throws here
@@ -116,7 +117,9 @@ public class JavaReadMailer extends JavaMailer2 {
             m_deleteOnClose = closeOnDelete;
         }
         m_config = config;
-        m_session = Session.getInstance(configureProperties(), createAuthenticator(config.getUserAuth().getUserName(), config.getUserAuth().getPassword()));
+        
+        final UserAuth userAuth = getUserAuth(config);
+        m_session = Session.getInstance(configureProperties(), createAuthenticator(userAuth.getUserName(), userAuth.getPassword()));
     }
     
     /**
@@ -129,14 +132,17 @@ public class JavaReadMailer extends JavaMailer2 {
         Message[] msgs;
         Folder mailFolder = null;
         
+        final ReadmailHost readmailHost = getReadmailHost(m_config);
+        final UserAuth userAuth = getUserAuth(m_config);
+
         try {
-            m_store = m_session.getStore(m_config.getReadmailHost().getReadmailProtocol().getTransport());
-            m_store.connect(m_config.getReadmailHost().getHost(), (int)m_config.getReadmailHost().getPort(), m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
+            m_store = m_session.getStore(readmailHost.getReadmailProtocol().getTransport());
+            m_store.connect(readmailHost.getHost(), (int)readmailHost.getPort(), userAuth.getUserName(), userAuth.getPassword());
             mailFolder = m_store.getFolder(m_config.getMailFolder());
             mailFolder.open(Folder.READ_WRITE);
             msgs = mailFolder.getMessages();
         } catch (NoSuchProviderException e) {
-            throw new JavaMailerException("No provider matching:"+m_config.getReadmailHost().getReadmailProtocol().getTransport()+" from config:"+m_config.getName(), e);
+            throw new JavaMailerException("No provider matching:"+readmailHost.getReadmailProtocol().getTransport()+" from config:"+m_config.getName(), e);
         } catch (MessagingException e) {
             throw new JavaMailerException("Problem reading messages from configured mail store", e);
         }
@@ -165,14 +171,17 @@ public class JavaReadMailer extends JavaMailer2 {
         Message[] msgs;
         Folder mailFolder = null;
         
+        final ReadmailHost readmailHost = getReadmailHost(m_config);
+        final UserAuth userAuth = getUserAuth(m_config);
+
         try {
-            Store store = m_session.getStore(m_config.getReadmailHost().getReadmailProtocol().getTransport());
-            store.connect(m_config.getReadmailHost().getHost(), (int)m_config.getReadmailHost().getPort(), m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
+            Store store = m_session.getStore(readmailHost.getReadmailProtocol().getTransport());
+            store.connect(readmailHost.getHost(), (int)readmailHost.getPort(), userAuth.getUserName(), userAuth.getPassword());
             mailFolder = store.getFolder(m_config.getMailFolder());
             mailFolder.open(Folder.READ_WRITE);
             msgs = mailFolder.search(term);
         } catch (NoSuchProviderException e) {
-            throw new JavaMailerException("No provider matching:"+m_config.getReadmailHost().getReadmailProtocol().getTransport()+" from config:"+m_config.getName(), e);
+            throw new JavaMailerException("No provider matching:"+readmailHost.getReadmailProtocol().getTransport()+" from config:"+m_config.getName(), e);
         } catch (MessagingException e) {
             throw new JavaMailerException("Problem reading messages from configured mail store", e);
         }
@@ -185,27 +194,31 @@ public class JavaReadMailer extends JavaMailer2 {
     /**
      * Configures the java mail api properties based on the settings ReadMailConfig
      * @return A set of javamail properties based on the mail configuration 
+     * @throws JavaMailerException 
      */
-    private Properties configureProperties() {
+    private Properties configureProperties() throws JavaMailerException {
         Properties props = new Properties();
         
         props.setProperty("mail.debug", String.valueOf(m_config.isDebug()));
         
         //first set the actual properties defined in the sendmail configuration
-        List<JavamailProperty> jmps = m_config.getJavamailPropertyCollection();
+        List<JavamailProperty> jmps = m_config.getJavamailProperties();
         for (JavamailProperty jmp : jmps) {
             props.setProperty(jmp.getName(), jmp.getValue());
         }
         
-        String protocol = m_config.getReadmailHost().getReadmailProtocol().getTransport();
-        props.put("mail." + protocol + ".host", m_config.getReadmailHost().getHost());
-        props.put("mail." + protocol + ".user", m_config.getUserAuth().getUserName());
-        props.put("mail." + protocol + ".port", m_config.getReadmailHost().getPort());
-        props.put("mail." + protocol + ".starttls.enable", m_config.getReadmailHost().getReadmailProtocol().isStartTls());
+        final ReadmailHost readmailHost = getReadmailHost(m_config);
+        final UserAuth userAuth = getUserAuth(m_config);
+
+        String protocol = readmailHost.getReadmailProtocol().getTransport();
+        props.put("mail." + protocol + ".host", readmailHost.getHost());
+        props.put("mail." + protocol + ".user", userAuth.getUserName());
+        props.put("mail." + protocol + ".port", readmailHost.getPort());
+        props.put("mail." + protocol + ".starttls.enable", readmailHost.getReadmailProtocol().isStartTls());
         props.put("mail.smtp.auth", "true");
 
-        if (m_config.getReadmailHost().getReadmailProtocol().isSslEnable()) {
-            props.put("mail." + protocol + ".socketFactory.port", m_config.getReadmailHost().getPort());
+        if (readmailHost.getReadmailProtocol().isSslEnable()) {
+            props.put("mail." + protocol + ".socketFactory.port", readmailHost.getPort());
             props.put("mail." + protocol + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             props.put("mail." + protocol + ".socketFactory.fallback", "false");
         }
@@ -304,5 +317,18 @@ public class JavaReadMailer extends JavaMailer2 {
         return Arrays.asList(linea);
     }
 
+    private UserAuth getUserAuth(final ReadmailConfig config) throws JavaMailerException {
+        if (config.getUserAuth() == null) {
+            throw new JavaMailerException("user-auth is not configured!");
+        }
+        return config.getUserAuth();
+    }
+
+    private ReadmailHost getReadmailHost(final ReadmailConfig config) throws JavaMailerException {
+        if (config.getReadmailHost() == null) {
+            throw new JavaMailerException("readmail-host is not configured!");
+        }
+        return config.getReadmailHost();
+    }
 
 }

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -69,10 +69,6 @@ public class WmiClient implements IWmiClient {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(WmiClient.class);
 
-
-    private JIComServer m_ComStub = null;
-    private IJIComObject m_ComObject = null;
-    private IJIDispatch m_Dispatch = null;
     private String m_Address = null;
     private JISession m_Session = null;
     private IJIDispatch m_WbemServices = null;
@@ -97,7 +93,7 @@ public class WmiClient implements IWmiClient {
     public OnmsWbemObjectSet performInstanceOf(final String wmiClass) throws WmiException {
         try {
             // Execute the InstancesOf method on the remote SWbemServices object.
-            final JIVariant results[] = m_WbemServices.callMethodA("InstancesOf", new Object[]{new JIString(wmiClass), 0, JIVariant.OPTIONAL_PARAM()});
+            final JIVariant[] results = m_WbemServices.callMethodA("InstancesOf", new Object[]{new JIString(wmiClass), 0, JIVariant.OPTIONAL_PARAM()});
             final IJIDispatch wOSd = (IJIDispatch) JIObjectFactory.narrowObject((results[0]).getObjectAsComObject());
 
             return new OnmsWbemObjectSetImpl(wOSd);
@@ -117,7 +113,7 @@ public class WmiClient implements IWmiClient {
     @Override
     public OnmsWbemObjectSet performExecQuery (final String strQuery, final String strQueryLanguage, final Integer flags) throws WmiException {
         try {
-            final JIVariant results[] = m_WbemServices.callMethodA("ExecQuery", new Object[]{new JIString(strQuery), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM(),JIVariant.OPTIONAL_PARAM()});
+            final JIVariant[] results = m_WbemServices.callMethodA("ExecQuery", new Object[]{new JIString(strQuery), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM(),JIVariant.OPTIONAL_PARAM()});
             final IJIDispatch wOSd = (IJIDispatch)JIObjectFactory.narrowObject((results[0]).getObjectAsComObject());
 
             return new OnmsWbemObjectSetImpl(wOSd);
@@ -135,7 +131,7 @@ public class WmiClient implements IWmiClient {
      */
     public OnmsWbemObject performWmiGet(final String strObjectPath) throws WmiException {
         try {
-            final JIVariant results[] = m_WbemServices.callMethodA("Get", new Object[]{new JIString(strObjectPath), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM()});
+            final JIVariant[] results = m_WbemServices.callMethodA("Get", new Object[]{new JIString(strObjectPath), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM()});
             final IJIDispatch obj_dsp = (IJIDispatch) JIObjectFactory.narrowObject((results[0]).getObjectAsComObject());
 
             return new OnmsWbemObjectImpl(obj_dsp);
@@ -153,7 +149,7 @@ public class WmiClient implements IWmiClient {
      */
     public OnmsWbemObjectSet performSubclassOf(final String strSuperClass) throws WmiException {
         try {
-            final JIVariant results[] = m_WbemServices.callMethodA("SubclassesOf", new Object[]{new JIString(strSuperClass), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM()});
+            final JIVariant[] results = m_WbemServices.callMethodA("SubclassesOf", new Object[]{new JIString(strSuperClass), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM()});
             final IJIDispatch objset_dsp = (IJIDispatch) JIObjectFactory.narrowObject((results[0]).getObjectAsComObject());
             
             return new OnmsWbemObjectSetImpl(objset_dsp);
@@ -170,7 +166,7 @@ public class WmiClient implements IWmiClient {
      */
     public OnmsWbemObjectSet performSubclassOf() throws WmiException {
         try {
-            final JIVariant results[] = m_WbemServices.callMethodA("SubclassesOf", new Object[]{ JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM()});
+            final JIVariant[] results = m_WbemServices.callMethodA("SubclassesOf", new Object[]{ JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM(), JIVariant.OPTIONAL_PARAM()});
             final IJIDispatch objset_dsp = (IJIDispatch) JIObjectFactory.narrowObject((results[0]).getObjectAsComObject());
 
             return new OnmsWbemObjectSetImpl(objset_dsp);
@@ -189,7 +185,7 @@ public class WmiClient implements IWmiClient {
     public static Object convertToNativeType(final JIVariant type) throws WmiException {
         try {
             if (type.isArray()) {
-                final ArrayList<Object> objs = new ArrayList<Object>();
+                final ArrayList<Object> objs = new ArrayList<>();
                 final Object [] array = (Object[])type.getObjectAsArray().getArrayInstance();
 
                 for (final Object element : array) {
@@ -226,25 +222,25 @@ public class WmiClient implements IWmiClient {
 
     /** {@inheritDoc} */
     @Override
-    public void connect(final String domain, final String username, final String password) throws WmiException {
+    public void connect(final String domain, final String username, final String password, final String namespace) throws WmiException {
         try {
 
             m_Session = JISession.createSession(domain, username, password);
             m_Session.useSessionSecurity(true);
             m_Session.setGlobalSocketTimeout(5000);
 
-            m_ComStub = new JIComServer(JIProgId.valueOf(WMI_PROGID), m_Address, m_Session);
+            JIComServer m_ComStub = new JIComServer(JIProgId.valueOf(WMI_PROGID), m_Address, m_Session);
 
             final IJIComObject unknown = m_ComStub.createInstance();
-            m_ComObject = unknown.queryInterface(WMI_CLSID);
+            IJIComObject m_ComObject = unknown.queryInterface(WMI_CLSID);
 
             // This will obtain the dispatch interface
-            m_Dispatch = (IJIDispatch) JIObjectFactory.narrowObject(m_ComObject.queryInterface(IJIDispatch.IID));
+            IJIDispatch m_Dispatch = (IJIDispatch) JIObjectFactory.narrowObject(m_ComObject.queryInterface(IJIDispatch.IID));
             final JIVariant results[] = m_Dispatch.callMethodA(
                 "ConnectServer",
                 new Object[]{
                     new JIString(m_Address),
-                    JIVariant.OPTIONAL_PARAM(),
+                    new JIString(namespace),
                     JIVariant.OPTIONAL_PARAM(),
                     JIVariant.OPTIONAL_PARAM(),
                     JIVariant.OPTIONAL_PARAM(),

@@ -1,0 +1,18 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <uei>uei.opennms.org/api/tl1d/message/autonomous</uei>
+      <event-label>OpenNMS-defined Autonomous TL1 message</event-label>
+      <descr>This is a TL1 autonomous message delivered for host: %host%.&lt;p>
+
+            &lt;p>Message: %parm[raw-message]% &lt;/p>
+            &lt;p>Alarm Code: %parm[alarm-code]% &lt;/p>
+            &lt;p>ATAG: %parm[atag]% &lt;/p>
+            &lt;p>Verb: %parm[verb]% &lt;/p>
+            &lt;p>Auto Block: %parm[autoblock]% &lt;/p></descr>
+      <logmsg dest="logndisplay">
+            &lt;p> %host%:%parm[verb]%:%parm[autoblock]% &lt;/p>
+        </logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%host%:%parm[aid]%" alarm-type="3" auto-clean="false"/>
+   </event>
+</events>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,8 +38,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
@@ -56,6 +54,8 @@ import org.opennms.web.svclayer.catstatus.model.StatusNode;
 import org.opennms.web.svclayer.catstatus.model.StatusSection;
 import org.opennms.web.svclayer.dao.CategoryConfigDao;
 import org.opennms.web.svclayer.dao.ViewDisplayDao;
+
+import junit.framework.TestCase;
 
 
 public class DefaultCategoryStatusServiceTest extends TestCase {
@@ -99,16 +99,12 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 	
 		View view = new View();
 		Section section = new Section();
-		org.opennms.netmgt.config.views.Category category = new org.opennms.netmgt.config.views.Category();
 		
 		section.setSectionName("Section One");
 		section.addCategory("Category One");
 		
-		category.setLabel("Category One");
-		//category.setCategoryComment("Category One Comment");
-	
 		OnmsOutage outage = new OnmsOutage();
-		Collection<OnmsOutage> outages = new ArrayList<OnmsOutage>();
+		Collection<OnmsOutage> outages = new ArrayList<>();
 		
 		outage.setId(300);
 		
@@ -130,14 +126,14 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		outages.add(outage);
 
 		view.addSection(section);
-		List <String>services = new ArrayList<String>();
+		List <String>services = new ArrayList<>();
 		services.add("HTTP");
 //		ServiceSelector selector = new ServiceSelector("isHTTP",(List<String>) services);
 		
 		
 		
 		expect(viewDisplayDao.getView()).andReturn(view);
-		expect(categoryDao.getCategoryByLabel( category.getLabel() ) ).andReturn(createCategoryFromLabel(category.getLabel()));
+		expect(categoryDao.getCategoryByLabel("Category One")).andReturn(createCategoryFromLabel("Category One"));
 		expect(outageDao.matchingCurrentOutages(isA(ServiceSelector.class))).andReturn(outages);
 		
 		
@@ -150,7 +146,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		verify(categoryDao);
 		verify(outageDao);
 		
-		assertEquals("Wrong Number of StatusSections",view.getSectionCount(),statusSections.size());
+		assertEquals("Wrong Number of StatusSections",view.getSections().size(),statusSections.size());
 		
 		
 		for (StatusSection statusSection : statusSections) {
@@ -183,6 +179,8 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		Category category = new Category();
 		
 		category.setLabel(label);
+		category.setNormalThreshold(0d);
+		category.setWarningThreshold(0d);
 		category.setRule("isHTTP");
 		category.addService("HTTP");
 		

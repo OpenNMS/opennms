@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:util="http://www.springframework.org/schema/util"
+        xmlns:cxf="http://cxf.apache.org/core"
+        xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+                http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+                http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+                http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+                http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+
+    <tx:annotation-driven />
+    <context:annotation-config/>
+
+    <!-- JAXB Serialization @Provider classes -->
+    <bean id="lenientJaxbProvider"     class="org.opennms.web.rest.support.ValidatingMessageBodyReader"/>
+    <bean id="jaxbProvider"            class="org.apache.cxf.jaxrs.provider.JAXBElementProvider"/>
+
+    <bean id="noSuchElementProvider"   class="org.opennms.web.rest.support.NoSuchElementProvider"/>
+    <bean id="errorResponseProvider"   class="org.opennms.web.rest.support.ErrorResponseProvider"/>
+    <bean id="serviceUnavailableResponseProvider" class="org.opennms.web.rest.support.ServiceUnavailableResponseProvider"/>
+
+    <!-- JSON Serialization @Provider classes -->
+    <!-- Jettison JSON provider -->
+    <!-- <bean id="jsonProvider"            class="org.apache.cxf.jaxrs.provider.json.JSONProvider"/> -->
+    <!-- Jackson JSON provider -->
+    <!-- <bean id="jacksonJsonProvider"     class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/> -->
+    <!-- Jackson JAXB JSON provider -->
+    <bean id="jacksonJaxbJsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider"/>
+
+    <!-- Atom Serialization @Provider classes -->
+    <bean id="atomEntryProvider"       class="org.apache.cxf.jaxrs.provider.atom.AtomEntryProvider"/>
+    <bean id="atomFeedProvider"        class="org.apache.cxf.jaxrs.provider.atom.AtomFeedProvider"/>
+    <!-- <bean id="atomPojoProvider"        class="org.apache.cxf.jaxrs.provider.atom.AtomPojoProvider"/> -->
+
+    <!-- FIQL search @Provider class -->
+    <bean id="searchContextProvider" class="org.apache.cxf.jaxrs.ext.search.SearchContextProvider"/>
+
+    <!-- Interceptors -->
+    <bean id="gzipOutInterceptor" class="org.apache.cxf.transport.common.gzip.GZIPOutInterceptor" />
+
+</beans>

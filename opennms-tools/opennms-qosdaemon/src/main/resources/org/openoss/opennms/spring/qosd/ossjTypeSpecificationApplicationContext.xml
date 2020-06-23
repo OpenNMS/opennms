@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+
+	<!-- *************************************** -->
+	<!-- invariant specification for AlarmValue  -->
+	<!-- Returns a new populated instance        -->
+	<!-- *************************************** -->
+	
+	<bean id="alarmValueSpecification"
+		class="org.openoss.ossj.jvt.fm.monitor.OOSSAlarmValue" scope="prototype">
+		<property name="alarmKey" ref="alarmKeySpecification" />
+		<property name="systemDN" value="${org.openoss.opennms.spring.qosd.jvthome}" />			
+	</bean>	
+	
+	<bean id="alarmKeySpecification"
+		class="org.openoss.ossj.jvt.fm.monitor.OOSSAlarmKey" scope="prototype">
+		<property name="applicationDN" value="${org.openoss.opennms.spring.qosd.jvthome}" />
+		<property name="applicationContext" ref="applicationContextSpecification" />	
+		<property name="type" value="mytype_notset" />	
+		<property name="primaryKey" value="primaryKey_notset" />	
+		<property name="alarmPrimaryKey" value="alarmPrimaryKey_notset" />	
+	</bean>	
+	
+	<bean id="applicationContextSpecification"
+		class="org.openoss.ossj.jvt.fm.monitor.OOSSApplicationContext" scope="prototype">
+		<property name="factoryClass" value="myfactoryclass" />
+		<property name="URL" value="${org.openoss.opennms.spring.qosd.url}" />	
+		<property name="systemProperties"  >
+			<props>
+				<prop key="jndi_fact_class_name"		>${org.openoss.opennms.spring.qosd.naming.contextfactory}</prop>
+				<prop key="jndi_url"					>${org.openoss.opennms.spring.qosd.naming.provider}</prop>
+				<prop key="bean_naming_package"			>${org.openoss.opennms.spring.qosd.naming.pkg}</prop>
+				<prop key="topic_connector_factory_name">${org.openoss.opennms.spring.qosd.jms.topicconnectionfactory}</prop>
+				<prop key="jvt_event_topic_name"		>${org.openoss.opennms.spring.qosd.jms.topic}</prop>
+				<prop key="xvt_event_topic_name"		>${org.openoss.qosd.jms.xvttopic}</prop>
+				<prop key="jvt_home"					>${org.openoss.opennms.spring.qosd.jvthome}</prop>
+				<prop key="system_url"					>${org.openoss.opennms.spring.qosd.url}</prop>
+			</props>
+		</property>				
+	</bean>	
+
+</beans>

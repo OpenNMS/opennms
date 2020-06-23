@@ -1,0 +1,5 @@
+opennms-minion (19.0.0-0) UNRELEASED; urgency=low
+
+  * Initial release.
+
+ -- Benjamin Reed <ranger@opennms.org>  Tue, 18 Apr 2017 12:01:59 -0400

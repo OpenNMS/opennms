@@ -1,65 +1,57 @@
-<?xml version="1.0"?>
-<thresholding-config>
-        <group name="mib2"
-                rrdRepository = "${install.share.dir}/rrd/snmp/">
-                <threshold type="high" ds-name="tcpInErrors" ds-type="node" ds-label="" value="1" rearm="0" trigger="1"/>
-                <expression type="high" expression="ifInErrors + ifOutErrors" ds-type="if" ds-label="ifName" value="1" rearm="0" trigger="2"/>
-                <expression type="high" expression="ifInDiscards + ifOutDiscards" ds-type="if" ds-label="ifName" value="1" rearm="0" trigger="2"/>
-                <expression type="high" expression="ifInOctets * 8 / 1000000 / ifHighSpeed * 100" ds-type="if" ds-label="ifName" value="90.0" rearm="75.0" trigger="3">
-                  <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
-                </expression>
-                <expression type="high" expression="ifOutOctets * 8 / 1000000 / ifHighSpeed * 100" ds-type="if" ds-label="ifName" value="90.0" rearm="75.0" trigger="3">
-                  <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
-                </expression>
-        </group>
-        
-        <group name="hrstorage"
-        		rrdRepository = "${install.share.dir}/rrd/snmp/">
-        		<expression type="high" expression="hrStorageUsed / hrStorageSize * 100.0" ds-type="hrStorageIndex" ds-label="hrStorageDescr" value="90.0" rearm="75.0" trigger="2">
-        		  <resource-filter field="hrStorageType">^\.1\.3\.6\.1\.2\.1\.25\.2\.1\.4$</resource-filter>
-        		</expression>
-        		<expression type="relativeChange" expression="hrStorageUsed / hrStorageSize * 100.0" ds-type="hrStorageIndex" ds-label="hrStorageDescr" value="0.5" rearm="0.0" trigger="2">
-        		  <resource-filter field="hrStorageType">^\.1\.3\.6\.1\.2\.1\.25\.2\.1\.4$</resource-filter>
-        		</expression>
-
-		</group>
-		
-        <group name="cisco"
-                rrdRepository = "${install.share.dir}/rrd/snmp/">
-                <threshold type="high" ds-name="avgBusy5"  ds-type="node" ds-label="" value="80" rearm="50" trigger="3"/>
-                <threshold type="relativeChange" ds-name="cscoMemPoolUtl5Min"  ds-type="ciscoMemoryPoolType" ds-label="cscoMemoryPoolName" value="0.25" rearm="0.0" trigger="1"/>
-                <threshold type="high" ds-name="cvmTempStatusValue" ds-type="ciscoEnvMonTemperatureStatusIndex" ds-label="cvmTempStatusDescr" value="55.0" rearm="50.0" trigger="3"/>
-                <threshold type="relativeChange" ds-name="cvmTempStatusValue" ds-type="ciscoEnvMonTemperatureStatusIndex" ds-label="cvmTempStatusDescr" value="0.2" rearm="0.0" trigger="1"/>
-        </group>
-        
-        <group name="netsnmp"
-        		rrdRepository = "${install.share.dir}/rrd/snmp/">
-        		<threshold type="high" ds-name="ns-dskPercent" ds-type="dskIndex" ds-label="ns-dskPath" value="90.0" rearm="75.0" trigger="2"/>
-        		<threshold type="high" ds-name="ns-dskPercentNode" ds-type="dskIndex" ds-label="ns-dskPath" value="90.0" rearm="75.0" trigger="2">
-        			<!-- Filter out special filesystems. See bug http://issues.opennms.org/browse/NMS-5116 -->
-        			<resource-filter field="ns-dskPath">^(?:(?!(/proc|/sys|/dev/pts)).)+$</resource-filter>
-        		</threshold>
-        		<threshold type="relativeChange" ds-name="ns-dskPercent" ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="2"/>
-        		<threshold type="relativeChange" ds-name="ns-dskPercentNode" ds-type="dskIndex" ds-label="ns-dskPath" value="0.5" rearm="0.0" trigger="2"/>
-        		<expression type="high" expression="loadavg5 / 100.0" ds-type="node" ds-label="" value="10.0" rearm="7.5" trigger="2"/>
-        		<expression type="low" expression="memAvailSwap / memTotalSwap * 100.0" ds-type="node" ds-label="" value="10.0" rearm="15.0" trigger="2"> 
-        		    <resource-filter field="memTotalSwap">^[1-9]+[.0-9]*$</resource-filter>
-        		</expression>
-        </group>
-        
-        <group name="netsnmp-memory-linux"
-        		rrdRepository = "${install.share.dir}/rrd/snmp/">
-        		<expression type="low" expression="(memAvailReal + memCached) / memTotalReal * 100.0" ds-type="node" ds-label="" value="5.0" rearm="10.0" trigger="2"/>
-        </group>
-
-        <group name="netsnmp-memory-nonlinux"
-        		rrdRepository = "${install.share.dir}/rrd/snmp/">
-        		<expression type="low" expression="memAvailReal / memTotalReal * 100.0" ds-type="node" ds-label="" value="5.0" rearm="10.0" trigger="2"/>
-        </group>
- 
-		<group name="coffee"
-				rrdRepository = "${install.share.dir}/rrd/snmp/">
-				<expression type="low" expression ="coffeePotLevel / coffeePotCapacity * 100.0" ds-type="node" ds-label="" value="25.0" rearm="100.0" trigger="1"/>
-		</group>
-
+<thresholding-config xmlns="http://xmlns.opennms.org/xsd/config/thresholding">
+   <group name="mib2" rrdRepository="${install.share.dir}/rrd/snmp/">
+      <threshold description="Trigger an alert if one or more incoming packets on the whole node were not received due to an error for one measurement interval" type="high" ds-type="node" value="1.0" rearm="0.0" trigger="1" filterOperator="OR" ds-name="tcpInErrors"/>
+      <expression description="Trigger an alert if one or more incoming or outgoing packets on an interface were not transmitted due to error for two consecutive measurement intervals" type="high" ds-type="if" value="1.0" rearm="0.0" trigger="2" ds-label="ifName" filterOperator="OR" expression="ifInErrors + ifOutErrors"/>
+      <expression description="Trigger an alert if one or more incoming or outgoing packets on an interface were discarded even though no errors were detected (possibly to free up buffer space) for two consecutive measurement intervals" type="high" ds-type="if" value="1.0" rearm="0.0" trigger="2" ds-label="ifName" filterOperator="OR" expression="ifInDiscards + ifOutDiscards"/>
+      <expression description="Trigger an alert if incoming usage of any interface reaches or goes above 90% of its maximum speed for three consecutive measurement intervals (only for interfaces that have a maximum speed value defined)" type="high" ds-type="if" value="90.0" rearm="75.0" trigger="3" ds-label="ifName" filterOperator="OR" expression="ifHCInOctets * 8 / 1000000 / ifHighSpeed * 100">
+         <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
+      </expression>
+      <expression description="Trigger an alert if outgoing usage of an interface reaches or goes above 90% of its maximum speed for three consecutive measurement intervals (only for interfaces that have a maximum speed value defined)" type="high" ds-type="if" value="90.0" rearm="75.0" trigger="3" ds-label="ifName" filterOperator="OR" expression="ifHCOutOctets * 8 / 1000000 / ifHighSpeed * 100">
+         <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
+      </expression>
+      <expression description="Trigger an alert if incoming usage of any interface reaches or goes above 90% of its maximum speed for three consecutive measurement intervals (only for interfaces that have a maximum speed value defined)" type="high" ds-type="if" value="90.0" rearm="75.0" trigger="3" ds-label="ifName" filterOperator="OR" expression="ifInOctets * 8 / ifSpeed * 100">
+         <resource-filter field="ifSpeed">^[1-9]+[0-9]*$</resource-filter>
+      </expression>
+      <expression description="Trigger an alert if outgoing usage of an interface reaches or goes above 90% of its maximum speed for three consecutive measurement intervals (only for interfaces that have a maximum speed value defined)" type="high" ds-type="if" value="90.0" rearm="75.0" trigger="3" ds-label="ifName" filterOperator="OR" expression="ifOutOctets * 8 / ifSpeed * 100">
+         <resource-filter field="ifSpeed">^[1-9]+[0-9]*$</resource-filter>
+      </expression>
+   </group>
+   <group name="hrstorage" rrdRepository="${install.share.dir}/rrd/snmp/">
+      <expression description="Trigger an alert when the percentage of disk space used reaches or goes above 90% for two consecutive measurement intervals (only for disks of type hrStorageFixedDisk, such as a locally attached or USB-attached hard disk)" type="high" ds-type="hrStorageIndex" value="90.0" rearm="75.0" trigger="2" ds-label="hrStorageDescr" filterOperator="OR" expression="hrStorageUsed / hrStorageSize * 100.0">
+         <resource-filter field="hrStorageType">^\.1\.3\.6\.1\.2\.1\.25\.2\.1\.4$</resource-filter>
+      </expression>
+      <expression description="Trigger an alert when the percentage of disk space used increases by a relative 33.3% compared to its most recent previous measurement (e.g. there is suddenly less free space) (only for disks of type hrStorageFixedDisk, such as a locally attached or USB-attached hard disk)" type="relativeChange" ds-type="hrStorageIndex" value="1.333" rearm="0.0" trigger="1" ds-label="hrStorageDescr" filterOperator="OR" expression="hrStorageUsed / hrStorageSize * 100.0">
+         <resource-filter field="hrStorageType">^\.1\.3\.6\.1\.2\.1\.25\.2\.1\.4$</resource-filter>
+      </expression>
+   </group>
+   <group name="cisco" rrdRepository="${install.share.dir}/rrd/snmp/">
+      <threshold description="Trigger an alert when the five minute exponentially-decayed moving average of the CPU busy percentage metric on a Cisco device reaches or goes above 80% for three measurement intervals" type="high" ds-type="node" value="80.0" rearm="50.0" trigger="3" filterOperator="OR" ds-name="avgBusy5"/>
+      <threshold description="Trigger an alert when the five minute memory pool percentage utilization metric on a Cisco device increases by 25% in one measurement interval" type="relativeChange" ds-type="ciscoMemoryPoolType" value="0.25" rearm="0.0" trigger="1" ds-label="cscoMemoryPoolName" filterOperator="OR" ds-name="cscoMemPoolUtl5Min"/>
+      <threshold description="Trigger an alert when the temperature metric on a Cisco device reaches or goes above 55 degrees Celcius for three measurement intervals" type="high" ds-type="ciscoEnvMonTemperatureStatusIndex" value="55.0" rearm="50.0" trigger="3" ds-label="cvmTempStatusDescr" filterOperator="OR" ds-name="cvmTempStatusValue"/>
+      <threshold description="Trigger an alert when the temperature metric on a Cisco device increases by 20% in one measurement interval" type="relativeChange" ds-type="ciscoEnvMonTemperatureStatusIndex" value="0.2" rearm="0.0" trigger="1" ds-label="cvmTempStatusDescr" filterOperator="OR" ds-name="cvmTempStatusValue"/>
+   </group>
+   <group name="juniper-srx" rrdRepository="${install.share.dir}/rrd/snmp/">
+      <expression description="Trigger an alert when the number of tracked sessions of a Juniper SRX router exceeds 90% of its capacity for two consecutive measurement intervals" type="high" ds-type="node" value="90.0" rearm="75.0" trigger="2" filterOperator="OR" expression="juniSPUMonCurrFlow / juniSPUMonMaxFlow * 100.0"/>
+   </group>
+   <group name="netsnmp" rrdRepository="${install.share.dir}/rrd/snmp/">
+      <threshold description="Trigger an alert when the percentage of disk space used on any disk reaches or goes above 90% full for two consecutive measurement intervals" type="high" ds-type="dskIndex" value="90.0" rearm="75.0" trigger="2" ds-label="ns-dskPath" filterOperator="OR" ds-name="ns-dskPercent"/>
+      <threshold description="Trigger an alert when the percentage of inodes used on any disk (excluding the specified special paths) reaches or goes above 90% for two consecutive measurement intervals" type="high" ds-type="dskIndex" value="90.0" rearm="75.0" trigger="2" ds-label="ns-dskPath" filterOperator="OR" ds-name="ns-dskPercentNode">
+         <resource-filter field="ns-dskPath">^(?:(?!(/proc|/sys|/dev/pts)).)+$</resource-filter>
+      </threshold>
+      <threshold description="Trigger an alert when the percentage of disk space used on any disk increases by a relative 33.3% compared to its most recent previous measurement (that is, there is suddenly less free space)" type="relativeChange" ds-type="dskIndex" value="1.333" rearm="0.0" trigger="1" ds-label="ns-dskPath" filterOperator="OR" ds-name="ns-dskPercent"/>
+      <threshold description="Trigger an alert when the percentage of inodes used on any disk increases by a relative 33.3% compared to its most recent previous measurement (that is, there are suddenly fewer free inodes)" type="relativeChange" ds-type="dskIndex" value="1.333" rearm="0.0" trigger="1" ds-label="ns-dskPath" filterOperator="OR" ds-name="ns-dskPercentNode"/>
+      <expression description="Trigger an alert when the five minute CPU load average metric reaches or goes above 70% for two consecutive measurement intervals" type="high" ds-type="node" value="70.0" rearm="50.0" trigger="2" filterOperator="OR" expression="((loadavg5 / 100) / CpuNumCpus) * 100.0"/>
+      <expression description="Trigger an alert when the amount of available swap space reaches or goes below 10% of the total amount of swap space for two consecutive measurement intervals (only for systems that have a total swap space value defined)" type="low" ds-type="node" value="10.0" rearm="15.0" trigger="2" filterOperator="OR" expression="memAvailSwap / memTotalSwap * 100.0">
+         <resource-filter field="memTotalSwap">^[1-9]+[.0-9]*$</resource-filter>
+      </expression>
+   </group>
+   <group name="netsnmp-memory-linux" rrdRepository="${install.share.dir}/rrd/snmp/">
+      <expression description="Trigger an alert when the sum of the amount of unused real/physical memory plus the amount of real/virtual memory currently allocated as cached memory expressed as a percentage of total system memory reaches or goes below 5% for two consecutive measurement intervals" type="low" ds-type="node" value="5.0" rearm="10.0" trigger="2" filterOperator="OR" expression="(memAvailReal + memCached) / memTotalReal * 100.0"/>
+   </group>
+   <group name="netsnmp-memory-nonlinux" rrdRepository="${install.share.dir}/rrd/snmp/">
+      <expression description="Trigger an alert when the amount of unused real/physical memory expressed as a percentage of total system memory reaches or goes below 5% for two consecutive measurement intervals" type="low" ds-type="node" value="5.0" rearm="10.0" trigger="2" filterOperator="OR" expression="memAvailReal / memTotalReal * 100.0"/>
+   </group>
+   <group name="coffee" rrdRepository="${install.share.dir}/rrd/snmp/">
+      <expression description="Trigger an alert when the coffee pot level reaches or goes below 25% in one measurement interval" type="low" ds-type="node" value="25.0" rearm="100.0" trigger="1" filterOperator="OR" expression="coffeePotLevel / coffeePotCapacity * 100.0"/>
+   </group>
 </thresholding-config>

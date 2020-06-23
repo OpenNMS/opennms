@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,25 +30,13 @@ package org.opennms.protocols.radius.springsecurity;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import net.jradius.client.RadiusClient;
-import net.jradius.client.auth.PAPAuthenticator;
-import net.jradius.client.auth.RadiusAuthenticator;
-import net.jradius.dictionary.Attr_UserName;
-import net.jradius.dictionary.Attr_UserPassword;
-import net.jradius.exception.RadiusException;
-import net.jradius.packet.AccessAccept;
-import net.jradius.packet.AccessRequest;
-import net.jradius.packet.RadiusPacket;
-import net.jradius.packet.attribute.AttributeFactory;
-import net.jradius.packet.attribute.AttributeList;
-import net.jradius.packet.attribute.RadiusAttribute;
-
-
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.protocols.radius.utils.RadiusUtils;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +52,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import net.jradius.client.RadiusClient;
+import net.jradius.client.auth.PAPAuthenticator;
+import net.jradius.client.auth.RadiusAuthenticator;
+import net.jradius.dictionary.Attr_UserName;
+import net.jradius.dictionary.Attr_UserPassword;
+import net.jradius.exception.RadiusException;
+import net.jradius.packet.AccessAccept;
+import net.jradius.packet.AccessRequest;
+import net.jradius.packet.RadiusPacket;
+import net.jradius.packet.attribute.AttributeFactory;
+import net.jradius.packet.attribute.AttributeList;
+import net.jradius.packet.attribute.RadiusAttribute;
+
 /**
  * An org.springframework.security.providers.AuthenticationProvider implementation that provides integration with a Radius server.
  *
@@ -73,19 +74,23 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
 	
 	private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthenticationProvider.class);
 
+    static {
+        RadiusUtils.loadSecurityProvider();
+    }
 
     private String server, secret;
     private int port = 1812, timeout = 5, retries = 3;
 
     /**
-     * There is a bug in {@link net.jradius.client.auth.PAPAuthenticator#processRequest(RadiusPacket)} that prevents 
-     * instances of the class from being reused. Set the authenticator class to null to work 
-     * around this problem (while still using the {@link net.jradius.client.auth.PAPAuthenticator}
-     * class).
-     * 
+     * The type of the {@link RadiusAuthenticator} to use for authentication.
+     * A class/type is used instead of an instance (as it was the case in earlier versions) as
+     * a {@link RadiusAuthenticator} cannot be re-used in another request, as username and password
+     * values are not reset. See {@link RadiusAuthenticator#setupRequest(RadiusClient, RadiusPacket)} for
+     * more details.
+     *
      * @see net.jradius.client.RadiusClient#authenticate(AccessRequest, RadiusAuthenticator, int)
      */
-    private RadiusAuthenticator authTypeClass = null;
+    private Class<? extends RadiusAuthenticator> authTypeClass = null;
 
     private String defaultRoles = Authentication.ROLE_USER, rolesAttribute;
 
@@ -112,8 +117,11 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         Assert.notNull(this.port, "A port number must be specified");
         Assert.notNull(this.timeout, "A timeout must be specified");
         Assert.notNull(this.retries, "A retry count must be specified");
-        //Assert.notNull(this.authTypeClass, "A RadiusAuthenticator object must be supplied in authTypeClass");
         Assert.notNull(this.defaultRoles, "Default Roles must be supplied in defaultRoles");
+
+        if (this.authTypeClass == null) {
+            LOG.warn("No RadiusAuthenticator provided. Falling back to {}", PAPAuthenticator.class);
+        }
     }
 
     /**
@@ -148,15 +156,8 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
      *
      * @param authTypeClass An instance of net.jradius.client.auth.RadiusAuthenticator (defaults to PAPAuthenticator)
      */
-    public void setAuthTypeClass(RadiusAuthenticator authTypeClass) {
-        if (authTypeClass instanceof PAPAuthenticator) {
-            // There is a bug in PAPAuthenticator() that prevents instances of the class
-            // from being reused. Set the authenticator class to null to work around this
-            // problem.
-            this.authTypeClass = null;
-        } else {
-            this.authTypeClass = authTypeClass;
-        }
+    public void setAuthTypeClass(Class<? extends RadiusAuthenticator> authTypeClass) {
+        this.authTypeClass = authTypeClass;
     }
 
     /**
@@ -232,11 +233,12 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         attributeList.add(new Attr_UserPassword(password));
         RadiusPacket reply;
         try {
-            RadiusClient radiusClient = new RadiusClient(serverIP, secret, port, port+1, timeout);
-            AccessRequest request = new AccessRequest(radiusClient, attributeList);
+            final RadiusAuthenticator authenticator = createAuthenticator(this.authTypeClass);
+            final RadiusClient radiusClient = new RadiusClient(serverIP, secret, port, port+1, timeout);
+            final AccessRequest request = new AccessRequest(radiusClient, attributeList);
 
-            LOG.debug("Sending AccessRequest message to {}:{} using {} protocol with timeout = {}, retries = {}, attributes:\n{}", InetAddressUtils.str(serverIP), port, (authTypeClass == null ? "PAP" : authTypeClass.getAuthName()), timeout, retries, attributeList.toString());
-            reply = radiusClient.authenticate(request, authTypeClass, retries);
+            LOG.debug("Sending AccessRequest message to {}:{} using {} protocol with timeout = {}, retries = {}, attributes:\n{}", InetAddressUtils.str(serverIP), port, authenticator.getAuthName(), timeout, retries, attributeList.toString());
+            reply = radiusClient.authenticate(request, authenticator, retries);
         } catch (RadiusException e) {
             LOG.error("Error connecting to radius server {} : {}", server, e);
             throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusError",
@@ -247,6 +249,16 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
             throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusError",
                 new Object[] {e},
                 "Error connecting to radius server: "+e));
+        } catch (NoSuchAlgorithmException e) {
+        	LOG.error("Error no such algorithm {} : {}",this.authTypeClass.getClass().getName(), e);
+        	throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusError",
+                    new Object[] {e},
+                    "Error connecting to radius server: "+e));
+        } catch (IllegalAccessException | InstantiationException e) {
+            LOG.error("Error instantiating configured RadiusAuthenticator {}", this.authTypeClass, e);
+            throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusError",
+                    new Object[] {e},
+                    "Error connecting to radius server: "+e));
         }
         if (reply == null) {
             LOG.error("Timed out connecting to radius server {}", server);
@@ -284,7 +296,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         for (String role : rolesArray) {
             authorities.add(new SimpleGrantedAuthority(role));
         }
-            StringBuffer readRoles = new StringBuffer();
+            final StringBuilder readRoles = new StringBuilder();
             for (GrantedAuthority authority : authorities) {
                 readRoles.append(authority.toString()+", ");
             }
@@ -294,6 +306,13 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
             LOG.debug("Parsed roles {} for user {}", readRoles, username);
 
         return new User(username, password, true, true, true, true, authorities);
+    }
+
+    private RadiusAuthenticator createAuthenticator(Class<? extends RadiusAuthenticator> authTypeClass) throws IllegalAccessException, InstantiationException {
+        if (authTypeClass == null) {
+            return new PAPAuthenticator();
+        }
+        return authTypeClass.newInstance();
     }
 
 }

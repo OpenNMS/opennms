@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+<!--
+	<import resource="applicationContext-dao.xml" />
+  -->
+	
+	<bean id="qosdConfigProperty" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+		<property name="properties">
+			<props>
+				<prop key="qosd.config.directory">${opennms.home}/etc</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" depends-on="qosdConfigProperty">
+		<property name="location" value="file:${qosd.config.directory}/qosd.properties"/>
+	</bean>
+
+	<bean id="QoSD" class="org.openoss.opennms.spring.qosd.QoSDimpl2">
+			<property name="nodeDao" ref="nodeDao" />
+			<property name="eventIpcManager" ref="eventIpcManager" />
+			<property name="alarmDao" ref="alarmDao" />
+			<property name="assetRecordDao" ref="assetRecordDao" />
+			<property name="alarmListConnectionManager" ref="AlarmListConnectionManagerSpringImpl" />
+			<property name="onmsAlarmOssjMapper" ref="onmsAlarmOssjMapper" />
+			<property name="ossDao" ref="ossDao" />
+	</bean>
+	
+	<!-- Old Class
+	<bean id="QoSD" class="org.openoss.opennms.spring.qosd.QoSDimpl1">
+			<property name="nodeDao" ref="nodeDao" />
+			<property name="eventIpcManager" ref="eventIpcManager" />
+			<property name="alarmDao" ref="alarmDao" />
+			<property name="assetRecordDao" ref="assetRecordDao" />
+			<property name="alarmListConnectionManager" ref="AlarmListConnectionManagerSpringImpl" />
+			<property name="onmsAlarmOssjMapper" ref="onmsAlarmOssjMapper" />
+			<property name="ossDao" ref="ossDao"	/>		
+	</bean>
+
+	 -->
+
+<!--
+	<bean id="AlarmListConnectionManagerJ2eeImpl"
+		class="org.openoss.opennms.spring.qosd.ejb.AlarmListConnectionManagerJ2eeImpl">
+	</bean>
+  -->	
+
+	
+	<bean id="AlarmMonitorDaoImpl"
+		class="org.openoss.ossj.fm.monitor.spring.AlarmMonitorDaoImpl"
+		depends-on="propertyConfigurer">
+		<property name="jndi_fact_class_name" value="${org.openoss.opennms.spring.qosd.naming.contextfactory}"/>
+		<property name="jndi_url" value="${org.openoss.opennms.spring.qosd.naming.provider}"/>
+		<property name="bean_naming_package" value="${org.openoss.opennms.spring.qosd.naming.pkg}"/>
+		<property name="topic_connector_factory_name" value="${org.openoss.opennms.spring.qosd.jms.topicconnectionfactory}"/>
+		<property name="jvt_event_topic_name" value="${org.openoss.opennms.spring.qosd.jms.topic}"/>
+		<property name="xvt_event_topic_name" value="${org.openoss.qosd.jms.xvttopic}"/>
+	</bean>
+	
+	
+	<!-- 
+	<bean id="AlarmMonitorDaoImpl"
+		class="org.openoss.ossj.fm.monitor.spring.AlarmMonitorDaoImpl">
+		<property name="JNDI_FACT_CLASS_NAME" value="org.jnp.interfaces.NamingContextFactory"/>
+		<property name="JNDI_URL" value= "jnp://jbossjmsserver1:1099"/>
+		<property name="BEAN_NAMING_PACKAGE" value= "org.jboss.naming"/>
+		<property name="TOPIC_CONNECTION_FACTORY_NAME" value="System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory"/>
+		<property name="JVT_EVENT_TOPIC_NAME" value="System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic"/>
+		<property name="XVT_EVENT_TOPIC_NAME" value="System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic"/>
+	</bean>
+	
+	  
+	org.openoss.opennms.spring.qosd.naming.provider=jnp://jbossjmsserver1:1099
+	org.openoss.opennms.spring.qosd.naming.contextfactory=org.jnp.interfaces.NamingContextFactory
+	org.openoss.opennms.spring.qosd.naming.pkg=org.jboss.naming
+
+	org.openoss.opennms.spring.qosd.jvthome=System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTHome
+
+	org.openoss.opennms.spring.qosd.jms.topicconnectionfactory=System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/TopicConnectionFactory
+	org.openoss.opennms.spring.qosd.jms.topic=System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/JVTEventTopic
+
+	org.openoss.qosd.jms.xvttopic=System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/XVTEventTopic
+
+	org.openoss.qosd.jms.queueconnectionfactory=System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/QueueConnectionFactory
+	org.openoss.qosd.jms.messagequeue=System/OpenOSS/ApplicationType/AlarmMonitor/Application/1-0;0-0;OpenNMS_OpenOSS_AM/Comp/MessageQueue
+	
+	-->
+	
+	
+	<bean id="AlarmListConnectionManagerSpringImpl"
+		class="org.openoss.opennms.spring.qosd.spring.AlarmListConnectionManagerSpringImpl"
+		depends-on="AlarmMonitorDaoImpl">
+		<property name="alarmMonitorDao" ref="AlarmMonitorDaoImpl"/>
+	</bean>
+	
+	<!--
+	Seth 2010-05-05: Commenting this out since there should always be an 'eventIpcManager'
+	bean defined in the context that this runs inside.
+
+	<bean id="eventIpcManager-init"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"
+			value="org.opennms.netmgt.events.api.EventIpcManagerFactory.init" />
+	</bean>
+
+	<bean id="eventIpcManager"
+		class="org.opennms.netmgt.events.api.EventIpcManagerFactory"
+		depends-on="eventIpcManager-init"
+		factory-method="getIpcManager"/>
+	-->
+
+<!-- 
+	<bean id="alarmDao"
+		class="org.opennms.netmgt.dao.jdbc.AlarmDaoJdbc">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+-->
+	
+		<!--  Simple method for local instance of ossDao
+	<bean id="ossDao"
+		class="org.openoss.opennms.spring.dao.OssDaoOpenNMSImpl">
+	   <property name="nodeDao" ref="nodeDao" />
+	   <property name="alarmDao" ref="alarmDao" />
+	   <property name="assetRecordDao" ref="assetRecordDao" />
+	   <property name="dataSource" ref="dataSource" />
+	</bean>
+	-->
+	
+	<!--  Method for sharing DAO across application contexts as a single instance -->
+	<bean id="ossDao-init" 
+	    class="org.openoss.opennms.spring.dao.OssDaoOpenNMSImplSingleton" >
+		<property name="nodeDao" ref="nodeDao" />
+	    <property name="alarmDao" ref="alarmDao" />
+	    <property name="assetRecordDao" ref="assetRecordDao" />
+	    <property name="dataSource" ref="dataSource" />
+	    <property name="transTemplate" ref="transactionTemplate" />
+	</bean>
+
+	<bean id="ossDao" 
+		class="org.openoss.opennms.spring.dao.OssDaoOpenNMSImplSingleton"
+		depends-on="ossDao-init"
+		factory-method="getInstance"/>
+	
+	<bean id="onmsAlarmOssjMapper"
+		class="org.openoss.opennms.spring.dao.OnmsAlarmOssjMapper">
+		<property name="nodeDao" ref="nodeDao" />
+		<property name="assetRecordDao" ref="assetRecordDao" />
+		<property name="ossDao" ref="ossDao" />
+	    <property name="distPollerDao" ref="distPollerDao" />
+	</bean>	
+	
+	<!-- *********************************** -->
+	<!-- Imports invariant specifications    -->
+	<!-- for OSS/J object types              -->
+	<!-- *********************************** -->
+	
+	<import resource="ossjTypeSpecificationApplicationContext.xml" />
+
+</beans>

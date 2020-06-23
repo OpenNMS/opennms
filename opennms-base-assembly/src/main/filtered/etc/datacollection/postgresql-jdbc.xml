@@ -1,13 +1,10 @@
-<?xml version="1.0"?>
-<datacollection-group name="PostgreSQL-JDBC">
-
-    <resourceType name="pgTableSpace" label="PostgreSQL Tablespace" resourceLabel="${spcname}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-    </resourceType>
-    <resourceType name="pgDatabase" label="PostgreSQL Database" resourceLabel="${datname}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-    </resourceType>
-
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="PostgreSQL-JDBC">
+   <resourceType name="pgTableSpace" label="PostgreSQL Tablespace" resourceLabel="${spcname}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="pgDatabase" label="PostgreSQL Database" resourceLabel="${datname}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
 </datacollection-group>

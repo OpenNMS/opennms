@@ -3,48 +3,51 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies</name>
+  <name>OpenNMS :: Dependencies</name>
   <modules>
     <module>activemq</module>
     <module>activemq-web</module>
     <module>asterisk</module>
+    <module>atomikos</module>
+    <module>aws</module>
     <module>camel</module>
     <module>camel-test</module>
-    <module>castor</module>
-    <module>dbpool</module>
+    <module>cxf</module>
     <module>dnsjava</module>
     <module>drools</module>
     <module>felix</module>
-    <module>gwt</module>
     <module>hibernate</module>
     <module>jasper</module>
     <module>jasypt</module>
     <module>javamail</module>
     <module>jaxb</module>
     <module>jcifs</module>
-    <module>jdbc-pool</module>
-    <module>jersey</module>
     <module>jfreechart</module>
     <module>jinterop</module>
+    <module>jmx</module>
     <module>jna</module>
     <module>jnlp</module>
     <module>jradius</module>
+    <module>jradius-extended</module>
     <module>jrobin</module>
     <module>jrrd</module>
-    <module>karaf</module>
+    <module>jrrd2</module>
+    <module>jstl</module>
     <module>liquibase</module>
     <module>mina</module>
     <module>netty</module>
+    <module>newts</module>
+    <module>owasp</module>
     <module>pax-exam</module>
     <module>quartz</module>
     <module>rancid</module>
-    <module>rxtx</module>
     <module>servlet</module>
+    <module>smack</module>
     <module>smslib</module>
     <module>snmp4j</module>
     <module>snmp4j-agent</module>

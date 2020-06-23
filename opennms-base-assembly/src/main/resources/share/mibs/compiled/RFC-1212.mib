@@ -1,0 +1,5 @@
+RFC-1212 DEFINITIONS ::= BEGIN
+-- This file is just a shim to satisfy modules that
+-- attempt to import the OBJECT-TYPE macro from RFC-1212
+-- since OBJECT-TYPE is internally defined by jsmiparser.
+END

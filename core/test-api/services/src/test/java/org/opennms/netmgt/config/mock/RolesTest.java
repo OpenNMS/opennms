@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -184,7 +184,7 @@ public class RolesTest extends IntervalTestCase {
 
     private void assertGroup(Group group, WebGroup webGroup) throws Exception {
         assertEquals(group.getName(), webGroup.getName());
-        Collection<String> userNames = group.getUserCollection();
+        Collection<String> userNames = group.getUsers();
         assertEquals(userNames.size(), webGroup.getUsers().size());
         for (Iterator<WebUser> it = webGroup.getUsers().iterator(); it.hasNext();) {
             WebUser user = it.next();
@@ -196,7 +196,7 @@ public class RolesTest extends IntervalTestCase {
 
     private void assertRole(Role role, WebRole webRole) throws Exception {
         assertEquals(role.getName(), webRole.getName());
-        assertEquals(role.getDescription(), webRole.getDescription());
+        assertEquals(role.getDescription().orElse(null), webRole.getDescription());
         assertNotNull(webRole.getMembershipGroup());
         assertEquals(role.getMembershipGroup(), webRole.getMembershipGroup().getName());
         assertNotNull(webRole.getDefaultUser());

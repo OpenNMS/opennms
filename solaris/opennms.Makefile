@@ -209,8 +209,8 @@ ${DESTDIR}/install/postremove: ${DESTDIR}/install install/postremove
 	touch $@
 
 # XXX it should be under BUILDDIR somewhere
-${DESTDIR}${BASEDIR}/docs/COPYING: ${DESTDIR}${BASEDIR}/docs ${TOPONMSDIR}/GPL
-	cp ${TOPONMSDIR}/GPL $@
+${DESTDIR}${BASEDIR}/docs/COPYING: ${DESTDIR}${BASEDIR}/docs
+	cp ${TOPONMSDIR}/COYPING $@
 
 ${DESTDIR}${BASEDIR}/contrib/svc-opennms: ${DESTDIR}${BASEDIR}/contrib svc-opennms
 	cp svc-opennms $@

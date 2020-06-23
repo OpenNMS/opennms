@@ -1,14 +1,42 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.notifd;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Optional;
 
-import org.opennms.bootstrap.Bootstrap;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
 import org.opennms.netmgt.dao.api.MicroblogConfigurationDao;
-import org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao;
+import org.opennms.netmgt.dao.jaxb.DefaultMicroblogConfigurationDao;
 import org.opennms.netmgt.notifd.MicroblogAuthorization.MicroblogAuthorizationException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -18,7 +46,7 @@ import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
-public class MicroblogClient extends Bootstrap {
+public class MicroblogClient {
     private final MicroblogConfigurationDao m_configDao;
 
     public MicroblogClient(final MicroblogConfigurationDao dao) {
@@ -62,7 +90,8 @@ public class MicroblogClient extends Bootstrap {
                 System.out.println("Step " + step++ + ".  Go to https://twitter.com/oauth_clients/new and create a Twitter");
                 System.out.println("\"application\" for your OpenNMS install.  If you have already created an application,");
                 System.out.println("you can get the info you need for the next steps at https://dev.twitter.com/apps/");
-                System.out.println("instead.");
+                System.out.println("instead.  Make sure you go to 'Keys and Access Tokens' and configure the 'Access Level'");
+                System.out.println("to allow 'Read, Write and Access direct messages'.");
                 System.out.println("");
                 System.out.print("Step " + step++ + ".  Enter your consumer key: ");
                 final String consumerKey = br.readLine();
@@ -159,13 +188,12 @@ public class MicroblogClient extends Bootstrap {
         return !isEmpty(mp.getAuthenUsername()) && !isEmpty(mp.getAuthenPassword());
     }
 
-    private static boolean isEmpty(final String value) {
-        return value == null || "".equals(value);
+    private static boolean isEmpty(final Optional<String> value) {
+        return !value.isPresent() || "".equals(value.get());
     }
 
     public MicroblogAuthorization requestAuthorization(final String profile) throws MicroblogAuthorizationException {
-        final MicroblogAuthorization auth = new MicroblogAuthorization(getTwitter(profile));
-        return auth;
+    	return new MicroblogAuthorization(getTwitter(profile));
     }
 
     public Twitter getTwitter(final String profile) {
@@ -174,12 +202,12 @@ public class MicroblogClient extends Bootstrap {
         final ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.setClientURL(mp.getServiceUrl());
 
-        if (!isEmpty(mp.getOauthConsumerKey()))       builder.setOAuthConsumerKey(mp.getOauthConsumerKey());
-        if (!isEmpty(mp.getOauthConsumerSecret()))    builder.setOAuthConsumerSecret(mp.getOauthConsumerSecret());
-        if (!isEmpty(mp.getOauthAccessToken()))       builder.setOAuthAccessToken(mp.getOauthAccessToken());
-        if (!isEmpty(mp.getOauthAccessTokenSecret())) builder.setOAuthAccessTokenSecret(mp.getOauthAccessTokenSecret());
-        if (!isEmpty(mp.getAuthenUsername()))         builder.setUser(mp.getAuthenUsername());
-        if (!isEmpty(mp.getAuthenPassword()))         builder.setPassword(mp.getAuthenPassword());
+        if (!isEmpty(mp.getOauthConsumerKey()))       builder.setOAuthConsumerKey(mp.getOauthConsumerKey().orElse(null));
+        if (!isEmpty(mp.getOauthConsumerSecret()))    builder.setOAuthConsumerSecret(mp.getOauthConsumerSecret().orElse(null));
+        if (!isEmpty(mp.getOauthAccessToken()))       builder.setOAuthAccessToken(mp.getOauthAccessToken().orElse(null));
+        if (!isEmpty(mp.getOauthAccessTokenSecret())) builder.setOAuthAccessTokenSecret(mp.getOauthAccessTokenSecret().orElse(null));
+        if (!isEmpty(mp.getAuthenUsername()))         builder.setUser(mp.getAuthenUsername().orElse(null));
+        if (!isEmpty(mp.getAuthenPassword()))         builder.setPassword(mp.getAuthenPassword().orElse(null));
 
         return new TwitterFactory(builder.build()).getInstance();
     }

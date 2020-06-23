@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -80,8 +80,28 @@ public class RrdOutputSocket {
         m_messages.addMessage(PerformanceDataReading.newBuilder()
                 .setPath(filename)
                 .setOwner(owner)
-                .setTimestamp(timestamp).
-                addAllValue(values)
+                .setTimestamp(timestamp)
+                .addAllDblValue(values)
+                .addAllStrValue(new ArrayList<String>())
+        );
+        m_messageCount++;
+    }
+
+    /**
+     * <p>addData</p>
+     *
+     * @param filename a {@link java.lang.String} object.
+     * @param owner a {@link java.lang.String} object.
+     * @param dblValues a {@link java.util.List} object.
+     * @param strValues a {@link java.util.List} object.
+     */
+    public void addData(String filename, String owner, Long timestampInSec, List<Double> dblValues, List<String> strValues) {
+        m_messages.addMessage(PerformanceDataReading.newBuilder()
+                .setPath(filename)
+                .setOwner(owner)
+                .setTimestamp(timestampInSec * 1000)
+                .addAllDblValue(dblValues)
+                .addAllStrValue(strValues)
         );
         m_messageCount++;
     }
@@ -122,7 +142,7 @@ public class RrdOutputSocket {
     }
 
     private List<Double> parseRrdValues(String data) {
-        List<Double> retval = new ArrayList<Double>();
+        List<Double> retval = new ArrayList<>();
         String[] values = data.split(":");
         // Skip index zero, that's the timestamp
         for (int i = 1; i < values.length; i++) {

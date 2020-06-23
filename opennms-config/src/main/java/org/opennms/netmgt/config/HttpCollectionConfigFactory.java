@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,18 +33,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
 import org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.rrd.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>HttpCollectionConfigFactory class.</p>
@@ -71,11 +70,9 @@ public class HttpCollectionConfigFactory {
      * <p>Constructor for HttpCollectionConfigFactory.</p>
      *
      * @param configFile a {@link java.lang.String} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public HttpCollectionConfigFactory(String configFile) throws MarshalException, ValidationException, IOException {
+    public HttpCollectionConfigFactory(String configFile) throws IOException {
         InputStream is = null;
         try {
             is = new FileInputStream(configFile);
@@ -91,16 +88,17 @@ public class HttpCollectionConfigFactory {
      * <p>Constructor for HttpCollectionConfigFactory.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws IOException
      */
-    public HttpCollectionConfigFactory(InputStream stream) throws MarshalException, ValidationException {
+    public HttpCollectionConfigFactory(InputStream stream) throws IOException {
         initialize(stream);
     }
 
-    private void initialize(InputStream stream) throws MarshalException, ValidationException {
+    private void initialize(InputStream stream) throws IOException {
         LOG.debug("initialize: initializing http collection config factory.");
-        m_config = CastorUtils.unmarshal(HttpDatacollectionConfig.class, stream);
+        try (InputStreamReader isr = new InputStreamReader(stream)) {
+            m_config = JaxbUtils.unmarshal(HttpDatacollectionConfig.class, isr);
+        }
     }
 
     /**
@@ -108,10 +106,8 @@ public class HttpCollectionConfigFactory {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException, FileNotFoundException {
         
         if (m_instance == null) {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.HTTP_COLLECTION_CONFIG_FILE_NAME);
@@ -151,10 +147,8 @@ public class HttpCollectionConfigFactory {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public synchronized void reload() throws IOException, FileNotFoundException {
         m_instance = null;
         init();
     }
@@ -165,10 +159,8 @@ public class HttpCollectionConfigFactory {
      * read it.
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    protected void updateFromFile() throws IOException, MarshalException, ValidationException {
+    protected void updateFromFile() throws IOException {
         if (m_loadedFromFile) {
             File surveillanceViewsFile = ConfigFileConstants.getFile(ConfigFileConstants.HTTP_COLLECTION_CONFIG_FILE_NAME);
             if (m_lastModified != surveillanceViewsFile.lastModified()) {
@@ -182,7 +174,7 @@ public class HttpCollectionConfigFactory {
      *
      * @return a {@link org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig} object.
      */
-    public synchronized static HttpDatacollectionConfig getConfig() {
+    public static synchronized HttpDatacollectionConfig getConfig() {
         return m_config;
     }
 
@@ -191,7 +183,7 @@ public class HttpCollectionConfigFactory {
      *
      * @param m_config a {@link org.opennms.netmgt.config.httpdatacollection.HttpDatacollectionConfig} object.
      */
-    public synchronized static void setConfig(HttpDatacollectionConfig m_config) {
+    public static synchronized void setConfig(HttpDatacollectionConfig m_config) {
         HttpCollectionConfigFactory.m_config = m_config;
     }
 
@@ -202,7 +194,13 @@ public class HttpCollectionConfigFactory {
      * @return a {@link org.opennms.netmgt.config.httpdatacollection.HttpCollection} object.
      */
     public HttpCollection getHttpCollection(String collectionName) {
-        List<HttpCollection> collections = m_config.getHttpCollectionCollection();
+        try {
+            updateFromFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        List<HttpCollection> collections = m_config.getHttpCollection();
         HttpCollection collection = null;
         for (HttpCollection coll : collections) {
             if (coll.getName().equalsIgnoreCase(collectionName)) {
@@ -221,7 +219,7 @@ public class HttpCollectionConfigFactory {
      * <p>getRrdRepository</p>
      *
      * @param collectionName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.RrdRepository} object.
+     * @return a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      */
     public RrdRepository getRrdRepository(String collectionName) {
         RrdRepository repo = new RrdRepository();
@@ -255,7 +253,7 @@ public class HttpCollectionConfigFactory {
     public List<String> getRRAList(String cName) {
        HttpCollection collection = getHttpCollection(cName);
         if (collection != null)
-            return collection.getRrd().getRraCollection();
+            return collection.getRrd().getRra();
         else
             return null;
 

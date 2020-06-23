@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+
+  <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao" init-method="reload">
+    <property name="configResource"><value>classpath:/org/opennms/netmgt/trapd/eventconf.xml</value></property>
+  </bean>
+
+  <!-- We need a mock consumer manager and a dispatcher factory in order to make the tests work-->
+  <import resource="classpath:/META-INF/opennms/mockSinkConsumerManager.xml" />
+  <bean id="mockMessageDispatcherFactory" class="org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory">
+    <property name="consumer" ref="trapSinkConsumer"/>
+  </bean>
+
+  <!-- update config for tests -->
+  <bean id="trapdConfigUpdate" class="org.opennms.netmgt.trapd.TrapdConfigConfigUpdater"/>
+
+</beans>

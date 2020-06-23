@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,23 +25,26 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.IncludeCollection;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 
 /**
@@ -50,7 +53,7 @@ import com.vaadin.ui.Button.ClickEvent;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollection>> {
+public class IncludeCollectionField extends CustomField<List<IncludeCollection>> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 3677540981240383672L;
@@ -75,10 +78,10 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
         table.addStyleName("light");
         table.setVisibleColumns(new Object[]{"type", "value"});
         table.setColumnHeaders(new String[]{"Type", "Value"});
+        table.setEditable(!isReadOnly());
         table.setSelectable(true);
         table.setImmediate(true);
-        table.setHeight("125px");
-        table.setWidth("100%");
+        table.setSizeFull();
         final Button add = new Button("Add", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
@@ -101,7 +104,7 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
                     Notification.show("Please select a IncludeCollection from the table.");
                     return;
                 }
-                IncludeCollectionWindow w = new IncludeCollectionWindow(dataCollectionConfigDao, container, (IncludeCollectionWrapper) value) {
+                IncludeCollectionWindow w = new IncludeCollectionWindow(dataCollectionConfigDao, container, container.getOnmsBean(value)) {
                     @Override
                     public void fieldChanged() {}
                 };
@@ -138,16 +141,16 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<ArrayList<IncludeCollection>> getType() {
-        return (Class<ArrayList<IncludeCollection>>) new ArrayList<IncludeCollection>().getClass();
+    public Class<? extends List<IncludeCollection>> getType() {
+        // Check org.opennms.netmgt.config.datacollection.SnmpCollection.getIncludeCollections() 
+        return (Class<? extends List<IncludeCollection>>) Collections.unmodifiableList(new ArrayList<IncludeCollection>()).getClass();
     }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    protected void setInternalValue(ArrayList<IncludeCollection> includeCollections) {
-        super.setInternalValue(includeCollections); // TODO Is this required ?
+    protected void setInternalValue(List<IncludeCollection> includeCollections) {
         container.removeAllItems();
         for (IncludeCollection ic : includeCollections) {
             container.addBean(new IncludeCollectionWrapper(ic));
@@ -158,10 +161,10 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
      * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    protected ArrayList<IncludeCollection> getInternalValue() {
-        ArrayList<IncludeCollection> beans = new ArrayList<IncludeCollection>();
-        for (Object itemId: container.getItemIds()) {
-            beans.add(container.getItem(itemId).getBean().createIncludeCollection());
+    protected List<IncludeCollection> getInternalValue() {
+        final List<IncludeCollection> beans = new ArrayList<>();
+        for (IncludeCollectionWrapper wrapper : container.getOnmsBeans()) {
+            beans.add(wrapper.createIncludeCollection());
         }
         return beans;
     }
@@ -171,6 +174,7 @@ public class IncludeCollectionField extends CustomField<ArrayList<IncludeCollect
      */
     @Override
     public void setReadOnly(boolean readOnly) {
+        table.setEditable(!readOnly);
         toolbar.setVisible(!readOnly);
         super.setReadOnly(readOnly);
     }

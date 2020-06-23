@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -63,7 +63,7 @@ public class OwnedInterval extends TimeInterval {
     /**
      * <p>Constructor for OwnedInterval.</p>
      *
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
      * @param interval a {@link org.opennms.core.utils.TimeInterval} object.
      */
     public OwnedInterval(Owner owner, TimeInterval interval) {
@@ -93,7 +93,7 @@ public class OwnedInterval extends TimeInterval {
     /**
      * <p>Constructor for OwnedInterval.</p>
      *
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
      * @param start a {@link java.util.Date} object.
      * @param end a {@link java.util.Date} object.
      */
@@ -124,14 +124,14 @@ public class OwnedInterval extends TimeInterval {
     /**
      * <p>addOwner</p>
      *
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
      */
     public void addOwner(Owner owner) { m_owners.add(owner); Collections.sort(m_owners); }
     
     /**
      * <p>removeOwner</p>
      *
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
      */
     public void removeOwner(Owner owner) { m_owners.remove(owner); }
     
@@ -152,7 +152,7 @@ public class OwnedInterval extends TimeInterval {
     /**
      * <p>isOwner</p>
      *
-     * @param owner a {@link org.opennms.netmgt.config.Owner} object.
+     * @param owner a {@link org.opennms.core.utils.Owner} object.
      * @return a boolean.
      */
     public boolean isOwner(Owner owner) { return m_owners.contains(owner); }
@@ -171,7 +171,7 @@ public class OwnedInterval extends TimeInterval {
      */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         if (m_owners.isEmpty()) {
             sb.append("UNOWNED");
         } else {

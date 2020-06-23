@@ -1,52 +1,27 @@
-<?xml version="1.0"?>
-<datacollection-group name="Routers">
-
-    <resourceType name="frCircuitIfIndex" label="Frame-Relay (RFC1315)">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Routers">
+   <resourceType name="frCircuitIfIndex" label="Frame-Relay (RFC1315)">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.FrameRelayStorageStrategy"/>
-    </resourceType>
-
-    <resourceType name="bgpPeerEntry" label="BGP Peer"
-                  resourceLabel="ASN ${bgpPeerRemoteAs}, Peer ${bgpPeerRemoteAddr}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-    </resourceType>
-
-    <resourceType name="ospfAreaEntry" label="OSPF Area Info"
-                  resourceLabel="OSPF Area ${ospfAreaId}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-    </resourceType>
-
-      <group name="rfc1315-frame-relay" ifType="all">
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.1" instance="frCircuitIfIndex" alias="frIfIndex"        type="string" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.2" instance="frCircuitIfIndex" alias="frDlci"           type="string" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.3" instance="frCircuitIfIndex" alias="frState"          type="string" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.4" instance="frCircuitIfIndex" alias="frReceivedFECNs"  type="Counter" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.5" instance="frCircuitIfIndex" alias="frReceivedBECNs"  type="Counter" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.6" instance="frCircuitIfIndex" alias="frSentFrames"     type="Counter" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.7" instance="frCircuitIfIndex" alias="frSentOctets"     type="Counter" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.8" instance="frCircuitIfIndex" alias="frReceivedFrames" type="Counter" />
-        <mibObj oid=".1.3.6.1.2.1.10.32.2.1.9" instance="frCircuitIfIndex" alias="frReceivedOctets" type="Counter" />
-      </group>
-
-      <!-- Stats from the IETF BGP4-MIB -->
-      <group name="ietf-bgp4-peer-stats" ifType="all">
-        <mibObj oid=".1.3.6.1.2.1.15.3.1.7"  instance="bgpPeerEntry" alias="bgpPeerRemoteAddr" type="string" />
-        <mibObj oid=".1.3.6.1.2.1.15.3.1.9"  instance="bgpPeerEntry" alias="bgpPeerRemoteAs" type="string" />
-        <mibObj oid=".1.3.6.1.2.1.15.3.1.10" instance="bgpPeerEntry" alias="bgpPeerInUpdates" type="counter" />
-        <mibObj oid=".1.3.6.1.2.1.15.3.1.11" instance="bgpPeerEntry" alias="bgpPeerOutUpdates" type="counter" />
-        <mibObj oid=".1.3.6.1.2.1.15.3.1.12" instance="bgpPeerEntry" alias="bgpPeerInTotalMsg" type="counter" />
-        <mibObj oid=".1.3.6.1.2.1.15.3.1.13" instance="bgpPeerEntry" alias="bgpPeerOutTotalMsg" type="counter" />
-      </group>
-
-      <!-- Stats from the IETF OSPF-MIB -->
-      <group name="ietf-ospf-stats" ifType="all">
-        <mibObj oid=".1.3.6.1.2.1.14.2.1.1"  instance="ospfAreaEntry" alias="ospfAreaId" type="string" />
-        <mibObj oid=".1.3.6.1.2.1.14.2.1.4"  instance="ospfAreaEntry" alias="ospfSpfRuns" type="counter" />
-        <mibObj oid=".1.3.6.1.2.1.14.2.1.5"  instance="ospfAreaEntry" alias="ospfAreaBdrRtrCount" type="gauge" />
-        <mibObj oid=".1.3.6.1.2.1.14.2.1.6"  instance="ospfAreaEntry" alias="ospfAsBdrRtrCount" type="gauge" />
-        <mibObj oid=".1.3.6.1.2.1.14.2.1.7"  instance="ospfAreaEntry" alias="ospfAreaLsaCount" type="gauge" />
-      </group>
-
+   </resourceType>
+   <resourceType name="bgpPeerEntry" label="BGP Peer" resourceLabel="ASN ${bgpPeerRemoteAs}, Peer ${bgpPeerRemoteAddr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <group name="rfc1315-frame-relay" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.10.32.2.1.1" instance="frCircuitIfIndex" alias="frIfIndex" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.10.32.2.1.2" instance="frCircuitIfIndex" alias="frDlci" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.10.32.2.1.3" instance="frCircuitIfIndex" alias="frState" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.10.32.2.1.4" instance="frCircuitIfIndex" alias="frReceivedFECNs" type="Counter"/>
+      <mibObj oid=".1.3.6.1.2.1.10.32.2.1.5" instance="frCircuitIfIndex" alias="frReceivedBECNs" type="Counter"/>
+      <mibObj oid=".1.3.6.1.2.1.10.32.2.1.6" instance="frCircuitIfIndex" alias="frSentFrames" type="Counter"/>
+      <mibObj oid=".1.3.6.1.2.1.10.32.2.1.7" instance="frCircuitIfIndex" alias="frSentOctets" type="Counter"/>
+      <mibObj oid=".1.3.6.1.2.1.10.32.2.1.8" instance="frCircuitIfIndex" alias="frReceivedFrames" type="Counter"/>
+      <mibObj oid=".1.3.6.1.2.1.10.32.2.1.9" instance="frCircuitIfIndex" alias="frReceivedOctets" type="Counter"/>
+   </group>
+   <group name="ietf-bgp4-peer-stats" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.15.3.1.7" instance="bgpPeerEntry" alias="bgpPeerRemoteAddr" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.15.3.1.9" instance="bgpPeerEntry" alias="bgpPeerRemoteAs" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.15.3.1.10" instance="bgpPeerEntry" alias="bgpPeerInUpdates" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.15.3.1.11" instance="bgpPeerEntry" alias="bgpPeerOutUpdates" type="counter"/>
+   </group>
 </datacollection-group>

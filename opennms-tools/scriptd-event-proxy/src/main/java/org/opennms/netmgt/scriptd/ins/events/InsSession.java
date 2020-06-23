@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -42,15 +42,14 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -104,7 +103,7 @@ class InsSession extends InsAbstractSession {
 
 	private int status = STARTING_SESSION_STATUS;
 	
-	private List<Event> m_events = new ArrayList<Event>();
+	private List<Event> m_events = new ArrayList<>();
 
 	InsSession(Socket server) throws IOException {
 		this.server = server;
@@ -266,7 +265,7 @@ class InsSession extends InsAbstractSession {
         final Date time = ev.getEventTime();
 		if (time != null) {
             LOG.debug("Setting event date timestamp to (GMT): {}", time);
-            e.setTime(EventConstants.formatToString(time));
+            e.setTime(time);
         } else {
         	LOG.info("No Event time found."); 
         }
@@ -350,7 +349,7 @@ class InsSession extends InsAbstractSession {
         final String eventParms = ev.getEventParms();
 		if (eventParms != null) {
         	LOG.debug("Setting Event Parms: {}", eventParms);
-        	final List<Parm> parms = Parameter.decode(eventParms);
+        	final List<Parm> parms = EventParameterUtils.decode(eventParms);
             if (parms != null) e.setParmCollection(parms);
         } else {
             LOG.info("No Event parms found.");

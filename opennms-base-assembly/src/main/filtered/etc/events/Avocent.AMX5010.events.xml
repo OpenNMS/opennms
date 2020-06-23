@@ -1,61 +1,57 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: AMX5010-TRAP-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/amx5010RebootStartedTrap</uei>
-	<event-label>AMX5010-TRAP-MIB defined trap event: amx5010RebootStartedTrap</event-label>
-	<descr>
-&lt;p&gt;The appliance is in the process of rebooting.
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/amx5010RebootStartedTrap</uei>
+      <event-label>AMX5010-TRAP-MIB defined trap event: amx5010RebootStartedTrap</event-label>
+      <descr>&lt;p>The appliance is in the process of rebooting.
 
 The name of the user who initiated the reboot is contained in 
 amx5010TrapObjectUserName.  If the reboot is initated from
 via snmp , then the value of this object will be the 
 following string
 
-  snmpUser&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+  snmpUser&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	amx5010TrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			amx5010RebootStartedTrap trap received 
-			amx5010TrapObjectUserName=%parm[#1]%&lt;/p&gt;
+			amx5010TrapObjectUserName=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/amx5010RouteConnectTrap</uei>
-	<event-label>AMX5010-TRAP-MIB defined trap event: amx5010RouteConnectTrap</event-label>
-	<descr>
-&lt;p&gt;A connection between a UserStation and an Amiq device has been 
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/amx5010RouteConnectTrap</uei>
+      <event-label>AMX5010-TRAP-MIB defined trap event: amx5010RouteConnectTrap</event-label>
+      <descr>&lt;p>A connection between a UserStation and an Amiq device has been 
 established.
 
 The Uid of the UserStation involved in the connection is contained 
@@ -65,86 +61,82 @@ The Uid of the Amiq device involved in the connection is contained
 in amx5010TrapObjectAmiqUid.
 
 The connection mode of the connection is contained in 
-amx5010TrapObjectAmiqConnectMode&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+amx5010TrapObjectAmiqConnectMode&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	amx5010TrapObjectUserStationUid&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectAmiqUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	amx5010TrapObjectAmiqUid&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectAmiqConnectMode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	amx5010TrapObjectAmiqConnectMode&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		nspmNONE(1)
 		nspmSHARED(2)
 		nspmPRIVATE(3)
 		nspmMAINTAIN(4)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			amx5010RouteConnectTrap trap received 
 			amx5010TrapObjectUserStationUid=%parm[#1]% 
 			amx5010TrapObjectAmiqUid=%parm[#2]% 
-			amx5010TrapObjectAmiqConnectMode=%parm[#3]%&lt;/p&gt;
+			amx5010TrapObjectAmiqConnectMode=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/amx5010RouteDisconnectTrap</uei>
-	<event-label>AMX5010-TRAP-MIB defined trap event: amx5010RouteDisconnectTrap</event-label>
-	<descr>
-&lt;p&gt;A connection between a UserStation and an Amiq device has been 
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/amx5010RouteDisconnectTrap</uei>
+      <event-label>AMX5010-TRAP-MIB defined trap event: amx5010RouteDisconnectTrap</event-label>
+      <descr>&lt;p>A connection between a UserStation and an Amiq device has been 
 disconnected.
 
 The Uid of the UserStation involved in the connection is contained 
-in amx5010TrapObjectUserStationUid.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+in amx5010TrapObjectUserStationUid.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	amx5010TrapObjectUserStationUid&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			amx5010RouteDisconnectTrap trap received 
-			amx5010TrapObjectUserStationUid=%parm[#1]%&lt;/p&gt;
+			amx5010TrapObjectUserStationUid=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/amx5010AmiqConnectedTrap</uei>
-	<event-label>AMX5010-TRAP-MIB defined trap event: amx5010AmiqConnectedTrap</event-label>
-	<descr>
-&lt;p&gt;An AMIQ device has been connected to the AMX.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/amx5010AmiqConnectedTrap</uei>
+      <event-label>AMX5010-TRAP-MIB defined trap event: amx5010AmiqConnectedTrap</event-label>
+      <descr>&lt;p>An AMIQ device has been connected to the AMX.
 
 The Uid of the Amiq device connected to the AMX is contained 
 in amx5010TrapObjectAmiqUid.
@@ -153,19 +145,19 @@ The name of the Amiq device connected to the AMX is contained
 in amx5010TrapObjectAmiqName.
 
 The PortNum of the Amiq device connected to the AMX is contained 
-in amx5010TrapObjectAmiqPortNum.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+in amx5010TrapObjectAmiqPortNum.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectAmiqUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	amx5010TrapObjectAmiqUid&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectAmiqName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	amx5010TrapObjectAmiqName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectAmiqPortNum&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	amx5010TrapObjectAmiqPortNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		portNumUserSide1(1)
 		portNumUserSide2(2)
 		portNumUserSide3(3)
@@ -247,68 +239,64 @@ in amx5010TrapObjectAmiqPortNum.&lt;/p&gt;&lt;table&gt;
 		portNumAmiqSide63(191)
 		portNumAmiqSide64(192)
 		portNumNULL(255)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			amx5010AmiqConnectedTrap trap received 
 			amx5010TrapObjectAmiqUid=%parm[#1]% 
 			amx5010TrapObjectAmiqName=%parm[#2]% 
-			amx5010TrapObjectAmiqPortNum=%parm[#3]%&lt;/p&gt;
+			amx5010TrapObjectAmiqPortNum=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/amx5010AmiqDisconnectedTrap</uei>
-	<event-label>AMX5010-TRAP-MIB defined trap event: amx5010AmiqDisconnectedTrap</event-label>
-	<descr>
-&lt;p&gt;An AMIQ device has been disconnected from the AMX.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/amx5010AmiqDisconnectedTrap</uei>
+      <event-label>AMX5010-TRAP-MIB defined trap event: amx5010AmiqDisconnectedTrap</event-label>
+      <descr>&lt;p>An AMIQ device has been disconnected from the AMX.
 
 The Uid of the Amiq device disconnected from the AMX is contained 
-in amx5010TrapObjectAmiqUid.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+in amx5010TrapObjectAmiqUid.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectAmiqUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	amx5010TrapObjectAmiqUid&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			amx5010AmiqDisconnectedTrap trap received 
-			amx5010TrapObjectAmiqUid=%parm[#1]%&lt;/p&gt;
+			amx5010TrapObjectAmiqUid=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/amx5010UserStationConnectedTrap</uei>
-	<event-label>AMX5010-TRAP-MIB defined trap event: amx5010UserStationConnectedTrap</event-label>
-	<descr>
-&lt;p&gt;A UserStation has been connected to the AMX.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/amx5010UserStationConnectedTrap</uei>
+      <event-label>AMX5010-TRAP-MIB defined trap event: amx5010UserStationConnectedTrap</event-label>
+      <descr>&lt;p>A UserStation has been connected to the AMX.
 
 The Uid of the UserStation connected to the AMX is contained 
 in amx5010TrapObjectUserStationUid.
@@ -317,19 +305,19 @@ The name of the UserStation connected to the AMX is contained
 in amx5010TrapObjectUserStationName.
 
 The PortNum of the UserStation connected to the AMX is contained 
-in amx5010TrapObjectUserStnPortNum.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+in amx5010TrapObjectUserStnPortNum.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	amx5010TrapObjectUserStationUid&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectUserStationName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	amx5010TrapObjectUserStationName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectUserStnPortNum&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	amx5010TrapObjectUserStnPortNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		portNumUserSide1(1)
 		portNumUserSide2(2)
 		portNumUserSide3(3)
@@ -411,122 +399,114 @@ in amx5010TrapObjectUserStnPortNum.&lt;/p&gt;&lt;table&gt;
 		portNumAmiqSide63(191)
 		portNumAmiqSide64(192)
 		portNumNULL(255)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			amx5010UserStationConnectedTrap trap received 
 			amx5010TrapObjectUserStationUid=%parm[#1]% 
 			amx5010TrapObjectUserStationName=%parm[#2]% 
-			amx5010TrapObjectUserStnPortNum=%parm[#3]%&lt;/p&gt;
+			amx5010TrapObjectUserStnPortNum=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/amx5010UserStnDisconnectedTrap</uei>
-	<event-label>AMX5010-TRAP-MIB defined trap event: amx5010UserStnDisconnectedTrap</event-label>
-	<descr>
-&lt;p&gt;A UserStation has been disconnected from the AMX.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/amx5010UserStnDisconnectedTrap</uei>
+      <event-label>AMX5010-TRAP-MIB defined trap event: amx5010UserStnDisconnectedTrap</event-label>
+      <descr>&lt;p>A UserStation has been disconnected from the AMX.
 
 The Uid of the UserStation disconnected from the AMX is contained 
-in amx5010TrapObjectUserStationUid.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+in amx5010TrapObjectUserStationUid.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	amx5010TrapObjectUserStationUid&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			amx5010UserStnDisconnectedTrap trap received 
-			amx5010TrapObjectUserStationUid=%parm[#1]%&lt;/p&gt;
+			amx5010TrapObjectUserStationUid=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/amx5010UserStationLoginTrap</uei>
-	<event-label>AMX5010-TRAP-MIB defined trap event: amx5010UserStationLoginTrap</event-label>
-	<descr>
-&lt;p&gt;A User has logged in from a UserStation.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/amx5010UserStationLoginTrap</uei>
+      <event-label>AMX5010-TRAP-MIB defined trap event: amx5010UserStationLoginTrap</event-label>
+      <descr>&lt;p>A User has logged in from a UserStation.
 
 The Uid of the UserStation being logged in from is contained 
 in amx5010TrapObjectUserStationUid.
 
 The name of the User logged in to the UserStation is contained 
-in amx5010TrapObjectUserStationName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+in amx5010TrapObjectUserStationName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	amx5010TrapObjectUserStationUid&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	amx5010TrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			amx5010UserStationLoginTrap trap received 
 			amx5010TrapObjectUserStationUid=%parm[#1]% 
-			amx5010TrapObjectUserName=%parm[#2]%&lt;/p&gt;
+			amx5010TrapObjectUserName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/amx5010UserStationLogoutTrap</uei>
-	<event-label>AMX5010-TRAP-MIB defined trap event: amx5010UserStationLogoutTrap</event-label>
-	<descr>
-&lt;p&gt;A User has logged out from a UserStation.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.10.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/amx5010UserStationLogoutTrap</uei>
+      <event-label>AMX5010-TRAP-MIB defined trap event: amx5010UserStationLogoutTrap</event-label>
+      <descr>&lt;p>A User has logged out from a UserStation.
 
 The Uid of the UserStation being logged out from is contained 
-in amx5010TrapObjectUserStationUid.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+in amx5010TrapObjectUserStationUid.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	amx5010TrapObjectUserStationUid&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	amx5010TrapObjectUserStationUid&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			amx5010UserStationLogoutTrap trap received 
-			amx5010TrapObjectUserStationUid=%parm[#1]%&lt;/p&gt;
+			amx5010TrapObjectUserStationUid=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<!-- End of auto generated data from MIB: AMX5010-TRAP-MIB -->
+      <severity>Normal</severity>
+   </event>
 </events>

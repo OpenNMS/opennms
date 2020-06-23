@@ -4,12 +4,12 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>1.13.0-SNAPSHOT</version>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.name-cutter</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS Name Cutter</name>
+    <name>OpenNMS :: Features :: Name Cutter</name>
 
     <build>
         <plugins>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,18 +25,36 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.data.Property;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.ui.*;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUI;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
+import org.opennms.netmgt.config.kscReports.Graph;
+import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.OnmsResourceType;
 
-import java.util.Calendar;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * This class is used to create a configuration window for the {@link RrdDashlet}.
@@ -79,6 +97,11 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
     private GridLayout m_gridLayout;
 
     /**
+     * the KSC report factory
+     */
+    private KSC_PerformanceReportFactory kscPerformanceReportFactory;
+
+    /**
      * Constructor for instantiating new objects of this class.
      *
      * @param dashletSpec the {@link DashletSpec} to be edited
@@ -103,6 +126,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
          * setting up the layouts
          */
         FormLayout leftFormLayout = new FormLayout();
+        FormLayout middleFormLayout = new FormLayout();
         FormLayout rightFormLayout = new FormLayout();
 
         /**
@@ -110,6 +134,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
          */
         m_columnsSelect = new NativeSelect();
         m_columnsSelect.setCaption("Columns");
+        m_columnsSelect.setDescription("Number of columns");
         m_columnsSelect.setImmediate(true);
         m_columnsSelect.setNewItemsAllowed(false);
         m_columnsSelect.setMultiSelect(false);
@@ -118,6 +143,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
 
         m_rowsSelect = new NativeSelect();
         m_rowsSelect.setCaption("Rows");
+        m_rowsSelect.setDescription("Number of rows");
         m_rowsSelect.setImmediate(true);
         m_rowsSelect.setNewItemsAllowed(false);
         m_rowsSelect.setMultiSelect(false);
@@ -155,16 +181,20 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
          */
         m_widthField = new TextField();
         m_widthField.setCaption("Graph Width");
+        m_widthField.setDescription("Width of graphs");
         m_widthField.setValue(m_dashletSpec.getParameters().get("width"));
 
         m_heightField = new TextField();
         m_heightField.setCaption("Graph Height");
+        m_heightField.setDescription("Height of graphs");
         m_heightField.setValue(m_dashletSpec.getParameters().get("height"));
 
         m_timeFrameValue = new TextField("Timeframe value");
+        m_timeFrameValue.setDescription("Timeframe value");
         m_timeFrameValue.setValue(m_dashletSpec.getParameters().get("timeFrameValue"));
 
         m_timeFrameType = new NativeSelect("Timeframe type");
+        m_timeFrameType.setDescription("Timeframe type");
         m_timeFrameType.setNullSelectionAllowed(false);
         m_timeFrameType.setMultiSelect(false);
         m_timeFrameType.setNewItemsAllowed(false);
@@ -232,9 +262,52 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
         leftFormLayout.addComponent(m_columnsSelect);
         leftFormLayout.addComponent(m_widthField);
         leftFormLayout.addComponent(m_timeFrameValue);
-        rightFormLayout.addComponent(m_rowsSelect);
-        rightFormLayout.addComponent(m_heightField);
-        rightFormLayout.addComponent(m_timeFrameType);
+        middleFormLayout.addComponent(m_rowsSelect);
+        middleFormLayout.addComponent(m_heightField);
+        middleFormLayout.addComponent(m_timeFrameType);
+
+        /**
+         * KSC import stuff
+         */
+        Button importButton = new Button("KSC Import");
+        importButton.setDescription("Import KSC-report");
+        final NativeSelect selectKSCReport = new NativeSelect();
+        selectKSCReport.setDescription("KSC-report selection");
+        selectKSCReport.setCaption("KSC Report");
+        selectKSCReport.setImmediate(true);
+        selectKSCReport.setNewItemsAllowed(false);
+        selectKSCReport.setMultiSelect(false);
+        selectKSCReport.setInvalidAllowed(false);
+        selectKSCReport.setNullSelectionAllowed(false);
+        selectKSCReport.setImmediate(true);
+
+        kscPerformanceReportFactory = KSC_PerformanceReportFactory.getInstance();
+
+        Map<Integer, String> mapOfKscReports = kscPerformanceReportFactory.getReportList();
+
+        if (mapOfKscReports.size() == 0) {
+            importButton.setEnabled(false);
+        }
+
+        for (Map.Entry<Integer, String> entry : mapOfKscReports.entrySet()) {
+            selectKSCReport.addItem(entry.getKey());
+
+            selectKSCReport.setItemCaption(entry.getKey(), entry.getValue());
+
+            if (selectKSCReport.getValue() == null) {
+                selectKSCReport.setValue(entry.getKey());
+            }
+        }
+
+        importButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                importKscReport(Integer.valueOf(selectKSCReport.getValue().toString()));
+            }
+        });
+
+        rightFormLayout.addComponent(selectKSCReport);
+        rightFormLayout.addComponent(importButton);
 
         /**
          * setting up the layout
@@ -243,6 +316,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
         horizontalLayout.setMargin(true);
 
         horizontalLayout.addComponent(leftFormLayout);
+        horizontalLayout.addComponent(middleFormLayout);
         horizontalLayout.addComponent(rightFormLayout);
 
         /**
@@ -258,6 +332,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
          * Adding the cancel button...
          */
         Button cancel = new Button("Cancel");
+        cancel.setDescription("Cancel editing");
         cancel.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -274,6 +349,7 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
          * ...and the OK button
          */
         Button ok = new Button("Save");
+        ok.setDescription("Save properties and close");
 
         ok.addClickListener(new Button.ClickListener() {
             @Override
@@ -306,8 +382,8 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
 
                 int i = 0;
 
-                for (int x = 0; x < m_gridLayout.getColumns(); x++) {
-                    for (int y = 0; y < m_gridLayout.getRows(); y++) {
+                for (int y = 0; y < m_gridLayout.getRows(); y++) {
+                    for (int x = 0; x < m_gridLayout.getColumns(); x++) {
                         RrdGraphEntry rrdGraphEntry = (RrdGraphEntry) m_gridLayout.getComponent(x, y);
                         m_dashletSpec.getParameters().put("nodeLabel" + i, rrdGraphEntry.getNodeLabel());
                         m_dashletSpec.getParameters().put("nodeId" + i, rrdGraphEntry.getNodeId());
@@ -349,6 +425,126 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
         setContent(verticalLayout);
     }
 
+    private void setRrdGraphEntryFromKscReportGraph(RrdGraphEntry rrdGraphEntry, Graph graph) {
+
+        String graphLabel, graphId, graphUrl, nodeId, nodeLabel, resourceLabel, resourceTypeId, resourceTypeLabel;
+
+        String[] graphTypeArr = graph.getGraphtype().split("\\.");
+        String[] resourceIdArr = graph.getResourceId().orElse("").split("\\.");
+
+        nodeId = resourceIdArr[0].split("[\\[\\]]")[1];
+        String resourceTypeName = resourceIdArr[1].split("[\\[\\]]")[0];
+
+        OnmsNode onmsNode = m_nodeDao.get(nodeId);
+        nodeLabel = onmsNode.getLabel();
+
+        Map<OnmsResourceType, List<OnmsResource>> resourceTypeListMap = m_rrdGraphHelper.getResourceTypeMapForNodeId(nodeId);
+
+        for (Map.Entry<OnmsResourceType, List<OnmsResource>> entry : resourceTypeListMap.entrySet()) {
+            OnmsResourceType onmsResourceType = entry.getKey();
+
+            if (resourceTypeName.equals(onmsResourceType.getName())) {
+                resourceTypeId = "node[" + nodeId + "]." + resourceTypeName;
+                resourceTypeLabel = onmsResourceType.getLabel();
+                List<OnmsResource> onmsResourceList = entry.getValue();
+
+                for (OnmsResource onmsResource : onmsResourceList) {
+
+                    String onmsResourceId = onmsResource.getId().toString();
+
+                    if (onmsResourceId.equals(graph.getResourceId())) {
+                        resourceLabel = onmsResource.getLabel();
+
+                        Map<String, String> resultsMap = m_rrdGraphHelper.getGraphResultsForResourceId(onmsResource.getId());
+                        Map<String, String> nameTitleMapping = m_rrdGraphHelper.getGraphNameTitleMappingForResourceId(onmsResource.getId());
+
+                        graphId = onmsResourceId + "." + nameTitleMapping.get(graph.getGraphtype());
+
+                        graphLabel = nameTitleMapping.get(graph.getGraphtype());
+                        graphUrl = resultsMap.get(graph.getGraphtype());
+
+                        rrdGraphEntry.setNodeId(nodeId);
+                        rrdGraphEntry.setNodeLabel(nodeLabel);
+                        rrdGraphEntry.setResourceTypeId(resourceTypeId);
+                        rrdGraphEntry.setResourceTypeLabel(resourceTypeLabel);
+                        rrdGraphEntry.setResourceId(onmsResourceId);
+                        rrdGraphEntry.setResourceLabel(resourceLabel);
+                        rrdGraphEntry.setGraphId(graphId);
+                        rrdGraphEntry.setGraphLabel(graphLabel);
+                        rrdGraphEntry.setGraphUrl(graphUrl);
+
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    /**
+     * Import the KSC report with the given name
+     */
+    private void importKscReport(int reportId) {
+        Report report = kscPerformanceReportFactory.getReportByIndex(reportId);
+
+        int columns = Math.max(1, report.getGraphsPerLine().orElse(1));
+
+        int rows = report.getGraphs().size() / columns;
+
+        if (rows == 0) {
+            rows = 1;
+        }
+
+        if (report.getGraphs().size() % columns > 0) {
+            rows++;
+        }
+
+        for (int y = 0; y < m_gridLayout.getRows(); y++) {
+            for (int x = 0; x < m_gridLayout.getColumns(); x++) {
+                if (x >= columns || y >= rows) {
+                    m_gridLayout.removeComponent(x, y);
+                }
+            }
+        }
+
+        m_columnsSelect.setValue(columns);
+        m_rowsSelect.setValue(rows);
+
+        m_gridLayout.setColumns(columns);
+        m_gridLayout.setRows(rows);
+
+        int timeFrameValue = 1;
+        int timeFrameType = Calendar.HOUR;
+
+        int i = 0;
+
+        for (int y = 0; y < m_gridLayout.getRows(); y++) {
+            for (int x = 0; x < m_gridLayout.getColumns(); x++) {
+
+                if (m_gridLayout.getComponent(x, y) == null) {
+                    RrdGraphEntry rrdGraphEntry = new RrdGraphEntry(m_nodeDao, m_rrdGraphHelper, x, y);
+                    rrdGraphEntry.setPreviewTimeFrame(timeFrameType, timeFrameValue);
+                    m_gridLayout.addComponent(rrdGraphEntry, x, y);
+                }
+
+                RrdGraphEntry rrdGraphEntry = (RrdGraphEntry) m_gridLayout.getComponent(x, y);
+
+                /**
+                 * setting the values if defined in the KSC report
+                 */
+                if (i < report.getGraphs().size()) {
+                    final int index = i;
+                    setRrdGraphEntryFromKscReportGraph(rrdGraphEntry, report.getGraphs().get(index));
+                }
+
+                rrdGraphEntry.update();
+
+                i++;
+            }
+        }
+    }
+
+
     /**
      * Updates the preview images on timeframe changes.
      */
@@ -371,8 +567,8 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
             timeFrameType = Calendar.HOUR;
         }
 
-        for (int x = 0; x < m_gridLayout.getColumns(); x++) {
-            for (int y = 0; y < m_gridLayout.getRows(); y++) {
+        for (int y = 0; y < m_gridLayout.getRows(); y++) {
+            for (int x = 0; x < m_gridLayout.getColumns(); x++) {
                 if (m_gridLayout.getComponent(x, y) != null) {
                     ((RrdGraphEntry) m_gridLayout.getComponent(x, y)).setPreviewTimeFrame(timeFrameType, timeFrameValue);
                 }
@@ -390,8 +586,8 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
         /**
          * removing old entries
          */
-        for (int x = 0; x < m_gridLayout.getColumns(); x++) {
-            for (int y = 0; y < m_gridLayout.getRows(); y++) {
+        for (int y = 0; y < m_gridLayout.getRows(); y++) {
+            for (int x = 0; x < m_gridLayout.getColumns(); x++) {
                 if (x >= columns || y >= rows) {
                     m_gridLayout.removeComponent(x, y);
                 }
@@ -427,8 +623,8 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
          */
         int i = 0;
 
-        for (int x = 0; x < m_gridLayout.getColumns(); x++) {
-            for (int y = 0; y < m_gridLayout.getRows(); y++) {
+        for (int y = 0; y < m_gridLayout.getRows(); y++) {
+            for (int x = 0; x < m_gridLayout.getColumns(); x++) {
                 if (m_gridLayout.getComponent(x, y) == null) {
                     RrdGraphEntry rrdGraphEntry = new RrdGraphEntry(m_nodeDao, m_rrdGraphHelper, x, y);
 

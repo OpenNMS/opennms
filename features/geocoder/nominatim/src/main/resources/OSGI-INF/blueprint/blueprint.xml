@@ -1,26 +1,35 @@
  <blueprint
 	xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
 	xsi:schemaLocation="
-		http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
-		http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 	">
 
-	<cm:property-placeholder id="geocoderConfig" persistent-id="org.opennms.features.geocoder.nominatim" update-strategy="reload">
+	<cm:property-placeholder persistent-id="org.opennms.features.geocoder.nominatim" update-strategy="reload">
 		<cm:default-properties>
 			<!-- We don't want to set these by default, we want to fail if we don't find a valid email address. -->
-			<cm:property name="emailAddress" value="" />
+			<cm:property name="url" value="https://nominatim.openstreetmap.org/search?format=json&amp;email={email}&amp;limit=1&amp;q={query}" />
+			<cm:property name="email" value="" />
 			<cm:property name="referer" value="" />
+			<cm:property name="userAgent" value="OpenNMS-NominatimGeocoderService/2.0" />
+			<cm:property name="useSystemProxy" value="false" />
+			<cm:property name="acceptUsageTerms" value="false" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
-	<bean id="nominatimGeocoderService" class="org.opennms.features.geocoder.nominatim.NominatimGeocoderService" init-method="onInit">
-    	<property name="emailAddress" value="${emailAddress}" />
-        <property name="referer" value="${referer}" />
+	 <bean id="nominatimGeocoderConfig" class="org.opennms.features.geocoder.nominatim.NominatimConfiguration">
+		 <property name="urlTemplate" value="${url}" />
+		 <property name="emailAddress" value="${email}" />
+		 <property name="referer" value="${referer}" />
+		 <property name="userAgent" value="${userAgent}" />
+		 <property name="useSystemProxy" value="${useSystemProxy}" />
+		 <property name="acceptUsageTerms" value="${acceptUsageTerms}" />
+	 </bean>
+	<bean id="nominatimGeocoderService" class="org.opennms.features.geocoder.nominatim.NominatimGeocoderService">
+    	<argument ref="nominatimGeocoderConfig" />
 	</bean>
-
-    <service interface="org.opennms.features.geocoder.GeocoderService"  ref="nominatimGeocoderService" ranking="100" />
-    
+    <service interface="org.opennms.features.geocoder.GeocoderService"  ref="nominatimGeocoderService" />
 </blueprint>

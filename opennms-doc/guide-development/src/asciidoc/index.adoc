@@ -1,0 +1,101 @@
+// Global settings
+:ascii-ids:
+:encoding: UTF-8
+:lang: en
+:icons: font
+:toc: left
+:toclevels: 3
+:numbered:
+
+= Developers Guide
+:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
+:revnumber: {opennms-product-name} {opennms-version}
+:revdate: {last-update-label} {docdatetime}
+:version-label!:
+
+// Include your documentation sections here
+// include::text/myFile.adoc[]
+
+== Setup a development system
+include::text/dev-guide.adoc[]
+
+ifndef::opennms-prime[]
+== Minion development
+include::text/minion/introduction.adoc[]
+include::text/minion/container.adoc[]
+include::text/minion/guidelines.adoc[]
+include::text/minion/testing.adoc[]
+endif::opennms-prime[]
+
+== Topology
+include::text/topology/introduction.adoc[]
+include::text/topology/infopanel.adoc[]
+include::text/topology/graphml.adoc[]
+include::text/topology/update.adoc[]
+
+== CORS Support
+include::text/rest/CORS.adoc[]
+
+== ReST API
+include::text/rest/rest-api.adoc[]
+
+// Expose ReST services via OSGi
+include::text/rest/osgi.adoc[]
+
+// Include section for all implemented ReST API resources
+=== Currently Implemented Interfaces
+include::text/rest/acknowledgements.adoc[]
+include::text/rest/alarm_statistics.adoc[]
+include::text/rest/alarms.adoc[]
+include::text/rest/alarm_history.adoc[]
+include::text/rest/events.adoc[]
+include::text/rest/categories.adoc[]
+include::text/rest/flows.adoc[]
+include::text/rest/classifications.adoc[]
+include::text/rest/foreign_sources.adoc[]
+include::text/rest/groups.adoc[]
+include::text/rest/heatmap.adoc[]
+include::text/rest/ifservices.adoc[]
+include::text/rest/ksc_reports.adoc[]
+include::text/rest/maps.adoc[]
+include::text/rest/measurements.adoc[]
+include::text/rest/meta-data.adoc[]
+include::text/rest/nodes.adoc[]
+include::text/rest/notifications.adoc[]
+include::text/rest/outage_timeline.adoc[]
+include::text/rest/outages.adoc[]
+include::text/rest/requisitions.adoc[]
+include::text/rest/resources.adoc[]
+include::text/rest/rtc.adoc[]
+include::text/rest/scheduled_outages.adoc[]
+include::text/rest/snmp_configuration.adoc[]
+include::text/rest/users.adoc[]
+include::text/rest/user-defined-links.adoc[]
+include::text/rest/snmptrapnbi-config.adoc[]
+include::text/rest/emailnbi-config.adoc[]
+include::text/rest/javamail-config.adoc[]
+include::text/rest/syslognbi-config.adoc[]
+include::text/bsm/bsm-development.adoc[]
+include::text/rest/discovery.adoc[]
+include::text/rest/situation-feedback.adoc[]
+
+=== ReST API Examples
+include::text/rest/examples.adoc[]
+
+== Develop Documentation
+include::text/docs/introduction.adoc[]
+include::text/docs/writing.adoc[]
+include::text/docs/images.adoc[]
+include::text/docs/include-source.adoc[]
+include::text/docs/cheat-sheets.adoc[]
+include::text/docs/migrating-from-wiki.adoc[]
+
+== AMQP Integration
+include::text/amqp/introduction.adoc[]
+include::text/amqp/event_forwarder.adoc[]
+include::text/amqp/event_receiver.adoc[]
+include::text/amqp/alarm_northbounder.adoc[]
+include::text/amqp/custom_processors.adoc[]
+
+== Design and Styleguidelines
+include::text/reporting/jasperreport-styleguide.adoc[]

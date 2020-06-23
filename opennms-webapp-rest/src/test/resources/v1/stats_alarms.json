@@ -1,0 +1,230 @@
+{
+    "acknowledgedCount": 3, 
+    "newestAcked": [
+        {
+            "ackId": 4, 
+            "ackTime": 1282329200000, 
+            "ackUser": "admin", 
+            "count": 1, 
+            "description": "This is a test alarm", 
+            "firstEventTime": 1262329200000, 
+            "id": 4, 
+            "ifIndex": null, 
+            "ipAddress": "192.0.2.123", 
+            "lastEvent": {
+                "createTime": 1262329200000, 
+                "description": "Test event 2", 
+                "display": "Y", 
+                "host": "es-with-the-most-es", 
+                "id": 4, 
+                "ifIndex": null, 
+                "ipAddress": "192.0.2.123", 
+                "log": "Y", 
+                "logMessage": "Test event 2 (log)", 
+                "nodeId": 1, 
+                "nodeLabel": "node1", 
+                "parameters": [
+                    {"name": "test", "value": "parm", "type":"string" }
+                ],
+                "serviceType": {
+                    "id": 1, 
+                    "name": "ICMP"
+                }, 
+                "severity": "MAJOR", 
+                "source": "AlarmStatsRestServiceTest", 
+                "time": 1262329200000, 
+                "uei": "uei.opennms.org/test/2"
+            }, 
+            "lastEventTime": 1262329200000, 
+            "logMessage": "this is a test alarm log message", 
+            "managedObjectInstance": null, 
+            "managedObjectType": null, 
+            "nodeId": 1, 
+            "nodeLabel": "node1", 
+            "ossPrimaryKey": null, 
+            "parameters": [
+                {"name": "test", "value": "parm", "type":"string" }
+            ],
+            "qosAlarmState": null, 
+            "serviceType": {
+                "id": 1, 
+                "name": "ICMP"
+            }, 
+            "severity": "CRITICAL", 
+            "type": 1, 
+            "uei": "uei.opennms.org/test/2", 
+            "x733AlarmType": null, 
+            "x733ProbableCause": 0
+        }
+    ], 
+    "newestUnacked": [
+        {
+            "ackId": 7, 
+            "count": 1, 
+            "description": "This is a test alarm", 
+            "firstEventTime": 1262340000000, 
+            "id": 7, 
+            "ifIndex": null, 
+            "ipAddress": "192.0.2.123", 
+            "lastEvent": {
+                "createTime": 1262340000000, 
+                "description": "Test event 5", 
+                "display": "Y", 
+                "host": "es-with-the-most-es", 
+                "id": 7, 
+                "ifIndex": null, 
+                "ipAddress": "192.0.2.123", 
+                "log": "Y", 
+                "logMessage": "Test event 5 (log)", 
+                "nodeId": 1, 
+                "nodeLabel": "node1", 
+                "parameters": [
+                    {"name": "test", "value": "parm", "type":"string" }
+                ],
+                "serviceType": {
+                    "id": 1, 
+                    "name": "ICMP"
+                }, 
+                "severity": "MAJOR", 
+                "source": "AlarmStatsRestServiceTest", 
+                "time": 1262340000000, 
+                "uei": "uei.opennms.org/test/5"
+            }, 
+            "lastEventTime": 1262340000000, 
+            "logMessage": "this is a test alarm log message", 
+            "managedObjectInstance": null, 
+            "managedObjectType": null, 
+            "nodeId": 1, 
+            "nodeLabel": "node1", 
+            "ossPrimaryKey": null, 
+            "parameters": [
+                {"name": "test", "value": "parm", "type":"string" }
+            ],
+            "qosAlarmState": null, 
+            "serviceType": {
+                "id": 1, 
+                "name": "ICMP"
+            }, 
+            "severity": "NORMAL", 
+            "type": 1, 
+            "uei": "uei.opennms.org/test/5", 
+            "x733AlarmType": null, 
+            "x733ProbableCause": 0
+        }
+    ], 
+    "oldestAcked": [
+        {
+            "ackId": 2, 
+            "ackTime": 1282329200000, 
+            "ackUser": "admin", 
+            "count": 1, 
+            "description": "This is a test alarm", 
+            "firstEventTime": 1262322000000, 
+            "id": 2, 
+            "ifIndex": null, 
+            "ipAddress": "192.0.2.123", 
+            "lastEvent": {
+                "createTime": 1262322000000, 
+                "description": "Test event 0", 
+                "display": "Y", 
+                "host": "es-with-the-most-es", 
+                "id": 2, 
+                "ifIndex": null, 
+                "ipAddress": "192.0.2.123", 
+                "log": "Y", 
+                "logMessage": "Test event 0 (log)", 
+                "nodeId": 1, 
+                "nodeLabel": "node1", 
+                "parameters": [
+                    {"name": "test", "value": "parm", "type":"string" }
+                ],
+                "serviceType": {
+                    "id": 1, 
+                    "name": "ICMP"
+                }, 
+                "severity": "MAJOR", 
+                "source": "AlarmStatsRestServiceTest", 
+                "time": 1262322000000, 
+                "uei": "uei.opennms.org/test/0"
+            }, 
+            "lastEventTime": 1262322000000, 
+            "logMessage": "this is a test alarm log message", 
+            "managedObjectInstance": null, 
+            "managedObjectType": null, 
+            "nodeId": 1, 
+            "nodeLabel": "node1", 
+            "ossPrimaryKey": null, 
+            "parameters": [
+                {"name": "test", "value": "parm", "type":"string" }
+            ],
+            "qosAlarmState": null, 
+            "serviceType": {
+                "id": 1, 
+                "name": "ICMP"
+            }, 
+            "severity": "CLEARED", 
+            "type": 1, 
+            "uei": "uei.opennms.org/test/0", 
+            "x733AlarmType": null, 
+            "x733ProbableCause": 0
+        }
+    ], 
+    "oldestUnacked": [
+        {
+            "ackId": 5, 
+            "count": 1, 
+            "description": "This is a test alarm", 
+            "firstEventTime": 1262332800000, 
+            "id": 5, 
+            "ifIndex": null, 
+            "ipAddress": "192.0.2.123", 
+            "lastEvent": {
+                "createTime": 1262332800000, 
+                "description": "Test event 3", 
+                "display": "Y", 
+                "host": "es-with-the-most-es", 
+                "id": 5, 
+                "ifIndex": null, 
+                "ipAddress": "192.0.2.123", 
+                "log": "Y", 
+                "logMessage": "Test event 3 (log)", 
+                "nodeId": 1, 
+                "nodeLabel": "node1", 
+                "parameters": [
+                    {"name": "test", "value": "parm", "type":"string" }
+                ],
+                "serviceType": {
+                    "id": 1, 
+                    "name": "ICMP"
+                }, 
+                "severity": "MAJOR", 
+                "source": "AlarmStatsRestServiceTest", 
+                "time": 1262332800000, 
+                "uei": "uei.opennms.org/test/3"
+            }, 
+            "lastEventTime": 1262332800000, 
+            "logMessage": "this is a test alarm log message", 
+            "managedObjectInstance": null, 
+            "managedObjectType": null, 
+            "nodeId": 1, 
+            "nodeLabel": "node1", 
+            "ossPrimaryKey": null, 
+            "parameters": [
+                {"name": "test", "value": "parm", "type":"string" }
+            ],
+            "qosAlarmState": null, 
+            "serviceType": {
+                "id": 1, 
+                "name": "ICMP"
+            }, 
+            "severity": "CRITICAL", 
+            "type": 1, 
+            "uei": "uei.opennms.org/test/3", 
+            "x733AlarmType": null, 
+            "x733ProbableCause": 0
+        }
+    ], 
+    "severity": null, 
+    "totalCount": 6, 
+    "unacknowledgedCount": 3
+}

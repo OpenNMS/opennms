@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.support;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
@@ -49,7 +50,7 @@ import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.ssl.SslFilter;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
+import org.opennms.core.utils.RelaxedX509ExtendedTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +66,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
     
     private BaseDetectorHandler<Request, Response> m_detectorHandler = new BaseDetectorHandler<Request, Response>();
     private IoFilterAdapter m_filterLogging = null;
-    private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter(new TextLineCodecFactory(CHARSET_UTF8));
+    private ProtocolCodecFilter m_protocolCodecFilter = new ProtocolCodecFilter(new TextLineCodecFactory(StandardCharsets.UTF_8));
     
     private final ConnectionFactory m_connectionFactory;
 
@@ -188,7 +189,7 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
      * @throws KeyManagementException 
      */
     private static final SSLContext createClientSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
-        final TrustManager[] tm = { new RelaxedX509TrustManager() };
+        final TrustManager[] tm = { new RelaxedX509ExtendedTrustManager() };
         final SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, tm, new java.security.SecureRandom());
         return sslContext;
@@ -210,22 +211,23 @@ public abstract class AsyncBasicDetectorMinaImpl<Request, Response> extends Asyn
             @Override
             public void operationComplete(ConnectFuture future) {
                 final Throwable cause = future.getException();
-               
-                if (cause instanceof IOException) {
-                    if(retryAttempt == 0) {
-                        LOG.info("Service {} detected false: {}: {}",getServiceName(), cause.getClass().getName(), cause.getMessage());
+
+                if (cause != null) {
+                    if (cause instanceof IOException) {
+                        if (retryAttempt == 0) {
+                            LOG.info("Service {} detected false: {}: {}",getServiceName(), cause.getClass().getName(), cause.getMessage());
+                            detectFuture.setServiceDetected(false);
+                        } else {
+                            LOG.info("Connection exception occurred: {} for service {}, retrying attempt {}", cause, getServiceName(), retryAttempt);
+                            future = m_connectionFactory.reConnect(address, init, createDetectorHandler(detectFuture));
+                            future.addListener(retryAttemptListener(detectFuture, address, init, retryAttempt - 1));
+                        }
+                    } else {
+                        LOG.info("Threw a Throwable and detection is false for service {}", getServiceName(), cause);
                         detectFuture.setServiceDetected(false);
-                    }else {
-                        LOG.info("Connection exception occurred: {} for service {}, retrying attempt {}", cause, getServiceName(), retryAttempt);
-                        future = m_connectionFactory.reConnect(address, init, createDetectorHandler(detectFuture));
-                        future.addListener(retryAttemptListener(detectFuture, address, init, retryAttempt - 1));
                     }
-                }else if(cause instanceof Throwable) {
-                    LOG.info("Threw a Throwable and detection is false for service {}", getServiceName(), cause);
-                    detectFuture.setServiceDetected(false);
                 }
             }
-            
         };
     }
 

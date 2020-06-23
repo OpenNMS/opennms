@@ -5,30 +5,50 @@
     <parent>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-integrations</artifactId>
-      <version>1.13.0-SNAPSHOT</version>
+      <version>25.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>opennms-vmware</artifactId>
-    <name>OpenNMS Integrations VMware Integration</name>
-    <packaging>jar</packaging>
+    <name>OpenNMS :: Integrations :: VMware Integration</name>
+    <packaging>bundle</packaging>
     <build>
       <plugins>
-<!--
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <extensions>true</extensions>
           <configuration>
             <instructions>
-              <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+              <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+              <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
               <Bundle-Version>${project.version}</Bundle-Version>
+              <!-- Don't export any packages, expose services only. -->
+              <Export-Package></Export-Package>
+              <Import-Package>
+                org.eclipse.persistence.internal.jaxb;resolution:=optional,
+                org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
+                org.opennms.core.network,
+                org.opennms.netmgt.collection.adapters,
+                *
+              </Import-Package>
             </instructions>
           </configuration>
         </plugin>
--->
       </plugins>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.lib</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-config</artifactId>
@@ -47,11 +67,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-services</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>spring-dependencies</artifactId>
             <type>pom</type>
@@ -63,22 +78,32 @@
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
-            <artifactId>opennms-dao</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
             <artifactId>opennms-provision-persistence</artifactId>
             <scope>compile</scope>
         </dependency>
         <!-- VMware Infrastructure API -->
         <dependency>
-            <groupId>com.vmware</groupId>
-            <artifactId>vijava</artifactId>
-            <version>520110926</version>
+            <groupId>com.toastcoders</groupId>
+            <artifactId>yavijava</artifactId>
+            <version>6.0.05</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+                <!--
+                    Lombok is a build dependency and should not leak into our project.
+                    We exclude it, otherwise it does not compile under Java 9.
+                    Please refer to https://github.com/rzwitserloot/lombok/issues/1629#issuecomment-376005025 for more details
+                -->
+                <exclusion>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-	<!-- Attention this is EPL license -->
+
+        <!-- Attention this is EPL license -->
         <dependency>
             <groupId>org.sblim.slp</groupId>
             <artifactId>sblimSLPClient</artifactId>
@@ -98,19 +123,17 @@
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
-            <version>3.1</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>1.4.12</version>
+            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-easymock</artifactId>
-            <version>1.4.12</version>
+            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -118,5 +141,47 @@
             <artifactId>opennms-rrd-jrobin</artifactId>
             <scope>test</scope>
         </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
+      <scope>test</scope>
+      <type>pom</type>
+    </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-rrdtool-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.collection</groupId>
+            <artifactId>org.opennms.features.collection.test-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-requisition-service</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.test-api</groupId>
+            <artifactId>org.opennms.core.test-api.xml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>1.7.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+            <id>opennms-repo</id>
+            <name>OpenNMS Repository</name>
+            <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+        </repository>
+    </repositories>
+
 </project>

@@ -1,26 +1,26 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
- * Additional permission under GNU GPL version 3 section 7
+ * Additional permission under GNU AGPL version 3 section 7
  *
  * If you modify this Program, or any covered work, by linking or
  * combining it with SBLIM (or a modified version of that library),
@@ -38,29 +38,25 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import com.vmware.vim25.HostRuntimeInfo;
-import com.vmware.vim25.HostSystemPowerState;
-import com.vmware.vim25.mo.HostSystem;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.protocols.vmware.VmwareViJavaAccess;
-import org.sblim.wbem.cim.CIMException;
-import org.sblim.wbem.cim.CIMObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.netmgt.poller.Distributable;
+import org.opennms.netmgt.poller.DistributionContext;
+import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.protocols.vmware.VmwareViJavaAccess;
+import org.sblim.wbem.cim.CIMObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vmware.vim25.HostRuntimeInfo;
+import com.vmware.vim25.HostSystemPowerState;
+import com.vmware.vim25.mo.HostSystem;
 
 /**
  * The Class VmwareCimMonitor
@@ -69,23 +65,18 @@ import java.util.Map;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-public class VmwareCimMonitor extends AbstractServiceMonitor {
+@Distributable(DistributionContext.DAEMON)
+public class VmwareCimMonitor extends AbstractVmwareMonitor {
 
     /**
      * logging for VMware data collection
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.VMware." + VmwareCimMonitor.class.getName());
-
-    /**
-     * the node dao object for retrieving assets
-     */
-    private NodeDao m_nodeDao = null;
+    private final Logger logger = LoggerFactory.getLogger(VmwareCimMonitor.class);
 
     /**
      * healthStates map
      */
-
-    private static HashMap<Integer, String> m_healthStates;
+    private static Map<Integer, String> m_healthStates;
 
     /*
      * default retries
@@ -113,19 +104,6 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
     }
 
     /**
-     * Initializes this object with a given parameter map.
-     *
-     * @param parameters the parameter map to use
-     */
-    @Override
-    public void initialize(Map<String, Object> parameters) {
-        m_nodeDao = BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class);
-        if (m_nodeDao == null) {
-            logger.error("Node dao should be a non-null value.");
-        }
-    }
-
-    /**
      * This method queries the Vmware hypervisor for sensor data.
      *
      * @param svc        the monitored service
@@ -134,11 +112,11 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
      */
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
-        OnmsNode onmsNode = m_nodeDao.get(svc.getNodeId());
-
-        // retrieve the assets and
-        String vmwareManagementServer = onmsNode.getAssetRecord().getVmwareManagementServer();
-        String vmwareManagedObjectId = onmsNode.getForeignId();
+        final boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
+        final String vmwareManagementServer = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_KEY, null);
+        final String vmwareManagedObjectId = getKeyedString(parameters, VMWARE_MANAGED_OBJECT_ID_KEY, null);
+        final String vmwareMangementServerUsername = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
+        final String vmwareMangementServerPassword = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
@@ -146,28 +124,14 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
 
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
 
-            VmwareViJavaAccess vmwareViJavaAccess = null;
-
-            try {
-                vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer);
-            } catch (MarshalException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
-                return PollStatus.unavailable("Error initialising VMware connection to '" + vmwareManagementServer + "'");
-            } catch (ValidationException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
-                return PollStatus.unavailable("Error initialising VMware connection to '" + vmwareManagementServer + "'");
-            } catch (IOException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", vmwareManagementServer, e.getMessage());
-                return PollStatus.unavailable("Error initialising VMware connection to '" + vmwareManagementServer + "'");
-            }
-
+            final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(vmwareManagementServer, vmwareMangementServerUsername, vmwareMangementServerPassword);
             try {
                 vmwareViJavaAccess.connect();
             } catch (MalformedURLException e) {
-                logger.warn("Error connecting VMware management server '{}': '{}'", vmwareManagementServer, e.getMessage());
+                logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
                 return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
             } catch (RemoteException e) {
-                logger.warn("Error connecting VMware management server '{}': '{}'", vmwareManagementServer, e.getMessage());
+                logger.warn("Error connecting VMware management server '{}': '{}' exception: {} cause: '{}'", vmwareManagementServer, e.getMessage(), e.getClass().getName(), e.getCause());
                 return PollStatus.unavailable("Error connecting VMware management server '" + vmwareManagementServer + "'");
             }
 
@@ -200,13 +164,7 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
                 List<CIMObject> cimObjects = null;
                 try {
                     cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor", svc.getIpAddr());
-                } catch (RemoteException e) {
-                    logger.warn("Error retrieving CIM values from host system '{}'", vmwareManagedObjectId, e.getMessage());
-
-                    vmwareViJavaAccess.disconnect();
-
-                    return PollStatus.unavailable("Error retrieving cim values from host system '" + vmwareManagedObjectId + "'");
-                } catch (CIMException e) {
+                } catch (Exception e) {
                     logger.warn("Error retrieving CIM values from host system '{}'", vmwareManagedObjectId, e.getMessage());
 
                     vmwareViJavaAccess.disconnect();
@@ -215,7 +173,7 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
                 }
 
                 boolean success = true;
-                StringBuffer reason = new StringBuffer("VMware CIM query returned: ");
+                final StringBuilder reason = new StringBuilder("VMware CIM query returned: ");
 
                 for (CIMObject cimObject : cimObjects) {
                     String healthState = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, "HealthState");
@@ -248,7 +206,11 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
                     serviceStatus = PollStatus.unavailable(reason.toString());
                 }
             } else {
-                serviceStatus = PollStatus.unresponsive("Host system's power state is '" + powerState + "'");
+                if (ignoreStandBy && "standBy".equals(powerState)) {
+                    serviceStatus = PollStatus.up();
+                } else {
+                    serviceStatus = PollStatus.unresponsive("Host system's power state is '" + powerState + "'");
+                }
             }
 
             vmwareViJavaAccess.disconnect();
@@ -257,14 +219,4 @@ public class VmwareCimMonitor extends AbstractServiceMonitor {
 
         return serviceStatus;
     }
-
-    /**
-     * Sets the NodeDao object for this instance.
-     *
-     * @param nodeDao the NodeDao object to use
-     */
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
-
 }

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,15 +30,17 @@ package org.opennms.netmgt.notifd;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.Executor;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notificationCommands.Argument;
@@ -55,12 +57,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach </a>
  *
  * Modification to pick an ExecuteStrategy based on the "binary" flag in
  * notificationCommands.xml by:
  * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
  */
-public class NotificationTask extends Thread {
+public class NotificationTask implements Runnable {
     
     private static final Logger LOG = LoggerFactory.getLogger(NotificationTask.class);
     
@@ -98,6 +101,8 @@ public class NotificationTask extends Thread {
 
     private final UserManager m_userManager;
 
+    private final Executor m_executor;
+
     /**
      * Constructor, initializes some information
      *
@@ -109,13 +114,13 @@ public class NotificationTask extends Thread {
      * @param siblings a {@link java.util.List} object.
      * @param autoNotify a {@link java.lang.String} object.
      */
-    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List<NotificationTask> siblings, String autoNotify) {
+    public NotificationTask(NotificationManager notificationManager, UserManager userManager, long sendTime, Map<String, String> someParams, List<NotificationTask> siblings, String autoNotify, Executor executor) {
         m_notificationManager = notificationManager;
         m_userManager = userManager;
         m_sendTime = sendTime;
         m_params = new HashMap<String, String>(someParams);
         m_autoNotify = autoNotify;
-
+        m_executor = Objects.requireNonNull(executor);
     }
 
     /**
@@ -125,7 +130,7 @@ public class NotificationTask extends Thread {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer("Send ");
+        final StringBuilder buffer = new StringBuilder("Send ");
 
         if (m_commands == null) {
             buffer.append("Null Commands");
@@ -208,7 +213,7 @@ public class NotificationTask extends Thread {
      *            the commands to call at the console.
      */
     public void setCommands(Command[] commands) {
-        m_commands = commands;
+        m_commands = Arrays.copyOf(commands, commands.length);
     }
     
     /**
@@ -225,6 +230,8 @@ public class NotificationTask extends Thread {
      */
     @Override
     public void run() {
+        Logging.putPrefix(Notifd.getLoggingCategory());
+
         boolean outstanding = false;
         try {
             outstanding = getNotificationManager().noticeOutstanding(m_notifyId);
@@ -239,6 +246,7 @@ public class NotificationTask extends Thread {
 
                     // send the notice
                     ExecutorStrategy strategy = null;
+                    boolean isBinary = false;
                     String cntct = "";
 
                     for (Command command : m_commands) {
@@ -250,32 +258,40 @@ public class NotificationTask extends Thread {
                                 LOG.error("Could not insert notice info into database, aborting send notice", e);
                                 continue;
                             }
-                            String binaryCommand = command.getBinary();
-                            if (binaryCommand == null) {
-                                LOG.error("binary flag not set for command: {}.  Guessing false.", command.getExecute());
-                                binaryCommand = "false";
-                            }
-                            if (binaryCommand.equals("true")) {
+
+                            isBinary = command.getBinary();
+                            if (command.getServiceRegistry()) {
+                                strategy = new ServiceRegistryExecutor();
+                            } else if (isBinary) {
                                 strategy = new CommandExecutor();
                             } else {
                                 strategy = new ClassExecutor();
                             }
                             LOG.debug("Class created is: {}", command.getClass());
 
+                            getNotificationManager().incrementAttempted(isBinary);
+                            
                             int returnCode = strategy.execute(command.getExecute(), getArgumentList(command));
                             LOG.debug("command {} return code = {}", command.getName(), returnCode);
+                            
+                            if (returnCode == 0) {
+                                getNotificationManager().incrementSucceeded(isBinary);
+                            } else {
+                                getNotificationManager().incrementFailed(isBinary);
+                            }
                         } catch (Throwable e) {
                             LOG.warn("Notification command failed: {}", command.getName(), e);
+                            if (strategy == null) {
+                                getNotificationManager().incrementUnknownInterrupted();
+                            } else {
+                                getNotificationManager().incrementInterrupted(isBinary);
+                            }
                         }
                     }
                 } else {
                     LOG.debug("User {} is not on duty, skipping", m_user.getUserId());
                 }
             } catch (IOException e) {
-                LOG.warn("Could not get user duty schedule information: ", e);
-            } catch (MarshalException e) {
-                LOG.warn("Could not get user duty schedule information: ", e);
-            } catch (ValidationException e) {
                 LOG.warn("Could not get user duty schedule information: ", e);
             }
         } else {
@@ -298,27 +314,27 @@ public class NotificationTask extends Thread {
         return m_userManager;
     }
 
-    private String getContactInfo(String cmdName) throws IOException, MarshalException, ValidationException {
+    private String getContactInfo(String cmdName) throws IOException {
         return getUserManager().getContactInfo(m_user, cmdName);
     }
 
     /**
      */
-    private List<org.opennms.core.utils.Argument> getArgumentList(Command command) {
+    private List<org.opennms.netmgt.model.notifd.Argument> getArgumentList(Command command) {
         Collection<Argument> notifArgs = getArgumentsForCommand(command);
-        List<org.opennms.core.utils.Argument> commandArgs = new ArrayList<org.opennms.core.utils.Argument>();
+        List<org.opennms.netmgt.model.notifd.Argument> commandArgs = new ArrayList<>();
 
         for (Argument curArg : notifArgs) {
-            LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue());
+            LOG.debug("argument: {} {} '{}' {}", curArg.getSwitch().orElse(null), curArg.getSubstitution().orElse(null), getArgumentValue(curArg.getSwitch().orElse(null)), curArg.getStreamed());
 
-            commandArgs.add(new org.opennms.core.utils.Argument(curArg.getSwitch(), curArg.getSubstitution(), getArgumentValue(curArg.getSwitch()), Boolean.valueOf(curArg.getStreamed()).booleanValue()));
+            commandArgs.add(new org.opennms.netmgt.model.notifd.Argument(curArg.getSwitch().orElse(null), curArg.getSubstitution().orElse(null), getArgumentValue(curArg.getSwitch().orElse(null)), curArg.getStreamed()));
         }
 
         return commandArgs;
     }
 
     private List<Argument> getArgumentsForCommand(Command command) {
-        return command.getArgumentCollection();
+        return command.getArguments();
     }
 
     /**
@@ -365,10 +381,8 @@ public class NotificationTask extends Thread {
      *
      * @return a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public String getEmail() throws IOException, MarshalException, ValidationException {
+    public String getEmail() throws IOException {
         return getContactInfo("email");
     }
     
@@ -376,21 +390,21 @@ public class NotificationTask extends Thread {
      * <p>getTuiPin</p>
      *
      * @return a {@link java.lang.String} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
      */
-    public String getTuiPin() throws MarshalException, ValidationException, IOException {
+    public String getTuiPin() throws IOException {
         return getContactInfo("tuiPin");
     }
 
     /**
      * <p>start</p>
      */
-    @Override
     public synchronized void start() {
+        if (m_started) {
+            throw new IllegalArgumentException("Notification was already started!");
+        }
         m_started = true;
-        super.start();
+        m_executor.execute(this);
     }
 
     /**

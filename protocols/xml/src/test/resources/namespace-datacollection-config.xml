@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<xml-datacollection-config rrdRepository="target/snmp/" xmlns="http://xmlns.opennms.org/xsd/config/xml-datacollection">
+    <xml-collection name="Namespace">
+        <rrd step="900">
+            <rra>RRA:AVERAGE:0.5:1:8928</rra>
+            <rra>RRA:AVERAGE:0.5:12:8784</rra>
+            <rra>RRA:MIN:0.5:12:8784</rra>
+            <rra>RRA:MAX:0.5:12:8784</rra>
+        </rrd>
+        <xml-source url="http://{ipaddr}:10342/junit/namespace.xml">
+            <xml-group name="namespace-stats" resource-type="node"
+                resource-xpath="/dp:RootElement/dp:ChildElement/dp:StatList"
+                >
+                <xml-object name="requests" type="counter" xpath="dp:Stat[@Name='REQUESTS']/@Value" />
+                <xml-object name="responses" type="counter" xpath="dp:Stat[@Name='RESPONSES']/@Value" />
+                <xml-object name="errors" type="counter" xpath="dp:Stat[@Name='ERRORS']/@Value" />
+                <xml-object name="warnings" type="counter" xpath="dp:Stat[@Name='WARNINGS']/@Value" />
+                <xml-object name="hats" type="gauge" xpath="dp:Stat[@Name='HATS']/@Value" />
+                <xml-object name="pants" type="gauge" xpath="dp:Stat[@Name='PANTS']/@Value" />
+            </xml-group>
+        </xml-source>
+    </xml-collection>
+ </xml-datacollection-config>

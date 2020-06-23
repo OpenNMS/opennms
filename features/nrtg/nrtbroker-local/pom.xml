@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>nrtg</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>nrtg-nrtbroker-local</artifactId>
@@ -14,7 +14,7 @@
     <bundle.symbolicName>org.opennms.features.nrtg.nrtbroker.local</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.nrtbroker.local</bundle.namespace>
   </properties>
-  <name>OpenNMS Features NRTG Broker Implementation - Local</name>
+  <name>OpenNMS :: Features :: NRTG :: Local Implementation</name>
   <description>
     An NRT Broker implementation using that uses queues.  This is local only to a single JVM.
   </description>

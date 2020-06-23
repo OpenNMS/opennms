@@ -11,8 +11,8 @@
 	</global>
 
 	<event>
-		<uei>uei.opennms.org/internal/capsd/snmpConflictsWithDb</uei>
-		<event-label>OpenNMS-defined capsd event: snmpConflictsWithDb</event-label>
+		<uei>uei.opennms.org/opennmsConfig/eventconf</uei>
+		<event-label>OpenNMS-defined opennms-config event: eventconf</event-label>
 		<descr>
 			&lt;p&gt;During a rescan the ip interfaces as determined by snmp
 			conflict with the ip interfaces listed in the database for this node.

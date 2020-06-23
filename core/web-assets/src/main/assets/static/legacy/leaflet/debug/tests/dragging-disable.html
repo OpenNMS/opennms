@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Leaflet debug page</title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+
+
+		<link rel="stylesheet" href="../css/screen.css" />
+		<script type="text/javascript" src="../../build/deps.js"></script>
+		<script src="../leaflet-include.js"></script>
+	</head>
+	<body>
+		<p>This page tests if the map dragging can be properly disabled in the map's <code>click</code> event, see https://github.com/Leaflet/Leaflet/issues/3666.</p>
+
+		Map should be draggable from the upper half, but not from the lower half.
+		
+		<hr>
+
+		<div>Map dragging enabled:</div>
+		<div id="map" style="height: 300px;width: 400px; float:left;"></div>
+
+		<script type="text/javascript">
+		var map = L.map('map').setView([51.505, -0.09], 13);
+
+		var positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+		}).addTo(map);
+		
+		var isMouseDown = false;
+
+		function onMouseDown(e) {
+
+			if (e.latlng.lat < map.getCenter().lat) {
+				//south of the current map center
+				isMouseDown = true;
+				console.log('onMouseDown');
+				map.dragging.disable();
+			}
+		}
+
+		function onMouseUp(e) {
+			isMouseDown = false;
+			console.log('onMouseUp');
+			map.dragging.enable();
+		}
+
+// 		map.on('mousemove', function (e) {
+// 			if (isMouseDown) {
+// 				console.log('mousemove');
+// 			}
+// 		});
+
+		//cicle
+		map.on('mousedown', onMouseDown);
+		L.DomEvent.on(document, 'mouseup', onMouseUp);
+		</script>
+	</body>
+</html>

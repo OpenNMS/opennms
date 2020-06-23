@@ -1,4 +1,8 @@
-<assembly>
+<assembly
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd"
+>
   <id>daemon</id>
   <formats>
     <format>tar.gz</format>
@@ -11,85 +15,71 @@
         <include>LICENSE*</include>
         <include>NOTICE*</include>
       </includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/classes/bin</directory>
+      <directory>${project.build.outputDirectory}/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <lineEnding>unix</lineEnding>
+      <!-- Mark files in bin as executable -->
       <fileMode>0755</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/classes/etc</directory>
+      <directory>${project.build.outputDirectory}/etc</directory>
       <outputDirectory>etc</outputDirectory>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/jasper</directory>
+      <directory>${project.build.directory}/jasper</directory>
       <outputDirectory>etc/report-templates</outputDirectory>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/classes/contrib</directory>
+      <directory>${project.build.outputDirectory}/contrib</directory>
       <includes>
         <include>**/*.pl</include>
         <include>**/*.py</include>
         <include>**/*.sh</include>
       </includes>
       <outputDirectory>contrib</outputDirectory>
+      <!-- Mark scripts in contrib as executable -->
       <fileMode>0755</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/classes/contrib</directory>
+      <directory>${project.build.outputDirectory}/contrib</directory>
       <excludes>
         <exclude>**/*.pl</exclude>
         <exclude>**/*.py</exclude>
         <exclude>**/*.sh</exclude>
       </excludes>
       <outputDirectory>contrib</outputDirectory>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/classes/logs</directory>
+      <directory>${project.build.outputDirectory}/logs</directory>
       <outputDirectory>logs</outputDirectory>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/classes/share</directory>
+      <directory>${project.build.directory}/jasperstudio-extension</directory>
+      <outputDirectory>contrib/jasperstudio-extension</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.outputDirectory}/share</directory>
       <outputDirectory>share</outputDirectory>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/jmx</directory>
+      <directory>${project.build.directory}/jmx</directory>
       <outputDirectory>lib</outputDirectory>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/remote-poller/etc</directory>
+      <directory>${project.build.directory}/remote-poller/etc</directory>
       <outputDirectory>contrib/remote-poller</outputDirectory>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/remote-poller/bin</directory>
+      <directory>${project.build.directory}/remote-poller/bin</directory>
       <outputDirectory>bin</outputDirectory>
+      <!-- Mark files in bin as executable -->
       <fileMode>0755</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
-      <directory>target/remote-poller/lib</directory>
+      <directory>${project.build.directory}/remote-poller/lib</directory>
       <outputDirectory>bin</outputDirectory>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
   <dependencySets>
@@ -97,54 +87,60 @@
       <useProjectArtifact>false</useProjectArtifact>
       <outputFileNameMapping>opennms_bootstrap.jar</outputFileNameMapping>
       <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>org.opennms:opennms-bootstrap:jar:${project.version}</include>
       </includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputFileNameMapping>opennms_install.jar</outputFileNameMapping>
       <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>org.opennms:opennms-install:jar:${project.version}</include>
       </includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputFileNameMapping>opennms_system_report.jar</outputFileNameMapping>
       <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>org.opennms.features:org.opennms.features.system-report:jar:${project.version}</include>
       </includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib/endorsed</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
-        <include>org.opennms.dependencies:jaxb-dependencies:pom</include>
+        <!-- <include>org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.2</include> -->
+        <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl</include>
       </includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <excludes>
-        <exclude>org.opennms.dependencies:jaxb-dependencies:pom</exclude>
+        <exclude>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jaxb-impl</exclude>
         <exclude>org.opennms:opennms-bootstrap</exclude>
         <exclude>org.opennms:opennms-install</exclude>
         <exclude>org.opennms.features:org.opennms.features.system-report</exclude>
+        <exclude>org.opennms:opennms-jasperstudio-extension</exclude>
+        <exclude>org.slf4j:slf4j-jdk14</exclude>
         <!-- Exclude the dependency POMs -->
         <exclude>*:pom</exclude>
       </excludes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
+    </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputDirectory>lib</outputDirectory>
+      <includes>
+        <!-- adds httpasyncclient-osgi to /lib class path - only used by Elasticsearch OSGi plugin -->
+        <include>org.apache.httpcomponents:httpasyncclient-osgi:jar:${httpasyncclientVersion}</include>
+      </includes>
     </dependencySet>
   </dependencySets>
 </assembly>

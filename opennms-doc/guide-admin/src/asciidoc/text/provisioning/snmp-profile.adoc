@@ -1,0 +1,83 @@
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+=== SNMP Profiles
+
+SNMP Profiles are prefabricated sets of SNMP configuration which are automatically "fitted" against eligible IP addresses at provisioning time.
+Each profile may have a unique label and an optional filter expression.
+If the filter expression is present, it will be evaluated to check whether a given IP address or reverse-lookup hostname passes the filter.
+A profile with a filter expression will be fitted to a given IP address only if the filter expression evaluates true against that IP address.
+
+SNMP profiles can be added to snmp-config.xml to enable automatic fitting of SNMP interfaces.
+
+[source, xml]
+.Sample snmp-config.xml with profiles
+----
+<snmp-config xmlns="http://xmlns.opennms.org/xsd/config/snmp" write-community="private" read-community="public" timeout="800" retry="3">
+   <definition version="v1" ttl="6000">
+      <specific>127.0.0.1</specific>
+   </definition>
+   <profiles>
+      <profile version="v1" read-community="horizon" timeout="10000">
+         <label>profile1</label>
+      </profile>
+      <profile version="v1" ttl="6000">
+         <label>profile2</label>
+         <filter>iphostname LIKE '%opennms%'</filter>
+      </profile>
+      <profile version="v1" read-community="meridian">
+         <label>profile3</label>
+         <filter>IPADDR IPLIKE 172.1.*.*</filter>
+      </profile>
+   </profiles>
+</snmp-config>
+----
+In the above config,
+
+1. `profile1` doesn't have a filter expression.
+This profile will be tried for every interface.
+
+2. `profile2` has a filter expression that compares `iphostname` (the hostname resulting from a reverse DNS lookup of the IP address being fitted) against a preconfigured value.
+This profile's SNMP parameters will be fitted only against IP addresses whose hostname contains the string `opennms`.
+
+3. `profile3` has an IPLIKE expression that matches all interfaces in the range specified in the filter.
+This profile's SNMP parameters will be fitted only against IP addresses in the range specified by the `IPLIKE` expression.
+
+NOTE: Profiles will be tried in the order they are configured.
+The first match that produces a successful SNMP `GET-REQUEST` on the scalar instance of `sysObjectID` will be saved by `Provisiond` as the SNMP configuratoin definition to use for all future SNMP operations against the fitted IP address.
+
+NOTE: `default` as profile label is reserved for default SNMP config.
+
+.Fit a SNMP profile
+
+The `opennms-snmp:fit` Karaf shell command finds a matching profile for a given IP address and prints out the resulting config.
+
+Matching or "fitting" an SNMP profile should be understood as passing the profile's filter expression _and_ success in getting the scalar `sysObjectID` instance.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> opennms-snmp:fit -l MINION -s 172.1.1.105 <1>
+admin@opennms()> opennms-snmp:fit 172.1.1.106 profile1     <2>
+----
+<1> searches the profiles that fit the IP address `172.1.1.105` at location `Minion` and saves the resulting configuration as a definition for future use.
+<2> checks whether the profile with label `profile1` is a fit for IP address `172.1.1.106`.
+If it succeeds, it prints out the resulting agent config, but does not save any definition.
+
+.Remove an IP address from definition.
+
+The `opennms-snmp:remove-from-definition` Karaf shell command removes an IP address from the system-wide SNMP configuration definitions.
+
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> opennms-snmp:remove-from-definition -l MINION 172.1.0.255
+----
+
+This removes IP address `172.1.0.255` at location `MINION` from the system-wide SNMP configuration so that this IP address can be fitted to a new profile.
+This command might be useful when an IP address formerly assigned to an SNMPv2c-capable switch is reassigned to an SNMPv3-capable load balancer.
+
+.Using SNMP profiles in Snmp Detector
+
+By default SnmpDetector doesn't use SNMP profiles. Add property `useSnmpProfiles` and set it to `true` in order to use SNMP Profiles.

@@ -2,7 +2,7 @@
 <http-datacollection-config 
                 xmlns:http-dc="http://xmlns.opennms.org/xsd/config/http-datacollection" 
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-                xsi:schemaLocation="http://www.opennms.org/xsd/config/http-datacollection-config.xsd" 
+                xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/http-datacollection http://www.opennms.org/xsd/config/http-datacollection-config.xsd" 
                 rrdRepository="%rrdRepository%" > 
                 <http-collection name="default">
                    <rrd step="1"> 

@@ -1,0 +1,69 @@
+package org.opennms.netmgt.correlation.drools;
+
+import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.drools.core.spi.KnowledgeHelper
+import org.drools.core.QueryResultsImpl;
+
+global DroolsCorrelationEngine engine;
+
+declare Thing
+	name: String
+end
+
+declare PersistedTestFact
+  factId: String
+end
+
+query "find PersistedTestFact by factId" (String searchFactId)
+  pf : PersistedTestFact(factId.equals(searchFactId))
+end
+
+rule "test-got-something"
+	salience 300
+when
+	$e : Event(uei matches "uei.opennms.org/nodes/nodeLostService")
+then
+    System.err.println("got one: " + $e);
+    EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/nodes/nodeUp", "Component Correlator");
+    eventBuilder.setNodeid($e.getNodeid());
+    insert(eventBuilder.getEvent());
+    insert(new Thing());
+end
+
+rule insertFact when
+  $e : Event(uei == "uei.opennms.org/junit/insertPersistenceTestFact", source != "", $source : source)
+then
+  delete($e);
+  insert(new PersistedTestFact($source));
+end
+
+rule "find and delete persisted test fact by Drools query"
+  when
+    $e : Event(uei == "uei.opennms.org/junit/deletePersistenceTestFact", source != "", $source : source)
+  then
+    delete($e);
+    engine.getKieSessionObjects().stream().filter(fh -> fh.getClass().getCanonicalName().equals(
+        "org.opennms.netmgt.correlation.drools.PersistedTestFact")).forEach(
+            factHandle -> {
+              try {
+                PersistedTestFact ptfFh = (PersistedTestFact) factHandle;
+                String factId = ptfFh.getFactId();
+                if (factId.equals($source)) {
+                  System.err.println("This fact should be deleted by this rule: " + ptfFh);
+                } else {
+                  System.err.println("This fact should not be deleted by this rule: " + ptfFh);
+                }
+              } catch (Exception ex) {
+                System.err.println("Caught exception: " + ex);
+              }
+          }
+        );
+    QueryResultsImpl qri = (QueryResultsImpl)kcontext.getKieRuntime().getQueryResults(
+        "find PersistedTestFact by factId", new Object[] {$source});
+    for (org.kie.api.runtime.rule.QueryResultsRow row : qri) {
+      PersistedTestFact ptf = (PersistedTestFact) row.get("pf");
+      delete(ptf);
+    }
+  end

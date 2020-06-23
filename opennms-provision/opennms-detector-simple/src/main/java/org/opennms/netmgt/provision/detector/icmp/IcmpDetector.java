@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,8 +35,6 @@ import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>IcmpDetector class.</p>
@@ -44,11 +42,13 @@ import org.springframework.stereotype.Component;
  * @author ranger
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
 public class IcmpDetector extends SyncAbstractDetector {
-    
     private static final Logger LOG = LoggerFactory.getLogger(IcmpDetector.class);
+
+    private PingerFactory pingerFactory;
+    private int m_dscp;
+    private boolean m_allowFragmentation;
+
     /**
      * <p>Constructor for IcmpDetector.</p>
      */
@@ -57,6 +57,22 @@ public class IcmpDetector extends SyncAbstractDetector {
         init();
     }
     
+    public void setDscp(final int dscp) {
+        m_dscp = dscp;
+    }
+
+    public int getDscp() {
+        return m_dscp;
+    }
+
+    public boolean isAllowFragmentation() {
+        return m_allowFragmentation;
+    }
+
+    public void setAllowFragmentation(final boolean allowFragmentation) {
+        m_allowFragmentation = allowFragmentation;
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean isServiceDetected(InetAddress address) {
@@ -65,8 +81,7 @@ public class IcmpDetector extends SyncAbstractDetector {
         boolean found = false;
         try {
             for(int i = 0; i < getRetries() && !found; i++) {
-                Number retval = PingerFactory.getInstance().ping(address, getTimeout(), getRetries());
-                
+                final Number retval = pingerFactory.getInstance(m_dscp, m_allowFragmentation).ping(address, getTimeout(), getRetries());
                 LOG.debug("isServiceDetected: Response time for address: {} is: {}.", address, retval);
                 
                 if (retval != null) {
@@ -86,18 +101,18 @@ public class IcmpDetector extends SyncAbstractDetector {
         return found;
     }
 
-    
-    /** {@inheritDoc} */
     @Override
     protected void onInit() {
         setTimeout(PingConstants.DEFAULT_TIMEOUT);
         setRetries(PingConstants.DEFAULT_RETRIES);
     }
 
-    /** {@inheritDoc} */
     @Override
     public void dispose() {
-        // TODO Auto-generated method stub
-        
+        // pass
+    }
+
+    public void setPingerFactory(PingerFactory pingerFactory) {
+        this.pingerFactory = pingerFactory;
     }
 }

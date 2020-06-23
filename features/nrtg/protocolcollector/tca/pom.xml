@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.opennms.features.nrtg</groupId>
     <artifactId>protocol-collectors</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg.protocolcollector</groupId>
   <artifactId>nrtg-protocolcollector-tca</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Features NRTG ProtocolCollector TCA</name>
+  <name>OpenNMS :: Features :: NRTG :: Collectors :: TCA</name>
   <properties>
     <bundle.symbolicName>org.opennms.nrtg.protocolcollector.tca</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.protocolcollector.tca</bundle.namespace>
@@ -47,6 +47,11 @@
     
     <dependency>
         <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.lib</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.snmp</artifactId>
         <scope>test</scope>
     </dependency>
@@ -55,6 +60,11 @@
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.implementations.snmp4j</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

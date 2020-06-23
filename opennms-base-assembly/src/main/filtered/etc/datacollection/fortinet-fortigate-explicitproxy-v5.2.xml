@@ -1,0 +1,55 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Fortinet-Fortigate-ExplicitProxy-v5.2">
+   <resourceType name="fgExProStaEntry" label="Fortigate Explicit Proxy Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgExProScriStaEntry" label="Fortigate Explicit Proxy Script Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgAppSuStatsEntry" label="Fortigate Scan Unit" resourceLabel="Virtual Domain: ${fgAppSuIndex}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgExProFiltStaEntry" label="Fortigate Explicit Proxy Filter Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <group name="fgExplicitProxyInfo" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.1.2" instance="0" alias="fgExProMemUsage" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.1.3" instance="0" alias="fgExProRequests" type="Counter64"/>
+   </group>
+   <group name="fgExplicitProxyStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgExProStaEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.2.1.1" instance="fgExProStaEntry" alias="fgExProUsers" type="Integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.2.1.2" instance="fgExProStaEntry" alias="fgExProSess" type="Integer32"/>
+   </group>
+   <group name="fgExplicitProxyScriptStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgExProScriStaEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.4.1.1" instance="fgExProScriStaEntry" alias="fgExProFiltApplets" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.4.1.2" instance="fgExProScriStaEntry" alias="fgExPr0FiltActiveX" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.4.1.3" instance="fgExProScriStaEntry" alias="fgExPr0FiltJScript" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.4.1.4" instance="fgExProScriStaEntry" alias="fgExPr0FiltJS" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.4.1.5" instance="fgExProScriStaEntry" alias="fgExPr0FiltVBS" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.4.1.6" instance="fgExProScriStaEntry" alias="fgExPr0FiltScript" type="Counter32"/>
+   </group>
+   <group name="fgExplicitProxyFilterStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgExProFiltStaEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.5.1.1" instance="fgExProFiltStaEntry" alias="fgExProBlckDLP" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.5.1.2" instance="fgExProFiltStaEntry" alias="fgExProBlckConTyp" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.5.1.3" instance="fgExProFiltStaEntry" alias="fgExProExURLs" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.5.1.4" instance="fgExProFiltStaEntry" alias="fgExProAllowURLs" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.5.1.5" instance="fgExProFiltStaEntry" alias="fgExProBlockURLs" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.5.1.6" instance="fgExProFiltStaEntry" alias="fgExProLoggedURL" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.10.112.5.1.7" instance="fgExProFiltStaEntry" alias="fgExProOverrURLs" type="Counter32"/>
+   </group>
+   <systemDef name="Fortinet-Fortigate-ExplicitProxy-v5.2">
+      <sysoidMask>.1.3.6.1.4.1.12356.</sysoidMask>
+      <collect>
+         <includeGroup>fgExplicitProxyInfo</includeGroup>
+         <includeGroup>fgExplicitProxyStatsTable</includeGroup>
+         <includeGroup>fgExplicitProxyScriptStatsTable</includeGroup>
+         <includeGroup>fgExplicitProxyFilterStatsTable</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

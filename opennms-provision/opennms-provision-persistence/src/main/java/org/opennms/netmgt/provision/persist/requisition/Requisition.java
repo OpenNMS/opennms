@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.persistence.Transient;
@@ -61,11 +62,11 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.RequisitionVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 
@@ -85,7 +86,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
     
     @XmlElement(name="node")
-    protected List<RequisitionNode> m_nodes = new ArrayList<RequisitionNode>();
+    protected List<RequisitionNode> m_nodes = new ArrayList<>();
     
     @XmlAttribute(name="date-stamp")
     protected XMLGregorianCalendar m_dateStamp;
@@ -275,6 +276,17 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     }
 
     /**
+     * <p>getLastImport</p>
+     *
+     * @return a {@link javax.xml.datatype.XMLGregorianCalendar} object.
+     */
+    @Transient
+    @XmlTransient
+    public Date getLastImportAsDate() {
+        return m_lastImport == null ? null : m_lastImport.toGregorianCalendar().getTime();
+    }
+
+    /**
      * <p>setLastImport</p>
      *
      * @param value a {@link javax.xml.datatype.XMLGregorianCalendar} object.
@@ -454,16 +466,25 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      */
     public void validate() throws ValidationException {
     	final Map<String,Integer> foreignSourceCounts = new HashMap<String,Integer>();
-    	final Set<String> errors = new HashSet<String>();
+    	final Set<String> errors = new HashSet<>();
+
+    	if (m_foreignSource == null) {
+    	    throw new ValidationException("Requisition 'foreign-source' must be set!");
+    	}
+    	if (m_foreignSource.contains("/")) {
+            throw new ValidationException("Foreign Source (" + m_foreignSource + ") contains invalid characters. ('/' is forbidden.)");
+    	}
 
     	for (final RequisitionNode node : m_nodes) {
     		final String foreignId = node.getForeignId();
+    		node.validate();
 			Integer count = foreignSourceCounts.get(foreignId);
 			foreignSourceCounts.put(foreignId, count == null? 1 : ++count);
     	}
     	
-    	for (final String foreignId : foreignSourceCounts.keySet()) {
-    		final Integer count = foreignSourceCounts.get(foreignId);
+    	for (final Entry<String,Integer> entry : foreignSourceCounts.entrySet()) {
+    	    final String foreignId = entry.getKey();
+    		final Integer count = entry.getValue();
     		if (count > 1) {
     			errors.add( foreignId + " (" + count + " found)");
     		}
@@ -487,7 +508,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     @XmlTransient
     @Transient
     public Date getDate() {
-        return getDateStamp() == null? null : getDateStamp().toGregorianCalendar().getTime();
+        return getDateStamp() == null ? null : getDateStamp().toGregorianCalendar().getTime();
     }
 
     public void setDate(final Date date) {

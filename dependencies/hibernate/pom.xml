@@ -3,13 +3,13 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>hibernate-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Hibernate</name>
+  <name>OpenNMS :: Dependencies :: Hibernate</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the hibernate library.
@@ -69,10 +69,6 @@
       <artifactId>hibernate-core</artifactId>
       <version>${hibernateVersion}</version>
       <exclusions>
-	<exclusion>
-		<groupId>org.hibernate.javax.persistence</groupId>
-		<artifactId>hibernate-jpa-2.0-api</artifactId>
-	</exclusion>
         <exclusion>
           <groupId>asm</groupId>
           <artifactId>asm</artifactId>

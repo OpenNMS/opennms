@@ -1,76 +1,68 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- event definitions for traps from cricket systems monitoring tool (http://cricket.sourceforge.net/) -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.2595.1.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>4</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Cricket/traps/CricketFailureTrap</uei>
- <event-label>Cricket Threshold exceeded</event-label>
- <descr>&lt;p&gt;This trap signifies that a metric that Cricket monitors has passed a critical threshold &lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Monitor Type&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Threshold String&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Target Name&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Data Source&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Instance Number&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Cricket Threshold alert at %parm[#3]%.&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
- <operinstruct>
-  &lt;p&gt;check &lt;a href="http://%nodelabel%/cricket/grapher.cgi?target=%parm[#3]%"&gt;cricket&lt;/a&gt; for current values&lt;/p&gt;
- </operinstruct>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.2595.1.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>5</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Cricket/traps/CricketClearTrap</uei>
- <event-label>Cricket Threshold cleared</event-label>
- <descr>&lt;p&gt;This trap signifies that a Cricket monitor threshold has cleared  &lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Monitor Type&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Threshold String&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Target Name&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Data Source&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Instance Number&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Cricket Threshold cleared at %parm[#3]%.&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
- <operinstruct>
-  &lt;p&gt;check &lt;a href="http://%nodelabel%/cricket/grapher.cgi?target=%parm[#3]%"&gt;cricket&lt;/a&gt; for current values&lt;/p&gt;
- </operinstruct>
-</event>
-<!-- End of Cricket Traps -->
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2595.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Cricket/traps/CricketFailureTrap</uei>
+      <event-label>Cricket Threshold exceeded</event-label>
+      <descr>&lt;p>This trap signifies that a metric that Cricket monitors has passed a critical threshold &lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ Monitor Type&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Threshold String&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Target Name&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Data Source&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Instance Number&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Cricket Threshold alert at %parm[#3]%.&lt;/p></logmsg>
+      <severity>Minor</severity>
+      <operinstruct>&lt;p>check &lt;a href=&quot;http://%nodelabel%/cricket/grapher.cgi?target=%parm[#3]%&quot;>cricket&lt;/a> for current values&lt;/p></operinstruct>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2595.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Cricket/traps/CricketClearTrap</uei>
+      <event-label>Cricket Threshold cleared</event-label>
+      <descr>&lt;p>This trap signifies that a Cricket monitor threshold has cleared  &lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ Monitor Type&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Threshold String&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Target Name&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Data Source&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Instance Number&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Cricket Threshold cleared at %parm[#3]%.&lt;/p></logmsg>
+      <severity>Minor</severity>
+      <operinstruct>&lt;p>check &lt;a href=&quot;http://%nodelabel%/cricket/grapher.cgi?target=%parm[#3]%&quot;>cricket&lt;/a> for current values&lt;/p></operinstruct>
+   </event>
 </events>

@@ -1,0 +1,541 @@
+{
+  "rows": [
+    {
+      "columns": [
+        {
+          "class": "col-md-6",
+          "panels": [
+            {
+              "title": "SNMP Info",
+              "fields": [
+                {
+                  "label": "System ID",
+                  "tooltip": "System ID, information from SNMP agent",
+                  "model": "sysObjectId",
+                  "type": "static"
+                },
+                {
+                  "label": "System Name",
+                  "tooltip": "System Name, information from SNMP agent",
+                  "model": "sysName",
+                  "type": "static"
+                },
+                {
+                  "label": "System Location",
+                  "tooltip": "System Location, information from SNMP agent",
+                  "model": "sysLocation",
+                  "type": "static"
+                },
+                {
+                  "label": "System Contact",
+                  "tooltip": "System Contact, information from SNMP agent",
+                  "model": "sysContact",
+                  "type": "static"
+                },
+                {
+                  "label": "System Description",
+                  "tooltip": "System Description, information from SNMP agent",
+                  "model": "sysDescription",
+                  "type": "static"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "class": "col-md-6",
+          "panels": [
+            {
+              "title": "Identification",
+              "fields": [
+                {
+                  "label": "Description",
+                  "tooltip": "Description of the device's purpose (E.G. Core P2P Router, Egress Internet Router, Etc.)",
+                  "model": "description",
+                  "type": "text"
+                },
+                {
+                  "label": "Category",
+                  "tooltip": "This column is to be used to specify what category of Network Element this device would fall into (E.G. WAN Router, Firewall, Etc.). Expected only Alphanumeric, '-' and '_'.",
+                  "model": "category",
+                  "pattern": "^[A-Za-z0-9_-]*$",
+                  "type": "text"
+                },
+                {
+                  "label": "Manufacturer",
+                  "tooltip": "Manufacturer - Self explanatory",
+                  "model": "manufacturer",
+                  "type": "text"
+                },
+                {
+                  "label": "Model Number",
+                  "tooltip": "Model number of the device (E.G. Cisco 3845, Oki B4400, Etc.)",
+                  "model": "modelNumber",
+                  "type": "text"
+                },
+                {
+                  "label": "Serial Number",
+                  "tooltip": "Serial Number",
+                  "model": "serialNumber",
+                  "type": "text"
+                },
+                {
+                  "label": "Asset Number",
+                  "tooltip": "This field should be used if the organization employs asset tags for inventory purposes",
+                  "model": "assetNumber",
+                  "type": "text"
+                },
+                {
+                  "label": "Date Installed",
+                  "tooltip": "A handy dandy place to keep the date this equipment went into service, just in case the bean counters or your boss ask you for any particulars on this device",
+                  "model": "dateInstalled",
+                  "type": "date"
+                },
+                {
+                  "label": "Operating System",
+                  "tooltip": "Operating System",
+                  "model": "operatingSystem",
+                  "type": "text"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "class": "col-md-6",
+          "panels": [
+            {
+              "title": "Configuration Categories",
+              "fields": [
+                {
+                  "label": "Display Category",
+                  "tooltip": "This column is to be used to specify what category of Network Element this device would fall into (E.G. WAN Router, Firewall, Etc.). Expected only Alphanumeric, '-' and '_'.",
+                  "model": "displayCategory",
+                  "pattern": "^[A-Za-z0-9_-]*$",
+                  "type": "text"
+                },
+                {
+                  "label": "Notification Category",
+                  "tooltip": "This could be something like 'serverAdmin' or 'networkAdmin' to be used in filter rules for directing notifications. Expected only Alphanumeric, '-' and '_'.",
+                  "model": "notifyCategory",
+                  "pattern": "^[A-Za-z0-9_-]*$",
+                  "type": "text"
+                },
+                {
+                  "label": "Poller Category",
+                  "tooltip": "This is to be used in filter rules to define devices in a particular poller package. Expected only Alphanumeric, '-' and '_'.",
+                  "model": "pollerCategory",
+                  "pattern": "^[A-Za-z0-9_-]*$",
+                  "type": "text"
+                },
+                {
+                  "label": "Threshold Category",
+                  "tooltip": "This is to be used in filter rules to define devices in a particular thresholding package. Expected only Alphanumeric, '-' and '_'.",
+                  "model": "thresholdCategory",
+                  "pattern": "^[A-Za-z0-9_-]*$",
+                  "type": "text"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "class": "col-md-6",
+          "panels": [
+            {
+              "title": "Location",
+              "fields": [
+                {
+                  "label": "State",
+                  "tooltip": "Continuation of address",
+                  "model": "state",
+                  "type": "text"
+                },
+                {
+                  "label": "Region",
+                  "tooltip": "On a geographically or otherwise determined regional basis",
+                  "model": "region",
+                  "type": "text"
+                },
+                {
+                  "label": "Address 1",
+                  "tooltip": "Street address of this device (For technician dispatch)",
+                  "model": "address1",
+                  "type": "text"
+                },
+                {
+                  "label": "Address 2",
+                  "tooltip": "Continuation of address",
+                  "model": "address2",
+                  "type": "text"
+                },
+                {
+                  "label": "City",
+                  "tooltip": "Continuation of address",
+                  "model": "city",
+                  "type": "text"
+                },
+                {
+                  "label": "ZIP",
+                  "tooltip": "Postal code (ZIP code)",
+                  "model": "zip",
+                  "type": "text"
+                },
+                {
+                  "label": "Country",
+                  "tooltip": "Country",
+                  "model": "country",
+                  "type": "text"
+                },
+                {
+                  "label": "Longitude",
+                  "tooltip": "Geo Longitude",
+                  "model": "longitude",
+                  "pattern": "^[0-9.-]*$",
+                  "type": "text"
+                },
+                {
+                  "label": "Latitude",
+                  "tooltip": "Geo Latitude",
+                  "model": "latitude",
+                  "pattern": "^[0-9.-]*$",
+                  "type": "text"
+                },
+                {
+                  "label": "Division",
+                  "tooltip": "Standard corporate mumbo jumbo for the bean counters getting ever more granular on where money gets spent. Populate as you fee fit, or as dictated.",
+                  "model": "division",
+                  "type": "text"
+                },
+                {
+                  "label": "Department",
+                  "tooltip": "More of the above, but more simple (E.G. Accounting, Collections, IT, Etc.)",
+                  "model": "department",
+                  "type": "text"
+                },
+                {
+                  "label": "Building",
+                  "tooltip": "If this address is part of a complex/campus, this field allows additional granularity.",
+                  "model": "building",
+                  "type": "text"
+                },
+                {
+                  "label": "Floor",
+                  "tooltip": "Floor on which this node is located, for technician dispatch.",
+                  "model": "floor",
+                  "type": "text"
+                },
+                {
+                  "label": "Room",
+                  "tooltip": "Room number where this node is located, for technician dispatch",
+                  "model": "room",
+                  "type": "text"
+                },
+                {
+                  "label": "Rack",
+                  "tooltip": "This field should be used to designate the rack in specific that this piece of equipment is located in at a given location (E.G. Server3; Network5; Isle C-Bay5;105.12, Etc.) preferably by using both Bay & Isle coordinates",
+                  "model": "rack",
+                  "type": "text"
+                },
+                {
+                  "label": "Rack unit height",
+                  "tooltip": "Rack unit height of node: 1, 2, 3, ...",
+                  "model": "rackunitheight",
+                  "pattern": "^[0-9]*$",
+                  "type": "text"
+                },
+                {
+                  "label": "Slot",
+                  "tooltip": "This field should be used to designate what slot in a chassis/shelf this node occupies",
+                  "model": "slot",
+                  "type": "text"
+                },
+                {
+                  "label": "Port",
+                  "tooltip": "Port on a given card or device being monitored",
+                  "model": "port",
+                  "type": "text"
+                },
+                {
+                  "label": "Circuit ID",
+                  "tooltip": "This field should contain the Circuit ID of the ISP/Carrier's designation to which this equipment terminates a connection. For DSL a phone number (or whatever identifying charistic of the LEC should be populated here) to this device's Voice or Data egress.",
+                  "model": "circuitId",
+                  "type": "text"
+                },
+                {
+                  "label": "Admin",
+                  "tooltip": "Admin contact at the given location",
+                  "model": "admin",
+                  "type": "text"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "class": "col-md-6",
+          "panels": [
+            {
+              "title": "Hardware",
+              "fields": [
+                {
+                  "label": "CPU",
+                  "tooltip": "Type of CPU in this node",
+                  "model": "cpu",
+                  "type": "text"
+                },
+                {
+                  "label": "RAM",
+                  "tooltip": "RAM",
+                  "model": "ram",
+                  "type": "text"
+                },
+                {
+                  "label": "Additional Hardware",
+                  "tooltip": "Additional Hardware",
+                  "model": "additionalhardware",
+                  "type": "text"
+                },
+                {
+                  "label": "Number of Power Supplies",
+                  "tooltip": "Number of power supplies (numeric value expected)",
+                  "model": "numpowersupplies",
+                  "pattern": "^[0-9]*$",
+                  "type": "text"
+                },
+                {
+                  "label": "Input Power",
+                  "tooltip": "Input power 'type' (numeric value expected)",
+                  "model": "inputpower",
+                  "pattern": "^[0-9]*$",
+                  "type": "text"
+                },
+                {
+                  "label": "Storage Controller",
+                  "tooltip": "Storage Controller",
+                  "model": "storagectrl",
+                  "type": "text"
+                },
+                {
+                  "label": "HDD 1",
+                  "tooltip": "Hard disk drive information",
+                  "model": "hdd1",
+                  "type": "text"
+                },
+                {
+                  "label": "HDD 2",
+                  "tooltip": "Hard disk drive information",
+                  "model": "hdd2",
+                  "type": "text"
+                },
+                {
+                  "label": "HDD 3",
+                  "tooltip": "Hard disk drive information",
+                  "model": "hdd3",
+                  "type": "text"
+                },
+                {
+                  "label": "HDD 4",
+                  "tooltip": "Hard disk drive information",
+                  "model": "hdd4",
+                  "type": "text"
+                },
+                {
+                  "label": "HDD 5",
+                  "tooltip": "Hard disk drive information",
+                  "model": "hdd5",
+                  "type": "text"
+                },
+                {
+                  "label": "HDD 6",
+                  "tooltip": "Hard disk drive information",
+                  "model": "hdd6",
+                  "type": "text"
+                }
+              ]
+            },
+            {
+              "title": "Authentication",
+              "fields": [
+                {
+                  "label": "Username",
+                  "tooltip": "Username",
+                  "model": "username",
+                  "type": "text"
+                },
+                {
+                  "label": "Password",
+                  "tooltip": "Password",
+                  "model": "password",
+                  "type": "password"
+                },
+                {
+                  "label": "Enable Password",
+                  "tooltip": "Enable Password: used only if AutoEnable is not set to 'A'",
+                  "model": "enable",
+                  "type": "password"
+                },
+                {
+                  "label": "Connection",
+                  "tooltip": "Connection",
+                  "model": "connection",
+                  "type": "select",
+                  "options": [ "telnet", "ssh", "rsh", "" ]
+                },
+                {
+                  "label": "Auto Enable",
+                  "tooltip": "Whether the provided authentication user goes directly into 'enable' mode on this node upon login.",
+                  "model": "autoenable",
+                  "type": "select",
+                  "options": [ "A", "" ]
+                },
+                {
+                  "label": "SNMP Community",
+                  "tooltip": "SNMP Community String (it is recommended to use snmp-config.xml instead)",
+                  "model": "snmpcommunity",
+                  "type": "text"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "class": "col-md-6",
+          "panels": [
+            {
+              "title": "Vendor",
+              "fields": [
+                {
+                  "label": "Name",
+                  "tooltip": "Vendor who provides service for this device (If applicable, E.G. ISP, Local PBX Maintenance vendor, etc.)",
+                  "model": "vendor",
+                  "type": "text"
+                },
+                {
+                  "label": "Phone",
+                  "tooltip": "Phone number of vendor that services (or provides service to) this equipment (E.G. ISP, PBX Vendor, Phone company, etc.)",
+                  "model": "vendorPhone",
+                  "type": "text"
+                },
+                {
+                  "label": "Fax",
+                  "tooltip": "Fax number of the above vendor",
+                  "model": "vendorFax",
+                  "type": "text"
+                },
+                {
+                  "label": "Lease",
+                  "tooltip": "A nice spot to populate the name of the leasing company or lease ID for this equipment",
+                  "model": "lease",
+                  "type": "text"
+                },
+                {
+                  "label": "Lease Expires",
+                  "tooltip": "If all goes according to plan, this should be a date after you’ve got new equipment commissioned to take over for the service this equipment provides",
+                  "model": "leaseExpires",
+                  "type": "date"
+                },
+                {
+                  "label": "Vendor Asset Number",
+                  "tooltip": "If the vendor that supplies this equipment uses a asset tag of their own, populate that data here",
+                  "model": "vendorAssetNumber",
+                  "type": "text"
+                },
+                {
+                  "label": "Contract Number",
+                  "tooltip": "Number / ID of maintenance contract",
+                  "model": "maintcontract",
+                  "type": "text"
+                },
+                {
+                  "label": "Contract Expires",
+                  "tooltip": "Date when maintenance contract expires",
+                  "model": "maintContractExpiration",
+                  "type": "date"
+                },
+                {
+                  "label": "Maint Phone",
+                  "tooltip": "Phone number for technical operational support for the device in question (Think Helpdesk, Phone Company, ISP NOC, Etc.)",
+                  "model":  "supportPhone",
+                  "type": "text"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "class": "col-md-6",
+          "panels": [
+            {
+              "title": "VMWare",
+              "fields": [
+                {
+                  "label": "VMware managed object ID",
+                  "tooltip": "Internal id in VMware vCenter",
+                  "model": "vmwareManagedObjectId",
+                  "type": "text"
+                },
+                {
+                  "label": "VMware managed entity type",
+                  "tooltip": "Defines a VMware host system or virtual machine",
+                  "model": "vmwareManagedEntityType",
+                  "type": "text"
+                },
+                {
+                  "label": "VMware management server",
+                  "tooltip": "VMware vCenter host",
+                  "model": "vmwareManagementServer",
+                  "type": "text"
+                },
+                {
+                  "label": "VMware state",
+                  "tooltip": "VMware managed entity state",
+                  "model": "vmwareState",
+                  "type": "text"
+                },
+                {
+                  "label": "VMware Topology Info",
+                  "tooltip": "VMware topology information",
+                  "model": "vmwareTopologyInfo",
+                  "type": "textarea"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "class": "col-md-6",
+          "panels": [
+            {
+              "title": "Comments",
+              "fields": [
+                {
+                  "label": "Comment",
+                  "tooltip": "Comments for this asset",
+                  "model": "comment",
+                  "type": "textarea"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

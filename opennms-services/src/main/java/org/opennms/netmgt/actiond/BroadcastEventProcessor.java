@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,15 +29,14 @@
 package org.opennms.netmgt.actiond;
 
 import java.util.Enumeration;
+import java.util.Queue;
 
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -49,7 +48,7 @@ final class BroadcastEventProcessor implements EventListener {
     /**
      * The location where executable events are enqueued to be executed.
      */
-    private final FifoQueue<String> m_execQ;
+    private final Queue<String> m_execQ;
 
     /**
      * This constructor subscribes to eventd for all events
@@ -58,7 +57,7 @@ final class BroadcastEventProcessor implements EventListener {
      *            The queue where executable events are stored.
      * 
      */
-    BroadcastEventProcessor(FifoQueue<String> execQ) {
+    BroadcastEventProcessor(Queue<String> execQ) {
         // set up the exectuable queue first
         //
         m_execQ = execQ;
@@ -94,35 +93,19 @@ final class BroadcastEventProcessor implements EventListener {
         //
         Enumeration<Autoaction> walker = event.enumerateAutoaction();
         while (walker.hasMoreElements()) {
-            try {
-                Autoaction aact = walker.nextElement();
-                if ("on".equalsIgnoreCase(aact.getState())) {
-                    m_execQ.add(aact.getContent()); // java.lang.String
-                }
-
-                LOG.debug("Added event \'{}\' to execute autoaction \'{}\'", event.getUei(), aact.getContent());
-            } catch (FifoQueueException ex) {
-                LOG.error("Failed to add event to execution queue", ex);
-                break;
-            } catch (InterruptedException ex) {
-                LOG.error("Failed to add event to execution queue", ex);
-                break;
+            Autoaction aact = walker.nextElement();
+            if ("on".equalsIgnoreCase(aact.getState())) {
+                m_execQ.add(aact.getContent()); // java.lang.String
             }
+
+            LOG.debug("Added event \'{}\' to execute autoaction \'{}\'", event.getUei(), aact.getContent());
         }
 
         // Handle trouble tickets
         //
         if (event.getTticket() != null && event.getTticket().getState().equalsIgnoreCase("on")) {
-            try {
-                m_execQ.add(event.getTticket().getContent()); // java.lang.String
-
-
-                LOG.debug("Added event \'{}\' to execute tticket \'{}\'", event.getUei(), event.getTticket().getContent());
-            } catch (FifoQueueException ex) {
-                LOG.error("Failed to add event to execution queue", ex);
-            } catch (InterruptedException ex) {
-                LOG.error("Failed to add event to execution queue", ex);
-            }
+            m_execQ.add(event.getTticket().getContent()); // java.lang.String
+            LOG.debug("Added event \'{}\' to execute tticket \'{}\'", event.getUei(), event.getTticket().getContent());
         }
 
     } // end onMessage()

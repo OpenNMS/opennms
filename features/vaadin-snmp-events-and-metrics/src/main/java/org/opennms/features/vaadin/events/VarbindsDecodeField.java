@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,26 +25,28 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.data.Container;
+import com.vaadin.v7.data.Container;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.DefaultFieldFactory;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.DefaultFieldFactory;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.TextField;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The Event's VarbindsDecode Field.
@@ -52,7 +54,7 @@ import com.vaadin.ui.VerticalLayout;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> implements Button.ClickListener {
+public class VarbindsDecodeField extends CustomField<List<Varbindsdecode>> implements Button.ClickListener {
 
     /** The Container. */
     private final OnmsBeanContainer<Varbindsdecode> container = new OnmsBeanContainer<Varbindsdecode>(Varbindsdecode.class);
@@ -77,10 +79,10 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
     public VarbindsDecodeField(String caption) {
         setCaption(caption);
         table.addStyleName("light");
-        table.setVisibleColumns(new Object[]{"parmid", "decodeCollection"});
+        table.setVisibleColumns(new Object[]{"parmid", "decodes"});
         table.setColumnHeader("parmid", "Parameter ID");
-        table.setColumnHeader("decodeCollection", "Decode Values");
-        table.setColumnExpandRatio("decodeCollection", 1);
+        table.setColumnHeader("decodes", "Decode Values");
+        table.setColumnExpandRatio("decodes", 1);
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
         table.setHeight("125px");
@@ -88,7 +90,7 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
             public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-                if (propertyId.equals("decodeCollection")) {
+                if (propertyId.equals("decodes")) {
                     final TextField field = new TextField();
                     field.setConverter(new DecodeListConverter());
                     return field;
@@ -118,28 +120,23 @@ public class VarbindsDecodeField extends CustomField<ArrayList<Varbindsdecode>> 
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<ArrayList<Varbindsdecode>> getType() {
-        return (Class<ArrayList<Varbindsdecode>>) new ArrayList<Varbindsdecode>().getClass();
+    public Class<? extends List<Varbindsdecode>> getType() {
+        return (Class<? extends List<Varbindsdecode>>) new ArrayList<Varbindsdecode>().getClass();
     }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    protected ArrayList<Varbindsdecode> getInternalValue() {
-        ArrayList<Varbindsdecode> beans = new ArrayList<Varbindsdecode>();
-        for (Object itemId: container.getItemIds()) {
-            beans.add(container.getItem(itemId).getBean());
-        }
-        return beans;
+    protected List<Varbindsdecode> getInternalValue() {
+        return container.getOnmsBeans();
     }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    protected void setInternalValue(ArrayList<Varbindsdecode> varbindsDecodes) {
-        super.setInternalValue(varbindsDecodes);  // TODO Is this required ?
+    protected void setInternalValue(List<Varbindsdecode> varbindsDecodes) {
         container.removeAllItems();
         container.addAll(varbindsDecodes);
     }

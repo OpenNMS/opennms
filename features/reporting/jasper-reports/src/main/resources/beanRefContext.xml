@@ -3,13 +3,19 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
         
-   <bean id="jasperReportContext"
-         class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
+   <bean id="jasperReportContext" class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
      <constructor-arg>
        <list>
          <value>META-INF/opennms/component-reporting.xml</value>
        </list>
      </constructor-arg>
    </bean>
-
+   <bean id="measurementDataSourceContext" class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
+     <constructor-arg>
+       <list>
+         <value>classpath*:/META-INF/opennms/component-measurement.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg ref="daoContext" />
+   </bean>
 </beans>

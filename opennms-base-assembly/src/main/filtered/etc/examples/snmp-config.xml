@@ -12,6 +12,10 @@
       <specific>10.0.0.3</specific>
     </definition>
     
+    <!-- Sample Version for having a location specific config -->
+    <definition version="v2c" location="MINION" proxy-host="192.168.0.3" port="1161" >
+      <specific>10.0.0.3</specific>
+    </definition>
     
     <!-- Sample Version 2c configuration -->
 	<definition version="v2c">
@@ -51,6 +55,20 @@
 		<range begin="192.168.107.1" end="192.168.107.254"/>
 	</definition>
 
+	<!-- Sample configuration for SNMP profiles -->
+	<profiles>
+		<profile version="v1" read-community="horizon" timeout="10000">
+			<label>profile1</label>
+		</profile>
+		<profile version="v1" read-community="minion1" ttl="6000">
+			<label>profile1</label>
+			<filter>iphostname LIKE '%opennms%'</filter>
+		</profile>
+		<profile version="v1" read-community="meridian">
+			<label>profile2</label>
+			<filter>IPADDR IPLIKE 172.1.*.*</filter>
+		</profile>
+	</profiles>
 
 </snmp-config>
 

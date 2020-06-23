@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,15 +32,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.core.utils.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.event.filter.EventCriteria;
 import org.opennms.web.event.filter.EventCriteria.EventCriteriaVisitor;
 import org.opennms.web.event.filter.EventDisplayFilter;
@@ -50,6 +54,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Maps;
 
 /**
  * <p>DaoWebEventRepository class.</p>
@@ -65,7 +71,6 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DaoWebEventRepository.class);
 
-    
     @Autowired
     EventDao m_eventDao;
     
@@ -79,7 +84,8 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         criteria.createAlias("alarm", "alarm", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
-        
+        criteria.createAlias("distPoller", "distPoller", OnmsCriteria.LEFT_JOIN);
+
         criteria.add(new EventDisplayFilter("Y").getCriterion());
         
         eventCriteria.visit(new EventCriteriaVisitor<RuntimeException>(){
@@ -129,6 +135,12 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
                 case TIME:
                     criteria.addOrder(Order.desc("eventTime"));
                     break;
+                case LOCATION:
+                    criteria.addOrder(Order.desc("distPoller.location"));
+                    break;
+                case SYSTEMID:
+                    criteria.addOrder(Order.desc("distPoller.id"));
+                    break;
                 case REVERSE_ID:
                     criteria.addOrder(Order.asc("id"));
                     break;
@@ -150,7 +162,12 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
                 case REVERSE_TIME:
                     criteria.addOrder(Order.asc("eventTime"));
                     break;
-                
+                case REVERSE_LOCATION:
+                    criteria.addOrder(Order.asc("distPoller.location"));
+                    break;
+                case REVERSE_SYSTEMID:
+                    criteria.addOrder(Order.asc("distPoller.id"));
+                    break;
                 }
             }
             
@@ -168,7 +185,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         event.autoAction = onmsEvent.getEventAutoAction();
         event.createTime = onmsEvent.getEventCreateTime();
         event.description = onmsEvent.getEventDescr();
-        event.dpName = onmsEvent.getDistPoller() != null ? onmsEvent.getDistPoller().getName() : "";
+        event.dpName = onmsEvent.getDistPoller() != null ? onmsEvent.getDistPoller().getId() : "";
         event.eventDisplay = Boolean.valueOf(onmsEvent.getEventDisplay().equals("Y"));
         event.forward = onmsEvent.getEventForward();
         event.host = onmsEvent.getEventHost();
@@ -181,11 +198,12 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         LOG.debug("Found NodeLabel for mapped event:{}", event.getNodeLabel());
         event.nodeID = getNodeIdFromNode(onmsEvent);
         LOG.debug("Found NodeId for mapped event:{}", event.getNodeId());
+        event.nodeLocation = getNodeLocationFromNode(onmsEvent);
         event.notification = onmsEvent.getEventNotification();
         event.operatorAction = onmsEvent.getEventOperAction();
         event.operatorActionMenuText = onmsEvent.getEventOperActionMenuText();
         event.operatorInstruction = onmsEvent.getEventOperInstruct();
-        event.parms = onmsEvent.getEventParms();
+        event.parms = onmsEvent.getEventParameters()==null ? Maps.newHashMap() : onmsEvent.getEventParameters().stream().collect(Collectors.toMap(OnmsEventParameter::getName, OnmsEventParameter::getValue));
         event.serviceID = onmsEvent.getServiceType() != null ? onmsEvent.getServiceType().getId() : 0;
         event.serviceName = onmsEvent.getServiceType() != null ? onmsEvent.getServiceType().getName() : "";
         event.severity = OnmsSeverity.get(onmsEvent.getEventSeverity());
@@ -195,6 +213,10 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         event.troubleTicket = onmsEvent.getEventTTicket();
         event.troubleTicketState = onmsEvent.getEventTTicketState();
         event.uei = onmsEvent.getEventUei();
+        if (onmsEvent.getDistPoller() != null) {
+            event.location = onmsEvent.getDistPoller().getLocation();
+            event.systemId = onmsEvent.getDistPoller().getId();
+        }
         return event;
     }
 
@@ -216,6 +238,22 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         } 
     }
     
+    private String getNodeLocationFromNode(OnmsEvent onmsEvent) {
+        try {
+            final OnmsNode node = onmsEvent.getNode();
+            if (node != null) {
+                final OnmsMonitoringLocation location = node.getLocation();
+                if (location != null) {
+                    return location.getLocationName();
+                }
+            }
+            return "";
+        } catch (org.hibernate.ObjectNotFoundException e) {
+            LOG.debug("No node found in database for event with id: {}", onmsEvent.getId());
+            return "";
+        } 
+    }
+
     /**
      * <p>acknowledgeAll</p>
      *
@@ -278,7 +316,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
     @Transactional
     @Override
     public Event[] getMatchingEvents(EventCriteria criteria) {
-        List<Event> events = new ArrayList<Event>();
+        List<Event> events = new ArrayList<>();
         LOG.debug("getMatchingEvents: try to get events for Criteria: {}", criteria.toString());
         List<OnmsEvent> onmsEvents = m_eventDao.findMatching(getOnmsCriteria(criteria));
 
@@ -316,29 +354,4 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
             m_eventDao.update(event);
         }
     }
-    
-
-
-	@Override
-	public int purgeEvents(List<Integer> eventIds) {
-		
-		List<String> deleteSuccessStatus = new ArrayList<String>();
-		List<String> deleteFailStatus = new ArrayList<String>();
-		int eventsDeleted = 0;
-		LOG.debug("Event Id's received : {}", eventIds);
-		for(Integer eventId : eventIds){
-			//Delete an event by Id
-			
-			int deleteCount = m_eventDao.deleteEventById(eventId);
-			
-			if(deleteCount>0){
-				deleteSuccessStatus.add(String.valueOf(eventId));
-				eventsDeleted = eventsDeleted + 1;
-			}else{
-				LOG.warn("Event id {} does not exist in DB", eventId);
-			}
-			LOG.debug("Event Id's {} are successfully deleted from the DB for event id {}", deleteSuccessStatus, eventId);
-		}
-		return eventsDeleted;
-	}
 }

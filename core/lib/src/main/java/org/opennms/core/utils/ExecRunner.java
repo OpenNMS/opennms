@@ -1,35 +1,34 @@
 /*******************************************************************************
- * This file is part of the OpenNMS(R) Application.
+ * This file is part of OpenNMS(R).
  *
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.  All rights reserved.
+ * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * 
- * This file is a derivative work, containing both original code, included code,
- * and modified code that was published under the GNU General Public License.
- * 
- * Original code for this file Copyright (C) 2002 Scott McCrory.
- * All rights reserved.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- *     along with OpenNMS(R).  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
  *
- * For more information contact: 
+ * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.core.utils;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -39,7 +38,8 @@ import java.io.StringWriter;
 import java.util.Date;
 import java.util.StringTokenizer;
 
-import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <P>
@@ -57,6 +57,7 @@ import org.apache.commons.io.IOUtils;
  * @author <a href="mailto:smccrory@users.sourceforge.net">Scott McCrory </a>.
  */
 public class ExecRunner {
+    private static final Logger LOG = LoggerFactory.getLogger(ExecRunner.class);
 
     /** Win NT/2K/MEPro require cmd.exe to run programs * */
     private static final String WINDOWS_NT_2000_COMMAND_1 = "cmd.exe";
@@ -184,10 +185,10 @@ public class ExecRunner {
 
             return rc;
         } finally {
-            IOUtils.closeQuietly(pwErr);
-            IOUtils.closeQuietly(swErr);
-            IOUtils.closeQuietly(pwOut);
-            IOUtils.closeQuietly(swOut);
+            closeQuietly(pwErr);
+            closeQuietly(swErr);
+            closeQuietly(pwOut);
+            closeQuietly(swOut);
         }
     }
 
@@ -217,8 +218,8 @@ public class ExecRunner {
 
             return exec(command, pwOut, pwErr);
         } finally {
-            IOUtils.closeQuietly(pwErr);
-            IOUtils.closeQuietly(pwOut);
+            closeQuietly(pwErr);
+            closeQuietly(pwOut);
         }
     }
 
@@ -457,6 +458,16 @@ public class ExecRunner {
 
         throw new IOException("Object cannot be serialized");
 
+    }
+
+    private void closeQuietly(final Closeable c) {
+        if (c != null) {
+            try {
+                c.close();
+            } catch (final IOException closeE) {
+                LOG.debug("failed to close", closeE);
+            }
+        }
     }
 
 }

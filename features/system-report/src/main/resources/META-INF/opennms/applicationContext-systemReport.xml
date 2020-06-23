@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
 	xsi:schemaLocation="
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
         ">
 
@@ -59,27 +59,22 @@
     <onmsgi:service id="textReportFormatterService" ref="textReportFormatter" interface="org.opennms.systemreport.SystemReportFormatter" />
     
     <!-- Full Text -->
-    <!--
     <bean name="fullTextReportFormatter" class="org.opennms.systemreport.formatters.FullTextSystemReportFormatter" />
     <onmsgi:service id="fullTextReportFormatterService" ref="fullTextReportFormatter" interface="org.opennms.systemreport.SystemReportFormatter" />
-    -->
-
+    
     <!-- XML -->
-    <!--
     <bean name="xmlReportFormatter" class="org.opennms.systemreport.formatters.XmlSystemReportFormatter" />
     <onmsgi:service id="xmlReportFormatterService" ref="xmlReportFormatter" interface="org.opennms.systemreport.SystemReportFormatter" />
-    -->
-
+    
     <!-- ZIP -->
     <bean name="zipReportFormatter" class="org.opennms.systemreport.formatters.ZipSystemReportFormatter" />
     <onmsgi:service id="zipReportFormatterService" ref="zipReportFormatter" interface="org.opennms.systemreport.SystemReportFormatter" />
     
     <!-- FTP -->
-    <!--
     <bean name="ftpReportFormatter" class="org.opennms.systemreport.formatters.FtpSystemReportFormatter" />
     <onmsgi:service id="ftpReportFormatterService" ref="ftpReportFormatter" interface="org.opennms.systemreport.SystemReportFormatter" />
     
 	<onmsgi:list id="systemReportFormatterList" interface="org.opennms.systemreport.SystemReportFormatter" />
-    -->
+
 
 </beans>

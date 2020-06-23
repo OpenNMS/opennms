@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-	http://www.springframework.org/schema/beans/spring-beans.xsd">
+	http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
 	<bean id="calendarAvailabilityCalculator"
 		class="org.opennms.reporting.availability.AvailabilityCalculatorImpl"
@@ -15,7 +15,7 @@
 		</property>
 		<property name="reportStoreService" ref="reportStoreService" />
 		<property name="availabilityData">
-			<ref local="availabilityData"/>
+			<ref bean="availabilityData"/>
 		</property>
 	</bean>
 
@@ -30,7 +30,7 @@
 		</property>
 		<property name="reportStoreService" ref="reportStoreService" />
 		<property name="availabilityData">
-			<ref local="availabilityData"/>
+			<ref bean="availabilityData"/>
 		</property>
 	</bean>
 	
@@ -40,10 +40,10 @@
 		<property name="parameterConversionService" ref="parameterConversionService" />
 		<property name="configDao" ref="availabilityReportConfigDao" />  
 		<property name="calendarCalculator">
-			<ref local="calendarAvailabilityCalculator" />
+			<ref bean="calendarAvailabilityCalculator" />
 		</property>
 		<property name="classicCalculator">
-			<ref local="classicAvailabilityCalculator" />
+			<ref bean="classicAvailabilityCalculator" />
 		</property>
 	</bean>
 	
@@ -53,7 +53,7 @@
     	class="org.opennms.reporting.availability.AvailabilityData"
     	scope="prototype">
 		<property name="availabilityDataService">
-			<ref local="legacyAvailabilityDataService" />
+			<ref bean="legacyAvailabilityDataService" />
     	</property>
     </bean>
     

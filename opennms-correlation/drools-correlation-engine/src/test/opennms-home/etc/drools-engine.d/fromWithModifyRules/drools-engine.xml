@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<engine-configuration 
+	xmlns="http://xmlns.opennms.org/xsd/drools-engine" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <rule-set name="fromWithModifyRules">
+    <rule-file>FromWithModifyRules.drl</rule-file>
+    <event>uei.opennms.org/nodes/nodeDown</event>
+    <event>uei.opennms.org/nodes/nodeUp</event>
+    <app-context>fromWithModifyRules-context.xml</app-context>
+  </rule-set>
+</engine-configuration>

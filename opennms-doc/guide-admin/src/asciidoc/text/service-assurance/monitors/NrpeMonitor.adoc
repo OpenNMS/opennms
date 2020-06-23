@@ -1,0 +1,68 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== NrpeMonitor
+
+This monitor allows to test plugins and checks running on the link:http://exchange.nagios.org/directory/Addons/Monitoring-Agents/NRPE--2D-Nagios-Remote-Plugin-Executor/details[Nagios Remote Plugin Executor] (_NRPE_) framework.
+The monitor allows to test the status output of any available check command executed by _NRPE_.
+Between {opennms-product-name} and _Nagios_ are some conceptional differences.
+In {opennms-product-name} a service can only be available or not available and the response time for the service is measured.
+_Nagios_ on the other hand combines service availability, performance data collection and thresholding in one check command.
+For this reason a _Nagios_ check command can have more states then _OK_ and _CRITICAL_.
+Using the _NrpeMonitor_ marks all check command results other than _OK_ as _down_.
+The full output of the check command output message is passed into the service down event in {opennms-product-name}.
+
+IMPORTANT: _NRPE_ configuration on the server is required and the check command has to be configured, e.g. `command[check_apt]=/usr/lib/nagios/plugins/check_apt`
+
+CAUTION: {opennms-product-name} executes every _NRPE_ check in a Java thread without _fork()_ a process and it is more resource friendly.
+         Nevertheless it is possible to run _NRPE_ plugins which combine a lot of external programs like `sed`, `awk` or `cut`.
+         Be aware, each command end up in forking additional processes.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.NrpeMonitor`
+| Remote Enabled | false
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the NrpeMonitor
+[options="header, autowidth"]
+|===
+| Parameter | Description                                                                                              | Required | Default value
+| `retry`   | Number of retries before the service is marked as _down_.                                                | optional | `0`
+| `command` | The {check_name} of the command configured as `command[{check_name}]="/path/to/plugin/check-script"      | required | empty
+| `port`    | Port to access _NRPE_ on the remote server.                                                              | optional | `5666`
+| `padding` | Padding for sending the command to the _NRPE_ agent.                                                     | optional | `2`
+| `usessl`  | Enable encryption of network communication. _NRPE_ uses SSL with anonymous DH and the following cipher
+              suite _TLS_DH_anon_WITH_AES_128_CBC_SHA_                                                                 | optional | `true`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Example: Using _check_apt_ with _NRPE_
+
+This examples shows how to configure the _NrpeMonitor_ running the _check_apt_ command on a configured _NRPE_.
+
+.Configuration of the _NRPE_ check command on the agent in 'nrpe.cfg'
+[source,bash]
+----
+command[check_apt]=/usr/lib/nagios/plugins/check_apt
+----
+
+.Configuration to test the _NRPE_ plugin with the _NrpeMonitor_
+[source, xml]
+----
+<service name="NRPE-Check-APT" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="3" />
+  <parameter key="timeout" value="3000" />
+  <parameter key="port" value="5666" />
+  <parameter key="command" value="check_apt" />
+  <parameter key="padding" value="2" />
+</service>
+
+<monitor service="NRPE-Check-APT" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
+----

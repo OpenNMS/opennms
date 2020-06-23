@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,32 +34,31 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.easymock.EasyMock;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.test.MockPlatformTransactionManager;
-import org.opennms.netmgt.config.CollectdPackage;
-import org.opennms.netmgt.config.MibObject;
+import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.collectd.Filter;
-import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.config.collectd.Package;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
-import org.opennms.netmgt.config.collector.ServiceParameters;
+import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.mock.MockDataCollectionConfigDao;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JValueFactory;
-
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -76,14 +75,16 @@ public class PersistRegexSelectorStrategyTest {
     private IpInterfaceDao ipInterfaceDao;
     private GenericIndexResource resourceA;
     private GenericIndexResource resourceB;
+    private GenericIndexResource resourceC;
+    private GenericIndexResource resourceD;
     private ServiceParameters serviceParams;
 
     @Before
     public void setUp() throws Exception {
         ipInterfaceDao = EasyMock.createMock(IpInterfaceDao.class);
         String localhost = InetAddress.getLocalHost().getHostAddress();
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", localhost);
-        NetworkBuilder builder = new NetworkBuilder(distPoller);
+
+        NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("myNode");
         builder.addInterface(localhost).setIsManaged("M").setIsSnmpPrimary("P");
         OnmsNode node = builder.getCurrentNode();
@@ -100,23 +101,23 @@ public class PersistRegexSelectorStrategyTest {
         Service service = new Service();
         service.setName("SNMP");
         pkg.addService(service);
-        CollectdPackage collectdPkg = new CollectdPackage(pkg, "localhost", false);
         Map<String, Object> map = new TreeMap<String, Object>();
-        List<org.opennms.netmgt.config.collectd.Parameter> params = collectdPkg.getService("SNMP").getParameterCollection();
+        List<org.opennms.netmgt.config.collectd.Parameter> params = pkg.getService("SNMP").getParameters();
         for (org.opennms.netmgt.config.collectd.Parameter p : params) {
             map.put(p.getKey(), p.getValue());
         }
         map.put("collection", "default");
         serviceParams = new ServiceParameters(map);
 
+        LocationAwareSnmpClient locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
         PlatformTransactionManager ptm = new MockPlatformTransactionManager();
-        CollectionAgent agent = DefaultCollectionAgent.create(1, ipInterfaceDao, ptm);
-        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, serviceParams);
+        SnmpCollectionAgent agent = DefaultSnmpCollectionAgent.create(1, ipInterfaceDao, ptm);
+        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, serviceParams, new MockDataCollectionConfigDao(), locationAwareSnmpClient);
 
         org.opennms.netmgt.config.datacollection.ResourceType rt = new org.opennms.netmgt.config.datacollection.ResourceType();
         rt.setName("myResourceType");
         StorageStrategy storageStrategy = new StorageStrategy();
-        storageStrategy.setClazz("org.opennms.netmgt.dao.support.IndexStorageStrategy");
+        storageStrategy.setClazz("org.opennms.netmgt.collection.support.IndexStorageStrategy");
         rt.setStorageStrategy(storageStrategy);
         PersistenceSelectorStrategy persistenceSelectorStrategy = new PersistenceSelectorStrategy();
         persistenceSelectorStrategy.setClazz("org.opennms.netmgt.collectd.PersistRegexSelectorStrategy");
@@ -129,7 +130,7 @@ public class PersistRegexSelectorStrategyTest {
 
         resourceA = new GenericIndexResource(resourceType, rt.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.1"));
         
-        AttributeGroupType groupType = new AttributeGroupType("mib2-interfaces", "all");
+        AttributeGroupType groupType = new AttributeGroupType("mib2-interfaces", AttributeGroupType.IF_TYPE_ALL);
         MibObject mibObject = new MibObject();
         mibObject.setOid(".1.2.3.4.5.6.7.8.9.2.1");
         mibObject.setInstance("1");
@@ -140,6 +141,22 @@ public class PersistRegexSelectorStrategyTest {
         resourceA.setAttributeValue(attributeType, snmpValue);
         
         resourceB = new GenericIndexResource(resourceType, rt.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.2"));
+
+        // selector sensitive to instance IDs
+        org.opennms.netmgt.config.datacollection.ResourceType rtInst = new org.opennms.netmgt.config.datacollection.ResourceType();
+        rtInst.setName("myResourceTypeTwo");
+        rtInst.setStorageStrategy(storageStrategy);
+        PersistenceSelectorStrategy persistenceSelectorStrategyInst = new PersistenceSelectorStrategy();
+        persistenceSelectorStrategyInst.setClazz("org.opennms.netmgt.collectd.PersistRegexSelectorStrategy");
+        Parameter paramInst = new Parameter();
+        paramInst.setKey(PersistRegexSelectorStrategy.MATCH_EXPRESSION);
+        paramInst.setValue("#instance matches '.*\\.3$'");
+        persistenceSelectorStrategyInst.addParameter(paramInst);
+        rtInst.setPersistenceSelectorStrategy(persistenceSelectorStrategyInst);
+        GenericIndexResourceType resourceTypeInst = new GenericIndexResourceType(agent, snmpCollection, rtInst);
+
+        resourceC = new GenericIndexResource(resourceTypeInst, rtInst.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.3"));
+        resourceD = new GenericIndexResource(resourceTypeInst, rtInst.getName(), new SnmpInstId("1.2.3.4.5.6.7.8.9.1.4"));
     }
 
     @After
@@ -149,8 +166,10 @@ public class PersistRegexSelectorStrategyTest {
 
     @Test
     public void testPersistSelector() throws Exception {
-        Assert.assertTrue(resourceA.shouldPersist(serviceParams));
-        Assert.assertFalse(resourceB.shouldPersist(serviceParams));
+        Assert.assertTrue("resourceA matches parameter expression", resourceA.shouldPersist(serviceParams));
+        Assert.assertFalse("resourceB doesn't matche parameter expression", resourceB.shouldPersist(serviceParams));
+        Assert.assertTrue("resourceC matches instance expression", resourceC.shouldPersist(serviceParams));
+        Assert.assertFalse("resourceD doesn't match instance expression", resourceD.shouldPersist(serviceParams));
     }
 
     @Test
@@ -159,7 +178,7 @@ public class PersistRegexSelectorStrategyTest {
         Expression exp = parser.parseExpression("#name matches '^Alejandro.*'");
         StandardEvaluationContext context = new StandardEvaluationContext();
         context.setVariable("name", "Alejandro Galue");
-        boolean result = exp.getValue(context, Boolean.class);
+        boolean result = (Boolean)exp.getValue(context, Boolean.class);
         Assert.assertTrue(result);
     }
 }

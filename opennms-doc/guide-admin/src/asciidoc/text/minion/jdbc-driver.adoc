@@ -1,0 +1,32 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Installing JDBC drivers in Minion
+
+For any JDBC service to be detected/polled/collected, corresponding JDBC driver needs to be installed in _Minion_.
+Following are steps to install JDBC driver.
+
+* JDBC driver jar needs to be copied into `minion/repositories/default` by following maven repositories pattern.
+  For ex: Mysql driver jar should be placed in `repositories/core/mysql/mysql-connector-java/8.0.15/mysql-connector-java-8.0.15.jar`
+
+* Install the JDBC driver jar as a feature. Modify contents of following `features-jdbc.xml` relevant to JDBC driver that is getting installed.
+  Copy `features-jdbc.xml` file into `${MINION_HOME}/deploy/`.  Multiple JDBC drivers can be added to this file each one as a new feature.
+
+.features-jdbc.xml
+[source, xml]
+-----
+<?xml version="1.0" encoding="UTF-8"?>
+<features
+        name="opennms-${project.version}"
+        xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
+>
+    <!-- Bootstrap mysql bundle to get loaded by default in minion -->
+    <feature name="mysql-bundle" version="8.0.15" install="auto">
+          <bundle>wrap:mvn:mysql/mysql-connector-java/8.0.15</bundle>
+    </feature>
+</features>
+-----
+
+* Restart _Minion_ with : `systemctl restart minion` and that should load the JDBC driver.

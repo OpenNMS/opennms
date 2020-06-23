@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -40,8 +40,15 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	public DelegatingVertexEdgeProvider(String vertexNamespace, String edgeNamespace) {
-		m_vertexProvider = new SimpleVertexProvider(vertexNamespace);
-		m_edgeProvider = new SimpleEdgeProvider(edgeNamespace);
+		this(new SimpleVertexProvider(vertexNamespace), new SimpleEdgeProvider(edgeNamespace));
+	}
+
+	public DelegatingVertexEdgeProvider(SimpleVertexProvider vertexProvider, SimpleEdgeProvider edgeProvider) {
+		m_vertexProvider = vertexProvider;
+		m_edgeProvider = edgeProvider;
+		if (!m_edgeProvider.getNamespace().equals(edgeProvider.getNamespace())) {
+			throw new IllegalStateException("Namespace of edge and vertex provider must match");
+		}
 	}
 
 	protected final SimpleVertexProvider getSimpleVertexProvider() {
@@ -62,6 +69,16 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 		m_vertexProvider.clearVertices();
 	}
 
+    @Override
+    public int getVertexTotalCount() {
+        return m_vertexProvider.getVertexTotalCount();
+    }
+
+	@Override
+	public int getEdgeTotalCount() {
+		return m_edgeProvider.getEdgeTotalCount();
+	}
+
 	@Override
 	public final boolean contributesTo(String namespace) {
 		return m_vertexProvider.contributesTo(namespace);
@@ -73,18 +90,18 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public boolean containsVertexId(VertexRef id) {
-		return m_vertexProvider.containsVertexId(id);
+	public boolean containsVertexId(VertexRef id, Criteria... criteria) {
+		return m_vertexProvider.containsVertexId(id, criteria);
 	}
 
 	@Override
-	public final List<Vertex> getChildren(VertexRef group) {
-		return m_vertexProvider.getChildren(group);
+	public final List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
+		return m_vertexProvider.getChildren(group, criteria);
 	}
 
 	@Override
-	public final String getVertexNamespace() {
-		return m_vertexProvider.getVertexNamespace();
+	public final String getNamespace() {
+		return m_vertexProvider.getNamespace();
 	}
 
 	@Override
@@ -108,23 +125,18 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public final Vertex getVertex(VertexRef reference) {
-		return m_vertexProvider.getVertex(reference);
+	public final Vertex getVertex(VertexRef reference, Criteria... criteria) {
+		return m_vertexProvider.getVertex(reference, criteria);
 	}
 
 	@Override
-	public final List<Vertex> getVertices(Criteria criteria) {
+	public final List<Vertex> getVertices(Criteria... criteria) {
 		return m_vertexProvider.getVertices(criteria);
 	}
 
 	@Override
-	public final List<Vertex> getVertices() {
-		return m_vertexProvider.getVertices();
-	}
-
-	@Override
-	public final List<Vertex> getVertices(Collection<? extends VertexRef> references) {
-		return m_vertexProvider.getVertices(references);
+	public final List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
+		return m_vertexProvider.getVertices(references, criteria);
 	}
 
 	@Override
@@ -163,28 +175,13 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	@Override
-	public final String getEdgeNamespace() {
-		return m_edgeProvider.getEdgeNamespace();
-	}
-
-	@Override
-	public final List<Edge> getEdges(Criteria criteria) {
+	public final List<Edge> getEdges(Criteria... criteria) {
 		return m_edgeProvider.getEdges(criteria);
-	}
-
-	@Override
-	public final List<Edge> getEdges() {
-		return m_edgeProvider.getEdges();
 	}
 
 	@Override
 	public final List<Edge> getEdges(Collection<? extends EdgeRef> references) {
 		return m_edgeProvider.getEdges(references);
-	}
-
-	@Override
-	public final boolean matches(EdgeRef edgeRef, Criteria criteria) {
-		return m_edgeProvider.matches(edgeRef, criteria);
 	}
 
 	@Override

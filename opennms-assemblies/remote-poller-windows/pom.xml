@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
   <artifactId>org.opennms.assemblies.remote-poller-windows</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Remote Poller (Windows)</name>
+  <name>OpenNMS Remote Poller (Windows, Jar)</name>
   <url>http://maven.apache.org</url>
   <build>
     <resources>
@@ -34,6 +34,9 @@
           <descriptors>
             <descriptor>src/assembly/remote-poller.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>

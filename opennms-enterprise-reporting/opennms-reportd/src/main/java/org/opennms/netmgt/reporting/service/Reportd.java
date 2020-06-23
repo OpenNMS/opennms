@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,20 +31,20 @@ package org.opennms.netmgt.reporting.service;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.ReportdConfigurationDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 /**
  * <p>Reportd class.</p>
@@ -118,13 +118,13 @@ public class Reportd implements SpringServiceDaemon {
      * @param report a {@link org.opennms.netmgt.config.reportd.Report} object.
      */
     public void runReport(Report report) {
-    	Map mdc = Logging.getCopyOfContextMap();
+    	Map<String,String> mdc = Logging.getCopyOfContextMap();
         try {
             Logging.putPrefix(NAME);
             LOG.debug("reportd -- running job {}", report.getReportName());
             String fileName = m_reportService.runReport(report,reportDirectory);
-            if (report.getRecipientCount() > 0) {
-                LOG.debug("reportd -- delivering report {} to {} recipients", report.getReportName(), report.getRecipientCount());
+            if (report.getRecipients().size() > 0) {
+                LOG.debug("reportd -- delivering report {} to {} recipients", report.getReportName(), report.getRecipients().size());
                 m_reportDeliveryService.deliverReport(report, fileName);
             } else {
                 LOG.info("Skipped delivery of report {} because it has no recipients", report.getReportName());
@@ -163,7 +163,7 @@ public class Reportd implements SpringServiceDaemon {
      */
     @EventHandler(uei = EventConstants.REPORTD_RUN_REPORT)
     public void handleRunReportEvent(Event e){
-       String reportName = new String();
+       String reportName = "";
        
        for(Parm parm : e.getParmCollection()){
        
@@ -175,7 +175,7 @@ public class Reportd implements SpringServiceDaemon {
                
            }
            
-           if (reportName != ""){
+           if (!"".equals(reportName)){
               LOG.debug("running report {}", reportName);
               runReport(reportName);
                
@@ -206,7 +206,11 @@ public class Reportd implements SpringServiceDaemon {
 
                 m_reportScheduler.rebuildReportSchedule();
 
-                LOG.debug("handleRelodConfigEvent: reports rescheduled.");
+                LOG.debug("handleReloadConfigEvent: reports rescheduled.");
+                
+                m_reportDeliveryService.reloadConfiguration();
+                
+                LOG.debug("handleReloadConfigEvent: Configuration reloaded for report delivery service {}", m_reportDeliveryService.getClass().getName());
 
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, "Reportd");
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Reportd");
@@ -247,7 +251,7 @@ public class Reportd implements SpringServiceDaemon {
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
@@ -256,7 +260,7 @@ public class Reportd implements SpringServiceDaemon {
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;

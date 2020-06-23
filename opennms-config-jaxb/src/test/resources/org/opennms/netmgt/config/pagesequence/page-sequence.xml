@@ -1,0 +1,16 @@
+<page-sequence>
+	<page method="GET" http-version="1.1" scheme="http" host="${ipaddr}"
+		disable-ssl-verification="true" port="7080" path="/Login.do"
+		successMatch="(HQ Login)|(Sign in to Hyperic HQ)" response-range="100-399" />
+	<page method="POST" http-version="1.1" scheme="http" host="${ipaddr}"
+		disable-ssl-verification="true" port="7080" path="/j_security_check.do"
+		failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)"
+		failureMessage="HQ Login in Failed" successMatch="HQ Dashboard"
+		response-range="100-399">
+		<parameter key="j_username" value="hqadmin" />
+		<parameter key="j_password" value="hqadmin" />
+	</page>
+	<page method="GET" http-version="1.1" scheme="http" host="${ipaddr}"
+		disable-ssl-verification="true" port="7080" path="/Logout.do"
+		successMatch="HQ Login" response-range="100-399" />
+</page-sequence>

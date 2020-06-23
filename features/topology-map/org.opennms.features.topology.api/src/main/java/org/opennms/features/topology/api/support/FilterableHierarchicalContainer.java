@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,27 +35,27 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-
-import com.vaadin.data.Container;
-import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Container.ItemSetChangeListener;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.BeanItem;
+import com.vaadin.v7.data.util.HierarchicalContainer;
 
 @SuppressWarnings("serial")
 public class FilterableHierarchicalContainer extends HierarchicalContainer implements ItemSetChangeListener {
 
     HierarchicalBeanContainer<?,?> m_container;
     List<Object> m_filteredItems;
-    private LinkedList<Object> m_filteredRoots = null;
-    private HashMap<Object, LinkedList<Object>> m_filteredChildren = null;
-    private HashMap<Object, Object> m_filteredParent = null;
+    private List<Object> m_filteredRoots = null;
+    private Map<Object, LinkedList<Object>> m_filteredChildren = null;
+    private Map<Object, Object> m_filteredParent = null;
     private boolean m_includeParentsWhenFiltering = true;
     private Set<Object> m_filterOverride = null;
-    private final HashMap<Object, Object> m_parent = new HashMap<Object, Object>();
+    private final Map<Object, Object> m_parent = new HashMap<Object, Object>();
     
    public FilterableHierarchicalContainer(HierarchicalBeanContainer<?,?> container) {
         super();
@@ -278,7 +278,7 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
         }
     }
     
-    private void addFilteredChildrenRecursively(Object parentItemId, HashSet<Object> includedItems) {
+    private void addFilteredChildrenRecursively(Object parentItemId, Set<Object> includedItems) {
         Collection<?> childList = m_container.getChildren(parentItemId);
         if (childList == null) {
             return;
@@ -305,7 +305,7 @@ public class FilterableHierarchicalContainer extends HierarchicalContainer imple
 
     }
     
-    private boolean filterIncludingParents(Object itemId, HashSet<Object> includedItems) {
+    private boolean filterIncludingParents(Object itemId, Set<Object> includedItems) {
         boolean toBeIncluded = passesFilters(itemId);
 
         Collection<?> childList = m_container.getChildren(itemId);

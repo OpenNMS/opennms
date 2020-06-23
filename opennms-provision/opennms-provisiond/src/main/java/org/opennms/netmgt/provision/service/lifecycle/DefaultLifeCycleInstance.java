@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.service.lifecycle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +37,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.tasks.BatchTask;
-import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.SequenceTask;
+import org.opennms.core.tasks.TaskCoordinator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,26 +60,26 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
      *  
      */
     
-    final BatchTask m_containingPhase;
-    final LifeCycleRepository m_repository;
-    final DefaultTaskCoordinator m_coordinator;
-    final String m_name;
-    final Phase[] m_phases;
-    final Object[] m_providers;
-    final Map<String, Object> m_attributes = new HashMap<String, Object>();
+    private final BatchTask m_containingPhase;
+    private final LifeCycleRepository m_repository;
+    private final TaskCoordinator m_coordinator;
+    private final String m_name;
+    private final Phase[] m_phases;
+    private final Object[] m_providers;
+    private final Map<String, Object> m_attributes = new HashMap<String, Object>();
     
     /**
      * <p>Constructor for DefaultLifeCycleInstance.</p>
      *
      * @param containingPhase a {@link org.opennms.core.tasks.BatchTask} object.
      * @param repository a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository} object.
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param lifeCycleName a {@link java.lang.String} object.
      * @param phaseNames an array of {@link java.lang.String} objects.
      * @param providers an array of {@link java.lang.Object} objects.
      */
     public DefaultLifeCycleInstance(BatchTask containingPhase, LifeCycleRepository repository,
-            DefaultTaskCoordinator coordinator, String lifeCycleName, String[] phaseNames, Object[] providers) {
+            TaskCoordinator coordinator, String lifeCycleName, String[] phaseNames, Object[] providers) {
 
         super(coordinator, containingPhase);
         m_containingPhase = containingPhase;
@@ -104,13 +105,13 @@ class DefaultLifeCycleInstance extends SequenceTask implements LifeCycleInstance
      * <p>Constructor for DefaultLifeCycleInstance.</p>
      *
      * @param repository a {@link org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository} object.
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      * @param lifeCycleName a {@link java.lang.String} object.
      * @param phaseNames an array of {@link java.lang.String} objects.
      * @param providers an array of {@link java.lang.Object} objects.
      */
-    public DefaultLifeCycleInstance(LifeCycleRepository repository, DefaultTaskCoordinator coordinator, String lifeCycleName, String[] phaseNames, Object[] providers) {
-        this(null, repository, coordinator, lifeCycleName, phaseNames, providers);
+    public DefaultLifeCycleInstance(LifeCycleRepository repository, TaskCoordinator coordinator, String lifeCycleName, String[] phaseNames, Object[] providers) {
+        this(null, repository, coordinator, lifeCycleName, Arrays.copyOf(phaseNames, phaseNames.length), Arrays.copyOf(providers, providers.length));
     }
 
     /**

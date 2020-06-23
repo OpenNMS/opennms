@@ -1,0 +1,34 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-role-user-management-pre-authentication]]
+=== Web UI Pre-Authentication
+
+It is possible to configure _{opennms-product-name}_ to run behind a proxy that provides authentication, and then pass the pre-authenticated user to the _{opennms-product-name}_ webapp using a header.
+
+The pre-authentication configuration is defined in `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/spring-security.d/header-preauth.xml`. This file is automatically included in the Spring Security context, but is not enabled by default.
+
+WARNING: *DO NOT* configure _{opennms-product-name}_ in this manner unless you are certain the web UI is only accessible to the proxy and not to end-users.
+	Otherwise, malicious attackers can craft queries that include the pre-authentication header and get full control of the web UI and ReST APIs.
+
+==== Enabling Pre-Authentication
+
+Edit the `header-preauth.xml` file, and set the `enabled` property:
+
+[source,xml]
+----
+<beans:property name="enabled" value="true" />
+----
+
+==== Configuring Pre-Authentication
+
+There are a number of other properties that can be set to change the behavior of the pre-authentication plugin.
+
+[options="header",frame="topbot",grid="none"]
+|====
+|Property|Description|Default
+|`enabled`|Whether the pre-authentication plugin is active.|`false`
+|`failOnError`|If true, disallow login if the header is not set or the user does not exist. If false, fall through to other mechanisms (basic auth, form login, etc.)|`false`
+|`userHeader`|The HTTP header that will specify the user to authenticate as.|`X-Remote-User`
+|`credentialsHeader`|A comma-separated list of additional credentials (roles) the user should have.|
+|====

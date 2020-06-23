@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,10 +34,12 @@ import static org.opennms.core.utils.InetAddressUtils.toIpAddrBytes;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,13 +50,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.network.IpListFromUrl;
 import org.opennms.core.utils.ByteArrayComparator;
-import org.opennms.core.utils.IpListFromUrl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.rancid.adapter.ExcludeRange;
 import org.opennms.netmgt.config.rancid.adapter.IncludeRange;
 import org.opennms.netmgt.config.rancid.adapter.Mapping;
@@ -63,6 +61,8 @@ import org.opennms.netmgt.config.rancid.adapter.PolicyManage;
 import org.opennms.netmgt.config.rancid.adapter.RancidConfiguration;
 import org.opennms.netmgt.config.rancid.adapter.Schedule;
 import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract RancidAdapterConfigManager class.</p>
@@ -71,7 +71,7 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
  * @author <a href="mailto:brozow@openms.org">Mathew Brozowski</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-abstract public class RancidAdapterConfigManager implements RancidAdapterConfig {
+public abstract class RancidAdapterConfigManager implements RancidAdapterConfig {
     private static final Logger LOG = LoggerFactory.getLogger(RancidAdapterConfigManager.class);
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
@@ -81,17 +81,6 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * The config class loaded from the config file
      */
      private RancidConfiguration m_config;
-
-    /**
-     * A boolean flag to indicate If a filter rule against the local OpenNMS
-     * server has to be used.
-     */
-    private static boolean m_verifyServer;
-
-    /**
-     * The name of the local OpenNMS server
-     */
-    private static String m_localServer;
 
     /**
      * A mapping of the configured URLs to a list of the specific IPs configured
@@ -115,15 +104,9 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      *
      * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
      * @param reader a {@link java.io.InputStream} object.
-     * @param verifyServer a boolean.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.IOException if any.
-     * @param serverName a {@link java.lang.String} object.
      */
-    public RancidAdapterConfigManager(final InputStream reader,final String serverName, final boolean verifyServer) throws MarshalException, ValidationException, IOException {
-         m_localServer = serverName;
-         m_verifyServer = verifyServer;
+    public RancidAdapterConfigManager(final InputStream reader) throws IOException {
          reloadXML(reader);
      }
 
@@ -144,15 +127,13 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     /**
      * <p>reloadXML</p>
      *
-     * @param reader a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @param is a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
-    protected void reloadXML(final InputStream reader) throws MarshalException, ValidationException, IOException {
-        getWriteLock().lock();
-        try {
-            m_config = CastorUtils.unmarshal(RancidConfiguration.class, reader);
+    protected void reloadXML(final InputStream is) throws IOException {
+        try (Reader reader = new InputStreamReader(is)) {
+            getWriteLock().lock();
+            m_config = JaxbUtils.unmarshal(RancidConfiguration.class, reader);
             createPolicyNamePkgMap();
             createUrlIpMap();
             createPackageIpListMap();
@@ -186,7 +167,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
         if (hasPolicies()) {
             for (final Package pkg: packages() ) {        
                 for(final String url : includeURLs(pkg)) {
-                    final List<String> iplist = IpListFromUrl.parse(url);
+                    final List<String> iplist = IpListFromUrl.fetch(url);
                     if (iplist.size() > 0) {
                         m_urlIPMap.put(url, iplist);
                     }
@@ -203,8 +184,8 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * from the database.
      */
     private void createPackageIpListMap() {
-        getWriteLock().lock();
         try {
+            getWriteLock().lock();
             m_pkgIpMap = new HashMap<Package, List<InetAddress>>();
             
             if (hasPolicies()) {
@@ -231,15 +212,9 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
     
     private List<InetAddress> getIpList(final Package pkg) {
-        final StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
-        if (m_verifyServer) {
-            filterRules.append(" & (serverName == ");
-            filterRules.append('\"');
-            filterRules.append(m_localServer);
-            filterRules.append('\"');
-            filterRules.append(")");
-        }
+        final StringBuilder filterRules = new StringBuilder(pkg.getFilter().getContent());
         LOG.debug("createPackageIpMap: package is {}. filter rules are {}", pkg.getName(), filterRules);
+        FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
         return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
     }
     
@@ -287,9 +262,9 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
  
         // if there are NO include ranges then treat act as if the user include
         // the range 0.0.0.0 - 255.255.255.255
-        has_range_include = pkg.getIncludeRangeCount() == 0 && pkg.getSpecificCount() == 0;
+        has_range_include = pkg.getIncludeRanges().size() == 0 && pkg.getSpecifics().size() == 0;
         
-        for (IncludeRange rng : pkg.getIncludeRange()) {
+        for (final IncludeRange rng : pkg.getIncludeRanges()) {
             if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_include = true;
                 break;
@@ -298,7 +273,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
 
         byte[] addr = toIpAddrBytes(iface);
 
-        for (String spec : pkg.getSpecific()) {
+        for (final String spec : pkg.getSpecifics()) {
             byte[] speca = toIpAddrBytes(spec);
             if (new ByteArrayComparator().compare(speca, addr) == 0) {
                 has_specific = true;
@@ -306,12 +281,12 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
             }
         }
 
-        Enumeration<String> eurl = pkg.enumerateIncludeUrl();
-        while (!has_specific && eurl.hasMoreElements()) {
-            has_specific = interfaceInUrl(iface, eurl.nextElement());
+        Iterator<String> eurl = pkg.getIncludeUrls().iterator();
+        while (!has_specific && eurl.hasNext()) {
+            has_specific = interfaceInUrl(iface, eurl.next());
         }
     
-        for (ExcludeRange rng : pkg.getExcludeRangeCollection()) {
+        for (final ExcludeRange rng : pkg.getExcludeRanges()) {
             if (isInetAddressInRange(iface, rng.getBegin(), rng.getEnd())) {
                 has_range_exclude = true;
                 break;
@@ -389,10 +364,10 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     /** {@inheritDoc} */
     @Override
     public long getDelay(final String ipaddr) {
-        getReadLock().lock();
         try {
-            if (hasPolicyManage(ipaddr) && getPolicyManageWithoutTesting(ipaddr).hasDelay()) {
-                return getPolicyManageWithoutTesting(ipaddr).getDelay();
+            getReadLock().lock();
+            if (hasPolicyManage(ipaddr) && getPolicyManageWithoutTesting(ipaddr).getDelay().isPresent()) {
+                return getPolicyManageWithoutTesting(ipaddr).getDelay().get();
             }
             return getConfiguration().getDelay();
         } finally {
@@ -403,10 +378,10 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     /** {@inheritDoc} */
     @Override
     public int getRetries(final String ipaddr) {
-        getReadLock().lock();
         try {
-            if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).hasRetries()) {
-                return getPolicyManageWithoutTesting(ipaddr).getRetries();
+            getReadLock().lock();
+            if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).getRetries().isPresent()) {
+                return getPolicyManageWithoutTesting(ipaddr).getRetries().get();
             }
             return getConfiguration().getRetries();
         } finally {
@@ -417,10 +392,10 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     /** {@inheritDoc} */
     @Override
     public boolean useCategories(final String ipaddr) {
-        getReadLock().lock();
         try {
-            if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).hasUseCategories()) {
-                return getPolicyManageWithoutTesting(ipaddr).getUseCategories();
+            getReadLock().lock();
+            if (hasPolicyManage(ipaddr) && getPolicyManage(ipaddr).getUseCategories().isPresent()) {
+                return getPolicyManageWithoutTesting(ipaddr).getUseCategories().get();
             }
             return getConfiguration().getUseCategories();
         } finally {
@@ -429,17 +404,43 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     }
 
     /** {@inheritDoc} */
-    @Override
-    public String getType(final String sysoid) {
+    public String getType(final String sysoid, final String sysdescr) {
+        LOG.debug("getType: sysoid: {}", sysoid);
+        LOG.debug("getType: sysdescription: {}", sysdescr);
         getReadLock().lock();
         try {
-            if (sysoid != null) {
-                for (final Mapping map: mappings()) {
-                    if (sysoid.startsWith(map.getSysoidMask()))
-                    return map.getType();
+            String type = getConfiguration().getDefaultType();
+            boolean notMatched = true;
+            if (sysoid != null && sysdescr != null) {
+                for (Mapping map : mappings()) {
+                    LOG.debug("getType: parsing map with SysoidMaSk: {}, SysdescrMatch: {}",
+                                    map.getSysoidMask(),
+                                    map.getSysdescrMatch().orElse(null));
+                    if (sysoid.startsWith(map.getSysoidMask())) {
+                        if (map.getSysdescrMatch().isPresent() && sysdescr.matches(map.getSysdescrMatch().get())) {
+                            LOG.debug("getType: matched type: {}", map.getType());
+                            return map.getType();
+                        } else if (!map.getSysdescrMatch().isPresent() && notMatched) {
+                            LOG.debug("getType: null sysdescrmatch: first match: type: {} ", map.getType());
+                            type = map.getType();
+                            notMatched = false;
+                        }
+                    }
                 }
+            } else if (sysoid != null) {
+                for (Mapping map : mappings()) {
+                    LOG.debug("getType: sysdescr is null: parsing map with SysoidMaSk: {} "
+                                            , map.getSysoidMask());
+                    if (sysoid.startsWith(map.getSysoidMask())) {
+                        LOG.debug("getType: matched type: {} "
+                                                , map.getType());
+                        return map.getType();
+                    }
+                }
+
             }
-            return getConfiguration().getDefaultType();
+            LOG.debug("getType: matched type: {}", type);
+            return type;
         } finally {
             getReadLock().unlock();
         }
@@ -449,8 +450,8 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
     /** {@inheritDoc} */
     @Override
     public boolean isCurTimeInSchedule(final String ipaddr) {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             if (hasSchedule(ipaddr)) {
                 final Calendar cal = new GregorianCalendar();
                 for(final Schedule schedule : getSchedules(ipaddr)) {
@@ -480,7 +481,7 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
 
 
     private boolean hasPolicies() {
-        return (getConfiguration().getPolicies() != null);
+        return (getConfiguration().getPolicies().isPresent());
     }
  
     private boolean hasPolicyManage(final String ipaddress) {
@@ -514,10 +515,10 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * @return a boolean.
      */
     public boolean hasSchedule(final String ipaddress) {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             if (hasPolicyManage(ipaddress)) {
-                return (getPolicyManageWithoutTesting(ipaddress).getScheduleCount() > 0);
+                return (getPolicyManageWithoutTesting(ipaddress).getSchedules().size() > 0);
             }
             return false;
         } finally {
@@ -533,10 +534,10 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * @return a {@link java.util.List} object.
      */
     public List<Schedule> getSchedules(final String ipaddress) {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             if (hasPolicyManage(ipaddress)) {
-                return getPolicyManageWithoutTesting(ipaddress).getScheduleCollection();
+                return getPolicyManageWithoutTesting(ipaddress).getSchedules();
             }
             return new ArrayList<Schedule>();
         } finally {
@@ -551,8 +552,8 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * @return a {@link java.lang.Iterable} object.
      */
     public Iterable<Package> packages() {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             final List<Package> pkgs = new ArrayList<Package>();
             if (hasPolicies()) {
                 for (final PolicyManage pm : policies() ) {
@@ -571,9 +572,9 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * @return a {@link java.lang.Iterable} object.
      */
     public Iterable<Mapping> mappings() {
-        getReadLock().lock();
         try {
-            return getConfiguration().getMappingCollection();
+            getReadLock().lock();
+            return getConfiguration().getMappings();
         } finally {
             getReadLock().unlock();
         }
@@ -585,9 +586,13 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * @return a {@link java.lang.Iterable} object.
      */
     public Iterable<PolicyManage> policies() {
-        getReadLock().lock();
         try {
-            return getConfiguration().getPolicies().getPolicyManageCollection();
+            getReadLock().lock();
+            if (getConfiguration().getPolicies().isPresent()) {
+                return getConfiguration().getPolicies().get().getPolicyManages();
+            } else {
+                return Collections.emptyList();
+            }
         } finally {
             getReadLock().unlock();
         }
@@ -600,9 +605,9 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * @return a {@link java.lang.Iterable} object.
      */
     public Iterable<String> includeURLs(final Package pkg) {
-        getReadLock().lock();
         try {
-            return pkg.getIncludeUrlCollection();
+            getReadLock().lock();
+            return pkg.getIncludeUrls();
         } finally {
             getReadLock().unlock();
         }
@@ -614,8 +619,8 @@ abstract public class RancidAdapterConfigManager implements RancidAdapterConfig 
      * @return a {@link org.opennms.netmgt.config.rancid.adapter.RancidConfiguration} object.
      */
     public RancidConfiguration getConfiguration() {
-        getReadLock().lock();
         try {
+            getReadLock().lock();
             return m_config;
         } finally {
             getReadLock().unlock();

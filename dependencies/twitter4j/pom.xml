@@ -3,20 +3,17 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>twitter4j-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Twitter4J</name>
+  <name>OpenNMS :: Dependencies :: Twitter4J</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use Twitter4J
   </description>
-  <properties>
-    <twitter4jVersion>[3.0,)</twitter4jVersion>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.twitter4j</groupId>

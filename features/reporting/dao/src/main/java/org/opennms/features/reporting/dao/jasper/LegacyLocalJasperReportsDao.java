@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,14 +34,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXB;
-
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.reporting.model.jasperreport.JasperReportDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 /**
@@ -54,12 +52,11 @@ import org.springframework.util.Assert;
  * @version $Id: $
  * @since 1.8.1
  */
-@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
     /**
      * Logging
      */
-    private Logger logger = LoggerFactory.getLogger("OpenNMS.Report." + LegacyLocalJasperReportsDao.class.getName());
+    private Logger logger = LoggerFactory.getLogger(LegacyLocalJasperReportsDao.class);
 
     /**
      * List of generic report definitions
@@ -97,9 +94,6 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
      */
     @Override
     public void loadConfiguration() throws Exception {
-        InputStream stream = null;
-        long lastModified;
-
         File file = null;
         try {
             file = m_configResource.getFile();
@@ -107,14 +101,7 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
             logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
         }
 
-        if (file != null) {
-            lastModified = file.lastModified();
-            stream = new FileInputStream(file);
-        } else {
-            lastModified = System.currentTimeMillis();
-            stream = m_configResource.getInputStream();
-        }
-        setLocalJasperReports(JAXB.unmarshal(file, LocalJasperReports.class));
+        setLocalJasperReports(JaxbUtils.unmarshal(LocalJasperReports.class, file));
         Assert.notNull(m_LocalJasperReports, "unmarshall config file returned a null value.");
         logger.debug("Unmarshalling config file '{}'", file.getAbsolutePath());
         logger.debug("Local report definitions assigned: '{}'", m_LocalJasperReports.toString());
@@ -183,29 +170,21 @@ public class LegacyLocalJasperReportsDao implements LocalJasperReportsDao {
      */
     @Override
     public InputStream getTemplateStream(String id) {
-        InputStream reportTemplateStream = null;
-
         try {
             String reportTemplateFolder = m_jrTemplateResource.getFile().getPath();
-
             for (JasperReportDefinition report : m_LocalJasperReports.getReportList()) {
                 if (id.equals(report.getId())) {
                     try {
-                        reportTemplateStream = new FileInputStream(
-                                new File(
-                                        reportTemplateFolder + "/" + report.getTemplate()));
+                        return new FileInputStream(new File(reportTemplateFolder + "/" + report.getTemplate()));
                     } catch (FileNotFoundException e) {
-                        logger.error("Template file '{}' at folder '{}' not found.", report.getTemplate(), reportTemplateFolder);
-
-                        //TODO indigo: Add e.message to error message
-                        e.printStackTrace();
+                        logger.error("Template file '{}' at folder '{}' not found.", report.getTemplate(), reportTemplateFolder, e);
                     }
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error(e.getMessage(), e);
         }
-        return reportTemplateStream;
+        return null;
     }
 
     /**

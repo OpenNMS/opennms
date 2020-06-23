@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,14 +35,18 @@
 package org.opennms.netmgt.config;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 
 public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Serializable {
 
-    private static final long serialVersionUID = 4852206182208816721L;
+    /**
+     * DO NOT CHANGE!
+     * This class is serialized by remote poller communications.
+     */
+    private static final long serialVersionUID = 1L;
 
     String m_serviceName;
     Class<? extends ServiceMonitor> m_serviceClass;
@@ -58,28 +62,14 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
         m_serviceClass = serviceClass;
     }
 
-    /*
-     * FIXME The use of CastorObjectRetrievalFailureException doesn't seem
-     * appropriate below, as I don't see Castor being used at all. - dj@opennms.org
-     */
-    /**
-     * <p>getServiceMonitor</p>
-     *
-     * @return a {@link org.opennms.netmgt.poller.ServiceMonitor} object.
-     */
     @Override
-    public ServiceMonitor getServiceMonitor() {
-        try {
-            ServiceMonitor mon = m_serviceClass.newInstance();
-            mon.initialize((Map<String,Object>)null);
-            return mon;
-        } catch (InstantiationException e) {
-            throw new ConfigObjectRetrievalFailureException("Unable to instantiate monitor for service "
-                    +m_serviceName+" with class-name "+m_serviceClass.getName(), e);
-        } catch (IllegalAccessException e) {
-            throw new ConfigObjectRetrievalFailureException("Illegal access trying to instantiate monitor for service "
-                    +m_serviceName+" with class-name "+m_serviceClass.getName(), e);
+    public ServiceMonitor getServiceMonitor(ServiceMonitorRegistry registry) {
+        final ServiceMonitor sm = registry.getMonitorByClassName(m_serviceClass.getCanonicalName());
+        if (sm == null) {
+            throw new ConfigObjectRetrievalFailureException("Could not find monitor for service "
+                    +m_serviceName+" with class-name "+m_serviceClass.getName(), null);
         }
+        return sm;
     }
 
     /**
@@ -101,5 +91,5 @@ public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Seri
     public String getServiceLocatorKey() {
         return m_serviceClass.getName();
     }
-    
+
 }

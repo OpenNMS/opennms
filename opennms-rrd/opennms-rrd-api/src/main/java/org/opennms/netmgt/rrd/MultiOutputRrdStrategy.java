@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -129,7 +128,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
     public List<Object> createDefinition(String creator, String directory, String rrdName,
             int step, List<RrdDataSource> dataSources, List<String> rraList)
             throws Exception {
-        List<Object> retval = new ArrayList<Object>();
+        List<Object> retval = new ArrayList<>();
         for (RrdStrategy<Object, Object> strategy : m_strategies) {
             retval.add(strategy.createDefinition(creator, directory, rrdName, step, dataSources, rraList));
         }
@@ -138,9 +137,9 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
 
     /** {@inheritDoc} */
     @Override
-    public void createFile(List<Object> rrdDef, Map<String, String> attributeMappings) throws Exception {
+    public void createFile(List<Object> rrdDef) throws Exception {
         for (int i = 0; i < rrdDef.size(); i++) {
-            m_strategies.get(i).createFile(rrdDef.get(i), attributeMappings);
+            m_strategies.get(i).createFile(rrdDef.get(i));
         }
     }
 
@@ -227,7 +226,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
      */
     @Override
     public String getStats() {
-        StringBuffer retval = new StringBuffer();
+        final StringBuilder retval = new StringBuilder();
         for (RrdStrategy<?, ?> strategy : m_strategies) {
             retval.append(strategy.getStats());
             retval.append("\n");
@@ -238,7 +237,7 @@ public class MultiOutputRrdStrategy implements RrdStrategy<List<Object>,List<Obj
     /** {@inheritDoc} */
     @Override
     public List<Object> openFile(String fileName) throws Exception {
-        List<Object> retval = new ArrayList<Object>();
+        List<Object> retval = new ArrayList<>();
         for (RrdStrategy<Object, Object> strategy : m_strategies) {
             retval.add(strategy.openFile(fileName));
         }

@@ -1,0 +1,2264 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>0</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/trendTestEvent</uei>
+      <event-label>TrendMicro-MIB defined trap event: trendTestEvent</event-label>
+      <descr>&lt;p>Trend Micro Test Notification&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      trendTestEvent trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      nodeLocalTime=%parm[#6]%
+      nodeGMTTime=%parm[#7]%
+      nodeName=%parm[#8]%
+      nodeIP=%parm[#9]%
+      controlManagerName=%parm[#10]%
+      controlManagerIP=%parm[#11]%
+      productName=%parm[#12]%
+      productVersion=%parm[#13]%
+      productID=%parm[#14]%
+      errorDescription=%parm[#15]%&lt;/p>
+    </logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/serviceStart</uei>
+      <event-label>TrendMicro-MIB defined trap event: serviceStart</event-label>
+      <descr>&lt;p>A Product Service started&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productServiceName&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productServiceStatus&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      serviceStart trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      productServiceName=%parm[#21]%
+      productServiceStatus=%parm[#22]%
+      errorDescription=%parm[#23]%&lt;/p>
+    </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/serviceStopped</uei>
+      <event-label>TrendMicro-MIB defined trap event: serviceStopped</event-label>
+      <descr>&lt;p>A Product Service stopped&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productServiceName&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productServiceStatus&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      serviceStopped trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      productServiceName=%parm[#21]%
+      productServiceStatus=%parm[#22]%
+      errorDescription=%parm[#23]%&lt;/p>
+    </logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/componentUpdateSuccess</uei>
+      <event-label>TrendMicro-MIB defined trap event: componentUpdateSuccess</event-label>
+      <descr>&lt;p>Component update successful&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      componentName&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      componentVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      componentInfo&lt;/b>&lt;/td>&lt;td>
+      %parm[#24]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      componentUpdateSuccess trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      errorDescription=%parm[#21]%
+      componentName=%parm[#22]%
+      componentVersion=%parm[#23]%
+      componentInfo=%parm[#24]%&lt;/p>
+    </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/componentUpdateFail</uei>
+      <event-label>TrendMicro-MIB defined trap event: componentUpdateFail</event-label>
+      <descr>&lt;p>Component update Fail&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      componentName&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      componentVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      componentInfo&lt;/b>&lt;/td>&lt;td>
+      %parm[#24]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      componentUpdateFail trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      errorDescription=%parm[#21]%
+      componentName=%parm[#22]%
+      componentVersion=%parm[#23]%
+      componentInfo=%parm[#24]%&lt;/p>
+    </logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/activeOPPolicyReceived</uei>
+      <event-label>TrendMicro-MIB defined trap event: activeOPPolicyReceived</event-label>
+      <descr>&lt;p>Active Outbreak Prevention Policy received&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      componentName&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      componentVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      componentInfo&lt;/b>&lt;/td>&lt;td>
+      %parm[#24]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      activeOPPolicyReceived trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      errorDescription=%parm[#21]%
+      componentName=%parm[#22]%
+      componentVersion=%parm[#23]%
+      componentInfo=%parm[#24]%&lt;/p>
+    </logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/virusOutbreakAlert</uei>
+      <event-label>TrendMicro-MIB defined trap event: virusOutbreakAlert</event-label>
+      <descr>&lt;p>Virus outbreak alert&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatType&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatClassification&lt;/b>&lt;/td>&lt;td>
+      %parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatName&lt;/b>&lt;/td>&lt;td>
+      %parm[#24]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatCount&lt;/b>&lt;/td>&lt;td>
+      %parm[#25]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      scanEngineName&lt;/b>&lt;/td>&lt;td>
+      %parm[#26]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      scanEngineVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#27]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      patternRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#28]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      patternRuleVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#29]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      virusOutbreakAlert trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      errorDescription=%parm[#21]%
+      threatType=%parm[#22]%
+      threatClassification=%parm[#23]%
+      threatName=%parm[#24]%
+      threatCount=%parm[#25]%
+      scanEngineName=%parm[#26]%
+      scanEngineVersion=%parm[#27]%
+      patternRuleName=%parm[#28]%
+      patternRuleVersion=%parm[#29]%&lt;/p>
+    </logmsg>
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/threatFoundActionFail</uei>
+      <event-label>TrendMicro-MIB defined trap event: threatFoundActionFail</event-label>
+      <descr>&lt;p>Threat Found and Take Action is Fail&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatType&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatClassification&lt;/b>&lt;/td>&lt;td>
+      %parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatName&lt;/b>&lt;/td>&lt;td>
+      %parm[#24]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectedFileName&lt;/b>&lt;/td>&lt;td>
+      %parm[#25]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectedFilePath&lt;/b>&lt;/td>&lt;td>
+      %parm[#26]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectionSourceNodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#27]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectionSourceNodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#28]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectionNodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#29]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectionNodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#30]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      action&lt;/b>&lt;/td>&lt;td>
+      %parm[#31]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      actionResult&lt;/b>&lt;/td>&lt;td>
+      %parm[#32]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      scanEngineName&lt;/b>&lt;/td>&lt;td>
+      %parm[#33]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      scanEngineVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#34]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      patternRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#35]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      patternRuleVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#36]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      srcIPAddress&lt;/b>&lt;/td>&lt;td>
+      %parm[#37]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      destIPAddress&lt;/b>&lt;/td>&lt;td>
+      %parm[#38]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      threatFoundActionFail trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      errorDescription=%parm[#21]%
+      threatType=%parm[#22]%
+      threatClassification=%parm[#23]%
+      threatName=%parm[#24]%
+      infectedFileName=%parm[#25]%
+      infectedFilePath=%parm[#26]%
+      infectionSourceNodeName=%parm[#27]%
+      infectionSourceNodeIP=%parm[#28]%
+      infectionNodeName=%parm[#29]%
+      infectionNodeIP=%parm[#30]%
+      action=%parm[#31]%
+      actionResult=%parm[#32]%
+      scanEngineName=%parm[#33]%
+      scanEngineVersion=%parm[#34]%
+      patternRuleName=%parm[#35]%
+      patternRuleVersion=%parm[#36]%
+      srcIPAddress=%parm[#37]%
+      destIPAddress=%parm[#38]%&lt;/p>
+    </logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/threatFoundActionSuccess</uei>
+      <event-label>TrendMicro-MIB defined trap event: threatFoundActionSuccess</event-label>
+      <descr>&lt;p>Threat Found and Take Action Successful&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatType&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatClassification&lt;/b>&lt;/td>&lt;td>
+      %parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatName&lt;/b>&lt;/td>&lt;td>
+      %parm[#24]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectedFileName&lt;/b>&lt;/td>&lt;td>
+      %parm[#25]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectedFilePath&lt;/b>&lt;/td>&lt;td>
+      %parm[#26]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectionSourceNodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#27]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectionSourceNodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#28]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectionNodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#29]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectionNodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#30]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      action&lt;/b>&lt;/td>&lt;td>
+      %parm[#31]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      actionResult&lt;/b>&lt;/td>&lt;td>
+      %parm[#32]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      scanEngineName&lt;/b>&lt;/td>&lt;td>
+      %parm[#33]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      scanEngineVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#34]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      patternRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#35]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      patternRuleVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#36]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      srcIPAddress&lt;/b>&lt;/td>&lt;td>
+      %parm[#37]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      destIPAddress&lt;/b>&lt;/td>&lt;td>
+      %parm[#38]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      threatFoundActionSuccess trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      errorDescription=%parm[#21]%
+      threatType=%parm[#22]%
+      threatClassification=%parm[#23]%
+      threatName=%parm[#24]%
+      infectedFileName=%parm[#25]%
+      infectedFilePath=%parm[#26]%
+      infectionSourceNodeName=%parm[#27]%
+      infectionSourceNodeIP=%parm[#28]%
+      infectionNodeName=%parm[#29]%
+      infectionNodeIP=%parm[#30]%
+      action=%parm[#31]%
+      actionResult=%parm[#32]%
+      scanEngineName=%parm[#33]%
+      scanEngineVersion=%parm[#34]%
+      patternRuleName=%parm[#35]%
+      patternRuleVersion=%parm[#36]%
+      srcIPAddress=%parm[#37]%
+      destIPAddress=%parm[#38]%&lt;/p>
+    </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/networkVirusFound</uei>
+      <event-label>TrendMicro-MIB defined trap event: networkVirusFound</event-label>
+      <descr>&lt;p>Network Virus Found Alert&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatType&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatClassification&lt;/b>&lt;/td>&lt;td>
+      %parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatName&lt;/b>&lt;/td>&lt;td>
+      %parm[#24]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectedFileName&lt;/b>&lt;/td>&lt;td>
+      %parm[#25]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectedFilePath&lt;/b>&lt;/td>&lt;td>
+      %parm[#26]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectionSourceNodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#27]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectionSourceNodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#28]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectionNodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#29]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      infectionNodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#30]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      actionOfNVW&lt;/b>&lt;/td>&lt;td>
+      %parm[#31]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      scanEngineName&lt;/b>&lt;/td>&lt;td>
+      %parm[#32]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      scanEngineVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#33]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      patternRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#34]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      patternRuleVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#35]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      srcIPAddress&lt;/b>&lt;/td>&lt;td>
+      %parm[#36]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      destIPAddress&lt;/b>&lt;/td>&lt;td>
+      %parm[#37]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      networkVirusFound trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      errorDescription=%parm[#21]%
+      threatType=%parm[#22]%
+      threatClassification=%parm[#23]%
+      threatName=%parm[#24]%
+      infectedFileName=%parm[#25]%
+      infectedFilePath=%parm[#26]%
+      infectionSourceNodeName=%parm[#27]%
+      infectionSourceNodeIP=%parm[#28]%
+      infectionNodeName=%parm[#29]%
+      infectionNodeIP=%parm[#30]%
+      actionOfNVW=%parm[#31]%
+      scanEngineName=%parm[#32]%
+      scanEngineVersion=%parm[#33]%
+      patternRuleName=%parm[#34]%
+      patternRuleVersion=%parm[#35]%
+      srcIPAddress=%parm[#36]%
+      destIPAddress=%parm[#37]%&lt;/p>
+    </logmsg>
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/potentialVulnerabilityAttackFound</uei>
+      <event-label>TrendMicro-MIB defined trap event: potentialVulnerabilityAttackFound</event-label>
+      <descr>&lt;p>Potential Vulnerability Attack Alert&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatType&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatClassification&lt;/b>&lt;/td>&lt;td>
+      %parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      threatName&lt;/b>&lt;/td>&lt;td>
+      %parm[#24]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      potentialVulnerabilityAttackFound trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      errorDescription=%parm[#21]%
+      threatType=%parm[#22]%
+      threatClassification=%parm[#23]%
+      threatName=%parm[#24]%&lt;/p>
+    </logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/violationStatisticUpdated</uei>
+      <event-label>TrendMicro-MIB defined trap event: violationStatisticUpdated</event-label>
+      <descr>&lt;p>Violation Statistic Update&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      violationStatisticUpdate&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      violationStatisticUpdated trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      errorDescription=%parm[#21]%
+      violationStatisticUpdate=%parm[#22]%&lt;/p>
+    </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/contentSecurityFound</uei>
+      <event-label>TrendMicro-MIB defined trap event: contentSecurityFound</event-label>
+      <descr>&lt;p>Content Secuiry Found&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityType&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityCount&lt;/b>&lt;/td>&lt;td>
+      %parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityMailID&lt;/b>&lt;/td>&lt;td>
+      %parm[#24]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityMailFrom&lt;/b>&lt;/td>&lt;td>
+      %parm[#25]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityMailTo&lt;/b>&lt;/td>&lt;td>
+      %parm[#26]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityMailSubject&lt;/b>&lt;/td>&lt;td>
+      %parm[#27]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityFilterName&lt;/b>&lt;/td>&lt;td>
+      %parm[#28]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityMailAction&lt;/b>&lt;/td>&lt;td>
+      %parm[#29]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityMailContentAction&lt;/b>&lt;/td>&lt;td>
+      %parm[#30]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      scanEngineName&lt;/b>&lt;/td>&lt;td>
+      %parm[#31]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      scanEngineVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#32]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      patternRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#33]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      patternRuleVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#34]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      contentSecurityFound trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      errorDescription=%parm[#21]%
+      securityType=%parm[#22]%
+      securityCount=%parm[#23]%
+      securityMailID=%parm[#24]%
+      securityMailFrom=%parm[#25]%
+      securityMailTo=%parm[#26]%
+      securityMailSubject=%parm[#27]%
+      securityFilterName=%parm[#28]%
+      securityMailAction=%parm[#29]%
+      securityMailContentAction=%parm[#30]%
+      scanEngineName=%parm[#31]%
+      scanEngineVersion=%parm[#32]%
+      patternRuleName=%parm[#33]%
+      patternRuleVersion=%parm[#34]%&lt;/p>
+    </logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6101.999.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/trendmicro/webSecurityFound</uei>
+      <event-label>TrendMicro-MIB defined trap event: webSecurityFound</event-label>
+      <descr>&lt;p>Web Security Found&lt;/p>&lt;table>
+      &lt;tr>&lt;td>&lt;b>
+
+      notificationVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventID&lt;/b>&lt;/td>&lt;td>
+      %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventTYPE&lt;/b>&lt;/td>&lt;td>
+      %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventName&lt;/b>&lt;/td>&lt;td>
+      %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventDesc&lt;/b>&lt;/td>&lt;td>
+      %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      eventRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeLocalTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeGMTTime&lt;/b>&lt;/td>&lt;td>
+      %parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeName&lt;/b>&lt;/td>&lt;td>
+      %parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      nodeIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      logonUser&lt;/b>&lt;/td>&lt;td>
+      %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      manageServerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerName&lt;/b>&lt;/td>&lt;td>
+      %parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      controlManagerIP&lt;/b>&lt;/td>&lt;td>
+      %parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityNameOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      entityCatagoryOnCM&lt;/b>&lt;/td>&lt;td>
+      %parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productName&lt;/b>&lt;/td>&lt;td>
+      %parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      productID&lt;/b>&lt;/td>&lt;td>
+      %parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      errorDescription&lt;/b>&lt;/td>&lt;td>
+      %parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityType&lt;/b>&lt;/td>&lt;td>
+      %parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityCount&lt;/b>&lt;/td>&lt;td>
+      %parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityBlocktype&lt;/b>&lt;/td>&lt;td>
+      %parm[#24]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityBlockRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#25]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityURL&lt;/b>&lt;/td>&lt;td>
+      %parm[#26]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      securityFileName&lt;/b>&lt;/td>&lt;td>
+      %parm[#27]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      scanEngineName&lt;/b>&lt;/td>&lt;td>
+      %parm[#28]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      scanEngineVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#29]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      patternRuleName&lt;/b>&lt;/td>&lt;td>
+      %parm[#30]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      patternRuleVersion&lt;/b>&lt;/td>&lt;td>
+      %parm[#31]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      srcIPAddress&lt;/b>&lt;/td>&lt;td>
+      %parm[#32]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+      &lt;tr>&lt;td>&lt;b>
+
+      destIPAddress&lt;/b>&lt;/td>&lt;td>
+      %parm[#33]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+      webSecurityFound trap received
+      notificationVersion=%parm[#1]%
+      eventID=%parm[#2]%
+      eventTYPE=%parm[#3]%
+      eventName=%parm[#4]%
+      eventDesc=%parm[#5]%
+      eventRuleName=%parm[#6]%
+      nodeLocalTime=%parm[#7]%
+      nodeGMTTime=%parm[#8]%
+      nodeName=%parm[#9]%
+      nodeIP=%parm[#10]%
+      logonUser=%parm[#11]%
+      manageServerName=%parm[#12]%
+      manageServerIP=%parm[#13]%
+      controlManagerName=%parm[#14]%
+      controlManagerIP=%parm[#15]%
+      entityNameOnCM=%parm[#16]%
+      entityCatagoryOnCM=%parm[#17]%
+      productName=%parm[#18]%
+      productVersion=%parm[#19]%
+      productID=%parm[#20]%
+      errorDescription=%parm[#21]%
+      securityType=%parm[#22]%
+      securityCount=%parm[#23]%
+      securityBlocktype=%parm[#24]%
+      securityBlockRuleName=%parm[#25]%
+      securityURL=%parm[#26]%
+      securityFileName=%parm[#27]%
+      scanEngineName=%parm[#28]%
+      scanEngineVersion=%parm[#29]%
+      patternRuleName=%parm[#30]%
+      patternRuleVersion=%parm[#31]%
+      srcIPAddress=%parm[#32]%
+      destIPAddress=%parm[#33]%&lt;/p>
+    </logmsg>
+      <severity>Minor</severity>
+   </event>
+</events>

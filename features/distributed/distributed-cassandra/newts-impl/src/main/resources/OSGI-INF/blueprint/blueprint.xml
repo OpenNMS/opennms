@@ -1,0 +1,17 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0">
+    <reference id="newtsCassandraSession" interface="org.opennms.newts.cassandra.CassandraSession"/>
+    <bean id="newtsCassandraSessionFactory"
+          class="org.opennms.features.distributed.cassandra.impl.NewtsCassandraSessionFactory">
+        <argument ref="newtsCassandraSession"/>
+    </bean>
+    <service ref="newtsCassandraSessionFactory"
+             interface="org.opennms.features.distributed.cassandra.api.CassandraSessionFactory"/>
+    
+    <reference id="newtsCassandraSchemaManagerProxy" interface="org.opennms.netmgt.newts.proxy.SchemaManagerProxy"/>
+    <bean id="newtsCassandraSchemaManagerFactory"
+          class="org.opennms.features.distributed.cassandra.impl.NewtsCassandraSchemaManagerFactory">
+        <argument ref="newtsCassandraSchemaManagerProxy"/>
+    </bean>
+    <service ref="newtsCassandraSchemaManagerFactory"
+             interface="org.opennms.features.distributed.cassandra.api.CassandraSchemaManagerFactory"/>
+</blueprint>

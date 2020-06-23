@@ -1,0 +1,46 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-performance-mgmt-stress-testing]]
+==== Stress Testing
+
+The `metrics:stress` _Karaf Shell_ command can be used to simulate load on the active persistence strategy, whether it be `RRDtool`, `JRobin`, or `Newts`.
+
+The tool works by generating collection sets, similar to those built when performing data collection, and sending these to the active persistence layer.
+By using the active persistence layer, we ensure that we use the same write path which is used by the actual data collection services.
+
+Generate samples for *10 nodes* every *15 seconds* and printing the statistic report every *30 seconds*:
+
+[source]
+----
+metrics:stress -n 10 -i 15 -r 30
+----
+
+While active, the command will continue to generate and persist collection sets.
+During this time you can monitor the system I/O and other relevant statistics.
+
+When your done, use *CTRL+C* to stop the stress tool.
+
+A complete list of options is available using:
+
+[source]
+----
+metrics:stress --help
+----
+
+==== Interpreting the output
+
+The statistics output by the tool can be be interpreted as follows:
+
+numeric-attributes-generated::
+  The number of numeric attributes that were sent to the persistence layer.
+  We have no guarantee as to whether or not these were actually persisted.
+
+string-attributes-generated::
+  The number of string attributes that were sent to the persistence layer.
+  We have no guarantee as to whether or not these were actually persisted.
+
+batches::
+  The count is used to indicate how many batches of collection sets (one at every interval) were sent to the persistence layer.
+  The timers show how much time was spent generating the batch, and sending the batch to the persistence layer.

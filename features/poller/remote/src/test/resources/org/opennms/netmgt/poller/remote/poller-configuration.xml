@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<poller-configuration threads="30" 
+        serviceUnresponsiveEnabled="false"
+        nextOutageId="SELECT nextval('outageNxtId')">
+	<node-outage status="on" 
+	             pollAllIfNoCriticalServiceDefined="true">
+	</node-outage>
+	<package name="example1">
+		<filter>IPADDR IPLIKE *.*.*.*</filter>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+                <rrd step = "300">
+                        <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                        <rra>RRA:AVERAGE:0.5:12:4464</rra>
+                        <rra>RRA:MIN:0.5:12:4464</rra>
+                        <rra>RRA:MAX:0.5:12:4464</rra>
+                </rrd>
+		<service name="DNS" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="2"/>
+			<parameter key="timeout" value="5000"/>
+			<parameter key="port" value="53"/>
+			<parameter key="lookup" value="localhost"/>
+			<parameter key="rrd-repository" value="target/test-data"/>
+			<parameter key="ds-name" value="dns"/>
+		</service>
+		<service name="SMTP" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="port" value="25"/>
+			<parameter key="rrd-repository" value="target/test-data"/>
+			<parameter key="ds-name" value="smtp"/>
+		</service>
+		<service name="FTP" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="port" value="21"/>
+			<parameter key="userid" value=""/>
+			<parameter key="password" value=""/>
+		</service>
+		<service name="SNMP" interval="300000" user-defined="false" status="off">
+			<parameter key="retry" value="2"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="port" value="161"/>
+			<parameter key="oid" value=".1.3.6.1.2.1.1.2.0"/>
+		</service>
+		<service name="HTTP" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+                        <parameter key="timeout" value="3000"/>
+                        <parameter key="port" value="80"/>
+                        <parameter key="url" value="/"/>
+			<parameter key="rrd-repository" value="target/test-data"/>
+			<parameter key="ds-name" value="http"/>
+                </service>
+                <service name="HTTP-8080" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+                        <parameter key="timeout" value="3000"/>
+                        <parameter key="port" value="8080"/>
+                        <parameter key="url" value="/"/>
+			<parameter key="rrd-repository" value="target/test-data"/>
+			<parameter key="ds-name" value="http-8080"/>
+                </service>
+                <service name="HTTP-8000" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+                        <parameter key="timeout" value="3000"/>
+                        <parameter key="port" value="8000"/>
+                        <parameter key="url" value="/"/>
+			<parameter key="rrd-repository" value="target/test-data"/>
+			<parameter key="ds-name" value="http-8000"/>
+                </service>
+                <service name="HTTPS" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+			<parameter key="timeout" value="5000"/>
+			<parameter key="port" value="443"/>
+			<parameter key="url" value="/"/>
+		</service>
+		<service name="MySQL" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="port" value="3306"/>
+			<parameter key="banner" value="*"/>
+		</service>
+		<service name="SQLServer" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="port" value="1433"/>
+			<parameter key="banner" value="*"/>
+		</service>
+		<service name="Oracle" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="port" value="1521"/>
+			<parameter key="banner" value="*"/>
+		</service>
+		<service name="Postgres" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+			<parameter key="banner" value="*"/>
+			<parameter key="port" value="5432"/>
+			<parameter key="timeout" value="3000"/>
+		</service>
+		<service name="SSH" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+			<parameter key="banner" value="SSH"/>
+			<parameter key="port" value="22"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="rrd-repository" value="target/test-data"/>
+			<parameter key="ds-name" value="ssh"/>
+		</service>
+		<service name="IMAP" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+			<parameter key="port" value="143"/>
+			<parameter key="timeout" value="3000"/>
+		</service>
+		<service name="POP3" interval="300000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+			<parameter key="port" value="110"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="rrd-repository" value="target/test-data"/>
+			<parameter key="ds-name" value="pop3"/>
+		</service>
+		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+
+		<downtime interval="30000" begin="0" end="300000"/>		<!-- 30s, 0, 5m -->
+		<downtime interval="300000" begin="300000" end="43200000"/>	<!-- 5m, 5m, 12h -->
+		<downtime interval="600000" begin="43200000" end="432000000"/>	<!-- 10m, 12h, 5d -->
+		<downtime begin="432000000" delete="true"/>			<!-- anything after 5 days delete -->
+
+	</package>
+
+	<package name="rdu">
+		<filter>IPADDR IPLIKE *.*.*.*</filter>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+        <rrd step = "300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:4464</rra>
+            <rra>RRA:MIN:0.5:12:4464</rra>
+            <rra>RRA:MAX:0.5:12:4464</rra>
+        </rrd>
+		<service name="HTTP" interval="30000" user-defined="false" status="on">
+			<parameter key="retry" value="1"/>
+            <parameter key="timeout" value="3000"/>
+            <parameter key="port" value="80"/>
+            <parameter key="url" value="/"/>
+			<parameter key="rrd-repository" value="target/test-data"/>
+			<parameter key="ds-name" value="http"/>
+        </service>
+		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+
+		<downtime interval="30000" begin="0" end="300000"/>		<!-- 30s, 0, 5m -->
+		<downtime interval="300000" begin="300000" end="43200000"/>	<!-- 5m, 5m, 12h -->
+		<downtime interval="600000" begin="43200000" end="432000000"/>	<!-- 10m, 12h, 5d -->
+		<downtime begin="432000000" delete="true"/>			<!-- anything after 5 days delete -->
+
+	</package>
+
+	<!-- Replace all monitors with MockMonitor so that we don't need the opennms-services monitors -->
+	<monitor service="HTTP" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="HTTP-8080"    class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="HTTP-8000"    class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="HTTPS" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="SMTP" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="DNS"  	class-name="org.opennms.netmgt.mock.MockMonitor" />
+	<monitor service="FTP"  	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="SNMP"         class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="Oracle" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="Postgres" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="MySQL" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="SQLServer" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="SSH"		class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="IMAP" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="POP3" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+	<monitor service="ICMP" 	class-name="org.opennms.netmgt.mock.MockMonitor"/>
+</poller-configuration>

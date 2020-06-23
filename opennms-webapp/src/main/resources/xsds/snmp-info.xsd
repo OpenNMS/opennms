@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://xmlns.opennms.org/xsd/config/snmp-info" xmlns:tns="http://xmlns.opennms.org/xsd/config/snmp-info" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="snmp-info" type="tns:snmpInfo"/>
+
+  <xs:complexType name="snmpInfo">
+    <xs:sequence>
+      <xs:element name="authPassPhrase" type="xs:string" minOccurs="0"/>
+      <xs:element name="authProtocol" type="xs:string" minOccurs="0"/>
+      <xs:element name="community" type="xs:string" minOccurs="0"/>
+      <xs:element name="contextEngineId" type="xs:string" minOccurs="0"/>
+      <xs:element name="contextName" type="xs:string" minOccurs="0"/>
+      <xs:element name="engineId" type="xs:string" minOccurs="0"/>
+      <xs:element name="enterpriseId" type="xs:string" minOccurs="0"/>
+      <xs:element name="maxRepetitions" type="xs:int" minOccurs="0"/>
+      <xs:element name="maxRequestSize" type="xs:int" minOccurs="0"/>
+      <xs:element name="maxVarsPerPdu" type="xs:int" minOccurs="0"/>
+      <xs:element name="port" type="xs:int" minOccurs="0"/>
+      <xs:element name="privPassPhrase" type="xs:string" minOccurs="0"/>
+      <xs:element name="privProtocol" type="xs:string" minOccurs="0"/>
+      <xs:element name="proxyHost" type="xs:string" minOccurs="0"/>
+      <xs:element name="readCommunity" type="xs:string" minOccurs="0"/>
+      <xs:element name="retries" type="xs:int" minOccurs="0"/>
+      <xs:element name="securityLevel" type="xs:int" minOccurs="0"/>
+      <xs:element name="securityName" type="xs:string" minOccurs="0"/>
+      <xs:element name="timeout" type="xs:int" minOccurs="0"/>
+      <xs:element name="version" type="xs:string" minOccurs="0"/>
+      <xs:element name="writeCommunity" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

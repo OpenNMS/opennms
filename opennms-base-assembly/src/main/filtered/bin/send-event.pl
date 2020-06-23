@@ -13,6 +13,7 @@ use vars qw(
 	$LOGMSG
 	$HOSTNAME
 	$INTERFACE
+	$IFINDEX
 	$NODEID
 	$SERVICE
 	$SEVERITY
@@ -34,13 +35,14 @@ $VERBOSE = 0;
 $ZONE    = 'GMT';
 
 @SEVERITIES = ( undef, 'Indeterminate', 'Cleared', 'Normal', 'Warning', 'Minor', 'Major', 'Critical' );
-	
+
 my $help = 0;
 my $version = 0;
 my $result = GetOptions("help|h" => \$help,
                         "descr|d=s"     => \$DESCR,
-                        "logmsg|l=s"     => \$LOGMSG,
+                        "logmsg|l=s"    => \$LOGMSG,
                         "interface|i=s" => \$INTERFACE,
+                        "ifindex|f=i"   => \$IFINDEX,
                         "nodeid|n=i"    => \$NODEID,
                         "parm|p=s"      => \@PARMS,
                         "service|s=s"   => \$SERVICE,
@@ -54,7 +56,7 @@ if ($version)  { print "$0 version $VERSION\n"; exit; }
 if ($help)     { print get_help(); exit; }
 
 # parm array is numerically referenced in OpenNMS' templates
-@PARMS = reverse map { parse_parm($_) } @PARMS;
+@PARMS = map { parse_parm($_) } @PARMS;
 
 my $hostname = hostname;
 
@@ -161,11 +163,11 @@ if (defined $SERVICE) {
 
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
 $year += 1900;
-my $month = $mon;
-$min   = sprintf("%02d", $min);
-$sec   = sprintf("%02d", $sec);
-my @week = ('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
-my @month = ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+my $month = sprintf("%02d", $mon + 1);
+$hour     = sprintf("%02d", $hour);
+$mday     = sprintf("%02d", $mday);
+$min      = sprintf("%02d", $min);
+$sec      = sprintf("%02d", $sec);
 
 my $uuidattribute;
 if (defined $UUID) {
@@ -186,12 +188,13 @@ END
 $event .= "   <nodeid>$NODEID</nodeid>\n"          if (defined $NODEID);
 
 $event .= <<END;
-   <time>$week[$wday], $mday $month[$month] $year $hour:$min:$sec o'clock $ZONE</time>
+   <time>${year}-${month}-${mday}T${hour}:${min}:${sec}+00:00</time>
    <host>$HOSTNAME</host>
 END
 
 $event .= "   <interface>$INTERFACE</interface>\n" if (defined $INTERFACE);
 $event .= "   <service>$SERVICE</service>\n"       if (defined $SERVICE);
+$event .= "   <ifIndex>$IFINDEX</ifIndex>\n"     if (defined $IFINDEX);
 
 if (@PARMS) {
   $event .= "   <parms>\n";
@@ -261,10 +264,10 @@ Options:
          --verbose, -v     print the raw XML that's generated
          --help, -h        this help message
 
-         --timezone, -t    the time zone you are in
-         --service, -s     service name 
+         --service, -s     service name
          --nodeid, -n      node identifier (numeric)
          --interface, -i   IP address of the interface
+         --ifindex, -f     IfIndex of the interface
          --descr, -d       a description for the event browser
          --logmsg, -l      a logmsg for the event browser (secure field by default)
          --severity, -x    the severity of the event (numeric or name)

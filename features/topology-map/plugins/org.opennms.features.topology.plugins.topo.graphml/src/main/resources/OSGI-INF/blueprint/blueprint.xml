@@ -1,0 +1,39 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+    xsi:schemaLocation="
+    http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+    http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+    ">
+
+	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+	<reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
+	<reference id="measurementsService" interface="org.opennms.netmgt.measurements.api.MeasurementsService" availability="mandatory"/>
+	<reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+	<reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
+
+	<bean id="serviceAccessor" class="org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor">
+		<property name="transactionOperations" ref="transactionOperations" />
+		<property name="nodeDao" ref="nodeDao"/>
+		<property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
+		<property name="measurementsService" ref="measurementsService"/>
+		<property name="alarmDao" ref="alarmDao" />
+	</bean>
+
+	<bean id="graphMLMetaTopologyFactory" class="org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLMetaTopologyFactory">
+		<argument ref="blueprintBundleContext" />
+		<argument ref="serviceAccessor" />
+	</bean>
+    <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="graphMLMetaTopologyFactory">
+    	<service-properties>
+    	  <entry key="service.pid" value="org.opennms.features.topology.plugins.topo.graphml"/>
+    	</service-properties>
+    </service>
+
+	<bean id="graphMLRepository" class="org.opennms.features.topology.plugins.topo.graphml.GraphmlRepositoryImpl"/>
+	<service interface="org.opennms.features.graphml.service.GraphmlRepository" ref="graphMLRepository">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+</blueprint>

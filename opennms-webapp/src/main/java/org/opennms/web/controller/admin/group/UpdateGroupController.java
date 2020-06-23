@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -66,7 +66,7 @@ public class UpdateGroupController extends AbstractController implements Initial
             WebGroup newGroup = (WebGroup) userSession.getAttribute("group.modifyGroup.jsp");
 
             // get the rest of the group information from the form
-            String users[] = request.getParameterValues("selectedUsers");
+            String[] users = request.getParameterValues("selectedUsers");
             
             newGroup.setUsers(new ArrayList<String>(Arrays.asList(users)));
 
@@ -74,7 +74,7 @@ public class UpdateGroupController extends AbstractController implements Initial
             
             newGroup.setAuthorizedCategories(new ArrayList<String>(Arrays.asList(selectedCategories)));
             
-            Vector<Object> newSchedule = new Vector<Object>();
+            Vector<Object> newSchedule = new Vector<>();
             ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
 
             Collection<String> dutySchedules = newGroup.getDutySchedules();
@@ -108,19 +108,6 @@ public class UpdateGroupController extends AbstractController implements Initial
         }
 
         return new ModelAndView(request.getParameter("redirect"));
-    }
-
-    /**
-     * @param allCategories
-     * @param categoryListInGroup
-     * @return
-     */
-    @SuppressWarnings("unused")
-    private String[] removeAll(String[] a,  String[] b) {
-        ArrayList<String> list = new ArrayList<String>();
-        list.addAll(Arrays.asList(a));
-        list.removeAll(Arrays.asList(b));
-        return list.toArray(new String[list.size()]);
     }
 
     /**

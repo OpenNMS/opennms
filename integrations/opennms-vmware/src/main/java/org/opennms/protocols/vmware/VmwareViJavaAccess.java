@@ -1,26 +1,26 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
- * Additional permission under GNU GPL version 3 section 7
+ * Additional permission under GNU AGPL version 3 section 7
  *
  * If you modify this Program, or any covered work, by linking or
  * combining it with SBLIM (or a modified version of that library),
@@ -38,30 +38,64 @@
 
 package org.opennms.protocols.vmware;
 
-import com.vmware.vim25.*;
-import com.vmware.vim25.mo.*;
-import com.vmware.vim25.mo.util.MorUtil;
-import com.vmware.vim25.ws.WSClient;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.BeanUtils;
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeSet;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.VmwareConfigDao;
-import org.sblim.wbem.cim.*;
+import org.sblim.wbem.cim.CIMException;
+import org.sblim.wbem.cim.CIMNameSpace;
+import org.sblim.wbem.cim.CIMObject;
+import org.sblim.wbem.cim.CIMObjectPath;
+import org.sblim.wbem.cim.CIMProperty;
+import org.sblim.wbem.cim.CIMValue;
 import org.sblim.wbem.client.CIMClient;
 import org.sblim.wbem.client.PasswordCredential;
 import org.sblim.wbem.client.UserPrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.*;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.security.SecureRandom;
-import java.util.*;
+import com.vmware.vim25.GuestNicInfo;
+import com.vmware.vim25.HostNetworkInfo;
+import com.vmware.vim25.HostServiceTicket;
+import com.vmware.vim25.HostVirtualNic;
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.PerfCounterInfo;
+import com.vmware.vim25.PerfEntityMetric;
+import com.vmware.vim25.PerfEntityMetricBase;
+import com.vmware.vim25.PerfMetricIntSeries;
+import com.vmware.vim25.PerfMetricSeries;
+import com.vmware.vim25.PerfQuerySpec;
+import com.vmware.vim25.VimPortType;
+import com.vmware.vim25.mo.HostNetworkSystem;
+import com.vmware.vim25.mo.HostSystem;
+import com.vmware.vim25.mo.InventoryNavigator;
+import com.vmware.vim25.mo.ManagedEntity;
+import com.vmware.vim25.mo.PerformanceManager;
+import com.vmware.vim25.mo.ServerConnection;
+import com.vmware.vim25.mo.ServiceInstance;
+import com.vmware.vim25.mo.VirtualMachine;
+import com.vmware.vim25.mo.util.MorUtil;
+import com.vmware.vim25.ws.Client;
 
 /**
  * The Class VmwareViJavaAccess
@@ -72,10 +106,11 @@ import java.util.*;
  */
 public class VmwareViJavaAccess {
 
+    public final static int DEFAULT_TIMEOUT = 3000;
     /**
      * logging for VMware library VI Java
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.VMware." + VmwareViJavaAccess.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(VmwareViJavaAccess.class);
 
     /**
      * the config dao
@@ -96,6 +131,10 @@ public class VmwareViJavaAccess {
 
     private Map<HostSystem, String> m_hostSystemCimUrls = new HashMap<HostSystem, String>();
 
+    private static ServiceInstancePool m_serviceInstancePool = new ServiceInstancePool();
+
+    private int m_timeout = DEFAULT_TIMEOUT;
+
     /**
      * Constructor for creating a instance for a given server and credentials.
      *
@@ -114,11 +153,9 @@ public class VmwareViJavaAccess {
      * are available in the Vmware config file.
      *
      * @param hostname the vCenter's hostname
-     * @throws MarshalException
-     * @throws ValidationException
      * @throws IOException
      */
-    public VmwareViJavaAccess(String hostname) throws MarshalException, ValidationException, IOException {
+    public VmwareViJavaAccess(String hostname) throws IOException {
         if (m_vmwareConfigDao == null) {
             m_vmwareConfigDao = BeanUtils.getBean("daoContext", "vmwareConfigDao", VmwareConfigDao.class);
         }
@@ -154,6 +191,16 @@ public class VmwareViJavaAccess {
         }
     }
 
+    public VmwareViJavaAccess(VmwareServer vmwareServer) {
+        m_hostname = Objects.requireNonNull(vmwareServer).getHostname();
+        m_username = vmwareServer.getUsername();
+        m_password = vmwareServer.getPassword();
+    }
+
+    public int getTimeout() {
+        return m_timeout;
+    }
+
     /**
      * Connects to the server.
      *
@@ -163,7 +210,7 @@ public class VmwareViJavaAccess {
     public void connect() throws MalformedURLException, RemoteException {
         relax();
 
-        m_serviceInstance = new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), m_username, m_password);
+        m_serviceInstance = m_serviceInstancePool.retain(m_hostname, m_username, m_password);
     }
 
     /**
@@ -178,10 +225,12 @@ public class VmwareViJavaAccess {
             if (serverConnection != null) {
                 VimPortType vimService = serverConnection.getVimService();
                 if (vimService != null) {
-                    WSClient wsClient = vimService.getWsc();
-                    if (wsClient != null) {
-                        wsClient.setConnectTimeout(timeout);
-                        wsClient.setReadTimeout(timeout);
+                    Client client = vimService.getWsc();
+                    if (client != null) {
+                        client.setConnectTimeout(timeout);
+                        client.setReadTimeout(timeout);
+                        m_timeout = timeout;
+                        logger.debug("Set VMware service instance timeout to " + timeout + " ms.");
                         return true;
                     }
                 }
@@ -194,19 +243,7 @@ public class VmwareViJavaAccess {
      * Disconnects from the server.
      */
     public void disconnect() {
-        if (m_serviceInstance == null) {
-            // not connected
-            return;
-        } else {
-            ServerConnection serverConnection = m_serviceInstance.getServerConnection();
-
-            if (serverConnection == null) {
-                // not connected
-                return;
-            } else {
-                m_serviceInstance.getServerConnection().logout();
-            }
-        }
+        m_serviceInstancePool.release(m_serviceInstance);
     }
 
     /**
@@ -214,36 +251,7 @@ public class VmwareViJavaAccess {
      */
     protected void relax() {
 
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-            @Override
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            public boolean isServerTrusted(
-                    java.security.cert.X509Certificate[] certs) {
-                return true;
-            }
-
-            public boolean isClientTrusted(
-                    java.security.cert.X509Certificate[] certs) {
-                return true;
-            }
-
-            @Override
-            public void checkServerTrusted(
-                    java.security.cert.X509Certificate[] certs, String authType)
-                    throws java.security.cert.CertificateException {
-                return;
-            }
-
-            @Override
-            public void checkClientTrusted(
-                    java.security.cert.X509Certificate[] certs, String authType)
-                    throws java.security.cert.CertificateException {
-                return;
-            }
-        }};
+        TrustManager[] trustAllCerts = new TrustManager[]{new AnyServerX509TrustManager()};
 
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
@@ -413,8 +421,8 @@ public class VmwareViJavaAccess {
      * @throws RemoteException
      * @throws CIMException
      */
-    public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass, String primaryIpAddress) throws RemoteException, CIMException {
-        List<CIMObject> cimObjects = new ArrayList<CIMObject>();
+    public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass, String primaryIpAddress) throws ConnectException, RemoteException, CIMException {
+        List<CIMObject> cimObjects = new ArrayList<>();
 
         if (!m_hostServiceTickets.containsKey(hostSystem)) {
             m_hostServiceTickets.put(hostSystem, hostSystem.acquireCimServicesTicket());
@@ -448,16 +456,14 @@ public class VmwareViJavaAccess {
         CIMNameSpace ns = new CIMNameSpace(cimAgentAddress, namespace);
         CIMClient cimClient = new CIMClient(ns, userPr, pwCred);
 
+        cimClient.getSessionProperties().setHttpTimeOut(3000);
+
         // very important to query esx5 hosts
         cimClient.useMPost(false);
-
         CIMObjectPath rpCOP = new CIMObjectPath(cimClass);
-
         Enumeration<?> rpEnm = cimClient.enumerateInstances(rpCOP);
-
         while (rpEnm.hasMoreElements()) {
             CIMObject rp = (CIMObject) rpEnm.nextElement();
-
             cimObjects.add(rp);
         }
 
@@ -473,19 +479,32 @@ public class VmwareViJavaAccess {
      * @throws RemoteException
      * @throws CIMException
      */
-    public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass) throws RemoteException, CIMException {
+    public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass) throws ConnectException, RemoteException, CIMException {
         return queryCimObjects(hostSystem, cimClass, null);
     }
 
     /**
-     * Searches for the primary ip address of a host system
+     * Searches for the primary ip address of a host system.
+     * <p>The idea is to resolve the HostSystem's name and use the resulting IP if the IP is listed on the available addresses list,
+     * otherwise, use the first ip listed on the available list.</p>
      *
      * @param hostSystem the host system to query
      * @return the primary ip address
-     * @throws RemoteException
      */
-    public String getPrimaryHostSystemIpAddress(HostSystem hostSystem) throws RemoteException {
-        return getHostSystemIpAddresses(hostSystem).first();
+    // TODO We should use the IP of the "Management Network" (i.e. the port that has enabled "Management Traffic" on the available vSwitches).
+    //      Resolving the name of the HostSystem as the FQDN is the most closest thing for that.
+    public String getPrimaryHostSystemIpAddress(HostSystem hostSystem) {
+        TreeSet<String> addresses = getHostSystemIpAddresses(hostSystem);
+        String ipAddress = null;
+        try {
+            ipAddress = InetAddress.getByName(hostSystem.getName()).getHostAddress();
+        } catch (Exception e) {
+            logger.debug("Can't resolve the IP address from {}.", hostSystem.getName());
+        }
+        if (ipAddress == null) {
+            return addresses.first();
+        }
+        return addresses.contains(ipAddress) ? ipAddress : addresses.first();
     }
 
     /**
@@ -493,12 +512,18 @@ public class VmwareViJavaAccess {
      *
      * @param hostSystem the host system to query
      * @return the ip addresses of the host system, the first one is the primary
-     * @throws RemoteException
      */
-    public TreeSet<String> getHostSystemIpAddresses(HostSystem hostSystem) throws RemoteException {
+    public TreeSet<String> getHostSystemIpAddresses(HostSystem hostSystem) {
         TreeSet<String> ipAddresses = new TreeSet<String>();
 
-        HostNetworkSystem hostNetworkSystem = hostSystem.getHostNetworkSystem();
+        HostNetworkSystem hostNetworkSystem = null;
+        try {
+            hostNetworkSystem = hostSystem.getHostNetworkSystem();
+        } catch (RemoteException e) {
+            logger.warn("Error fetching network information for Host System '{}' (ID: {})", hostSystem.getName(), hostSystem.getMOR().getVal());
+            logger.warn("Exception thrown while fetching network information: {}", e);
+            return ipAddresses;
+        }
 
         if (hostNetworkSystem != null) {
             HostNetworkInfo hostNetworkInfo = hostNetworkSystem.getNetworkInfo();
@@ -517,6 +542,34 @@ public class VmwareViJavaAccess {
                 }
             }
         }
+        return ipAddresses;
+    }
+
+    /**
+     * Searches for all ip addresses of a virtual machine
+     *
+     * @param virtualMachine the virtual machine to query
+     * @return the ip addresses of the virtual machine, the first one is the primary
+     */
+    public TreeSet<String> getVirtualMachineIpAddresses(VirtualMachine virtualMachine) {
+        TreeSet<String> ipAddresses = new TreeSet<String>();
+
+        // add the Ip address reported by VMware tools, this should be primary
+        if (virtualMachine.getGuest().getIpAddress() != null) {
+            ipAddresses.add(virtualMachine.getGuest().getIpAddress());
+        }
+
+        // if possible, iterate over all virtual networks networks and add interface Ip addresses
+        if (virtualMachine.getGuest().getNet() != null) {
+            for (GuestNicInfo guestNicInfo : virtualMachine.getGuest().getNet()) {
+                if (guestNicInfo.getIpAddress() != null) {
+                    for (String ipAddress : guestNicInfo.getIpAddress()) {
+                        ipAddresses.add(ipAddress);
+                    }
+                }
+            }
+        }
+
         return ipAddresses;
     }
 
@@ -540,7 +593,7 @@ public class VmwareViJavaAccess {
         if (m_serviceInstance != null) {
             String apiVersion = m_serviceInstance.getAboutInfo().getApiVersion();
 
-            String arr[] = apiVersion.split("\\.");
+            String[] arr = apiVersion.split("\\.");
 
             if (arr.length > 1) {
                 int apiMajorVersion = Integer.valueOf(arr[0]);
@@ -588,5 +641,9 @@ public class VmwareViJavaAccess {
                 }
             }
         }
+    }
+
+    public static void setServiceInstancePool(final ServiceInstancePool serviceInstancePool) {
+        m_serviceInstancePool = serviceInstancePool;
     }
 }

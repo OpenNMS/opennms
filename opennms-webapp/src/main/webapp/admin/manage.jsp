@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,8 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File,
-		java.util.*,
+	import="java.util.*,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.web.admin.nodeManagement.*
 	"
@@ -46,7 +45,7 @@
 
 <%
     HttpSession userSession = request.getSession(false);
-    List nodes = null;
+    List<ManagedInterface> nodes = null;
     Integer lineItems= new Integer(0);
     
     //EventConfFactory eventFactory = EventConfFactory.getInstance();
@@ -56,12 +55,12 @@
     
     if (userSession != null)
     {
-		  	nodes = (List)userSession.getAttribute("listAll.manage.jsp");
+		  	nodes = (List<ManagedInterface>)userSession.getAttribute("listAll.manage.jsp");
         lineItems = (Integer)userSession.getAttribute("lineItems.manage.jsp");
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Manage/Unmanage Interfaces and Services" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
@@ -164,70 +163,75 @@
   }
 %>
 
-    <h3>Manage and Unmanage Interfaces and Services</h3>
-
+<div class="card">
+  <div class="card-header">
+    <span>Manage and Unmanage Interfaces and Services</span>
+  </div>
+  <div class="card-body">
           <p>The two tables below represent each managed and unmanged node, interface, and service combination. The 'Status' column indicates if the interface or
           service is managed or not, with checked rows meaning the interface or service is managed, and unchecked meaning not managed. Each different interface
           has a dark grey row and no service column, and each service on that interface is listed below on light grey rows.</p>
           <p>Managing or Unmanaging an interface will automatically mark each service on that interface as managed or unmanaged accordingly. A service cannot be
           managed if its interface is not managed.</p>
 
-          <input type="button" value="Apply Changes" onClick="applyChanges()">
-          <input type="button" value="Cancel" onClick="cancel()">
-          <input type="button" value="Select All" onClick="checkAll()">
-          <input type="button" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset"><br/>&nbsp;
+    <button type="button" class="btn btn-secondary" onClick="applyChanges()">Apply Changes</button>
+    <button type="button" class="btn btn-secondary" onClick="cancel()">Cancel</button>
+    <button type="button" class="btn btn-secondary" onClick="checkAll()">Select All</button>
+    <button type="button" class="btn btn-secondary" onClick="uncheckAll()"> Unselect All</button>
+    <button type="reset" class="btn btn-secondary">Reset</button>
 
-	<br/>
-      
+    <div class="row top-buffer">
       <% if (nodes.size() > 0) { %>
-	<div id="contentleft">
-          <table class="standardfirst">
+	<div class="col-md-6">
+          <table class="table table-sm table-striped table-hover">
             <tr>
-              <td class="standardheader" width="5%">Status</td>
-              <td class="standardheader" width="10%">Node Label</td>
-              <td class="standardheader" width="5%">Interface</td>
-              <td class="standardheader" width="5%">Service</td>
+              <th width="5%">Status</th>
+              <th width="10%">Node Label</th>
+              <th width="5%">Interface</th>
+              <th width="5%">Service</th>
             </tr>
             
             <%=buildManageTableRows(nodes, 0, midNodeIndex)%>
             
           </table>
-	</div>
+	</div> <!-- column -->
           <% } /*end if*/ %>
         
       <!--see if there is a second column to draw-->
       <% if (midNodeIndex < nodes.size()) { %>
-	<div id="contentright">
-          <table class="standardfirst">
+	<div class="col-md-6">
+          <table class="table table-sm table-striped table-hover">
             <tr>
-              <td class="standardheader" width="5%">Status</td>
-              <td class="standardheader" width="10%">Node Label</td>
-              <td class="standardheader" width="5%">Interface</td>
-              <td class="standardheader" width="5%">Service</td>
+              <th width="5%">Status</th>
+              <th width="10%">Node Label</th>
+              <th width="5%">Interface</th>
+              <th width="5%">Service</th>
             </tr>
             
             <%=buildManageTableRows(nodes, midNodeIndex, nodes.size())%>
                
           </table>
-	</div>
+	</div> <!-- column -->
         <% } /*end if */ %>
+    </div> <!-- row -->
 
-	<div class="spacer"><!-- --></div>
-	<br/>
+    <div class="top-buffer"></div>
 
-          <input type="button" value="Apply Changes" onClick="applyChanges()">
-          <input type="button" value="Cancel" onClick="cancel()"> |
-          <input type="button" value="Select All" onClick="checkAll()">
-          <input type="button" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset">
+    <button type="button" class="btn btn-secondary" onClick="applyChanges()">Apply Changes</button>
+    <button type="button" class="btn btn-secondary" onClick="cancel()">Cancel</button>
+    <button type="button" class="btn btn-secondary" onClick="checkAll()">Select All</button>
+    <button type="button" class="btn btn-secondary" onClick="uncheckAll()"> Unselect All</button>
+    <button type="reset" class="btn btn-secondary">Reset</button>
+  </div> <!-- card-body -->
+</div> <!-- panel -->
+
 </form>
 
 
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
 
 <%!
-      public String buildManageTableRows(List nodes, int start, int stop)
+      public String buildManageTableRows(List<ManagedInterface> nodes, int start, int stop)
       	throws java.sql.SQLException
       {
           StringBuffer rows = new StringBuffer();
@@ -255,10 +259,10 @@
                                               curInterface.getAddress()));
                     
                   
-                List interfaceServices = curInterface.getServices();
+                List<ManagedService> interfaceServices = curInterface.getServices();
                 for (int k = 0; k < interfaceServices.size(); k++) 
                 {
-                     ManagedService curService = (ManagedService)interfaceServices.get(k);
+                     ManagedService curService = interfaceServices.get(k);
                      String serviceKey = curInterface.getNodeid() + "-" + curInterface.getAddress() + "-" + curService.getId();
                      rows.append(buildServiceRow(serviceKey,
                                                  interfaceIndex,
@@ -280,32 +284,32 @@
       
       public String buildInterfaceRow(String key, int interfaceIndex, String serviceArray, String status, String nodeLabel, String address)
       {
-          StringBuffer row = new StringBuffer( "<tr bgcolor=\"#999999\">");
+          StringBuffer row = new StringBuffer( "<tr>");
           
-          row.append("<td class=\"standardheaderplain\" width=\"5%\" align=\"center\">");
+          row.append("<td class=\"text-center\">");
           row.append("<input type=\"checkbox\" name=\"interfaceCheck\" value=\"").append(key).append("\" onClick=\"javascript:updateServices(" + interfaceIndex + ", " + serviceArray + ")\" ").append(status).append(" >");
           row.append("</td>").append("\n");
-          row.append("<td class=\"standardheaderplain\" width=\"10%\">");
+          row.append("<td>");
           row.append(nodeLabel);
           row.append("</td>").append("\n");
-          row.append("<td class=\"standardheaderplain\" width=\"5%\">");
+          row.append("<td>");
           row.append(address);
           row.append("</td>").append("\n");
-          row.append("<td class=\"standardheaderplain\" width=\"5%\">").append("&nbsp;").append("</td></tr>").append("\n");
+          row.append("<td>").append("&nbsp;").append("</td></tr>").append("\n");
           
           return row.toString();
       }
       
       public String buildServiceRow(String key, int interfaceIndex, int serviceIndex, String status, String nodeLabel, String address, String service)
       {
-          StringBuffer row = new StringBuffer( "<tr bgcolor=\"#cccccc\">");
+          StringBuffer row = new StringBuffer( "<tr>");
           
-          row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
+          row.append("<td class=\"text-center\">");
           row.append("<input type=\"checkbox\" name=\"serviceCheck\" value=\"").append(key).append("\" onClick=\"javascript:verifyManagedInterface(" + interfaceIndex + ", " + serviceIndex + ")\" ").append(status).append(" >");
           row.append("</td>").append("\n");
-          row.append("<td class=\"standard\" width=\"10%\">").append(nodeLabel).append("</td>").append("\n");
-          row.append("<td class=\"standard\" width=\"5%\">").append(address).append("</td>").append("\n");
-          row.append("<td class=\"standard\" width=\"5%\">").append(service).append("</td></tr>").append("\n");
+          row.append("<td>").append(nodeLabel).append("</td>").append("\n");
+          row.append("<td>").append(address).append("</td>").append("\n");
+          row.append("<td>").append(service).append("</td></tr>").append("\n");
           
           return row.toString();
       }

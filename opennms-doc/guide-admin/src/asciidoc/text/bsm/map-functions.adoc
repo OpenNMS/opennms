@@ -1,0 +1,20 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+=== Map Functions
+
+The _Map Functions_ define how the _Severity_ of the edge will be used in the _Reduce Function_ of the parent when calculating the _Operational Status_.
+
+The available _Map Functions_ are:
+
+.Calculation of the _Operational Status_ with _Map Functions_
+[options="header, autowidth"]
+|===
+| Name       | Description
+| `Identity` | Use the same _Severity_ as _Operational Status_ of the _BS_
+| `Increase` | Increase the _Severity_ by one level and use it as _Operational Status_ of the _BS_
+| `Decrease` | Decrease the _Severity_ by one level and use it as _Operational Status_ of the _BS_
+| `SetTo`    | Set the _Operational Status_ to a constant _Severity_ value
+| `Ignore`   | The input of the _Edge_ is ignored for _Operational Status_ calculation
+|===

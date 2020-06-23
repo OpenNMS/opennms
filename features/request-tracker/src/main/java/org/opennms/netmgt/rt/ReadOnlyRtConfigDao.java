@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -42,7 +42,7 @@ public class ReadOnlyRtConfigDao implements RtConfigDao {
     private static final Logger LOG = LoggerFactory.getLogger(ReadOnlyRtConfigDao.class);
     private Configuration m_config = null;
     private long m_lastUpdated = 0L;
-    private static final long TIMEOUT = 1000 * 60 * 5; // 5 minutes
+    private static final long TIMEOUT = 1000L * 60L * 5L; // 5 minutes
 
     /**
 	 * Retrieves the properties defined in the rt.properties file.
@@ -102,7 +102,7 @@ public class ReadOnlyRtConfigDao implements RtConfigDao {
 	
 	@SuppressWarnings("unchecked")
     @Override
-	public List<Integer> getValidOpenStatus() {
+	public List<String> getValidOpenStatus() {
 		return getProperties().getList(getPrefix() + ".validopenstatus");
 	}
 	
@@ -146,8 +146,13 @@ public class ReadOnlyRtConfigDao implements RtConfigDao {
 	public int getRetry() {
 	    return getProperties().getInt(getPrefix() + ".retry", 0);
 	}
-	
-    @Override
+
+	@Override
+	public boolean getUseSystemProxy() {
+		return getProperties().getBoolean(getPrefix() + ".useSystemProxy", false);
+	}
+
+	@Override
 	public void save() throws IOException {
 	    LOG.warn("ReadOnlyRtConfigDao cannot save.");
 	}

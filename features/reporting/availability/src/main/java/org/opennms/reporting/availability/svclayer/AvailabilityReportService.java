@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -37,9 +37,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.opennms.api.reporting.ReportException;
@@ -77,51 +76,6 @@ public class AvailabilityReportService implements ReportService {
     private static final String LOG4J_CATEGORY = "reports";
 
     private static final String CAL_TYPE = "calendar";
-
-
-    /**
-     * <p>Constructor for AvailabilityReportService.</p>
-     */
-    public AvailabilityReportService() {
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean validate(final HashMap<String, Object> reportParms, final String reportID) {
-        try {
-            return Logging.withPrefix(LOG4J_CATEGORY, new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws Exception {
-                    if (!reportParms.containsKey("endDate")) {
-                        LOG.error("report parameters should contain parameter endDate");
-                        return false;
-                    }
-
-                    if (!(reportParms.get("endDate") instanceof Date)) {
-                        LOG.error("report parameters 'endDate' should be a Date");
-                        return false;
-                    }
-
-                    if (!reportParms.containsKey("reportCategory")) {
-                        LOG.error("report parameters should contain parameter reportCategory");
-                        return false;
-                    }
-
-                    if (!(reportParms.get("reportCategory") instanceof String)) {
-                        LOG.error("report parameter 'reportCategory' should be a String");
-                        return false;
-                    }
-
-                    return true;
-                }
-
-            });
-        } catch (final Exception e) {
-            LOG.error("And unknown error occurred.", e);
-            return false;
-        }
-    }
-
 
     /** {@inheritDoc} */
     @Override
@@ -186,7 +140,7 @@ public class AvailabilityReportService implements ReportService {
     @Override
     public List<ReportFormat> getFormats(String id) {
 
-        List<ReportFormat> formats = new ArrayList<ReportFormat>();
+        List<ReportFormat> formats = new ArrayList<>();
 
         if (m_configDao.getHtmlStylesheetLocation(id) != null)
             formats.add(ReportFormat.HTML);
@@ -202,7 +156,7 @@ public class AvailabilityReportService implements ReportService {
 
     /** {@inheritDoc} */
     @Override
-    public String run(final HashMap<String, Object> reportParms, final String reportId) {
+    public String run(final Map<String, Object> reportParms, final String reportId) {
         try {
             return Logging.withPrefix(LOG4J_CATEGORY, new Callable<String>() {
                 @Override public String call() throws Exception {
@@ -223,7 +177,6 @@ public class AvailabilityReportService implements ReportService {
 
                     LOG.debug("set availability calculator report category to: {}", calculator.getCategoryName());
 
-                    calculator.setCalendar(new GregorianCalendar());
                     calculator.setPeriodEndDate((Date) reportParms.get("endDate"));
 
                     LOG.debug("set availability calculator end date to: {}", calculator.getPeriodEndDate());
@@ -256,7 +209,7 @@ public class AvailabilityReportService implements ReportService {
 
     /** {@inheritDoc} */
     @Override
-    public void runAndRender(final HashMap<String, Object> reportParms, final String reportId, final ReportFormat format, final OutputStream outputStream) {
+    public void runAndRender(final Map<String, Object> reportParms, final String reportId, final ReportFormat format, final OutputStream outputStream) {
         Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
             @Override public void run() {
                 ByteArrayOutputStream out = null;
@@ -283,7 +236,6 @@ public class AvailabilityReportService implements ReportService {
                     LOG.debug("set availability calculator report category to: {}", calculator.getCategoryName());
     
     
-                    calculator.setCalendar(new GregorianCalendar());
                     calculator.setPeriodEndDate((Date) reportParms.get("endDate"));
     
                     LOG.debug("set availability calculator end date to: {}", calculator.getPeriodEndDate());

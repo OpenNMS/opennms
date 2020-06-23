@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -39,6 +39,8 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * PhysInterfaceTableTracker
@@ -47,6 +49,7 @@ import org.opennms.netmgt.snmp.TableTracker;
  * @version $Id: $
  */
 public class IPInterfaceTableTracker extends TableTracker {
+    private static final Logger LOG = LoggerFactory.getLogger(IPInterfaceTableTracker.class);
     
     /** Constant <code>IP_ADDR_TABLE_ENTRY</code> */
     public static final SnmpObjId IP_ADDR_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.2.1.4.20.1");
@@ -68,7 +71,7 @@ public class IPInterfaceTableTracker extends TableTracker {
         IP_ADDR_ENT_BCASTADDR
     };
     
-    class IPInterfaceRow extends SnmpRowResult {
+    static class IPInterfaceRow extends SnmpRowResult {
 
         public IPInterfaceRow(int columnCount, SnmpInstId instance) {
             super(columnCount, instance);
@@ -91,10 +94,11 @@ public class IPInterfaceTableTracker extends TableTracker {
                 	if (addr == null) {
                 		throw new IllegalArgumentException("cannot convert "+inst+" to an InetAddress");
                 	}
-					return addr;
+                	return addr;
+                } else {
+                	return null;
                 }
             }
-            return null;
         }
 
         private InetAddress getNetMask() {
@@ -104,24 +108,27 @@ public class IPInterfaceTableTracker extends TableTracker {
 
         public OnmsIpInterface createInterfaceFromRow() {
             
-            String ipAddr = getIpAddress();
-            InetAddress netMask = getNetMask();
-            Integer ifIndex = getIfIndex();
+            final Integer ifIndex = getIfIndex();
+            final String ipAddr = getIpAddress();
+            final InetAddress netMask = getNetMask();
 
-            OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
-            snmpIface.setNetMask(netMask);
-            snmpIface.setCollectionEnabled(true);
+            LOG.debug("createInterfaceFromRow: ifIndex = {}, ipAddress = {}, netmask = {}", ifIndex, ipAddr, netMask);
+
+            if (ipAddr == null) {
+                return null;
+            }
 
             final InetAddress inetAddress = InetAddressUtils.addr(ipAddr);
-            OnmsIpInterface iface = new OnmsIpInterface(inetAddress, null);
-            iface.setSnmpInterface(snmpIface);
-            
-            iface.setIfIndex(ifIndex);
-            String hostName = null;
-            if (inetAddress != null) hostName = inetAddress.getHostName();
-            if (hostName == null) hostName = InetAddressUtils.normalize(ipAddr);
-            iface.setIpHostName(hostName == null? ipAddr : hostName);
-            
+            final OnmsIpInterface iface = new OnmsIpInterface(inetAddress, null);
+            iface.setNetMask(netMask);
+
+            if (ifIndex != null) {
+                final OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(null, ifIndex);
+                snmpIface.setCollectionEnabled(true);
+                iface.setSnmpInterface(snmpIface);
+                iface.setIfIndex(ifIndex);
+            }
+
             return iface;
         }
 

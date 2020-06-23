@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,10 +30,15 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -49,15 +54,21 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
-import org.opennms.core.xml.bind.InetAddressXmlAdapter;
-import org.springframework.core.style.ToStringCreator;
+import org.opennms.core.network.InetAddressXmlAdapter;
+import org.opennms.netmgt.events.api.EventParameterUtils;
+import org.opennms.netmgt.xml.event.Event;
+
+import com.google.common.base.MoreObjects;
 
 /**
  * <p>OnmsEvent class.</p>
@@ -66,221 +77,175 @@ import org.springframework.core.style.ToStringCreator;
 @Entity
 @Table(name="events")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -7412025003474162992L;
 
 	/** identifier field */
-	private Integer m_eventId;
+	@Id
+	@Column(name="eventId", nullable=false)
+	@SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
+	@GeneratedValue(generator="eventSequence")
+	private Integer eventId;
 
 	/** persistent field */
-	private String m_eventUei;
+	@Column(name="eventUei", length=256, nullable=false)
+	private String eventUei;
 
 	/** persistent field */
-	private Date m_eventTime;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="eventTime", nullable=false)
+	private Date eventTime;
 
 	/** nullable persistent field */
-	private String m_eventHost;
+	@Column(name="eventHost", length=256)
+	private String eventHost;
 
 	/** persistent field */
-	private String m_eventSource;
+	@Column(name="eventSource", length=128, nullable=false)
+	private String eventSource;
 
 	/** nullable persistent field */
-	private InetAddress m_ipAddr;
+	@Column(name="ipAddr")
+	@Type(type="org.opennms.netmgt.model.InetAddressUserType")
+	private InetAddress ipAddr;
 
 	/** persistent field */
-	private OnmsDistPoller m_distPoller;
+	@ManyToOne
+	@JoinColumn(name="systemId", nullable=false)
+	private OnmsMonitoringSystem distPoller;
 
 	/** nullable persistent field */
-	private String m_eventSnmpHost;
+	@Column(name="eventSnmpHost", length=256)
+	private String eventSnmpHost;
 
 	/** nullable persistent field */
-	private OnmsServiceType m_serviceType;
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="serviceId", nullable=true)
+	private OnmsServiceType serviceType;
 
 	/** nullable persistent field */
-	private String m_eventSnmp;
+	@Column(name="eventSnmp", length=256)
+	private String eventSnmp;
 
-	/** nullable persistent field */
-	private String m_eventParms;
+	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
+	private List<OnmsEventParameter> eventParameters;
 
 	/** persistent field */
-	private Date m_eventCreateTime;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="eventCreateTime", nullable=false)
+	private Date eventCreateTime;
 
 	/** nullable persistent field */
-	private String m_eventDescr;
+	@Column(name="eventDescr", length=4000)
+	private String eventDescr;
 
 	/** nullable persistent field */
-	private String m_eventLogGroup;
+	@Column(name="eventLogGroup", length=32)
+	private String eventLogGroup;
 
 	/** nullable persistent field */
-	private String m_eventLogMsg;
+	@Column(name="eventLogMsg", length=1024)
+	private String eventLogMsg;
 
 	/** persistent field */
-	private Integer m_eventSeverity;
-	
-	/** nullable persistent field */
-    private Integer m_ifIndex;
+	@Column(name="eventSeverity", nullable=false)
+	private Integer eventSeverity;
 
 	/** nullable persistent field */
-	private String m_eventPathOutage;
+	@Column(name="ifIndex")
+    private Integer ifIndex;
 
 	/** nullable persistent field */
-	private String m_eventCorrelation;
+	@Column(name="eventPathOutage", length=1024)
+	private String eventPathOutage;
 
 	/** nullable persistent field */
-	private Integer m_eventSuppressedCount;
+	@Column(name="eventCorrelation", length=1024)
+	private String eventCorrelation;
 
 	/** nullable persistent field */
-	private String m_eventOperInstruct;
+	@Column(name="eventSuppressedCount")
+	private Integer eventSuppressedCount;
 
 	/** nullable persistent field */
-	private String m_eventAutoAction;
+	@Column(name="eventOperInstruct")
+	private String eventOperInstruct;
 
 	/** nullable persistent field */
-	private String m_eventOperAction;
+	@Column(name="eventAutoAction", length=256)
+	private String eventAutoAction;
 
 	/** nullable persistent field */
-	private String m_eventOperActionMenuText;
+	@Column(name="eventOperAction", length=256)
+	private String eventOperAction;
 
 	/** nullable persistent field */
-	private String m_eventNotification;
+	@Column(name="eventOperActionMenuText", length=64)
+	private String eventOperActionMenuText;
 
 	/** nullable persistent field */
-	private String m_eventTTicket;
+	@Column(name="eventNotification", length=128)
+	private String eventNotification;
 
 	/** nullable persistent field */
-	private Integer m_eventTTicketState;
+	@Column(name="eventTTicket", length=128)
+	private String eventTTicket;
 
 	/** nullable persistent field */
-	private String m_eventForward;
+	@Column(name="eventTTicketState")
+	private Integer eventTTicketState;
 
 	/** nullable persistent field */
-	private String m_eventMouseOverText;
+	@Column(name="eventForward", length=256)
+	private String eventForward;
+
+	/** nullable persistent field */
+	@Column(name="eventMouseOverText", length=64)
+	private String eventMouseOverText;
 
 	/** persistent field */
-	private String m_eventLog;
+	@Column(name="eventLog", length=1, nullable=false)
+	private String eventLog;
 
 	/** persistent field */
-	private String m_eventDisplay;
+	@Column(name="eventDisplay", length=1, nullable=false)
+	private String eventDisplay;
 
 	/** nullable persistent field */
-	private String m_eventAckUser;
+	@Column(name="eventAckUser", length=256)
+	private String eventAckUser;
 
 	/** nullable persistent field */
-	private Date m_eventAckTime;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="eventAckTime")
+	private Date eventAckTime;
 
 	/** nullable persistent field */
-	private OnmsAlarm m_alarm;
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="alarmId")
+	private OnmsAlarm alarm;
 
 	/** persistent field */
-	private org.opennms.netmgt.model.OnmsNode m_node;
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="nodeId")
+	private org.opennms.netmgt.model.OnmsNode node;
 
 	/** persistent field */
-	private Set<OnmsNotification> m_notifications = new HashSet<OnmsNotification>();
+	@OneToMany(mappedBy="event", fetch=FetchType.LAZY)
+	private Set<OnmsNotification> notifications = new HashSet<>();
 
 	/** persistent field */
-	private Set<OnmsOutage> m_associatedServiceRegainedOutages = new HashSet<OnmsOutage>();
+	@OneToMany(mappedBy="serviceRegainedEvent", fetch=FetchType.LAZY)
+	private Set<OnmsOutage> associatedServiceRegainedOutages = new HashSet<>();
 
 	/** persistent field */
-	private Set<OnmsOutage> m_associatedServiceLostOutages = new HashSet<OnmsOutage>();
-
-	/**
-	 * full constructor
-	 *
-	 * @param eventid a {@link java.lang.Integer} object.
-	 * @param eventuei a {@link java.lang.String} object.
-	 * @param eventtime a {@link java.util.Date} object.
-	 * @param eventhost a {@link java.lang.String} object.
-	 * @param eventsource a {@link java.lang.String} object.
-	 * @param ipaddr a {@link java.lang.String} object.
-	 * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
-	 * @param eventsnmphost a {@link java.lang.String} object.
-	 * @param service a {@link org.opennms.netmgt.model.OnmsServiceType} object.
-	 * @param eventsnmp a {@link java.lang.String} object.
-	 * @param eventparms a {@link java.lang.String} object.
-	 * @param eventcreatetime a {@link java.util.Date} object.
-	 * @param eventdescr a {@link java.lang.String} object.
-	 * @param eventloggroup a {@link java.lang.String} object.
-	 * @param eventlogmsg a {@link java.lang.String} object.
-	 * @param eventseverity a {@link java.lang.Integer} object.
-	 * @param eventpathoutage a {@link java.lang.String} object.
-	 * @param eventcorrelation a {@link java.lang.String} object.
-	 * @param eventsuppressedcount a {@link java.lang.Integer} object.
-	 * @param eventoperinstruct a {@link java.lang.String} object.
-	 * @param eventautoaction a {@link java.lang.String} object.
-	 * @param eventoperaction a {@link java.lang.String} object.
-	 * @param eventoperactionmenutext a {@link java.lang.String} object.
-	 * @param eventnotification a {@link java.lang.String} object.
-	 * @param eventtticket a {@link java.lang.String} object.
-	 * @param eventtticketstate a {@link java.lang.Integer} object.
-	 * @param eventforward a {@link java.lang.String} object.
-	 * @param eventmouseovertext a {@link java.lang.String} object.
-	 * @param eventlog a {@link java.lang.String} object.
-	 * @param eventdisplay a {@link java.lang.String} object.
-	 * @param eventackuser a {@link java.lang.String} object.
-	 * @param eventacktime a {@link java.util.Date} object.
-	 * @param alarm a {@link org.opennms.netmgt.model.OnmsAlarm} object.
-	 * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
-	 * @param notifications a {@link java.util.Set} object.
-	 * @param outagesBySvcregainedeventid a {@link java.util.Set} object.
-	 * @param outagesBySvclosteventid a {@link java.util.Set} object.
-	 */
-	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
-			String eventhost, String eventsource, InetAddress ipaddr,
-			OnmsDistPoller distPoller, String eventsnmphost, OnmsServiceType service,
-			String eventsnmp, String eventparms, Date eventcreatetime,
-			String eventdescr, String eventloggroup, String eventlogmsg,
-			Integer eventseverity, String eventpathoutage, String eventcorrelation,
-			Integer eventsuppressedcount, String eventoperinstruct,
-			String eventautoaction, String eventoperaction,
-			String eventoperactionmenutext, String eventnotification,
-			String eventtticket, Integer eventtticketstate,
-			String eventforward, String eventmouseovertext, String eventlog,
-			String eventdisplay, String eventackuser, Date eventacktime,
-			OnmsAlarm alarm, org.opennms.netmgt.model.OnmsNode node,
-			Set<OnmsNotification> notifications, Set<OnmsOutage> outagesBySvcregainedeventid,
-			Set<OnmsOutage> outagesBySvclosteventid) {
-		m_eventId = eventid;
-		m_eventUei = eventuei;
-		m_eventTime = eventtime;
-		m_eventHost = eventhost;
-		m_eventSource = eventsource;
-		m_ipAddr = ipaddr;
-		m_distPoller = distPoller;
-		m_eventSnmpHost = eventsnmphost;
-		m_serviceType = service;
-		m_eventSnmp = eventsnmp;
-		m_eventParms = eventparms;
-		m_eventCreateTime = eventcreatetime;
-		m_eventDescr = eventdescr;
-		m_eventLogGroup = eventloggroup;
-		m_eventLogMsg = eventlogmsg;
-		m_eventSeverity = eventseverity;
-		m_eventPathOutage = eventpathoutage;
-		m_eventCorrelation = eventcorrelation;
-		m_eventSuppressedCount = eventsuppressedcount;
-		m_eventOperInstruct = eventoperinstruct;
-		m_eventAutoAction = eventautoaction;
-		m_eventOperAction = eventoperaction;
-		m_eventOperActionMenuText = eventoperactionmenutext;
-		m_eventNotification = eventnotification;
-		m_eventTTicket = eventtticket;
-		m_eventTTicketState = eventtticketstate;
-		m_eventForward = eventforward;
-		m_eventMouseOverText = eventmouseovertext;
-		m_eventLog = eventlog;
-		m_eventDisplay = eventdisplay;
-		m_eventAckUser = eventackuser;
-		m_eventAckTime = eventacktime;
-		m_alarm = alarm;
-		m_node = node;
-		m_notifications = notifications;
-		m_associatedServiceRegainedOutages = outagesBySvcregainedeventid;
-		m_associatedServiceLostOutages = outagesBySvclosteventid;
-	}
+	@OneToMany(mappedBy="serviceLostEvent", fetch=FetchType.LAZY)
+	private Set<OnmsOutage> associatedServiceLostOutages = new HashSet<>();
 
 	/**
 	 * default constructor
@@ -288,57 +253,14 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	public OnmsEvent() {
 	}
 
-	/**
-	 * minimal constructor
-	 *
-	 * @param eventid a {@link java.lang.Integer} object.
-	 * @param eventuei a {@link java.lang.String} object.
-	 * @param eventtime a {@link java.util.Date} object.
-	 * @param eventsource a {@link java.lang.String} object.
-	 * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
-	 * @param eventcreatetime a {@link java.util.Date} object.
-	 * @param eventseverity a {@link java.lang.Integer} object.
-	 * @param eventlog a {@link java.lang.String} object.
-	 * @param eventdisplay a {@link java.lang.String} object.
-	 * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
-	 * @param notifications a {@link java.util.Set} object.
-	 * @param outagesBySvcregainedeventid a {@link java.util.Set} object.
-	 * @param outagesBySvclosteventid a {@link java.util.Set} object.
-	 * @param alarms a {@link java.util.Set} object.
-	 */
-	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
-			String eventsource, OnmsDistPoller distPoller, Date eventcreatetime,
-			Integer eventseverity, String eventlog, String eventdisplay,
-			org.opennms.netmgt.model.OnmsNode node, Set<OnmsNotification> notifications,
-			Set<OnmsOutage> outagesBySvcregainedeventid, Set<OnmsOutage> outagesBySvclosteventid,
-			Set<OnmsAlarm> alarms) {
-		m_eventId = eventid;
-		m_eventUei = eventuei;
-		m_eventTime = eventtime;
-		m_eventSource = eventsource;
-		m_distPoller = distPoller;
-		m_eventCreateTime = eventcreatetime;
-		m_eventSeverity = eventseverity;
-		m_eventLog = eventlog;
-		m_eventDisplay = eventdisplay;
-		m_node = node;
-		m_notifications = notifications;
-		m_associatedServiceRegainedOutages = outagesBySvcregainedeventid;
-		m_associatedServiceLostOutages = outagesBySvclosteventid;
-	}
-
     /**
      * <p>getId</p>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    @Id
-    @XmlAttribute(name="id")
-    @Column(name="eventId", nullable=false)
-    @SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
-    @GeneratedValue(generator="eventSequence")    
+	@XmlAttribute(name="id")
 	public Integer getId() {
-		return m_eventId;
+		return eventId;
 	}
 
 	/**
@@ -347,7 +269,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventid a {@link java.lang.Integer} object.
 	 */
 	public void setId(Integer eventid) {
-		m_eventId = eventid;
+		eventId = eventid;
 	}
 
 	/**
@@ -356,9 +278,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="uei")
-	@Column(name="eventUei", length=256, nullable=false)
 	public String getEventUei() {
-		return m_eventUei;
+		return eventUei;
 	}
 
 	/**
@@ -367,7 +288,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventuei a {@link java.lang.String} object.
 	 */
 	public void setEventUei(String eventuei) {
-		m_eventUei = eventuei;
+		eventUei = eventuei;
 	}
 
 	/**
@@ -376,10 +297,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.util.Date} object.
 	 */
 	@XmlElement(name="time")
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="eventTime", nullable=false)
 	public Date getEventTime() {
-		return m_eventTime;
+		return eventTime;
 	}
 
 	/**
@@ -388,7 +307,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventtime a {@link java.util.Date} object.
 	 */
 	public void setEventTime(Date eventtime) {
-		m_eventTime = eventtime;
+		eventTime = eventtime;
 	}
 
 	/**
@@ -397,9 +316,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="host")
-	@Column(name="eventHost", length=256)
 	public String getEventHost() {
-		return m_eventHost;
+		return eventHost;
 	}
 
 	/**
@@ -408,7 +326,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventhost a {@link java.lang.String} object.
 	 */
 	public void setEventHost(String eventhost) {
-		m_eventHost = eventhost;
+		eventHost = eventhost;
 	}
 
 	/**
@@ -417,9 +335,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="source")
-	@Column(name="eventSource", length=128, nullable=false)
 	public String getEventSource() {
-		return m_eventSource;
+		return eventSource;
 	}
 
 	/**
@@ -428,7 +345,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventsource a {@link java.lang.String} object.
 	 */
 	public void setEventSource(String eventsource) {
-		m_eventSource = eventsource;
+		eventSource = eventsource;
 	}
 
 	/**
@@ -436,12 +353,10 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-	@Column(name="ipAddr")
 	@XmlElement(name="ipAddress")
-	@Type(type="org.opennms.netmgt.model.InetAddressUserType")
 	@XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
 	public InetAddress getIpAddr() {
-		return m_ipAddr;
+		return ipAddr;
 	}
 
 	/**
@@ -450,19 +365,17 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param ipaddr a {@link java.lang.String} object.
 	 */
 	public void setIpAddr(InetAddress ipaddr) {
-		m_ipAddr = ipaddr;
+		ipAddr = ipaddr;
 	}
 
 	/**
 	 * <p>getDistPoller</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+	 * @return a {@link org.opennms.netmgt.model.OnmsMonitoringSystem} object.
 	 */
 	@XmlTransient
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="eventDpName", nullable=false)
-	public OnmsDistPoller getDistPoller() {
-		return m_distPoller;
+	public OnmsMonitoringSystem getDistPoller() {
+		return distPoller;
 	}
 
 	/**
@@ -470,8 +383,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
 	 */
-	public void setDistPoller(OnmsDistPoller distPoller) {
-		m_distPoller = distPoller;
+	public void setDistPoller(OnmsMonitoringSystem distPoller) {
+		this.distPoller = distPoller;
 	}
 
 	/**
@@ -480,9 +393,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="snmpHost")
-	@Column(name="eventSnmpHost", length=256)
 	public String getEventSnmpHost() {
-		return m_eventSnmpHost;
+		return eventSnmpHost;
 	}
 
 	/**
@@ -491,7 +403,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventsnmphost a {@link java.lang.String} object.
 	 */
 	public void setEventSnmpHost(String eventsnmphost) {
-		m_eventSnmpHost = eventsnmphost;
+		eventSnmpHost = eventsnmphost;
 	}
 
 	/**
@@ -499,10 +411,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @return a {@link org.opennms.netmgt.model.OnmsServiceType} object.
 	 */
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="serviceId", nullable=true)
 	public OnmsServiceType getServiceType() {
-		return m_serviceType;
+		return serviceType;
 	}
 
 	/**
@@ -511,7 +421,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param serviceType a {@link org.opennms.netmgt.model.OnmsServiceType} object.
 	 */
 	public void setServiceType(OnmsServiceType serviceType) {
-		m_serviceType = serviceType;
+		this.serviceType = serviceType;
 	}
 
 	/**
@@ -520,9 +430,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="snmp")
-	@Column(name="eventSnmp", length=256)
 	public String getEventSnmp() {
-		return m_eventSnmp;
+		return eventSnmp;
 	}
 
 	/**
@@ -531,28 +440,54 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventsnmp a {@link java.lang.String} object.
 	 */
 	public void setEventSnmp(String eventsnmp) {
-		m_eventSnmp = eventsnmp;
+		eventSnmp = eventsnmp;
+	}
+
+	@XmlElementWrapper(name="parameters")
+	@XmlElement(name="parameter")
+	public List<OnmsEventParameter> getEventParameters() {
+		if(this.eventParameters != null) {
+			this.eventParameters.sort(Comparator.comparing(OnmsEventParameter::getPosition));
+		}
+		return this.eventParameters;
+	}
+
+	public void setEventParameters(List<OnmsEventParameter> eventParameters) {
+		this.eventParameters = eventParameters;
+		setPositionsOnParameters(this.eventParameters);
+	}
+
+	public void setEventParametersFromEvent(final Event event) {
+		this.eventParameters = EventParameterUtils.normalizePreserveOrder(event.getParmCollection()).stream()
+				.map(p -> new OnmsEventParameter(this, p))
+				.collect(Collectors.toList());
+		setPositionsOnParameters(eventParameters);
+	}
+
+	public void addEventParameter(OnmsEventParameter parameter) {
+		if (eventParameters == null) {
+			eventParameters = new ArrayList<>();
+		}
+		if (eventParameters.contains(parameter)) {
+			eventParameters.remove(parameter);
+		}
+		eventParameters.add(parameter);
+        setPositionsOnParameters(eventParameters);
 	}
 
 	/**
-	 * <p>getEventParms</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	@XmlElement(name="parms")
-	@Column(name="eventParms", length=1024)
-	public String getEventParms() {
-		return m_eventParms;
-	}
-
-	/**
-	 * <p>setEventParms</p>
-	 *
-	 * @param eventparms a {@link java.lang.String} object.
-	 */
-	public void setEventParms(String eventparms) {
-		m_eventParms = eventparms;
-	}
+     * We need this method to preserve the order in the m_eventParameters when saved and retrieved from the database.
+     * There might be a more elegant solution via JPA but none seems to work in our context, see also:
+     * https://issues.opennms.org/browse/NMS-9827
+     */
+    private void setPositionsOnParameters(List<OnmsEventParameter> parameters) {
+        if (parameters != null) {
+            // give each parameter a distinct position
+            for (int i = 0; i < parameters.size(); i++) {
+                parameters.get(i).setPosition(i);
+            }
+        }
+    }
 
 	/**
 	 * <p>getEventCreateTime</p>
@@ -560,10 +495,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.util.Date} object.
 	 */
 	@XmlElement(name="createTime")
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="eventCreateTime", nullable=false)
 	public Date getEventCreateTime() {
-		return m_eventCreateTime;
+		return eventCreateTime;
 	}
 
 	/**
@@ -572,7 +505,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventcreatetime a {@link java.util.Date} object.
 	 */
 	public void setEventCreateTime(Date eventcreatetime) {
-		m_eventCreateTime = eventcreatetime;
+		eventCreateTime = eventcreatetime;
 	}
 
 	/**
@@ -581,9 +514,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="description")
-	@Column(name="eventDescr", length=4000)
 	public String getEventDescr() {
-		return m_eventDescr;
+		return eventDescr;
 	}
 
 	/**
@@ -592,7 +524,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventdescr a {@link java.lang.String} object.
 	 */
 	public void setEventDescr(String eventdescr) {
-		m_eventDescr = eventdescr;
+		eventDescr = eventdescr;
 	}
 
 	/**
@@ -601,9 +533,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="logGroup")
-	@Column(name="eventLogGroup", length=32)
 	public String getEventLogGroup() {
-		return m_eventLogGroup;
+		return eventLogGroup;
 	}
 
 	/**
@@ -612,7 +543,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventloggroup a {@link java.lang.String} object.
 	 */
 	public void setEventLogGroup(String eventloggroup) {
-		m_eventLogGroup = eventloggroup;
+		eventLogGroup = eventloggroup;
 	}
 
 	/**
@@ -621,9 +552,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="logMessage")
-	@Column(name="eventLogMsg", length=1024)
 	public String getEventLogMsg() {
-		return m_eventLogMsg;
+		return eventLogMsg;
 	}
 
 	/**
@@ -632,7 +562,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventlogmsg a {@link java.lang.String} object.
 	 */
 	public void setEventLogMsg(String eventlogmsg) {
-		m_eventLogMsg = eventlogmsg;
+		eventLogMsg = eventlogmsg;
 	}
 
 	/**
@@ -641,9 +571,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.Integer} object.
 	 */
 	@XmlTransient
-	@Column(name="eventSeverity", nullable=false)
 	public Integer getEventSeverity() {
-		return m_eventSeverity;
+		return eventSeverity;
 	}
 
 	/**
@@ -652,7 +581,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param severity a {@link java.lang.Integer} object.
 	 */
 	public void setEventSeverity(Integer severity) {
-		m_eventSeverity = severity;
+		eventSeverity = severity;
 	}
 
     /**
@@ -660,10 +589,9 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.lang.String} object.
      */
-    @Transient
     @XmlAttribute(name="severity")
     public String getSeverityLabel() {
-        return OnmsSeverity.get(m_eventSeverity).name();
+        return OnmsSeverity.get(eventSeverity).name();
     }
 
     /**
@@ -672,9 +600,9 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
      * @param label a {@link java.lang.String} object.
      */
     public void setSeverityLabel(String label) {
-        m_eventSeverity = OnmsSeverity.get(label).getId();
+        eventSeverity = OnmsSeverity.get(label).getId();
     }
-    
+
 
 	/**
 	 * <p>getEventPathOutage</p>
@@ -682,9 +610,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="pathOutage")
-	@Column(name="eventPathOutage", length=1024)
 	public String getEventPathOutage() {
-		return m_eventPathOutage;
+		return eventPathOutage;
 	}
 
 	/**
@@ -693,7 +620,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventpathoutage a {@link java.lang.String} object.
 	 */
 	public void setEventPathOutage(String eventpathoutage) {
-		m_eventPathOutage = eventpathoutage;
+		eventPathOutage = eventpathoutage;
 	}
 
 	/**
@@ -702,9 +629,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="correlation")
-	@Column(name="eventCorrelation", length=1024)
 	public String getEventCorrelation() {
-		return m_eventCorrelation;
+		return eventCorrelation;
 	}
 
 	/**
@@ -713,7 +639,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventcorrelation a {@link java.lang.String} object.
 	 */
 	public void setEventCorrelation(String eventcorrelation) {
-		m_eventCorrelation = eventcorrelation;
+		eventCorrelation = eventcorrelation;
 	}
 
 	/**
@@ -722,9 +648,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.Integer} object.
 	 */
 	@XmlElement(name="suppressedCount")
-	@Column(name="eventSuppressedCount")
 	public Integer getEventSuppressedCount() {
-		return m_eventSuppressedCount;
+		return eventSuppressedCount;
 	}
 
 	/**
@@ -733,7 +658,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventsuppressedcount a {@link java.lang.Integer} object.
 	 */
 	public void setEventSuppressedCount(Integer eventsuppressedcount) {
-		m_eventSuppressedCount = eventsuppressedcount;
+		eventSuppressedCount = eventsuppressedcount;
 	}
 
 	/**
@@ -742,9 +667,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="operatorInstructions")
-	@Column(name="eventOperInstruct", length=1024)
 	public String getEventOperInstruct() {
-		return m_eventOperInstruct;
+		return eventOperInstruct;
 	}
 
 	/**
@@ -753,7 +677,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventoperinstruct a {@link java.lang.String} object.
 	 */
 	public void setEventOperInstruct(String eventoperinstruct) {
-		m_eventOperInstruct = eventoperinstruct;
+		eventOperInstruct = eventoperinstruct;
 	}
 
 	/**
@@ -762,9 +686,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="autoAction")
-	@Column(name="eventAutoAction", length=256)
 	public String getEventAutoAction() {
-		return m_eventAutoAction;
+		return eventAutoAction;
 	}
 
 	/**
@@ -773,7 +696,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventautoaction a {@link java.lang.String} object.
 	 */
 	public void setEventAutoAction(String eventautoaction) {
-		m_eventAutoAction = eventautoaction;
+		eventAutoAction = eventautoaction;
 	}
 
 	/**
@@ -782,9 +705,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="operatorAction")
-	@Column(name="eventOperAction", length=256)
 	public String getEventOperAction() {
-		return m_eventOperAction;
+		return eventOperAction;
 	}
 
 	/**
@@ -793,7 +715,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventoperaction a {@link java.lang.String} object.
 	 */
 	public void setEventOperAction(String eventoperaction) {
-		m_eventOperAction = eventoperaction;
+		eventOperAction = eventoperaction;
 	}
 
 	/**
@@ -802,9 +724,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="operationActionMenuText")
-	@Column(name="eventOperActionMenuText", length=64)
 	public String getEventOperActionMenuText() {
-		return m_eventOperActionMenuText;
+		return eventOperActionMenuText;
 	}
 
 	/**
@@ -813,7 +734,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventOperActionMenuText a {@link java.lang.String} object.
 	 */
 	public void setEventOperActionMenuText(String eventOperActionMenuText) {
-		m_eventOperActionMenuText = eventOperActionMenuText;
+		this.eventOperActionMenuText = eventOperActionMenuText;
 	}
 
 	/**
@@ -822,9 +743,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="notification")
-	@Column(name="eventNotification", length=128)
 	public String getEventNotification() {
-		return m_eventNotification;
+		return eventNotification;
 	}
 
 	/**
@@ -833,7 +753,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventnotification a {@link java.lang.String} object.
 	 */
 	public void setEventNotification(String eventnotification) {
-		m_eventNotification = eventnotification;
+		eventNotification = eventnotification;
 	}
 
 	/**
@@ -842,9 +762,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="troubleTicket")
-	@Column(name="eventTTicket", length=128)
 	public String getEventTTicket() {
-		return m_eventTTicket;
+		return eventTTicket;
 	}
 
 	/**
@@ -853,7 +772,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventtticket a {@link java.lang.String} object.
 	 */
 	public void setEventTTicket(String eventtticket) {
-		m_eventTTicket = eventtticket;
+		eventTTicket = eventtticket;
 	}
 
 	/**
@@ -862,9 +781,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.Integer} object.
 	 */
 	@XmlElement(name="troubleTicketState")
-	@Column(name="eventTTicketState")
 	public Integer getEventTTicketState() {
-		return m_eventTTicketState;
+		return eventTTicketState;
 	}
 
 	/**
@@ -873,7 +791,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventtticketstate a {@link java.lang.Integer} object.
 	 */
 	public void setEventTTicketState(Integer eventtticketstate) {
-		m_eventTTicketState = eventtticketstate;
+		eventTTicketState = eventtticketstate;
 	}
 
 	/**
@@ -882,9 +800,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlTransient
-	@Column(name="eventForward", length=256)
 	public String getEventForward() {
-		return m_eventForward;
+		return eventForward;
 	}
 
 	/**
@@ -893,7 +810,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventforward a {@link java.lang.String} object.
 	 */
 	public void setEventForward(String eventforward) {
-		m_eventForward = eventforward;
+		eventForward = eventforward;
 	}
 
 	/**
@@ -902,9 +819,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="mouseOverText")
-	@Column(name="eventMouseOverText", length=64)
 	public String getEventMouseOverText() {
-		return m_eventMouseOverText;
+		return eventMouseOverText;
 	}
 
 	/**
@@ -913,7 +829,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventmouseovertext a {@link java.lang.String} object.
 	 */
 	public void setEventMouseOverText(String eventmouseovertext) {
-		m_eventMouseOverText = eventmouseovertext;
+		eventMouseOverText = eventmouseovertext;
 	}
 
 	/**
@@ -922,9 +838,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlAttribute(name="log")
-	@Column(name="eventLog", length=1, nullable=false)
 	public String getEventLog() {
-		return m_eventLog;
+		return eventLog;
 	}
 
 	/**
@@ -933,7 +848,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventlog a {@link java.lang.String} object.
 	 */
 	public void setEventLog(String eventlog) {
-		m_eventLog = eventlog;
+		eventLog = eventlog;
 	}
 
 	/**
@@ -942,9 +857,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlAttribute(name="display")
-	@Column(name="eventDisplay", length=1, nullable=false)
 	public String getEventDisplay() {
-		return m_eventDisplay;
+		return eventDisplay;
 	}
 
 	/**
@@ -953,7 +867,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventdisplay a {@link java.lang.String} object.
 	 */
 	public void setEventDisplay(String eventdisplay) {
-		m_eventDisplay = eventdisplay;
+		eventDisplay = eventdisplay;
 	}
 
 	/**
@@ -962,9 +876,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.lang.String} object.
 	 */
 	@XmlElement(name="ackUser")
-	@Column(name="eventAckUser", length=256)
 	public String getEventAckUser() {
-		return m_eventAckUser;
+		return eventAckUser;
 	}
 
 	/**
@@ -973,19 +886,17 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventackuser a {@link java.lang.String} object.
 	 */
 	public void setEventAckUser(String eventackuser) {
-		m_eventAckUser = eventackuser;
+		eventAckUser = eventackuser;
 	}
-	
+
 	/**
 	 * <p>getEventAckTime</p>
 	 *
 	 * @return a {@link java.util.Date} object.
 	 */
 	@XmlElement(name="ackTime")
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="eventAckTime")
 	public Date getEventAckTime() {
-		return m_eventAckTime;
+		return eventAckTime;
 	}
 
 	/**
@@ -994,7 +905,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param eventacktime a {@link java.util.Date} object.
 	 */
 	public void setEventAckTime(Date eventacktime) {
-		m_eventAckTime = eventacktime;
+		eventAckTime = eventacktime;
 	}
 
 	/**
@@ -1003,10 +914,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link org.opennms.netmgt.model.OnmsAlarm} object.
 	 */
 	@XmlTransient
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="alarmId")
 	public OnmsAlarm getAlarm() {
-		return m_alarm;
+		return alarm;
 	}
 
 	/**
@@ -1015,7 +924,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param alarm a {@link org.opennms.netmgt.model.OnmsAlarm} object.
 	 */
 	public void setAlarm(OnmsAlarm alarm) {
-		m_alarm = alarm;
+		this.alarm = alarm;
 	}
 
 	/**
@@ -1023,20 +932,31 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
 	 */
-	@XmlIDREF
-	@XmlElement(name="nodeId")
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="nodeId")
+	@XmlTransient
+	@JsonIgnore
 	public OnmsNode getNode() {
-		return m_node;
+		return node;
 	}
 
-	@Transient
-	@XmlElement(name="nodeLabel", required=false)
-	public String getNodeLabel() {
-	    if (m_node == null) return null;
-	    return m_node.getLabel();
-	}
+    @XmlElement(name="nodeId")
+    public Integer getNodeId() {
+        try {
+            return node != null ? node.getId() : null;
+        } catch (ObjectNotFoundException e) {
+            return null;
+        }
+    }
+
+    @XmlElement(name="nodeLabel", required=false)
+    public String getNodeLabel() {
+        try{
+            if (node == null) return null;
+            return node.getLabel();
+        } catch (ObjectNotFoundException e){
+            return "";
+        }
+
+    }
 
 	/**
 	 * <p>setNode</p>
@@ -1044,7 +964,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
 	 */
 	public void setNode(OnmsNode node) {
-		m_node = node;
+		this.node = node;
 	}
 
 	/**
@@ -1053,9 +973,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.util.Set} object.
 	 */
 	@XmlTransient
-	@OneToMany(mappedBy="event", fetch=FetchType.LAZY)
 	public Set<OnmsNotification> getNotifications() {
-		return m_notifications;
+		return notifications;
 	}
 
 	/**
@@ -1064,7 +983,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param notifications a {@link java.util.Set} object.
 	 */
 	public void setNotifications(Set<OnmsNotification> notifications) {
-		m_notifications = notifications;
+		this.notifications = notifications;
 	}
 
 	/**
@@ -1073,9 +992,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.util.Set} object.
 	 */
 	@XmlTransient
-	@OneToMany(mappedBy="serviceRegainedEvent", fetch=FetchType.LAZY)
 	public Set<OnmsOutage> getAssociatedServiceRegainedOutages() {
-		return m_associatedServiceRegainedOutages;
+		return associatedServiceRegainedOutages;
 	}
 
 	/**
@@ -1084,7 +1002,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param outagesBySvcregainedeventid a {@link java.util.Set} object.
 	 */
 	public void setAssociatedServiceRegainedOutages(Set<OnmsOutage> outagesBySvcregainedeventid) {
-		m_associatedServiceRegainedOutages = outagesBySvcregainedeventid;
+		associatedServiceRegainedOutages = outagesBySvcregainedeventid;
 	}
 
 	/**
@@ -1093,9 +1011,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @return a {@link java.util.Set} object.
 	 */
 	@XmlTransient
-	@OneToMany(mappedBy="serviceLostEvent", fetch=FetchType.LAZY)
 	public Set<OnmsOutage> getAssociatedServiceLostOutages() {
-		return m_associatedServiceLostOutages;
+		return associatedServiceLostOutages;
 	}
 
 	/**
@@ -1104,7 +1021,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @param outagesBySvclosteventid a {@link java.util.Set} object.
 	 */
 	public void setAssociatedServiceLostOutages(Set<OnmsOutage> outagesBySvclosteventid) {
-		m_associatedServiceLostOutages = outagesBySvclosteventid;
+		associatedServiceLostOutages = outagesBySvclosteventid;
 	}
 
 	/**
@@ -1114,8 +1031,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 */
         @Override
 	public String toString() {
-		return new ToStringCreator(this).append("eventid", getId())
-		        .append("eventuei", getEventUei())
+            return MoreObjects.toStringHelper(this).add("eventid", getId())
+		        .add("eventuei", getEventUei())
 				.toString();
 	}
 
@@ -1130,9 +1047,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	    *
 	    * @return a {@link java.lang.Integer} object.
 	    */
-	   @Column(name="ifIndex")
 	    public Integer getIfIndex() {
-	        return m_ifIndex;
+	        return ifIndex;
 	    }
 
 	    /**
@@ -1141,7 +1057,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	     * @param ifIndex a {@link java.lang.Integer} object.
 	     */
 	    public void setIfIndex(Integer ifIndex) {
-	        m_ifIndex = ifIndex;
+	        this.ifIndex = ifIndex;
 	    }
-
 }

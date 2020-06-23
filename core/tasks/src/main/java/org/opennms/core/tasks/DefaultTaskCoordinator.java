@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,16 +30,10 @@ package org.opennms.core.tasks;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletionService;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.slf4j.Logger;
@@ -48,88 +42,61 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 /**
- * TaskCoordinator
- *
+ * This {@link DefaultTaskCoordinator} class provides utility methods to construct
+ * and schedule hierarchies of {@link Tasks}.
+ * 
  * @author brozow
- * @version $Id: $
  */
-public class DefaultTaskCoordinator implements InitializingBean {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(DefaultTaskCoordinator.class);
+public class DefaultTaskCoordinator implements TaskCoordinator, InitializingBean {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultTaskCoordinator.class);
 
     /**
-     * A RunnableActor class is a thread that simple removes Future<Runnable> from a queue
-     * and executes them.  This
+     * This interface is used as a marker for {@link Runnable} tasks that
+     * are intended to be enqueued on the {@link RunnableActor} thread.
+     */
+    interface SerialRunnable extends Runnable {}
+
+    /**
+     * <p>This {@link Executor} handles all of the task dependency work to reduce the 
+     * need for synchronization. The single thread:</p>
+     * 
+     * <ul>
+     * <li>Processes the completion queue</li>
+     * <li>Updates dependencies due to completing tasks</li>
+     * <li>Schedules tasks that must be run due to completing dependencies</li>
+     * <li>Schedules the adding of dependencies</li>
+     * </ul>
      *
      * @author brozow
      */
-    private class RunnableActor extends Thread {
-        private final BlockingQueue<Future<Runnable>> m_queue;
-        public RunnableActor(String name, BlockingQueue<Future<Runnable>> queue) {
-            super(name);
-            m_queue = queue;
-            start();
-        }
-        
-        @Override
-        public void run() {
-            while(true) {
-                try {
-                    Runnable r = m_queue.take().get();
-                    if (r != null) {
-                        r.run();
-                    }
-                    if (m_loopDelay != null) {
-                        sleep(m_loopDelay);
-                    }
-                } catch (InterruptedException e) {
-                	LOG.warn("runnable actor interrupted", e);
-                    Thread.currentThread().interrupt();
-                } catch (ExecutionException e) {
-                	LOG.warn("runnable actor execution failed", e);
-                } catch (Throwable e) {
-                	LOG.error("an unknown error occurred in the runnable actor", e);
-                }
-            }
-        }
-    }
-    
+    private final Executor m_actorExecutor;
 
-    private final BlockingQueue<Future<Runnable>> m_queue;
-    private final ConcurrentHashMap<String, CompletionService<Runnable>> m_taskCompletionServices = new ConcurrentHashMap<String, CompletionService<Runnable>>();
-    @SuppressWarnings("unused")
-    private final RunnableActor m_actor;
-    
-    private String m_defaultExecutor ;
-    private CompletionService<Runnable> m_defaultCompletionService;
-    
-    // This is used to adjust timing during testing
-    private Long m_loopDelay;
+    private final ConcurrentHashMap<String, Executor> m_taskExecutors = new ConcurrentHashMap<String, Executor>();
 
-    /**
-     * <p>Constructor for DefaultTaskCoordinator.</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     */
-    public DefaultTaskCoordinator(String name) {
-        m_queue = new LinkedBlockingQueue<Future<Runnable>>();
-        m_actor = new RunnableActor(name+"-TaskScheduler", m_queue);
-        addExecutor(SyncTask.ADMIN_EXECUTOR, Executors.newSingleThreadExecutor(
-            new LogPreservingThreadFactory(SyncTask.ADMIN_EXECUTOR, 1, false)
-        ));
-    }
-    
+    private String m_defaultExecutorName = TaskCoordinator.DEFAULT_EXECUTOR;
+
+    private long m_loopDelay = 0;
+
     /**
      * <p>Constructor for DefaultTaskCoordinator.</p>
      *
      * @param name a {@link java.lang.String} object.
      * @param defaultExecutor a {@link java.util.concurrent.Executor} object.
      */
-    public DefaultTaskCoordinator(String name, Executor defaultExecutor) {
-        this(name);
-        m_defaultExecutor = SyncTask.DEFAULT_EXECUTOR;
-        addExecutor(SyncTask.DEFAULT_EXECUTOR, defaultExecutor);
-        afterPropertiesSet();
+    public DefaultTaskCoordinator(String name) {
+        // Create a new single-threaded actor executor
+        m_actorExecutor = Executors.newSingleThreadExecutor(
+            new LogPreservingThreadFactory(name+"-TaskScheduler", 1)
+        );
+
+        // By default, add one single-threaded task executor to the coordinator
+        addOrUpdateExecutor(
+            m_defaultExecutorName,
+            Executors.newSingleThreadExecutor(
+                new LogPreservingThreadFactory(m_defaultExecutorName, 1)
+            )
+        );
     }
 
     /**
@@ -137,8 +104,8 @@ public class DefaultTaskCoordinator implements InitializingBean {
      *
      * @param executorName a {@link java.lang.String} object.
      */
-    public void setDefaultExecutor(String executorName) {
-        m_defaultExecutor = executorName;
+    public final void setDefaultExecutor(String executorName) {
+        m_defaultExecutorName = executorName;
     }
     
     /**
@@ -146,12 +113,8 @@ public class DefaultTaskCoordinator implements InitializingBean {
      */
     @Override
     public void afterPropertiesSet() {
-        Assert.notNull(m_defaultExecutor, "defaultExecutor must be set");
-        
-        m_defaultCompletionService = getCompletionService(m_defaultExecutor);
-        
-        Assert.notNull(m_defaultCompletionService, "defaultExecutor must be set to the name of an added executor");
-        
+        Assert.notNull(m_defaultExecutorName, "defaultExecutor must be set");
+        Assert.notNull(getExecutor(m_defaultExecutorName), "defaultExecutor must be set to the name of an added executor");
     }
     
     /**
@@ -161,6 +124,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param r a {@link java.lang.Runnable} object.
      * @return a {@link org.opennms.core.tasks.SyncTask} object.
      */
+    @Override
     public SyncTask createTask(ContainerTask<?> parent, Runnable r) {
         return new SyncTask(this, parent, r);
     }
@@ -173,6 +137,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param schedulingHint a {@link java.lang.String} object.
      * @return a {@link org.opennms.core.tasks.SyncTask} object.
      */
+    @Override
     public SyncTask createTask(ContainerTask<?> parent, Runnable r, String schedulingHint) {
         return new SyncTask(this, parent, r, schedulingHint);
     }
@@ -186,10 +151,10 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param <T> a T object.
      * @return a {@link org.opennms.core.tasks.AsyncTask} object.
      */
+    @Override
     public <T> AsyncTask<T> createTask(ContainerTask<?> parent, Async<T> async, Callback<T> cb) {
         return new AsyncTask<T>(this, parent, async, cb);
     }
-    
 
     /**
      * <p>createBatch</p>
@@ -197,6 +162,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
      */
+    @Override
     public TaskBuilder<BatchTask> createBatch(ContainerTask<?> parent) {
         return new TaskBuilder<BatchTask>(new BatchTask(this, parent));
     }
@@ -206,6 +172,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      *
      * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
      */
+    @Override
     public TaskBuilder<BatchTask> createBatch() {
         return createBatch((ContainerTask<?>)null);
     }
@@ -217,6 +184,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param tasks a {@link java.lang.Runnable} object.
      * @return a {@link org.opennms.core.tasks.BatchTask} object.
      */
+    @Override
     public BatchTask createBatch(ContainerTask<?> parent, Runnable... tasks) {
         return createBatch(parent).add(tasks).get(parent);
     }
@@ -228,6 +196,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param tasks a {@link java.lang.Runnable} object.
      * @return a {@link org.opennms.core.tasks.BatchTask} object.
      */
+    @Override
     public BatchTask createBatch(Runnable... tasks) {
         return createBatch().add(tasks).get();
     }
@@ -239,6 +208,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param parent a {@link org.opennms.core.tasks.ContainerTask} object.
      * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
      */
+    @Override
     public TaskBuilder<SequenceTask> createSequence(ContainerTask<?> parent) {
         return new TaskBuilder<SequenceTask>(new SequenceTask(this, parent));
     }
@@ -248,6 +218,7 @@ public class DefaultTaskCoordinator implements InitializingBean {
      *
      * @return a {@link org.opennms.core.tasks.TaskBuilder} object.
      */
+    @Override
     public TaskBuilder<SequenceTask> createSequence() {
         return createSequence((ContainerTask<?>)null);
     }
@@ -259,87 +230,71 @@ public class DefaultTaskCoordinator implements InitializingBean {
      * @param tasks a {@link java.lang.Runnable} object.
      * @return a {@link org.opennms.core.tasks.SequenceTask} object.
      */
+    @Override
     public SequenceTask createSequence(ContainerTask<?> parent, Runnable... tasks) {
         return createSequence(parent).add(tasks).get(parent);
     }
 
-    
-    /**
-     * <p>createSquence</p>
-     *
-     * @param tasks a {@link java.lang.Runnable} object.
-     * @return a {@link org.opennms.core.tasks.SequenceTask} object.
-     */
-    public SequenceTask createSquence(Runnable... tasks) {
-        return createSequence().add(tasks).get();
-    }
-
-    
-    
     /**
      * <p>setLoopDelay</p>
      *
      * @param millis a long.
      */
-    public void setLoopDelay(long millis) {
+    @Override
+    public final void setLoopDelay(long millis) {
         m_loopDelay = millis;
     }
     
     /**
      * <p>schedule</p>
      *
-     * @param task a {@link org.opennms.core.tasks.Task} object.
+     * @param task a {@link org.opennms.core.tasks.AbstractTask} object.
      */
-    public void schedule(final Task task) {
+    @Override
+    public void schedule(final AbstractTask task) {
         onProcessorThread(scheduler(task));
     }
     
     /**
      * <p>addDependency</p>
      *
-     * @param prereq a {@link org.opennms.core.tasks.Task} object.
-     * @param dependent a {@link org.opennms.core.tasks.Task} object.
+     * @param prereq a {@link org.opennms.core.tasks.AbstractTask} object.
+     * @param dependent a {@link org.opennms.core.tasks.AbstractTask} object.
      */
-    public void addDependency(Task prereq, Task dependent) {
+    @Override
+    public void addDependency(AbstractTask prereq, AbstractTask dependent) {
         // this is only needed when add dependencies while running
         dependent.incrPendingPrereqCount();
         onProcessorThread(dependencyAdder(prereq, dependent));
     }
-    
-    private void onProcessorThread(final Runnable r) {
-        Future<Runnable> now = new Future<Runnable>() {
-            @Override
-            public boolean cancel(boolean mayInterruptIfRunning) {
-                return false;
-            }
-            @Override
-            public Runnable get() {
-                return r;
-            }
-            @Override
-            public Runnable get(long timeout, TimeUnit unit) {
-                return get();
-            }
-            @Override
-            public boolean isCancelled() {
-                return false;
-            }
-            @Override
-            public boolean isDone() {
-                return true;
-            }
-            @Override
-            public String toString() {
-                return "Future<"+r+">";
-            }
-        };
-        m_queue.add(now);
+
+    void onProcessorThread(final SerialRunnable r) {
+        // If there's a delay set for testing, run the task
+        // and then sleep for the delay
+        CompletableFuture<Void> future = null;
+        if (m_loopDelay > 0) {
+            future = CompletableFuture.runAsync(new Runnable() {
+                @Override
+                public void run() {
+                    r.run();
+                    try {
+                        Thread.sleep(m_loopDelay);
+                    } catch (InterruptedException e) {}
+                }
+                
+            }, m_actorExecutor);
+        } else {
+            future = CompletableFuture.runAsync(r, m_actorExecutor);
+        }
+        future.exceptionally(e -> {
+            LOG.warn("Unexpected exception during actor runnable: " + e.getMessage(), e);
+            return null;
+        });
     }
 
-    
 
-    private Runnable scheduler(final Task task) {
-        return new Runnable() {
+    private static SerialRunnable scheduler(final AbstractTask task) {
+        return new SerialRunnable() {
             @Override
             public void run() {
                 task.scheduled();
@@ -352,8 +307,8 @@ public class DefaultTaskCoordinator implements InitializingBean {
         };
     }
     
-    Runnable taskCompleter(final Task task) {
-        return new Runnable() {
+    private static SerialRunnable taskCompleter(final AbstractTask task) {
+        return new SerialRunnable() {
             @Override
             public void run() {
                 notifyDependents(task);
@@ -366,34 +321,35 @@ public class DefaultTaskCoordinator implements InitializingBean {
     }
     
     
-    private void notifyDependents(Task completed) {
-        // log().debug(String.format("Task %s completed!", completed));
-        completed.onComplete();
+    private static void notifyDependents(AbstractTask task) {
+        //LOG.debug("Task {} completed!", task);
+        task.onComplete();
 
-        final Set<Task> dependents = completed.getDependents();
-        for(Task dependent : dependents) {
-            dependent.doCompletePrerequisite(completed);
-            if (dependent.isReady()) {
-                // log().debug(String.format("Task %s %s ready.", dependent, dependent.isReady() ? "is" : "is not"));
+        final Set<AbstractTask> dependents = task.getDependents();
+        for(AbstractTask dependent : dependents) {
+            dependent.doCompletePrerequisite(task);
+            /*
+            if (LOG.isDebugEnabled()) {
+                if (dependent.isReady()) {
+                    LOG.debug("Task {} {} ready.", dependent, dependent.isReady() ? "is" : "is not");
+                }
             }
-            
+            */
             dependent.submitIfReady();
         }
 
-        // log().debug(String.format("CLEAN: removing dependents of %s", completed));
-        completed.clearDependents();
-        
-        
+        //LOG.debug("CLEAN: removing dependents of {}", task);
+        task.clearDependents();
     }
 
     /**
      * The returns a runnable that is run on the taskCoordinator thread.. This is 
      * done to keep the Task data structures thread safe.
      */
-    private Runnable dependencyAdder(final Task prereq, final Task dependent) {
+    private static SerialRunnable dependencyAdder(final AbstractTask prereq, final AbstractTask dependent) {
         Assert.notNull(prereq, "prereq must not be null");
         Assert.notNull(dependent, "dependent must not be null");
-        return new Runnable() {
+        return new SerialRunnable() {
             @Override
             public void run() {
                 prereq.doAddDependent(dependent);
@@ -415,33 +371,57 @@ public class DefaultTaskCoordinator implements InitializingBean {
     }
     
     
-    private CompletionService<Runnable> getCompletionService(String name) {
-        CompletionService<Runnable> completionService = m_taskCompletionServices.get(name);
-        CompletionService<Runnable> selected = completionService != null ? completionService : m_defaultCompletionService;
-        // log().debug(String.format("USING COMPLETION SERVICE %s : %s!", name, selected));
-        return selected;
+    private final Executor getExecutor(String name) {
+        Executor executor = m_taskExecutors.get(name);
+        if (executor == null) {
+            Executor defaultExecutor = m_taskExecutors.get(m_defaultExecutorName);
+            if (defaultExecutor == null) {
+                throw new IllegalStateException("No default executor in " + getClass().getName());
+            } else {
+                return defaultExecutor;
+            }
+        } else {
+            //LOG.debug("Using executor {}: {}", name, executor);
+            return executor;
+        }
     }
     
-    void markTaskAsCompleted(Task task) {
+    @Override
+    public void markTaskAsCompleted(AbstractTask task) {
         onProcessorThread(taskCompleter(task));
     }
 
-    void submitToExecutor(String executorPreference, Runnable workToBeDone, Task owningTask) {
-        submitToExecutor(executorPreference, workToBeDone, taskCompleter(owningTask));
+    @Override
+    public void submitToExecutor(String executorPreference, Runnable workToBeDone, AbstractTask owningTask) {
+        CompletableFuture
+            // Run the work on the preferred executor
+            .runAsync(workToBeDone, getExecutor(executorPreference))
+            // Log any uncaught exceptions from the task execution
+            .exceptionally(e -> {
+                LOG.warn("Unexpected exception during task execution: " + e.getMessage(), e);
+                return null;
+            })
+            // Then run the completer on the actor executor
+            .thenRunAsync(taskCompleter(owningTask), m_actorExecutor)
+            // Log any uncaught exceptions from the task completer
+            .exceptionally(e -> {
+                LOG.warn("Unexpected exception during task completion: " + e.getMessage(), e);
+                return null;
+            });
     }
-    
-    void submitToExecutor(String executorPreference, final Runnable workToBeDone, Runnable completionProcessor) {
-        getCompletionService(executorPreference).submit(workToBeDone, completionProcessor);
-    }
-    
+
     /**
      * <p>addExecutor</p>
      *
      * @param executorName a {@link java.lang.String} object.
      * @param executor a {@link java.util.concurrent.Executor} object.
      */
-    public void addExecutor(String executorName, Executor executor) {
-        m_taskCompletionServices.put(executorName, new ExecutorCompletionService<Runnable>(executor, m_queue));
+    @Override
+    public final void addOrUpdateExecutor(String executorName, Executor executor) {
+        Executor service = m_taskExecutors.put(executorName, executor);
+        if (service != null) {
+            LOG.info("Replacing executor {} with {}", executorName, executor);
+        }
     }
 
     /**
@@ -449,10 +429,11 @@ public class DefaultTaskCoordinator implements InitializingBean {
      *
      * @param executors a {@link java.util.Map} object.
      */
-    public void setExecutors(Map<String,Executor> executors) {
-        m_taskCompletionServices.clear();
+    @Override
+    public final void setExecutors(Map<String,Executor> executors) {
+        m_taskExecutors.clear();
         for (Map.Entry<String, Executor> e : executors.entrySet()) {
-            addExecutor(e.getKey(), e.getValue());
+            addOrUpdateExecutor(e.getKey(), e.getValue());
         }
     }
 

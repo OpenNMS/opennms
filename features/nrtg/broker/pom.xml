@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>nrtg</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>nrtg-broker</artifactId>
@@ -13,7 +13,7 @@
     <bundle.symbolicName>org.opennms.features.nrtg.broker</bundle.symbolicName>
     <bundle.namespace>org.opennms.nrtg.nrtcollector.broker</bundle.namespace>
   </properties>
-  <name>OpenNMS Features NRTG ActiveMQ Broker</name>
+  <name>OpenNMS :: Features :: NRTG :: ActiveMQ Broker</name>
   <description>
     This bundle creates an activemq broker for use by NRTG
   </description>

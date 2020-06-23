@@ -8,6 +8,7 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-location_monitors">
+		<validCheckSum>3:0757a5f38706c1edd1b60696da487df4</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="location_monitors" /></not>
 		</preConditions> 
@@ -19,7 +20,7 @@
 			<column name="status" type="varchar(31)">
 				<constraints nullable="false" />
 			</column>
-			<column name="lastcheckintime" type="DATETIME" />
+			<column name="lastcheckintime" type="TIMESTAMP WITH TIME ZONE" />
 			<column name="definitionname" type="varchar(31)">
 				<constraints nullable="false" />
 			</column>

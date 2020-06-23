@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -49,7 +49,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  */
 @XmlRootElement(name="xml-source")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlSource extends XmlGroups implements Serializable, Comparable<XmlSource> {
+public class XmlSource extends XmlGroups implements Serializable, Comparable<XmlSource>, Cloneable {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -9220561601381984080L;
@@ -60,7 +60,7 @@ public class XmlSource extends XmlGroups implements Serializable, Comparable<Xml
 
     /** Import Groups List. */
     @XmlElement(name="import-groups", required=false)
-    private List<String> m_importGroupsList = new ArrayList<String>();
+    private List<String> m_importGroupsList = new ArrayList<>();
 
     /** The request object. */
     @XmlElement(name="request", required=false)
@@ -74,6 +74,13 @@ public class XmlSource extends XmlGroups implements Serializable, Comparable<Xml
      * Instantiates a new XML source.
      */
     public XmlSource() {
+    }
+
+    public XmlSource(XmlSource copy) {
+        super(copy);
+        m_importGroupsList.addAll(copy.m_importGroupsList);
+        m_request = copy.m_request != null ? copy.m_request.clone() : null;
+        m_url = copy.m_url;
     }
 
     /**
@@ -165,4 +172,8 @@ public class XmlSource extends XmlGroups implements Serializable, Comparable<Xml
         return false;
     }
 
+    @Override
+    public XmlSource clone() {
+        return new XmlSource(this);
+    }
 }

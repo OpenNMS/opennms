@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -108,10 +108,10 @@ public class CalendarTableBuilder {
 			int dayInNextMonth;
 			int firstDayOfWeek;
 					   	
-		   	String monthNames[] = new DateFormatSymbols(m_locale).getMonths();
+		   	String[] monthNames = new DateFormatSymbols(m_locale).getMonths();
 		   	m_calTable.setMonth(monthNames[month]);
 		   	
-			String dayNames[] = new DateFormatSymbols(m_locale).getShortWeekdays();
+			String[] dayNames = new DateFormatSymbols(m_locale).getShortWeekdays();
 		   	DaysOfWeek titleDays = new DaysOfWeek();
 			
 		    int dayOfWeek;
@@ -142,7 +142,7 @@ public class CalendarTableBuilder {
 		    for (dayInLastMonth = 0; dayInLastMonth < m_firstDay; dayInLastMonth++) {
 		    	m_days[dayInLastMonth] = new Day();
 		    	m_days[dayInLastMonth].setVisible(false);
-				m_days[dayInLastMonth].setPctValue(0);
+				m_days[dayInLastMonth].setPctValue(0.0);
 			}
 			
 	        /**
@@ -161,7 +161,7 @@ public class CalendarTableBuilder {
 	            m_days[dayInThisMonth] = new Day();
 	        	m_days[dayInThisMonth].setDate(date);
 	        	m_days[dayInThisMonth].setVisible(true);
-				m_days[dayInThisMonth].setPctValue(0);
+				m_days[dayInThisMonth].setPctValue(0.0);
 				dayInThisMonth++;
 				date++;
 	            m_workingCalendar.add(Calendar.DATE, 1);
@@ -176,7 +176,7 @@ public class CalendarTableBuilder {
 	        for (dayInNextMonth = dayInThisMonth; dayInNextMonth < 42; dayInNextMonth++) {
 	        	m_days[dayInNextMonth] =  new Day();
 	            m_days[dayInNextMonth].setVisible(false);
-				m_days[dayInNextMonth].setPctValue(0);
+				m_days[dayInNextMonth].setPctValue(0.0);
 			}
 	        
 	        

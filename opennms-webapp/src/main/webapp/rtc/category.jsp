@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,11 +41,11 @@
 		org.opennms.netmgt.xml.rtc.Node,
 		org.opennms.web.servlet.XssRequestWrapper,
 		org.opennms.web.springframework.security.AclUtils,
-		org.opennms.web.springframework.security.AclUtils.NodeAccessChecker,
 		org.springframework.security.core.context.SecurityContextHolder
 		"
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 
 <%!
@@ -53,18 +53,11 @@
     
     public void init() throws ServletException {
         try {
-            this.model = CategoryModel.getInstance();            
+            this.model = CategoryModel.getInstance();
         }
         catch( java.io.IOException e ) {
             throw new ServletException("Could not instantiate the CategoryModel", e);
         }
-        catch( org.exolab.castor.xml.MarshalException e ) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        }
-        catch( org.exolab.castor.xml.ValidationException e ) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        }        
-
     }
 %>
 
@@ -85,13 +78,10 @@
     
     AclUtils.NodeAccessChecker accessChecker = AclUtils.getNodeAccessChecker(getServletContext());
 
-    //put the nodes in a tree map to sort by name
+    // put the nodes in a tree map to sort by name
     TreeMap<String,Node> nodeMap = new TreeMap<String,Node>();
-    Enumeration<Node> nodeEnum = category.enumerateNode();
-    
-    while (nodeEnum.hasMoreElements()) {
-        Node node = nodeEnum.nextElement();
-        int nodeId = (int)node.getNodeid();
+    for (Node node : category.getNode()) {
+        int nodeId = (int)(node.getNodeid());
         String nodeLabel =
 		NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(nodeId);
         // nodeMap.put( nodeLabel, node );
@@ -106,50 +96,17 @@
             }
         }
     }
-    
-    Set<String> keySet = nodeMap.keySet();
-    Iterator<String> nameIterator = keySet.iterator();
 %>
 
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Category Service Level Monitoring" />
   <jsp:param name="headTitle" value="<%=category.getName()%>" />
   <jsp:param name="headTitle" value="Category" />
   <jsp:param name="headTitle" value="SLM" />
   <jsp:param name="breadcrumb" value="<a href='rtc/index.jsp'>SLM</a>" />
-  <jsp:param name="breadcrumb" value="Category"/>
+  <jsp:param name="breadcrumb" value="<%=category.getName()%>"/>
 </jsp:include>
-
-<h3>
-  <span title="Last updated <c:out value="<%=category.getLastUpdated().toString()%>"/>">
-    <c:out value="<%=category.getName()%>"/>
-  </span>
-</h3>
-
-<form name="showoutages">
-  <p>
-    Show interfaces:
-	<% String showoutages = req.getParameter("showoutages"); %>
-
-        <%  
-        if(showoutages == null ) {
-           showoutages = "avail";
-        } %>
-
-              <input type="radio" name="showout" <%=(showoutages.equals("all") ? "checked" : "")%>
-               onclick="window.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=all") %>'" ></input>All
-
-
-              <input type="radio" name="showout" <%=(showoutages.equals("outages") ? "checked" : "")%>
-               onclick="window.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=outages") %>'" ></input>With outages
-
-
-              <input type="radio" name="showout" <%=(showoutages.equals("avail") ? "checked" : "")%>
-               onclick="window.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=avail") %>'" ></input>With availability &lt; 100% 
-
-  </p>
-</form>
 
       <% if( category.getComment() != null ) { %>      
         <p><c:out value="<%=category.getComment()%>"/></p>
@@ -157,21 +114,56 @@
       <% if( AclUtils.shouldFilter(SecurityContextHolder.getContext().getAuthentication().getAuthorities()) ) { %>
         <p style="color: red"> This list has been filtered to accessible nodes only based on your user group. </p>
       <% } %>
-      <c:out escapeXml="false" value="<!-- Last updated "/><c:out value="<%=category.getLastUpdated().toString()%>"/><c:out escapeXml="false" value=" -->"/>
 
-      <table>
+    <% String showoutages = req.getParameter("showoutages"); %>
+
+        <%  
+        if(showoutages == null ) {
+           showoutages = "avail";
+        } %>
+
+<div class="btn-group">
+  <button 
+    type="button" 
+    class="btn btn-secondary <%=(showoutages.equals("all") ? "active" : "")%>"
+    onclick="top.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=all") %>'"
+  >
+    All
+  </button>
+  <button 
+    type="button" 
+    class="btn btn-secondary <%=(showoutages.equals("outages") ? "active" : "")%>"
+    onclick="top.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=outages") %>'"
+  >
+    With outages
+  </button>
+  <button 
+    type="button" 
+    class="btn btn-secondary <%=(showoutages.equals("avail") ? "active" : "")%>"
+    onclick="top.location = '<%= Util.calculateUrlBase( req , "rtc/category.jsp?category=" + Util.encode(category.getName()) + "&amp;showoutages=avail") %>'"
+  >
+    With availability less than 100%
+  </button>
+</div>
+
+<br/><br/>
+
+    <div class="card fix-subpixel">
+      <table class="table table-sm severity">
+        <thead>
         <tr>
           <th>Nodes</th>
           <th>Outages</th>
           <th>24hr Availability</th>
         </tr>
+        </thead>
       
         <%  
 	    int valuecnt = 0;
 	    int outagecnt = 0;
-
-            while( nameIterator.hasNext() ) {
-                String nodeLabel = nameIterator.next();
+        
+        if (nodeMap.size() > 0) {
+            for (String nodeLabel : nodeMap.keySet()) {
                 Node node = nodeMap.get(nodeLabel);
                 
                 double value = node.getNodevalue();
@@ -188,39 +180,37 @@
                     String availClass = CategoryUtil.getCategoryClass( category, value );
                     String outageClass = CategoryUtil.getCategoryClass( category, servicePercentage );
 
-		    if ( showoutages.equals("all") | (showoutages.equals("outages") & serviceDownCount > 0 ) | (showoutages.equals("avail") & value < 100 ) ) {
-        %>
-                    <tr class="CellStatus">
+                    if ( showoutages.equals("all") || (showoutages.equals("outages") && serviceDownCount > 0 ) || (showoutages.equals("avail") && value < 100 ) ) { %>
+                    <tr>
                       <td><a href="element/node.jsp?node=<%=node.getNodeid()%>"><c:out value="<%=nodeLabel%>"/></a></td>
-                      <td class="<%=outageClass%>" align="right"><%=serviceDownCount%> of <%=serviceCount%></td>
-                      <td class="<%=availClass%>" align="right" width="30%"><b><%=CategoryUtil.formatValue(value)%>%</b></td>
+                      <td class="bright severity-<%=outageClass%>" align="right"><%=serviceDownCount%> of <%=serviceCount%></td>
+                      <td class="bright severity-<%=availClass%>" align="right" width="30%"><b><%=CategoryUtil.formatValue(value)%>%</b></td>
                     </tr>
-            	    <%  } 
-		    if (value < 100 )
-		        ++valuecnt;
-		    if (serviceDownCount > 0 )
-		        ++outagecnt;
-		    %>
-            <%  } %>
-        <%  } %>
+                    <%  }
+                    if (value < 100 ) ++valuecnt;
+                    if (serviceDownCount > 0 ) ++outagecnt;
+                }
+            }
+            if (showoutages.equals("outages") && outagecnt == 0) { %>
+			<tr>
+				<td colspan="3">There are currently no outages in this Category.</td>
+			</tr>
+			<% } %>
 
-	<% if ( showoutages.equals("outages") & outagecnt == 0 ) { %>
-		<tr>
-                  <td colspan="3">
-		    There are currently no outages in this Category
-		  </td>
-                </tr>
-        <%  } %>
+			<% if (showoutages.equals("avail") && valuecnt == 0) { %>
+			<tr>
+				<td colspan="3">All services in this Category are at 100%.</td>
+			</tr>
+			<% } %>
+		<% } else { %>
+			<tr>
+				<td colspan="3">There are no nodes in this Category.</td>
+			</tr>
+		<% } %>
 
-	<% if ( showoutages.equals("avail") & valuecnt == 0 ) { %>
-		<tr>
-                  <td colspan="3">
-		    All services in this Category are at 100%
-		  </td>
-                </tr>
-        <%  } %>
-        
     </table>
+  </div>
 
+  <p>Last updated: <onms:datetime date="<%=category.getLastUpdated()%>"/></p>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

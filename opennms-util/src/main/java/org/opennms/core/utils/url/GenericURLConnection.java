@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,6 +35,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public abstract class GenericURLConnection extends URLConnection {
     /**
      * Logging to output.log
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.Output." + GenericURLConnection.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(GenericURLConnection.class);
 
     /**
      * URL for connection
@@ -60,11 +61,6 @@ public abstract class GenericURLConnection extends URLConnection {
      * User and password delimiter for URL user:pass@host
      */
     private static final String USERINFO_DELIMITER = ":";
-
-    /**
-     * Default encoding for URL
-     */
-    private static final String UTF8_ENCODING = "UTF-8";
 
     /**
      * Delimiter for URL arguments
@@ -139,21 +135,24 @@ public abstract class GenericURLConnection extends URLConnection {
      * @return a {@link java.util.HashMap} with arguments as key value map
      */
     protected Map<String, String> getQueryArgs() {
-        HashMap<String, String> hashMap = new HashMap<String, String>();
+        return getQueryStringParameters(m_url.getQuery());
+    }
 
-        String queryString = this.m_url.getQuery();
+    public static Map<String, String> getQueryStringParameters(final String queryString) {
+        HashMap<String, String> hashMap = new HashMap<String, String>();
 
         if (queryString != null) {
 
+            String decodedQueryString = queryString;
             try {
-                queryString = URLDecoder.decode(queryString, UTF8_ENCODING);
+                decodedQueryString = URLDecoder.decode(queryString, StandardCharsets.UTF_8.name());
             } catch (UnsupportedEncodingException e) {
                 // Your system does not support UTF-8 encoding
-                logger.error("Unsupported " + UTF8_ENCODING + " encoding for URL query string: '{}'. Error message: '{}'", queryString, e.getMessage());
+                logger.error("Unsupported {} encoding for URL query string: '{}'. Error message: '{}'", StandardCharsets.UTF_8.name(), queryString, e.getMessage());
             }
 
             // queryString is everthing behind "?"
-            String[] queryArgs = queryString.split(URL_QUERY_ARGS_DELIMITERS);
+            String[] queryArgs = decodedQueryString.split(URL_QUERY_ARGS_DELIMITERS);
 
             for (String queryArg : queryArgs) {
 

@@ -4,40 +4,57 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.protocols</artifactId>
-        <version>1.13.0-SNAPSHOT</version>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.protocols</groupId>
     <artifactId>org.opennms.protocols.cifs</artifactId>
-    <name>OpenNMS Protocols CIFS Support</name>
+    <name>OpenNMS :: Protocols :: CIFS</name>
+    <packaging>bundle</packaging>
 
-    <properties>
-        <powermock.version>1.5</powermock.version>
-    </properties>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Version>${project.version}</Bundle-Version>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
-            <version>3.1</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
+            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-easymock</artifactId>
-            <version>${powermock.version}</version>
+            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.poller</groupId>
             <artifactId>org.opennms.features.poller.api</artifactId>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.poller.monitors</groupId>
+            <artifactId>org.opennms.features.poller.monitors.core</artifactId>
+            <type>jar</type>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
@@ -50,11 +67,6 @@
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.core.test-api</groupId>
             <artifactId>org.opennms.core.test-api.services</artifactId>
             <scope>test</scope>
@@ -64,11 +76,16 @@
             <artifactId>opennms-dao</artifactId>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-dao</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+            <id>opennms-repo</id>
+            <name>OpenNMS Repository</name>
+            <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+        </repository>
+    </repositories>
+
 </project>

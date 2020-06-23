@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,8 +28,7 @@
 
 package org.opennms.netmgt.model;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import org.codehaus.jackson.annotate.JsonBackReference;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -39,21 +38,26 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-import org.springframework.core.style.ToStringCreator;
+import com.google.common.base.MoreObjects;
 
 @Entity
-/**
- * <p>OnmsApplication class.</p>
- */
 @Table(name = "applications")
+@XmlRootElement(name="application")
 public class OnmsApplication implements Comparable<OnmsApplication> {
 
     private Integer m_id;
 
     private String m_name;
 
-    private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<OnmsMonitoredService>();
+    private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<>();
 
     /**
      * <p>getId</p>
@@ -64,6 +68,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
     @Column(nullable=false)
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
+    @XmlAttribute
     public Integer getId() {
         return m_id;
     }
@@ -106,6 +111,10 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
                 mappedBy="applications",
                 cascade={CascadeType.PERSIST, CascadeType.MERGE}
     )
+    @XmlIDREF
+    @XmlElement(name="monitoredServiceId")
+    @XmlElementWrapper(name="monitoredServices")
+    @JsonBackReference
     public Set<OnmsMonitoredService> getMonitoredServices() {
         return m_monitoredServices;
     }
@@ -144,10 +153,10 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        ToStringCreator creator = new ToStringCreator(this);
-        creator.append("id", getId());
-        creator.append("name", getName());
-        return creator.toString();
+        return MoreObjects.toStringHelper(this)
+        .add("id", getId())
+        .add("name", getName())
+        .toString();
     }
 
     /** {@inheritDoc} */

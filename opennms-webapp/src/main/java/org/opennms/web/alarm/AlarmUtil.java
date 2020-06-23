@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,7 +28,9 @@
 
 package org.opennms.web.alarm;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.servlet.ServletContext;
@@ -45,28 +47,34 @@ import org.opennms.web.alarm.filter.AcknowledgedByFilter;
 import org.opennms.web.alarm.filter.AfterFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.AfterLastEventTimeFilter;
 import org.opennms.web.alarm.filter.AlarmCriteria;
+import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
+import org.opennms.web.alarm.filter.AlarmTextFilter;
 import org.opennms.web.alarm.filter.BeforeFirstEventTimeFilter;
 import org.opennms.web.alarm.filter.BeforeLastEventTimeFilter;
+import org.opennms.web.alarm.filter.CategoryFilter;
 import org.opennms.web.alarm.filter.EventParmLikeFilter;
 import org.opennms.web.alarm.filter.ExactUEIFilter;
 import org.opennms.web.alarm.filter.IPAddrLikeFilter;
 import org.opennms.web.alarm.filter.InterfaceFilter;
+import org.opennms.web.alarm.filter.LocationFilter;
 import org.opennms.web.alarm.filter.LogMessageMatchesAnyFilter;
-import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
 import org.opennms.web.alarm.filter.NegativeAcknowledgedByFilter;
 import org.opennms.web.alarm.filter.NegativeEventParmLikeFilter;
 import org.opennms.web.alarm.filter.NegativeExactUEIFilter;
 import org.opennms.web.alarm.filter.NegativeInterfaceFilter;
+import org.opennms.web.alarm.filter.NegativeLocationFilter;
 import org.opennms.web.alarm.filter.NegativeNodeFilter;
+import org.opennms.web.alarm.filter.NegativeNodeLocationFilter;
 import org.opennms.web.alarm.filter.NegativePartialUEIFilter;
 import org.opennms.web.alarm.filter.NegativeServiceFilter;
 import org.opennms.web.alarm.filter.NegativeSeverityFilter;
 import org.opennms.web.alarm.filter.NodeFilter;
+import org.opennms.web.alarm.filter.NodeLocationFilter;
 import org.opennms.web.alarm.filter.NodeNameLikeFilter;
 import org.opennms.web.alarm.filter.PartialUEIFilter;
 import org.opennms.web.alarm.filter.ServiceFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
-import org.opennms.web.alarm.filter.AlarmCriteria.AlarmCriteriaVisitor;
+import org.opennms.web.alarm.filter.SituationFilter;
 import org.opennms.web.filter.Filter;
 
 /**
@@ -89,6 +97,8 @@ public abstract class AlarmUtil extends Object {
     public static OnmsCriteria getOnmsCriteria(final AlarmCriteria alarmCriteria) {
         final OnmsCriteria criteria = new OnmsCriteria(OnmsAlarm.class);
         criteria.createAlias("node", "node", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("distPoller", "distPoller", OnmsCriteria.LEFT_JOIN);
+        criteria.createAlias("lastEvent", "lastEvent", OnmsCriteria.LEFT_JOIN);
         criteria.createAlias("serviceType", "serviceType", OnmsCriteria.LEFT_JOIN);
 
         alarmCriteria.visit(new AlarmCriteriaVisitor<RuntimeException>() {
@@ -146,6 +156,9 @@ public abstract class AlarmUtil extends Object {
                     case ACKUSER:
                         criteria.addOrder(Order.asc("alarmAckUser"));
                         break;
+                    case SITUATION:
+                        criteria.addOrder(Order.desc("situation"));
+                        break;
                     case REVERSE_COUNT:
                         criteria.addOrder(Order.asc("counter"));
                         break;
@@ -175,6 +188,9 @@ public abstract class AlarmUtil extends Object {
                         break;
                     case REVERSE_ACKUSER:
                         criteria.addOrder(Order.desc("alarmAckUser"));
+                        break;
+                    case REVERSE_SITUATION:
+                        criteria.addOrder(Order.asc("situation"));
                         break;
                     default:
                         break;
@@ -218,7 +234,7 @@ public abstract class AlarmUtil extends Object {
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(InetAddressUtils.addr(value));
         } else if (type.equals(ServiceFilter.TYPE)) {
-            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(PartialUEIFilter.TYPE)) {
             filter = new PartialUEIFilter(value);
         } else if (type.equals(ExactUEIFilter.TYPE)) {
@@ -232,7 +248,7 @@ public abstract class AlarmUtil extends Object {
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {
             filter = new NegativeInterfaceFilter(InetAddressUtils.addr(value));
         } else if (type.equals(NegativeServiceFilter.TYPE)) {
-            filter = new NegativeServiceFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new NegativeServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NegativePartialUEIFilter.TYPE)) {
             filter = new NegativePartialUEIFilter(value);
         } else if (type.equals(NegativeExactUEIFilter.TYPE)) {
@@ -241,8 +257,8 @@ public abstract class AlarmUtil extends Object {
             filter = new NegativeAcknowledgedByFilter(value);
         } else if (type.equals(IPAddrLikeFilter.TYPE)) {
             filter = new IPAddrLikeFilter(value);
-        } else if (type.equals(LogMessageSubstringFilter.TYPE)) {
-            filter = new LogMessageSubstringFilter(value);
+        } else if (type.equals(AlarmTextFilter.TYPE)) {
+            filter = new AlarmTextFilter(value);
         } else if (type.equals(LogMessageMatchesAnyFilter.TYPE)) {
             filter = new LogMessageMatchesAnyFilter(value);
         } else if (type.equals(BeforeLastEventTimeFilter.TYPE)) {
@@ -257,6 +273,18 @@ public abstract class AlarmUtil extends Object {
             filter = new EventParmLikeFilter(value);
         } else if(type.equals(NegativeEventParmLikeFilter.TYPE)) {
             filter = new NegativeEventParmLikeFilter(value);
+        } else if (type.equals(LocationFilter.TYPE)) {
+            filter = new LocationFilter(value);
+        } else if (type.equals(NegativeLocationFilter.TYPE)) {
+            filter = new NegativeLocationFilter(value);
+        } else if (type.equals(NodeLocationFilter.TYPE)) {
+            filter = new NodeLocationFilter(value);
+        } else if (type.equals(NegativeNodeLocationFilter.TYPE)) {
+            filter = new NegativeNodeLocationFilter(value);
+        } else if (type.equals(SituationFilter.TYPE)) {
+            filter = new SituationFilter(Boolean.valueOf(value));
+        } else if (type.equals(CategoryFilter.TYPE)) {
+            filter = new CategoryFilter(value);
         }
 
         return filter;
@@ -343,5 +371,18 @@ public abstract class AlarmUtil extends Object {
         filter = new AfterLastEventTimeFilter(now.getTime());
 
         return filter;
+    }
+
+    public static List<Filter> getFilterList(String[] filterStrings, ServletContext servletContext) {
+        List<Filter> filterList = new ArrayList<>();
+        if (filterStrings != null) {
+            for (String filterString : filterStrings) {
+                Filter filter = AlarmUtil.getFilter(filterString, servletContext);
+                if (filter != null) {
+                    filterList.add(filter);
+                }
+            }
+        }
+        return filterList;
     }
 }

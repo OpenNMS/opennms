@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,7 +29,7 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="false" import="java.util.*,org.opennms.core.utils.WebSecurityUtils,org.opennms.web.servlet.MissingParameterException" %>
+<%@page language="java" contentType="text/html" session="false" import="org.opennms.core.utils.WebSecurityUtils,org.opennms.web.servlet.MissingParameterException" %>
 
 <%!
     protected static final String DEFAULT_LIMIT_PARAM_NAME    = "limit";
@@ -39,7 +39,7 @@
     protected static final int DEFAULT_MULTIPLE = 0;
 
     protected static final int LOWER_OFFSET = 5;
-    protected static final int UPPER_OFFSET = 4;    
+    protected static final int UPPER_OFFSET = 4;
 %>
 
 <%
@@ -65,12 +65,16 @@
     String limitName = request.getParameter("limitname");
     if(limitName == null) {
         limitName = DEFAULT_LIMIT_PARAM_NAME;
+    } else {
+        limitName = WebSecurityUtils.sanitizeString(limitName);
     }
 
     //optional parameter, multiplename
     String multipleName = request.getParameter("multiplename");
     if(multipleName == null) {
         multipleName = DEFAULT_MULTIPLE_PARAM_NAME;
+    } else {
+        multipleName = WebSecurityUtils.sanitizeString(multipleName);
     }
 
     //get the count    
@@ -101,24 +105,24 @@
 
 %>
 
-<p class="pager">
  <% if (limit > 0 ) { %> 
-  Results: (<%=startResult%>-<%=endResult%>)
+  <div class="text-center my-2">
+  <strong>Results <%=startResult%>-<%=endResult%></strong>
+  </div>
  <% } else { %>
-  All Results
+  <div class="text-center">
+  <strong>All Results</strong>
+  </div>
  <% } %> 
-	
-  <% if( itemCount >= limit || multiple > 0 ) { %>  
-    <span>
-<% if( multiple > 0 ) { %>
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=0">First</a>&nbsp;  
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>">Previous</a>&nbsp;  
-    <% } %>
-    
-    <% if( itemCount >= limit  ) { %>
-      <a href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>">Next</a>&nbsp;
-    <% } %>
-		</span>
-   <% } %>      
-</p>
 
+  <% if( itemCount >= limit || multiple > 0 ) { %>
+  <nav class="btn-toolbar" role="toolbar">
+      <div class="form-group ml-auto mr-auto">
+        <a class="btn btn-sm btn-secondary <%=multiple > 0 ? "" : "disabled"%>" role="button" href="<%=baseUrl%>&amp;<%=multipleName%>=0">First</a></a>
+        <a class="btn btn-sm btn-secondary <%=multiple > 0 ? "" : "disabled"%>" role="button" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple-1%>">Previous</a></a>
+        <a class="btn btn-sm btn-secondary <%=itemCount >= limit ? "" : "disabled"%>" role="button" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=multiple+1%>">Next</a></a>
+      </div>
+  </nav>
+  <% } else { %>
+   <br/>
+  <% } %>

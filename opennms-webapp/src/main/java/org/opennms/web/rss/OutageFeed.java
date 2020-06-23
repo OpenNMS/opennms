@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,16 +31,17 @@ package org.opennms.web.rss;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.web.outage.OutageModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndEntryImpl;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.feed.synd.SyndFeedImpl;
 
 /**
  * <p>OutageFeed class.</p>
@@ -77,7 +78,7 @@ public class OutageFeed extends AbstractFeed {
     /**
      * <p>getFeed</p>
      *
-     * @return a {@link com.sun.syndication.feed.synd.SyndFeed} object.
+     * @return a {@link com.rometools.rome.feed.synd.SyndFeed} object.
      */
     @Override
     public SyndFeed getFeed() {
@@ -87,13 +88,12 @@ public class OutageFeed extends AbstractFeed {
         feed.setDescription("OpenNMS Nodes with Outages");
         feed.setLink(getUrlBase() + "outage/list.htm");
 
-        ArrayList<SyndEntry> entries = new ArrayList<SyndEntry>();
+        List<SyndEntry> entries = new ArrayList<>();
 
         try {
-            OutageModel model = new OutageModel();    
             Date date = new Date();
             date.setTime(date.getTime() - (1000 * 60 * 60 * 24));
-            OutageSummary[] summaries = model.getAllOutageSummaries(date);
+            OutageSummary[] summaries = OutageModel.getAllOutageSummaries(date);
 
             SyndEntry entry;
             
@@ -111,10 +111,11 @@ public class OutageFeed extends AbstractFeed {
                     entry.setTitle(sanitizeTitle(summary.getNodeLabel()));
                     entry.setUpdatedDate(summary.getTimeDown());
                 } else {
-                    entry.setTitle(sanitizeTitle(summary.getNodeLabel()) + " (resolved)");
+                    entry.setTitle(sanitizeTitle(summary.getNodeLabel()) + " (Resolved)");
                     entry.setUpdatedDate(summary.getTimeUp());
                 }
                 entry.setLink(link);
+                entry.setAuthor("OpenNMS");
                 
                 entries.add(entry);
             }

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <!--
+      Fix for issue NMS-6864:
+        Change the datatype of most of the assets fields to text.
+  -->
+  <changeSet author="cpape" id="1.40.0-changeDataTypeOfAssetFieldsToText">
+    <modifyDataType tableName="assets" columnName="category" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="manufacturer" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="vendor" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="modelnumber" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="serialnumber" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="description" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="circuitid" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="assetnumber" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="operatingsystem" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="rack" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="slot" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="port" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="region" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="division" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="department" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="address1" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="address2" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="city" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="state" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="zip" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="country" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="building" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="floor" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="room" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="vendorphone" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="vendorfax" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="vendorassetnumber" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="username" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="password" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="enable" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="lease" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="supportphone" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="maintcontract" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="displaycategory" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="notifycategory" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="pollercategory" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="thresholdcategory" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="managedobjectinstance" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="managedobjecttype" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="cpu" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="ram" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="storagectrl" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="hdd1" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="hdd2" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="hdd3" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="hdd4" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="hdd5" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="hdd6" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="additionalhardware" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="admin" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="vmwaremanagedobjectid" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="vmwaremanagedentitytype" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="vmwaremanagementserver" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="vmwaretopologyinfo" newDataType="text"/>
+    <modifyDataType tableName="assets" columnName="vmwarestate" newDataType="text"/>
+
+    <rollback>
+      <modifyDataType tableName="assets" columnName="category" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="manufacturer" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="vendor" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="modelnumber" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="serialnumber" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="description" newDataType="varchar(128)"/>
+      <modifyDataType tableName="assets" columnName="circuitid" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="assetnumber" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="operatingsystem" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="rack" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="slot" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="port" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="region" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="division" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="department" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="address1" newDataType="varchar(256)"/>
+      <modifyDataType tableName="assets" columnName="address2" newDataType="varchar(256)"/>
+      <modifyDataType tableName="assets" columnName="city" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="state" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="zip" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="country" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="building" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="floor" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="room" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="vendorphone" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="vendorfax" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="vendorassetnumber" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="username" newDataType="varchar(32)"/>
+      <modifyDataType tableName="assets" columnName="password" newDataType="varchar(32)"/>
+      <modifyDataType tableName="assets" columnName="enable" newDataType="varchar(32)"/>
+      <modifyDataType tableName="assets" columnName="lease" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="supportphone" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="maintcontract" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="displaycategory" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="notifycategory" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="pollercategory" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="thresholdcategory" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="managedobjectinstance" newDataType="varchar(512)"/>
+      <modifyDataType tableName="assets" columnName="managedobjecttype" newDataType="varchar(512)"/>
+      <modifyDataType tableName="assets" columnName="cpu" newDataType="varchar(32)"/>
+      <modifyDataType tableName="assets" columnName="ram" newDataType="varchar(10)"/>
+      <modifyDataType tableName="assets" columnName="storagectrl" newDataType="varchar(32)"/>
+      <modifyDataType tableName="assets" columnName="hdd1" newDataType="varchar(32)"/>
+      <modifyDataType tableName="assets" columnName="hdd2" newDataType="varchar(32)"/>
+      <modifyDataType tableName="assets" columnName="hdd3" newDataType="varchar(32)"/>
+      <modifyDataType tableName="assets" columnName="hdd4" newDataType="varchar(32)"/>
+      <modifyDataType tableName="assets" columnName="hdd5" newDataType="varchar(32)"/>
+      <modifyDataType tableName="assets" columnName="hdd6" newDataType="varchar(32)"/>
+      <modifyDataType tableName="assets" columnName="additionalhardware" newDataType="varchar(64)"/>
+      <modifyDataType tableName="assets" columnName="admin" newDataType="varchar(32)"/>
+      <modifyDataType tableName="assets" columnName="vmwaremanagedobjectid" newDataType="varchar(70)"/>
+      <modifyDataType tableName="assets" columnName="vmwaremanagedentitytype" newDataType="varchar(70)"/>
+      <modifyDataType tableName="assets" columnName="vmwaremanagementserver" newDataType="varchar(70)"/>
+      <modifyDataType tableName="assets" columnName="vmwaretopologyinfo" newDataType="text"/>
+      <modifyDataType tableName="assets" columnName="vmwarestate" newDataType="varchar(255)"/>
+    </rollback>
+  </changeSet>
+
+  <!--
+      Fix for issue NMS-6910:
+        PSQLException in EnhancedLinkd Cdp discovery
+        Change the datatype of cdplink.cdpcacheversion to text.
+  -->
+  <changeSet author="rssntn67" id="1.14.0-changeDataTypeOfcdpLinkCdpVersion">
+    <modifyDataType tableName="cdplink" columnName="cdpcacheversion" newDataType="text"/>
+
+    <rollback>
+      <modifyDataType tableName="cdplink" columnName="cdpcacheversion" newDataType="varchar(255)"/>
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -113,7 +113,7 @@
             </goals>
             <configuration>
               <artifactItems>
-                <artifactItem>org.opennms.features:org.opennms.features.remote-poller-jnlp:tar.gz:jnlp
+                <artifactItem>
                   <groupId>org.opennms.features</groupId>
                   <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
                   <version>${project.version}</version>
@@ -134,7 +134,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.4</version>
         <configuration>
           <webResources>
             <resource>
@@ -145,6 +144,29 @@
             </resource>
           </webResources>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>cleanup-after-integration-tests</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
+              <filesets>
+                <fileset>
+                  <directory>${project.build.directory}/dependency</directory>
+                </fileset>
+                <fileset>
+                  <directory>${project.build.directory}/${project.build.finalName}</directory>
+                </fileset>
+              </filesets>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -160,6 +182,15 @@
       <groupId>org.opennms.assemblies</groupId>
       <artifactId>opennms-remote-poller-windows</artifactId>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Make sure that remote-poller-jnlp.tar.gz builds before this assembly -->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+      <version>${project.version}</version>
+      <classifier>jnlp</classifier>
+      <type>tar.gz</type>
       <scope>provided</scope>
     </dependency>
 
@@ -192,11 +223,39 @@
       <artifactId>org.opennms.features.springframework-security</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!--
+      Make sure that org.opennms.core.soa is marked as 'provided' so that we don't
+      include the JAR for it in this webapp. Otherwise, we will run into classloader
+      issues when trying to expose the ServiceRegistry over Spring RMI.
+      
+      @see http://issues.opennms.org/browse/NMS-7464
+    -->
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.soa</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.spring-web</artifactId>
+    </dependency>
+    <!--
+      Make sure that jetty-jsp is marked as 'provided' so that we don't
+      include the JARs for it in this webapp. Otherwise, we will run into classloader
+      issues when trying to render .jsps.
+
+      @see http://issues.opennms.org/browse/NMS-7565
+    -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>apache-jsp</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
+      <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -215,6 +274,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.services</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-test-dependencies</artifactId>
       <type>pom</type>
@@ -225,5 +289,37 @@
       <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
+      <scope>test</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jna</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-best</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+  </repositories>
+
 </project>

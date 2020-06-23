@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
@@ -66,14 +67,14 @@ public class EventConfData extends Object {
     /**
      * The map keyed with 'EventKey's
      */
-    private LinkedHashMap<EventKey, org.opennms.netmgt.xml.eventconf.Event> m_eventMap;
+    private Map<EventKey, org.opennms.netmgt.xml.eventconf.Event> m_eventMap;
 
     /**
      * The map of UEI to 'EventKey's list - used mainly to find matches for the
      * OpenNMS internal events faster(in cases where there are multiple masks
      * for the same UEI)
      */
-    private LinkedHashMap<String, List<EventKey>> m_ueiToKeyListMap;
+    private Map<String, List<EventKey>> m_ueiToKeyListMap;
 
     /**
      * Check whether the event matches the passed key
@@ -84,15 +85,14 @@ public class EventConfData extends Object {
         // go through the key elements and see if this event will match
         boolean maskMatch = true;
 
-        Iterator<String> keysetIter = eventKey.keySet().iterator();
-        while (keysetIter.hasNext() && maskMatch) {
-            String key = keysetIter.next();
+        for (final Entry<String, Object> entry : eventKey.entrySet()) {
+            final String key = entry.getKey();
 
             @SuppressWarnings("unchecked")
-            List<String> maskValues = (List<String>) eventKey.get(key);
+            final List<String> maskValues = (List<String>) entry.getValue();
 
             // get the event value for this key
-            String eventvalue = EventKey.getMaskElementValue(event, key);
+            final String eventvalue = EventKey.getMaskElementValue(event, key);
             maskMatch = eventValuePassesMaskValue(eventvalue, maskValues);
             if (!maskMatch) {
                 return maskMatch;
@@ -113,7 +113,7 @@ public class EventConfData extends Object {
      * @param eventvalue a {@link java.lang.String} object.
      * @param maskValues a {@link java.util.List} object.
      */
-    protected static boolean eventValuePassesMaskValue(String eventvalue, List<String> maskValues) {
+    public static boolean eventValuePassesMaskValue(String eventvalue, List<String> maskValues) {
         boolean maskMatch = false;
 
         Iterator<String> valiter = maskValues.iterator();
@@ -184,7 +184,7 @@ public class EventConfData extends Object {
         updateUeiToKeyListMap(eventKey, event);
 
         // if event has snmp information, add to the snmp map
-        org.opennms.netmgt.xml.eventconf.Snmp eventSnmp = event.getSnmp();
+        final org.opennms.netmgt.xml.eventconf.Snmp eventSnmp = event.getSnmp();
         if (eventSnmp != null) {
             String eventEID = eventSnmp.getId();
             if (eventEID != null) {

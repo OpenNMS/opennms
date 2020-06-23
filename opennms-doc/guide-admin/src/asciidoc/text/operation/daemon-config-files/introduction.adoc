@@ -1,0 +1,6 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+Configuration changes require a restart of OpenNMS and some daemons are able to reload configuration changes triggered by a daemon reload event.
+This section gives an overview about all daemons and the related configuration files and which can be reloaded without restarting OpenNMS.

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,9 +47,10 @@ import org.opennms.core.utils.OwnedInterval;
 import org.opennms.core.utils.OwnedIntervalSequence;
 import org.opennms.core.utils.Owner;
 import org.opennms.core.utils.TimeInterval;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.groups.Schedule;
-import org.opennms.netmgt.config.poller.Outage;
+import org.opennms.netmgt.config.groups.Time;
+import org.opennms.netmgt.config.poller.outages.Outage;
 
 public class BasicScheduleUtilsTest extends IntervalTestCase {
 
@@ -59,7 +60,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"specific\">" +
             "               <time begins=\"20-Aug-2005 13:00:00\" ends=\"20-Aug-2005 14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = JaxbUtils.unmarshal(Schedule.class, schedSpec);
         
         Owner owner = new Owner("unnamed", "simple", 0);
         OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), BasicScheduleUtils.getGroupSchedule(simpleSchedule), owner);
@@ -74,7 +75,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"specific\">" +
             "               <time begins=\"18-Aug-2005 13:00:00\" ends=\"18-Aug-2005 14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = JaxbUtils.unmarshal(Schedule.class, schedSpec);
         
         Owner owner = new Owner("unnamed", "simple", 0);
         OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), BasicScheduleUtils.getGroupSchedule(simpleSchedule), owner);
@@ -90,7 +91,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "               <time begins=\"18-Aug-2005 13:00:00\" ends=\"18-Aug-2005 14:00:00\"/>\n" + 
             "               <time begins=\"18-Aug-2005 16:00:00\" ends=\"18-Aug-2005 17:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = JaxbUtils.unmarshal(Schedule.class, schedSpec);
         
         Owner owner = new Owner("unnamed", "double", 0);
         OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), BasicScheduleUtils.getGroupSchedule(simpleSchedule), owner);
@@ -109,7 +110,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "               <time day=\"19\" begins=\"09:00:00\" ends=\"10:00:00\"/>\n" + 
             "               <time begins=\"18-Aug-2005 16:00:00\" ends=\"18-Aug-2005 17:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = JaxbUtils.unmarshal(Schedule.class, schedSpec);
         
         Owner owner = new Owner("unnamed", "complex", 0);
        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), BasicScheduleUtils.getGroupSchedule(simpleSchedule), owner);
@@ -131,7 +132,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"specific\">" +
             "               <time begins=\"18-Aug-2005 13:00:00\" ends=\"18-Aug-2005 14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = JaxbUtils.unmarshal(Schedule.class, schedSpec);
         BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
 
         Owner owner = new Owner("unnamed", "simple", 0, 0);
@@ -147,7 +148,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"specific\">" +
             "               <time day=\"18\" begins=\"13:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = JaxbUtils.unmarshal(Schedule.class, schedSpec);
         BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
@@ -163,7 +164,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"specific\">" +
             "               <time day=\"thursday\" begins=\"13:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = JaxbUtils.unmarshal(Schedule.class, schedSpec);
         BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
@@ -179,7 +180,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"weekly\">" +
             "               <time day=\"thursday\" begins=\"11:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = JaxbUtils.unmarshal(Schedule.class, schedSpec);
         BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
@@ -202,7 +203,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"monthly\">" +
             "               <time day=\"7\" begins=\"11:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = JaxbUtils.unmarshal(Schedule.class, schedSpec);
         BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
@@ -227,14 +228,24 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           <schedule name=\"simple\" type=\"daily\">" +
             "               <time begins=\"11:00:00\" ends=\"14:00:00\"/>\n" + 
             "           </schedule>";
-        Schedule simpleSchedule = CastorUtils.unmarshal(Schedule.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        Schedule simpleSchedule = JaxbUtils.unmarshal(Schedule.class, schedSpec);
+        assertEquals("simple", simpleSchedule.getName());
+        assertEquals("daily", simpleSchedule.getType());
+        assertEquals(1, simpleSchedule.getTimes().size());
+
+        final Time simpleScheduleTime = simpleSchedule.getTimes().get(0);
+        assertEquals("11:00:00", simpleScheduleTime.getBegins());
+        assertEquals("14:00:00", simpleScheduleTime.getEnds());
+        assertEquals(false, simpleScheduleTime.getDay().isPresent());
+        assertEquals(false, simpleScheduleTime.getId().isPresent());
+
         BasicSchedule basicSchedule = BasicScheduleUtils.getGroupSchedule(simpleSchedule);
         
         Owner owner = new Owner("unnamed", "simple", 0, 0);
         OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervals(interval(6, 1, 0, 7, 1, 0), basicSchedule.getTime(0), owner);
         assertNotNull(intervals);
 
-        List<OwnedInterval> expected = new ArrayList<OwnedInterval>();
+        List<OwnedInterval> expected = new ArrayList<>();
         for (int i = 1; i < 31; i++) {
         	expected.add(owned(owner, jun(i, 11, i, 14)));
         }
@@ -260,7 +271,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
                 "    <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/> \n" + 
                 "    <interface address=\"10.85.34.61\"/> \n" +
                 "</outage> \n";
-        final Outage out = CastorUtils.unmarshal(Outage.class, new ByteArrayInputStream(schedSpec.getBytes()));
+        final Outage out = JaxbUtils.unmarshal(Outage.class, schedSpec);
         final BasicSchedule schedule = BasicScheduleUtils.getBasicOutageSchedule(out);
 
         final Map<Calendar,Boolean> daySchedules = new HashMap<Calendar,Boolean>();

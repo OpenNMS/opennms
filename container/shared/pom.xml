@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.opennms</groupId>
+        <artifactId>org.opennms.container</artifactId>
+        <version>25.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.container</groupId>
+    <artifactId>org.opennms.container.shared</artifactId>
+    <packaging>karaf-assembly</packaging>
+    <name>OpenNMS :: Container :: Karaf (Shared)</name>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/filtered-resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+            <!--
+                This configuration mimics the default Karaf assembly from:
+
+                https://github.com/apache/karaf/blob/karaf-X.X.X/assemblies/apache-karaf/pom.xml
+            -->
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-maven-plugin</artifactId>
+                <version>${karafVersion}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <bootRepositories>
+                        <!-- OPENNMS: Add the OpenNMS Karaf extensions feature repository -->
+                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
+                        <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
+                    </bootRepositories>
+                    <!-- use this instead of bootRepositories when we move to karaf-maven-plugin 4.2.x or higher -->
+                    <!-- <descriptors>
+                        <!-/- OPENNMS: Add the OpenNMS Karaf extensions feature repository -/->
+                        <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</descriptor>
+                        <!-/- OPENNMS: Additional tools -/->
+                        <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
+                    </descriptors> -->
+                    <installedFeatures>
+                        <feature>wrapper</feature>
+
+                        <!-- OPENNMS: Add Spring features that we need in the base container -->
+                        <!-- These versions match the versions shipped with Apache Karaf 4.1.5 -->
+                        <feature>spring/3.1.4.RELEASE</feature>
+                        <feature>spring/3.2.18.RELEASE_1</feature>
+                        <feature>spring/4.0.9.RELEASE_1</feature>
+                        <feature>spring/4.1.9.RELEASE_1</feature>
+                        <feature>spring/4.2.9.RELEASE_1</feature>
+                        <feature>spring/4.3.14.RELEASE_1</feature>
+
+                        <feature>spring-jms/4.1.9.RELEASE_1</feature>
+                        <feature>spring/${springVersion}</feature>
+                        <feature>spring-jms/${springVersion}</feature>
+                    </installedFeatures>
+                    <startupFeatures>
+                        <feature>eventadmin</feature>
+                    </startupFeatures>
+                    <bootFeatures>
+                        <feature>wrap</feature>
+                        <feature>aries-blueprint</feature>
+                        <feature>shell</feature>
+                        <feature>shell-compat</feature>
+                        <feature>feature</feature>
+                        <feature>jaas</feature>
+                        <feature>ssh</feature>
+                        <feature>management</feature>
+                        <feature>bundle</feature>
+                        <feature>config</feature>
+                        <feature>deployer</feature>
+                        <feature>diagnostic</feature>
+                        <feature>feature</feature>
+                        <feature>instance</feature>
+                        <feature>kar</feature>
+                        <feature>log</feature>
+                        <feature>package</feature>
+                        <feature>service</feature>
+                        <feature>system</feature>
+
+                        <!-- OPENNMS: Add our enhancements to the container -->
+                        <feature>karaf-extender</feature>
+                        <feature>scv</feature>
+
+                        <!-- OPENNMS: Additional tools -->
+                        <feature>hawtio-offline</feature>
+                    </bootFeatures>
+                    <libraries>
+                        <!-- OPENNMS: Add JNA bundles to prevent jline from refreshing (KARAF-5251) -->
+                        <library>mvn:net.java.dev.jna/jna/${jnaVersion};type:=boot;export:=false</library>
+                        <library>mvn:net.java.dev.jna/jna-platform/${jnaVersion};type:=boot;export:=false</library>
+
+                        <!-- OPENNMS: Add MINA bundles to prevent mina-sshd-core from refreshing (KARAF-5384) -->
+                        <library>mvn:org.apache.mina/mina-core/${minaVersion};type:=boot;export:=false</library>
+                    </libraries>
+                    <javase>1.8</javase>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>cleanup-after-integration-tests</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.build.directory}/assembly</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <!-- scope is compile so all features (there is only one) are 
+                installed into startup.properties and the feature repo itself is not added 
+                in etc/org.apache.karaf.features.cfg file -->
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>framework</artifactId>
+            <version>${karafVersion}</version>
+            <type>kar</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>standard</artifactId>
+            <version>${karafVersion}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
+                file, and features will installed into the system directory if specified in 
+                the plugin configuration -->
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>spring</artifactId>
+            <version>${karafVersion}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <!-- scope is runtime so the feature repo is listed in etc/org.apache.karaf.features.cfg 
+                file, and features will installed into the system directory if specified in 
+                the plugin configuration -->
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>spring-legacy</artifactId>
+            <version>${karafVersion}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>karaf-extensions</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+</project>

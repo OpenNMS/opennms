@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,11 +38,12 @@
         org.opennms.web.servlet.MissingParameterException,
         org.opennms.web.api.Util,
         org.opennms.netmgt.model.OnmsResource,
-        org.opennms.web.svclayer.ResourceService,
+        org.opennms.web.svclayer.api.ResourceService,
         org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils,
         org.opennms.web.servlet.XssRequestWrapper"
 %>
+<%@ page import="org.opennms.netmgt.model.ResourceId" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
@@ -55,13 +56,13 @@
     static {
         s_colors.put(0, new String[] { "Red", "ff0000" });
         s_colors.put(1, new String[] { "Green", "00ff00" });
-        s_colors.put(2, new String[] { "Blue", "ff00ff" });
+        s_colors.put(2, new String[] { "Blue", "0000ff" });
         s_colors.put(3, new String[] { "Black", "000000" });
     }
     
     public void init() throws ServletException {
 	    WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-        m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
+        m_resourceService = webAppContext.getBean("resourceService", ResourceService.class);
     }%>
  
 <%
@@ -80,7 +81,7 @@
     if (req.getParameterValues("resourceId").length > 1) {
         pageContext.setAttribute("tooManyResourceIds", "true");
     } else {
-        String resourceId = req.getParameter("resourceId");
+        ResourceId resourceId = ResourceId.fromString(req.getParameter("resourceId"));
         OnmsResource resource = m_resourceService.getResourceById(resourceId);
         m_resourceService.promoteGraphAttributesForResource(resource);
         pageContext.setAttribute("resource", resource);
@@ -91,7 +92,7 @@
 
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Custom Resource Graphs" />
   <jsp:param name="headTitle" value="Custom" />
   <jsp:param name="headTitle" value="Resource Graphs" />
@@ -156,7 +157,7 @@
     <form method="get" action="graph/adhoc3.jsp" >
       <%=Util.makeHiddenTags(request)%>
 
-      <table width="100%" cellspacing="2" cellpadding="2" border="0">
+      <table width="100%">
         <c:set var="anythingSelected" value="false"/>
         <c:forEach var="dsIndex" begin="0" end="3">
           <!-- Data Source ${dsIndex} -->     
@@ -174,7 +175,7 @@
               
               <br/>
 
-              <select name="ds" size="6">
+              <select class="multi-select" name="ds" size="6">
                 <c:forEach var="attribute" items="${resource.attributes}">
                   <c:choose>
                     <c:when test="${! anythingSelected}">
@@ -193,7 +194,7 @@
             </td>
 
             <td valign="top">
-              <table width="100%" cellspacing="0" cellpadding="2">
+              <table width="100%">
                 <tr>
                   <td width="5%">Title:</td>
                   <td><input type="input" name="dstitle" value="Data Source ${dsIndex + 1}" /></td>
@@ -262,4 +263,4 @@
   <jsp:include page="/includes/footnote1.jsp" flush="false" />
 </c:if>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

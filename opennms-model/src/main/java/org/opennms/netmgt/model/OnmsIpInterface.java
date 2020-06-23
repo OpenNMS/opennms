@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,15 +30,21 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -51,21 +57,25 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.xml.bind.InetAddressXmlAdapter;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.springframework.core.style.ToStringCreator;
+
+import com.google.common.base.MoreObjects;
 
 /**
  * <p>OnmsIpInterface class.</p>
@@ -73,13 +83,16 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement(name = "ipInterface")
 @Entity
 @Table(name="ipInterface")
+@XmlAccessorType(XmlAccessType.NONE)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
-    
-    private static final long serialVersionUID = 7750043250236397014L;
+    private static final long serialVersionUID = 8463903013592837114L;
 
     private Integer m_id;
 
     private InetAddress m_ipAddress;
+
+    private InetAddress m_netMask;
 
     private String m_ipHostName;
 
@@ -91,9 +104,11 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private OnmsNode m_node;
 
-    private Set<OnmsMonitoredService> m_monitoredServices = new HashSet<OnmsMonitoredService>();
+    private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<>();
 
     private OnmsSnmpInterface m_snmpInterface;
+
+    private List<OnmsMetaData> m_metaData = new ArrayList<>();
 
     /**
      * <p>Constructor for OnmsIpInterface.</p>
@@ -140,18 +155,6 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
     
     /**
-     * <p>getInterfaceId</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @XmlID
-    @XmlAttribute(name="id")
-    @Transient
-    public String getInterfaceId() {
-        return getId().toString();
-    }
-
-    /**
      * <p>setId</p>
      *
      * @param id a {@link java.lang.Integer} object.
@@ -161,12 +164,39 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
     /**
+     * <p>getInterfaceId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @XmlID
+    @XmlAttribute(name="id")
+    @Transient
+    public String getInterfaceId() {
+        return getId() == null? null : getId().toString();
+    }
+
+    public void setInterfaceId(final String id) {
+        setId(Integer.valueOf(id));
+    }
+
+    @Transient
+    @XmlAttribute(name="hasFlows")
+    public boolean getHasFlows() {
+        if (m_snmpInterface == null) {
+            return false;
+        }
+
+        return m_snmpInterface.getHasFlows();
+    }
+
+    /**
      * <p>getIpAddress</p>
      *
      * @return a {@link java.lang.String} object.
      * @deprecated
      */
     @Transient
+    @XmlTransient
     public String getIpAddressAsString() {
         return InetAddressUtils.toIpAddrString(m_ipAddress);
     }
@@ -246,6 +276,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @return a boolean.
      */
     @Transient
+    @XmlTransient
     public boolean isManaged() {
         return "M".equals(getIsManaged());
     }
@@ -316,8 +347,66 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @return a boolean.
      */
     @Transient
+    @XmlTransient
     public boolean isPrimary(){
         return m_isSnmpPrimary.equals(PrimaryType.PRIMARY);
+    }
+
+    @JsonIgnore
+    @XmlTransient
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name="ipInterface_metadata", joinColumns = @JoinColumn(name = "id"))
+    public List<OnmsMetaData> getMetaData() {
+        return m_metaData;
+    }
+
+    public void setMetaData(final List<OnmsMetaData> metaData) {
+        m_metaData = metaData;
+    }
+
+    public void addMetaData(final String context, final String key, final String value) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
+
+        final Optional<OnmsMetaData> entry = getMetaData().stream()
+                .filter(m -> m.getContext().equals(context))
+                .filter(m -> m.getKey().equals(key))
+                .findFirst();
+
+        // Update the value if present, otherwise create a new entry
+        if (entry.isPresent()) {
+            entry.get().setValue(value);
+        } else {
+            getMetaData().add(new OnmsMetaData(context, key, value));
+        }
+    }
+
+    public void removeMetaData(final String context, final String key) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(key);
+        final Iterator<OnmsMetaData> iterator = getMetaData().iterator();
+
+        while (iterator.hasNext()) {
+            final OnmsMetaData onmsNodeMetaData = iterator.next();
+
+            if (context.equals(onmsNodeMetaData.getContext()) && key.equals(onmsNodeMetaData.getKey())) {
+                iterator.remove();
+            }
+        }
+    }
+
+    public void removeMetaData(final String context) {
+        Objects.requireNonNull(context);
+        final Iterator<OnmsMetaData> iterator = getMetaData().iterator();
+
+        while (iterator.hasNext()) {
+            final OnmsMetaData onmsNodeMetaData = iterator.next();
+
+            if (context.equals(onmsNodeMetaData.getContext())) {
+                iterator.remove();
+            }
+        }
     }
 
     /**
@@ -328,7 +417,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     @XmlElement(name="nodeId")
-    @XmlIDREF
+    //@XmlIDREF
+    @XmlJavaTypeAdapter(NodeIdAdapter.class)
     public OnmsNode getNode() {
         return m_node;
     }
@@ -342,8 +432,17 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_node = node;
     }
 
+    @Transient
+    @XmlTransient
+    public Integer getNodeId() {
+        if (m_node != null) {
+            return m_node.getId();
+        }
+        return null;
+    }
+
     /**
-     * The services on this node
+     * The services on this interface
      *
      * @return a {@link java.util.Set} object.
      */
@@ -363,6 +462,16 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_monitoredServices = ifServices;
     }
 
+    // TODO: Why are these annotations here?
+    @Transient
+    @JsonIgnore
+    public void addMonitoredService(final OnmsMonitoredService svc) {
+        m_monitoredServices.add(svc);
+    }
+
+    public void removeMonitoredService(final OnmsMonitoredService svc) {
+        m_monitoredServices.remove(svc);
+    }
 
     /**
      * The SnmpInterface associated with this interface if any
@@ -393,13 +502,15 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-        .append("id", m_id)
-        .append("ipAddr", InetAddressUtils.str(m_ipAddress))
-        .append("ipHostName", m_ipHostName)
-        .append("isManaged", m_isManaged)
-        .append("isSnmpPrimary", m_isSnmpPrimary)
-        .append("ipLastCapsdPoll", m_ipLastCapsdPoll)
+        return MoreObjects.toStringHelper(this)
+        .add("id", m_id)
+        .add("ipAddr", InetAddressUtils.str(m_ipAddress))
+        .add("netMask", InetAddressUtils.str(m_netMask))
+        .add("ipHostName", m_ipHostName)
+        .add("isManaged", m_isManaged)
+        .add("isSnmpPrimary", m_isSnmpPrimary)
+        .add("ipLastCapsdPoll", m_ipLastCapsdPoll)
+        .add("nodeId", getNodeId())
         .toString();
     }
 
@@ -437,6 +548,17 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         m_ipAddress = ipaddr;
     }
 
+    @Column(name = "netmask")
+    @Type(type="org.opennms.netmgt.model.InetAddressUserType")
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+    public InetAddress getNetMask() {
+        return m_netMask;
+    }
+
+    public void setNetMask(final InetAddress netMask) {
+        m_netMask = netMask;
+    }
+    
     /**
      * <p>isDown</p>
      *
@@ -467,6 +589,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @param svcName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.OnmsMonitoredService} object.
      */
+    @JsonIgnore
     public OnmsMonitoredService getMonitoredServiceByServiceType(String svcName) {
         for (OnmsMonitoredService monSvc : getMonitoredServices()) {
             if (monSvc.getServiceType().getName().equals(svcName)) {
@@ -483,6 +606,14 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      */
     public void mergeInterfaceAttributes(OnmsIpInterface scannedIface) {
         
+        if (hasNewValue(scannedIface.getIfIndex(), getIfIndex())) {
+            setIfIndex(scannedIface.getIfIndex());
+        }
+    
+        if (hasNewValue(scannedIface.getNetMask(), getNetMask())) {
+            setNetMask(scannedIface.getNetMask());
+        }
+    
         if (hasNewValue(scannedIface.getIsManaged(), getIsManaged())) {
             setIsManaged(scannedIface.getIsManaged());
         }
@@ -517,7 +648,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * <p>mergeMonitoredServices</p>
      *
      * @param scannedIface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
     public void mergeMonitoredServices(OnmsIpInterface scannedIface, EventForwarder eventForwarder, boolean deleteMissing) {
@@ -544,6 +675,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             else {
                 // otherwice update the service attributes
                 svc.mergeServiceAttributes(imported);
+                svc.mergeMetaData(imported);
             }
             
             // mark the service is updated
@@ -556,6 +688,12 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             svc.setIpInterface(this);
             getMonitoredServices().add(svc);
             svc.visit(new AddEventVisitor(eventForwarder));
+        }
+    }
+
+    public void mergeMetaData(OnmsIpInterface scanned) {
+        if (!getMetaData().equals(scanned.getMetaData())) {
+            setMetaData(scanned.getMetaData());
         }
     }
 
@@ -591,13 +729,34 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * <p>mergeInterface</p>
      *
      * @param scannedIface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
     public void mergeInterface(OnmsIpInterface scannedIface, EventForwarder eventForwarder, boolean deleteMissing) {
-        mergeInterfaceAttributes(scannedIface);
         updateSnmpInterface(scannedIface);
+        mergeInterfaceAttributes(scannedIface);
         mergeMonitoredServices(scannedIface, eventForwarder, deleteMissing);
+        mergeMetaData(scannedIface);
+    }
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public String getForeignSource() {
+        if (getNode() != null) {
+            return getNode().getForeignSource();
+        }
+        return null;
+    }
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public String getForeignId() {
+        if (getNode() != null) {
+            return getNode().getForeignId();
+        }
+        return null;
     }
 
 }

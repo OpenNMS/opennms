@@ -1,29 +1,26 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: ALLOT-SMP-SNMP-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603.5.5.20</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alSMPProvisionErrTrap</uei>
-	<event-label>ALLOT-SMP-SNMP-MIB defined trap event: alSMPProvisionErrTrap</event-label>
-	<descr>
-<![CDATA[
-<p></p><table>
-	<tr><td><b>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603.5.5.20</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alSMPProvisionErrTrap</uei>
+      <event-label>ALLOT-SMP-SNMP-MIB defined trap event: alSMPProvisionErrTrap</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alIniatingProcess</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alIniatingProcess&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		fastUpdates(10)
 		smf(50)
 		smfRouter(60)
@@ -31,19 +28,19 @@
 		eventDistributer(80)
 		highAvailability(90)
 		pcc(100)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alProvisioningType</b></td><td>
-	%parm[#2]%;</td><td><p>
+	alProvisioningType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		start(0)
 		stop(1)
 		timeout(2)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alFailCause</b></td><td>
-	%parm[#3]%;</td><td><p>
+	alFailCause&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		unknownCause(0)
 		invalidParam(1)
 		subscriberLimit(2)
@@ -58,51 +55,47 @@
 		hostNoActive(11)
 		ipNotAssignedToHost(12)
 		unknownIp(14)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alSubscriberName</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr>
-	<tr><td><b>
+	alSubscriberName&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alSubscriberIp</b></td><td>
-	%parm[#5]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alSubscriberIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alSMPProvisionErrTrap trap received 
 			alIniatingProcess=%parm[#1]% 
 			alProvisioningType=%parm[#2]% 
 			alFailCause=%parm[#3]% 
 			alSubscriberName=%parm[#4]% 
-			alSubscriberIp=%parm[#5]%</p>
-]]>		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603.5.5.20</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alSMPMultiFailTrap</uei>
-	<event-label>ALLOT-SMP-SNMP-MIB defined trap event: alSMPMultiFailTrap</event-label>
-	<descr>
-<![CDATA[
-<p></p><table>
-	<tr><td><b>
+			alSubscriberIp=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603.5.5.20</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alSMPMultiFailTrap</uei>
+      <event-label>ALLOT-SMP-SNMP-MIB defined trap event: alSMPMultiFailTrap</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alIniatingProcess</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alIniatingProcess&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		fastUpdates(10)
 		smf(50)
 		smfRouter(60)
@@ -110,11 +103,11 @@
 		eventDistributer(80)
 		highAvailability(90)
 		pcc(100)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alFailCause</b></td><td>
-	%parm[#2]%;</td><td><p>
+	alFailCause&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		unknownCause(0)
 		invalidParam(1)
 		subscriberLimit(2)
@@ -129,40 +122,36 @@
 		hostNoActive(11)
 		ipNotAssignedToHost(12)
 		unknownIp(14)
-	</p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alSMPMultiFailTrap trap received 
 			alIniatingProcess=%parm[#1]% 
-			alFailCause=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603.5.5.20</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alSmpHighAvailabilityTrap</uei>
-	<event-label>ALLOT-SMP-SNMP-MIB defined trap event: alSmpHighAvailabilityTrap</event-label>
-	<descr>
-<![CDATA[
-<p></p><table>
-	<tr><td><b>
+			alFailCause=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603.5.5.20</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alSmpHighAvailabilityTrap</uei>
+      <event-label>ALLOT-SMP-SNMP-MIB defined trap event: alSmpHighAvailabilityTrap</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alFailCause</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alFailCause&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		unknownCause(0)
 		invalidParam(1)
 		subscriberLimit(2)
@@ -177,48 +166,44 @@
 		hostNoActive(11)
 		ipNotAssignedToHost(12)
 		unknownIp(14)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alHighAvailabilityStatus</b></td><td>
-	%parm[#2]%;</td><td><p>
+	alHighAvailabilityStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		active(0)
 		passive(1)
 		dead(2)
-	</p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alSmpHighAvailabilityTrap trap received 
 			alFailCause=%parm[#1]% 
-			alHighAvailabilityStatus=%parm[#2]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2603.5.5.20</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/allot/traps/alSMPSystemTrap</uei>
-	<event-label>ALLOT-SMP-SNMP-MIB defined trap event: alSMPSystemTrap</event-label>
-	<descr>
-<![CDATA[
-<p></p><table>
-	<tr><td><b>
+			alHighAvailabilityStatus=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2603.5.5.20</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/allot/traps/alSMPSystemTrap</uei>
+      <event-label>ALLOT-SMP-SNMP-MIB defined trap event: alSMPSystemTrap</event-label>
+      <descr>&lt;p>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	alIniatingProcess</b></td><td>
-	%parm[#1]%;</td><td><p>
+	alIniatingProcess&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		fastUpdates(10)
 		smf(50)
 		smfRouter(60)
@@ -226,35 +211,32 @@
 		eventDistributer(80)
 		highAvailability(90)
 		pcc(100)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alSysSubject</b></td><td>
-	%parm[#2]%;</td><td><p>
+	alSysSubject&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		none(0)
 		pcrf(1)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alSysCause</b></td><td>
-	%parm[#3]%;</td><td><p>
+	alSysCause&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		lossOfCommunication(101)
 		communicationReestablished(102)
-	</p></td></tr>
-	<tr><td><b>
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	alSysInfo</b></td><td>
-	%parm[#4]%;</td><td><p></p></td></tr></table>
-]]>
-	</descr>
-		<logmsg dest='logndisplay'><![CDATA[<p>
+	alSysInfo&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			alSMPSystemTrap trap received 
 			alIniatingProcess=%parm[#1]% 
 			alSysSubject=%parm[#2]% 
 			alSysCause=%parm[#3]% 
-			alSysInfo=%parm[#4]%</p>
-]]>		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: ALLOT-SMP-SNMP-MIB -->
+			alSysInfo=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
 </events>

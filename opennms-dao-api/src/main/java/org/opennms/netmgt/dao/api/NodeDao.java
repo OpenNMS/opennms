@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.SurveillanceStatus;
@@ -44,7 +45,7 @@ import org.springframework.stereotype.Repository;
 /**
  * <p>NodeDao interface.</p>
  */
-public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
+public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
 	
     /**
      * Get a node based on it's node ID or foreignSource:foreignId
@@ -53,7 +54,16 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      * @return the node
      */
     OnmsNode get(String lookupCriteria);
-    
+
+    /**
+     * Retrieves all of node id/label tuples.
+     *
+     * Can be used as a lightweight alternative to findAll().
+     *
+     * @return a {@link java.util.Map} containing all node ids and their associated labels.
+     */
+    Map<Integer, String> getAllLabelsById();
+
     /**
      * Light weight call to simply get the node label without loading the entire node.
      * 
@@ -61,7 +71,15 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      * @return A String representing the provisioned label for the node.  Returns null if not found.
      */
     String getLabelForId(Integer id);
-    
+
+    /**
+     * Light weight call to simply get the node location without loading the entire node.
+     *
+     * @param id
+     * @return A String representing the provisioned label for the node.  Returns null if not found.
+     */
+    String getLocationForId(Integer id);
+
     /**
      * <p>findByLabel</p>
      *
@@ -71,12 +89,13 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     List<OnmsNode> findByLabel(String label);
     
     /**
-     * <p>findNodes</p>
+     * <p>findByLabel</p>
      *
-     * @param dp a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+     * @param label a {@link java.lang.String} object.
+     * @param location a {@link java.lang.String} object.
      * @return a {@link java.util.Collection} object.
      */
-    List<OnmsNode> findNodes(OnmsDistPoller dp);
+    List<OnmsNode> findByLabelForLocation(String label, String location);
     
     /**
      * <p>getHierarchy</p>
@@ -94,6 +113,21 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      */
     Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource);
     
+    /**
+     * <p>getForeignIdsPerForeignSourceMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    Map<String, Set<String>> getForeignIdsPerForeignSourceMap();
+
+    /**
+     * <p>getForeignIdsPerForeignSource</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link java.util.Set} object.
+     */
+    Set<String> getForeignIdsPerForeignSource(String foreignSource);
+
     /**
      * <p>findAllByVarCharAssetColumn</p>
      *
@@ -163,6 +197,26 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
     OnmsNode findByForeignId(String foreignSource, String foreignId);
+    
+    /**
+     * <p>findByForeignId</p>
+     *
+     * @param foreignId a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    List<OnmsNode> findByForeignId(String foreignId);
+    
+    /**
+     * <p>findByForeignIdForLocation</p>
+     *
+     * @param foreignId a {@link java.lang.String} object.
+     * @param location a {@link java.lang.String} object.
+     * @return a {@link java.util.List} object.
+     */
+    List<OnmsNode> findByForeignIdForLocation(String foreignId, String location);
+    
+
+    List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName);
 
     /**
      * <p>getNodeCountForForeignSource</p>
@@ -220,9 +274,24 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
      */
     List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress);
 
+    /**
+     * Retrieves the number of nodes for each sysOid.
+     *
+     * @return a {@link java.util.Map} containing the number of nodes for each sysOid
+     */
+    Map<String, Long> getNumberOfNodesBySysOid();
+
     SurveillanceStatus findSurveillanceStatusByCategoryLists(Collection<OnmsCategory> rowCategories, Collection<OnmsCategory> columnCategories);
-    
+
     Integer getNextNodeId (Integer nodeId);
-    
+
     Integer getPreviousNodeId (Integer nodeId);
+
+    void markHavingFlows(final Collection<Integer> nodeIds);
+
+    List<OnmsNode> findAllHavingFlows();
+    
+    OnmsNode getDefaultFocusPoint();
+
+    List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value);
 }

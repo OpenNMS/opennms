@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,11 +28,13 @@
 
 package org.opennms.features.jmxconfiggenerator.graphs;
 
-import org.opennms.features.jmxconfiggenerator.graphs.GraphConfigGenerator;
-import org.opennms.features.jmxconfiggenerator.graphs.Report;
-import org.opennms.features.jmxconfiggenerator.graphs.JmxConfigReader;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
+
+import java.io.IOException;
 import java.util.Collection;
-import org.junit.*;
 
 /**
  * @author Simon Walter <simon.walter@hp-factory.de>
@@ -44,25 +46,10 @@ public class JmxConfigReaderTest {
     private JmxConfigReader jmxConfigReader;
     private GraphConfigGenerator graphConfigGenerator;
 
-    public JmxConfigReaderTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
     @Before
     public void setUp() {
-        jmxConfigReader = new JmxConfigReader();
-        graphConfigGenerator = new GraphConfigGenerator();
-    }
-
-    @After
-    public void tearDown() {
+        jmxConfigReader = new JmxConfigReader(new Slf4jLogAdapter(JmxConfigReader.class));
+        graphConfigGenerator = new GraphConfigGenerator(new Slf4jLogAdapter(GraphConfigGenerator.class));
     }
 
     @Test
@@ -77,11 +64,10 @@ public class JmxConfigReaderTest {
         Assert.assertEquals("read structure from jmx-datacollection-config.xml", 139, reports.size());
     }
 
-    //TODO move to GraphConfigGenerator
     @Test
-    public void testVelociteyRun() {
+    public void testVelociteyRun() throws IOException {
         Collection<Report> reports = jmxConfigReader.generateReportsByJmxDatacollectionConfig("src/test/resources/JVM-Basics.xml");
         String snmpGraphConfig = graphConfigGenerator.generateSnmpGraph(reports, "src/main/resources/graphTemplate.vm");
-        System.out.println(snmpGraphConfig);
+        Assert.assertNotNull(snmpGraphConfig);
     }
 }

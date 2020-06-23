@@ -1,0 +1,10 @@
+
+===== Map
+
+This _Dashlet_ displays the link:http://www.opennms.org/wiki/Geographical_Maps[geographical map].
+
+[options="autowidth"]
+|===
+| Boost support | false
+| `search`      | Predefined link:http://www.opennms.org/wiki/Geographical_Maps#Searching[search] for a subset of nodes shown in the geographical map in this _Dashlet_
+|===

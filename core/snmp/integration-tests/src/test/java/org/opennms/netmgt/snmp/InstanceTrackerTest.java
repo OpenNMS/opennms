@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -62,15 +62,15 @@ public class InstanceTrackerTest extends TestCase {
 
     }
 
-    public void testSingleInstanceTrackerZeroInstance() {
+    public void testSingleInstanceTrackerZeroInstance() throws Exception {
         testSingleInstanceTracker("0", SnmpObjId.get(m_sysNameOid, "0"));
     }
     
-    public void testSingleInstanceTrackerMultiIdInstance() {
+    public void testSingleInstanceTrackerMultiIdInstance() throws Exception {
         testSingleInstanceTracker("1.2.3", SnmpObjId.get(m_sysNameOid, "1.2.3"));
     }
     
-    public void testSingleInstanceTracker(String instance, SnmpObjId receivedOid) {
+    public void testSingleInstanceTracker(String instance, SnmpObjId receivedOid) throws Exception {
         SnmpInstId inst = new SnmpInstId(instance);
         CollectionTracker it = new SingleInstanceTracker(m_sysNameOid, inst);
         
@@ -80,11 +80,11 @@ public class InstanceTrackerTest extends TestCase {
         assertTrue(it.isFinished());
     }
     
-    private void testCollectionTrackerInnerLoop(CollectionTracker tracker, final SnmpObjId expectedOid, SnmpObjId receivedOid, final int nonRepeaters) {
+    private void testCollectionTrackerInnerLoop(CollectionTracker tracker, final SnmpObjId expectedOid, SnmpObjId receivedOid, final int nonRepeaters) throws Exception {
         testCollectionTrackerInnerLoop(tracker, new SnmpObjId[] { expectedOid }, new SnmpObjId[] { receivedOid }, nonRepeaters);
     }
     
-    private void testCollectionTrackerInnerLoop(CollectionTracker tracker, final SnmpObjId[] expectedOids, SnmpObjId[] receivedOids, final int nonRepeaters) {
+    private void testCollectionTrackerInnerLoop(CollectionTracker tracker, final SnmpObjId[] expectedOids, SnmpObjId[] receivedOids, final int nonRepeaters) throws Exception {
         class OidCheckedPduBuilder extends PduBuilder {
             int count = 0;
 
@@ -117,7 +117,11 @@ public class InstanceTrackerTest extends TestCase {
         ResponseProcessor rp = tracker.buildNextPdu(builder);
         assertNotNull(rp);
         assertEquals(expectedOids.length, builder.getCount());
-        rp.processErrors(0, 0);
+        try {
+            rp.processErrors(0, 0);
+        } catch (SnmpException e) {
+            throw new RuntimeException(e);
+        }
         for (SnmpObjId receivedOid : receivedOids) {
             rp.processResponse(receivedOid, SnmpUtils.getValueFactory().getOctetString("Value".getBytes()));
         }
@@ -125,17 +129,17 @@ public class InstanceTrackerTest extends TestCase {
         
     }
     
-    public void testSingleInstanceTrackerNonZeroInstance() {
+    public void testSingleInstanceTrackerNonZeroInstance() throws Exception {
         testSingleInstanceTracker("1", SnmpObjId.get(m_sysNameOid, "1"));
 
     }
     
-    public void testSingleInstanceTrackerNoMatch() {
+    public void testSingleInstanceTrackerNoMatch() throws Exception {
         testSingleInstanceTracker("0", SnmpObjId.get(m_sysNameOid, "1"));
     }
     
-    public void testInstanceListTrackerWithAllResults() {
-        String instances[] = { "1", "3", "5" };
+    public void testInstanceListTrackerWithAllResults() throws Exception {
+        String[] instances = { "1", "3", "5" };
         CollectionTracker it = new InstanceListTracker(m_sysNameOid, toCommaSeparated(instances));
         
         SnmpObjId[] oids = new SnmpObjId[instances.length];
@@ -147,8 +151,8 @@ public class InstanceTrackerTest extends TestCase {
         assertTrue(it.isFinished());
     }
     
-    public void testInstanceListTrackerWithNoResults() {
-        String instances[] = { "1", "3", "5" };
+    public void testInstanceListTrackerWithNoResults() throws Exception {
+        String[] instances = { "1", "3", "5" };
         CollectionTracker it = new InstanceListTracker(m_sysNameOid, toCommaSeparated(instances));
         
         SnmpObjId[] expectedOids = new SnmpObjId[instances.length];
@@ -163,7 +167,7 @@ public class InstanceTrackerTest extends TestCase {
     }
 
     
-    public void testColumnTracker() {
+    public void testColumnTracker() throws Exception {
         SnmpObjId colOid = SnmpObjId.get(".1.3.6.1.2.1.1.5");
         SnmpObjId nextColOid = SnmpObjId.get(".1.3.6.1.2.1.1.6.2");
         MyColumnTracker tracker = new MyColumnTracker(colOid);
@@ -187,7 +191,7 @@ public class InstanceTrackerTest extends TestCase {
     }
     
     private String toCommaSeparated(String[] instances) {
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         for(int i = 0; i < instances.length; i++) {
             if (i != 0) {
                 buf.append(',');

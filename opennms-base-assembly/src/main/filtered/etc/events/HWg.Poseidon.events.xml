@@ -1,0 +1,272 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.21796.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/traps/POSEIDON-MIB/inpAlarmStateChanged</uei>
+      <event-label>POSEIDON-MIB defined trap event: inpAlarmStateChanged</event-label>
+      <descr>&lt;p>Input state entered/left alarm condition.
+		This trap always follows tsTrapAlarmStart/tsTrapAlarmEnd.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	infoAddressMAC&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	inpName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	inpValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
+		off(0)
+		on(1)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	inpAlarmState&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		normal(0)
+		alarm(1)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	inpAlarmStateChanged trap received
+	sysName=%parm[#1]%
+	infoAddressMAC=%parm[#2]%
+	inpName=%parm[#3]%
+	inpValue=%parm[#4]%
+	inpAlarmState=%parm[#5]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#4]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="off"/>
+         <decode varbindvalue="1" varbinddecodedstring="on"/>
+      </varbindsdecode>
+      <varbindsdecode>
+         <parmid>parm[#5]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="normal"/>
+         <decode varbindvalue="1" varbinddecodedstring="alarm"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.21796.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/traps/POSEIDON-MIB/sensAlarmStateChanged</uei>
+      <event-label>POSEIDON-MIB defined trap event: sensAlarmStateChanged</event-label>
+      <descr>&lt;p>Nth sensor state entered/left alarm condition.
+		This trap always follows tsTrapAlarmStart/tsTrapAlarmEnd.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	infoAddressMAC&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sensName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sensID&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sensState&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		invalid(0)
+		normal(1)
+		alarmstate(2)
+		alarm(3)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sensValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sensUnit&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		celsius(0)
+		fahrenheit(1)
+		kelvin(2)
+		percent(3)
+		volt(4)
+		miliAmper(5)
+		noUnit(6)
+		pulse(7)
+		switch(8)
+		dewPoint(9)
+		absoluteHumidity(10)
+		pressure(11)
+		universal(12)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	sensAlarmStateChanged trap received
+	sysName=%parm[#1]%
+	infoAddressMAC=%parm[#2]%
+	sensName=%parm[#3]%
+	sensID=%parm[#4]%
+	sensState=%parm[#5]%
+	sensValue=%parm[#6]%
+	sensUnit=%parm[#7]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#5]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="invalid"/>
+         <decode varbindvalue="1" varbinddecodedstring="normal"/>
+         <decode varbindvalue="2" varbinddecodedstring="alarmstate"/>
+         <decode varbindvalue="3" varbinddecodedstring="alarm"/>
+      </varbindsdecode>
+      <varbindsdecode>
+         <parmid>parm[#7]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="celsius"/>
+         <decode varbindvalue="1" varbinddecodedstring="fahrenheit"/>
+         <decode varbindvalue="2" varbinddecodedstring="kelvin"/>
+         <decode varbindvalue="3" varbinddecodedstring="percent"/>
+         <decode varbindvalue="4" varbinddecodedstring="volt"/>
+         <decode varbindvalue="5" varbinddecodedstring="miliAmper"/>
+         <decode varbindvalue="6" varbinddecodedstring="noUnit"/>
+         <decode varbindvalue="7" varbinddecodedstring="pulse"/>
+         <decode varbindvalue="8" varbinddecodedstring="switch"/>
+         <decode varbindvalue="9" varbinddecodedstring="dewPoint"/>
+         <decode varbindvalue="10" varbinddecodedstring="absoluteHumidity"/>
+         <decode varbindvalue="11" varbinddecodedstring="pressure"/>
+         <decode varbindvalue="12" varbinddecodedstring="universal"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.21796.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/traps/POSEIDON-MIB/tsTrapAlarmStart</uei>
+      <event-label>POSEIDON-MIB defined trap event: tsTrapAlarmStart</event-label>
+      <descr>&lt;p>This trap is sent each time an alarm is inserted
+		into to the alarm table.  It is sent on the insertion
+		of all alarms except for powerFailure.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	infoAddressMAC&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tsAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tsAlarmDescr&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
+		inputStateAlarm(1)
+		temperatureOutOfRange(2)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	tsTrapAlarmStart trap received
+	sysName=%parm[#1]%
+	infoAddressMAC=%parm[#2]%
+	tsAlarmId=%parm[#3]%
+	tsAlarmDescr=%parm[#4]%&lt;/p></logmsg>
+      <severity>Warning</severity>
+      <operinstruct></operinstruct>
+      <varbindsdecode>
+         <parmid>parm[#4]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="inputStateAlarm"/>
+         <decode varbindvalue="2" varbinddecodedstring="temperatureOutOfRange"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.21796.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/traps/POSEIDON-MIB/tsTrapAlarmEnd</uei>
+      <event-label>POSEIDON-MIB defined trap event: tsTrapAlarmEnd</event-label>
+      <descr>&lt;p>This trap is sent each time an alarm is removed
+		from the alarm table.  It is sent on the removal
+		of all alarms.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	infoAddressMAC&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tsAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tsAlarmDescr&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
+		inputStateAlarm(1)
+		temperatureOutOfRange(2)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	tsTrapAlarmEnd trap received
+	sysName=%parm[#1]%
+	infoAddressMAC=%parm[#2]%
+	tsAlarmId=%parm[#3]%
+	tsAlarmDescr=%parm[#4]%&lt;/p></logmsg>
+      <severity>Normal</severity>
+      <operinstruct></operinstruct>
+      <varbindsdecode>
+         <parmid>parm[#4]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="inputStateAlarm"/>
+         <decode varbindvalue="2" varbinddecodedstring="temperatureOutOfRange"/>
+      </varbindsdecode>
+   </event>
+</events>

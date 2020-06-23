@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -68,7 +68,7 @@
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Choose Path" />
   <jsp:param name="headTitle" value="Choose Path" />
   <jsp:param name="headTitle" value="Admin" />
@@ -77,7 +77,7 @@
   <jsp:param name="breadcrumb" value="Choose Path" />
 </jsp:include>
 
-<script language="JAVASCRIPT" >
+<script type="text/javascript" >
   
     function trimString(str) 
     {
@@ -118,41 +118,52 @@
 
 <h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br/>" : "")%></h2>
 
-<h3>Choose the destination path and enter the information to send via the notification</h3>
-
 <form method="post" name="info"
       action="admin/notification/noticeWizard/notificationWizard">
       <input type="hidden" name="userAction" value=""/>
       <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_PATH%>"/>
-      <table width="100%" cellspacing="2" cellpadding="2" border="0">
+
+<div class="row">
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header">
+        <span>Choose the destination path and enter the information to send via the notification</span>
+      </div>
+      <table class="table table-sm">
         <tr>
           <td width="10%" valign="top" align="left">
-            Name:
+            <label>Name:</label>
           </td>
           <td valign="top" align="left">
-            <input type="text" size="100" name="name" value='<%=(newNotice.getName()!=null ? newNotice.getName() : "")%>'/>
+            <input type="text" class="form-control" name="name" value='<%=(newNotice.getName()!=null ? newNotice.getName() : "")%>'/>
           </td>
         </tr>
         <tr>
           <td width="10%" valign="top" align="left">
-            Description:
+            <label>Description:</label>
           </td>
           <td valign="top" align="left">
-            <input type="text" size="100" name="description" value='<%=(newNotice.getDescription()!=null ? newNotice.getDescription() : "")%>'/>
+            <input type="text" class="form-control" name="description" value='<%=newNotice.getDescription().orElse("")%>'/>
           </td>
         </tr>
         <tr>
           <td width="10%" valign="top" align="left">
-            Parameter:
+            <label>Parameter:</label>
           </td>
           <td valign="top" align="left">
-            Name: <input type="text" size="30" name="varbindName" value='<%=varbindName%>'/>
-			Value: <input type="text" size="30" name="varbindValue" value='<%=varbindValue%>'/>
+            <div class="row">
+              <div class="col-md-6">
+                <label>Name:</label> <input type="text" class="form-control" size="30" name="varbindName" value='<%=varbindName%>'/>
+              </div>
+              <div class="col-md-6">
+                <label>Value:</label> <input class="form-control" type="text" size="30" name="varbindValue" value='<%=varbindValue%>'/>
+              </div>
+            </div>
           </td>
         </tr>
         <tr>
           <td width="10%" valign="top" align="left">
-            Choose A Path:
+            <label>Choose A Path:</label>
           </td>
           <td valign="top" align="left">
             <%=buildPathSelect(newNotice.getDestinationPath())%>
@@ -160,34 +171,34 @@
          </tr>
          <tr>
           <td width="10%" valign="top" align="left">
-            Text Message:
+            <label>Text Message:</label>
           </td>
           <td valign="top" align="left">
-            <textarea rows="3" cols="100" name="textMsg"><%=(newNotice.getTextMessage()!=null ? newNotice.getTextMessage() : "")%></textarea>
+            <textarea rows="3" class="form-control" name="textMsg"><%=(newNotice.getTextMessage()!=null ? newNotice.getTextMessage() : "")%></textarea>
           </td>
          </tr>
          <tr>
           <td width="10%" valign="top" align="left">
-            Short Message:
+            <label>Short Message:</label>
           </td>
           <td valign="top" align="left">
-            <textarea rows="1" cols="100" name="numMsg"><%=(newNotice.getNumericMessage()!=null ? newNotice.getNumericMessage() : "")%></textarea>
+            <textarea rows="1" class="form-control" name="numMsg"><%=newNotice.getNumericMessage().orElse("")%></textarea>
           </td>
          </tr>
          <tr>
           <td width="10%" valign="top" align="left">
-            Email Subject:
+            <label>Email Subject:</label>
           </td>
           <td valign="top" align="left">
-            <input type="text" size="100" name="subject" value='<%=(newNotice.getSubject()!=null ? newNotice.getSubject() : "")%>'/>
+            <input type="text" class="form-control" name="subject" value='<%=newNotice.getSubject().orElse("")%>'/>
           </td>
          </tr>
          <tr>
           <td width="10%" valign="top" align="left">
-            Special Values:
+            <label>Special Values:</label>
           </td>
           <td valign="top" align="left">
-            <table width="100%" border="0" cellspacing="0" cellpadding="1">
+            <table class="table table-sm">
               <tr>
                 <td colspan="3">Can be used in both the text message and email subject:</td>
               </tr>
@@ -214,31 +225,29 @@
             </table>
           </td>
          </tr>
-         
-        <tr>
-          <td colspan="2">
-            <a HREF="javascript:finish()">Finish</a>
-          </td>
-        </tr>
       </table>
-      </form>
+        <div class="card-footer">
+              <a class="btn btn-secondary" href="javascript:finish()">Finish</a>
+        </div>
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+</form>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     public String buildPathSelect(String currentPath)
       throws ServletException
     {
-         StringBuffer buffer = new StringBuffer("<select NAME=\"path\">");
+         StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" NAME=\"path\">");
          
          Map<String, Path> pathsMap = null;
          
          try {
-            pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
-         Iterator iterator = pathsMap.keySet().iterator();
-         while(iterator.hasNext())
-         { 
-                 String key = (String)iterator.next();
+             pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
+             for (String key : pathsMap.keySet()) {
                  if (key.equals(currentPath))
                  {
                     buffer.append("<option SELECTED VALUE=" + key + ">" + key + "</option>");
@@ -247,7 +256,7 @@
                  {
                     buffer.append("<option VALUE=" + key + ">" + key + "</option>");
                  }
-            }
+             }
          } catch (Throwable e)
          {
             throw new ServletException("couldn't get destination path list.", e);

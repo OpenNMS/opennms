@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
- 
 <databaseChangeLog
 	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -9,14 +8,15 @@
 
 <changeSet runOnChange="true" author="rangerrick" id="getOutageTimeInWindow">
 <createProcedure>
-CREATE OR REPLACE FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone)
+<!-- Drop any old versions of the procedure -->
+DROP FUNCTION IF EXISTS getOutageTimeInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone);
+
+CREATE OR REPLACE FUNCTION getOutageTimeInWindow(integer,timestamp without time zone,timestamp without time zone)
         RETURNS float8 AS '
    DECLARE
-        nid ALIAS FOR $1;
-        ipid ALIAS FOR $2;
-        sid ALIAS FOR $3;
-        xtime ALIAS FOR $4;
-        ytime ALIAS FOR $5;
+        ifsrvid ALIAS FOR $1;
+        xtime ALIAS FOR $2;
+        ytime ALIAS FOR $3;
         orec RECORD;
         lostTime timestamp without time zone;
         gainTime timestamp without time zone;
@@ -26,9 +26,12 @@ CREATE OR REPLACE FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,tim
    BEGIN
         downtime = zero;
         FOR orec IN SELECT ifLostService,ifRegainedService
-                FROM outages WHERE (nodeID = nid AND ipAddr = ipid AND serviceID = sid AND
-                                   ((ifRegainedService IS NULL AND ifLostService &lt;= xtime)  OR
-                                    (ifRegainedService &gt; ytime)))
+                FROM outages 
+                WHERE ifServiceId = ifsrvid 
+                        AND (
+                                (ifRegainedService IS NULL AND ifLostService &lt;= xtime)
+                                OR (ifRegainedService &gt; ytime)
+                        )
         LOOP
          BEGIN
                 gainTime := epochTime;
@@ -58,7 +61,7 @@ CREATE OR REPLACE FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,tim
                  ELSE
                   IF xtime &gt; gainTime AND gainTime &gt; ytime THEN
                    --
-                   -- regain time between x &amp; y
+                   -- regain time between x and y
                    --
                     IF ytime &gt; lostTime THEN
                      downtime := downtime + EXTRACT (EPOCH FROM (gainTime - ytime));
@@ -91,7 +94,7 @@ CREATE OR REPLACE FUNCTION getOutageTimeInWindow(integer,varchar(16),integer,tim
 </createProcedure>
 
 <rollback>
-  <sql>DROP FUNCTION IF EXISTS getOutageTimeInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone);</sql>
+  <sql>DROP FUNCTION IF EXISTS getOutageTimeInWindow(integer,timestamp without time zone,timestamp without time zone);</sql>
 </rollback>
 </changeSet>
 

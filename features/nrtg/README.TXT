@@ -20,18 +20,18 @@
   b. start one inside the opennms osgi container by running the
      following commands:
 
-     osgi> features:install activemq-blueprint
+     osgi> feature:install activemq-blueprint
      osgi> activemq:create-broker -t blueprint
 
 2. Install the nrtg feature in the opennms osgi container
 
   You may start this feature by running
 
-  osgi> features:install nrtg
+  osgi> feature:install nrtg
 
   alternatively you may install the individual features for nrtg
 
-  osgi> features:install osgi-nrtg-api osgi-nrtg-nrtcollector osgi-nrtg-protocolcollector-snmp
+  osgi> feature:install osgi-nrtg-api osgi-nrtg-nrtcollector osgi-nrtg-protocolcollector-snmp
 
 3. Install NRTG Web components
   - Provide the org.opennms.features.nrtg/nrtg-web/1.11.3-SNAPSHOT to the local .m2/repository 

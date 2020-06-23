@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,15 +34,15 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.MethodUtils;
 import org.opennms.core.soa.ServiceRegistry;
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.utils.PropertyPath;
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.spring.PropertyPath;
 import org.opennms.netmgt.provision.OnmsPolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.annotations.Policy;
@@ -51,6 +51,7 @@ import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.support.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -103,7 +104,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      */
     @Override
     public Set<ForeignSource> getAllForeignSources() {
-        Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
+        Set<ForeignSource> foreignSources = new TreeSet<>();
         foreignSources.addAll(m_pendingForeignSourceRepository.getForeignSources());
         for (ForeignSource fs : m_deployedForeignSourceRepository.getForeignSources()) {
             if (!foreignSources.contains(fs)) {
@@ -266,7 +267,12 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                 if (serviceName == null) {
                     serviceName = d.getClass().getSimpleName();
                 }
-                detectors.put(serviceName, d.getClass().getName());
+                String className = d.getClass().getName();
+                // NMS-8119: The class name may be changed when using proxy objects
+                if (d instanceof TargetClassAware) {
+                    className = ((TargetClassAware)d).getTargetClass().getName();
+                }
+                detectors.put(serviceName, className);
             }
 
             m_detectors = new LinkedHashMap<String,String>();
@@ -314,7 +320,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
     @Override
     public Map<String,PluginWrapper> getWrappers() {
         if (m_wrappers == null && m_policies != null && m_detectors != null) {
-            m_wrappers = new HashMap<String,PluginWrapper>(m_policies.size());
+            m_wrappers = new HashMap<String,PluginWrapper>(m_policies.size() + m_detectors.size());
             for (String key : m_policies.keySet()) {
                 try {
                     PluginWrapper wrapper = new PluginWrapper(key);
@@ -344,13 +350,14 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
         }
     }
 
-    private void normalizePluginConfig(PluginConfig pc) {
+    private void normalizePluginConfig(final PluginConfig pc) {
         if (m_wrappers.containsKey(pc.getPluginClass())) {
-            PluginWrapper w = m_wrappers.get(pc.getPluginClass());
+            final PluginWrapper w = m_wrappers.get(pc.getPluginClass());
             if (w != null) {
-                Map<String,String> parameters = pc.getParameterMap();
-                Map<String,Set<String>> required = w.getRequiredItems();
-                for (String key : required.keySet()) {
+                final Map<String,String> parameters = pc.getParameterMap();
+                final Map<String,Set<String>> required = w.getRequiredItems();
+                for (final Entry<String, Set<String>> entry : required.entrySet()) {
+                    final String key = entry.getKey();
                     String value = "";
                     if (!parameters.containsKey(key)) {
                         if (required.get(key).size() > 0) {

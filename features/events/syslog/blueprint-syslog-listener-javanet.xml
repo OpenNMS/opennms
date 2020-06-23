@@ -1,0 +1,52 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+	<cm:property-placeholder id="syslogProperties" persistent-id="org.opennms.netmgt.syslog" update-strategy="reload">
+		<cm:default-properties>
+			<cm:property name="syslog.listen.interface" value="0.0.0.0" />
+			<cm:property name="syslog.listen.port" value="1514" />
+			<cm:property name="syslog.threads" value="0" />
+			<cm:property name="syslog.queue.size" value="10000" />
+			<cm:property name="syslog.batch.size" value="1000" />
+			<cm:property name="syslog.batch.interval" value="500" />
+		</cm:default-properties>
+	</cm:property-placeholder>
+
+	<bean id="syslogConfig" class="org.opennms.netmgt.syslogd.SyslogConfigBean">
+		<property name="syslogPort" value="${syslog.listen.port}" />
+		<property name="listenAddress" value="${syslog.listen.interface}" />
+		<property name="numThreads" value="${syslog.threads}" />
+		<property name="queueSize" value="${syslog.queue.size}" />
+		<property name="batchSize" value="${syslog.batch.size}" />
+		<property name="batchIntervalMs" value="${syslog.batch.interval}" />
+	</bean>
+
+	<reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+
+	<reference id="messageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory" />
+
+	<bean id="syslogReceiverJavaNet" class="org.opennms.netmgt.syslogd.SyslogReceiverJavaNetImpl" destroy-method="stop">
+		<argument ref="syslogConfig" />
+		<property name="distPollerDao" ref="distPollerDao"/>
+		<property name="messageDispatcherFactory" ref="messageDispatcherFactory" />
+	</bean>
+
+	<bean class="java.lang.Thread" init-method="start">
+		<argument ref="syslogReceiverJavaNet"/>
+	</bean>
+
+	<service interface="org.opennms.netmgt.syslogd.SyslogReceiver" ref="syslogReceiverJavaNet"/>
+
+</blueprint>

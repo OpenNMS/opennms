@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.core.test;
 
 
@@ -101,8 +129,10 @@ public class MockLogger extends MarkerIgnoringBase {
         loadProperties();
 
         String defaultLogLevelString = getStringProperty(DEFAULT_LOG_LEVEL_KEY, null);
-        if (defaultLogLevelString != null)
+        if (defaultLogLevelString != null) {
+            //System.err.println("Changing default log level to: " + defaultLogLevelString);
             DEFAULT_LOG_LEVEL = stringToLevel(defaultLogLevelString);
+        }
 
         SHOW_LOG_NAME = getBooleanProperty(SHOW_LOG_NAME_KEY, SHOW_LOG_NAME);
         SHOW_SHORT_LOG_NAME = getBooleanProperty(SHOW_SHORT_LOG_NAME_KEY, SHOW_SHORT_LOG_NAME);
@@ -133,8 +163,7 @@ public class MockLogger extends MarkerIgnoringBase {
         } else {
             try {
                 FileOutputStream fos = new FileOutputStream(logFile);
-                PrintStream printStream = new PrintStream(fos);
-                return printStream;
+                return new PrintStream(fos);
             } catch (FileNotFoundException e) {
                 Util.report("Could not open [" + logFile + "]. Defaulting to System.err", e);
                 return System.err;
@@ -227,7 +256,7 @@ public class MockLogger extends MarkerIgnoringBase {
 
         MockLogAppender.addEvent(new LoggingEvent(getName(), level, message));
 
-        StringBuffer buf = new StringBuffer(32);
+        final StringBuilder buf = new StringBuilder(32);
 
         // Append date-time if so configured
         if (SHOW_DATE_TIME) {
@@ -267,7 +296,7 @@ public class MockLogger extends MarkerIgnoringBase {
 
     }
 
-    void write(StringBuffer buf, Throwable t) {
+    void write(StringBuilder buf, Throwable t) {
         TARGET_STREAM.println(buf.toString());
         if (t != null) {
             t.printStackTrace(TARGET_STREAM);

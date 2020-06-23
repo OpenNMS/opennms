@@ -47,4 +47,10 @@
             <command>mockNotifier</command>
         </target>
     </path>
+    <path name="LockThread" initial-delay="0s">
+        <target>
+            <name>SingleUserGroup</name>
+            <command>threadLockingNotifier</command>
+        </target>
+    </path>
 </destinationPaths>

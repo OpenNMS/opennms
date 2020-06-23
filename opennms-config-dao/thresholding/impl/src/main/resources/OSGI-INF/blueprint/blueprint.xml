@@ -1,0 +1,14 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
+
+    <bean id="sentinelThreshdDao" class="org.opennms.netmgt.config.dao.thresholding.impl.SentinelThreshdDao">
+        <argument ref="jsonStore"/>
+    </bean>
+    <service ref="sentinelThreshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao"/>
+
+    <bean id="sentinelThresholdingDao" class="org.opennms.netmgt.config.dao.thresholding.impl.SentinelThresholdingDao">
+        <argument ref="jsonStore"/>
+    </bean>
+    <service ref="sentinelThresholdingDao"
+             interface="org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao"/>
+</blueprint>

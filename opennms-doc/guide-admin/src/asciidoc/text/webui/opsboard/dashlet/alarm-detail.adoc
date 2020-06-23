@@ -1,0 +1,24 @@
+
+===== Alarm Details
+
+This _Alarm-Details Dashlet_ shows a table with alarms and some detailed information.
+
+.Information of the alarms
+[options="header, autowidth"]
+|===
+| Field             | Description
+| _Alarm ID_        | {opennms-product-name} ID for the alarm
+| _Severity_        | Alarm severity (Cleared, Indeterminate, Normal, Warning, Minor, Major, Critical)
+| _Node label_      | Node label of the node where the alarm occurred
+| _Alarm count_     | Alarm count based on reduction key for deduplication
+| _Last Event Time_ | Last time the alarm occurred
+| _Log Message_     | Reason and detailed log message of the alarm
+|===
+
+The _Alarm Details Dashlet_ can be configured with the following parameters.
+
+[options="autowidth"]
+|===
+| Boost support | <<webui-opsboard-dashlet-boosting,Boosted Severity>>
+| Configuration | <<webui-opsboard-criteria-builder,Criteria Builder>>
+|===

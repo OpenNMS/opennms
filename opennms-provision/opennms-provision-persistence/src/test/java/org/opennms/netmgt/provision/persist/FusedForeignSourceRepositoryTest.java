@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -65,11 +65,11 @@ import org.springframework.core.io.UrlResource;
 
 public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
     @Autowired
-    @Qualifier("pending")
+    @Qualifier("filePending")  // TODO fused doesn't work with fastFilePending
     private ForeignSourceRepository m_pending;
     
     @Autowired
-    @Qualifier("deployed")
+    @Qualifier("fileDeployed") // TODO fused doesn't work with fastFileDeployed
     private ForeignSourceRepository m_active;
     
     @Autowired
@@ -84,22 +84,8 @@ public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTes
         MockLogAppender.setupLogging(props);
 
         System.err.println("setUp()");
-        /* 
-         * since we share the filesystem with other tests, best
-         * to make sure it's totally clean here.
-         */
-        for (final ForeignSource fs : m_pending.getForeignSources()) {
-            m_pending.delete(fs);
-        }
-        for (final ForeignSource fs : m_active.getForeignSources()) {
-            m_active.delete(fs);
-        }
-        for (final Requisition r : m_pending.getRequisitions()) {
-            m_pending.delete(r);
-        }
-        for (final Requisition r : m_active.getRequisitions()) {
-            m_active.delete(r);
-        }
+        m_pending.clear();
+        m_active.clear();
         
         FileUtils.deleteDirectory(new File("target/opennms-home/etc/imports/pending"));
 
@@ -307,7 +293,7 @@ public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTes
     }
 
     protected List<String> getImports(final String foreignSource) {
-        final List<String> entries = new ArrayList<String>();
+        final List<String> entries = new ArrayList<>();
 
         final File importsDirectory = new File("target/opennms-home/etc/imports");
         for (final File file : importsDirectory.listFiles()) {

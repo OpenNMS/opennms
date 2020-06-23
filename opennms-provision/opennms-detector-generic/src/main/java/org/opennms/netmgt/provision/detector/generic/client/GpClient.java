@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -51,7 +51,6 @@ public class GpClient implements Client<GpRequest, GpResponse> {
     private String m_match;
     private String m_hoption;
     private String m_toption;
-    private ExecRunner m_execRunner;
     private int m_exitStatus = 100;
     private String m_response = "";
     private String m_error = "";
@@ -69,21 +68,21 @@ public class GpClient implements Client<GpRequest, GpResponse> {
     public void connect(final InetAddress address, final int port, final int timeout) throws IOException, Exception {
         setExitStatus(100);
         
-        m_execRunner = new ExecRunner();
-        m_execRunner.setMaxRunTimeSecs(convertToSeconds(timeout));
+        ExecRunner execRunner = new ExecRunner();
+        execRunner.setMaxRunTimeSecs(convertToSeconds(timeout));
         final String hostAddress = InetAddressUtils.str(address);
 		final String script = "" + getScript() + " " + getHoption() + " " + hostAddress + " " + getToption() + " " + convertToSeconds(timeout);
         if (getArgs() == null)
-            setExitStatus(m_execRunner.exec(script));
+            setExitStatus(execRunner.exec(script));
         else
-            setExitStatus(m_execRunner.exec(getScript() + " " + getHoption() + " " + hostAddress + " " + getToption() + " " + convertToSeconds(timeout) + " " + getArgs()));
+            setExitStatus(execRunner.exec(getScript() + " " + getHoption() + " " + hostAddress + " " + getToption() + " " + convertToSeconds(timeout) + " " + getArgs()));
         
-        if (m_execRunner.isMaxRunTimeExceeded()) {
+        if (execRunner.isMaxRunTimeExceeded()) {
             
         } else {
             if (getExitStatus() == 0) {
-                setResponse(m_execRunner.getOutString());
-                setError(m_execRunner.getErrString());
+                setResponse(execRunner.getOutString());
+                setError(execRunner.getErrString());
             }
         }
     }

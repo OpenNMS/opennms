@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,10 +32,17 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -43,6 +50,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -51,17 +60,18 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.ObjectNotFoundException;
-import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.MapKey;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
-import org.opennms.core.xml.bind.InetAddressXmlAdapter;
-import org.springframework.core.style.ToStringCreator;
+import org.opennms.core.network.InetAddressXmlAdapter;
+import com.google.common.base.MoreObjects;
 
 /**
  * <p>OnmsAlarm class.</p>
@@ -70,6 +80,7 @@ import org.springframework.core.style.ToStringCreator;
 @Entity
 @Table(name="alarms")
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsAlarm implements Acknowledgeable, Serializable {
     private static final long serialVersionUID = 7275548439687562161L;
     
@@ -79,6 +90,11 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     /** Constant <code>RESOLUTION_TYPE=2</code> */
     public static final int RESOLUTION_TYPE = 2;
 
+    /** Constant <code>PROBLEM_WITHOUT_RESOLUTION_TYPE=3</code> */
+    public static final int PROBLEM_WITHOUT_RESOLUTION_TYPE = 3;
+
+    public static final String ARCHIVED = "Archived";
+
     /** identifier field */
     private Integer m_id;
 
@@ -86,7 +102,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private String m_uei;
 
     /** persistent field */
-    private OnmsDistPoller m_distPoller;
+    private OnmsMonitoringSystem m_distPoller;
 
     /** nullable persistent field */
     private OnmsNode m_node;
@@ -164,9 +180,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private OnmsEvent m_lastEvent;
     
     /** persistent field */
-    private String m_eventParms;
-
-    /** persistent field */
     private String m_managedObjectInstance;
     
     /** persistent field */
@@ -188,7 +201,15 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private OnmsMemo m_stickyMemo;
     
     private OnmsReductionKeyMemo m_reductionKeyMemo;
-    
+
+    private Set<AlarmAssociation> m_associatedAlarms = new HashSet<>();
+
+    private Set<OnmsAlarm> m_relatedSituations = new HashSet<>();
+
+    private boolean m_situation;
+
+    private boolean m_partOfSituation;
+
     /**
      * default constructor
      */
@@ -265,9 +286,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 	 * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
 	 */
 	@XmlTransient
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="dpName", nullable=false)
-    public OnmsDistPoller getDistPoller() {
+    @ManyToOne
+    @JoinColumn(name="systemId", nullable=false)
+    public OnmsMonitoringSystem getDistPoller() {
         return this.m_distPoller;
     }
 
@@ -276,7 +297,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
      */
-    public void setDistPoller(OnmsDistPoller distPoller) {
+    public void setDistPoller(OnmsMonitoringSystem distPoller) {
         this.m_distPoller = distPoller;
     }
 
@@ -444,6 +465,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      */
+    @Override
     @Column(name="severity", nullable=false)
     // @Enumerated(EnumType.ORDINAL)
     @Type(type="org.opennms.netmgt.model.OnmsSeverityUserType")
@@ -546,7 +568,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link java.lang.String} object.
      */
     @XmlElement(name="operatorInstructions")
-    @Column(name="operinstruct", length=1024)
+    @Column(name="operinstruct")
     public String getOperInstruct() {
         return this.m_operInstruct;
     }
@@ -777,24 +799,19 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         }
     }
 
-    /**
-     * <p>getEventParms</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @XmlElement(name="parms")
-    @Column(name="eventParms", length=1024)
-    public String getEventParms() {
-        return this.m_eventParms;
+    @Transient
+    @XmlElementWrapper(name="parameters")
+    @XmlElement(name="parameter")
+    public List<OnmsEventParameter> getEventParameters() {
+        return m_lastEvent != null ? m_lastEvent.getEventParameters() : null;
     }
 
-    /**
-     * <p>setEventParms</p>
-     *
-     * @param eventparms a {@link java.lang.String} object.
-     */
-    public void setEventParms(String eventparms) {
-        this.m_eventParms = eventparms;
+    public Optional<OnmsEventParameter> findEventParameter(final String name) {
+        return this.getEventParameters().stream().filter(p -> Objects.equals(name, p.getName())).findAny();
+    }
+
+    public String getEventParameter(final String name) {
+        return this.getEventParameters().stream().filter(p -> Objects.equals(name, p.getName())).findAny().map(OnmsEventParameter::getValue).orElse(null);
     }
 
     /**
@@ -804,8 +821,13 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-            .append("alarmid", getId())
+        return MoreObjects.toStringHelper(this)
+            .add("alarmid", getId())
+            .add("distPoller", getDistPoller())
+            .add("uei", getUei())
+            .add("severity", getSeverity())
+            .add("lastEventTime",getLastEventTime())
+            .add("counter", getCounter())
             .toString();
     }
 
@@ -1012,9 +1034,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @return a {@link java.util.Map} object.
      */
     @XmlTransient
-    @CollectionOfElements
+    @ElementCollection
     @JoinTable(name="alarm_attributes", joinColumns = @JoinColumn(name="alarmId"))
-    @MapKey(columns=@Column(name="attribute"))
+    @MapKeyColumn(name="attributename")
     @Column(name="attributeValue", nullable=false)
     public Map<String, String> getDetails() {
         return m_details;
@@ -1102,6 +1124,22 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     }
 
     /**
+     * This marks an alarm as archived and prevents it from being used again in during reduction.
+     */
+    public void archive() {
+        m_qosAlarmState = ARCHIVED;
+        m_severity = OnmsSeverity.CLEARED;
+        m_reductionKey = getReductionKey() + ":ID:"+ getId();
+    }
+
+    // Alarms that are archived
+    @Transient
+    @XmlTransient
+    public boolean isArchived() {
+        return ARCHIVED.equals(m_qosAlarmState);
+    }
+
+    /**
      * <p>getType</p>
      *
      * @return a {@link org.opennms.netmgt.model.AckType} object.
@@ -1144,5 +1182,126 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     public Date getAckTime() {
         return m_alarmAckTime;
     }
-    
+
+    /**
+     * <p>getRelatedAlarms</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
+    @Transient
+    @XmlTransient
+    public Set<OnmsAlarm> getRelatedAlarms() {
+        return m_associatedAlarms.stream().map(AlarmAssociation::getRelatedAlarm).collect(Collectors.toSet());
+    }
+
+    @Transient
+    @XmlTransient
+    public Set<Integer> getRelatedAlarmIds() {
+        return getRelatedAlarms().stream()
+                .map(OnmsAlarm::getId)
+                .collect(Collectors.toSet());
+    }
+
+    @XmlTransient
+    @OneToMany(mappedBy = "situationAlarm", orphanRemoval = true, cascade = CascadeType.ALL)
+    public Set<AlarmAssociation> getAssociatedAlarms() {
+        return m_associatedAlarms;
+    }
+
+    public void setAssociatedAlarms(Set<AlarmAssociation> alarms) {
+        m_associatedAlarms = alarms;
+        m_situation = !m_associatedAlarms.isEmpty();
+    }
+
+    public void setRelatedAlarms(Set<OnmsAlarm> alarms) {
+        m_associatedAlarms.clear();
+        alarms.forEach(relatedAlarm -> m_associatedAlarms.add(new AlarmAssociation(this, relatedAlarm)));
+        m_situation = !m_associatedAlarms.isEmpty();
+    }
+
+    public void setRelatedAlarms(Set<OnmsAlarm> alarms, Date associationEventTime) {
+        m_associatedAlarms.clear();
+        alarms.forEach(relatedAlarm -> m_associatedAlarms.add(new AlarmAssociation(this, relatedAlarm, associationEventTime)));
+        m_situation = !m_associatedAlarms.isEmpty();
+    }
+
+    public void addRelatedAlarm(OnmsAlarm alarm) {
+        m_associatedAlarms.add(new AlarmAssociation(this, alarm));
+        m_situation = !m_associatedAlarms.isEmpty();
+    }
+
+    public void removeRelatedAlarm(OnmsAlarm alarm) {
+        m_associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(alarm.getId()));
+        m_situation = !m_associatedAlarms.isEmpty();
+    }
+
+    public void removeRelatedAlarmWithId(Integer relatedAlarmId) {
+        m_associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(relatedAlarmId));
+        m_situation = !m_associatedAlarms.isEmpty();
+    }
+
+    @XmlTransient
+    @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.SITUATION_ID=ALARMID)")
+    public boolean isSituation() {
+        return m_situation;
+    }
+
+    public void setSituation(final boolean situation) {
+        m_situation = situation;
+    }
+
+    @XmlTransient
+    @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.RELATED_ALARM_ID=ALARMID)")
+    public boolean isPartOfSituation() {
+        return m_partOfSituation;
+    }
+
+    public void setPartOfSituation(final boolean partOfSituation) {
+        m_partOfSituation = partOfSituation;
+    }
+
+    @XmlTransient
+    @ElementCollection
+    @JoinTable(name = "alarm_situations", joinColumns = @JoinColumn(name = "related_alarm_id"), inverseJoinColumns = @JoinColumn(name = "situation_id"))
+    @Column(name="alarm_id", nullable=false)
+    public Set<OnmsAlarm> getRelatedSituations() {
+        return m_relatedSituations;
+    }
+
+    @Transient
+    @XmlTransient
+    public Set<Integer> getRelatedSituationIds() {
+        return getRelatedSituations().stream()
+                .map(OnmsAlarm::getId)
+                .collect(Collectors.toSet());
+    }
+
+    public void setRelatedSituations(Set<OnmsAlarm> alarms) {
+        m_relatedSituations = alarms;
+        m_partOfSituation = !m_relatedSituations.isEmpty();
+    }
+
+    @Transient
+    @XmlTransient
+    public Integer getAffectedNodeCount() {
+        if (m_associatedAlarms == null || m_associatedAlarms.isEmpty()) {
+            return m_node == null ? 0 : 1;
+        }
+        Set<Integer> nodes = getRelatedAlarms().stream().map(OnmsAlarm::getNode).filter(Objects::nonNull).map(OnmsNode::getId).collect(Collectors.toSet());
+        // count the Situtation's node if it is different
+        if (m_node != null) {
+            nodes.add(m_node.getId());
+        }
+        return nodes.size();
+    }
+
+    @Transient
+    @XmlTransient
+    public Date getLastUpdateTime() {
+        if (getLastAutomationTime() != null && getLastAutomationTime().compareTo(getLastEventTime()) > 0) {
+            return getLastAutomationTime();
+        }
+        return getLastEventTime();
+    }
+
 }

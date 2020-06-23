@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -49,13 +49,13 @@ public class RTTicket implements Serializable {
     private String m_status;
     private String m_queue;
     private String m_created;
-    private List<String> m_requestors = new ArrayList<String>();
+    private List<String> m_requestors = new ArrayList<>();
     private String m_subject;
     private String m_text;
     private List<CustomField> m_customFields;
 
     public RTTicket() {
-        m_customFields = new ArrayList<CustomField>();
+        m_customFields = new ArrayList<>();
     }
 
     public RTTicket(final String queue, final String requestor, final String subject, final String text, final List<CustomField> customFields) {
@@ -165,7 +165,7 @@ public class RTTicket implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder customFields = new StringBuilder();
+        final StringBuilder customFields = new StringBuilder();
         for (CustomField cf : m_customFields) {
             customFields.append(cf.toString())
             .append("\n");

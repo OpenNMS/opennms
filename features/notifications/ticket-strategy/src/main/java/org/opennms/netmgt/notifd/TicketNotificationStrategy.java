@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2011 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2011 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,14 +34,13 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.Argument;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DefaultEventConfDao;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
-import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +58,6 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TicketNotificationStrategy.class);
 	private EventIpcManager m_eventManager;
-	private List<Argument> m_arguments;
 	private DefaultEventConfDao m_eventConfDao;
 	
 	enum AlarmType {
@@ -98,7 +96,7 @@ public class TicketNotificationStrategy implements NotificationStrategy {
 		}
 	}
 	
-	protected class AlarmStateRowCallbackHandler implements RowCallbackHandler {
+	protected static class AlarmStateRowCallbackHandler implements RowCallbackHandler {
 		AlarmState m_alarmState;
 		public AlarmStateRowCallbackHandler() {
 			m_alarmState = null;
@@ -123,10 +121,8 @@ public class TicketNotificationStrategy implements NotificationStrategy {
         String eventUEI = null;
         String noticeID = null;
         
-        m_arguments = arguments;
-        
         // Pull the arguments we're interested in from the list.
-        for (Argument arg : m_arguments) {
+        for (Argument arg : arguments) {
 		LOG.debug("arguments: {} = {}", arg.getSwitch(), arg.getValue());
         	
             if ("eventID".equalsIgnoreCase(arg.getSwitch())) {
@@ -192,21 +188,20 @@ public class TicketNotificationStrategy implements NotificationStrategy {
      *
      * @return 0 if alarmid is null
      */
-	protected AlarmType getAlarmTypeFromUEI(String eventUEI) {
-        Event event = m_eventConfDao.findByUei(eventUEI);
-        if( event == null )
-        	return AlarmType.NOT_AN_ALARM;
-        
-        AlarmData alarmData = event.getAlarmData();        
-        if( alarmData != null && alarmData.hasAlarmType() ) {
-        	if( alarmData.getAlarmType() == 2) {
-        		return AlarmType.RESULTION;
-        	} else {
-        		return AlarmType.PROBLEM;
-        	}
-        }
-        
-		return AlarmType.NOT_AN_ALARM;
+	protected AlarmType getAlarmTypeFromUEI(final String eventUEI) {
+	    final Event event = m_eventConfDao.findByUei(eventUEI);
+	    if( event == null ) {
+	        return AlarmType.NOT_AN_ALARM;
+	    }
+
+	    if (event.getAlarmData() != null && event.getAlarmData().getAlarmType() != null) {
+	        if( event.getAlarmData().getAlarmType() == 2) {
+	            return AlarmType.RESULTION;
+	        } else {
+	            return AlarmType.PROBLEM;
+	        }
+	    }
+	    return AlarmType.NOT_AN_ALARM;
 	}
 	
     /**

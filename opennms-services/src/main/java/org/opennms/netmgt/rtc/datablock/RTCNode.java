@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.opennms.netmgt.rtc.RTCConstants;
+import org.opennms.netmgt.rtc.NodeNotInCategoryException;
 
 /**
  * The main unit for the RTCManager.
@@ -51,6 +51,7 @@ import org.opennms.netmgt.rtc.RTCConstants;
  *
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * 
  * @see org.opennms.netmgt.rtc.datablock.RTCNodeSvcTime
  * @see org.opennms.netmgt.rtc.datablock.RTCNodeSvcTimesList
  */
@@ -58,17 +59,17 @@ public class RTCNode {
     /**
      * The node ID.
      */
-    private long m_nodeID;
+    private int m_nodeID;
 
     /**
      * The ip address of the interface of the node.
      */
-    private InetAddress m_ip;
+    private final InetAddress m_ip;
 
     /**
      * The service name.
      */
-    private String m_svcName;
+    private final String m_svcName;
 
     /**
      * List of the lost/regained service times for this node.
@@ -78,15 +79,15 @@ public class RTCNode {
     /**
      * List of the categories this node belongs to
      */
-    private List<String> m_categories;
+    private final List<String> m_categories = new ArrayList<>();
 
     /**
      * <p>Constructor for RTCNode.</p>
      *
      * @param key a {@link org.opennms.netmgt.rtc.datablock.RTCNodeKey} object.
      */
-    public RTCNode(RTCNodeKey key) {
-    	this(key.getNodeID(), key.getIP(), key.getSvcName());
+    public RTCNode(RTCNodeKey key, long rollingWindow) {
+    	this(key.getNodeID(), key.getIP(), key.getSvcName(), rollingWindow);
     }
 
     /**
@@ -99,15 +100,14 @@ public class RTCNode {
      * @param svcName
      *            the service
      */
-    public RTCNode(long nodeid, InetAddress inetAddress, String svcName) {
+    public RTCNode(int nodeid, InetAddress inetAddress, String svcName, long rollingWindow) {
         m_nodeID = nodeid;
 
         m_ip = inetAddress;
 
         m_svcName = svcName;
 
-        m_svcTimesList = new RTCNodeSvcTimesList();
-        m_categories = new ArrayList<String>();
+        m_svcTimesList = new RTCNodeSvcTimesList(rollingWindow);
     }
 
     /**
@@ -116,28 +116,8 @@ public class RTCNode {
      * @param id
      *            the node ID
      */
-    public void setNodeID(long id) {
+    public void setNodeID(int id) {
         m_nodeID = id;
-    }
-
-    /**
-     * Set the service name.
-     *
-     * @param svcName
-     *            the service name
-     */
-    public void setSvcName(String svcName) {
-        m_svcName = svcName;
-    }
-
-    /**
-     * Set the IP address.
-     *
-     * @param ip
-     *            the ip address
-     */
-    public void setIP(InetAddress ip) {
-        m_ip = ip;
     }
 
     /**
@@ -235,7 +215,7 @@ public class RTCNode {
      *
      * @return the node ID
      */
-    public long getNodeID() {
+    public Integer getNodeID() {
         return m_nodeID;
     }
 
@@ -255,15 +235,6 @@ public class RTCNode {
      */
     public InetAddress getIP() {
         return m_ip;
-    }
-
-    /**
-     * Return the list of service times for this node.
-     *
-     * @return the list of service times for this node
-     */
-    public List<RTCNodeSvcTime> getServiceTimes() {
-        return m_svcTimesList;
     }
 
     /**
@@ -302,52 +273,23 @@ public class RTCNode {
      * @param rollingWindow
      *            the window for which downtime is required
      * @return the total outage time for this node
+     * @throws NodeNotInCategoryException 
      */
-    public long getDownTime(String cat, long curTime, long rollingWindow) {
+    public long getDownTime(String cat, long curTime, long rollingWindow) throws NodeNotInCategoryException {
         // get the down time for this node in the context of the
-        // category
-        // if the service is not in 'context', return a negative value
-        if (!m_categories.contains(cat))
-            return (long) RTCConstants.NODE_NOT_IN_CATEGORY;
+        // category.
+        // if the service is not in 'context', throw an exception
+        if (!m_categories.contains(cat)) {
+            throw new NodeNotInCategoryException();
+        }
 
         return m_svcTimesList.getDownTime(curTime, rollingWindow);
     }
 
     /**
-     * Get the avaialability. Return the total availability for this node in the
-     * last 'rollingWindow' milliseconds since 'curTime' for the category
+     * Return if the service is currently down.
      *
-     * @param cat
-     *            the category in the context which of which availability is
-     *            needed
-     * @param curTime
-     *            the start time (or current time) from which we go back
-     *            rollinWindow interval
-     * @param rollingWindow
-     *            the window for which availability is required
-     * @return the value for this node
-     */
-    public double getValue(String cat, long curTime, long rollingWindow) {
-        double value = 0.0;
-
-        // get the outages in the last 'rollingWindow'
-        long outageTime = getDownTime(cat, curTime, rollingWindow);
-        if (outageTime < 0)
-            return outageTime;
-
-        double dOut = outageTime * 1.0;
-        double dRoll = rollingWindow * 1.0;
-
-        value = 100 * (1 - (dOut / dRoll));
-
-        return value;
-
-    }
-
-    /**
-     * Return if the service is currently up/down.
-     *
-     * @return if the service is currently up/down
+     * @return true if the service is currently down
      */
     public boolean isServiceCurrentlyDown() {
         int size = m_svcTimesList.size();
@@ -407,13 +349,12 @@ public class RTCNode {
     /**
      * {@inheritDoc}
      *
-     * String represenatation. Returns a string representation of this object
+     * String representation. Returns a string representation of this object
      * that has the nodeid/ip/servicename details
      */
     @Override
     public String toString() {
-        String s = "RTCNode\n[\n\t" + "nodeID       = " + m_nodeID + "\n\t" + "IP           = " + m_ip + "\n\t" + "Service      = " + m_svcName + "\n\t" + "\n]\n";
-        return s;
+    	return "RTCNode\n[\n\t" + "nodeID       = " + m_nodeID + "\n\t" + "IP           = " + m_ip + "\n\t" + "Service      = " + m_svcName + "\n\t" + "\n]\n";
     }
 
 }

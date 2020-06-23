@@ -1,0 +1,123 @@
+{opennms-product-name} supports the assignment of arbitrary meta-data to nodes, interfaces and services.
+
+The meta-data is a simple triple of strings containing a context, a key and the associated value.
+There can be an arbitrary number of meta-data elements assigned to each node, each interface and each service.
+The only restriction is, that the tuple of context and key must be unique in the element to which they are associated.
+
+The meta-data is associated to nodes, interfaces and services during link:#ga-provisioning-meta-data[provisioning].
+
+To view the meta-data currently assigned to nodes, interfaces and services, there according details page can be used.
+These pages show the meta-data as it is currently assigned in the database.
+
+The meta-data can be used to dynamically configure service monitoring, performance data collection, and service detection.
+They all use a link:#ga-meta-data-dsl[simple DSL] which allows to access the meta-data associated to the elements they are working on.
+
+=== Special contexts
+In relation to nodes, interfaces and services, there are special contexts available which expose details about those objects.
+
+The `node` context provides details about the node currently processed.
+The following keys are available under this context:
+
+[options="header, autowidth"]
+|===
+| Context:Key            | Description
+| `node:label`           | The label of the node
+| `node:foreign-source`  | The node's foreign source name
+| `node:foreign-id`      | The node's foreigne ID
+| `node:netbios-domain`  | The NetBIOS domain as provided by SNMP
+| `node:netbios-name`    | The NetBIOS name as provided by SNMP
+| `node:os`              | The node's operating system
+| `node:sys-name`        | The system name of the node
+| `node:sys-location`    | The system location of the node
+| `node:sys-contact`     | The system contact specified for the node
+| `node:sys-description` | The system description of the node
+| `node:location`        | The node's monitoring location name
+| `node:area`            | The node's monitoring location area
+|===
+
+The `interface` context provides details about the interface currently processed.
+The following keys are available under this context:
+
+[options="header, autowidth"]
+|===
+| Context:Key                | Description
+| `interface:hostname`       | The hostname associated with the IP address of the interface
+| `interface:address`        | The IP address if the interface
+| `interface:netmask`        | The netmask of the interface
+| `interface:if-index`       | The SNMP interface index
+| `interface:if-alias`       | The SNMP interface alias
+| `interface:if-description` | The SNMP interface description
+| `interface:phy-addr`       | The physical address of the interface
+|===
+
+The `service` context provides details about the service currently processed.
+The following keys are available under this context:
+
+[options="header, autowidth"]
+|===
+| Context:Key        | Description
+| `service:name`     | The full name of the service
+|===
+
+[[ga-meta-data-dsl]]
+=== The Meta-Data-DSL
+The meta-data DSL allow interpolation of meta-data into a parameter.
+The syntax allows the usage of patterns like `${context:key|context_fallback:key_fallback|...|default}` in an expression.
+
+Each expressions can contain multiple references to meta-data which will be replaced with the according value during evaluation.
+Placeholders starts with `${` and ends with `}` containing a reference to a context-key-pair optionally allowing to define multiple fallback context-key-pairs and and optional trailing default value.
+Context and key are separated by a `:`.
+
+`${requisition:username}`::
+Will resolve to the `username` as defined in the requisitioning UI or an empty value, if there is no such username defined.
+
+An placeholder can contain an optional default value which is separated by a `|`.
+
+`${requisition:username|admin}`::
+Will resolve to the `username` as defined in the requisitioning UI or to the value `admin`, if there is no such username defined.
+
+There can be zero or more fallback context-key-pairs in an placeholder which will follow the primary context-key-pair.
+Each fallback context-key-pair is separated by a `|`.
+
+`${requisition:username|requisition:account|admin}`::
+Will resolve to the `username` as defined in the requisitioning UI.
+If there is no such username defined the fallback `account` will be used.
+If both of them do not exist, the fallback value `admin` will be used.
+
+To resolve the value associated with context-key-pair, the DSL uses scopes which will determine the resolution order.
+The last scope will be queried first and if a scope does not contain the queried context-key-tuple, the next one will be queried.
+Which scopes are available depends on the environment for which a expression is evaluated and is documented in the according places.
+Some environments also provide additional scopes which are not backed by the persisted meta-data but provide additional meta-data related to the current evaluation.
+
+==== Testing an expression
+To test an expression, there is a karaf shell command which interpolates a string containing a pattern to the final result:
+[source]
+----
+admin@opennms> meta:test -n 1 -i 192.168.0.100 -s ICMP '${fruits:apple|fruits:banana|vegetables:tomato|blue}'
+---
+Meta-Data for node (id=1)
+fruits:
+  apple='green'
+  banana='yellow'
+vegetables:
+  tomato='red'
+---
+Meta-Data for interface (ipAddress=192.168.0.100):
+fruits:
+  apple='brown'
+---
+Meta-Data for service (name=ICMP):
+fruits:
+  apple='red'
+---
+Input: '${fruits:apple|fruits:banana|vegetables:tomato|blue}'
+Output: 'red'
+admin@opennms>
+----
+
+==== Usages
+The following places allow to use the Meta-Data-DSL:
+
+* link:#ga-provisioning-detectors-meta-data[Provisioning Detectors]
+* link:#ga-pollerd-configuration-meta-data[Service Assurance]
+* link:#ga-collectd-packages-services-meta-data[Performance Management]

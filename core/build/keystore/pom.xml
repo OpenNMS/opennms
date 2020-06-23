@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.build</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.build</groupId>
   <artifactId>org.opennms.core.build.keystore</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Core Build Keystore</name>
+  <name>OpenNMS :: Core :: Build Tools :: Keystore</name>
   <build>
     <resources>
       <resource>
@@ -19,83 +19,34 @@
     </resources>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>keytool-maven-plugin</artifactId>
+        <version>1.5</version>
         <executions>
           <execution>
-            <id>generate-key</id>
-            <phase>generate-resources</phase>
+            <id>generateKeyPair</id>
             <goals>
-              <goal>execute</goal>
+              <goal>generateKeyPair</goal>
             </goals>
+            <phase>generate-resources</phase>
             <configuration>
-              <source>
-                def keystore = new File(project.properties['webstart.keystore'])
-                if (!keystore.exists()) {
-                  keystore.parentFile.mkdirs();
-                  println "keystore is missing, generating for alias '${project.properties['webstart.keyalias']}'"
-                  def args = [
-                    keystore: project.properties['webstart.keystore'],
-                    alias: project.properties['webstart.keyalias'],
-                    storepass: project.properties['webstart.storepass'],
-                    dname: "cn=${project.properties['webstart.dnameCn']}"
-                  ]
-                  if (project.properties['webstart.keypass']) {
-                    args.put('keypass', project.properties['webstart.keypass'])
-                  }
-                  def ant = new AntBuilder();
-                  ant.genkey(args)
-                }
-              </source>
+              <!-- Don't generate a key if the keystore already exists -->
+              <skipIfExist>true</skipIfExist>
+              <keystore>${webstart.keystore}</keystore>
+              <storepass>${webstart.storepass}</storepass>
+              <alias>${webstart.keyalias}</alias>
+              <keypass>${webstart.keypass}</keypass>
+              <dname>cn=${webstart.dnameCn}</dname>
+
+              <!-- I'm not sure if we need these extension attributes -->
+              <!-- Add X.509 V3 "KeyUsage" attribute -->
+              <!-- <ext>KU=digitalSignature</ext> -->
+              <!-- Add X.509 V3 "ExtendedKeyUsage" attribute -->
+              <!-- <ext>EKU=codeSigning</ext> -->
             </configuration>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.groovy.maven.runtime</groupId>
-            <artifactId>gmaven-runtime-1.6</artifactId>
-            <version>1.0</version>
-            <exclusions>
-              <exclusion>
-                <groupId>org.codehaus.groovy</groupId>
-                <artifactId>groovy-all-minimal</artifactId>
-              </exclusion>
-            </exclusions>
-          </dependency>
-          <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>1.7.5</version>
-          </dependency>
-          <!-- Needed for AntBuilder calls in remote poller projects -->
-          <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.8.2</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <providerSelection>1.6</providerSelection>
-        </configuration>
       </plugin>
-<!--
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/keystore.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
--->
     </plugins>
   </build>
 </project>

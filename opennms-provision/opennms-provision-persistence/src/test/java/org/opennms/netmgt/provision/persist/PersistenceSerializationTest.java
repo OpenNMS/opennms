@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -37,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,7 +98,7 @@ public class PersistenceSerializationTest {
         XMLGregorianCalendar cal = DatatypeFactory.newInstance().newXMLGregorianCalendar("2009-02-25T12:45:38.800-05:00");
         fs.setDateStamp(cal);
 
-        List<PluginConfig> detectors = new ArrayList<PluginConfig>();
+        List<PluginConfig> detectors = new ArrayList<>();
         final PluginConfig detector = new PluginConfig("food", "org.opennms.netmgt.provision.persist.detectors.FoodDetector");
         detector.addParameter("type", "cheese");
         detector.addParameter("density", "soft");
@@ -105,7 +106,7 @@ public class PersistenceSerializationTest {
         detectors.add(detector);
         fs.setDetectors(detectors);
 
-        List<PluginConfig> policies = new ArrayList<PluginConfig>();
+        List<PluginConfig> policies = new ArrayList<>();
         PluginConfig policy = new PluginConfig("lower-case-node", "org.opennms.netmgt.provision.persist.policies.NodeCategoryPolicy");
         policy.addParameter("label", "~^[a-z]$");
         policy.addParameter("category", "Lower-Case-Nodes");
@@ -120,7 +121,8 @@ public class PersistenceSerializationTest {
         policies.add(policy);
         fs.setPolicies(policies);
 
-        fsw = new ForeignSourceCollection(fsr.getForeignSources());
+        fsw = new ForeignSourceCollection();
+        fsw.getForeignSources().addAll(fsr.getForeignSources());
         c = JAXBContext.newInstance(ForeignSourceCollection.class, ForeignSource.class);
         m = c.createMarshaller();
         
@@ -150,10 +152,10 @@ public class PersistenceSerializationTest {
         m.marshal(fsw, objectXML);
 
         // Read the example XML from src/test/resources
-        StringBuffer exampleXML = new StringBuffer();
+        final StringBuilder exampleXML = new StringBuilder();
         File foreignSources = new File(ClassLoader.getSystemResource("foreign-sources.xml").getFile());
         assertTrue("foreign-sources.xml is readable", foreignSources.canRead());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(foreignSources), "UTF-8"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(foreignSources), StandardCharsets.UTF_8));
         String line;
         while (true) {
             line = reader.readLine();
@@ -176,8 +178,7 @@ public class PersistenceSerializationTest {
     }
 
     @SuppressWarnings("unchecked")
-    private static DetailedDiff getDiff(StringWriter objectXML,
-            StringBuffer exampleXML) throws SAXException, IOException {
+    private static DetailedDiff getDiff(StringWriter objectXML, StringBuilder exampleXML) throws SAXException, IOException {
         DetailedDiff myDiff = new DetailedDiff(XMLUnit.compareXML(exampleXML.toString(), objectXML.toString()));
         List<Difference> allDifferences = myDiff.getAllDifferences();
         if (allDifferences.size() > 0) {

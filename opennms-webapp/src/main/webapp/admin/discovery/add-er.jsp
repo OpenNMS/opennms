@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,52 +28,58 @@
  *******************************************************************************/
 
 --%>
-
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.discovery.*, org.opennms.web.admin.discovery.ActionDiscoveryServlet" %>
+<%@page language="java" contentType="text/html" session="true" import="
+  java.util.Map,
+  java.util.TreeMap,
+  org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation,
+  org.opennms.netmgt.dao.api.*,
+  org.springframework.web.context.WebApplicationContext,
+  org.springframework.web.context.support.WebApplicationContextUtils,
+  org.opennms.netmgt.config.DiscoveryConfigFactory,
+  org.opennms.netmgt.config.discovery.DiscoveryConfiguration,
+  org.opennms.web.admin.discovery.DiscoveryServletConstants,
+  org.opennms.web.admin.discovery.ActionDiscoveryServlet,
+  org.opennms.web.admin.discovery.DiscoveryScanServlet
+"%>
 <% 
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
 	if (request.getProtocol().equals("HTTP/1.1")) {
 		response.setHeader("Cache-Control", "no-cache");
 	}
-
 %>
 
-<html>
+<%
+    WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+    HttpSession sess = request.getSession(false);
+    DiscoveryConfiguration currConfig;
+    if (DiscoveryServletConstants.EDIT_MODE_SCAN.equals(request.getParameter("mode"))) {
+    	currConfig  = (DiscoveryConfiguration) sess.getAttribute(DiscoveryScanServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION);
+    } else if (DiscoveryServletConstants.EDIT_MODE_CONFIG.equals(request.getParameter("mode"))) {
+    	currConfig  = (DiscoveryConfiguration) sess.getAttribute(ActionDiscoveryServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION);
+    } else {
+    	throw new ServletException("Cannot get discovery configuration from the session");
+    }
 
-<head>
-  <title>Add Exclude Range | Admin | OpenNMS Web Console</title>
-  <base href="<%=org.opennms.web.api.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-  <script type='text/javascript' src='js/ipv6/ipv6.js'></script>
-  <script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>
-  <script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>
-  <script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>
+    MonitoringLocationDao locationDao = context.getBean(MonitoringLocationDao.class);
+    Map<String,String> locations = new TreeMap<String,String>();
+    for (OnmsMonitoringLocation location : locationDao.findAll()) {
+    	locations.put(location.getLocationName(), location.getLocationName());
+    }
+%>
 
-</head>
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
+    <jsp:param name="title" value="Add Exclude Range" />
+    <jsp:param name="headTitle" value="Admin" />
+    <jsp:param name="quiet" value="true" />
+</jsp:include>
 
-<body>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="ipaddress-js" />
+</jsp:include>
+
 <script type="text/javascript">
-function v4BigInteger(ip) {
-    var a = ip.split('.');
-    return parseInt(a[0])*Math.pow(2,24) + parseInt(a[1])*Math.pow(2,16) + parseInt(a[2])*Math.pow(2,8) + parseInt(a[3]);
-};
-
-function checkIpRange(ip1, ip2){
-    if (verifyIPv4Address(ip1) && verifyIPv4Address(ip2)) {
-        var a = v4BigInteger(ip1);
-        var b = v4BigInteger(ip2);
-        return b >= a;
-    }
-    if (verifyIPv6Address(ip1) && verifyIPv6Address(ip2)) {
-        var a = new v6.Address(ip1).bigInteger();
-        var b = new v6.Address(ip2).bigInteger();
-        return b.compareTo(a) >= 0;
-    }
-    return false;
-}
-
-function addExcludeRange(){
+function doAddExcludeRange(){
 	if(!isValidIPAddress(document.getElementById("begin").value)){
 		alert("Begin Address not valid.");
 		document.getElementById("begin").focus();
@@ -94,34 +100,57 @@ function addExcludeRange(){
 	
 	opener.document.getElementById("erbegin").value=document.getElementById("begin").value;
 	opener.document.getElementById("erend").value=document.getElementById("end").value;
-	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=ActionDiscoveryServlet.addExcludeRangeAction%>";
+	opener.document.getElementById("erlocation").value=document.getElementById("location").value;
+	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=DiscoveryServletConstants.addExcludeRangeAction%>";
 	opener.document.getElementById("modifyDiscoveryConfig").submit();
 	window.close();
 	opener.document.focus();
-	
 }
 
 </script>
 
-<h3>Add Range to Exclude from Discovery</h3>
-<div class="boxWrapper">
-		  <p>Add a range of IP addresses to exclude from discovery.<br/>
-			 Insert <i>Begin</i> and <i>End</i> IP addresses and click on <i>Add</i> to confirm.
-	      </p>
-</div>
-<table class="standard">
-<tr>
- <td class="standard" align="center" width="35%">Begin IP Address:<input type="text" id="begin" name="begin" size="15" value=''/></td>
- <td class="standard" align="center" width="35%">End IP Address:<input type="text" id="end" name="end" size="15"  value=''/></td>
-</tr>
-</table>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <span>Add Range to Exclude from Discovery</span>
+      </div>
+      <div class="card-body">
+        <form role="form" class="form">
+          <div class="form-group form-row">
+            <label for="begin" class="col-form-label col-sm-2">Begin IP Address</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="begin" name="begin" value=''/>
+            </div>
+          </div>
+          <div class="form-group form-row">
+            <label for="end" class="col-form-label col-sm-2">End IP Address</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="end" name="end" value=''/>
+            </div>
+          </div>
+          <div class="form-group form-row">
+            <label for="location" class="col-form-label col-sm-2">Location</label>
+            <div class="col-sm-10">
+                <select id="location" class="form-control custom-select" name="location">
+                    <% for (String key : locations.keySet()) { %>
+                    <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
+                        <% } %>
+                </select>
+            </div>
+          </div>
+          <div class="form-group form-row">
+            <div class="col-sm-12">
+              <button type="button" class="btn btn-secondary" name="addExcludeRange" id="addExcludeRange" onclick="doAddExcludeRange();">Add</button>
+              <button type="button" class="btn btn-secondary" name="cancel" id="cancel" onclick="window.close();opener.document.focus();">Cancel</button>
+            </div>
+          </div>
+        </form>
+      </div> <!-- card-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
 
-
-<input type="button" name="addExcludeRange" id="addExcludeRange" value="Add" onclick="addExcludeRange();" />
-<input type="button" name="cancel" id="cancel" value="Cancel" onclick="window.close();opener.document.focus();" />
-
-<hr/>
-
-</body>
-
-</html>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" >
+  <jsp:param name="quiet" value="true" />
+</jsp:include>

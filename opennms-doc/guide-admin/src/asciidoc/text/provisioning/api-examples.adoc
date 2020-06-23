@@ -1,0 +1,16 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+=== Yet Other API Examples
+
+.List the Nodes in a Provisioning Group
+
+The `provision.pl` script doesn't supply this feature but you can get it via the REST API. Here is an example using `curl`:
+
+[source, bash]
+----
+#!/bin/bash
+REQ=$1
+curl -X GET -H "Content-Type: application/xml" -u admin:admin http://localhost:8980/opennms/rest/requisitions/$REQ 2>/dev/null | xmllint --format -
+----

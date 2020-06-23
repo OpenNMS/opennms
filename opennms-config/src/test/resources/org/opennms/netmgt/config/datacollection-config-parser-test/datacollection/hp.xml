@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<datacollection-group name="HP">
+
+    <!-- HP-UX fileSystemTable resource type -->
+    <resourceType name="hpuxFSTable" label="HP-UX Filesystem" resourceLabel="${hpuxFSName} on ${hpuxFSDir}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="hpuxFSDir" />
+		<parameter key="replace-first" value="s/^-$/_root_fs/" />
+		<parameter key="replace-all" value="s/^-//" />
+		<parameter key="replace-all" value="s/\s//" />
+      </storageStrategy>
+    </resourceType>
+
+      <!-- Hewlett-Packard MIBs -->
+      <group name="compaq-insight-manager-stats" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.232.11.2.4.1.1.5" instance="0" alias="cimPctHddUsed1"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.232.11.2.4.1.1.5" instance="1" alias="cimPctHddUsed2"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.232.11.2.3.1.1.3" instance="0" alias="cim5MinCpuUtilPct" type="integer" />
+      </group>
+
+      <group name="hp-procurve" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.9.6.1"       instance="0" alias="hpSwitchCpuStat"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.1.1.1.1.2" instance="1" alias="hpMsgBufCorrupt"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.1.1.1.1.3" instance="1" alias="hpMsgBufFree"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.1.1.1.1.4" instance="1" alias="hpMsgBufInit"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.1.1.1.1.5" instance="1" alias="hpMsgBufMin"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.1.1.1.1.6" instance="1" alias="hpMsgBufMiss"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.1.1.1.1.7" instance="1" alias="hpMsgBufSize"     type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.2.1.1.1.4" instance="1" alias="hpSwitchAllocMem" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.2.1.1.1.5" instance="1" alias="hpSwitchTotalMem" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.14.11.5.1.1.2.1.1.1.6" instance="1" alias="hpSwitchFreeMem"  type="gauge" />
+      </group>
+
+      <group name="hpux" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.2"  instance="0" alias="hpuxNumberOfUsers"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.7"  instance="0" alias="hpuxFreeMemory"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.8"  instance="0" alias="hpuxPhysMemory"     type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.10" instance="0" alias="hpuxSwapConfigured" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.11" instance="0" alias="hpuxSwapEnabled"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.12" instance="0" alias="hpuxSwapFree"       type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.13" instance="0" alias="hpuxCpuUsedByUsers" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.14" instance="0" alias="hpuxCpuUsedBySys"   type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.15" instance="0" alias="hpuxCpuIdle"        type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.1.16" instance="0" alias="hpuxCpuNice"        type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.1"  instance="0" alias="hpuxTotalFsMounted" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.4.1"  instance="0" alias="hpuxTotalProcesses" type="gauge" />
+      </group>
+
+      <group name="hpux-filesystem" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.1"  instance="hpuxFSTable" alias="hpuxFSID1"    type="string" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.2"  instance="hpuxFSTable" alias="hpuxFSID2"    type="string" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.3"  instance="hpuxFSTable" alias="hpuxFSName"   type="string" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.4"  instance="hpuxFSTable" alias="hpuxFSBlock"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.5"  instance="hpuxFSTable" alias="hpuxFSBfree"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.6"  instance="hpuxFSTable" alias="hpuxFSBavail" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.7"  instance="hpuxFSTable" alias="hpuxFSBsize"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.8"  instance="hpuxFSTable" alias="hpuxFSFiles"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.9"  instance="hpuxFSTable" alias="hpuxFSFfree"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.11.2.3.1.2.2.1.10" instance="hpuxFSTable" alias="hpuxFSDir"    type="string" />
+      </group>
+
+      <systemDef name="HP Printers">
+        <sysoid>.1.3.6.1.4.1.11.2.3.9.1</sysoid>
+        <collect>
+          <includeGroup>printer-usage</includeGroup>
+          <includeGroup>printer-mib-supplies</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="HP ProCurve">
+        <sysoidMask>.1.3.6.1.4.1.11.2.3.7.11.</sysoidMask>
+        <collect>
+          <includeGroup>hp-procurve</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="HP-UX">
+        <sysoidMask>.1.3.6.1.4.1.11.2.3.2.</sysoidMask>
+        <collect>
+          <includeGroup>hpux</includeGroup>
+          <includeGroup>hpux-filesystem</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

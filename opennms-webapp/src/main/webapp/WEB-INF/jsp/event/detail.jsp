@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,26 +32,25 @@
 <%@page language="java"	contentType="text/html"	session="true" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <%@page import="java.util.HashMap"%>
-<%@page import="java.util.regex.Matcher"%>
-<%@page import="java.util.regex.Pattern"%>
+<%@page import="java.util.Map"%>
+<%@page import="org.opennms.core.utils.WebSecurityUtils"%>
+<%@page import="org.opennms.netmgt.events.api.EventConstants"%>
+
+<%@page import="org.opennms.web.event.AcknowledgeType"%>
+<%@page import="org.opennms.web.event.Event"%>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
 <%@page import="org.springframework.util.Assert"%>
 
-<%@page import="org.opennms.netmgt.EventConstants"%>
-<%@page import="org.opennms.core.utils.WebSecurityUtils"%>
-<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
-<%@page import="org.opennms.web.event.Event"%>
-<%@page import="org.opennms.web.event.AcknowledgeType"%>
-
 <%
-
 	XssRequestWrapper req = new XssRequestWrapper(request);
 	Event[] events = (Event[])req.getAttribute("events");
 	Event event = null;
 	String action = null;
     String buttonName=null;
-    HashMap<String, String> parms = new HashMap<String, String>();
+    Map<String, String> parms = new HashMap<String, String>();
 	if ( events.length > 0 ) {
 		Assert.isTrue(events.length == 1, "event detail filter should match only one event: event found:" + events.length);
 
@@ -68,64 +67,63 @@
 	        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
 	    }
 
-		Pattern p = Pattern.compile("([^=]+)=(.*)\\((\\w+),(\\w+)\\)");
-	    
-	    if (event.getParms() != null) {
-			String[] parmStrings = event.getParms().split(";");
-			for (String parmString : parmStrings) {
-				Matcher m = p.matcher(parmString);
-				if (!m.matches()) {
-					log("Could not match event parameter string element '"
-						+ parmString + "' in event ID " + event.getId());
-					continue;
-				}
-				
-				parms.put(m.group(1), m.group(2));
-			}
-	    }
-	}    
+	    parms = event.getParms();
+	}
 
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<% boolean provisioned = parms.containsKey(EventConstants.PARM_LOCATION_MONITOR_ID); %>
+<% boolean acknowledgeEvent = "true".equals(System.getProperty("opennms.eventlist.acknowledge")); %>
+<% boolean canAck = (request.isUserInRole(org.opennms.web.api.Authentication.ROLE_ADMIN) || !request.isUserInRole(org.opennms.web.api.Authentication.ROLE_READONLY)); %>
+
+<c:set var="provisioned" value="<%=provisioned%>"/>
+<c:set var="acknowledgeEvent" value="<%=acknowledgeEvent%>"/>
+
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Event Detail" />
   <jsp:param name="headTitle" value="Detail" />
   <jsp:param name="headTtitle" value="Events" />
-  <jsp:param name="breadcrumb" value="<a href='event/index.jsp'>Events</a>" />
-  <jsp:param name="breadcrumb" value="Detail" />
+  <jsp:param name="breadcrumb" value="<a href='event/index'>Events</a>" />
+  <jsp:param name="breadcrumb" value='<%="Event " + (event == null? "Not Found" : event.getId()) %>' />
 </jsp:include>
-	 <% if (event == null ) { %>
-      <h3>Event Not Found in Database</h3>
-	<% } else { %>
-      <h3>Event <%=event.getId()%></h3>
 
-      <% String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge"); %>
+<% if (event == null ) { %>
+    <p>Event not found in database.</p>
+<% } else { %>
 
-      <table>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <th class="divider" width="100em">Severity</th>
-          <td class="divider" width="28%"><%= event.getSeverity().getLabel() %></td>
-          <th class="divider" width="100em">Node</th>
-          <td class="divider" width="28%">
+    <div class="card">
+      <div class="card-header">
+        <span>Event <%=event.getId()%></span>
+      </div>
+
+      <table class="table table-sm severity">
+        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+          <th class="col-1">Severity</th>
+          <td class="col-3 bright"><%= event.getSeverity().getLabel() %></td>
+          <th class="col-1">Node</th>
+          <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-3' : 'col-7'}">
             <% if( event.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=event.getNodeLabel()%></a>
             <% } else {%>
               &nbsp;
             <% } %>
           </td>
-          <% if ("true".equals(acknowledgeEvent)) { %>
-          <th class="divider" width="135em">Acknowledged&nbsp;By</th>
-          <td class="divider" width="28%"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
-          <% } else { %>
-          <td class="divider" colspan="2">&nbsp;</td>
-          <% } %>
+          <c:if test="${acknowledgeEvent}">
+            <th class="col-1">Acknowledged&nbsp;By</th>
+            <td class="col-4"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
+          </c:if>
         </tr>
-        
-        <tr  class="<%= event.getSeverity().getLabel() %>">
-          <th>Time</th>
-          <td><%=org.opennms.web.api.Util.formatDateToUIString(event.getTime())%></td>
-          <th>Interface</th>
-          <td>
+          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+              <th class="col-1">Event Source Location</th>
+              <td class="col-3"><%=event.getLocation()%> (<%= event.getSystemId() %>)</td>
+              <th class="col-1">Node Location</th>
+              <td class="col-3"><%= event.getNodeLocation() %></td>
+          </tr>
+          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+          <th class="col-1">Time</th>
+          <td class="col-3"><onms:datetime date="<%=event.getTime()%>" /></td>
+          <th class="col-1">Interface</th>
+          <td ${acknowledgeEvent ? '' : 'colspan="3"'} class="${acknowledgeEvent ? 'col-3' : 'col-7'}">
             <% if( event.getIpAddress() != null ) { %>
               <% if( event.getNodeId() > 0 ) { %>
                 <c:url var="interfaceLink" value="element/interface.jsp">
@@ -140,17 +138,24 @@
               &nbsp;
             <% } %>
           </td>
-          <% if ("true".equals(acknowledgeEvent)) { %>
-          <th>Time&nbsp;Acknowledged</th>
-          <td><%=event.getAcknowledgeTime()!=null ? org.opennms.web.api.Util.formatDateToUIString(event.getAcknowledgeTime()) : "&nbsp;"%></td>
-          <% } else { %>
-          <td colspan="2">&nbsp;</td>
-          <% } %>
+          <c:if test="${acknowledgeEvent}">
+          <th class="col-1">Time&nbsp;Acknowledged</th>
+          <td class="col-3">
+          <c:choose>
+            <c:when test="<%=event.getAcknowledgeTime() != null%>">
+              <onms:datetime date="<%=event.getAcknowledgeTime()%>" />
+            </c:when>
+            <c:otherwise>
+              &nbsp;
+            </c:otherwise>
+          </c:choose>
+          </td>
+          </c:if>
         </tr>
-        
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <th>Service</th>
-          <td>
+        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+          <th class="col-1">Service</th>
+          <!-- If the node is not provisioned, then expand the service row out with colspan 5, col-11 -->
+          <td ${provisioned ? '' : 'colspan="5"'} class="${provisioned ? 'col-3' : 'col-11'}">
             <% if( event.getServiceName() != null ) { %>
               <% if( event.getIpAddress() != null && event.getNodeId() > 0 ) { %>
                 <c:url var="serviceLink" value="element/service.jsp">
@@ -166,18 +171,15 @@
               &nbsp;
             <% } %>
           </td>
-          <% if (parms.containsKey(EventConstants.PARM_LOCATION_MONITOR_ID)) { %>
-            <th>Location&nbsp;Monitor&nbsp;ID</th>
-            <td><a href="distributed/locationMonitorDetails.htm?monitorId=<%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID)%>"><%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID) %></a></td>
-            <td colspan="2">&nbsp;</td>
-          <% } else { %>
-            <td colspan="4">&nbsp;</td>
-          <% } %>
-        </tr> 
-          
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          	<th>UEI</th>
-                <td colspan="5">
+          <c:if test="${provisioned}">
+            <th class="col-1">Location&nbsp;Monitor&nbsp;ID</th>
+            <td colspan="3" class="col-7"><a href="distributed/locationMonitorDetails.htm?monitorId=<%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID)%>"><%= parms.get(EventConstants.PARM_LOCATION_MONITOR_ID) %></a></td>
+          </c:if>
+        </tr>
+
+        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+          	<th class="col-1">UEI</th>
+                <td colspan="5" class="col-11">
           	<% if( event.getUei() != null ) { %>
           	      <%=event.getUei()%>
           	<% } else {%>
@@ -185,49 +187,59 @@
           	<% } %>
                 </td>
         </tr>
-      </table>
 
-      <table>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <th>Log&nbsp;Message</th>
-        </tr>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <td><%=event.getLogMessage()%></td>
-        </tr>
-      </table>
+          <% if (event.getAlarmId() != null && event.getAlarmId().intValue() != 0) { %>
+            <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %> d-flex">
+              <th class="col-1">Alarm ID</th>
+              <td colspan="5" class="col-11">
+                  <a href="alarm/detail.htm?id=<%=event.getAlarmId()%>"><%=event.getAlarmId()%></a>
+              </td>
+            </tr>
+          <% }%>
 
-      <table>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <th>Description</th>
-        </tr>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <td><%=event.getDescription()%></td>
-        </tr>
       </table>
-      
-      <table>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <th>Operator&nbsp;Instructions</th>
-        </tr>
-        <tr class="<%= event.getSeverity().getLabel() %>">
-          <td>
-	    <%if (event.getOperatorInstruction()==null) { %>
-              No instructions available
-            <% } else { %>
-              <%=event.getOperatorInstruction()%>
-            <% } %>
-	  </td>
-        </tr>
-      </table>
+    </div>
 
-      <% 
-      if( ( request.isUserInRole( org.opennms.web.api.Authentication.ROLE_ADMIN ) || !request.isUserInRole( org.opennms.web.api.Authentication.ROLE_READONLY ) ) && "true".equals(acknowledgeEvent)) { %>
-        <form method="post" action="event/acknowledge">
-          <input type="hidden" name="actionCode" value="<%=action%>" />
-          <input type="hidden" name="event" value="<%=event.getId()%>"/>
-          <input type="hidden" name="redirect" value="<%= "detail.jsp?" + request.getQueryString()%>" />
-          <input type="submit" value="<%=buttonName%>"/>
-        </form>
-      <% } %>
-   <% } %>   
-<jsp:include page="/includes/footer.jsp" flush="false" />
+    <div class="card severity">
+      <div class="card-header">
+        <span>Log&nbsp;Message</span>
+      </div>
+      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+        <%=WebSecurityUtils.sanitizeString(event.getLogMessage(), true)%>
+      </div>
+    </div>
+
+    <div class="card severity">
+      <div class="card-header">
+        <span>Description</span>
+      </div>
+      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+        <%=WebSecurityUtils.sanitizeString(event.getDescription(), true)%>
+      </div>
+    </div>
+
+    <div class="card severity">
+      <div class="card-header">
+        <span>Operator&nbsp;Instructions</span>
+      </div>
+      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+        <% if (event.getOperatorInstruction()==null) { %>
+          No instructions available.
+        <% } else { %>
+          <%=event.getOperatorInstruction()%>
+        <% } %>
+      </div>
+    </div>
+ 
+    <c:if test="<%=canAck && acknowledgeEvent %>">
+      <form method="post" action="event/acknowledge">
+        <input type="hidden" name="actionCode" value="<%=action%>" />
+        <input type="hidden" name="event" value="<%=event.getId()%>"/>
+        <input type="hidden" name="redirect" value="<%= "detail.jsp?" + request.getQueryString()%>" />
+        <input type="submit" value="<%=buttonName%>"/>
+      </form>
+    </c:if>
+
+<% } %>
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

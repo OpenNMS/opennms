@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,7 +34,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.core.utils.Argument;
+import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 public class SnmpTrapNotificationStrategyTest extends TestCase {
 
@@ -48,7 +48,7 @@ public class SnmpTrapNotificationStrategyTest extends TestCase {
      * Test method for 'org.opennms.netmgt.notifd.SnmpTrapNotificationStrategy.send(List)'
      */
     public void testSendWithEmptyArgumentList() {
-        List<Argument> arguments = new ArrayList<Argument>();
+        List<Argument> arguments = new ArrayList<>();
         NotificationStrategy strategy = new SnmpTrapNotificationStrategy();
         strategy.send(arguments);
 
@@ -58,7 +58,7 @@ public class SnmpTrapNotificationStrategyTest extends TestCase {
      * Test method for 'org.opennms.netmgt.notifd.SnmpTrapNotificationStrategy.send(List)'
      */
     public void testSendWithNamedHost() {
-        List<Argument> arguments = new ArrayList<Argument>();
+        List<Argument> arguments = new ArrayList<>();
         Argument arg = new Argument("trapHost", null, "localhost", false);
         arguments.add(arg);
         NotificationStrategy strategy = new SnmpTrapNotificationStrategy();

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.icmp.jni6;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -40,7 +41,7 @@ import org.opennms.protocols.icmp6.ICMPv6Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Ping {
+public abstract class Ping {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Ping.class);
 
@@ -70,7 +71,7 @@ public class Ping {
                     if (reply.isEchoReply()
                             && reply.getThreadId() == m_icmpId) {
                         double rtt = reply.elapsedTime(TimeUnit.MILLISECONDS);
-                        System.out.println(ICMPEchoPacket.getNetworkSize()
+                        System.out.println(pkt.getData().length
                                 + " bytes from "
                                 + InetAddressUtils.str(pkt.getAddress())
                                 + ": icmp_seq="
@@ -100,11 +101,12 @@ public class Ping {
         }
 
         String host = argv[0];
+        short icmpId = (short) new Random().nextInt(Short.MAX_VALUE);
 
         ICMPv6Socket m_socket = null;
 
         try {
-            m_socket = new ICMPv6Socket();
+            m_socket = new ICMPv6Socket(icmpId);
         } catch (UnsatisfiedLinkError e) {
             System.err.println("UnsatisfiedLinkError while creating an "
                     + "IcmpSocket.  Most likely failed to load "
@@ -140,16 +142,14 @@ public class Ping {
 
         System.out.println("PING " + host + " (" + InetAddressUtils.str(addr) + "): 56 data bytes");
 
-        short m_icmpId = 2;
-
-        Ping.Stuff s = new Ping.Stuff(m_socket, m_icmpId);
+        Ping.Stuff s = new Ping.Stuff(m_socket, icmpId);
         Thread t = new Thread(s, Ping.class.getSimpleName());
         t.start();
 
         for (long m_fiberId = 0; true; m_fiberId++) {
             // build a packet
             ICMPEchoPacket pingPkt = new ICMPEchoPacket(m_fiberId);
-            pingPkt.setIdentity(m_icmpId);
+            pingPkt.setIdentity(icmpId);
             pingPkt.computeChecksum();
 
             // convert it to a datagram to be sent

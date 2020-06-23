@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -126,10 +127,11 @@ import org.slf4j.LoggerFactory;
 public class Jni6Pinger implements Pinger {
     private static final Logger LOG = LoggerFactory.getLogger(Jni6Pinger.class);
 
-    private final int m_pingerId = (int) (Math.random() * Short.MAX_VALUE);
+    private final int m_pingerId = new SecureRandom().nextInt(Short.MAX_VALUE);
 
     private JniPinger m_jniPinger;
     private RequestTracker<Jni6PingRequest, Jni6PingResponse> s_pingTracker;
+    private Jni6IcmpMessenger m_jni6messenger;
 
     private Throwable m_v4Error = null;
     private Throwable m_v6Error = null;
@@ -156,14 +158,19 @@ public class Jni6Pinger implements Pinger {
         final IDBasedRequestLocator<Jni6PingRequestId, Jni6PingRequest, Jni6PingResponse> requestLocator = new IDBasedRequestLocator<Jni6PingRequestId, Jni6PingRequest, Jni6PingResponse>();
 
         try {
+            m_jni6messenger = new Jni6IcmpMessenger(m_pingerId);
             s_pingTracker = Logging.withPrefix("icmp", new Callable<RequestTracker<Jni6PingRequest, Jni6PingResponse>>() {
                 @Override public RequestTracker<Jni6PingRequest, Jni6PingResponse> call() throws Exception {
-                    return new RequestTracker<Jni6PingRequest, Jni6PingResponse>(name, new Jni6IcmpMessenger(m_pingerId), requestLocator);
+                    return new RequestTracker<Jni6PingRequest, Jni6PingResponse>(name, m_jni6messenger, requestLocator);
                 }
             });
             s_pingTracker.start();
         } catch (final IOException ioe) {
             m_v6Error = ioe;
+            final String errorMessage = m_v6Error.getMessage().toLowerCase();
+            if (errorMessage.contains("permission denied") || errorMessage.contains("operation not permitted")) {
+                LOG.error("Permission error received while attempting to open ICMP socket. See https://wiki.opennms.org/wiki/ICMP for information on configuring ICMP for non-root.");
+            }
             throw ioe;
         } catch (final RuntimeException rte) {
             m_v6Error = rte;
@@ -299,17 +306,20 @@ public class Jni6Pinger implements Pinger {
     }
 
     /**
-     * <p>parallelPing</p>
+     * Ping a remote host, sending 1 or more packets at the given interval, and then
+     * return the response times as a list.
      *
-     * @param host a {@link java.net.InetAddress} object.
-     * @param count a int.
-     * @param timeout a long.
-     * @param pingInterval a long.
-     * @return a {@link java.util.List} object.
-     * @throws java.lang.Exception if any.
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param count The number of packets to send.
+     * @param timeout The time to wait between each retry.
+     * @param pingInterval The interval at which packets will be sent.
+     * @param size The size of the packet to send.
+     * @return a {@link java.util.List} of response times in microseconds.
+     *     If, for a given ping request, the host is reachable and has responded with an
+     *     echo reply, it will contain a number, otherwise a null value.
      */
     @Override
-    public List<Number> parallelPing(final InetAddress host, final int count, final long timeout, final long pingInterval) throws Exception {
+    public List<Number> parallelPing(final InetAddress host, final int count, final long timeout, final long pingInterval, final int size) throws Exception {
         if (host instanceof Inet4Address) {
             initialize4();
             return m_jniPinger.parallelPing(host, count, timeout, pingInterval);
@@ -319,7 +329,7 @@ public class Jni6Pinger implements Pinger {
 
             final long threadId = Jni6PingRequest.getNextTID();
             for (int seqNum = 0; seqNum < count; seqNum++) {
-                final Jni6PingRequest request = new Jni6PingRequest((Inet6Address)host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, 0 , DEFAULT_PACKET_SIZE, cb);
+                final Jni6PingRequest request = new Jni6PingRequest((Inet6Address)host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, 0 , size, cb);
                 s_pingTracker.sendRequest(request);
                 Thread.sleep(pingInterval);
             }
@@ -328,6 +338,39 @@ public class Jni6Pinger implements Pinger {
             return cb.getResponseTimes();
 
         }
+    }
+
+    /**
+     * Ping a remote host, sending 1 or more packets at the given interval, and then
+     * return the response times as a list.
+     *
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param count The number of packets to send.
+     * @param timeout The time to wait between each retry.
+     * @param pingInterval The interval at which packets will be sent.
+     * @return a {@link java.util.List} of response times in microseconds.
+     *     If, for a given ping request, the host is reachable and has responded with an
+     *     echo reply, it will contain a number, otherwise a null value.
+     */
+    @Override
+    public List<Number> parallelPing(final InetAddress host, final int count, final long timeout, final long pingInterval) throws Exception {
+        return parallelPing(host, count, timeout, pingInterval, DEFAULT_PACKET_SIZE);
+    }
+
+    @Override
+    public void setTrafficClass(final int tc) throws Exception {
+        initialize4();
+        initialize6();
+        m_jniPinger.setTrafficClass(tc);
+        m_jni6messenger.setTrafficClass(tc);
+    }
+
+    @Override
+    public void setAllowFragmentation(final boolean allow) throws Exception {
+        initialize4();
+        initialize6();
+        m_jniPinger.setAllowFragmentation(allow);
+        m_jni6messenger.setAllowFragmentation(allow);
     }
 
 }

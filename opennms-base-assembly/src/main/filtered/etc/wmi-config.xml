@@ -1,5 +1,1 @@
-<?xml version="1.0"?>
-<wmi-config retry="2" timeout="1500" 
-	username="Administrator" domain="WORKGROUP" password="password">
-</wmi-config>
-
+<wmi-config xmlns="http://xmlns.opennms.org/xsd/config/wmi" timeout="1500" retry="2" username="Administrator" domain="WORKGROUP" password="password"/>

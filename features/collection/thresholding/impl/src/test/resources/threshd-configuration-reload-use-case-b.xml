@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<threshd-configuration 
+   threads="5">
+   
+   <package name="reload-use-case-a">
+       <filter>catincCAT1</filter>
+       <include-range begin="1.1.1.1" end="254.254.254.254"/>
+       <service name="SNMP" interval="300000" user-defined="false" status="on">
+           <parameter key="thresholding-group" value="generic-snmp"/>
+       </service>
+   </package>
+   <package name="reload-use-case-b">
+       <filter>catincCAT2</filter>
+       <include-range begin="1.1.1.1" end="254.254.254.254"/>
+       <service name="SNMP" interval="300000" user-defined="false" status="on">
+           <parameter key="thresholding-group" value="generic-snmp"/>
+       </service>
+       <service name="HTTP" interval="300000" user-defined="false" status="on">
+           <parameter key="thresholding-group" value="web-services"/>
+       </service>
+   </package>
+
+</threshd-configuration>

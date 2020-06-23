@@ -3,20 +3,23 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.core</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Core</name>
+  <name>OpenNMS :: Core</name>
   <build>
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
-            <descriptor>src/assemble/bin.xml</descriptor>
+            <descriptor>src/assembly/bin.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
       </plugin>
     </plugins>
@@ -24,21 +27,35 @@
   <modules>
     <module>api</module>
     <module>build</module>
+    <module>cache</module>
+    <module>camel</module>
+    <module>cli</module>
+    <module>config</module>
     <module>criteria</module>
     <module>daemon</module>
     <module>db</module>
     <module>db-install</module>
-    <module>doc</module>
+    <module>health</module>
     <module>icmp-jna</module>
+    <module>ipc</module>
+    <module>jmx</module>
+    <module>jstl-support</module>
     <module>lib</module>
     <module>logging-api</module>
+    <module>profiler</module>
     <module>runtime</module>
     <module>schema</module>
     <module>snmp</module>
     <module>soa</module>
+    <module>spring</module>
+    <module>spring-web</module>
+    <module>sysprops</module>
     <module>tasks</module>
     <module>test-api</module>
-    <!--<module>web</module>-->
+    <module>upgrade</module>
+    <module>web</module>
+    <module>web-assets</module>
     <module>xml</module>
+    <module>tracing</module>
   </modules>
 </project>

@@ -3,29 +3,21 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>container</artifactId>
+  <artifactId>org.opennms.container</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS OSGi Container</name>
+  <name>OpenNMS :: OSGi Container</name>
   <modules>
     <module>branding</module>
     <module>features</module>
-    <module>standalone</module>
     <module>karaf</module>
     <module>servlet</module>
     <module>bridge</module>
+    <module>jaas-login-module</module>
+    <module>extender</module>
+    <module>spring-extender</module>
+    <module>shared</module>
   </modules>
-
-  <repositories>
-    <repository>
-      <id>servicemix</id>
-      <name>Apache ServiceMix Repository</name>
-      <url>http://maven.opennms.org/content/groups/servicemix-release/</url>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>false</enabled></snapshots>
-    </repository>
-  </repositories>
-
 </project>

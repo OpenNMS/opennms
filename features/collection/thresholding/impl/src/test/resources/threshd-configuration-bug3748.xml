@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<threshd-configuration 
+   threads="5">
+   
+   <package name="thresholding-visitor-test">
+       <filter>IPADDR != '0.0.0.0'</filter>
+       <include-range begin="1.1.1.1" end="254.254.254.254"/>
+       <service name="SNMP" interval="300000" user-defined="false" status="on">
+           <parameter key="thresholding-group" value="absolute-test"/>
+       </service>
+       <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+   </package>
+
+</threshd-configuration>

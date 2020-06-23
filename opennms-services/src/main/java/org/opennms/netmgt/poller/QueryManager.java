@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,50 +28,19 @@
 
 package org.opennms.netmgt.poller;
 
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import javax.sql.DataSource;
+import org.opennms.netmgt.poller.pollables.PollableService;
 
 /**
  * <p>QueryManager interface.</p>
  *
  * @author brozow
- *
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- * @version $Id: $
  */
 public interface QueryManager {
-    /**
-     * <p>activeServiceExists</p>
-     *
-     * @param whichEvent a {@link java.lang.String} object.
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param serviceName a {@link java.lang.String} object.
-     * @return a boolean.
-     */
-    public boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName);
-
-    /**
-     * <p>getActiveServiceIdsForInterface</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     * @return a {@link java.util.List} object.
-     */
-    public List<Integer> getActiveServiceIdsForInterface(String ipaddr) throws SQLException;
-
-    /**
-     * <p>getNodeIDForInterface</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     * @return a int.
-     */
-    public int getNodeIDForInterface(String ipaddr) throws SQLException;
 
     /**
      * <p>getNodeLabel</p>
@@ -80,94 +49,51 @@ public interface QueryManager {
      * @throws java.sql.SQLException if any.
      * @return a {@link java.lang.String} object.
      */
-    public String getNodeLabel(int nodeId) throws SQLException;
+    String getNodeLabel(int nodeId) throws SQLException;
+
+    String getNodeLocation(int nodeId);
 
     /**
-     * <p>getServiceCountForInterface</p>
-     *
-     * @param ipaddr a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     * @return a int.
+     * Creates a new outage for the given service without setting
+     * the lost event id.
      */
-    public int getServiceCountForInterface(String ipaddr) throws SQLException;
+    Integer openOutagePendingLostEventId(int nodeId, String ipAddr, String svcName, Date lostTime);
 
     /**
-     * <p>getInterfacesWithService</p>
-     *
-     * @param svcName a {@link java.lang.String} object.
-     * @throws java.sql.SQLException if any.
-     * @return a {@link java.util.List} object.
+     * Set or updates the lost event id on the specified outage.
      */
-    public List<IfKey> getInterfacesWithService(String svcName) throws SQLException;
+    void updateOpenOutageWithEventId(int outageId, int lostEventId);
 
     /**
-     * <p>getServiceLostDate</p>
+     * Marks the outage for the given service as resolved
+     * with the given time and returns the id of this outage.
      *
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName a {@link java.lang.String} object.
-     * @param serviceId a int.
-     * @return a {@link java.util.Date} object.
+     * If no outages are currently open, then no action is take
+     * and the function returns null.
      */
-    public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId);
+    Integer resolveOutagePendingRegainEventId(int nodeId, String ipAddr, String svcName, Date regainedTime);
 
     /**
-     * <p>setDataSource</p>
-     *
-     * @param dataSource a {@link javax.sql.DataSource} object.
+     * Set or updates the regained event id on the specified outage.
      */
-    public void setDataSource(DataSource dataSource);
-    
-    /**
-     * <p>getDataSource</p>
-     *
-     * @return a {@link javax.sql.DataSource} object.
-     */
-    @Deprecated
-    public DataSource getDataSource();
+    void updateResolvedOutageWithEventId(int outageId, int regainedEventId);
 
     /**
-     * <p>openOutage</p>
-     *
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName TODO
-     * @param dbid a int.
-     * @param time a {@link java.lang.String} object.
-     * @param outageIdSQL a {@link java.lang.String} object.
+     * @param nodeId
+     * @return
      */
-    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, String time);
+    List<String[]> getNodeServices(int nodeId);
 
-    /**
-     * <p>resolveOutage</p>
-     *
-     * @param nodeId a int.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName TODO
-     * @param dbid a int.
-     * @param time a {@link java.lang.String} object.
-     */
-    public void resolveOutage(int nodeId, String ipAddr, String svcName, int dbid, String time);
+    void closeOutagesForUnmanagedServices();
 
-    /**
-     * <p>reparentOutages</p>
-     *
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param oldNodeId a int.
-     * @param newNodeId a int.
-     */
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId);
-    
-    
+    void closeOutagesForNode(Date closeDate, int eventId, int nodeId);
 
-    /**
-     * <p>getCriticalPath</p>
-     *
-     * @param nodeId a int.
-     * @return an array of {@link java.lang.String} objects.
-     */
-    public String[] getCriticalPath(int nodeId);
-    
-    public List<String[]> getNodeServices(int nodeId);
-    
+    void closeOutagesForInterface(Date closeDate, int eventId, int nodeId, String ipAddr);
+
+    void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName);
+
+    void updateServiceStatus(int nodeId, String ipAddr, String serviceName, String status);
+
+    void updateLastGoodOrFail(int nodeId, InetAddress ipAddr, String serviceName, PollStatus status);
+
 }

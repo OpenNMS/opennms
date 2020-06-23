@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,12 +36,14 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.model.events.annotations.EventExceptionHandler;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
-import org.opennms.netmgt.model.events.annotations.EventPostProcessor;
-import org.opennms.netmgt.model.events.annotations.EventPreProcessor;
+import org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.events.api.annotations.EventExceptionHandler;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.annotations.EventPostProcessor;
+import org.opennms.netmgt.events.api.annotations.EventPreProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
 
@@ -62,7 +64,7 @@ public class AnnotationBasedEventListenerAdapterTest {
     private Set<String> m_subscriptions;
     
     @EventListener(name=ANNOTATED_NAME)
-    private static class AnnotatedListener {
+    public static class AnnotatedListener {
         
         public int preProcessedEvents = 0;
         public int receivedEventCount = 0;
@@ -70,43 +72,36 @@ public class AnnotationBasedEventListenerAdapterTest {
         public int illegalArgsHandled = 0;
         public int genExceptionsHandled = 0;
         
-        @SuppressWarnings("unused")
         @EventHandler(uei=EventConstants.NODE_DOWN_EVENT_UEI)
         public void handleAnEvent(Event e) {
             receivedEventCount++;
         }
         
-        @SuppressWarnings("unused")
-        @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
+        @EventHandler(uei=EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
         public void handleAnotherEvent(Event e) {
             throw new IllegalArgumentException("test generated exception");
         }
         
-        @SuppressWarnings("unused")
         @EventHandler(uei=EventConstants.ADD_NODE_EVENT_UEI)
         public void handleYetAnotherEvent(Event e) {
             throw new IllegalStateException("test generated state exception");
         }
         
-        @SuppressWarnings("unused")
         @EventPreProcessor()
         public void preProcess(Event e) {
             preProcessedEvents++;
         }
         
-        @SuppressWarnings("unused")
         @EventPostProcessor
         public void postProcess(Event e) {
             postProcessedEvents++;
         }
         
-        @SuppressWarnings("unused")
         @EventExceptionHandler
         public void handleException(Event e, IllegalArgumentException ex) {
             illegalArgsHandled++;
         }
         
-        @SuppressWarnings("unused")
         @EventExceptionHandler
         public void handleException(Event e, Exception ex) {
             genExceptionsHandled++;
@@ -133,12 +128,12 @@ public class AnnotationBasedEventListenerAdapterTest {
         m_adapter.setAnnotatedListener(m_annotatedListener);
         m_adapter.setEventSubscriptionService(m_eventIpcMgr);
         
-        m_subscriptions = new HashSet<String>();
+        m_subscriptions = new HashSet<>();
         
         Collections.addAll(m_subscriptions, 
                 EventConstants.NODE_DOWN_EVENT_UEI, 
                 EventConstants.ADD_NODE_EVENT_UEI,
-                EventConstants.ADD_INTERFACE_EVENT_UEI
+                EventConstants.NODE_LOST_SERVICE_EVENT_UEI
                 );
         
         m_eventIpcMgr.addEventListener(m_adapter, m_subscriptions);
@@ -232,7 +227,7 @@ public class AnnotationBasedEventListenerAdapterTest {
         assertEquals(0, m_annotatedListener.illegalArgsHandled);
         assertEquals(0, m_annotatedListener.genExceptionsHandled);
 
-        m_adapter.onEvent(createEvent(EventConstants.ADD_INTERFACE_EVENT_UEI));
+        m_adapter.onEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI));
         
         assertEquals(1, m_annotatedListener.illegalArgsHandled);
         assertEquals(0, m_annotatedListener.genExceptionsHandled);

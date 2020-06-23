@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,8 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
@@ -90,10 +88,6 @@ public class DestinationWizardServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             DestinationPathFactory.init();
-        } catch (MarshalException e1) {
-            throw new ServletException("Exception initializing DestinationPatchFactory "+e1.getMessage(), e1);
-        } catch (ValidationException e1) {
-            throw new ServletException("Exception initializing DestinationPatchFactory "+e1.getMessage(), e1);
         } catch (FileNotFoundException e1) {
             throw new ServletException("Exception initializing DestinationPatchFactory "+e1.getMessage(), e1);
         } catch (IOException e1) {
@@ -101,7 +95,7 @@ public class DestinationWizardServlet extends HttpServlet {
         }
         String sourcePage = request.getParameter("sourcePage");
         HttpSession user = request.getSession(true);
-        StringBuffer redirectString = new StringBuffer();
+        final StringBuilder redirectString = new StringBuilder();
 
         if (sourcePage.equals(SOURCE_PAGE_PATHS)) {
             String action = request.getParameter("userAction");
@@ -153,6 +147,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 if (action.equals("add")) {
                     int index = WebSecurityUtils.safeParseInt(request.getParameter("index"));
                     Escalate newEscalate = new Escalate();
+                    newEscalate.setDelay("0s");
                     path.addEscalate(index, newEscalate);
 
                     Map<String, String> requestParams = new HashMap<String, String>();
@@ -195,10 +190,10 @@ public class DestinationWizardServlet extends HttpServlet {
             // compare the list of targets chosen to the existing targets,
             // replacing
             // and creating new targets as necessary
-            String userTargets[] = request.getParameterValues("users");
-            String groupTargets[] = request.getParameterValues("groups");
-            String roleTargets[] = request.getParameterValues("roles");
-            String emailTargets[] = request.getParameterValues("emails");
+            String[] userTargets = request.getParameterValues("users");
+            String[] groupTargets = request.getParameterValues("groups");
+            String[] roleTargets = request.getParameterValues("roles");
+            String[] emailTargets = request.getParameterValues("emails");
 
             Path newPath = (Path) user.getAttribute(SESSION_ATTRIBUTE_NEW_PATH);
             int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
@@ -212,9 +207,10 @@ public class DestinationWizardServlet extends HttpServlet {
 
             // remove all the targets from the path or escalation
             if (index == -1) {
-                newPath.removeAllTarget();
+                newPath.clearTargets();
             } else {
-                newPath.getEscalate(index).removeAllTarget();
+                final int index1 = index;
+                newPath.getEscalates().get(index1).clearTargets();
             }
 
             // reload the new targets into the path or escalation
@@ -233,8 +229,10 @@ public class DestinationWizardServlet extends HttpServlet {
 
                     if (index == -1)
                         newPath.addTarget(target);
-                    else
-                        newPath.getEscalate(index).addTarget(target);
+                    else {
+                        final int index1 = index;
+                        newPath.getEscalates().get(index1).addTarget(target);
+                    }
                 }
             }
 
@@ -253,8 +251,10 @@ public class DestinationWizardServlet extends HttpServlet {
 
                     if (index == -1)
                         newPath.addTarget(target);
-                    else
-                        newPath.getEscalate(index).addTarget(target);
+                    else {
+                        final int index1 = index;
+                        newPath.getEscalates().get(index1).addTarget(target);
+                    }
                 }
             }
 
@@ -273,8 +273,10 @@ public class DestinationWizardServlet extends HttpServlet {
 
                     if (index == -1)
                         newPath.addTarget(target);
-                    else
-                        newPath.getEscalate(index).addTarget(target);
+                    else {
+                        final int index1 = index;
+                        newPath.getEscalates().get(index1).addTarget(target);
+                    }
                 }
             }
 
@@ -294,8 +296,10 @@ public class DestinationWizardServlet extends HttpServlet {
 
                     if (index == -1)
                         newPath.addTarget(target);
-                    else
-                        newPath.getEscalate(index).addTarget(target);
+                    else {
+                        final int index1 = index;
+                        newPath.getEscalates().get(index1).addTarget(target);
+                    }
                 }
             }
 
@@ -312,7 +316,7 @@ public class DestinationWizardServlet extends HttpServlet {
         } else if (sourcePage.equals(SOURCE_PAGE_INTERVALS)) {
             Path newPath = (Path) user.getAttribute(SESSION_ATTRIBUTE_NEW_PATH);
             int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
-            Target targets[] = null;
+            Target[] targets = null;
 
             try {
                 targets = DestinationPathFactory.getInstance().getTargetList(index, newPath);
@@ -333,7 +337,7 @@ public class DestinationWizardServlet extends HttpServlet {
         } else if (sourcePage.equals(SOURCE_PAGE_COMMANDS)) {
             Path newPath = (Path) user.getAttribute(SESSION_ATTRIBUTE_NEW_PATH);
             int index = WebSecurityUtils.safeParseInt(request.getParameter("targetIndex"));
-            Target targets[] = null;
+            Target[] targets = null;
 
             try {
                 targets = DestinationPathFactory.getInstance().getTargetList(index, newPath);
@@ -345,13 +349,13 @@ public class DestinationWizardServlet extends HttpServlet {
                 String name = targets[i].getName();
                 // don't overwrite the email target command
                 if (targets[i].getName().indexOf("@") == -1) {
-                    targets[i].removeAllCommand();
-                    String commands[] = request.getParameterValues(name + "Commands");
+                    targets[i].clearCommands();
+                    String[] commands = request.getParameterValues(name + "Commands");
                     for (int j = 0; j < commands.length; j++) {
                         targets[i].addCommand(commands[j]);
                     }
                 }
-                String autoNotify[] =  request.getParameterValues(name + "AutoNotify");
+                String[] autoNotify =  request.getParameterValues(name + "AutoNotify");
                 if(autoNotify[0] == null) {
                     autoNotify[0] = "auto";
                 }
@@ -366,7 +370,7 @@ public class DestinationWizardServlet extends HttpServlet {
 
     private static void saveOutlineForm(Path path, HttpServletRequest request) {
         path.setName(request.getParameter("name"));
-        Escalate[] escalations = path.getEscalate();
+        Escalate[] escalations = path.getEscalates().toArray(new Escalate[0]);
 
         for (int i = 0; i < escalations.length; i++) {
             escalations[i].setDelay(request.getParameter("escalate" + i + "Delay"));
@@ -374,12 +378,13 @@ public class DestinationWizardServlet extends HttpServlet {
     }
 
     private static void removeEscalation(Path path, int index) {
-        Escalate escalate = path.getEscalate(index);
+        final int index1 = index;
+        Escalate escalate = path.getEscalates().get(index1);
         path.removeEscalate(escalate);
     }
 
     private static String makeQueryString(Map<String,String> map) {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         String separator = "?";
 
         Iterator<String> i = map.keySet().iterator();
@@ -393,27 +398,27 @@ public class DestinationWizardServlet extends HttpServlet {
     }
 
     // have to copy a path field by field until we get a cloning method in the
-    // Castor generated classes
+    // JAXB generated classes
     private static Path copyPath(Path oldPath) {
         Path newPath = new Path();
 
         newPath.setName(oldPath.getName());
-        newPath.setInitialDelay(oldPath.getInitialDelay());
+        newPath.setInitialDelay(oldPath.getInitialDelay().orElse(null));
 
-        Collection<Target> targets = oldPath.getTargetCollection();
+        Collection<Target> targets = oldPath.getTargets();
         Iterator<Target> it = targets.iterator();
         while (it.hasNext()) {
             newPath.addTarget(copyTarget(it.next()));
         }
 
-        Collection<Escalate> escalations = oldPath.getEscalateCollection();
+        Collection<Escalate> escalations = oldPath.getEscalates();
         Iterator<Escalate> ie = escalations.iterator();
         while (ie.hasNext()) {
             Escalate curEscalate = ie.next();
             Escalate newEscalate = new Escalate();
             newEscalate.setDelay(curEscalate.getDelay());
 
-            Collection<Target> esTargets = curEscalate.getTargetCollection();
+            Collection<Target> esTargets = curEscalate.getTargets();
             Iterator<Target> iet = esTargets.iterator();
             while (iet.hasNext()) {
                 newEscalate.addTarget(copyTarget((Target) iet.next()));
@@ -429,11 +434,11 @@ public class DestinationWizardServlet extends HttpServlet {
         Target newTarget = new Target();
 
         newTarget.setName(target.getName());
-        newTarget.setInterval(target.getInterval());
-        newTarget.setAutoNotify(target.getAutoNotify());
+        newTarget.setInterval(target.getInterval().orElse(null));
+        newTarget.setAutoNotify(target.getAutoNotify().orElse(null));
 
-        for (int i = 0; i < target.getCommand().length; i++) {
-            newTarget.addCommand(target.getCommand()[i]);
+        for (int i = 0; i < target.getCommands().toArray(new String[0]).length; i++) {
+            newTarget.addCommand(target.getCommands().toArray(new String[0])[i]);
         }
 
         return newTarget;

@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.config.vacuumd;
 
 import java.text.ParseException;
@@ -25,41 +53,28 @@ public class VacuumdConfigurationTest extends
 
         // A config with every option set
         VacuumdConfiguration vacuumdConfig;
-        List<Statement> statements = new ArrayList<Statement>();
+        List<Statement> statements = new ArrayList<>();
         Statement statement = new Statement(
                                             "INSERT 1000000 INTO bankaccount;",
                                             false);
         statements.add(statement);
 
-        Automations automations = new Automations();
-        Automation automation = new Automation("testAutomation", 3000,
+        List<Automation> automations = Arrays.asList(new Automation("testAutomation", 3000,
                                                "testTrigger", "testAction",
                                                "testAutoEvent",
-                                               "testActionEvent", false);
-        automations.addAutomation(automation);
+                                               "testActionEvent", false));
 
-        Triggers triggers = new Triggers();
-        Trigger trigger = new Trigger("testTrigger", "testDataSource", ">=",
-                                      0, statement);
-        triggers.addTrigger(trigger);
+        List<Trigger> triggers = Arrays.asList(new Trigger("testTrigger", "testDataSource", ">=",
+                                      0, statement));
 
-        Actions actions = new Actions();
-        Action action = new Action("testTrigger", "testDataSource", statement);
-        actions.addAction(action);
+        List<Action> actions = Arrays.asList(new Action("testTrigger", "testDataSource", statement));
 
-        AutoEvents autoEvents = new AutoEvents();
-        AutoEvent autoEvent = new AutoEvent("testAutoEvent", "testField",
-                                            new Uei("testUei"));
-        autoEvents.addAutoEvent(autoEvent);
+        List<AutoEvent> autoEvents = Arrays.asList(new AutoEvent("testAutoEvent", "testField",
+                                            new Uei("testUei")));
 
-        List<Assignment> assignments = new ArrayList<Assignment>();
-        Assignment assignment = new Assignment("field", "uei", "testUei");
-        assignments.add(assignment);
+        List<Assignment> assignments = Arrays.asList(new Assignment("field", "uei", "testUei"));
 
-        ActionEvents actionEvents = new ActionEvents();
-        ActionEvent actionEvent = new ActionEvent("testActionEvent", true,
-                                                  true, assignments);
-        actionEvents.addActionEvent(actionEvent);
+        List<ActionEvent> actionEvents = Arrays.asList(new ActionEvent("testActionEvent", true, assignments));
 
         vacuumdConfig = new VacuumdConfiguration(1, statements, automations,
                                                  triggers, actions,
@@ -99,7 +114,7 @@ public class VacuumdConfigurationTest extends
                                 + "    </auto-event>"
                                 + "</auto-events>"
                                 + "<action-events>"
-                                + "    <action-event name=\"testActionEvent\" for-each-result=\"true\" add-all-parms=\"true\">"
+                                + "    <action-event name=\"testActionEvent\" for-each-result=\"true\">"
                                 + "        <assignment type=\"field\" name=\"uei\" value=\"testUei\"/>"
                                 + "    </action-event>" + "</action-events>"
                                 + "</VacuumdConfiguration>",

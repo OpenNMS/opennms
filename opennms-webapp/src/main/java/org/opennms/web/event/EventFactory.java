@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,13 +33,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
-
+import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletContext;
 
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.event.filter.IfIndexFilter;
 import org.opennms.web.event.filter.InterfaceFilter;
@@ -48,8 +50,12 @@ import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
 import org.opennms.web.filter.Filter;
 
+import com.google.common.collect.Maps;
+
 /**
  * Encapsulates all querying functionality for events.
+ * 
+ * @deprecated Use an injected {@link EventDao} implementation instead
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
@@ -83,10 +89,10 @@ public class EventFactory {
         }
 
         int eventCount = 0;
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
         try {
-            StringBuffer select = new StringBuffer("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
+            final StringBuilder select = new StringBuilder("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (Filter filter : filters) {
@@ -134,11 +140,11 @@ public class EventFactory {
         }
 
         int[] eventCounts = new int[8];
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
+            final StringBuilder select = new StringBuilder("SELECT EVENTSEVERITY, COUNT(*) AS EVENTCOUNT FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
             for (Filter filter : filters) {
@@ -182,11 +188,11 @@ public class EventFactory {
      */
     public static Event getEvent(int eventId) throws SQLException {
         Event event = null;
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT EVENTS.*, NODE.NODELABEL, SERVICE.SERVICENAME FROM EVENTS LEFT OUTER JOIN NODE USING (NODEID) LEFT OUTER JOIN SERVICE USING (SERVICEID) WHERE EVENTID=? ");
+            PreparedStatement stmt = conn.prepareStatement("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel, monitoringsystems.location AS location, node.nodeLabel, service.serviceName FROM events LEFT OUTER JOIN monitoringsystems ON events.systemId=monitoringsystems.id LEFT OUTER JOIN node USING (nodeId) LEFT OUTER JOIN service USING (serviceId) WHERE eventId=? ");
             d.watch(stmt);
             stmt.setInt(1, eventId);
 
@@ -204,6 +210,31 @@ public class EventFactory {
         }
 
         return event;
+    }
+
+    public static Map<String, String> getParmsForEventId(int eventId) throws SQLException {
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
+        final DBUtils d = new DBUtils(EventFactory.class, conn);
+
+        final Map<String, String> result = Maps.newHashMap();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT name, value FROM event_parameters WHERE eventid = ?");
+            d.watch(stmt);
+            stmt.setInt(1, eventId);
+
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+
+            while (rs.next()) {
+                result.put(rs.getString("name"), rs.getString("value"));
+            }
+
+        } finally {
+            d.cleanUp();
+        }
+
+        return result;
     }
 
     /**
@@ -313,15 +344,20 @@ public class EventFactory {
         }
 
         Event[] events = null;
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("" +
-                    "          SELECT events.*, node.nodelabel, service.servicename " + 
-                    "            FROM node " + 
+            final StringBuilder select = new StringBuilder("" +
+                    "          SELECT events.*, node.nodelabel, service.servicename, " +
+                    "                 monitoringsystems.id AS systemId, " + 
+                    "                 monitoringsystems.label AS systemLabel, " +
+                    "                 monitoringsystems.location AS location " +
+                    "            FROM node " +
                     "RIGHT OUTER JOIN events " +
                     "              ON (events.nodeid = node.nodeid) " + 
+                    " LEFT OUTER JOIN monitoringsystems " +
+                    "              ON (events.systemid = monitoringsystems.id) " +
                     " LEFT OUTER JOIN service " +
                     "              ON (service.serviceid = events.serviceid) " + 
                     "           WHERE ");
@@ -446,11 +482,11 @@ public class EventFactory {
         }
 
         int eventCount = 0;
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS WHERE ");
+            final StringBuilder select = new StringBuilder("SELECT COUNT(EVENTID) AS EVENTCOUNT FROM EVENTS WHERE ");
             select.append(getAcknowledgeTypeClause(ackType));
 
             select.append(" AND NODEID=?");
@@ -868,11 +904,11 @@ public class EventFactory {
         }
 
         Event[] events = null;
-        final Connection conn = Vault.getDbConnection();
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
         try {
-            StringBuffer select = new StringBuffer("SELECT * FROM EVENTS WHERE EVENTDPNAME=?");
+            final StringBuilder select = new StringBuilder("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel, monitoringsystems.location AS location FROM events LEFT JOIN monitoringsystems ON events.systemid=monitoringsystems.id WHERE monitoringsystems.type='OpenNMS' AND systemLabel=?");
 
             if (!includeAcknowledged) {
                 select.append(" AND EVENTACKUSER IS NULL");
@@ -956,7 +992,7 @@ public class EventFactory {
         }
 
         if (eventIds.length > 0) {
-            StringBuffer update = new StringBuffer("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=?");
+            final StringBuilder update = new StringBuilder("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=?");
             update.append(" WHERE EVENTID IN (");
             update.append(eventIds[0]);
 
@@ -968,7 +1004,7 @@ public class EventFactory {
             update.append(")");
             update.append(" AND EVENTACKUSER IS NULL");
 
-            final Connection conn = Vault.getDbConnection();
+            final Connection conn = DataSourceFactory.getInstance().getConnection();
             final DBUtils d = new DBUtils(EventFactory.class, conn);
 
             try {
@@ -1011,7 +1047,7 @@ public class EventFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StringBuffer update = new StringBuffer("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE");
+        final StringBuilder update = new StringBuilder("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE");
         update.append(getAcknowledgeTypeClause(AcknowledgeType.UNACKNOWLEDGED));
 
         for (Filter filter : filters) {
@@ -1021,7 +1057,7 @@ public class EventFactory {
 
         final DBUtils d = new DBUtils(EventFactory.class);
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement(update.toString());
@@ -1066,7 +1102,7 @@ public class EventFactory {
 
         final DBUtils d = new DBUtils(EventFactory.class);
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("UPDATE EVENTS SET EVENTACKUSER=?, EVENTACKTIME=? WHERE EVENTACKUSER IS NULL");
@@ -1078,7 +1114,6 @@ public class EventFactory {
         } finally {
             d.cleanUp();
         }
-
     }
 
     /**
@@ -1113,7 +1148,7 @@ public class EventFactory {
         }
 
         if (eventIds.length > 0) {
-            StringBuffer update = new StringBuffer("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL");
+            final StringBuilder update = new StringBuilder("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL");
             update.append(" WHERE EVENTID IN (");
             update.append(eventIds[0]);
 
@@ -1126,7 +1161,7 @@ public class EventFactory {
 
             DBUtils d = new DBUtils(EventFactory.class);
             try {
-                Connection conn = Vault.getDbConnection();
+                Connection conn = DataSourceFactory.getInstance().getConnection();
                 d.watch(conn);
 
                 PreparedStatement stmt = conn.prepareStatement(update.toString());
@@ -1150,7 +1185,7 @@ public class EventFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        StringBuffer update = new StringBuffer("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE");
+        final StringBuilder update = new StringBuilder("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE");
         update.append(getAcknowledgeTypeClause(AcknowledgeType.ACKNOWLEDGED));
 
         for (Filter filter : filters) {
@@ -1160,7 +1195,7 @@ public class EventFactory {
 
         final DBUtils d = new DBUtils(EventFactory.class);
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement(update.toString());
@@ -1186,7 +1221,7 @@ public class EventFactory {
         final DBUtils d = new DBUtils(EventFactory.class);
 
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("UPDATE EVENTS SET EVENTACKUSER=NULL, EVENTACKTIME=NULL WHERE EVENTACKUSER IS NOT NULL");
@@ -1196,7 +1231,6 @@ public class EventFactory {
         } finally {
             d.cleanUp();
         }
-
     }
 
     /**
@@ -1209,8 +1243,7 @@ public class EventFactory {
      * @throws java.sql.SQLException if any.
      */
     protected static Event[] rs2Events(ResultSet rs) throws SQLException {
-        Event[] events = null;
-        Vector<Event> vector = new Vector<Event>();
+        List<Event> vector = new ArrayList<>();
 
         while (rs.next()) {
             Event event = new Event();
@@ -1225,8 +1258,8 @@ public class EventFactory {
 
             event.host = rs.getString("eventHost");
             event.snmphost = rs.getString("eventSnmpHost");
-            event.dpName = rs.getString("eventDpName");
-            event.parms = rs.getString("eventParms");
+            event.dpName = rs.getString("systemLabel");
+            event.parms = EventFactory.getParmsForEventId(event.id);
 
             // node id can be null
             Object element = rs.getObject("nodeID");
@@ -1275,16 +1308,13 @@ public class EventFactory {
             element = rs.getObject("alarmid");
             event.alarmId = (element == null ) ? Integer.valueOf(0) : (Integer) element;
 
-            vector.addElement(event);
+            event.location = rs.getString("location");
+            event.systemId = rs.getString("systemId");
+
+            vector.add(event);
         }
 
-        events = new Event[vector.size()];
-
-        for (int i = 0; i < events.length; i++) {
-            events[i] = vector.elementAt(i);
-        }
-
-        return events;
+        return vector.toArray(new Event[vector.size()]);
     }
 
     /**
@@ -1315,5 +1345,4 @@ public class EventFactory {
         }
         return ackType.getAcknowledgeTypeClause();
     }
-
 }

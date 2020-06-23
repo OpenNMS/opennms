@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,19 +25,19 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.datacollection;
 
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
-import org.opennms.netmgt.dao.support.IndexStorageStrategy;
+import org.opennms.netmgt.collection.support.IndexStorageStrategy;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * The Class Event Form.
@@ -48,30 +48,25 @@ import com.vaadin.ui.TextField;
 public class ResourceTypeForm extends CustomComponent {
 
     /** The name. */
-    @PropertyId("name")
     final TextField name = new TextField("Resource Type Name");
 
     /** The label. */
-    @PropertyId("label")
     final TextField label = new TextField("Resource Type Label");
 
     /** The resource label. */
-    @PropertyId("resourceLabel")
     final TextField resourceLabel = new TextField("Resource Label");
 
     /** The storage strategy. */
-    @PropertyId("storageStrategy")
-    StorageStrategyField storageStrategy = new StorageStrategyField("Storage Strategy");
+    final StorageStrategyField storageStrategy = new StorageStrategyField("Storage Strategy");
 
     /** The persistence selector strategy. */
-    @PropertyId("persistenceSelectorStrategy")
     final PersistSelectorStrategyField persistenceSelectorStrategy = new PersistSelectorStrategyField("Persist Selector Strategy");
 
     /** The Event editor. */
-    private final FieldGroup resourceTypeEditor = new FieldGroup();
+    final BeanFieldGroup<ResourceType> resourceTypeEditor = new BeanFieldGroup<ResourceType>(ResourceType.class);
 
     /** The event layout. */
-    private final FormLayout resourceTypeLayout = new FormLayout();
+    final FormLayout resourceTypeLayout = new FormLayout();
 
     /**
      * Instantiates a new resource type form.
@@ -96,10 +91,14 @@ public class ResourceTypeForm extends CustomComponent {
         resourceTypeLayout.addComponent(persistenceSelectorStrategy);
 
         setResourceType(createBasicResourceType());
-        resourceTypeEditor.bindMemberFields(this);
+
+        resourceTypeEditor.bind(name, "name");
+        resourceTypeEditor.bind(label, "label");
+        resourceTypeEditor.bind(resourceLabel, "resourceLabel");
+        resourceTypeEditor.bind(storageStrategy, "storageStrategy");
+        resourceTypeEditor.bind(persistenceSelectorStrategy,  "persistenceSelectorStrategy");
 
         setCompositionRoot(resourceTypeLayout);
-
     }
 
     /**
@@ -107,9 +106,8 @@ public class ResourceTypeForm extends CustomComponent {
      *
      * @return the resource type
      */
-    @SuppressWarnings("unchecked")
     public ResourceType getResourceType() {
-        return ((BeanItem<ResourceType>) resourceTypeEditor.getItemDataSource()).getBean();
+        return resourceTypeEditor.getItemDataSource().getBean();
     }
 
     /**
@@ -118,7 +116,7 @@ public class ResourceTypeForm extends CustomComponent {
      * @param resourceType the new resource type
      */
     public void setResourceType(ResourceType resourceType) {
-        resourceTypeEditor.setItemDataSource(new BeanItem<ResourceType>(resourceType));
+        resourceTypeEditor.setItemDataSource(resourceType);
     }
 
     /**
@@ -132,7 +130,7 @@ public class ResourceTypeForm extends CustomComponent {
         rt.setLabel("New Resource Type");
         rt.setResourceLabel("{index}");
         PersistenceSelectorStrategy persistence = new PersistenceSelectorStrategy();
-        persistence.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy"); // To avoid requires opennms-services
+        persistence.setClazz("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"); // To avoid requires opennms-services
         rt.setPersistenceSelectorStrategy(persistence);
         StorageStrategy storage = new StorageStrategy();
         storage.setClazz(IndexStorageStrategy.class.getName());
@@ -141,12 +139,19 @@ public class ResourceTypeForm extends CustomComponent {
     }
 
     /**
-     * Gets the field group.
-     *
-     * @return the field group
+     * Discard.
      */
-    public FieldGroup getFieldGroup() {
-        return resourceTypeEditor;
+    public void discard() {
+        resourceTypeEditor.discard();
+    }
+
+    /**
+     * Commit.
+     *
+     * @throws CommitException the commit exception
+     */
+    public void commit() throws CommitException {
+        resourceTypeEditor.commit();
     }
 
     /* (non-Javadoc)
@@ -154,7 +159,6 @@ public class ResourceTypeForm extends CustomComponent {
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         resourceTypeEditor.setReadOnly(readOnly);
     }
 
@@ -163,6 +167,15 @@ public class ResourceTypeForm extends CustomComponent {
      */
     @Override
     public boolean isReadOnly() {
-        return super.isReadOnly() && resourceTypeEditor.isReadOnly();
+        return resourceTypeEditor.isReadOnly();
+    }
+
+    /**
+     * Gets the resource type name.
+     *
+     * @return the resource type name
+     */
+    public String getResourceTypeName() {
+        return name.getValue();
     }
 }

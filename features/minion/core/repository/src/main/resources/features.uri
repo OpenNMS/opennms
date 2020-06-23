@@ -1,0 +1,1 @@
+mvn:org.opennms.features.minion/core-features/${project.version}/xml

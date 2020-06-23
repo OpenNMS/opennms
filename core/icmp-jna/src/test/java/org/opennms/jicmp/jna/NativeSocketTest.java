@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,78 +29,102 @@
 package org.opennms.jicmp.jna;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 /**
  * NativeSocketTest
  *
  * @author brozow
  */
+@Ignore
 public class NativeSocketTest {
-    
-    private static final Charset UTF_8 = Charset.forName("UTF-8");
-    
+
+    private static final ExecutorService m_executor = Executors.newCachedThreadPool();
+
     Server m_server;
-    
-    
+    int m_port = 0;
+
+    @Rule
+    public TestName m_testName = new TestName();
+
     @Before
     public void setUp() throws Exception {
-        m_server = new Server(7777);
+        System.err.println("------------------- begin " + m_testName.getMethodName() + " ---------------------");
+        m_server = new Server(m_port);
         m_server.start();
         m_server.waitForStart();
+        m_port = m_server.getPort();
     }
-    
+
     @After
     public void tearDown() throws InterruptedException {
         m_server.stop();
+        m_port = 0;
+        System.err.println("------------------- end " + m_testName.getMethodName() + " -----------------------");
     }
-    
-    public void printf(String fmt, Object... args) {
+
+    public void printf(final String fmt, final Object... args) {
         System.err.print(String.format(fmt, args));
     }
-    
+
     @Test
     public void testServer() throws Exception  {
         String[] cmds = new String[] { "echo", "echo2", "quit" };
         DatagramSocket socket = null;
         try {
             socket = new DatagramSocket();
-        
-            for(String cmd : cmds) {
-                
-                printf("Sending cmd: %s\n", cmd);
 
-                byte[] data = cmd.getBytes("UTF-8");
+            for(final String cmd : cmds) {
+                final DatagramSocket sock = socket;
+                final FutureTask<DatagramPacket> task = new FutureTask<DatagramPacket>(new Callable<DatagramPacket>() {
+                    @Override public DatagramPacket call() throws Exception {
+                        printf("Sending cmd: %s\n", cmd);
 
-                DatagramPacket p = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), 7777);
+                        final byte[] data = cmd.getBytes(StandardCharsets.UTF_8);
+                        final DatagramPacket p = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), sock.getLocalPort());
+                        sock.send(p);
 
-                socket.send(p);
+                        printf("Receiving...\n");
+                        final DatagramPacket r = new DatagramPacket(new byte[128], 128);
+                        sock.receive(r);
+                        printf("Received\n");
 
-                DatagramPacket r = new DatagramPacket(new byte[128], 128);
-                socket.receive(r);
-                
-                String response = new String(r.getData(), r.getOffset(), r.getLength(), "UTF-8");
-                
+                        return r;
+                    }
+                });
+
+                m_executor.execute(task);
+                final DatagramPacket r = task.get(10, TimeUnit.SECONDS);
+                assertNotNull(r);
+
+                final String response = new String(r.getData(), r.getOffset(), r.getLength(), StandardCharsets.UTF_8);
                 printf("Received Response: %s from %s:%d\n", response, r.getAddress().getHostAddress(), r.getPort());
-
                 assertEquals(cmd, response);
             }
-        
+
         } finally {
             if (socket != null) socket.close();
         }
     }
-    
+
     @Test
     public void testNativeV4() throws Exception {
         testNative(NativeDatagramSocket.PF_INET, InetAddress.getByName("127.0.0.1"));
@@ -111,29 +135,37 @@ public class NativeSocketTest {
         testNative(NativeDatagramSocket.PF_INET6, InetAddress.getByName("::1"));
     }
 
-    private void testNative(int family, InetAddress address) throws Exception {
-        String[] cmds = new String[] { "nativeEcho", "nativeEcho2", "quitNative" };
+    private void testNative(final int family, final InetAddress address) throws Exception {
+        final String[] cmds = new String[] { "nativeEcho", "nativeEcho2", "quitNative" };
         NativeDatagramSocket socket = null;
 
         try {
-            socket = NativeDatagramSocket.create(family, NativeDatagramSocket.SOCK_DGRAM,
-                    NativeDatagramSocket.IPPROTO_UDP);
+            socket = NativeDatagramSocket.create(family, NativeDatagramSocket.IPPROTO_UDP, 1234);
 
-            for(String cmd : cmds) {
+            for(final String cmd : cmds) {
+                final NativeDatagramSocket sock = socket;
+                final FutureTask<NativeDatagramPacket> task = new FutureTask<NativeDatagramPacket>(new Callable<NativeDatagramPacket>() {
+                    @Override public NativeDatagramPacket call() throws Exception {
+                        printf("Sending cmd: %s\n", cmd);
+                        final ByteBuffer buf = StandardCharsets.UTF_8.encode(cmd);
+                        final NativeDatagramPacket p = new NativeDatagramPacket(buf, address, m_port);
+                        sock.send(p);
 
-                printf("Sending cmd: %s\n", cmd);
-                
-                ByteBuffer buf = UTF_8.encode(cmd);
+                        printf("Receiving...\n");
+                        final NativeDatagramPacket r = new NativeDatagramPacket(128);
+                        sock.receive(r);
+                        printf("Received.\n");
 
-                NativeDatagramPacket p = new NativeDatagramPacket(buf, address, 7777); 
+                        return r;
+                    }
 
-                socket.send(p);
+                });
 
-                NativeDatagramPacket r = new NativeDatagramPacket(128);
-                socket.receive(r);
-                
-                String response = UTF_8.decode(r.getContent()).toString();
+                m_executor.execute(task);
+                final NativeDatagramPacket r = task.get(10, TimeUnit.SECONDS);
+                assertNotNull(r);
 
+                final String response = StandardCharsets.UTF_8.decode(r.getContent()).toString();
                 printf("Received Response: %s from %s:%d\n", response, r.getAddress().getHostAddress(), r.getPort());
 
                 assertEquals(cmd, response);
@@ -143,46 +175,32 @@ public class NativeSocketTest {
             if (socket != null) socket.close();
         }
     }
-    
+
     @Test(timeout=10000)
     @Ignore("This is ignored since I haven't found a way to interrupt a socket blocked on recvfrom in linux")
     public void testCloseInReceive() throws Exception {
-        final NativeDatagramSocket socket = NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.SOCK_DGRAM,
-                NativeDatagramSocket.IPPROTO_UDP);
-        
-        Thread t = new Thread("Listener") {
-            @Override
-            public void run() {
-                try {
-                    while(true) {
-                        NativeDatagramPacket r = new NativeDatagramPacket(128);
-                        System.err.println("About to receive");
-                        socket.receive(r);
-                        System.err.println("Returned from receive");
-                        String response = UTF_8.decode(r.getContent()).toString();
+        try(final NativeDatagramSocket socket = NativeDatagramSocket.create(NativeDatagramSocket.PF_INET, NativeDatagramSocket.IPPROTO_UDP, 1234)) {
+            final FutureTask<NativeDatagramPacket> task = new FutureTask<NativeDatagramPacket>(new Callable<NativeDatagramPacket>() {
+                @Override public NativeDatagramPacket call() throws Exception {
+                    final ByteBuffer buf = StandardCharsets.UTF_8.encode("msg1");
+                    final NativeDatagramPacket p = new NativeDatagramPacket(buf, InetAddress.getLocalHost(), m_port);
+                    socket.send(p);
 
-                        printf("Received Response: %s from %s:%d\n", response, r.getAddress().getHostAddress(), r.getPort());
-                    }
-                } catch (Throwable e) {
-                    e.printStackTrace();
+                    final NativeDatagramPacket r = new NativeDatagramPacket(128);
+                    printf("Receiving...\n");
+                    socket.receive(r);
+                    printf("Received\n");
+                    return r;
                 }
-            }
-        };
-        t.start();
-        
-        ByteBuffer buf = UTF_8.encode("msg1");
+            });
 
-        NativeDatagramPacket p = new NativeDatagramPacket(buf, InetAddress.getLocalHost(), 7777); 
+            m_executor.execute(task);
+            final NativeDatagramPacket r = task.get(10, TimeUnit.SECONDS);
+            assertNotNull(r);
 
-        socket.send(p);
-        
-        Thread.sleep(1000);
-        
-        socket.close();
-        
-        t.join();
-        
-        
+            final String response = StandardCharsets.UTF_8.decode(r.getContent()).toString();
+            printf("Received Response: %s from %s:%d\n", response, r.getAddress().getHostAddress(), r.getPort());
+        }
     }
 
 }

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,103 +28,72 @@
 
 package org.opennms.netmgt.alarmd;
 
-import java.util.List;
-import java.util.Map;
-
-import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
-import org.opennms.netmgt.alarmd.api.Northbounder;
-import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.netmgt.alarmd.drools.DroolsAlarmContext;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.daemon.DaemonTools;
+import org.opennms.netmgt.events.api.ThreadAwareEventListener;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Alarm management Daemon
- * 
- * TODO: Create configuration for Alarm to enable forwarding.
- * TODO: Application Context for wiring in forwarders???
- * TODO: Change this class to use AbstractServiceDaemon instead of SpringServiceDaemon
- * 
  *
+ * @author jwhite
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
 @EventListener(name=Alarmd.NAME, logPrefix="alarmd")
-public class Alarmd implements SpringServiceDaemon, DisposableBean {
+public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventListener {
     private static final Logger LOG = LoggerFactory.getLogger(Alarmd.class);
 
-    /** Constant <code>NAME="Alarmd"</code> */
-    public static final String NAME = "Alarmd";
+    /** Constant <code>NAME="alarmd"</code> */
+    public static final String NAME = "alarmd";
 
-    private EventForwarder m_eventForwarder;
-    
-    private List<Northbounder> m_northboundInterfaces;
+    protected static final Integer THREADS = SystemProperties.getInteger("org.opennms.alarmd.threads", 4);
 
     private AlarmPersister m_persister;
-    
-    
-    
-    
-    //Get all events
+
+    @Autowired
+    private AlarmLifecycleListenerManager m_alm;
+
+    @Autowired
+    private DroolsAlarmContext m_droolsAlarmContext;
+
+    @Autowired
+    private NorthbounderManager m_northbounderManager;
+
+    public Alarmd() {
+        super(NAME);
+    }
+
     /**
-     * <p>onEvent</p>
+     * Listens for all events.
+     *
+     * This method is thread-safe.
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     @EventHandler(uei = EventHandler.ALL_UEIS)
     public void onEvent(Event e) {
-    	
     	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
-    		handleReloadEvent(e);
+           handleReloadEvent(e);
+           return;
     	}
-    	
-    	
-        OnmsAlarm alarm = m_persister.persist(e);
-        
-        if (alarm != null) {
-        	NorthboundAlarm a = new NorthboundAlarm(alarm);
-
-            for (Northbounder nbi : m_northboundInterfaces) {
-                nbi.onAlarm(a);
-            }
-        }
-        
+    	m_persister.persist(e);
     }
 
-    @EventHandler(uei = "uei.opennms.org/internal/reloadDaemonConfig")
-    private void handleReloadEvent(Event e) {
-    	LOG.info("Received reload configuration event: {}", e);
-
-    	List<Parm> parmCollection = e.getParmCollection();
-    	for (Parm parm : parmCollection) {
-
-    		String parmName = parm.getParmName();
-    		if("daemonName".equals(parmName)) {
-    			if (parm.getValue() == null || parm.getValue().getContent() == null) {
-    				LOG.warn("The daemonName parameter has no value, ignoring.");
-    				return;
-    			}
-
-    			List<Northbounder> nbis = getNorthboundInterfaces();
-    			for (Northbounder nbi : nbis) {
-    				if (parm.getValue().getContent().contains(nbi.getName())) {
-    					LOG.debug("Handling reload event for NBI: {}", nbi.getName());
-    					LOG.debug("Reloading NBI configuration for interface {} not yet implemented.", nbi.getName());
-    					nbi.reloadConfig();		
-    					return;
-    				}
-    			}
-    		}
-    	}
+    private synchronized void handleReloadEvent(Event e) {
+        m_northbounderManager.handleReloadEvent(e);
+        DaemonTools.handleReloadEvent(e, Alarmd.NAME, (event) -> onAlarmReload());
     }
 
-
+    private void onAlarmReload() {
+        m_droolsAlarmContext.reload();
+    }
 
 	/**
      * <p>setPersister</p>
@@ -144,81 +113,28 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
         return m_persister;
     }
 
-    /**
-     * <p>getEventForwarder</p>
-     *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
-     */
-    public EventForwarder getEventForwarder() {
-        return m_eventForwarder;
-    }
-
-    /**
-     * <p>setEventForwarder</p>
-     *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
-     */
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        m_eventForwarder = eventForwarder;
-    }
-
-    /**
-     * 
-     * TODO: use onInit() instead
-     * <p>afterPropertiesSet</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @Override
-    public void afterPropertiesSet() throws Exception {
-        if (getNorthboundInterfaces() != null) {
-            for (final Northbounder nb : getNorthboundInterfaces()) {
-                nb.start();
-            }
-        }
+    protected synchronized void onInit() {
+        // pass
     }
 
-    /**
-     * <p>destroy</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @Override
-    public void destroy() throws Exception {
+    public synchronized void onStart() {
+        // Start the Drools context
+        m_droolsAlarmContext.start();
     }
 
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getName() {
-        return NAME;
-    }
-
-    /**
-     * <p>start</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @Override
-    public void start() throws Exception {
+    public synchronized void onStop() {
+        // Stop the northbound interfaces
+        m_northbounderManager.stop();
+        // Stop the Drools context
+        m_droolsAlarmContext.stop();
     }
 
-    public void onNorthbounderRegistered(final Northbounder northbounder, final Map<String,String> properties) {
-        northbounder.start();
-    }
-    
-    public void onNorthbounderUnregistered(final Northbounder northbounder, final Map<String,String> properties) {
-        northbounder.stop();
-    }
-    
-    public List<Northbounder> getNorthboundInterfaces() {
-        return m_northboundInterfaces;
-    }
-
-    public void setNorthboundInterfaces(List<Northbounder> northboundInterfaces) {
-        m_northboundInterfaces = northboundInterfaces;
+    @Override
+    public int getNumThreads() {
+        return THREADS;
     }
 
 }

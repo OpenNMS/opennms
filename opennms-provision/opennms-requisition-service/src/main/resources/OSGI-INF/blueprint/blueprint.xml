@@ -1,0 +1,47 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+    xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+    xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <!-- Build the registry and listen for RequisitionProvider types  -->
+    <bean id="requisitionProviderRegistry" class="org.opennms.netmgt.provision.service.requisition.DefaultRequisitionProviderRegistry"/>
+    <service ref="requisitionProviderRegistry" interface="org.opennms.netmgt.provision.persist.RequisitionProviderRegistry" />
+    <reference-list interface="org.opennms.netmgt.provision.persist.RequisitionProvider" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="requisitionProviderRegistry" />
+    </reference-list>
+
+    <!-- Thread pool used to execute the requisition requests locally -->
+    <bean id="requisitionRequestExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
+
+    <!-- RPC Module -->
+    <bean id="requisitionRpcModule" class="org.opennms.netmgt.provision.persist.rpc.RequisitionRpcModule" >
+       <property name="registry" ref="requisitionProviderRegistry"/>
+       <property name="executor" ref="requisitionRequestExecutor"/>
+    </bean>
+    <service ref="requisitionRpcModule" interface="org.opennms.core.rpc.api.RpcModule" />
+
+    <!-- The 'file' provider -->
+    <bean id="fileRequisitionProvider" class="org.opennms.netmgt.provision.service.requisition.FileRequisitionProvider" />
+	<service ref="fileRequisitionProvider" interface="org.opennms.netmgt.provision.persist.RequisitionProvider">
+		<service-properties>
+			<entry key="type" value="file" />
+		</service-properties>
+	</service>
+
+    <!-- The 'http' provider -->
+    <bean id="httpRequisitionProvider" class="org.opennms.netmgt.provision.service.requisition.HttpRequisitionProvider" />
+	<service ref="httpRequisitionProvider" interface="org.opennms.netmgt.provision.persist.RequisitionProvider">
+		<service-properties>
+			<entry key="type" value="http" />
+		</service-properties>
+	</service>
+
+</blueprint>

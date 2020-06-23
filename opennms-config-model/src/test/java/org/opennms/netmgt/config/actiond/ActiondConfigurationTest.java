@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,24 +35,31 @@ import java.util.Collection;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
 
-public class ActiondConfigurationTest extends
-        XmlTestNoCastor<ActiondConfiguration> {
+public class ActiondConfigurationTest extends XmlTestNoCastor<ActiondConfiguration> {
 
-    public ActiondConfigurationTest(final ActiondConfiguration sampleObject,
-            final String sampleXml, final String schemaFile) {
+    public ActiondConfigurationTest(final ActiondConfiguration sampleObject, final String sampleXml, final String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
     }
 
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
+        final ActiondConfiguration actiondConfig = new ActiondConfiguration(5, 1000l);
 
-        ActiondConfiguration actiondConfig = new ActiondConfiguration(5, 1000);
-
-        return Arrays.asList(new Object[][] { {
+        return Arrays.asList(new Object[][] {
+            {
                 actiondConfig,
                 "<actiond-configuration max-outstanding-actions=\"5\" "
                         + "max-process-time=\"1000\">"
                         + "</actiond-configuration>",
-                "target/classes/xsds/actiond-configuration.xsd", }, });
+                "target/classes/xsds/actiond-configuration.xsd",
+            },
+            {
+                actiondConfig,
+                "<actiond-configuration max-outstanding-actions=\"5\" "
+                        + "max-process-time=\"1000\">\n   "
+                        + "</actiond-configuration>",
+                "target/classes/xsds/actiond-configuration.xsd",
+            }
+        });
     }
 }

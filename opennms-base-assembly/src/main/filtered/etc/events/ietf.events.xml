@@ -1,0 +1,387 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.10.30.15</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/DS3/traps/dsx3LineStatusChange</uei>
+      <event-label>DS3-MIB defined trap event: dsx3LineStatusChange</event-label>
+      <descr>&lt;p>A dsx3LineStatusChange trap is sent when the
+            value of an instance of dsx3LineStatus changes. It
+            can be utilized by an NMS to trigger polls. When
+            the line status change results in a lower level
+            line status change (i.e. ds1), then no traps for
+            the lower level are sent.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+            dsx3LineStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            dsx3LineStatusLastChange&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>DS3 Event: Line Status Change.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.47.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/ENTITY/traps/entConfigChange</uei>
+      <event-label>ENTITY-MIB defined trap event: entConfigChange</event-label>
+      <descr>&lt;p>An entConfigChange notification is generated when the value
+            of entLastChangeTime changes. It can be utilized by an NMS
+            to trigger logical/physical entity table maintenance polls.
+            &lt;/p>&lt;p>
+            An agent should not generate more than one entConfigChange
+            'notification-event' in a given time interval (five seconds
+            is the suggested default). A 'notification-event' is the
+            transmission of a single trap or inform PDU to a list of
+            notification destinations.
+            &lt;/p>&lt;p>
+            If additional configuration changes occur within the
+            throttling period, then notification-events for these
+            changes should be suppressed by the agent until the current
+            throttling period expires. At the end of a throttling
+            period, one notification-event should be generated if any
+            configuration changes occurred since the start of the
+            throttling period. In such a case, another throttling period
+            is started right away.
+            &lt;/p>&lt;p>
+            An NMS should periodically check the value of
+            entLastChangeTime to detect any missed entConfigChange
+            notification-events, e.g., due to throttling or transmission
+            loss.&lt;/p>&lt;table>
+            &lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>ENTITY Configuration Change Notification.&lt;/p></logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.10.20.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/ISDN/traps/isdnMibCallInformation</uei>
+      <event-label>ISDN-MIB defined trap event: isdnMibCallInformation</event-label>
+      <descr>&lt;p>This trap/inform is sent to the manager under the
+            following condidions:
+            &lt;/p>&lt;p>
+            - on incoming calls for each call which is rejected for
+            policy reasons (e.g. unknown neighbor or access
+            violation)
+            &lt;/p>&lt;p>
+            - on outgoing calls whenever a call attempt is determined
+            to have ultimately failed. In the event that call retry
+            is active, then this will be after all retry attempts
+            have failed.
+            &lt;/p>&lt;p>
+            - whenever a call connects. In this case, the object
+            isdnBearerCallConnectTime should be included in the
+            trap.
+            &lt;/p>&lt;p>
+            Only one such trap is sent in between successful or
+            unsuccessful call attempts from or to a single neighbor;
+            subsequent call attempts result in no trap.
+            &lt;/p>&lt;p>
+            If the Dial Control MIB objects dialCtlNbrCfgId and
+            dialCtlNbrCfgIndex are known by the entity generating
+            this trap, both objects should be included in the trap
+            as well. The receipt of this trap with no dial neighbor
+            information indicates that the manager must poll the
+            callHistoryTable of the Dial Control MIB to see what
+            changed.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+            ifIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            isdnBearerOperStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p;>
+            idle(1) connecting(2) connected(3) active(4)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            isdnBearerPeerAddress&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            isdnBearerPeerSubAddress&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            isdnBearerCallSetupTime&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            isdnBearerInfoType&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+            &lt;/td>&lt;td>&lt;p;>
+            unknown(1) speech(2) unrestrictedDigital(3) unrestrictedDigital56(4) restrictedDigital(5) audio31(6)
+            audio7(7) video(8) packetSwitched(9)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            isdnBearerCallOrigin&lt;/b>&lt;/td>&lt;td>%parm[#7]%
+            &lt;/td>&lt;td>&lt;p;>
+            unknown(1) originate(2) answer(3) callback(4)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>ISDN Call Information Event.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.10.21.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/DialControl/traps/dialCtlPeerCallInformation</uei>
+      <event-label>DIAL-CONTROL-MIB defined trap event: dialCtlPeerCallInformation</event-label>
+      <descr>&lt;p>This trap/inform is sent to the manager whenever
+            a successful call clears, or a failed call attempt
+            is determined to have ultimately failed. In the
+            event that call retry is active, then this is after
+            all retry attempts have failed. However, only one such
+            trap is sent in between successful call attempts;
+            subsequent call attempts result in no trap.
+            ifOperStatus will return the operational status of the
+            virtual interface associated with the peer to whom
+            this call was made to.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+            callHistoryPeerId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callHistoryPeerIfIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callHistoryLogicalIfIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            ifOperStatus&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+            &lt;/td>&lt;td>&lt;p;>
+            up(1) down(2) testing(3) unknown(4) dormant(5) notPresent(6) lowerLayerDown(7)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callHistoryPeerAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callHistoryPeerSubAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callHistoryDisconnectCause&lt;/b>&lt;/td>&lt;td>%parm[#7]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callHistoryConnectTime&lt;/b>&lt;/td>&lt;td>%parm[#8]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callHistoryDisconnectTime&lt;/b>&lt;/td>&lt;td>%parm[#9]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callHistoryInfoType&lt;/b>&lt;/td>&lt;td>%parm[#10]%
+            &lt;/td>&lt;td>&lt;p;>
+            other(1) speech(2) unrestrictedDigital(3) unrestrictedDigital56(4) restrictedDigital(5) audio31(6)
+            audio7(7) video(8) packetSwitched(9) fax(10)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callHistoryCallOrigin&lt;/b>&lt;/td>&lt;td>%parm[#11]%
+            &lt;/td>&lt;td>&lt;p;>
+            originate(1) answer(2) callback(3)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Dial Control Event: Peer Call Information.&lt;/p></logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.10.21.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/DialControl/traps/dialCtlPeerCallSetup</uei>
+      <event-label>DIAL-CONTROL-MIB defined trap event: dialCtlPeerCallSetup</event-label>
+      <descr>&lt;p>This trap/inform is sent to the manager whenever
+            a call setup message is received or sent.
+            ifOperStatus will return the operational status of the
+            virtual interface associated with the peer to whom
+            this call was made to.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+            callActivePeerId&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callActivePeerIfIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callActiveLogicalIfIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            ifOperStatus&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+            &lt;/td>&lt;td>&lt;p;>
+            up(1) down(2) testing(3) unknown(4) dormant(5) notPresent(6) lowerLayerDown(7)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callActivePeerAddress&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callActivePeerSubAddress&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callActiveInfoType&lt;/b>&lt;/td>&lt;td>%parm[#7]%
+            &lt;/td>&lt;td>&lt;p;>
+            other(1) speech(2) unrestrictedDigital(3) unrestrictedDigital56(4) restrictedDigital(5)
+            audio31(6) audio7(7) video(8) packetSwitched(9) fax(10)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            callActiveCallOrigin&lt;/b>&lt;/td>&lt;td>%parm[#8]%
+            &lt;/td>&lt;td>&lt;p;>
+            originate(1) answer(2) callback(3)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Dial Control Event: Peer Call Setup Notification.&lt;/p></logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.17</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/Bridge/traps/newRoot</uei>
+      <event-label>BRIDGE-MIB defined trap event: newRoot</event-label>
+      <descr>&lt;p>The newRoot trap indicates that the sending agent
+            has become the new root of the Spanning Tree; the
+            trap is sent by a bridge soon after its election
+            as the new root, e.g., upon expiration of the
+            Topology Change Timer immediately subsequent to
+            its election. Implementation of this trap is
+            optional.&lt;/p>&lt;table>
+            &lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Bridge MIB: New Spanning Tree Root.&lt;/p></logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.17</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/Bridge/traps/topologyChange</uei>
+      <event-label>BRIDGE-MIB defined trap event: topologyChange</event-label>
+      <descr>&lt;p>A topologyChange trap is sent by a bridge when
+            any of its configured ports transitions from the
+            Learning state to the Forwarding state, or from
+            the Forwarding state to the Blocking state. The
+            trap is not sent if a newRoot trap is sent for the
+            same transition. Implementation of this trap is
+            optional.&lt;/p>&lt;table>
+            &lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Bridge MIB: Topology Change.&lt;/p></logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.10.32</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/RFC1315/traps/frDLCIStatusChange</uei>
+      <event-label>RFC1315-MIB defined trap event: frDLCIStatusChange</event-label>
+      <descr>&lt;p>This trap indicates that the indicated Virtual
+            Circuit has changed state. It has either been
+            created or invalidated, or has toggled between
+            the active and inactive states.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+            frCircuitIfIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            frCircuitDlci&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            frCircuitState&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+            &lt;/td>&lt;td>&lt;p;>
+            invalid(1) active(2) inactive(3)
+            &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>RFC1315 Event: Frame Relay DLCI Status Change.&lt;/p></logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.353.5.7.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/ATMForum/traps/imaFailureAlarm</uei>
+      <event-label>IMA-MIB defined trap event: imaFailureAlarm</event-label>
+      <descr>&lt;p>The imaFailureAlarm provides a method for an agent implementing IMA
+            to notify an NMS of an alarm condition.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+            ifIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            imaAlarmStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p;>
+            cleared(1) declared(2)&lt;/p>&lt;/td;>
+            &lt;/tr>&lt;tr>&lt;td>&lt;b>
+            imaAlarmType&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+            &lt;/td>&lt;td>&lt;p;>
+            imaAlarmLinkLif(1) imaAlarmLinkLods(2) imaAlarmLinkTxMisConnect(3) imaAlarmLinkRfi(4)
+            imaAlarmLinkFault(5) imaAlarmLinkTxUnusableFe(6) imaAlarmLinkRxUnusableFe(7)
+            imaAlarmGroupStartupFe(8) imaAlarmGroupCfgAbort(9) imaAlarmGroupCfgAbortFe(10)
+            imaAlarmGroupInsuffLinks(11) imaAlarmGroupInsuffLinksFe(12) imaAlarmGroupBlockedFe(13)
+            imaAlarmGroupTimingSynch(14)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>ATM Event: IMA Failure Alarm.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+</events>

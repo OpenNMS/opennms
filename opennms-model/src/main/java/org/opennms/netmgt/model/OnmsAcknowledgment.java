@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.model;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
@@ -43,13 +42,14 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 
 @XmlRootElement(name="ack")  //hmmm
 @Entity
 @Table(name = "acks")
-
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 /**
  * Persistable object used in acknowledgment activities
  *
@@ -112,7 +112,7 @@ public class OnmsAcknowledgment {
      * @throws java.text.ParseException if any.
      */
     public OnmsAcknowledgment(final Event e) throws ParseException {
-        this(DateFormat.getDateInstance(DateFormat.FULL).parse(e.getTime()), "admin");
+        this(e.getTime(), "admin");
         Collection<Parm> parms = e.getParmCollection();
         
         if (parms.size() <= 2) {
@@ -121,25 +121,39 @@ public class OnmsAcknowledgment {
         
         for (Parm parm : parms) {
             final String parmValue = parm.getValue().getContent();
-            
-            if (!"ackType".equals(parm.getParmName()) && !"refId".equals(parm.getParmName()) && !"user".equals(parm.getParmName()) ) {
+            if (!"ackAction".equals(parm.getParmName()) && 
+                !"ackType".equals(parm.getParmName())   && 
+                !"refId".equals(parm.getParmName())     && 
+                !"ackUser".equals(parm.getParmName())   &&
+                !"user".equals(parm.getParmName())) {
                 throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", is an invalid paramter");
-            } else {
+            } 
             
-                if ("ackType".equals(parm.getParmName())) {
+            if ("ackType".equals(parm.getParmName())) {
 
-                    if ("ALARM".equalsIgnoreCase(parmValue) || "NOTIFICATION".equalsIgnoreCase(parmValue)) {
-                        m_ackType = ("ALARM".equalsIgnoreCase(parmValue) ? AckType.ALARM : AckType.NOTIFICATION);
-                    } else {
-                        throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", has invalid value, requires: \"Alarm\" or \"Notification\"." );
-                    }
-                    
-                } else if ("refId".equals(parm.getParmName())){
-                    m_refId = Integer.valueOf(parm.getValue().getContent());
+                if ("ALARM".equalsIgnoreCase(parmValue) || "NOTIFICATION".equalsIgnoreCase(parmValue)) {
+                    m_ackType = ("ALARM".equalsIgnoreCase(parmValue) ? AckType.ALARM : AckType.NOTIFICATION);
                 } else {
-                    m_ackUser = parm.getValue().getContent();
+                    throw new IllegalArgumentException("Event parm: "+parm.getParmName()+", has invalid value, requires: \"Alarm\" or \"Notification\"." );
                 }
-            }                
+                
+            } else if ("refId".equals(parm.getParmName())){
+                m_refId = Integer.valueOf(parmValue);
+            } else if ("ackUser".equals(parm.getParmName())|| "user".equals(parm.getParmName())){
+                m_ackUser = parmValue;
+            } else {
+                if ("ACKNOWLEDGE".equalsIgnoreCase(parmValue)) {
+                    m_ackAction=AckAction.ACKNOWLEDGE;
+                } else if ("ESCALATE".equalsIgnoreCase(parmValue)) {
+                    m_ackAction=AckAction.ESCALATE;
+                } else if ("UNACKNOWLEDGE".equalsIgnoreCase(parmValue)) {
+                    m_ackAction=AckAction.UNACKNOWLEDGE;
+                } else if ("CLEAR".equalsIgnoreCase(parmValue)) {
+                    m_ackAction=AckAction.CLEAR;
+                } else {
+                    m_ackAction = AckAction.UNSPECIFIED;
+                } 
+            }
         }
     }
 
@@ -333,7 +347,7 @@ public class OnmsAcknowledgment {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        StringBuilder bldr = new StringBuilder("Acknowledgment ID:");
+        final StringBuilder bldr = new StringBuilder("Acknowledgment ID:");
         bldr.append(m_id);
         bldr.append(" User:");
         bldr.append(m_ackUser);

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,14 +28,15 @@
 
 package org.opennms.web.alarm.filter;
 
+import org.opennms.web.alarm.filter.LogMessageSubstringFilter;
 import org.opennms.web.filter.SubstringFilter;
 
 /**
  * <p>LogMessageMatchesAnyFilter class.</p>
  *
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
- * @version $Id: $
- * @since 1.8.1
+ * 
+ * @deprecated Replace calls to this with the identical {@link LogMessageSubstringFilter}
  */
 public class LogMessageMatchesAnyFilter extends SubstringFilter {
     /** Constant <code>TYPE="msgmatchany"</code> */
@@ -57,7 +58,7 @@ public class LogMessageMatchesAnyFilter extends SubstringFilter {
      */
     @Override
     public String getTextDescription() {
-        StringBuffer buffer = new StringBuffer("message containing \"");
+        final StringBuilder buffer = new StringBuilder("message containing \"");
         buffer.append(getValue());
         buffer.append("\"");
 
@@ -77,6 +78,8 @@ public class LogMessageMatchesAnyFilter extends SubstringFilter {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof LogMessageMatchesAnyFilter)) return false;
         return this.toString().equals(obj.toString());
     }
 

@@ -1,0 +1,34 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5089.1.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/traps/clavister/clavisterOSGenericTrap</uei>
+      <event-label>CLAVISTER-TRAPS-MIB defined trap event: clavisterOSGenericTrap</event-label>
+      <descr>&lt;p>Generic Event&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b> clavisterOSTrapVarSeverity&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p> emergency(0) alert(1) critical(2) error(3) warning(4) notice(5) info(6) debug(7) &lt;/p>&lt;/td>&lt;/tr> &lt;tr>&lt;td>&lt;b> clavisterOSTrapVarCategory&lt;/b>&lt;/td>&lt;td> %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr> &lt;tr>&lt;td>&lt;b> clavisterOSTrapVarID&lt;/b>&lt;/td>&lt;td> %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr> &lt;tr>&lt;td>&lt;b> clavisterOSTrapVarEvent&lt;/b>&lt;/td>&lt;td> %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr> &lt;tr>&lt;td>&lt;b> clavisterOSTrapVarAction&lt;/b>&lt;/td>&lt;td> %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr> &lt;tr>&lt;td>&lt;b> clavisterOSTrapVarTime&lt;/b>&lt;/td>&lt;td> %parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr> &lt;tr>&lt;td>&lt;b> clavisterOSTrapVarMessage&lt;/b>&lt;/td>&lt;td> %parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p> clavisterOSGenericTrap trap received clavisterOSTrapVarSeverity=%parm[#1]% clavisterOSTrapVarCategory=%parm[#2]% clavisterOSTrapVarID=%parm[#3]% clavisterOSTrapVarEvent=%parm[#4]% clavisterOSTrapVarAction=%parm[#5]% clavisterOSTrapVarTime=%parm[#6]% clavisterOSTrapVarMessage=%parm[#7]%&lt;/p></logmsg>
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="emergency"/>
+         <decode varbindvalue="1" varbinddecodedstring="alert"/>
+         <decode varbindvalue="2" varbinddecodedstring="critical"/>
+         <decode varbindvalue="3" varbinddecodedstring="error"/>
+         <decode varbindvalue="4" varbinddecodedstring="warning"/>
+         <decode varbindvalue="5" varbinddecodedstring="notice"/>
+         <decode varbindvalue="6" varbinddecodedstring="info"/>
+         <decode varbindvalue="7" varbinddecodedstring="debug"/>
+      </varbindsdecode>
+   </event>
+</events>

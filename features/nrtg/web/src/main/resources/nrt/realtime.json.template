@@ -1,0 +1,7 @@
+{
+  "collectionTaskId": "${nrtCollectionTaskId}",
+  "rrdGraphString": "${rrdGraphString}",
+  "metricsMapping": {
+    ${metricsMapping}
+  }     
+}

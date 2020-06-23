@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.org/wmi-config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:this="http://xmlns.opennms.org/xsd/config/wsman" xmlns:ns2="http://www.w3.org/1999/xhtml" xmlns:ns="http://www.w3.org/2001/XMLSchema" xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty" targetNamespace="http://xmlns.opennms.org/xsd/config/wsman" elementFormDefault="qualified">
+  <annotation>
+    <documentation>
+			XML Schema for the wsman-config.xml configuration file.
+		</documentation>
+  </annotation>
+  <element name="range">
+    <annotation>
+      <documentation>IP Address Range</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="begin" type="string" use="required">
+        <annotation>
+          <documentation>Starting IP address of the range.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="end" type="string" use="required">
+        <annotation>
+          <documentation>Ending IP address of the range.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="wsman-config">
+    <annotation>
+      <documentation>This is the top-level element for wsman-config.xml</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:definition">
+          <annotation>
+            <documentation>Maps IP addresses to specific WS-Man parameters(retries, timeouts...)</documentation>
+          </annotation>
+        </element>
+      </sequence>
+      <attribute name="timeout" type="int" use="optional">
+        <annotation>
+          <documentation>Default timeout (in milliseconds).</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="retry" type="int" use="optional">
+        <annotation>
+          <documentation>Default number of retries.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="username" type="string" use="optional">
+        <annotation>
+          <documentation>Default username.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="password" type="string" use="optional">
+        <annotation>
+          <documentation>Default user password.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="port" type="int" use="optional">
+        <annotation>
+          <documentation>Default port.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="max-elements" type="int" use="optional">
+        <annotation>
+          <documentation>Default max elements.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="ssl" type="boolean" use="optional">
+        <annotation>
+          <documentation>Default SSL flag.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="strict-ssl" type="boolean" use="optional">
+        <annotation>
+          <documentation>Default strict SSL flag. Disable in order to remove SSL certificate validation.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="path" type="string" use="optional">
+        <annotation>
+          <documentation>Default URL path.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="product-vendor" type="string" use="optional">
+        <annotation>
+          <documentation>Default Product Vendor.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="product-version" type="string" use="optional">
+        <annotation>
+          <documentation>Default Product Version.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="gss-auth" type="boolean" use="optional">
+        <annotation>
+          <documentation>Enables GSS (HTTP Negotiate) authentication.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="definition">
+    <annotation>
+      <documentation>
+				Provides a mechanism for associating one or more
+				specific IP addresses and/or IP address ranges with a
+				set of WS-Man parameters which will be used in place of the
+				default values during WS-Man data collection.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:range">
+          <annotation>
+            <documentation>IP address range to which this definition applies.</documentation>
+          </annotation>
+        </element>
+        <element name="specific" type="string" minOccurs="0" maxOccurs="unbounded">
+          <annotation>
+            <documentation>Specific IP address to which this definition applies.</documentation>
+          </annotation>
+        </element>
+        <element ref="this:ip-match" minOccurs="0" maxOccurs="unbounded">
+          <annotation>
+            <documentation>Match Octets (as in IPLIKE)</documentation>
+          </annotation>
+        </element>
+      </sequence>
+      <attribute name="retry" type="int" use="optional"/>
+      <attribute name="timeout" type="int" use="optional"/>
+      <attribute name="username" type="string" use="optional"/>
+      <attribute name="password" type="string" use="optional"/>
+      <attribute name="port" type="int" use="optional"/>
+      <attribute name="max-elements" type="int" use="optional"/>
+      <attribute name="ssl" type="boolean" use="optional"/>
+      <attribute name="strict-ssl" type="boolean" use="optional"/>
+      <attribute name="path" type="string" use="optional"/>
+      <attribute name="product-vendor" type="string" use="optional"/>
+      <attribute name="product-version" type="string" use="optional"/>
+      <attribute name="gss-auth" type="boolean" use="optional" />
+    </complexType>
+  </element>
+  <element name="ip-match">
+    <simpleType>
+      <restriction base="string">
+        <pattern value="([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)\.([0-9]{1,3}((,|-)[0-9]{1,3})*|\*)">
+    			</pattern>
+      </restriction>
+    </simpleType>
+  </element>
+</schema>

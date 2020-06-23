@@ -1,0 +1,26 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+    xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+    xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <reference id="serviceDetectorRegistry" interface="org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry" availability="mandatory"/>
+    <bean id="detectorExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
+    <bean id="detectorRpcModule" class="org.opennms.netmgt.provision.detector.client.rpc.DetectorClientRpcModule" >
+        <property name="serviceDetectorRegistry" ref="serviceDetectorRegistry"/>
+        <property name="executor" ref="detectorExecutor"/>
+    </bean>
+    <service ref="detectorRpcModule" interface="org.opennms.core.rpc.api.RpcModule" />
+
+    <service interface="org.opennms.core.rpc.api.RpcModule">
+        <bean class="org.opennms.netmgt.provision.dns.client.rpc.DnsLookupClientRpcModule" />
+    </service>
+
+</blueprint>

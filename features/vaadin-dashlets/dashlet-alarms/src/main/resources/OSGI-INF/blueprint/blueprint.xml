@@ -1,13 +1,17 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+    <reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+    <reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" availability="mandatory" />
+    <reference id="timeformatService" interface="org.opennms.features.timeformat.api.TimeformatService" availability="mandatory" />
 
     <bean id="alarmsDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.AlarmsDashletFactory" scope="singleton">
         <argument ref="alarmDao"/>
         <argument ref="nodeDao"/>
         <property name="name" value="Alarms"/>
         <property name="boostable" value="true"/>
+        <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>
@@ -26,8 +30,12 @@
     <bean id="alarmDetailsDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.AlarmDetailsDashletFactory" scope="singleton">
         <argument ref="alarmDao"/>
         <argument ref="nodeDao"/>
+        <argument ref="alarmRepository"/>
+        <argument ref="transactionTemplate"/>
+        <argument ref="timeformatService"/>
         <property name="name" value="Alarm Details"/>
         <property name="boostable" value="true"/>
+        <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
   <bean id="populatedTemporaryDatabaseTestCase" class="org.opennms.netmgt.dao.db.PopulatedTemporaryDatabaseTestCase" init-method="setUp">
     <property name="setupIpLike" ref="setupIpLike"/>
@@ -13,7 +15,7 @@
 	<property name="arguments">
       <list>
 	    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	      <property name="targetObject"><ref local="populatedTemporaryDatabaseTestCase"/></property>
+	      <property name="targetObject" ref="populatedTemporaryDatabaseTestCase"/>
 	      <property name="targetMethod"><value>getDataSource</value></property>
 	    </bean>
       </list>

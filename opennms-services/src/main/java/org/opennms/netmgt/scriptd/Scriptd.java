@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,16 +31,11 @@ package org.opennms.netmgt.scriptd;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.BeanUtils;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.xml.event.Event;
-
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.access.BeanFactoryReference;
@@ -52,8 +47,8 @@ import org.springframework.beans.factory.access.BeanFactoryReference;
  * This services uses the Bean Scripting Framework (BSF) in order to allow
  * scripts to be written in a variety of registered languages.
  *
- * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
- * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
+ * @author <a href="mailto:jim.doble@tavve.com">Jim Doble</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS.org</a>
  */
 public final class Scriptd extends AbstractServiceDaemon {
     
@@ -69,20 +64,13 @@ public final class Scriptd extends AbstractServiceDaemon {
     /**
      * The execution launcher
      */
-    private Executor m_execution;
-
-    /**
-     * The broadcast event receiver.
-     */
-    private BroadcastEventProcessor m_eventReader;
+    private Executor m_executor = null;
 
     /**
      * Constructs a new Script execution daemon.
      */
     private Scriptd() {
-    	super(NAME);
-        m_execution = null;
-        m_eventReader = null;
+        super(NAME);
     }
 
     /**
@@ -98,35 +86,17 @@ public final class Scriptd extends AbstractServiceDaemon {
         try {
             ScriptdConfigFactory.reload();
             aFactory = ScriptdConfigFactory.getInstance();
-        } catch (MarshalException ex) {
-            LOG.error("Failed to load scriptd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            LOG.error("Failed to load scriptd configuration", ex);
-            throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
             LOG.error("Failed to load scriptd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
-        // A queue for execution
-
-        FifoQueue<Event> execQ = new FifoQueueImpl<Event>();
-
-        // start the event reader
-
-        try {
-            m_eventReader = new BroadcastEventProcessor(execQ);
-        } catch (Throwable ex) {
-            LOG.error("Failed to setup event reader", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
-
-        // get the node DAO
+        // get the node DAO and sessionUtils
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         NodeDao nodeDao = BeanUtils.getBean(bf, "nodeDao", NodeDao.class);
+        SessionUtils sessionUtils = BeanUtils.getBean(bf, "sessionUtils", SessionUtils.class);
 
-        m_execution = new Executor(execQ, aFactory, nodeDao);
+        m_executor = new Executor(aFactory, nodeDao, sessionUtils);
     }
 
     /**
@@ -134,49 +104,32 @@ public final class Scriptd extends AbstractServiceDaemon {
      */
     @Override
     protected void onStart() {
-		if (m_execution == null) {
-		    init();
-		}
+        if (m_executor == null) {
+            init();
+        }
 
-		m_execution.start();
-		LOG.info("Scriptd running");
-	}
+        m_executor.start();
+
+        LOG.info("Scriptd started");
+    }
 
     /**
      * <p>onStop</p>
      */
     @Override
     protected void onStop() {
-		try {
-            if (m_execution != null) {
-                m_execution.stop();
+        try {
+            if (m_executor != null) {
+                m_executor.stop();
             }
         } catch (Throwable e) {
+            LOG.warn("Unexpected throwable when stopping Scriptd", e);
         }
 
-        if (m_eventReader != null) {
-            m_eventReader.close();
-        }
+        m_executor = null;
 
-        m_eventReader = null;
-        m_execution = null;
-	}
-
-    /**
-     * <p>onPause</p>
-     */
-    @Override
-    protected void onPause() {
-		m_execution.pause();
-	}
-
-    /**
-     * <p>onResume</p>
-     */
-    @Override
-    protected void onResume() {
-		m_execution.resume();
-	}
+        LOG.info("Scriptd stopped");
+    }
 
     /**
      * Returns the singular instance of the <em>Scriptd</em> daemon. There can

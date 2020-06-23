@@ -1,0 +1,329 @@
+{
+  "time": { "$numberLong" : "1521618510235" },
+  "data": {
+    "agent_address": {
+      "ipv4": "127.0.0.1"
+    },
+    "sub_agent_id": {
+      "$numberLong": "0"
+    },
+    "sequence_number": {
+      "$numberLong": "35"
+    },
+    "uptime": {
+      "$numberLong": "89000"
+    },
+    "samples": [
+      {
+        "format": "0:1",
+        "data": {
+          "sequence_number": {
+            "$numberLong": "24"
+          },
+          "source_id": {
+            "$numberLong": "33555432"
+          },
+          "sampling_rate": {
+            "$numberLong": "64"
+          },
+          "sample_pool": {
+            "$numberLong": "1536"
+          },
+          "drops": {
+            "$numberLong": "0"
+          },
+          "input": {
+            "$numberLong": "4"
+          },
+          "output": {
+            "$numberLong": "17"
+          },
+          "flows": {
+            "0:1001": {
+              "src_vlan": {
+                "$numberLong": "0"
+              },
+              "src_priority": {
+                "$numberLong": "0"
+              },
+              "dst_vlan": {
+                "$numberLong": "0"
+              },
+              "dst_priority": {
+                "$numberLong": "0"
+              }
+            },
+            "0:1": {
+              "protocol": 1,
+              "frame_length": {
+                "$numberLong": "1298"
+              },
+              "stripped": {
+                "$numberLong": "4"
+              },
+              "ethernet": {},
+              "ipv6": {
+                "tos": 0,
+                "length": 1280,
+                "protocol": 6,
+                "src_ip": "2a00:1450:4001:81a:0:0:0:2009",
+                "dst_ip": "2001:638:301:11a0:80bd:5840:2551:5687",
+                "src_port": 443,
+                "dst_port": 41536,
+                "tcp_flags": 16
+              }
+            }
+          }
+        }
+      },
+      {
+        "format": "0:1",
+        "data": {
+          "sequence_number": {
+            "$numberLong": "25"
+          },
+          "source_id": {
+            "$numberLong": "33555432"
+          },
+          "sampling_rate": {
+            "$numberLong": "64"
+          },
+          "sample_pool": {
+            "$numberLong": "1600"
+          },
+          "drops": {
+            "$numberLong": "0"
+          },
+          "input": {
+            "$numberLong": "5"
+          },
+          "output": {
+            "$numberLong": "1073741823"
+          },
+          "flows": {
+            "0:1001": {
+              "src_vlan": {
+                "$numberLong": "0"
+              },
+              "src_priority": {
+                "$numberLong": "0"
+              },
+              "dst_vlan": {
+                "$numberLong": "0"
+              },
+              "dst_priority": {
+                "$numberLong": "0"
+              }
+            },
+            "0:1": {
+              "protocol": 1,
+              "frame_length": {
+                "$numberLong": "1298"
+              },
+              "stripped": {
+                "$numberLong": "4"
+              },
+              "ethernet": {},
+              "ipv6": {
+                "tos": 0,
+                "length": 1280,
+                "protocol": 6,
+                "src_ip": "2a00:1450:4001:81a:0:0:0:2009",
+                "dst_ip": "2001:638:301:11a0:80bd:5840:2551:5687",
+                "src_port": 443,
+                "dst_port": 41536,
+                "tcp_flags": 16
+              }
+            }
+          }
+        }
+      },
+      {
+        "format": "0:1",
+        "data": {
+          "sequence_number": {
+            "$numberLong": "26"
+          },
+          "source_id": {
+            "$numberLong": "33555432"
+          },
+          "sampling_rate": {
+            "$numberLong": "64"
+          },
+          "sample_pool": {
+            "$numberLong": "1664"
+          },
+          "drops": {
+            "$numberLong": "0"
+          },
+          "input": {
+            "$numberLong": "17"
+          },
+          "output": {
+            "$numberLong": "4"
+          },
+          "flows": {
+            "0:1001": {
+              "src_vlan": {
+                "$numberLong": "0"
+              },
+              "src_priority": {
+                "$numberLong": "0"
+              },
+              "dst_vlan": {
+                "$numberLong": "0"
+              },
+              "dst_priority": {
+                "$numberLong": "0"
+              }
+            },
+            "0:1": {
+              "protocol": 1,
+              "frame_length": {
+                "$numberLong": "90"
+              },
+              "stripped": {
+                "$numberLong": "4"
+              },
+              "ethernet": {},
+              "ipv6": {
+                "tos": 0,
+                "length": 72,
+                "protocol": 6,
+                "src_ip": "2001:638:301:11a0:80bd:5840:2551:5687",
+                "dst_ip": "2a00:1450:4001:81a:0:0:0:2009",
+                "src_port": 41450,
+                "dst_port": 443,
+                "tcp_flags": 16
+              }
+            }
+          }
+        }
+      },
+      {
+        "format": "0:1",
+        "data": {
+          "sequence_number": {
+            "$numberLong": "27"
+          },
+          "source_id": {
+            "$numberLong": "33555432"
+          },
+          "sampling_rate": {
+            "$numberLong": "64"
+          },
+          "sample_pool": {
+            "$numberLong": "1728"
+          },
+          "drops": {
+            "$numberLong": "0"
+          },
+          "input": {
+            "$numberLong": "1073741823"
+          },
+          "output": {
+            "$numberLong": "18"
+          },
+          "flows": {
+            "0:1001": {
+              "src_vlan": {
+                "$numberLong": "0"
+              },
+              "src_priority": {
+                "$numberLong": "0"
+              },
+              "dst_vlan": {
+                "$numberLong": "0"
+              },
+              "dst_priority": {
+                "$numberLong": "0"
+              }
+            },
+            "0:1": {
+              "protocol": 1,
+              "frame_length": {
+                "$numberLong": "1298"
+              },
+              "stripped": {
+                "$numberLong": "4"
+              },
+              "ethernet": {},
+              "ipv6": {
+                "tos": 0,
+                "length": 1280,
+                "protocol": 6,
+                "src_ip": "2a00:1450:4001:81a:0:0:0:2009",
+                "dst_ip": "2001:638:301:11a0:80bd:5840:2551:5687",
+                "src_port": 443,
+                "dst_port": 41450,
+                "tcp_flags": 16
+              }
+            }
+          }
+        }
+      },
+      {
+        "format": "0:1",
+        "data": {
+          "sequence_number": {
+            "$numberLong": "28"
+          },
+          "source_id": {
+            "$numberLong": "33555432"
+          },
+          "sampling_rate": {
+            "$numberLong": "64"
+          },
+          "sample_pool": {
+            "$numberLong": "1792"
+          },
+          "drops": {
+            "$numberLong": "0"
+          },
+          "input": {
+            "$numberLong": "4"
+          },
+          "output": {
+            "$numberLong": "17"
+          },
+          "flows": {
+            "0:1001": {
+              "src_vlan": {
+                "$numberLong": "0"
+              },
+              "src_priority": {
+                "$numberLong": "0"
+              },
+              "dst_vlan": {
+                "$numberLong": "0"
+              },
+              "dst_priority": {
+                "$numberLong": "0"
+              }
+            },
+            "0:1": {
+              "protocol": 1,
+              "frame_length": {
+                "$numberLong": "203"
+              },
+              "stripped": {
+                "$numberLong": "4"
+              },
+              "ethernet": {},
+              "ipv6": {
+                "tos": 0,
+                "length": 185,
+                "protocol": 6,
+                "src_ip": "2a00:1450:4001:81a:0:0:0:2009",
+                "dst_ip": "2001:638:301:11a0:80bd:5840:2551:5687",
+                "src_port": 443,
+                "dst_port": 41450,
+                "tcp_flags": 24
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

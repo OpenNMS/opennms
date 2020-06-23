@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,9 +25,11 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.opennms.features.vaadin.api.OnmsBeanContainer;
@@ -37,11 +39,11 @@ import org.vaadin.dialogs.ConfirmDialog;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.Table;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The MIB Object Field.
@@ -49,7 +51,7 @@ import com.vaadin.ui.VerticalLayout;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
 @SuppressWarnings("serial")
-public class MibObjField extends CustomField<ArrayList<MibObj>> implements Button.ClickListener {
+public class MibObjField extends CustomField<List<MibObj>> implements Button.ClickListener {
 
     /** The Container. */
     private final OnmsBeanContainer<MibObj> container = new OnmsBeanContainer<MibObj>(MibObj.class);
@@ -70,8 +72,9 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
      * Instantiates a new MIB object field.
      *
      * @param resourceTypes the available resource types
+     * @param mibGroupEditable true, if the MIB group can be modified
      */
-    public MibObjField(final List<String> resourceTypes) {
+    public MibObjField(final List<String> resourceTypes, boolean mibGroupEditable) {
         table.addStyleName("light");
         table.setVisibleColumns(new Object[] { "oid", "instance", "alias", "type" });
         table.setColumnHeaders(new String[] { "OID", "Instance", "Alias", "Type" });
@@ -81,8 +84,10 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
         table.setWidth("100%");
         table.setTableFieldFactory(new MibObjFieldFactory(resourceTypes));
 
-        toolbar.addComponent(add);
-        toolbar.addComponent(delete);
+        if (mibGroupEditable) {
+            toolbar.addComponent(add);
+            toolbar.addComponent(delete);
+        }
         toolbar.setVisible(table.isEditable());
 
         setValidationVisible(true);
@@ -105,16 +110,16 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<ArrayList<MibObj>> getType() {
-        return (Class<ArrayList<MibObj>>) new ArrayList<MibObj>().getClass();
+    public Class<? extends List<MibObj>> getType() {
+        // Check org.opennms.netmgt.config.datacollection.Group.getMibObjs()
+        return  (Class<? extends List<MibObj>>) Collections.unmodifiableList(new ArrayList<MibObj>()).getClass();
     }
 
     /* (non-Javadoc)
      * @see com.vaadin.ui.AbstractField#setInternalValue(java.lang.Object)
      */
     @Override
-    protected void setInternalValue(ArrayList<MibObj> mibObjects) {
-        super.setInternalValue(mibObjects); // TODO Is this required ?
+    protected void setInternalValue(List<MibObj> mibObjects) {
         container.removeAllItems();
         container.addAll(mibObjects);
     }
@@ -123,12 +128,8 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
      * @see com.vaadin.ui.AbstractField#getInternalValue()
      */
     @Override
-    protected ArrayList<MibObj> getInternalValue() {
-        ArrayList<MibObj> beans = new ArrayList<MibObj>();
-        for (Object itemId: container.getItemIds()) {
-            beans.add(container.getItem(itemId).getBean());
-        }
-        return beans;
+    protected List<MibObj> getInternalValue() {
+        return container.getOnmsBeans();
     }
 
     /* (non-Javadoc)
@@ -153,14 +154,6 @@ public class MibObjField extends CustomField<ArrayList<MibObj>> implements Butto
         if (btn == delete) {
             deleteHandler();
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.vaadin.addon.customfield.CustomField#isValid()
-     */
-    @Override
-    public boolean isValid() {
-        return super.isValid() && table.isValid(); // FIXME This is not working
     }
 
     /**

@@ -1,0 +1,74 @@
+<div class="mx-2 my-2">
+    <div class="mb-4">
+        <button class="btn btn-secondary" id="action.refresh" ng-click="refresh()" title="Refresh"><i class="fa fa-refresh"></i></button>
+        <button class="btn btn-secondary"
+                ng-if="userInfo.isReportDesigner() || userInfo.isAdmin() && scheduledReports.length > 0"
+                id="action.deleteAll"
+                mwl-confirm
+                message="Do you really want to delete all persisted reports?"
+                on-confirm="deleteAll()"
+                placement="right"
+                confirm-button-type="danger"
+                cancel-button-type="secondary"
+                confirm-text="Yes"
+                cancel-text="No"
+                title="Delete All">
+            <i class="fa fa-trash"></i>
+        </button>
+    </div>
+    <div ng-if="scheduledReports.length == 0">
+        <span>No Data available</span>
+    </div>
+    <pagination model="pagination" ng-if="scheduledReports.length > 0" position="bottom" on-change="refresh">
+        <table class="table table-sm table-striped mb-2">
+            <thead>
+            <tr>
+                <th ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">Action(s)</th>
+                <th>Template</th>
+                <th>Format</th>
+                <th colspan="3">Delivery Options</th>
+                <th>Cron Expression</th>
+                <th>Trigger Name</th>
+                <th>Next fire time</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="schedule in scheduledReports">
+                <td>
+                    <button class="btn btn-sm btn-danger" title="Delete Schedule" ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()" ng-click="delete(schedule)"><i class="fa fa-trash"></i></button>
+                    <button class="btn btn-sm btn-primary" id="action.edit.{{schedule.triggerName}}" ng-click="edit(schedule.triggerName, schedule.reportId)" title="Show Report Parameters"><i class="fa fa-cogs"></i></button>
+                </td>
+                <td>{{schedule.reportId}}</td>
+                <td>
+                    <i class="fa" ng-class="{'fa-file-pdf-o':schedule.deliveryOptions.format === 'PDF', 'fa-file-text-o': schedule.deliveryOptions.format === 'CSV'}"></i>
+                    {{schedule.deliveryOptions.format}}
+                </td>
+                <td>
+                    <span ng-if="schedule.deliveryOptions.persist || false" title="Persist to Disk">
+                        <i class="fa fa-save"></i>
+                    </span>
+                </td>
+                <td>
+                    <span ng-if="schedule.deliveryOptions.sendMail || false" title="Mail to {{schedule.deliveryOptions.mailTo}}">
+                        <i class="fa fa-envelope-o"></i>
+                    </span>
+                </td>
+                <td>
+                    <span ng-if="schedule.deliveryOptions.webhook || false" title="POST to {{schedule.deliveryOptions.webhookUrl}}">
+                        <i class="fa fa-paper-plane-o"></i>
+                    </span>
+                </td>
+                <td>
+                    <span title="Cron Expression">
+                        <i class="fa fa-clock-o"></i> <small>{{schedule.cronExpression}}</small>
+                    </span>
+                </td>
+                <td>{{schedule.triggerName}}</td>
+                <td>{{schedule.nextFireTime}}</td>
+                <td>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </pagination>
+</div>

@@ -5,84 +5,16 @@
 
     <parent>
         <groupId>org.opennms</groupId>
-        <artifactId>container</artifactId>
-        <version>1.13.0-SNAPSHOT</version>
+        <artifactId>org.opennms.container</artifactId>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
-
     <groupId>org.opennms.container</groupId>
-    <artifactId>bridge</artifactId>
-    <packaging>bundle</packaging>
-    <name>OpenNMS OSGi Container - Web Servlet OSGi Bridge</name>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>
-                            org.opennms.container.web.bridge.internal.BridgeActivator
-                        </Bundle-Activator>
-                        <Bundle-SymbolicName>
-                            org.opennms.container.web.bridge
-                        </Bundle-SymbolicName>
-                        <Export-Package>
-                            org.apache.felix.http.api;version=${felixVersion},
-                            org.osgi.service.http;version=1.2.0
-                        </Export-Package>
-                        <Private-Package>
-                            org.opennms.container.web.felix.base.internal.*,
-                            org.opennms.container.web.bridge.internal.*
-                        </Private-Package>
-                        <Import-Package>
-                            javax.servlet.*,
-                            *;resolution:=optional
-                        </Import-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.http.api</artifactId>
-            <version>${felixVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>spring-dependencies</artifactId>
-            <type>pom</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>spring-test-dependencies</artifactId>
-            <type>pom</type>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
+    <artifactId>org.opennms.container.bridge</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenNMS :: OSGi Container :: Web OSGi Bridge :: Parent</name>
+    <modules>
+        <module>api</module>
+        <module>proxy</module>
+        <module>rest</module>
+    </modules>
 </project>

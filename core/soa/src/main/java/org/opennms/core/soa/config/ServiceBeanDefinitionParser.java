@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -67,6 +67,8 @@ public class ServiceBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
     
     /** Constant <code>REF_ATTR="ref"</code> */
     public static final String REF_ATTR = "ref";
+    /** Constant <code>DEPENDS_ON_ATTR="depends-on"</code> */
+    public static final String DEPENDS_ON_ATTR = "depends-on";
     /** Constant <code>INTERFACE_ATTR="interface"</code> */
     public static final String INTERFACE_ATTR = "interface";
     /** Constant <code>INTERFACES_ELEM="interfaces"</code> */
@@ -88,6 +90,11 @@ public class ServiceBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
         bean.addPropertyReference("target", ref);
         bean.addPropertyReference("serviceRegistry", SERVICE_REGISTRY_BEAN_NAME);
         
+        String dependsOn = element.getAttribute(DEPENDS_ON_ATTR);
+        if (dependsOn != null && !"".equals(dependsOn.trim())) {
+            bean.addDependsOn(dependsOn.trim());
+        }
+        
         String serviceInterface = element.getAttribute(INTERFACE_ATTR);
         if (StringUtils.hasText(serviceInterface)) {
             bean.addPropertyValue("interfaces", serviceInterface);
@@ -104,7 +111,7 @@ public class ServiceBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
                 if (INTERFACES_ELEM.equals(child.getLocalName())) {
                     
                     if (element.hasAttribute(INTERFACE_ATTR)) {
-                        context.getReaderContext().error("either 'interface' attribute or <intefaces> sub-element has be specified", element);
+                        context.getReaderContext().error("either 'interface' attribute or <interfaces> sub-element has to be specified", element);
                     }                
                 
                     Set<?> interfaces = context.getDelegate().parseSetElement(child, bean.getBeanDefinition());

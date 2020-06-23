@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.vmmgr;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -37,16 +38,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.FileSystemResource;
 
 /**
  * <p>
@@ -67,8 +64,8 @@ public class DatabaseChecker {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DatabaseChecker.class);
 	
-    private static List<String> m_required = new ArrayList<String>();
-    private static List<String> m_optional = new ArrayList<String>();
+    private static List<String> m_required = new ArrayList<>();
+    private static List<String> m_optional = new ArrayList<>();
     private Map<String,JdbcDataSource> m_dataSources = new HashMap<String,JdbcDataSource>();
 
     static {
@@ -81,18 +78,18 @@ public class DatabaseChecker {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @param configFile a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.lang.ClassNotFoundException if any.
      */
-    protected DatabaseChecker(final String configFile) throws IOException, MarshalException, ValidationException, ClassNotFoundException {
-        final DataSourceConfiguration database = CastorUtils.unmarshal(DataSourceConfiguration.class, new FileSystemResource(configFile), false);
+    protected DatabaseChecker(final String configFile) throws IOException, ClassNotFoundException {
+        final DataSourceConfiguration database;
+        try {
+            database = JaxbUtils.unmarshal(DataSourceConfiguration.class, new File(configFile));
+        } catch (Exception e) {
+            throw new RuntimeException(String.format("Failed to unmarshal: %s Cause: %s",
+                    configFile, e.getMessage()), e);
+        }
 
         for (final JdbcDataSource dataSource : database.getJdbcDataSourceCollection()) {
             m_dataSources.put(dataSource.getName(), dataSource);
@@ -105,16 +102,10 @@ public class DatabaseChecker {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.lang.ClassNotFoundException if any.
      */
-    protected DatabaseChecker() throws IOException, MarshalException, ValidationException, ClassNotFoundException {
+    protected DatabaseChecker() throws IOException, ClassNotFoundException {
     	this(ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME).getPath());
     }
 
@@ -147,19 +138,32 @@ public class DatabaseChecker {
         
         // Finally, try connecting to all data sources, and warn or error as appropriate.
         for (final JdbcDataSource dataSource : m_dataSources.values()) {
-            final String name = dataSource.getName();
-            if (!m_required.contains(name) && !m_optional.contains(name)) {
-            	LOG.warn("Unknown datasource '{}' was found.", name);
-            }
+            Connection connection = null;
+
             try {
-                Class.forName(dataSource.getClassName());
-                final Connection connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUserName(), dataSource.getPassword());
-                connection.close();
-            } catch (final Throwable t) {
-                final String errorMessage = "Unable to connect to data source '{}' at URL '{}' with username '{}', check opennms-datasources.xml and your database permissions.";
-            	LOG.error(errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
-                if (m_required.contains(name)) {
-                    throw new InvalidDataSourceException("Data source '" + name + "' failed.", t);
+                final String name = dataSource.getName();
+                if (!m_required.contains(name) && !m_optional.contains(name)) {
+                    LOG.warn("Unknown datasource '{}' was found.", name);
+                }
+                try {
+                    Class.forName(dataSource.getClassName());
+                    connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.getUserName(), dataSource.getPassword());
+                } catch (final Throwable t) {
+                    final String errorMessage = "Unable to connect to data source '{}' at URL '{}' with username '{}', check opennms-datasources.xml and your database permissions.";
+                    if (m_required.contains(name)) {
+                        LOG.error(errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
+                        throw new InvalidDataSourceException("Data source '" + name + "' failed.", t);
+                    } else {
+                        LOG.warn(errorMessage, name, dataSource.getUrl(), dataSource.getUserName());
+                    }
+                }
+            } finally {
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (final SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

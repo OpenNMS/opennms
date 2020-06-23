@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.config;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -43,8 +44,9 @@ import org.opennms.netmgt.config.snmp.SnmpConfig;
  */
 public class SnmpConfigManager {
 
-	private SnmpConfig m_config;
-	private List<MergeableDefinition> m_definitions = new ArrayList<MergeableDefinition>();
+    private static final String DEFAULT_LOCATION = "Default";
+    private SnmpConfig m_config;
+	private List<MergeableDefinition> m_definitions = new ArrayList<>();
 
 	/**
 	 * <p>
@@ -56,7 +58,7 @@ public class SnmpConfigManager {
 	 */
 	public SnmpConfigManager(SnmpConfig config) {
 		m_config = config;
-		for (Definition def : m_config.getDefinitionCollection()) {
+		for (Definition def : m_config.getDefinitions()) {
 			m_definitions.add(new MergeableDefinition(def));
 		}
 	}
@@ -91,6 +93,7 @@ public class SnmpConfigManager {
 		if (areEquals(m_config.getSecurityLevel(), def.getSecurityLevel())) def.setSecurityLevel(null);
 		if (areEquals(m_config.getRetry(), def.getRetry())) def.setRetry(null);
 		if (areEquals(m_config.getReadCommunity(), def.getReadCommunity())) def.setReadCommunity(null);
+		if (areEquals(m_config.getTTL(), def.getTTL())) def.setTTL(null);
 	}
 
 	/**
@@ -134,6 +137,7 @@ public class SnmpConfigManager {
 		removeDefaults(eventDef); 
 		MergeableDefinition eventToMerge = new MergeableDefinition(eventDef);
 
+        removeDefinitionsthatDontMatchLocation(eventDef);
 		// remove pass
 		purgeRangesFromDefinitions(eventToMerge);
 
@@ -150,11 +154,51 @@ public class SnmpConfigManager {
 	}
 
 	/**
+	 * Remove definition from the base config.
+	 * @param definition a @{@link Definition} object
+	 * @return true when definition is removed else false.
+	 */
+	public boolean removeDefinition(final Definition definition) {
+		MergeableDefinition removableDefinition = new MergeableDefinition(definition);
+
+		removeDefinitionsthatDontMatchLocation(definition);
+		// Find a matching definition and remove range from that definition
+		MergeableDefinition matchingDef = findMatchingDefinition(removableDefinition);
+		if (matchingDef != null) {
+			matchingDef.removeRanges(removableDefinition);
+			removeEmptyDefinitions();
+			return true;
+		}
+		return false;
+	}
+
+    private void removeDefinitionsthatDontMatchLocation(Definition eventToDef) {
+
+        for (Iterator<MergeableDefinition> iter = getDefinitions().iterator(); iter.hasNext();) {
+            MergeableDefinition def = iter.next();
+            String location = def.getConfigDef().getLocation();
+            String locationFromEvent = eventToDef.getLocation();
+            if (DEFAULT_LOCATION.equals(location)) {
+                location = null;
+                def.getConfigDef().setLocation(location);
+            }
+            if (DEFAULT_LOCATION.equals(locationFromEvent)) {
+                locationFromEvent = null;
+                eventToDef.setLocation(locationFromEvent);
+            }
+            if (!Objects.equals(location, locationFromEvent)) {
+                iter.remove();
+            }
+        }
+
+    }
+
+    /**
 	 * This method purges specifics and ranges from definitions that don't match
 	 * the attributes specified in the event (the updateDef)
 	 * 
-	 * @param updatedDef
-	 * @param eventDef
+	 *
+	 * @param eventDefinition
 	 */
 	private void purgeRangesFromDefinitions(MergeableDefinition eventDefinition) {
 		for (MergeableDefinition def : getDefinitions()) {

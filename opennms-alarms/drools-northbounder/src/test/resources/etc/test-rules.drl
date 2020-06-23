@@ -1,0 +1,16 @@
+package org.opennms.netmgt.correlation.drools
+
+import org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounder;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
+
+global DroolsNorthbounder engine;
+global String owner;
+
+rule "sample"
+    salience 100
+    when
+        $a : NorthboundAlarm($uei : uei matches ".*myTrap1")
+    then
+    	retract($a);
+    	System.out.println("From DRL: " + $uei);
+end

@@ -12,6 +12,32 @@ provision.pl [options] command [arguments ...]
 
 use warnings;
 
+BEGIN {
+	eval("use HTTP::Cookies; use HTTP::Request; use LWP; use Pod::Usage; use XML::Twig;");
+	if ($@) {
+		print <<END;
+!!!! WARNING !!!!
+
+provision.pl requires a couple of perl modules that may not be provided by
+your perl installation.  Please make sure LWP and XML::Twig are installed.
+
+If you are on an RPM-based system, you can run:
+
+	yum install 'perl(LWP)' 'perl(XML::Twig)'
+
+If you are on a Debian-based system, run:
+
+	apt-get install libwww-perl libxml-twig-perl
+
+Otherwise, you can use CPAN directly:
+
+	cpan LWP XML::Twig
+
+END
+		exit(1);
+	}
+}
+
 use Carp;
 use Data::Dumper;
 use File::Path;
@@ -37,6 +63,7 @@ use vars qw(
 	$password
 
 	$url_root
+	$user_config_file
 );
 
 $BUILD = (qw$LastChangedRevision 1 $)[-1];
@@ -46,6 +73,11 @@ $XML = XML::Twig->new();
 $url_root = 'http://localhost:8980/opennms/rest';
 $username = 'admin';
 $password = 'juniper123';
+
+$user_config_file = ($^O eq "MSWin32") ? $ENV{LOCALAPPDATA} . "\\OpenNMS\\provision.plrc" : $ENV{HOME} . "/.opennms/provision.plrc";
+
+# load user-overridden defaults if present
+load_user_config();
 
 =head1 OPTIONS
 
@@ -66,6 +98,9 @@ user must have administrative privileges in the OpenNMS web UI.
 
 Defaults to 'admin'.
 
+May be overridden by setting $username in $HOME/.opennms/provision.plrc
+(UNIX) or %LOCALAPPDATA%\OpenNMS\provision.plrc (Windows).
+
 =item B<--password>
 
 The password associated with the administrative username specified
@@ -73,10 +108,16 @@ in B<-username>.
 
 Defaults to 'admin'.
 
+May be overridden by setting $password in $HOME/.opennms/provision.plrc
+(UNIX) or %LOCALAPPDATA%\OpenNMS\provision.plrc (Windows).
+
 =item B<--url>
 
 The URL of the OpenNMS REST interface.  Defaults to
 'http://localhost:8980/opennms/rest'.
+
+May be overridden by setting $url_root in $HOME/.opennms/provision.plrc
+(UNIX) or %LOCALAPPDATA%\OpenNMS\provision.plrc (Windows).
 
 =back
 
@@ -161,9 +202,22 @@ Remove the requisition with the given foreign source.
 If the optional argument "B<deployed>" is specified, it will remove
 the already-imported foreign source configuration.
 
-=item B<requisition import E<lt>foreign-sourceE<gt>>
+=item B<requisition import E<lt>foreign-sourceE<gt>> [rescanExisting] [value]
 
 Import the requisition with the given foreign source.
+
+If the optional argument "B<rescanExisting>" is specified, the value
+must be one of the following:
+
+=over 4
+
+=item * true, to update the database and execute the scan phase 
+
+=item * false, to add/delete nodes on the DB sckipping the scan phase
+
+=item * dbonly, to add/detete/update nodes on the DB sckipping the scan phase
+
+=back
 
 =back
 
@@ -182,6 +236,9 @@ sub cmd_requisition {
 	if ($command eq 'list') {
 		cmd_list($foreign_source);
 	} elsif (is_add($command)) {
+		if ($foreign_source =~ /[\/\\?:&*'"]/) {
+			pod2usage(-exitval => 1, -message => "Error: foreign source cannot contain :, /, \\, ?, &, *, ', \"", -verbose => 0);
+		}
 		my $xml = get_element('model-import');
 		my $root = $xml->root;
 		$root->{'att'}->{'foreign-source'} = $foreign_source;
@@ -194,7 +251,13 @@ sub cmd_requisition {
 			remove($foreign_source);
 		}
 	} elsif ($command eq 'import' or $command eq 'deploy') {
-		put($foreign_source . '/import');
+		my $key   = shift @args || '';
+		my $value = shift @args || '';
+		if ($key eq 'rescanExisting' and $value !~ /^(true|false|dbonly)$/i) {
+			pod2usage(-exitval => 1, -message => "Error: You must specify a valid value for rescanExisting (true, false, dbonly)!", -verbose => 0);
+		}
+		my $query = URI::Escape::uri_escape_utf8($key) . "=" . URI::Escape::uri_escape_utf8($value) if $key eq 'rescanExisting';
+		put_simple(URI::Escape::uri_escape_utf8($foreign_source) . '/import', $query);
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: requisition $command", -verbose => 0);
 	}
@@ -224,9 +287,13 @@ Set a property on a node, given the foreign source and foreign id.  Valid proper
 
 =item * node-label
 
+=item * parent-foreign-source
+
 =item * parent-foreign-id
 
 =item * parent-node-label
+
+=item * location
 
 =back
 
@@ -249,6 +316,9 @@ sub cmd_node {
 	}
 
 	if (is_add($command)) {
+		if ($foreign_id =~ /[\/\\?:&*'"]/) {
+			pod2usage(-exitval => 1, -message => "Error: foreign id cannot contain :, /, \\, ?, &, *, ', \"", -verbose => 0);
+		}
 		my $node_label = shift @args;
 		if (not defined $node_label or $node_label eq "") {
 			pod2usage(-exitval => 1, -message => "Error: You must specify a node label!", -verbose => 0);
@@ -257,7 +327,7 @@ sub cmd_node {
 		my $root = $xml->root;
 		$root->{'att'}->{'foreign-id'} = $foreign_id;
 		$root->{'att'}->{'node-label'} = $node_label;
-		post("$foreign_source/nodes", $root);
+		post(URI::Escape::uri_escape_utf8($foreign_source) . "/nodes", $root);
 	} elsif (is_remove($command)) {
 		remove($foreign_source . '/nodes/' . $foreign_id);
 	} elsif (is_set($command)) {
@@ -270,7 +340,7 @@ sub cmd_node {
 
 		$key   = URI::Escape::uri_escape_utf8($key);
 		$value = URI::Escape::uri_escape_utf8($value);
-		put($foreign_source . '/nodes/' . $foreign_id, "$key=$value");
+		put(URI::Escape::uri_escape_utf8($foreign_source) . '/nodes/' . URI::Escape::uri_escape_utf8($foreign_id), URI::Escape::uri_escape_utf8($key) . "=" . URI::Escape::uri_escape_utf8($value));
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: node $command", -verbose => 0);
 	}
@@ -328,7 +398,7 @@ sub cmd_interface {
 		my $xml = get_element('interface');
 		my $root = $xml->root;
 		$root->{'att'}->{'ip-addr'} = $ip;
-		post("$foreign_source/nodes/$foreign_id/interfaces", $root);
+		post(URI::Escape::uri_escape_utf8($foreign_source) . "/nodes/" . URI::Escape::uri_escape_utf8($foreign_id) . "/interfaces", $root);
 	} elsif (is_remove($command)) {
 		remove($foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip);
 	} elsif (is_set($command)) {
@@ -343,7 +413,7 @@ sub cmd_interface {
 		$key   = URI::Escape::uri_escape_utf8($key);
 		$value = URI::Escape::uri_escape_utf8($value);
 
-		put($foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip, "$key=$value");
+		put(URI::Escape::uri_escape_utf8($foreign_source) . '/nodes/' . URI::Escape::uri_escape_utf8($foreign_id) . '/interfaces/' . URI::Escape::uri_escape_utf8($ip), URI::Escape::uri_escape_utf8($key) . "=" . URI::Escape::uri_escape_utf8($value));
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: interface $command", -verbose => 0);
 	}
@@ -357,7 +427,7 @@ sub cmd_interface {
 
 Add a service to the interface identified by the given foreign source, node ID, and IP address.
 
-=item B<service remove E<lt>foreign-source<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>>
+=item B<service remove E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>ip-addressE<gt> E<lt>service-nameE<gt>>
 
 Remove a service from the interface identified by the given foreign source, node ID, and IP address.
 
@@ -391,7 +461,7 @@ sub cmd_service {
 		my $xml = get_element('monitored-service');
 		my $root = $xml->root;
 		$root->{'att'}->{'service-name'} = $service;
-		post("$foreign_source/nodes/$foreign_id/interfaces/$ip/services", $root);
+		post(URI::Escape::uri_escape_utf8($foreign_source) . "/nodes/" . URI::Escape::uri_escape_utf8($foreign_id) . "/interfaces/" . URI::Escape::uri_escape_utf8($ip) . "/services", $root);
 	} elsif (is_remove($command)) {
 		remove($foreign_source . '/nodes/' . $foreign_id . '/interfaces/' . $ip . '/services/' . $service);
 	} else {
@@ -437,7 +507,7 @@ sub cmd_category {
 		my $xml = get_element('category');
 		my $root = $xml->root;
 		$root->{'att'}->{'name'} = $category;
-		post("$foreign_source/nodes/$foreign_id/categories", $root);
+		post(URI::Escape::uri_escape_utf8($foreign_source) . "/nodes/" . URI::Escape::uri_escape_utf8($foreign_id) . "/categories", $root);
 	} elsif (is_remove($command)) {
 		remove("$foreign_source/nodes/$foreign_id/categories/$category");
 	} else {
@@ -457,7 +527,7 @@ Add an asset to the node identified by the given foreign source and node foreign
 
 Remove an asset from the node identified by the given foreign source and node foreign ID.
 
-=item B<asset set E<lt>foreign-source<gt> E<lt>foreign-idE<gt> E<lt>keyE<gt> E<lt>valueE<gt>>
+=item B<asset set E<lt>foreign-sourceE<gt> E<lt>foreign-idE<gt> E<lt>keyE<gt> E<lt>valueE<gt>>
 
 Set an asset value given the node foreign source, foreign ID, and asset key.
 
@@ -490,7 +560,7 @@ sub cmd_asset {
 		my $root = $xml->root;
 		$root->{'att'}->{'name'}  = $key;
 		$root->{'att'}->{'value'} = $value;
-		post("$foreign_source/nodes/$foreign_id/assets", $root);
+		post(URI::Escape::uri_escape_utf8($foreign_source) . "/nodes/" . URI::Escape::uri_escape_utf8($foreign_id) . "/assets", $root);
 	} elsif (is_remove($command)) {
 		remove("$foreign_source/nodes/$foreign_id/assets/$key");
 	} else {
@@ -521,15 +591,55 @@ Optionally, you can set additional options as key=value pairs.  For example:
 
 Valid options are:
 
-=over 8
+=over 4
 
-=item * version: v1 or v2c
+=item * version: v1 or v2c or v3
 
 =item * port: the port of the SNMP agent
 
 =item * timeout: the timeout, in milliseconds
 
 =item * retries: the number of retries before giving up
+
+=item * max-repetitions: maximum repetitions (defaults to 2)
+
+=item * max-vars-per-pdu: maximum variables per PDU (defaults to 10)
+
+=back
+
+SNMPv3 options:
+
+=over 4
+
+=item * security-name: the USM name
+
+=item * security-level: 1, 2, 3
+
+=over 4
+
+=item * 1: noAuthNoPriv (default)
+
+=item * 2: authNoPriv
+
+=item * 3: authPriv
+
+=back
+
+=item * priv-protocol: DES, AES, AES192, AES256
+
+=item * priv-pass-phrase: the password for privacy protocol
+
+=item * auth-protocol: MD5, SHA
+
+=item * auth-pass-phrase: the password for the authentication protocol
+
+=item * engine-id: the unique engine ID of the SNMP agent
+
+=item * context-engine-id: the context ending ID
+
+=item * context-name: the context name
+
+=item * enterprise-id: the enterprise ID
 
 =back
 
@@ -548,7 +658,7 @@ sub cmd_snmp {
 	}
 
 	if ($command eq 'get' or $command eq 'list') {
-		my $response = get($ip, '/snmpConfig');
+		my $response = get(URI::Escape::uri_escape_utf8($ip), '/snmpConfig');
 		$XML->parse($response->content);
 		my $root = $XML->root;
 		print "SNMP Configuration for $ip:\n";
@@ -556,7 +666,7 @@ sub cmd_snmp {
 			print "* ", $child->tag, ": ", $child->text, "\n";
 		}
 	} elsif ($command eq 'netsnmp') {
-		my $response = get($ip, '/snmpConfig');
+		my $response = get(URI::Escape::uri_escape_utf8($ip), '/snmpConfig');
 		$XML->parse($response->content);
 		my $root = $XML->root;
 		my $versionSwitch = "-" . $root->first_child('version')->text;
@@ -575,7 +685,7 @@ sub cmd_snmp {
 			my ($key, $value) = split(/=/, $arg);
 			$arguments .= "&" . URI::Escape::uri_escape_utf8($key) . "=" . URI::Escape::uri_escape_utf8($value);
 		}
-		put($ip, $arguments, '/snmpConfig');
+		put(URI::Escape::uri_escape_utf8($ip), $arguments, '/snmpConfig');
 	} else {
 		pod2usage(-exitval => 1, -message => "Unknown command: snmp $command", -verbose => 0);
 	}
@@ -644,6 +754,25 @@ sub put {
 	$put->content_type('application/x-www-form-urlencoded');
 	$put->content($arguments);
 	my $response = $BROWSER->request($put);
+	if ($response->is_redirect && $response->header('Location')) {
+		return $response;
+	}
+	if ($response->is_success) {
+		return $response;
+	}
+	croak($response->status_line);
+}
+
+sub put_simple {
+	my $path = shift;
+	my $args = shift;
+	my $base = shift || '/requisitions';
+
+	my $put = HTTP::Request->new(PUT => $url_root . $base . '/' . $path . (defined $args and $args ne '' ? '?' . $args : ''));
+	my $response = $BROWSER->request($put);
+	if ($response->is_redirect && $response->header('Location')) {
+		return $response;
+	}
 	if ($response->is_success) {
 		return $response;
 	}
@@ -656,6 +785,9 @@ sub remove {
 
 	my $delete = HTTP::Request->new(DELETE => $url_root . $base . '/' . $path );
 	my $response = $BROWSER->request($delete);
+	if ($response->is_redirect && $response->header('Location')) {
+		return $response;
+	}
 	if ($response->is_success) {
 		return $response;
 	}
@@ -673,6 +805,9 @@ sub post {
 	$post->content_type('application/xml');
 	$post->content($twig->sprint);
 	my $response = $BROWSER->request($post);
+	if ($response->is_redirect && $response->header('Location')) {
+		return $response;
+	}
 	if ($response->is_success) {
 		return $response;
 	}
@@ -712,8 +847,13 @@ sub dump_requisition {
 sub dump_node {
 	my $node = shift;
 
+	my @parent_info;
+	push (@parent_info, "foreign Label: " . $node->{'att'}->{'parent-node-label'}) if $node->{'att'}->{'parent-node-label'};
+	push (@parent_info, "foreign ID: " . $node->{'att'}->{'parent-foreign-id'}) if $node->{'att'}->{'parent-foreign-id'};
+	push (@parent_info, "foreign Source: " . $node->{'att'}->{'parent-foreign-source'}) if $node->{'att'}->{'parent-foreign-source'};
 	print ("    * ", $node->{'att'}->{'node-label'}, " (foreign ID: ", $node->{'att'}->{'foreign-id'}, ")\n");
-	print ("      * parent: ", $node->{'att'}->{'parent-node-label'}, " (foreign ID: ", $node->{'att'}->{'parent-foreign-id'}, ")\n") if ($node->{'att'}->{'parent-node-label'} or $node->{'att'}->{'parent-foreign-id'});
+	print ("      * location: ", $node->{'att'}->{'location'}, "\n") if ($node->{'att'}->{'location'});
+	print ("      * parent: (", join(", ", @parent_info), ")\n") if ($node->{'att'}->{'parent-node-label'} or $node->{'att'}->{'parent-foreign-id'});
 	print ("      * city: ", $node->{'att'}->{'city'}, "\n") if ($node->{'att'}->{'city'});
 	print ("      * building: ", $node->{'att'}->{'building'}, "\n") if ($node->{'att'}->{'building'});
 	print ("      * assets:\n") if ($node->descendants('asset'));
@@ -758,6 +898,15 @@ sub dump_interface {
 sub print_version {
 	printf("%s build %d\n", (split('/', $0))[-1], $BUILD);
 	exit 0;
+}
+
+sub load_user_config {
+	my $have_config = open USERCONFIG, "<${user_config_file}";
+	return if (! defined $have_config);
+	while (my $configline = <USERCONFIG>) {
+		eval $configline;
+	}
+	close USERCONFIG;
 }
 
 =back

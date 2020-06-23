@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -37,25 +37,30 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.config.api.ConfigReloadContainer;
+import org.opennms.core.spring.FileReloadCallback;
+import org.opennms.core.spring.FileReloadContainer;
 import org.opennms.core.utils.BundleLists;
-import org.opennms.core.utils.FileReloadCallback;
-import org.opennms.core.utils.FileReloadContainer;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.model.AdhocGraphType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.PrefabGraphType;
+import org.opennms.netmgt.model.PrefabGraphs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -74,20 +79,16 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     /** Constant <code>DEFAULT_GRAPH_LIST_KEY="reports"</code> */
     public static final String DEFAULT_GRAPH_LIST_KEY = "reports";
 
-    private Map<String, Resource> m_prefabConfigs;
-    private Map<String, Resource> m_adhocConfigs;
+    private ConcurrentMap<String, Resource> m_prefabConfigs = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, Resource> m_adhocConfigs  = new ConcurrentHashMap<>();
 
-    private Map<String, FileReloadContainer<PrefabGraphTypeDao>> m_types =
-        new HashMap<String, FileReloadContainer<PrefabGraphTypeDao>>();
+    private final ConcurrentMap<String, FileReloadContainer<PrefabGraphTypeDao>> m_types = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, FileReloadContainer<AdhocGraphType>> m_adhocTypes = new ConcurrentHashMap<>();
 
-    private HashMap<String, FileReloadContainer<AdhocGraphType>> m_adhocTypes =
-        new HashMap<String, FileReloadContainer<AdhocGraphType>>();
+    private final PrefabGraphTypeCallback m_prefabCallback = new PrefabGraphTypeCallback();
+    private final AdhocGraphTypeCallback m_adhocCallback = new AdhocGraphTypeCallback();
 
-    private PrefabGraphTypeCallback m_prefabCallback =
-        new PrefabGraphTypeCallback();
-    private AdhocGraphTypeCallback m_adhocCallback =
-        new AdhocGraphTypeCallback();
-
+    private ConfigReloadContainer<PrefabGraphs> m_extContainer;
     /**
      * <p>
      * Constructor for PropertiesGraphDao.
@@ -97,13 +98,13 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
     }
 
     private void initPrefab() throws IOException {
-        for (Map.Entry<String, Resource> configEntry : m_prefabConfigs.entrySet()) {
+        for (Map.Entry<String, Resource> configEntry : getPrefabConfigs().entrySet()) {
             loadProperties(configEntry.getKey(), configEntry.getValue());
         }
     }
 
     private void initAdhoc() throws IOException {
-        for (Map.Entry<String, Resource> configEntry : m_adhocConfigs.entrySet()) {
+        for (Map.Entry<String, Resource> configEntry : getAdhocConfigs().entrySet()) {
             loadAdhocProperties(configEntry.getKey(), configEntry.getValue());
         }
     }
@@ -139,7 +140,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * loadProperties
      * </p>
      * 
-     * @param type
+     * @param typeName
      *            a {@link java.lang.String} object.
      * @param resource
      *            a {@link org.springframework.core.io.Resource} object.
@@ -280,9 +281,10 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                     return (name.endsWith(".properties"));
                 }
             };
-            File[] propertyFiles = includeDirectory.listFiles(propertyFilesFilter);
+            final File[] propertyFiles = includeDirectory.listFiles(propertyFilesFilter);
+            Arrays.sort(propertyFiles);
 
-            for (File file : propertyFiles) {
+            for (final File file : propertyFiles) {
                 loadIncludedFile(type, file);
             }
         }
@@ -501,7 +503,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             PrefabGraphTypeDao type, Properties properties) {
         Assert.notNull(properties, "properties argument cannot be null");
 
-        List<PrefabGraph> result = new ArrayList<PrefabGraph>();
+        List<PrefabGraph> result = new ArrayList<>();
 
         String listString = properties.getProperty(DEFAULT_GRAPH_LIST_KEY); // Optional
 
@@ -660,7 +662,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         }
 
         try {
-            return new Integer(value);
+            return Integer.valueOf(value);
         } catch (NumberFormatException e) {
             throw new DataAccessResourceFailureException(
                                                          "Property value for '"
@@ -733,27 +735,37 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      */
     @Override
     public List<PrefabGraph> getAllPrefabGraphs() {
-        List<PrefabGraph> graphs = new ArrayList<PrefabGraph>();
-        for (FileReloadContainer<PrefabGraphTypeDao> container : m_types.values()) {
-            PrefabGraphTypeDao type = container.getObject();
+        final List<PrefabGraph> graphs = new ArrayList<>();
+        for (final FileReloadContainer<PrefabGraphTypeDao> container : new ArrayList<>(m_types.values())) {
+            final PrefabGraphTypeDao type = container.getObject();
             this.rescanIncludeDirectory(type);
-            Map<String, FileReloadContainer<PrefabGraph>> map = type.getReportMap();
-            for (FileReloadContainer<PrefabGraph> graphContainer : map.values()) {
+            for (final FileReloadContainer<PrefabGraph> graphContainer : type.getReportMap().values()) {
                 graphs.add(graphContainer.getObject());
             }
+        }
+        if(m_extContainer.getObject() != null) {
+            graphs.addAll(m_extContainer.getObject().getPrefabGraphs());
         }
         return graphs;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PrefabGraph getPrefabGraph(String name) {
-        for (FileReloadContainer<PrefabGraphTypeDao> container : m_types.values()) {
-            PrefabGraphTypeDao type = container.getObject();
+    public PrefabGraph getPrefabGraph(final String name) {
+        for (final FileReloadContainer<PrefabGraphTypeDao> container : m_types.values()) {
+            final PrefabGraphTypeDao type = container.getObject();
             this.rescanIncludeDirectory(type);
-            PrefabGraph graph = type.getQuery(name);
+            final PrefabGraph graph = type.getQuery(name);
             if (graph != null) {
                 return graph;
+            }
+        }
+
+        if (m_extContainer.getObject() != null) {
+            List<PrefabGraph> graphs = m_extContainer.getObject().getPrefabGraphs();
+            Optional<PrefabGraph> prefabGraph = graphs.stream().filter(graph -> graph.getName().equals(name)).findFirst();
+            if (prefabGraph.isPresent()) {
+                return prefabGraph.get();
             }
         }
         throw new ObjectRetrievalFailureException(PrefabGraph.class, name,
@@ -763,21 +775,21 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
 
     /** {@inheritDoc} */
     @Override
-    public PrefabGraph[] getPrefabGraphsForResource(OnmsResource resource) {
+    public PrefabGraph[] getPrefabGraphsForResource(final OnmsResource resource) {
         if (resource == null) {
             LOG.warn("returning empty graph list for resource because it is null");
             return new PrefabGraph[0];
         }
-        Set<OnmsAttribute> attributes = resource.getAttributes();
+        Set<OnmsAttribute> attributes = new LinkedHashSet<>(resource.getAttributes());
         // Check if there are no attributes
         if (attributes.size() == 0) {
             LOG.debug("returning empty graph list for resource {} because its attribute list is empty", resource);
             return new PrefabGraph[0];
         }
 
-        Set<String> availableRrdAttributes = resource.getRrdGraphAttributes().keySet();
-        Set<String> availableStringAttributes = resource.getStringPropertyAttributes().keySet();
-        Set<String> availableExternalAttributes = resource.getExternalValueAttributes().keySet();
+        Set<String> availableRrdAttributes = new LinkedHashSet<>(resource.getRrdGraphAttributes().keySet());
+        Set<String> availableStringAttributes = new LinkedHashSet<>(resource.getStringPropertyAttributes().keySet());
+        Set<String> availableExternalAttributes = new LinkedHashSet<>(resource.getExternalValueAttributes().keySet());
 
         // Check if there are no RRD attributes
         if (availableRrdAttributes.size() == 0) {
@@ -826,8 +838,8 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             LOG.debug("found {} prefabricated graphs for resource {}: {}", nameList.size(), resource, StringUtils.collectionToDelimitedString(nameList, ", "));
         }
 
-        Set<String> suppressReports = new HashSet<String>();
-        for (Entry<String, PrefabGraph> entry : returnList.entrySet()) {
+        final Set<String> suppressReports = new HashSet<>();
+        for (final Entry<String, PrefabGraph> entry : returnList.entrySet()) {
             suppressReports.addAll(Arrays.asList(entry.getValue().getSuppress()));
         }
 
@@ -836,15 +848,14 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             LOG.debug("suppressing {} prefabricated graphs for resource {}: {}", suppressReports.size(), resource, StringUtils.collectionToDelimitedString(suppressReports, ", "));
         }
 
-        for (String suppressReport : suppressReports) {
+        for (final String suppressReport : suppressReports) {
             returnList.remove(suppressReport);
         }
 
         return returnList.values().toArray(new PrefabGraph[returnList.size()]);
     }
 
-    private boolean verifyAttributesExist(PrefabGraph query, String type,
-            List<String> requiredList, Set<String> availableRrdAttributes) {
+    private boolean verifyAttributesExist(PrefabGraph query, String type, List<String> requiredList, Set<String> availableRrdAttributes) {
         if (availableRrdAttributes.containsAll(requiredList)) {
             return true;
         } else {
@@ -881,13 +892,12 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      */
     @Override
     public void afterPropertiesSet() throws IOException {
-        Assert.notNull(m_prefabConfigs,
-                       "property prefabConfigs must be set to a non-null value");
-        Assert.notNull(m_adhocConfigs,
-                       "property adhocConfigs must be set to a non-null value");
+        Assert.notNull(getPrefabConfigs(), "property prefabConfigs must be set to a non-null value");
+        Assert.notNull(getAdhocConfigs(), "property adhocConfigs must be set to a non-null value");
 
         initPrefab();
         initAdhoc();
+        initExtensions();
     }
 
     /**
@@ -897,8 +907,8 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * 
      * @return a {@link java.util.Map} object.
      */
-    public Map<String, Resource> getAdhocConfigs() {
-        return Collections.unmodifiableMap(m_adhocConfigs);
+    protected Map<String, Resource> getAdhocConfigs() {
+        return m_adhocConfigs;
     }
 
     /**
@@ -909,8 +919,8 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @param adhocConfigs
      *            a {@link java.util.Map} object.
      */
-    public void setAdhocConfigs(Map<String, Resource> adhocConfigs) {
-        m_adhocConfigs = adhocConfigs;
+    public void setAdhocConfigs(final Map<String, Resource> adhocConfigs) {
+        m_adhocConfigs = new ConcurrentHashMap<>(adhocConfigs);
     }
 
     /**
@@ -920,8 +930,8 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * 
      * @return a {@link java.util.Map} object.
      */
-    public Map<String, Resource> getPrefabConfigs() {
-        return Collections.unmodifiableMap(m_prefabConfigs);
+    protected Map<String, Resource> getPrefabConfigs() {
+        return m_prefabConfigs;
     }
 
     /**
@@ -932,8 +942,14 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * @param prefabConfigs
      *            a {@link java.util.Map} object.
      */
-    public void setPrefabConfigs(Map<String, Resource> prefabConfigs) {
-        m_prefabConfigs = prefabConfigs;
+    public void setPrefabConfigs(final Map<String, Resource> prefabConfigs) {
+        m_prefabConfigs = new ConcurrentHashMap<>(prefabConfigs);
+    }
+
+    private void initExtensions() {
+        m_extContainer = new ConfigReloadContainer.Builder<>(PrefabGraphs.class)
+                .withFolder((accumulator, next) -> accumulator.getPrefabGraphs().addAll(next.getPrefabGraphs()))
+                .build();
     }
 
     /**
@@ -946,7 +962,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * FileReloadContainers; all access to graph objects is via this Dao anyway
      */
     class PrefabGraphTypeDao extends PrefabGraphType {
-        private Map<String, FileReloadContainer<PrefabGraph>> m_reportMap;
+        private final ConcurrentMap<String, FileReloadContainer<PrefabGraph>> m_reportMap = new ConcurrentHashMap<>();
         
         //The ordering to use for the next graph added to this type, to ensure sortability
         private int m_ordering;
@@ -959,11 +975,11 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
          // A call-back object for this type, which will reload a file, and
         // re-add the
         // new graph to this PrefabGraphTypeDao instance
-        private PrefabGraphCallback m_callback;
+        private final PrefabGraphCallback m_callback;
         
         // A set of files that were malformed last time they were read by scanIncludeDirectory
         // and their previous time-stamps
-        private Map<File, Long> m_malformedFiles;
+        private final ConcurrentMap<File, Long> m_malformedFiles = new ConcurrentHashMap<>();
         
         /**
          * The resource that is the include directory
@@ -973,12 +989,8 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         private Resource m_includeDirectoryResource;
 
         public PrefabGraphTypeDao() {
-            m_reportMap = new HashMap<String, FileReloadContainer<PrefabGraph>>();
             m_ordering = 0;
             m_callback = new PrefabGraphCallback(this);
-            
-            m_malformedFiles = new HashMap<File, Long>();
-
         }
 
         public void setIncludeDirectoryResource(Resource includeDirectoryResource) {

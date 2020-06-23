@@ -1,9 +1,19 @@
 #!/bin/sh -
 
-JINTEROP_DEPS_JAR=`ls -1 "${install.dir}"/lib/j-interopdeps-*.jar | head -n 1`
-JINTEROP_JAR=`ls -1 "${install.dir}"/lib/j-interop-*.jar | head -n 1`
-JCIFS_JAR=`ls -1 "${install.dir}"/lib/jcifs-*.jar | head -n 1`
-WMI_JAR=`ls -1 "${install.dir}"/lib/opennms-wmi-*.jar | head -n 1`
-LOG4J_JAR=`ls -1 "${install.dir}"/lib/log4j-*.jar | head -n 1`
-COMMONS_CLI_JAR=`ls -1 "${install.dir}"/lib/commons-cli-*.jar | head -n 1`
-exec ${install.bin.dir}/runjava -r -- -Xmx256m -cp "$JINTEROP_DEPS_JAR:$JINTEROP_JAR:$JCIFS_JAR:$WMI_JAR:$LOG4J_JAR:$COMMONS_CLI_JAR" org.opennms.protocols.wmi.CheckWmi "$@"
+OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
+
+JINTEROP_DEPS_JAR=`ls -1 "$OPENNMS_HOME"/lib/j-interopdeps-*.jar | head -n 1`
+JINTEROP_JAR=`ls -1 "$OPENNMS_HOME"/lib/j-interop-*.jar | head -n 1`
+JCIFS_JAR=`ls -1 "$OPENNMS_HOME"/lib/jcifs-*.jar | head -n 1`
+WMI_JAR=`ls -1 "$OPENNMS_HOME"/lib/opennms-wmi-*.jar | head -n 1`
+LOG4J_JAR=`ls -1 "$OPENNMS_HOME"/lib/log4j-*.jar | head -n 1`
+SLF4J_JAR=`ls -1 "$OPENNMS_HOME"/lib/slf4j-api-*.jar | head -n 1`
+COMMONS_CLI_JAR=`ls -1 "$OPENNMS_HOME"/lib/commons-cli-*.jar | head -n 1`
+
+exec "$OPENNMS_BINDIR"/runjava -r -- \
+	-Xmx256m \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-cp "$JINTEROP_DEPS_JAR:$JINTEROP_JAR:$JCIFS_JAR:$WMI_JAR:$LOG4J_JAR:$SLF4J_JAR:$COMMONS_CLI_JAR" \
+	org.opennms.protocols.wmi.CheckWmi \
+	"$@"

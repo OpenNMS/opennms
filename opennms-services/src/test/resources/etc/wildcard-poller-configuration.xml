@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<poller-configuration threads="30" 
+                      serviceUnresponsiveEnabled="false"> 
+  <node-outage status="on">
+    <critical-service name="ICMP" />
+  </node-outage>
+  
+  <package name="Default">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <include-range begin="0.0.0.0" end="255.255.255.255" />
+    <rrd step="60">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <service name="HTTP" interval="60000" user-defined="false" status="on">
+      <pattern><![CDATA[^HTTP-(?<vhost>.*)$]]></pattern>
+      <parameter key="sequence-retry" value="10"/>
+      <parameter key="timeout" value="5000"/>
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+      <parameter key="rrd-base-name" value="http-${pattern:vhost}"/>
+      <parameter key="ds-name" value="http"/>
+      <parameter key="host-name" value="${pattern:vhost}"/>
+    </service>
+    <downtime interval="300000" begin="0" end="432000000"/><!-- 5m, 0, 5d -->
+    <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
+  </package>
+
+  <monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/>
+</poller-configuration>

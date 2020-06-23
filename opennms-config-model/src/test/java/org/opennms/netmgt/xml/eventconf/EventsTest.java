@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -88,8 +88,8 @@ public class EventsTest extends XmlTestNoCastor<Events> {
 		snmp0.setCommunity("public");
 		event1.setSnmp(snmp0);
 		Correlation correlation0 = new Correlation();
-		correlation0.setState("on");
-		correlation0.setPath("pathOutage");
+		correlation0.setState(StateType.ON);
+		correlation0.setPath(PathType.PATH_OUTAGE);
 		correlation0.setCmin("cmin");
 		correlation0.setCmax("cmax");
 		correlation0.setCtime("ctime");
@@ -98,7 +98,7 @@ public class EventsTest extends XmlTestNoCastor<Events> {
 		event1.setOperinstruct("operinstruct");
 		Autoaction autoaction0 = new Autoaction();
 		autoaction0.setContent("These are important data");
-		autoaction0.setState("on");
+		autoaction0.setState(StateType.ON);
 		event1.addAutoaction(autoaction0);
 		Varbindsdecode varbindsdecode0 = new Varbindsdecode();
 		Decode decode0 = new Decode();
@@ -110,20 +110,20 @@ public class EventsTest extends XmlTestNoCastor<Events> {
 		Operaction operaction0 = new Operaction();
 		operaction0.setMenutext("Test");
 		operaction0.setContent("This is a test");
-		operaction0.setState("on");
+		operaction0.setState(StateType.ON);
 		event1.addOperaction(operaction0);
 		Autoacknowledge autoacknowledge0 = new Autoacknowledge();
 		autoacknowledge0.setContent("These are important data");
-		autoacknowledge0.setState("on");
+		autoacknowledge0.setState(StateType.ON);
 		event1.setAutoacknowledge(autoacknowledge0);
 		event1.addLoggroup("loggroup");
 		Tticket tticket0 = new Tticket();
 		tticket0.setContent("This is a test");
-		tticket0.setState("on");
+		tticket0.setState(StateType.ON);
 		event1.setTticket(tticket0);
 		Forward forward0 = new Forward();
-		forward0.setMechanism("snmpudp");
-		forward0.setState("on");
+		forward0.setMechanism(MechanismType.SNMPUDP);
+		forward0.setState(StateType.ON);
 		event1.addForward(forward0);
 		Script script0 = new Script();
 		script0.setLanguage("erlang");
@@ -143,6 +143,14 @@ public class EventsTest extends XmlTestNoCastor<Events> {
 		security1.addDoNotOverride("I'm very important, don't mess with me!");
 		security1.addDoNotOverride("Also important");
 		global0.setSecurity(security1);
+		Parameter parameter0 = new Parameter();
+		parameter0.setName("operating-system");
+		parameter0.setValue("cisco-ios");
+		event1.addParameter(parameter0);
+                Parameter parameter1 = new Parameter();
+                parameter1.setName("location");
+                parameter1.setValue("planet-earth");
+                event1.addParameter(parameter1);
 
 		events1.setGlobal(global0);
 
@@ -210,6 +218,8 @@ public class EventsTest extends XmlTestNoCastor<Events> {
 					"    <parmid>parm[#1]</parmid>" +
 					"    <decode varbinddecodedstring=\"testing\" varbindvalue=\"3\"/>" +
 					"  </varbindsdecode>" +
+                                        "  <parameter name=\"operating-system\" value=\"cisco-ios\"/>" +
+                                        "  <parameter name=\"location\" value=\"planet-earth\"/>" +
 					"  <operaction menutext=\"Test\" state=\"on\">This is a test</operaction>" +
 					"  <autoacknowledge state=\"on\">These are important data</autoacknowledge>" +
 					"  <loggroup>loggroup</loggroup>" +

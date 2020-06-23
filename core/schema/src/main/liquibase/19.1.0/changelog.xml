@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <!-- NMS-9146: Assure that the Default location exists in the database -->
+  <changeSet author="cpape" id="19.1.0-assure-default-location-exists">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(id) FROM monitoringlocations WHERE id='Default';
+      </sqlCheck>
+    </preConditions>
+    <insert tableName="monitoringlocations">
+      <column name="id" value="Default"/>
+      <column name="monitoringarea" value="Default"/>
+    </insert>
+  </changeSet>
+
+  <!-- NMS-9146: Check for references to blank locations and associate them to the Default location -->
+  <changeSet author="cpape" id="19.1.0-fix-empty-locations-in-node-table">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="1">
+        select
+          case when exists (
+            select location from node where location=''
+          )
+          then 1
+          else 0
+        end;
+      </sqlCheck>
+    </preConditions>
+    <sql>
+      update node set location='Default' where location='';
+    </sql>
+  </changeSet>
+
+  <!-- NMS-9146: Check for references to blank locations and associate them to the Default location -->
+  <changeSet author="cpape" id="19.1.0-fix-empty-locations-in-collectionpackages-table">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="1">
+        select
+          case when exists (
+            select monitoringlocationid from monitoringlocationscollectionpackages where monitoringlocationid=''
+          )
+          then 1
+          else 0
+        end;
+      </sqlCheck>
+    </preConditions>
+    <sql>
+      update monitoringlocationscollectionpackages set monitoringlocationid='Default' where monitoringlocationid='';
+    </sql>
+  </changeSet>
+
+  <!-- NMS-9146: Check for references to blank locations and associate them to the Default location -->
+  <changeSet author="cpape" id="19.1.0-fix-empty-locations-in-pollingpackages-table">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="1">
+        select
+          case when exists (
+            select monitoringlocationid from monitoringlocationspollingpackages where monitoringlocationid=''
+          )
+          then 1
+          else 0
+        end;
+      </sqlCheck>
+    </preConditions>
+    <sql>
+      update monitoringlocationspollingpackages set monitoringlocationid='Default' where monitoringlocationid='';
+    </sql>
+  </changeSet>
+
+  <!-- NMS-9146: Check for references to blank locations and associate them to the Default location -->
+  <changeSet author="cpape" id="19.1.0-fix-empty-locations-in-tags-table">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="1">
+        select
+          case when exists (
+            select monitoringlocationid from monitoringlocationstags where monitoringlocationid=''
+          )
+          then 1
+          else 0
+        end;
+      </sqlCheck>
+    </preConditions>
+    <sql>
+      update monitoringlocationstags set monitoringlocationid='Default' where monitoringlocationid='';
+    </sql>
+  </changeSet>
+
+  <!-- NMS-9146: Check for references to blank locations and associate them to the Default location -->
+  <changeSet author="cpape" id="19.1.0-fix-empty-locations-in-scanreports-table">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="1">
+        select
+          case when exists (
+            select location from scanreports where location=''
+          )
+          then 1
+          else 0
+        end;
+      </sqlCheck>
+    </preConditions>
+    <sql>
+      update scanreports set location='Default' where location='';
+    </sql>
+  </changeSet>
+
+  <!-- NMS-9146: Remove ON DELETE CASCADE for the location foreign key constraint in the node table -->
+  <changeSet author="cpape" id="19.1.0-remove-on-delete-cascade">
+    <!-- Drop existing foreign key constraints -->
+    <dropForeignKeyConstraint baseTableName="node" constraintName="fk_node_location"/>
+    <!-- Recreate the foreign key constraint without using onDelete="CASCADE" -->
+    <addForeignKeyConstraint baseTableName="node" constraintName="fk_node_location" baseColumnNames="location" referencedTableName="monitoringlocations" referencedColumnNames="id" onUpdate="CASCADE"/>
+  </changeSet>
+
+  <!-- NMS-9146: Double check that nothing is associated with the blank location before deleting it -->
+  <changeSet author="cpape" id="19.1.0-delete-blank-location">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        select
+          case when exists (
+            select * from (
+              select location from node
+              union
+              select monitoringlocationid as location from monitoringlocationscollectionpackages
+              union
+              select monitoringlocationid as location from monitoringlocationspollingpackages
+              union
+              select monitoringlocationid as location from monitoringlocationstags
+              union
+              select location from scanreports
+            ) S where location=''
+          )
+          then 1
+          else 0
+        end;
+      </sqlCheck>
+    </preConditions>
+    <sql>
+      delete from monitoringlocations where id='';
+    </sql>
+  </changeSet>
+
+  <!-- NMS-6584: Upgrade to Quartz 2 schema -->
+  <!-- http://www.quartz-scheduler.org/documentation/quartz-2.x/migration-guide.html -->
+  <changeSet author="seth" id="19.1.0-upgrade-to-quartz-2-schema">
+
+    <!-- Drop tables that are no longer used -->
+
+    <dropTable tableName="qrtz_job_listeners"/>
+    <dropTable tableName="qrtz_trigger_listeners"/>
+
+
+    <!-- Drop columns that are no longer used -->
+
+    <dropColumn columnName="is_volatile" tableName="qrtz_fired_triggers"/>
+    <dropColumn columnName="is_volatile" tableName="qrtz_job_details"/>
+    <dropColumn columnName="is_volatile" tableName="qrtz_triggers"/>
+
+
+    <!-- SL 2017-01-16: Fix some additional inconsistencies in the Quartz schema -->
+
+    <dropColumn columnName="recoverer" tableName="qrtz_scheduler_state"/>
+    <dropNotNullConstraint columnDataType="bytea" columnName="job_data" tableName="qrtz_job_details"/>
+    <addNotNullConstraint columnName="priority" tableName="qrtz_fired_triggers"/>
+
+    <addColumn tableName="qrtz_fired_triggers">
+      <column name="sched_time" type="bigint"/>
+    </addColumn>
+    <sql>UPDATE qrtz_fired_triggers SET sched_time = fired_time;</sql>
+    <addNotNullConstraint columnName="sched_time" tableName="qrtz_fired_triggers"/>
+
+
+    <!-- Add new columns that replace the 'is_stateful' column -->
+
+    <addColumn tableName="qrtz_job_details">
+      <column name="is_nonconcurrent" type="boolean"/>
+    </addColumn>
+    <sql>UPDATE qrtz_job_details SET is_nonconcurrent = is_stateful;</sql>
+    <addNotNullConstraint columnName="is_nonconcurrent" tableName="qrtz_job_details"/>
+    <addColumn tableName="qrtz_job_details">
+      <column name="is_update_data" type="boolean"/>
+    </addColumn>
+    <sql>UPDATE qrtz_job_details SET is_update_data = is_stateful;</sql>
+    <addNotNullConstraint columnName="is_update_data" tableName="qrtz_job_details"/>
+    <dropColumn columnName="is_stateful" tableName="qrtz_job_details"/>
+
+    <addColumn tableName="qrtz_fired_triggers">
+      <column name="is_nonconcurrent" type="boolean"/>
+    </addColumn>
+    <sql>UPDATE qrtz_fired_triggers SET is_nonconcurrent = is_stateful;</sql>
+    <dropColumn columnName="is_stateful" tableName="qrtz_fired_triggers"/>
+
+
+    <!-- Add new 'sched_name' column to all tables, make its value match our scheduler name -->
+    <!-- See opennms-webapp/src/main/resources/org/opennms/web/svclayer/applicationContext-svclayer.xml -->
+
+    <addColumn tableName="qrtz_blob_triggers">
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
+    </addColumn>
+    <addNotNullConstraint tableName="qrtz_blob_triggers" columnName="sched_name"/>
+    <addColumn tableName="qrtz_calendars">
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
+    </addColumn>
+    <addNotNullConstraint tableName="qrtz_calendars" columnName="sched_name"/>
+    <addColumn tableName="qrtz_cron_triggers">
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
+    </addColumn>
+    <addNotNullConstraint tableName="qrtz_cron_triggers" columnName="sched_name"/>
+    <addColumn tableName="qrtz_fired_triggers">
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
+    </addColumn>
+    <addNotNullConstraint tableName="qrtz_fired_triggers" columnName="sched_name"/>
+    <addColumn tableName="qrtz_job_details">
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
+    </addColumn>
+    <addNotNullConstraint tableName="qrtz_job_details" columnName="sched_name"/>
+    <addColumn tableName="qrtz_locks">
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
+    </addColumn>
+    <addNotNullConstraint tableName="qrtz_locks" columnName="sched_name"/>
+    <addColumn tableName="qrtz_paused_trigger_grps">
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
+    </addColumn>
+    <addNotNullConstraint tableName="qrtz_paused_trigger_grps" columnName="sched_name"/>
+    <addColumn tableName="qrtz_scheduler_state">
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
+    </addColumn>
+    <addNotNullConstraint tableName="qrtz_scheduler_state" columnName="sched_name"/>
+    <addColumn tableName="qrtz_simple_triggers">
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
+    </addColumn>
+    <addNotNullConstraint tableName="qrtz_simple_triggers" columnName="sched_name"/>
+    <addColumn tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)" value="databaseReport"/>
+    </addColumn>
+    <addNotNullConstraint tableName="qrtz_triggers" columnName="sched_name"/>
+
+
+    <!-- Drop all primary and foreign key constraints, so that we can define new ones -->
+
+    <dropPrimaryKey tableName="qrtz_blob_triggers" constraintName="pk_qrtz_blob_triggers"/>
+    <dropForeignKeyConstraint baseTableName="qrtz_blob_triggers" constraintName="fk_qrtz_blob_triggers"/>
+
+    <dropPrimaryKey tableName="qrtz_simple_triggers" constraintName="pk_qrtz_simple_triggers"/>
+    <dropForeignKeyConstraint baseTableName="qrtz_simple_triggers" constraintName="fk_qrtz_simple_triggers"/>
+
+    <dropPrimaryKey tableName="qrtz_cron_triggers" constraintName="pk_qrtz_cron_triggers"/>
+    <dropForeignKeyConstraint baseTableName="qrtz_cron_triggers" constraintName="fk_qrtz_cron_triggers"/>
+
+    <dropPrimaryKey tableName="qrtz_triggers" constraintName="pk_qrtz_triggers"/>
+    <dropForeignKeyConstraint baseTableName="qrtz_triggers" constraintName="fk_qrtz_triggers"/>
+
+    <dropPrimaryKey tableName="qrtz_job_details" constraintName="qrtz_job_details_pkey"/>
+
+
+    <!-- Add all primary and foreign key constraints, based on new columns -->
+
+    <addPrimaryKey tableName="qrtz_job_details" columnNames="sched_name,job_name,job_group" constraintName="pk_qrtz_job_details" />
+
+    <addPrimaryKey tableName="qrtz_triggers" columnNames="sched_name,trigger_name,trigger_group" constraintName="pk_qrtz_triggers" />
+    <addForeignKeyConstraint baseTableName="qrtz_triggers" baseColumnNames="sched_name,job_name,job_group" referencedTableName="qrtz_job_details" referencedColumnNames="sched_name,job_name,job_group" constraintName="fk_qrtz_triggers_job_details"/>
+
+    <addPrimaryKey tableName="qrtz_blob_triggers" columnNames="sched_name,trigger_name,trigger_group" constraintName="pk_qrtz_blob_triggers" />
+    <addForeignKeyConstraint baseTableName="qrtz_blob_triggers" baseColumnNames="sched_name,trigger_name,trigger_group" referencedTableName="qrtz_triggers" referencedColumnNames="sched_name,trigger_name,trigger_group" constraintName="fk_qrtz_blob_triggers_triggers"/>
+
+    <addPrimaryKey tableName="qrtz_simple_triggers" columnNames="sched_name,trigger_name,trigger_group" constraintName="pk_qrtz_simple_triggers" />
+    <addForeignKeyConstraint baseTableName="qrtz_simple_triggers" baseColumnNames="sched_name,trigger_name,trigger_group" referencedTableName="qrtz_triggers" referencedColumnNames="sched_name,trigger_name,trigger_group" constraintName="fk_qrtz_simple_triggers_triggers"/>
+
+    <addPrimaryKey tableName="qrtz_cron_triggers" columnNames="sched_name,trigger_name,trigger_group" constraintName="pk_qrtz_cron_triggers" />
+    <addForeignKeyConstraint baseTableName="qrtz_cron_triggers" baseColumnNames="sched_name,trigger_name,trigger_group" referencedTableName="qrtz_triggers" referencedColumnNames="sched_name,trigger_name,trigger_group" constraintName="fk_qrtz_cron_triggers_triggers"/>
+
+
+    <!-- Drop and re-add other primary key constraints, based on new columns -->
+
+    <dropPrimaryKey tableName="qrtz_fired_triggers" constraintName="pk_qrtz_fired_triggers"/>
+    <addPrimaryKey tableName="qrtz_fired_triggers" columnNames="sched_name,entry_id" constraintName="pk_qrtz_fired_triggers" />
+
+    <dropPrimaryKey tableName="qrtz_calendars" constraintName="pk_qrtz_calendars"/>
+    <addPrimaryKey tableName="qrtz_calendars" columnNames="sched_name,calendar_name" constraintName="pk_qrtz_calendars" />
+
+    <dropPrimaryKey tableName="qrtz_locks" constraintName="pk_qrtz_locks"/>
+    <addPrimaryKey tableName="qrtz_locks" columnNames="sched_name,lock_name" constraintName="pk_qrtz_locks" />
+
+    <dropPrimaryKey tableName="qrtz_paused_trigger_grps" constraintName="pk_qrtz_paused_trigger_grps"/>
+    <addPrimaryKey tableName="qrtz_paused_trigger_grps" columnNames="sched_name,trigger_group" constraintName="pk_qrtz_paused_trigger_grps" />
+
+    <dropPrimaryKey tableName="qrtz_scheduler_state" constraintName="pk_qrtz_scheduler_state"/>
+    <addPrimaryKey tableName="qrtz_scheduler_state" columnNames="sched_name,instance_name" constraintName="pk_qrtz_scheduler_state" />
+
+
+    <!-- Add new simprop_triggers table -->
+
+    <createTable tableName="qrtz_simprop_triggers">
+      <column name="sched_name" type="varchar(120)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="trigger_name" type="varchar(200)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="trigger_group" type="varchar(200)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="str_prop_1" type="varchar(512)"/>
+      <column name="str_prop_2" type="varchar(512)"/>
+      <column name="str_prop_3" type="varchar(512)"/>
+      <column name="int_prop_1" type="integer"/>
+      <column name="int_prop_2" type="integer"/>
+      <column name="long_prop_1" type="bigint"/>
+      <column name="long_prop_2" type="bigint"/>
+      <column name="dec_prop_1" type="numeric(13,4)"/>
+      <column name="dec_prop_2" type="numeric(13,4)"/>
+      <column name="bool_prop_1" type="boolean"/>
+      <column name="bool_prop_2" type="boolean"/>
+    </createTable>
+    <addPrimaryKey tableName="qrtz_simprop_triggers" columnNames="sched_name,trigger_name,trigger_group" constraintName="pk_qrtz_simprop_triggers"/>
+    <addForeignKeyConstraint baseTableName="qrtz_simprop_triggers" baseColumnNames="sched_name,trigger_name,trigger_group" referencedTableName="qrtz_triggers" referencedColumnNames="sched_name,trigger_name,trigger_group" constraintName="fk_qrtz_simprop_triggers_triggers"/>
+
+  </changeSet>
+
+  <!-- NMS-6584: Add indices for Quartz 2 tables -->
+  <!-- http://www.quartz-scheduler.org/documentation/quartz-2.x/migration-guide.html -->
+  <changeSet author="seth" id="19.1.0-add-quartz-2-indices">
+
+    <!-- Create indexes for faster queries -->
+
+    <createIndex indexName="idx_qrtz_j_req_recovery" tableName="qrtz_job_details">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="requests_recovery" type="boolean"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_j_grp" tableName="qrtz_job_details">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="job_group" type="varchar(200)"/>
+    </createIndex>
+
+    <createIndex indexName="idx_qrtz_t_j" tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="job_name" type="varchar(200)"/>
+      <column name="job_group" type="varchar(200)"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_t_jg" tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="job_group" type="varchar(200)"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_t_c" tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="calendar_name" type="varchar(250)"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_t_g" tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="trigger_group" type="varchar(200)"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_t_state" tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="trigger_state" type="varchar(16)"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_t_n_state" tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="trigger_name" type="varchar(200)"/>
+      <column name="trigger_group" type="varchar(200)"/>
+      <column name="trigger_state" type="varchar(16)"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_t_n_g_state" tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="trigger_group" type="varchar(200)"/>
+      <column name="trigger_state" type="varchar(16)"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_t_next_fire_time" tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="next_fire_time" type="bigint"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_t_nft_st" tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="trigger_state" type="varchar(16)"/>
+      <column name="next_fire_time" type="bigint"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_t_nft_misfire" tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="misfire_instr" type="smallint"/>
+      <column name="next_fire_time" type="bigint"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_t_nft_st_misfire" tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="misfire_instr" type="smallint"/>
+      <column name="next_fire_time" type="bigint"/>
+      <column name="trigger_state" type="varchar(16)"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_t_nft_st_misfire_grp" tableName="qrtz_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="misfire_instr" type="smallint"/>
+      <column name="next_fire_time" type="bigint"/>
+      <column name="trigger_group" type="varchar(200)"/>
+      <column name="trigger_state" type="varchar(16)"/>
+    </createIndex>
+ 
+    <createIndex indexName="idx_qrtz_ft_trig_inst_name" tableName="qrtz_fired_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="instance_name" type="varchar(200)"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_ft_inst_job_req_rcvry" tableName="qrtz_fired_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="instance_name" type="varchar(200)"/>
+      <column name="requests_recovery" type="boolean"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_ft_j_g" tableName="qrtz_fired_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="job_name" type="varchar(200)"/>
+      <column name="job_group" type="varchar(200)"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_ft_jg" tableName="qrtz_fired_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="job_group" type="varchar(200)"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_ft_t_g" tableName="qrtz_fired_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="trigger_name" type="varchar(200)"/>
+      <column name="trigger_group" type="varchar(200)"/>
+    </createIndex>
+    <createIndex indexName="idx_qrtz_ft_tg" tableName="qrtz_fired_triggers">
+      <column name="sched_name" type="varchar(120)"/>
+      <column name="trigger_group" type="varchar(200)"/>
+    </createIndex>
+
+  </changeSet>
+
+  <!-- NMS-6584: Extend some column lengths to match Quartz 2 schema -->
+  <changeSet author="seth" id="19.1.0-extend-quartz-column-widths">
+    <modifyDataType tableName="qrtz_job_details" columnName="job_name" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_job_details" columnName="job_group" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_job_details" columnName="description" newDataType="varchar(250)"/>
+    <modifyDataType tableName="qrtz_job_details" columnName="job_class_name" newDataType="varchar(250)"/>
+
+    <modifyDataType tableName="qrtz_triggers" columnName="trigger_name" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_triggers" columnName="trigger_group" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_triggers" columnName="job_name" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_triggers" columnName="job_group" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_triggers" columnName="description" newDataType="varchar(250)"/>
+    <modifyDataType tableName="qrtz_triggers" columnName="calendar_name" newDataType="varchar(250)"/>
+
+    <modifyDataType tableName="qrtz_simple_triggers" columnName="trigger_name" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_simple_triggers" columnName="trigger_group" newDataType="varchar(200)"/>
+
+    <modifyDataType tableName="qrtz_cron_triggers" columnName="trigger_name" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_cron_triggers" columnName="trigger_group" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_cron_triggers" columnName="cron_expression" newDataType="varchar(120)"/>
+
+    <modifyDataType tableName="qrtz_blob_triggers" columnName="trigger_name" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_blob_triggers" columnName="trigger_group" newDataType="varchar(200)"/>
+
+    <modifyDataType tableName="qrtz_calendars" columnName="calendar_name" newDataType="varchar(200)"/>
+
+    <modifyDataType tableName="qrtz_paused_trigger_grps" columnName="trigger_group" newDataType="varchar(200)"/>
+
+    <modifyDataType tableName="qrtz_fired_triggers" columnName="trigger_name" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_fired_triggers" columnName="trigger_group" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_fired_triggers" columnName="instance_name" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_fired_triggers" columnName="job_name" newDataType="varchar(200)"/>
+    <modifyDataType tableName="qrtz_fired_triggers" columnName="job_group" newDataType="varchar(200)"/>
+
+    <modifyDataType tableName="qrtz_scheduler_state" columnName="instance_name" newDataType="varchar(200)"/>
+  </changeSet>
+
+</databaseChangeLog>

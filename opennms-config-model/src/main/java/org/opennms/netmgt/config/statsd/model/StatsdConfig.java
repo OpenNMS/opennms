@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,9 +31,9 @@ package org.opennms.netmgt.config.statsd.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.netmgt.config.statsd.PackageReportStatus;
 import org.opennms.netmgt.config.statsd.Parameter;
 import org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration;
-import org.opennms.netmgt.config.statsd.types.PackageReportStatusType;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
@@ -48,19 +48,19 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  * @version $Id: $
  */
 public class StatsdConfig {
-    private StatisticsDaemonConfiguration m_castorConfig;
-    private List<Report> m_reports = new ArrayList<Report>();
-    private List<StatsdPackage> m_packages = new ArrayList<StatsdPackage>();
+    private StatisticsDaemonConfiguration m_config;
+    private List<Report> m_reports = new ArrayList<>();
+    private List<StatsdPackage> m_packages = new ArrayList<>();
 
     /**
      * <p>Constructor for StatsdConfig.</p>
      *
-     * @param castorConfig a {@link org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration} object.
+     * @param config a {@link org.opennms.netmgt.config.statsd.StatisticsDaemonConfiguration} object.
      */
-    public StatsdConfig(StatisticsDaemonConfiguration castorConfig) {
-        m_castorConfig = castorConfig;
+    public StatsdConfig(StatisticsDaemonConfiguration config) {
+        m_config = config;
 
-        for (org.opennms.netmgt.config.statsd.Report report : getCastorReports()) {
+        for (org.opennms.netmgt.config.statsd.Report report : getXmlReports()) {
             Report r = new Report();
             r.setName(report.getName());
             r.setClassName(report.getClassName());
@@ -70,10 +70,12 @@ public class StatsdConfig {
             m_reports.add(r);
         }
         
-        for (org.opennms.netmgt.config.statsd.Package pkg : getCastorPackages()) {
+        for (org.opennms.netmgt.config.statsd.Package pkg : getXmlPackages()) {
             StatsdPackage p = new StatsdPackage();
             p.setName(pkg.getName());
-            p.setFilter(pkg.getFilter() != null ? pkg.getFilter().getContent() : null);
+            if (pkg.getFilter().isPresent() && pkg.getFilter().get().getContent().isPresent()) {
+                p.setFilter(pkg.getFilter().get().getContent().get());
+            }
             for (org.opennms.netmgt.config.statsd.PackageReport packageReport : getPackageReportForPackage(pkg)) {
                 PackageReport r = new PackageReport();
                 r.setPackage(p);
@@ -85,7 +87,7 @@ public class StatsdConfig {
                 r.setDescription(packageReport.getDescription());
                 r.setRetainInterval(Long.parseLong(packageReport.getRetainInterval()));
                 r.setSchedule(packageReport.getSchedule());
-                r.setEnabled(packageReport.getStatus().equals(PackageReportStatusType.ON));
+                r.setEnabled(packageReport.getStatus().equals(PackageReportStatus.on));
                 for (Parameter parameter : getParametersForPackageReport(packageReport)) {
                     r.addParameter(parameter.getKey(), parameter.getValue());
                 }
@@ -124,23 +126,23 @@ public class StatsdConfig {
     }
 
     private List<Parameter> getParametersForReport(org.opennms.netmgt.config.statsd.Report report) {
-        return report.getParameterCollection();
+        return report.getParameters();
     }
 
-    private List<org.opennms.netmgt.config.statsd.Report> getCastorReports() {
-        return m_castorConfig.getReportCollection();
+    private List<org.opennms.netmgt.config.statsd.Report> getXmlReports() {
+        return m_config.getReports();
     }
 
-    private List<org.opennms.netmgt.config.statsd.Package> getCastorPackages() {
-        return m_castorConfig.getPackageCollection();
+    private List<org.opennms.netmgt.config.statsd.Package> getXmlPackages() {
+        return m_config.getPackages();
     }
 
     private List<org.opennms.netmgt.config.statsd.PackageReport> getPackageReportForPackage(org.opennms.netmgt.config.statsd.Package pkg) {
-        return pkg.getPackageReportCollection();
+        return pkg.getPackageReports();
     }
 
     private List<Parameter> getParametersForPackageReport(org.opennms.netmgt.config.statsd.PackageReport packageReport) {
-        return packageReport.getParameterCollection();
+        return packageReport.getParameters();
     }
 
 }

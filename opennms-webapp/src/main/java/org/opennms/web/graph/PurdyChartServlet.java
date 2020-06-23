@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,8 +36,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.web.charts.ChartUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +43,6 @@ import org.slf4j.LoggerFactory;
  * <p>PurdyChartServlet class.</p>
  *
  * @author david
- * @version $Id: $
- * @since 1.8.1
  */
 public class PurdyChartServlet extends HttpServlet {
 	
@@ -68,10 +64,6 @@ public class PurdyChartServlet extends HttpServlet {
         try {
             ChartConfigFactory.init();
             DataSourceFactory.init();
-        } catch (MarshalException e) {
-            log().error("init: Error marshalling chart-configuration.xml: ",e);
-        } catch (ValidationException e) {
-            log().error("init: Error validating chart-configuration.xml: ",e);
         } catch (IOException e) {
             log().error("init: Error reading chart-configuration.xml: ",e);
         } catch (ClassNotFoundException e) {
@@ -110,10 +102,6 @@ public class PurdyChartServlet extends HttpServlet {
         
         try {
                 ChartUtils.getBarChartPNG(chartName, out);
-        } catch (MarshalException e) {
-            LOG.error("Error marshalling chart-configuration.xml: ",e);
-        } catch (ValidationException e) {
-            LOG.error("Error validating chart-configuration.xml: ",e);
         } catch (IOException e) {
             LOG.error("Error reading chart-configuration.xml: ",e);
         } catch (SQLException e) {

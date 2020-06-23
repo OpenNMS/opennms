@@ -2,10 +2,12 @@
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
  <head>
   <title>OpenNMS Remote Poller</title>
-  <link rel="stylesheet" type="text/css" href="../opennms/css/styles.css" media="screen" />
-  <link rel="stylesheet" type="text/css" href="../opennms/css/gwt-asset.css" media="screen" />
-  <link rel="stylesheet" type="text/css" href="../opennms/css/onms-gwt-chrome.css" media="screen" />
-  <link rel="stylesheet" type="text/css" href="../opennms/css/print.css" media="print" />
+  <script type="text/javascript" src="../opennms/rest/web-assets/manifest.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="../opennms/rest/web-assets/styles.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="../opennms/rest/web-assets/gwt-asset.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="../opennms/rest/web-assets/onms-gwt-chrome.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="../opennms/rest/web-assets/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="../opennms/rest/web-assets/font-awesome.css" />
   <style type="text/css">
     .download-link {
         background-color: #659324;
@@ -31,20 +33,23 @@
     }
     .download-link P {
         font-size: 12px;
-        padding-left:1.8em;
+        padding-right:1em;
         margin: 0px;
     }
   </style>
-  <script type="text/javascript" src="js/jquery-2.0.3.js"></script>
+  <script type="text/javascript" src="../opennms/rest/web-assets/vendor.min.js"></script>
+  <script type="text/javascript" src="../opennms/rest/web-assets/jquery-js.min.js"></script>
   <script type="text/javascript">
     // Shorthand for 'onload'
     $(function() {
       $.getJSON('js/properties.json', function (json) {
+          var exe = 'opennms-remote-poller-windows-' + json.projectVersion + '.exe';
           // Change all 'version' spans to the correct version
           $('.version').html(json.projectVersion);
+          $('#exe_link').attr('href', exe);
           // Check to see if the installer EXE is present on the system; if so, show the download link. 
           $.ajax({
-            url: 'opennms-remote-poller-windows-' + json.projectVersion + '.exe',
+            url: exe,
             method: 'HEAD',
             error: function()
             {
@@ -72,7 +77,7 @@
    below to get started.
   </p>
   <div style="padding:0px 10px 10px 10px">
-    <h2><a href="webstart/app.jnlp">Remote Poller with GUI</a></h2>
+    <h2><a href="webstart/app.jnlp">Remote Poller</a></h2>
     <p>
       Starts the remote poller with an interactive GUI.  On first start, it will prompt you for authentication credentials 
       and the name of the monitoring location for this remote poller. These values will be stored in a configuration file so 
@@ -82,6 +87,10 @@
     <p>
       Starts the remote poller in the background without a status GUI. You must run the GUI version of the remote poller
       at least once to configure your monitoring location.
+    </p>
+    <h2><a href="webstart/scan-report.jnlp">Remote Poller Scan Report</a></h2>
+    <p>
+      Starts the remote poller in a special scan report mode with an interactive GUI.
     </p>
   </div>
   <p style="padding:0px 10px 10px 10px">
@@ -104,9 +113,16 @@
       The following installer package can be used to register the Java Web Start version of the remote poller as a Windows service.
     </p>
     <div id="download-local" class="download-link">
-      <span>&#x25BC; <a href="opennms-remote-poller-windows-1.13.0-SNAPSHOT.exe" style="color:#FFFF88;">OpenNMS Remote Poller Installer</a></span>
-      <p>Windows 2000, XP, 2003, Vista, 2008, 7, 8, 2012</p>
-      <p>Version <span class="version">Unknown</span></p>
+      <div style="display:inline-block">
+        <i class="fa fa-download fa-fw fa-3x"></i>
+      </div>
+      <div style="display:inline-block">
+        <a id="exe_link" href="opennms-remote-poller-windows.exe" style="text-decoration:none;color:white">
+          <p style="color:#FFFF88;">OpenNMS Remote Poller Installer</p>
+          <p>Windows Vista, 2008, 7, 8, 2012, 10, 2016</p>
+          <p>Version <span class="version">Unknown</span></p>
+        </a>
+      </div>
     </div>
     <div id="download-unavailable" class="download-link unavailable">
       <span>The Windows installer is not available for download.</span>

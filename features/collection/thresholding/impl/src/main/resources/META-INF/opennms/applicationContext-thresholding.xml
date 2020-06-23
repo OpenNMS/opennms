@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+    <context:annotation-config/>
+    <tx:annotation-driven/>
+
+    <bean name="thresholdingSetPersister" class="org.opennms.netmgt.threshd.DefaultThresholdingSetPersister"/>
+
+    <onmsgi:reference id="blobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore" />
+    <bean name="thresholdStateMonitor" class="org.opennms.netmgt.threshd.BlobStoreAwareMonitor">
+        <constructor-arg ref="blobStore"/>
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.threshd.api.ThresholdStateMonitor" ref="thresholdStateMonitor"/>
+
+    <bean id="thresholdingService" class="org.opennms.netmgt.threshd.ThresholdingServiceImpl">
+        <property name="thresholdingSetPersister" ref="thresholdingSetPersister"/>
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.threshd.api.ThresholdingService" ref="thresholdingService"/>
+
+</beans>

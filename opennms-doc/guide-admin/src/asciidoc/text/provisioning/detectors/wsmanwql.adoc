@@ -1,0 +1,70 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== WS-Man WQL Detector
+
+The WS-Management WQL detector attempts to connect to the agent defined in `wsman-config.xml` and issues a WQL query.
+If the query successfully returns one or more items, the service is marked as detected. The WS-Man WQL detector can be used to define arbitrary services based on WQL filter results.
+
+===== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.wsman.WsManWQLDetector`
+|===
+
+===== Configuration and Usage
+
+.Parameters for the <DETECTOR-NAME-HERE>
+[options="header, autowidth"]
+|===
+| Parameter      | Description                                                                                        | Required | Default value
+| `resourceUri`  | A resourceUri consists of a prefix and a path to a resource.                                       | yes      | `http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*`
+| `wql`          | A query using the WQL filter dialect                                                               | yes      | `none`
+| `serviceName`  | A custom service name to identify this service                                                     | no       | `WsManWQLService`
+|===
+
+===== Examples
+
+Example detector configuration:
+
+[source, xml]
+----
+<detector name="WinRM" class="org.opennms.netmgt.provision.detector.wsman.WsManWQLDetector">
+   <parameter key="resourceUri" value="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*"/>
+   <parameter key="serviceName" value="WinRM"/>
+   <parameter key="wql" value="select Name,Status from Win32_Service where Name = 'WinRM' and StartMode='Auto' and Status = 'OK'"/>
+</detector>
+----
+
+The response is logged as _DEBUG_ information in `provisiond.log` and looks like the following:
+
+[source, xml]
+----
+ID: 167
+Response-Code: 200
+Encoding: UTF-8
+Content-Type: application/soap+xml;charset=UTF-8
+Headers: {Content-Length=[975], content-type=[application/soap+xml;charset=UTF-8], Date=[Thu, 02 Aug 2018 20:34:33 GMT], Server=[Microsoft-HTTPAPI/2.0]
+Payload: <s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:n="http://schemas.xmlsoap.org/ws/2004/09/enumeration" xmlns:w="http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd" xml:lang="en-US">
+  <s:Header>
+    <a:Action>http://schemas.xmlsoap.org/ws/2004/09/enumeration/EnumerateResponse</a:Action>
+    <a:MessageID>uuid:2298892C-575F-4722-82F6-C77F9E8B1A4F</a:MessageID>
+    <a:To>http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous</a:To>
+    <a:RelatesTo>urn:uuid:3c63e4d5-890c-4706-854b-876bf3b35b99</a:RelatesTo>
+  </s:Header>
+  <s:Body>
+    <n:EnumerateResponse>
+      <n:EnumerationContext/>
+      <w:Items>
+        <w:XmlFragment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:w="http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd" xmlns:m="http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd">
+          <Name>WinRM</Name>
+          <Status>OK</Status>
+        </w:XmlFragment>
+      </w:Items>
+      <w:EndOfSequence/>
+    </n:EnumerateResponse>
+  </s:Body>
+</s:Envelope>
+----

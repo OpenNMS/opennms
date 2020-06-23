@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,11 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author brozow
- *
  */
 public class SnmpTableResult implements RowResultFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpTableResult.class);
 
     private final RowCallback m_callback;
     private final SnmpObjId[] m_columns;
@@ -57,7 +60,7 @@ public class SnmpTableResult implements RowResultFactory {
         m_columns = columns;
         m_rowResultFactory = (rowResultFactory == null ? this : rowResultFactory);
 
-        m_finishedColumns = new ArrayList<SnmpObjId>();
+        m_finishedColumns = new ArrayList<>();
         m_pendingData = new TreeMap<SnmpInstId,SnmpRowResult>();
     }
     
@@ -65,9 +68,6 @@ public class SnmpTableResult implements RowResultFactory {
         return m_columns.length;
     }
 
-    /**
-     * @param result
-     */
     void storeResult(SnmpResult result) {
         SnmpInstId instId = result.getInstance();
         if ( !m_pendingData.containsKey( instId ) ) {
@@ -99,8 +99,13 @@ public class SnmpTableResult implements RowResultFactory {
         if (lastInstance != null || isFinished()) {
             Iterator<SnmpInstId> i = m_pendingData.keySet().iterator();
             while (i.hasNext()) {
-                SnmpInstId key = i.next();
-                m_callback.rowCompleted(m_pendingData.get(key));
+                final SnmpInstId key = i.next();
+                final SnmpRowResult pendingData = m_pendingData.get(key);
+                try {
+                    m_callback.rowCompleted(pendingData);
+                } catch (final Exception e) {
+                    LOG.warn("Failed to handle completed SNMP table row {}: {}", key, pendingData, e);
+                }
                 i.remove();
                 if (key.equals(lastInstance)) {
                     break;
@@ -109,14 +114,11 @@ public class SnmpTableResult implements RowResultFactory {
         }
     }
 
-    void tableFinished() {
+    public void tableFinished() {
         setFinished(true);
         handleCompleteRows();
     }
 
-    /**
-     * @param base
-     */
     public void columnFinished(SnmpObjId columnId) {
         m_finishedColumns.add(columnId);
         handleCompleteRows();

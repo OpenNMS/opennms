@@ -1,0 +1,140 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:sec="http://www.springframework.org/schema/security"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+
+<!--
+     Example context for performing single sign-on (SSO) in an Active
+     Directory environment, where Kerberos is the authentication source
+     and LDAP group membership is used to grant roles to authenticated
+     users.  Access to the LDAP directory is also Kerberized, so it is
+     not necessary to store a plaintext password for a bind user.
+
+     If the user's browser supports SPNEGO and is configured to accept
+     it for the server, no interactive login should be required. As a
+     fallback, form-based authentication with Kerberos credentials is
+     used.
+
+     Note that changes to the top-level applicationContext-spring-security.xml
+     file are necessary when using this configuration. Specifically:
+
+     * In the <http> element for the '/**' pattern, replace the reference to
+       loginUrlAuthenticationEntryPoint with one to spnegoEntryPoint
+
+     * In the same <http> element, add the following element before the
+       <http-basic /> element:
+
+       <custom-filter ref="spnegoAuthenticationProcessingFilter" before="BASIC_AUTH_FILTER" />
+
+     * Instead of uncommenting the reference to externalAuthenticationProvider, add
+       the following elements after the reference to hybridAuthenticationProvider:
+
+       <authentication-provider ref="kerberosAuthenticationProvider" />
+       <authentication-provider ref="kerberosServiceAuthenticationProvider" />
+-->
+  
+  <bean id="kerberosAuthenticationProvider"
+    class="org.opennms.web.springframework.security.KerberosLdapAuthenticationProvider">
+    <property name="kerberosClient">
+      <bean class="org.springframework.security.kerberos.authentication.sun.SunJaasKerberosClient">
+        <property name="debug" value="true"/>
+      </bean>
+    </property>
+    <property name="ldapUserSearch" ref="kerberosLdapUserSearch"/>
+    <property name="ldapAuthoritiesPopulator" ref="kerberosUserGroupLdapAuthoritiesPopulator"/>
+  </bean>
+
+  <bean id="kerberosServiceAuthenticationProvider"
+    class="org.opennms.web.springframework.security.KerberosServiceLdapAuthenticationProvider">
+    <property name="ticketValidator">
+      <bean
+        class="org.springframework.security.kerberos.authentication.sun.SunJaasKerberosTicketValidator">
+        <!-- Name of the Kerberos service principal designated for the OpenNMS webapp -->
+        <property name="servicePrincipal" value="HTTP/opennms.example.org@EXAMPLE.ORG" />
+        <!-- Location of the Kerberos keytab file. Must be of the form file:/path/to/keytab -->
+        <property name="keyTabLocation" value="file:/opt/opennms/etc/HTTP_opennms.example.org.keytab" />
+        <property name="debug" value="true" />
+      </bean>
+    </property>
+    <property name="ldapUserSearch" ref="kerberosLdapUserSearch"/>
+    <property name="ldapAuthoritiesPopulator" ref="kerberosUserGroupLdapAuthoritiesPopulator"/>
+  </bean>
+
+  <bean id="spnegoEntryPoint"
+    class="org.springframework.security.kerberos.web.authentication.SpnegoEntryPoint" >
+    <constructor-arg value="/login.jsp" />
+  </bean>
+
+  <bean id="spnegoAuthenticationProcessingFilter"
+    class="org.springframework.security.kerberos.web.authentication.SpnegoAuthenticationProcessingFilter">
+    <property name="authenticationManager" ref="authenticationManager" />
+  </bean>
+
+  <bean id="kerberosLdapContextSource"
+    class="org.springframework.security.kerberos.client.ldap.KerberosLdapContextSource">
+    <constructor-arg>
+      <list>
+        <!-- List one or more of your LDAP servers here -->
+        <value>ldap://adc1.example.org:389/</value>
+        <value>ldap://adc2.example.org:389/</value>
+      </list>
+    </constructor-arg>
+    <!-- Base DN for LDAP searches. Every group below is relative to this. -->
+    <constructor-arg value="dc=example,dc=org" />
+    <property name="loginConfig" ref="ldapLoginConfig" />
+  </bean>
+
+  <bean id="ldapLoginConfig"
+    class="org.springframework.security.kerberos.client.config.SunJaasKrb5LoginConfig">
+    <!-- Name of the Kerberos service principal designated for the OpenNMS webapp -->
+    <property name="servicePrincipal" value="HTTP/opennms.example.org@EXAMPLE.ORG" />
+    <!-- Location of the Kerberos keytab file. Must be of the form file:/path/to/keytab -->
+    <property name="keyTabLocation" value="file:/opt/opennms/etc/HTTP_opennms.example.org.keytab" />
+    <property name="debug" value="true" />
+    <property name="isInitiator" value="true" />
+  </bean>
+
+  <bean id="kerberosLdapUserSearch" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
+    <!-- Search base for looking up users in the LDAP directory -->
+    <constructor-arg index="0" value="ou=Users,ou=Accounts" />
+    <!-- Search filter for user lookups -->
+    <constructor-arg index="1" value="(sAMAccountName={0})" />
+    <constructor-arg index="2" ref="kerberosLdapContextSource" />
+    <property name="searchSubtree" value="true" />
+  </bean>
+
+  <bean id="kerberosUserGroupLdapAuthoritiesPopulator" class="org.opennms.web.springframework.security.UserGroupLdapAuthoritiesPopulator">
+    <constructor-arg ref="kerberosLdapContextSource" />
+    <!-- Search base for looking up groups in the LDAP directory -->
+    <constructor-arg value="ou=Groups,ou=Accounts" />
+    <property name="searchSubtree" value="true" />
+    <property name="convertToUpperCase" value="true" />
+    <property name="groupRoleAttribute" value="cn" />
+    <!-- Search filter for groups -->
+    <property name="groupSearchFilter" value="member={0}" />
+    <property name="groupToRoleMap">
+      <map>
+        <entry>
+          <!-- Name of the LDAP group for normal (non-admin) OpenNMS users -->
+          <key><value>opennms_users</value></key>
+          <list>
+            <value>ROLE_USER</value>
+            <!-- <value>ROLE_DASHBOARD</value> -->
+          </list>
+        </entry>
+        <entry>
+          <!-- Name of the LDAP group for OpenNMS administrators -->
+          <key><value>opennms_admins</value></key>
+          <list>
+            <value>ROLE_USER</value>
+            <value>ROLE_ADMIN</value>
+          </list>
+        </entry>
+      </map>
+    </property>
+  </bean>
+
+</beans>

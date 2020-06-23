@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,30 +38,26 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
-
+import net.sf.json.JSONSerializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.jxpath.JXPathContext;
+import org.apache.commons.jxpath.JXPathException;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.lang.StringUtils;
-
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
-import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.config.collector.AttributeGroupType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler;
 import org.opennms.protocols.xml.collector.UrlFactory;
-import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
-import org.opennms.protocols.xml.collector.XmlCollectionResource;
-import org.opennms.protocols.xml.collector.XmlCollectionSet;
-import org.opennms.protocols.xml.collector.XmlCollectorException;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
 import org.opennms.protocols.xml.config.XmlSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +81,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
      * @throws ParseException the parse exception
      */
     @SuppressWarnings("unchecked")
-    protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, JSONObject json) throws ParseException {
+    protected void fillCollectionSet(CollectionAgent agent, CollectionSetBuilder builder, XmlSource source, JSONObject json) throws ParseException {
         JXPathContext context = JXPathContext.newContext(json);
         for (XmlGroup group : source.getXmlGroups()) {
             LOG.debug("fillCollectionSet: getting resources for XML group {} using XPATH {}", group.getName(), group.getResourceXpath());
@@ -94,16 +90,20 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
             while (itr.hasNext()) {
                 JXPathContext relativeContext = context.getRelativeContext(itr.next());
                 String resourceName = getResourceName(relativeContext, group);
-                LOG.debug("fillCollectionSet: processing XML resource {}", resourceName);
-                XmlCollectionResource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
-                AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
+                LOG.debug("fillCollectionSet: processing XML resource {} of type {}", resourceName, group.getResourceType());
+                final Resource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
+                LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
                 for (XmlObject object : group.getXmlObjects()) {
-                    String value = (String) relativeContext.getValue(object.getXpath());
-                    XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
-                    collectionResource.setAttributeValue(attribType, value);
+                    try {
+                        Object obj = relativeContext.getValue(object.getXpath());
+                        if (obj != null) {
+                            builder.withAttribute(collectionResource, group.getName(), object.getName(), obj.toString(), object.getDataType());
+                        }
+                    } catch (JXPathException ex) {
+                        LOG.warn("Unable to get value for {}: {}", object.getXpath(), ex.getMessage());
+                    }
                 }
-                processXmlResource(collectionResource, attribGroupType);
-                collectionSet.getCollectionResources().add(collectionResource);
+                processXmlResource(builder, collectionResource, resourceName, group.getName());
             }
         }
     }
@@ -118,7 +118,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
     private String getResourceName(JXPathContext context, XmlGroup group) {
         // Processing multiple-key resource name.
         if (group.hasMultipleResourceKey()) {
-            List<String> keys = new ArrayList<String>();
+            List<String> keys = new ArrayList<>();
             for (String key : group.getXmlResourceKey().getKeyXpathList()) {
                 LOG.debug("getResourceName: getting key for resource's name using {}", key);
                 String keyName = (String)context.getValue(key);
@@ -132,8 +132,7 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
         }
         // Processing single-key resource name.
         LOG.debug("getResourceName: getting key for resource's name using {}", group.getKeyXpath());
-        String keyName = (String)context.getValue(group.getKeyXpath());
-        return keyName;
+        return (String)context.getValue(group.getKeyXpath());
     }
 
     /**
@@ -167,23 +166,34 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
      * @param urlString the URL string
      * @param request the request
      * @return the JSON object
+     * @throws Exception the exception
      */
-    protected JSONObject getJSONObject(String urlString, Request request) {
+    protected JSONObject getJSONObject(String urlString, Request request) throws Exception {
         InputStream is = null;
+        URLConnection c = null;
         try {
             URL url = UrlFactory.getUrl(urlString, request);
-            URLConnection c = url.openConnection();
+            c = url.openConnection();
             is = c.getInputStream();
             StringWriter writer = new StringWriter();
             IOUtils.copy(is, writer);
-            JSONObject jsonObject = JSONObject.fromObject(writer.toString());
-            UrlFactory.disconnect(c);
-            return jsonObject;
-        } catch (Exception e) {
-            throw new XmlCollectorException(e.getMessage(), e);
+
+            return wrapArray(JSONSerializer.toJSON(writer.toString()));
+
         } finally {
             IOUtils.closeQuietly(is);
+            UrlFactory.disconnect(c);
         }
     }
 
+    protected static JSONObject wrapArray(final JSON json) {
+        if (json.isArray()) {
+            final JSONObject wrapper = new JSONObject();
+            wrapper.put("elements", json);
+            return wrapper;
+
+        } else {
+            return (JSONObject) json;
+        }
+    }
 }

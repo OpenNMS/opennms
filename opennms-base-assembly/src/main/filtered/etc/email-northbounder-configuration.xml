@@ -1,0 +1,20 @@
+<email-northbounder-config>
+   <enabled>false</enabled>
+   <nagles-delay>1000</nagles-delay>
+   <batch-size>100</batch-size>
+   <queue-size>300000</queue-size>
+   <destination>
+      <name>google</name><!-- Have to match the name of a sendmail-config's entry on javamail-configuration.xml -->
+      <filter name="Only Servers">
+         <rule>foreignSource matches '^Servers.*'</rule>
+      </filter>
+      <filter name="Only Routers">
+         <rule>foreignSource matches '^Routers.*'</rule>
+         <!-- To override the sendmail-message from selected sendmail-config -->
+         <from>donotreply@domain.com</from>
+         <to>tarus@opennms.org, jeff@opennms.org</to>
+         <subject>${nodeLabel} : Something is wrong!</subject>
+         <body>${logMsg} - ${description}</body>
+      </filter>
+   </destination>
+</email-northbounder-config>

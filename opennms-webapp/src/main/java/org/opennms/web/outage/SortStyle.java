@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -42,17 +42,21 @@ import org.springframework.util.Assert;
  */
 public enum SortStyle {
     NODE("node"),
+    FOREIGNSOURCE("foreignsource"),
     INTERFACE("interface"),
     SERVICE("service"),
     IFLOSTSERVICE("iflostservice"),
     IFREGAINEDSERVICE("ifregainedservice"),
     ID("id"),
+    LOCATION("location"),
     REVERSE_NODE("rev_node"),
+    REVERSE_FOREIGNSOURCE("rev_foreignsource"),
     REVERSE_INTERFACE("rev_interface"),
     REVERSE_SERVICE("rev_service"),
     REVERSE_IFLOSTSERVICE("rev_iflostservice"),
     REVERSE_IFREGAINEDSERVICE("rev_ifregainedservice"),
-    REVERSE_ID("rev_id");
+    REVERSE_ID("rev_id"),
+    REVERSE_LOCATION("rev_location");
 
     /** Constant <code>DEFAULT_SORT_STYLE</code> */
     public static final SortStyle DEFAULT_SORT_STYLE = SortStyle.ID;
@@ -129,6 +133,12 @@ public enum SortStyle {
         case REVERSE_NODE:
             clause = " ORDER BY NODELABEL DESC";
             break;
+        case FOREIGNSOURCE:
+            clause = " ORDER BY FOREIGNSOURCE ASC";
+            break;
+        case REVERSE_FOREIGNSOURCE:
+            clause = " ORDER BY FOREIGNSOURCE DESC";
+            break;
         case INTERFACE:
             clause = " ORDER BY IPADDR ASC";
             break;
@@ -158,6 +168,12 @@ public enum SortStyle {
             break;
         case REVERSE_ID:
             clause = " ORDER BY OUTAGEID ASC";
+            break;
+        case LOCATION:
+            clause = " ORDER BY LOCATION DESC";
+            break;
+        case REVERSE_LOCATION:
+            clause = " ORDER BY LOCATION ASC";
             break;
         default:
             throw new IllegalArgumentException("Unknown SortStyle: " + this);

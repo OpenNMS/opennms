@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<poller-configuration threads="30" 
+                      serviceUnresponsiveEnabled="false"> 
+  <node-outage status="on">
+    <critical-service name="ICMP" />
+  </node-outage>
+  
+  <package name="MapQuest">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <rrd step="60">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <service name="MQ_API_DirectRte_v2" interval="60000" user-defined="false" status="on">
+      <parameter key="sequence-retry" value="10"/>
+      <parameter key="timeout" value="5000"/>
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+      <parameter key="rrd-base-name" value="MQ_API_DirectRte_v2"/>
+      <parameter key="ds-name" value="MQ_API_DirectRte_v2"/>
+      <parameter key="page-sequence">
+        <page-sequence>
+          <page path="/directions/v2/route" port="80"
+            user-agent="Papa Johns Network Operations Center"
+            method="GET" host="www.mapquestapi.com"
+            virtual-host="www.mapquestapi.com"
+            successMatch="S English Station" failureMessage="Proper response from MapQuest Geocoding API not received">
+            <parameter key="key" value="Gmjtd|luubnuu7nd,r2=o5-lz15l"/>
+            <parameter key="inFormat" value="json"/>
+            <parameter key="json" value="{&quot;locations&quot;:[{&quot;latLng&quot;:{&quot;lng&quot;:-85.488576,&quot;lat&quot;:38.238977},&quot;postalCode&quot;:&quot;40245-3907&quot;,&quot;county&quot;:&quot;Jefferson&quot;,&quot;street&quot;:&quot;14041 Shelbyville Rd&quot;,&quot;state&quot;:&quot;KY&quot;,&quot;country&quot;:&quot;US&quot;,&quot;city&quot;:&quot;Louisville&quot;},{&quot;latLng&quot;:{&quot;lng&quot;:-85.496119,&quot;lat&quot;:38.228311},&quot;postalCode&quot;:&quot;40245-3910&quot;,&quot;county&quot;:&quot;Jefferson&quot;,&quot;street&quot;:&quot;700 S English Station Rd&quot;,&quot;state&quot;:&quot;KY&quot;,&quot;country&quot;:&quot;US&quot;,&quot;city&quot;:&quot;Louisville&quot;},{&quot;latLng&quot;:{&quot;lng&quot;:-85.488576,&quot;lat&quot;:38.238977},&quot;postalCode&quot;:&quot;40245-3907&quot;,&quot;county&quot;:&quot;Jefferson&quot;,&quot;street&quot;:&quot;14041 Shelbyville Rd&quot;,&quot;state&quot;:&quot;KY&quot;,&quot;country&quot;:&quot;US&quot;,&quot;city&quot;:&quot;Louisville&quot;}],&quot;options&quot;:{&quot;doReverseGeocode&quot;:false,&quot;routeType&quot;:&quot;fastest&quot;,&quot;generalize&quot;:0,&quot;narrativeType&quot;:&quot;text&quot;,&quot;locale&quot;:&quot;en_US&quot;}}"/>
+          </page>
+        </page-sequence>
+      </parameter>
+    </service>
+    <downtime interval="300000" begin="0" end="432000000"/><!-- 5m, 0, 5d -->
+    <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
+  </package>
+
+  <monitor service="MQ_API_DirectRte_v2" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor"/>
+</poller-configuration>

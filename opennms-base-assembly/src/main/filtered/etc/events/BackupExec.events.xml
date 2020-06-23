@@ -1,317 +1,317 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.1.9</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/beNTLoaded</uei>
-        <event-label>Backup-Exec-MIB defined trap event: beNTLoaded</event-label>
-        <descr>&lt;p&gt;The application has started.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;appInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: The Backup Exec services are starting on server %parm[#2]%.&lt;/p&gt;</logmsg>
-        <severity>Normal</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.1.9</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>2</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/beNTUnloaded</uei>
-        <event-label>Backup-Exec-MIB defined trap event: beNTUnloaded</event-label>
-        <descr>&lt;p&gt;The application has stopped.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;appInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: The Backup Exec services are terminating on server %parm[#2]%.&lt;/p&gt;</logmsg>
-        <severity>Normal</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.2.8</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/jobFailure</uei>
-        <event-label>Backup-Exec-MIB defined trap event: jobFailure</event-label>
-        <descr>&lt;p&gt;The Job failed.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;additionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest="logndisplay">&lt;p&gt;Backup Exec: Job %parm[#3]% on server %parm[#2]% failed. Additional text %parm[#4]%.&lt;/p&gt;</logmsg>
-        <severity>Major</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.2.8</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>2</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/jobAborted</uei>
-        <event-label>Backup-Exec-MIB defined trap event: jobAborted</event-label>
-        <descr>&lt;p&gt;The Job was aborted.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;operatorName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: Job %parm[#3]% on server %parm[#2]% was cancelled by user %parm[#4]%.&lt;/p&gt;</logmsg>
-        <severity>Minor</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.2.8</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>3</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/jobSuccess</uei>
-        <event-label>Backup-Exec-MIB defined trap event: jobSuccess</event-label>
-        <descr>&lt;p&gt;The Job succeeded.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;additionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: Job %parm[#3]% on server %parm[#2]% completed successfully. Additional text %parm[#4]%.&lt;/p&gt;</logmsg>
-        <severity>Normal</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.2.8</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>4</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/jobSuccessExcept</uei>
-        <event-label>Backup-Exec-MIB defined trap event: jobSuccessExcept</event-label>
-        <descr>&lt;p&gt;The Job succeeded, but there was a problem.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;additionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: jobSuccessExcept trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p&gt;</logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.2.8</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>5</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/jobStarted</uei>
-        <event-label>Backup-Exec-MIB defined trap event: jobStarted</event-label>
-        <descr>&lt;p&gt;The Job has started.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;additionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: jobStarted trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p&gt;</logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.4.1.1</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/multipleTapesNeeded</uei>
-        <event-label>Backup-Exec-MIB defined trap event: multipleTapesNeeded</event-label>
-        <descr>&lt;p&gt;Media for Low Administration Backup jobs will need to be replaced more frequently.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;additionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: multipleTapesNeeded trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p&gt;</logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.4.1.1</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>2</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/retriedAutomatically</uei>
-        <event-label>Backup-Exec-MIB defined trap event: retriedAutomatically</event-label>
-        <descr>&lt;p&gt;The failed Low Administration Backup job has caused an additional medium to be used. The Low Administration media group will need to be replaced sooner than scheduled.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;additionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: retriedAutomatically trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p&gt;</logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.4.2.1</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/copyDRFile</uei>
-        <event-label>Backup-Exec-MIB defined trap event: copyDRFile</event-label>
-        <descr>&lt;p&gt;Disaster Recovery is not complete. Update the Disaster Recovery diskettes or manually copy Disaster Recovery file, (servername).dr, found in the Disaster Recovery directory, to the alternate path.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;additionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: copyDRFile trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p&gt;</logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.4.2.1</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>2</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/fullBackupComplete</uei>
-        <event-label>Backup-Exec-MIB defined trap event: fullBackupComplete</event-label>
-        <descr>&lt;p&gt;Disaster Recovery has completed a full backup. It is necessary now to update the disaster recovery disks in order to keep them current.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;additionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: fullBackupComplete trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p&gt;</logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.4.3.1</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/ofoFailed</uei>
-        <event-label>Backup-Exec-MIB defined trap event: ofoFailed</event-label>
-        <descr>&lt;p&gt;The Open File Option was unable to backup the selected volume.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;additionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: ofoFailed trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p&gt;</logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.1.4.3.1</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>2</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/ofoCouldNotInit</uei>
-        <event-label>Backup-Exec-MIB defined trap event: ofoCouldNotInit</event-label>
-        <descr>&lt;p&gt;The Open File Option was unable to initialize. The volume is being backed up using normal backup methods.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;additionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: ofoCouldNotInit trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p&gt;</logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.2.4.3</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>3</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/loaderNeedsAttention</uei>
-        <event-label>Backup-Exec-MIB defined trap event: loaderNeedsAttention</event-label>
-        <descr>&lt;p&gt;Loader needs human intervention.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;additionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: The loader needs attention on server %parm[#2]% while processing job %parm[#3]%. Additional text %parm[#4]%.&lt;/p&gt;</logmsg>
-        <severity>Minor</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.1302.3.2.5.3</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>3</mevalue>
-            </maskelement>
-        </mask>
-        <uei>http://uei.opennms.org/vendor/BackupExec/traps/driveNeedsAttention</uei>
-        <event-label>Backup-Exec-MIB defined trap event: driveNeedsAttention</event-label>
-        <descr>&lt;p&gt;Tape drive needs human intervention.&lt;/p&gt;&lt;table&gt; &lt;tr&gt;&lt;td&gt;&lt;b&gt;messageText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;serverName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;jobName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;additionalText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt; </descr>
-        <logmsg dest='logndisplay'>&lt;p&gt;Backup Exec: driveNeedsAttention trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p&gt;</logmsg>
-        <severity>Indeterminate</severity>
-    </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.1.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/beNTLoaded</uei>
+      <event-label>Backup-Exec-MIB defined trap event: beNTLoaded</event-label>
+      <descr>&lt;p>The application has started.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>appInfo&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: The Backup Exec services are starting on server %parm[#2]%.&lt;/p></logmsg>
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.1.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/beNTUnloaded</uei>
+      <event-label>Backup-Exec-MIB defined trap event: beNTUnloaded</event-label>
+      <descr>&lt;p>The application has stopped.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>appInfo&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: The Backup Exec services are terminating on server %parm[#2]%.&lt;/p></logmsg>
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.2.8</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/jobFailure</uei>
+      <event-label>Backup-Exec-MIB defined trap event: jobFailure</event-label>
+      <descr>&lt;p>The Job failed.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>additionalText&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: Job %parm[#3]% on server %parm[#2]% failed. Additional text %parm[#4]%.&lt;/p></logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.2.8</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/jobAborted</uei>
+      <event-label>Backup-Exec-MIB defined trap event: jobAborted</event-label>
+      <descr>&lt;p>The Job was aborted.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>operatorName&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: Job %parm[#3]% on server %parm[#2]% was cancelled by user %parm[#4]%.&lt;/p></logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.2.8</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/jobSuccess</uei>
+      <event-label>Backup-Exec-MIB defined trap event: jobSuccess</event-label>
+      <descr>&lt;p>The Job succeeded.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>additionalText&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: Job %parm[#3]% on server %parm[#2]% completed successfully. Additional text %parm[#4]%.&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.2.8</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/jobSuccessExcept</uei>
+      <event-label>Backup-Exec-MIB defined trap event: jobSuccessExcept</event-label>
+      <descr>&lt;p>The Job succeeded, but there was a problem.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>additionalText&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: jobSuccessExcept trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.2.8</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/jobStarted</uei>
+      <event-label>Backup-Exec-MIB defined trap event: jobStarted</event-label>
+      <descr>&lt;p>The Job has started.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>additionalText&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: jobStarted trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.4.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/multipleTapesNeeded</uei>
+      <event-label>Backup-Exec-MIB defined trap event: multipleTapesNeeded</event-label>
+      <descr>&lt;p>Media for Low Administration Backup jobs will need to be replaced more frequently.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>additionalText&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: multipleTapesNeeded trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.4.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/retriedAutomatically</uei>
+      <event-label>Backup-Exec-MIB defined trap event: retriedAutomatically</event-label>
+      <descr>&lt;p>The failed Low Administration Backup job has caused an additional medium to be used. The Low Administration media group will need to be replaced sooner than scheduled.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>additionalText&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: retriedAutomatically trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.4.2.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/copyDRFile</uei>
+      <event-label>Backup-Exec-MIB defined trap event: copyDRFile</event-label>
+      <descr>&lt;p>Disaster Recovery is not complete. Update the Disaster Recovery diskettes or manually copy Disaster Recovery file, (servername).dr, found in the Disaster Recovery directory, to the alternate path.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>additionalText&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: copyDRFile trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.4.2.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/fullBackupComplete</uei>
+      <event-label>Backup-Exec-MIB defined trap event: fullBackupComplete</event-label>
+      <descr>&lt;p>Disaster Recovery has completed a full backup. It is necessary now to update the disaster recovery disks in order to keep them current.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>additionalText&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: fullBackupComplete trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.4.3.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/ofoFailed</uei>
+      <event-label>Backup-Exec-MIB defined trap event: ofoFailed</event-label>
+      <descr>&lt;p>The Open File Option was unable to backup the selected volume.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>additionalText&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: ofoFailed trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.1.4.3.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/ofoCouldNotInit</uei>
+      <event-label>Backup-Exec-MIB defined trap event: ofoCouldNotInit</event-label>
+      <descr>&lt;p>The Open File Option was unable to initialize. The volume is being backed up using normal backup methods.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>additionalText&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: ofoCouldNotInit trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.2.4.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/loaderNeedsAttention</uei>
+      <event-label>Backup-Exec-MIB defined trap event: loaderNeedsAttention</event-label>
+      <descr>&lt;p>Loader needs human intervention.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>additionalText&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: The loader needs attention on server %parm[#2]% while processing job %parm[#3]%. Additional text %parm[#4]%.&lt;/p></logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1302.3.2.5.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/BackupExec/traps/driveNeedsAttention</uei>
+      <event-label>Backup-Exec-MIB defined trap event: driveNeedsAttention</event-label>
+      <descr>&lt;p>Tape drive needs human intervention.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b>messageText&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>serverName&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>jobName&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>additionalText&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Backup Exec: driveNeedsAttention trap received messageText=%parm[#1]% serverName=%parm[#2]% jobName=%parm[#3]% additionalText=%parm[#4]%&lt;/p></logmsg>
+      <severity>Minor</severity>
+   </event>
 </events>

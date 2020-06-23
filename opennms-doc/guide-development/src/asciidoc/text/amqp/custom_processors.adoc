@@ -1,0 +1,62 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+=== Custom Processors
+
+If your integration requires specific filtering and or formatting, you can write your own processor by implementing the `org.apache.camel.Processor` interface.
+
+For example, we can implement a custom processor used for event forwarding:
+
+[source,java]
+----
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+
+public class MyEventProcessor implements Processor {
+    @Override
+    public void process(final Exchange exchange) throws Exception {
+        final Event event = exchange.getIn().getBody(Event.class);
+
+        // Filtering
+        if (!shouldForward(event)) {
+            exchange.setProperty(Exchange.ROUTE_STOP, Boolean.TRUE);
+            return;
+        }
+
+        // Transforming
+        MyDTO eventAsDTO = toDTO(event);
+        exchange.getIn().setBody(eventAsDTO, MyDTO.class);
+    }
+}
+----
+
+In order to use the processor, package it as a bundle, and expose it to the OSGi service registry using:
+
+[source,xml]
+----
+<bean id="myEventProcessor" class="org.opennms.integrations.evilcorp.MyEventProcessor" />
+
+<service id="myEventProcessorService" ref="myEventProcessor" interface="org.apache.camel.Processor">
+  <service-properties>
+    <entry key="name" value="evilcorp-event-forwarder-processor"/>
+  </service-properties>
+</service>
+----
+
+Once your bundle in the Karaf container, you can update the loaded you can refer to your processor with:
+
+[source]
+----
+config:edit org.opennms.features.amqp.eventforwarder
+config:property-set processorName evilcorp-event-forwarder-processor
+config:update
+----
+
+If the event forwarder feature was already started, it should automatically restart and start using the new processor.
+Otherwise, you can start the feature with:
+
+[source]
+----
+feature:install opennms-amqp-event-forwarder
+----

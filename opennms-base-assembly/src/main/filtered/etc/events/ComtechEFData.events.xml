@@ -1,28 +1,26 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: CDM-625 -->
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>1</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625UnitAlarm</uei>
-    <event-label>CDM-625 defined trap event: cdm625UnitAlarm</event-label>
-    <descr>
-&lt;p&gt;Modem Unit Faults Trap&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625UnitAlarm</uei>
+      <event-label>CDM-625 defined trap event: cdm625UnitAlarm</event-label>
+      <descr>&lt;p>Modem Unit Faults Trap&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cdm625UnitAlarms&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	cdm625UnitAlarms&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		noFaults(0)
 		powerSupply5volts(1)
 		powerSupply12volts(2)
@@ -43,60 +41,58 @@
 		txDCMFail(17)
 		overTemperature(18)
 		pktpMailbox(19)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-    <logmsg dest="logndisplay">&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 	cdm625UnitAlarm trap received
-	cdm625UnitAlarms=%parm[#1]%&lt;/p&gt;
+	cdm625UnitAlarms=%parm[#1]%&lt;/p>
 	</logmsg>
-    <severity>Indeterminate</severity>
-    <varbindsdecode>
-      <parmid>parm[#1]</parmid>
-      <decode varbinddecodedstring="noFaults" varbindvalue="0"/>
-      <decode varbinddecodedstring="powerSupply5volts" varbindvalue="1"/>
-      <decode varbinddecodedstring="powerSupply12volts" varbindvalue="2"/>
-      <decode varbinddecodedstring="powerSupplyNeg5volts" varbindvalue="3"/>
-      <decode varbinddecodedstring="powerSupply3point3volts" varbindvalue="4"/>
-      <decode varbinddecodedstring="powerSupplyNeg12volts" varbindvalue="5"/>
-      <decode varbinddecodedstring="powerSupply2point5volts" varbindvalue="6"/>
-      <decode varbinddecodedstring="topCardComms" varbindvalue="7"/>
-      <decode varbinddecodedstring="txSynthesizerLock" varbindvalue="8"/>
-      <decode varbinddecodedstring="rxSynthesizerLock" varbindvalue="9"/>
-      <decode varbinddecodedstring="topCardLoadFail" varbindvalue="10"/>
-      <decode varbinddecodedstring="tpcFPGALoadFail" varbindvalue="11"/>
-      <decode varbinddecodedstring="hdlcFPGALoadFail" varbindvalue="12"/>
-      <decode varbinddecodedstring="cincFPGALoadFail" varbindvalue="13"/>
-      <decode varbinddecodedstring="versaFECFPGALoadFail" varbindvalue="14"/>
-      <decode varbinddecodedstring="calibrationDataMissing" varbindvalue="15"/>
-      <decode varbinddecodedstring="refUnlocked" varbindvalue="16"/>
-      <decode varbinddecodedstring="txDCMFail" varbindvalue="17"/>
-      <decode varbinddecodedstring="overTemperature" varbindvalue="18"/>
-      <decode varbinddecodedstring="pktpMailbox" varbindvalue="19"/>
-    </varbindsdecode>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>2</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625TxTrafficAlarm</uei>
-    <event-label>CDM-625 defined trap event: cdm625TxTrafficAlarm</event-label>
-    <descr>
-&lt;p&gt;Modem TX Traffic Faults Trap&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="noFaults"/>
+         <decode varbindvalue="1" varbinddecodedstring="powerSupply5volts"/>
+         <decode varbindvalue="2" varbinddecodedstring="powerSupply12volts"/>
+         <decode varbindvalue="3" varbinddecodedstring="powerSupplyNeg5volts"/>
+         <decode varbindvalue="4" varbinddecodedstring="powerSupply3point3volts"/>
+         <decode varbindvalue="5" varbinddecodedstring="powerSupplyNeg12volts"/>
+         <decode varbindvalue="6" varbinddecodedstring="powerSupply2point5volts"/>
+         <decode varbindvalue="7" varbinddecodedstring="topCardComms"/>
+         <decode varbindvalue="8" varbinddecodedstring="txSynthesizerLock"/>
+         <decode varbindvalue="9" varbinddecodedstring="rxSynthesizerLock"/>
+         <decode varbindvalue="10" varbinddecodedstring="topCardLoadFail"/>
+         <decode varbindvalue="11" varbinddecodedstring="tpcFPGALoadFail"/>
+         <decode varbindvalue="12" varbinddecodedstring="hdlcFPGALoadFail"/>
+         <decode varbindvalue="13" varbinddecodedstring="cincFPGALoadFail"/>
+         <decode varbindvalue="14" varbinddecodedstring="versaFECFPGALoadFail"/>
+         <decode varbindvalue="15" varbinddecodedstring="calibrationDataMissing"/>
+         <decode varbindvalue="16" varbinddecodedstring="refUnlocked"/>
+         <decode varbindvalue="17" varbinddecodedstring="txDCMFail"/>
+         <decode varbindvalue="18" varbinddecodedstring="overTemperature"/>
+         <decode varbindvalue="19" varbinddecodedstring="pktpMailbox"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625TxTrafficAlarm</uei>
+      <event-label>CDM-625 defined trap event: cdm625TxTrafficAlarm</event-label>
+      <descr>&lt;p>Modem TX Traffic Faults Trap&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cdm625TxAlarms&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	cdm625TxAlarms&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		txTrafficOK(0)
 		noClockFromTerrestrialInterface(1)
 		txFIFOSlip(2)
@@ -105,48 +101,46 @@
 		noExternalRef(5)
 		bucSummaryAlarm(6)
 		g703lossOfSignal(7)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-    <logmsg dest="logndisplay">&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 	cdm625TxTrafficAlarm trap received
-	cdm625TxAlarms=%parm[#1]%&lt;/p&gt;
+	cdm625TxAlarms=%parm[#1]%&lt;/p>
 	</logmsg>
-    <severity>Indeterminate</severity>
-    <varbindsdecode>
-      <parmid>parm[#1]</parmid>
-      <decode varbinddecodedstring="txTrafficOK" varbindvalue="0"/>
-      <decode varbinddecodedstring="noClockFromTerrestrialInterface" varbindvalue="1"/>
-      <decode varbinddecodedstring="txFIFOSlip" varbindvalue="2"/>
-      <decode varbinddecodedstring="aisDetectedOnIncomingData" varbindvalue="3"/>
-      <decode varbinddecodedstring="aupcUpperLimitReached" varbindvalue="4"/>
-      <decode varbinddecodedstring="noExternalRef" varbindvalue="5"/>
-      <decode varbinddecodedstring="bucSummaryAlarm" varbindvalue="6"/>
-      <decode varbinddecodedstring="g703lossOfSignal" varbindvalue="7"/>
-    </varbindsdecode>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>3</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625RxTrafficAlarm</uei>
-    <event-label>CDM-625 defined trap event: cdm625RxTrafficAlarm</event-label>
-    <descr>
-&lt;p&gt;Modem RX Traffic Faults Trap&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="txTrafficOK"/>
+         <decode varbindvalue="1" varbinddecodedstring="noClockFromTerrestrialInterface"/>
+         <decode varbindvalue="2" varbinddecodedstring="txFIFOSlip"/>
+         <decode varbindvalue="3" varbinddecodedstring="aisDetectedOnIncomingData"/>
+         <decode varbindvalue="4" varbinddecodedstring="aupcUpperLimitReached"/>
+         <decode varbindvalue="5" varbinddecodedstring="noExternalRef"/>
+         <decode varbindvalue="6" varbinddecodedstring="bucSummaryAlarm"/>
+         <decode varbindvalue="7" varbinddecodedstring="g703lossOfSignal"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625RxTrafficAlarm</uei>
+      <event-label>CDM-625 defined trap event: cdm625RxTrafficAlarm</event-label>
+      <descr>&lt;p>Modem RX Traffic Faults Trap&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cdm625RxAlarms&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	cdm625RxAlarms&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		rxTrafficOK(0)
 		demodulatorUnlocked(1)
 		agcAlarmSignalOutOfRange(2)
@@ -158,51 +152,49 @@
 		bufferClockActivity(8)
 		lnbSummaryAlarm(9)
 		qdiDeframerUnlocked(10)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-    <logmsg dest="logndisplay">&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 	cdm625RxTrafficAlarm trap received
-	cdm625RxAlarms=%parm[#1]%&lt;/p&gt;
+	cdm625RxAlarms=%parm[#1]%&lt;/p>
 	</logmsg>
-    <severity>Indeterminate</severity>
-    <varbindsdecode>
-      <parmid>parm[#1]</parmid>
-      <decode varbinddecodedstring="rxTrafficOK" varbindvalue="0"/>
-      <decode varbinddecodedstring="demodulatorUnlocked" varbindvalue="1"/>
-      <decode varbinddecodedstring="agcAlarmSignalOutOfRange" varbindvalue="2"/>
-      <decode varbinddecodedstring="frameSync" varbindvalue="3"/>
-      <decode varbinddecodedstring="spare" varbindvalue="4"/>
-      <decode varbinddecodedstring="bufferSlip" varbindvalue="5"/>
-      <decode varbinddecodedstring="aisDetectedOnIncomingData" varbindvalue="6"/>
-      <decode varbinddecodedstring="ebNoAlarm" varbindvalue="7"/>
-      <decode varbinddecodedstring="bufferClockActivity" varbindvalue="8"/>
-      <decode varbinddecodedstring="lnbSummaryAlarm" varbindvalue="9"/>
-      <decode varbinddecodedstring="qdiDeframerUnlocked" varbindvalue="10"/>
-    </varbindsdecode>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>4</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625OpenNetworkAlarm</uei>
-    <event-label>CDM-625 defined trap event: cdm625OpenNetworkAlarm</event-label>
-    <descr>
-&lt;p&gt;Modem Open Network Faults Trap&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="rxTrafficOK"/>
+         <decode varbindvalue="1" varbinddecodedstring="demodulatorUnlocked"/>
+         <decode varbindvalue="2" varbinddecodedstring="agcAlarmSignalOutOfRange"/>
+         <decode varbindvalue="3" varbinddecodedstring="frameSync"/>
+         <decode varbindvalue="4" varbinddecodedstring="spare"/>
+         <decode varbindvalue="5" varbinddecodedstring="bufferSlip"/>
+         <decode varbindvalue="6" varbinddecodedstring="aisDetectedOnIncomingData"/>
+         <decode varbindvalue="7" varbinddecodedstring="ebNoAlarm"/>
+         <decode varbindvalue="8" varbinddecodedstring="bufferClockActivity"/>
+         <decode varbindvalue="9" varbinddecodedstring="lnbSummaryAlarm"/>
+         <decode varbindvalue="10" varbinddecodedstring="qdiDeframerUnlocked"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625OpenNetworkAlarm</uei>
+      <event-label>CDM-625 defined trap event: cdm625OpenNetworkAlarm</event-label>
+      <descr>&lt;p>Modem Open Network Faults Trap&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cdm625OpenNetworkAlarms&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	cdm625OpenNetworkAlarms&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		noFaults(0)
 		lossOfTxFrame(1)
 		berAlarm(2)
@@ -218,155 +210,147 @@
 		idrTxBWA2(12)
 		idrTxBWA3(13)
 		idrTxBWA4(14)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-    <logmsg dest="logndisplay">&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 	cdm625OpenNetworkAlarm trap received
-	cdm625OpenNetworkAlarms=%parm[#1]%&lt;/p&gt;
+	cdm625OpenNetworkAlarms=%parm[#1]%&lt;/p>
 	</logmsg>
-    <severity>Indeterminate</severity>
-    <varbindsdecode>
-      <parmid>parm[#1]</parmid>
-      <decode varbinddecodedstring="noFaults" varbindvalue="0"/>
-      <decode varbinddecodedstring="lossOfTxFrame" varbindvalue="1"/>
-      <decode varbinddecodedstring="berAlarm" varbindvalue="2"/>
-      <decode varbinddecodedstring="lossOfTxMultiframe" varbindvalue="3"/>
-      <decode varbinddecodedstring="txSignalingAIS" varbindvalue="4"/>
-      <decode varbinddecodedstring="txRemoteAlarm" varbindvalue="5"/>
-      <decode varbinddecodedstring="lbsSatelliteAlarm" varbindvalue="6"/>
-      <decode varbinddecodedstring="idrRxBWA1" varbindvalue="7"/>
-      <decode varbinddecodedstring="idrRxBWA2" varbindvalue="8"/>
-      <decode varbinddecodedstring="idrRxBWA3" varbindvalue="9"/>
-      <decode varbinddecodedstring="idrRxBWA4" varbindvalue="10"/>
-      <decode varbinddecodedstring="idrTxBWA1" varbindvalue="11"/>
-      <decode varbinddecodedstring="idrTxBWA2" varbindvalue="12"/>
-      <decode varbinddecodedstring="idrTxBWA3" varbindvalue="13"/>
-      <decode varbinddecodedstring="idrTxBWA4" varbindvalue="14"/>
-    </varbindsdecode>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>5</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625BUCAlarm</uei>
-    <event-label>CDM-625 defined trap event: cdm625BUCAlarm</event-label>
-    <descr>
-&lt;p&gt;BUC Faults Trap&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="noFaults"/>
+         <decode varbindvalue="1" varbinddecodedstring="lossOfTxFrame"/>
+         <decode varbindvalue="2" varbinddecodedstring="berAlarm"/>
+         <decode varbindvalue="3" varbinddecodedstring="lossOfTxMultiframe"/>
+         <decode varbindvalue="4" varbinddecodedstring="txSignalingAIS"/>
+         <decode varbindvalue="5" varbinddecodedstring="txRemoteAlarm"/>
+         <decode varbindvalue="6" varbinddecodedstring="lbsSatelliteAlarm"/>
+         <decode varbindvalue="7" varbinddecodedstring="idrRxBWA1"/>
+         <decode varbindvalue="8" varbinddecodedstring="idrRxBWA2"/>
+         <decode varbindvalue="9" varbinddecodedstring="idrRxBWA3"/>
+         <decode varbindvalue="10" varbinddecodedstring="idrRxBWA4"/>
+         <decode varbindvalue="11" varbinddecodedstring="idrTxBWA1"/>
+         <decode varbindvalue="12" varbinddecodedstring="idrTxBWA2"/>
+         <decode varbindvalue="13" varbinddecodedstring="idrTxBWA3"/>
+         <decode varbindvalue="14" varbinddecodedstring="idrTxBWA4"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625BUCAlarm</uei>
+      <event-label>CDM-625 defined trap event: cdm625BUCAlarm</event-label>
+      <descr>&lt;p>BUC Faults Trap&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cdm625BUCAlarms&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	cdm625BUCAlarms&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		noFaults(0)
 		bucCurrent(1)
 		bucVoltage(2)
 		bucNoComms(4)
 		bucPLL(5)
 		bucTemperature(6)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-    <logmsg dest="logndisplay">&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 	cdm625BUCAlarm trap received
-	cdm625BUCAlarms=%parm[#1]%&lt;/p&gt;
+	cdm625BUCAlarms=%parm[#1]%&lt;/p>
 	</logmsg>
-    <severity>Indeterminate</severity>
-    <varbindsdecode>
-      <parmid>parm[#1]</parmid>
-      <decode varbinddecodedstring="noFaults" varbindvalue="0"/>
-      <decode varbinddecodedstring="bucCurrent" varbindvalue="1"/>
-      <decode varbinddecodedstring="bucVoltage" varbindvalue="2"/>
-      <decode varbinddecodedstring="bucNoComms" varbindvalue="4"/>
-      <decode varbinddecodedstring="bucPLL" varbindvalue="5"/>
-      <decode varbinddecodedstring="bucTemperature" varbindvalue="6"/>
-    </varbindsdecode>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625LNBAlarm</uei>
-    <event-label>CDM-625 defined trap event: cdm625LNBAlarm</event-label>
-    <descr>
-&lt;p&gt;LNB Faults Trap&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="noFaults"/>
+         <decode varbindvalue="1" varbinddecodedstring="bucCurrent"/>
+         <decode varbindvalue="2" varbinddecodedstring="bucVoltage"/>
+         <decode varbindvalue="4" varbinddecodedstring="bucNoComms"/>
+         <decode varbindvalue="5" varbinddecodedstring="bucPLL"/>
+         <decode varbindvalue="6" varbinddecodedstring="bucTemperature"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625LNBAlarm</uei>
+      <event-label>CDM-625 defined trap event: cdm625LNBAlarm</event-label>
+      <descr>&lt;p>LNB Faults Trap&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cdm625LNBAlarms&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	cdm625LNBAlarms&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		noFaults(0)
 		lnbCurrent(1)
 		lnbVoltage(2)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-    <logmsg dest="logndisplay">&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 	cdm625LNBAlarm trap received
-	cdm625LNBAlarms=%parm[#1]%&lt;/p&gt;
+	cdm625LNBAlarms=%parm[#1]%&lt;/p>
 	</logmsg>
-    <severity>Indeterminate</severity>
-    <varbindsdecode>
-      <parmid>parm[#1]</parmid>
-      <decode varbinddecodedstring="noFaults" varbindvalue="0"/>
-      <decode varbinddecodedstring="lnbCurrent" varbindvalue="1"/>
-      <decode varbinddecodedstring="lnbVoltage" varbindvalue="2"/>
-    </varbindsdecode>
-  </event>
-  <event>
-    <mask>
-      <maskelement>
-        <mename>id</mename>
-        <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>generic</mename>
-        <mevalue>6</mevalue>
-      </maskelement>
-      <maskelement>
-        <mename>specific</mename>
-        <mevalue>7</mevalue>
-      </maskelement>
-    </mask>
-    <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625RedundancyStateTrap</uei>
-    <event-label>CDM-625 defined trap event: cdm625RedundancyStateTrap</event-label>
-    <descr>
-&lt;p&gt;Redundancy State (Online / Offline) Trap&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="noFaults"/>
+         <decode varbindvalue="1" varbinddecodedstring="lnbCurrent"/>
+         <decode varbindvalue="2" varbinddecodedstring="lnbVoltage"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6247.34.2.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Comtech_EF_Data/traps/DTMX5000/cdm625RedundancyStateTrap</uei>
+      <event-label>CDM-625 defined trap event: cdm625RedundancyStateTrap</event-label>
+      <descr>&lt;p>Redundancy State (Online / Offline) Trap&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cdm625RedundancyState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	cdm625RedundancyState&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		offline(0)
 		online(1)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-    <logmsg dest="logndisplay">&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 	cdm625RedundancyStateTrap trap received
-	cdm625RedundancyState=%parm[#1]%&lt;/p&gt;
+	cdm625RedundancyState=%parm[#1]%&lt;/p>
 	</logmsg>
-    <severity>Indeterminate</severity>
-    <varbindsdecode>
-      <parmid>parm[#1]</parmid>
-      <decode varbinddecodedstring="offline" varbindvalue="0"/>
-      <decode varbinddecodedstring="online" varbindvalue="1"/>
-    </varbindsdecode>
-  </event>
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="offline"/>
+         <decode varbindvalue="1" varbinddecodedstring="online"/>
+      </varbindsdecode>
+   </event>
 </events>
-<!-- End of auto generated data from MIB: CDM-625 -->

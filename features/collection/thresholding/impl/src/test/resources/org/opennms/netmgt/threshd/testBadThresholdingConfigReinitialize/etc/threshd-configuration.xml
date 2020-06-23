@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<threshd-configuration threads="5">
+
+   <package name="example1">
+       <filter>IPADDR IPLIKE *.*.*.*</filter>
+       <specific>127.0.0.1</specific>
+       <specific>fe80:0000:0000:0000:ffff:eeee:dddd:cccc</specific>
+
+       <service name="SNMP" interval="3000" user-defined="false" status="on">
+           <parameter key="thresholding-group" value="mib2"/>
+       </service>
+
+       <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+       <outage-calendar>junit outage</outage-calendar>
+   </package>
+
+</threshd-configuration>

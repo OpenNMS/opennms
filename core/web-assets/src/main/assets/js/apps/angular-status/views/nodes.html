@@ -1,0 +1,51 @@
+<div ng-controller="NodeStatusController">
+    <filter-controls>
+        <!-- Additional strategy controls -->
+        <div class="btn-group ml-2">
+            <button type="button" ng-click="setStrategy('alarms')" class="btn btn-secondary {{query.strategy === 'alarms' ? 'active' : ''}}" title="Calculate status based on unacknowledged alarms">Alarms</button>
+            <button type="button" ng-click="setStrategy('outages')" class="btn btn-secondary {{query.strategy === 'outages' ? 'active' : ''}}" title="Calculate status base on current outages">Outages</button>
+        </div>
+    </filter-controls>
+    <pagination model="query" class="mt-4">
+        <div class="">
+            <table class="table table-bordered severity">
+                <tbody>
+                <tr>
+                    <th>
+                        <a href ng-click="changeOrderBy('severity')">Severity</a>
+                        <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                        <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                    </th>
+                    <th>
+                        <a href ng-click="changeOrderBy('label')">Node Label</a>
+                        <i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                        <i ng-show="query.orderBy === 'label' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                    </th>
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+
+                <tr ng-repeat="item in items" class="severity-{{item.severity | lowercase}}">
+                    <td class="divider bright">
+                        {{item['severity'] | severity}}
+                    </td>
+                    <td>
+                        <a href="element/node.jsp?node={{item['id']}}">
+                            {{item['name']}}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="outage/list?outtype=current&filter=node={{item['id']}}" ng-show="item.severity != 'NORMAL' && query.strategy === 'outages'">
+                            <i class="fa fa-external-link-square"></i> View Outages
+                        </a>
+                        <a href="alarm/list?sortby=lasteventtime&acktype=unack&filter=node={{item['id']}}" ng-show="item.severity != 'NORMAL' && query.strategy === 'alarms'">
+                            <i class="fa fa-external-link-square"></i> View Alarms
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </pagination>
+</div>

@@ -6,14 +6,14 @@
 
     <parent>
         <groupId>org.opennms</groupId>
-        <artifactId>container</artifactId>
-        <version>1.13.0-SNAPSHOT</version>
+        <artifactId>org.opennms.container</artifactId>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
     <artifactId>web</artifactId>
     <packaging>war</packaging>
-    <name>OpenNMS OSGi Container - Web</name>
+    <name>OpenNMS :: OSGi Container :: Web</name>
 
     <properties>
         <jetty.port>8080</jetty.port>
@@ -38,16 +38,16 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.main</artifactId>
-            <version>4.0.3</version>
+            <version>4.4.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.http.proxy</artifactId>
-            <version>${felixVersion}</version>
+            <version>${felixProxyVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
-            <artifactId>karaf</artifactId>
+            <artifactId>org.opennms.container.karaf</artifactId>
             <version>${project.version}</version>
             <type>tar.gz</type>
             <scope>provided</scope>
@@ -78,6 +78,9 @@
                             <descriptors>
                                 <descriptor>src/assembly/web.xml</descriptor>
                             </descriptors>
+                            <overrideUid>0</overrideUid>
+                            <overrideGid>0</overrideGid>
+                            <tarLongFileMode>posix</tarLongFileMode>
                         </configuration>
                     </execution>
                 </executions>

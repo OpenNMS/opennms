@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,7 +31,6 @@ package org.opennms.netmgt.snmp.joesnmp;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.snmp.TrapNotificationListener;
-import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduTrap;
@@ -40,12 +39,10 @@ import org.opennms.protocols.snmp.SnmpTrapSession;
 
 public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
     
-    private TrapProcessorFactory m_trapProcessorFactory;
     private TrapNotificationListener m_listener;
 
-    public JoeSnmpTrapNotifier(TrapNotificationListener listener, TrapProcessorFactory factory) {
+    public JoeSnmpTrapNotifier(TrapNotificationListener listener) {
         m_listener = listener;
-        m_trapProcessorFactory = factory;
     }
 
     /**
@@ -69,7 +66,7 @@ public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
     @Override
     public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
             int port, SnmpOctetString community, SnmpPduPacket pdu) {
-        m_listener.trapReceived(new V2TrapInformation(agent, new String(community.getString()), pdu, m_trapProcessorFactory.createTrapProcessor()));
+        m_listener.trapReceived(new V2TrapInformation(agent, new String(community.getString()), pdu));
     }
     
     /**
@@ -93,7 +90,7 @@ public class JoeSnmpTrapNotifier implements SnmpTrapHandler {
     @Override
     public void snmpReceivedTrap(SnmpTrapSession session, InetAddress agent,
             int port, SnmpOctetString community, SnmpPduTrap pdu) {
-        m_listener.trapReceived(new V1TrapInformation(agent, new String(community.getString()), pdu, m_trapProcessorFactory.createTrapProcessor()));
+        m_listener.trapReceived(new V1TrapInformation(agent, new String(community.getString()), pdu));
     }
     
     /**

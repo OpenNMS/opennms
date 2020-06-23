@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -37,6 +37,13 @@ public class BoundingBox{
     public BoundingBox() {
         
     }
+    
+    public BoundingBox(BoundingBox box) {
+        m_left = box.m_left;
+        m_right = box.m_right;
+        m_top = box.m_top;
+        m_bottom = box.m_bottom;
+    }
 
     public BoundingBox(int x, int y, int width, int height) {
         m_left = x;
@@ -46,8 +53,8 @@ public class BoundingBox{
     }
     
     public BoundingBox(Point center, int width, int height) {
-        m_left = center.getX() - width /2 ;
-        m_top = center.getY() - height /2;
+        m_left = (int)center.getX() - width /2 ;
+        m_top = (int)center.getY() - height /2;
         m_right = m_left + width;
         m_bottom = m_top + height;
     }
@@ -69,20 +76,21 @@ public class BoundingBox{
     }
 
     public void addPoint(Point location) {
-        m_left = Math.min(m_left, location.getX());
-        m_right = Math.max(m_right, location.getX());
-        m_top = Math.min(m_top,  location.getY());
-        m_bottom = Math.max(m_bottom, location.getY());
+        //TODO cast to int for now
+        m_left = Math.min(m_left, (int)location.getX());
+        m_right = Math.max(m_right, (int)location.getX());
+        m_top = Math.min(m_top,  (int)location.getY());
+        m_bottom = Math.max(m_bottom, (int)location.getY());
     }
     
     public Point getCenter() {
-        Point p = new Point(getX() + (getWidth()/2), getY() + (getHeight()/2));
-        return p;
+    	return new Point(getX() + (getWidth()/2), getY() + (getHeight()/2));
     }
     
     public void setCenter(Point center) {
-        m_left = center.getX() - getWidth()/2;
-        m_top = center.getY() - getHeight()/2; 
+        //TODO cast to int for now
+        m_left = (int)center.getX() - getWidth()/2;
+        m_top = (int)center.getY() - getHeight()/2;
     }
     
     public BoundingBox computeWithAspectRatio(double R) {
@@ -90,8 +98,9 @@ public class BoundingBox{
         int width =  (int) (r < R ? Math.round(getHeight() * R ): getWidth());
         int height = (int) (r < R ? getHeight() : Math.round(getWidth() / R));
         Point center = getCenter();
-        int x = center.getX() - width/2;
-        int y = center.getY() - height/2;
+        //TODO cast to int for now
+        int x = (int)center.getX() - width/2;
+        int y = (int)center.getY() - height/2;
         return new BoundingBox(x, y, width, height);
     }
 

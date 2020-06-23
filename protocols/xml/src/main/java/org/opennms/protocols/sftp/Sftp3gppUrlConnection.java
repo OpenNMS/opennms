@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,10 +58,11 @@ import com.jcraft.jsch.SftpException;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class Sftp3gppUrlConnection extends SftpUrlConnection {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppUrlConnection.class);
 
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(Sftp3gppUrlConnection.class);
 
+    /** The URL properties map. */
     private Map<String,String> m_urlProperties;
 
     /**
@@ -136,7 +136,7 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         }
 
         // Processing 3GPP File Type A (NE Mode)
-        StringBuffer sb = new StringBuffer("A");
+        final StringBuilder sb = new StringBuilder("A");
         sb.append(datef.format(new Date(timestamp)));
         sb.append(".");
         sb.append(timef.format(new Date(timestamp-step)));
@@ -180,7 +180,7 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
             m_urlProperties = new HashMap<String,String>();
             if (url.getQuery() != null) {
                 for (String pair : url.getQuery().split("&")) {
-                    String data[] = pair.split("=");
+                    String[] data = pair.split("=");
                     m_urlProperties.put(data[0].toLowerCase(), data[1]);
                 }
             }
@@ -197,8 +197,8 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
      */
     @SuppressWarnings("unchecked")
     public List<String> getFileList() throws SftpException, IOException {
-        List<String> files = new ArrayList<String>();
-        Vector<LsEntry> entries = getChannel().ls(url.getPath());
+        List<String> files = new ArrayList<>();
+        List<LsEntry> entries = getChannel().ls(url.getPath());
         for (LsEntry entry : entries) {
             if (entry.getFilename().startsWith("."))
                 continue;

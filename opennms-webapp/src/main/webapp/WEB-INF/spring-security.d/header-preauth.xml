@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+  xmlns:beans="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+  <!-- This filter will pre-authenticate the user if the servlet request has the specified HTTP header set.
+       NOTE: THIS IS A HUGE SECURITY RISK IF NOT CONFIGURED CORRECTLY!  ONLY ENABLE THIS WITH A PROXY THAT SETS THE HEADERS UNCONDITIONALLY!
+       Make sure your OpenNMS instance is:
+         a) not reachable from the outside except through the proxy
+         b) not able to receive the header if a malicious user passes it on their request
+  -->
+  <beans:bean id="headerPreAuthFilter" class="org.opennms.web.springframework.security.RequestHeaderPreAuthenticationProcessingFilter">
+    <beans:property name="enabled" value="false" />
+    <beans:property name="failOnError" value="false" />
+    <beans:property name="userHeader" value="X-Remote-User" />
+    <beans:property name="credentialsHeader" value="" />
+    <beans:property name="authenticationManager" ref="authenticationManager" />
+  </beans:bean>
+
+</beans:beans>

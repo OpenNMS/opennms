@@ -5,22 +5,32 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
-
   <properties>
     <bundle.symbolicName>org.opennms.features.topology.shell</bundle.symbolicName>
     <bundle.namespace>org.opennms.features.topology.shell</bundle.namespace>
   </properties>
-
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.topology</groupId>
-  <artifactId>shell</artifactId>
-
-  <name>${bundle.symbolicName}</name>
-
+  <artifactId>org.opennms.features.topology.shell</artifactId>
+  <name>OpenNMS :: Features :: Topology :: Shell Commands</name>
   <packaging>bundle</packaging>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Karaf-Commands>*</Karaf-Commands>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <!--
      | uncomment to add all imported (non-local) bundles to your compilation classpath
@@ -33,13 +43,24 @@
     -->
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
-      <artifactId>api</artifactId>
+      <artifactId>org.opennms.features.topology.api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
-      <artifactId>org.apache.karaf.shell.console</artifactId>
+      <artifactId>org.apache.karaf.shell.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.aries.blueprint</groupId>
+      <artifactId>org.apache.aries.blueprint.core</artifactId>
+      <version>1.4.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

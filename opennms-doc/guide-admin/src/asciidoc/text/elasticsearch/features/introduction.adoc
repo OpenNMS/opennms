@@ -1,0 +1,28 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== Feature Matrix
+
+The following features leverage _Elasticsearch_ and are compatible with version 7.x.x.
+
+|===
+| Name | Enabled by default | Feature
+
+| Event and Alarm Forwarder
+| no
+| `opennms-es-rest`
+
+| Flow Support
+| yes
+| `opennms-flows`
+
+| Situation Feedback (ALEC)
+| no
+| `opennms-situation-feedback`
+
+| Alarm History
+| yes
+| `opennms-alarm-history-elastic`
+
+|===

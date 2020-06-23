@@ -7,10 +7,10 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.correlation.drools.Affliction.Type;
-import org.drools.spi.KnowledgeHelper;
+import org.drools.core.spi.KnowledgeHelper;
 
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
@@ -24,24 +24,25 @@ rule "first service lost event received"
 		$e : Event( uei == EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
 		not( Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName ) )
 	then
-		Affliction $aff = new Affliction( $nodeid, $ipAddr, $svcName, locationMonitor( $e ) );
-		println( "Affliction detected by monitor " + locationMonitor( $e ) + " for nodeId = " + $nodeid + ": " + $aff );
+		Affliction $aff = new Affliction( $nodeid, $ipAddr, $svcName, findLocationMonitor( $e ) );
+		println( "Affliction detected by monitor " + findLocationMonitor( $e ) + " for nodeId = " + $nodeid + ": " + $aff );
 		retract( $e );
 		insert( $aff );
-		insert( createFlap( engine, $nodeid, $ipAddr, $svcName, locationMonitor( $e ), FLAP_INTERVAL ) );
+		insert( createFlap( engine, $nodeid, $ipAddr, $svcName, findLocationMonitor( $e ), FLAP_INTERVAL ) );
 end
 
 rule "service lost detected by additional monitor"
 	salience 100
 	when
 		$e : Event( uei == EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
-		$aff: Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, $reporters : reporters -> ( !$reporters.contains( locationMonitor( $e ) ) ) )
+		$aff: Affliction(nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, $reporters : reporters, reporters not contains findLocationMonitor($e) )
+                
 	then
-		$aff.addReporter( locationMonitor( $e ) );
+		$aff.addReporter( findLocationMonitor( $e ) );
 		retract( $e );
 		update( $aff );
-		insert( createFlap( engine, $nodeid, $ipAddr, $svcName, locationMonitor( $e ), FLAP_INTERVAL ) );
-		println(" Added reporter " + locationMonitor( $e ) + " to affliction " + $aff);
+		insert( createFlap( engine, $nodeid, $ipAddr, $svcName, findLocationMonitor( $e ), FLAP_INTERVAL ) );
+		println(" Added reporter " + findLocationMonitor( $e ) + " to affliction " + $aff);
 end
 
 rule "wide spread affliction"
@@ -57,15 +58,15 @@ end
 rule "affliction resolved for one monitor"
 	when
 		$e : Event( uei == EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
-		$aff: Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, $reporters : reporters -> ( $reporters.contains( locationMonitor( $e ) ) ) ) 
-		$flap: Flap( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, endTime == null, locationMonitor == ( locationMonitor( $e ) ) )
+		$aff: Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, $reporters : reporters, reporters contains findLocationMonitor($e) )
+                $flap: Flap( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, endTime == null, locationMonitor == findLocationMonitor( $e ) )
 	then
-		$aff.removeReporter( locationMonitor( $e ) );
+		$aff.removeReporter( findLocationMonitor( $e ) );
 		$flap.setEndTime( new Date() );
 		update( $aff );
 		update( $flap );
 		retract( $e );
-		println(" Monitor " + locationMonitor( $e ) + " has reported up for afflication " + $aff );
+		println(" Monitor " + findLocationMonitor( $e ) + " has reported up for afflication " + $aff );
 end
 
 rule "create flap count for flap if it doesn't exist"
@@ -158,10 +159,10 @@ function void sendServiceFlappingEvent(DroolsCorrelationEngine engine, Long node
 }
 
 function Flap createFlap(DroolsCorrelationEngine engine, Long nodeid, String ipAddr, String svcName, Integer locationMonitor, Long flapInterval) {
-		return new Flap( nodeid, ipAddr, svcName, locationMonitor, engine.setTimer( flapInterval ) );
+    return new Flap( nodeid, ipAddr, svcName, locationMonitor, engine.setTimer( flapInterval ) );
 }
 
-function Integer locationMonitor( Event e ) {
+function Integer findLocationMonitor( Event e ) {
 	return new Integer( EventUtils.getIntParm( e, EventConstants.PARM_LOCATION_MONITOR_ID, -1 ) );
 }
 

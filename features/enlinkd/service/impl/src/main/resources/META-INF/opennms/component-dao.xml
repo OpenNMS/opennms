@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi
+           http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <context:annotation-config />
+
+    <bean id="nodeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.NodeTopologyServiceImpl">
+      <property name="nodeDao" ref="nodeDao" />
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.NodeTopologyService" ref="nodeTopologyService" />
+
+    <bean id="userDefinedLinkTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.UserDefinedLinkTopologyServiceImpl">
+        <property name="topologyEntityCache" ref="topologyEntityCache" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.UserDefinedLinkTopologyService" ref="userDefinedLinkTopologyService" />
+
+    <bean id="bridgeTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.BridgeTopologyServiceImpl">
+        <property name="bridgeElementDao" ref="bridgeElementDao" />
+        <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
+        <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
+        <property name="bridgeStpLinkDao" ref="bridgeStpLinkDao" />
+        <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
+        <property name="topologyEntityCache" ref="topologyEntityCache" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.BridgeTopologyService" ref="bridgeTopologyService" />
+
+    <bean id="ipNetToMediaTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.IpNetToMediaTopologyServiceImpl">
+        <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
+        <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.IpNetToMediaTopologyService" ref="ipNetToMediaTopologyService" />
+        
+   <bean id="cdpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.CdpTopologyServiceImpl">
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
+      <property name="cdpLinkDao" ref="cdpLinkDao" />
+      <property name="cdpElementDao" ref="cdpElementDao" />
+   </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.CdpTopologyService" ref="cdpTopologyService" />
+
+   <bean id="isisTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.IsisTopologyServiceImpl">
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
+      <property name="isisLinkDao" ref="isisLinkDao" />
+      <property name="isisElementDao" ref="isisElementDao" />
+   </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.IsisTopologyService" ref="isisTopologyService" />
+
+   <bean id="lldpTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.LldpTopologyServiceImpl">
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
+      <property name="lldpLinkDao" ref="lldpLinkDao" />
+      <property name="lldpElementDao" ref="lldpElementDao" />
+   </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.LldpTopologyService" ref="lldpTopologyService" />
+   
+   <bean id="ospfTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.OspfTopologyServiceImpl">
+      <property name="topologyEntityCache" ref="topologyEntityCache" />
+      <property name="ospfLinkDao" ref="ospfLinkDao" />
+      <property name="ospfElementDao" ref="ospfElementDao" />
+   </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.OspfTopologyService" ref="ospfTopologyService" />
+   
+    
+</beans>

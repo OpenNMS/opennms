@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -41,8 +41,10 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.InetAddress;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -55,38 +57,42 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.opennms.bootstrap.Bootstrap;
-import org.opennms.core.db.ConnectionFactoryUtil;
+import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.SimpleDataSource;
-import org.opennms.core.schema.ExistingResourceAccessor;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.schema.Migration;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.ProcessExec;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.icmp.PingerFactory;
+import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
 /*
- * Big To-dos: - Fix all of the XXX items (some coding, some discussion)
+ * TODO:
+ * - Fix all of the XXX items (some coding, some discussion)
  * - Change the Exceptions to something more reasonable
- * - Do exception handling where it makes sense (give users reasonable
- *   error messages for common problems)
+ * - Do exception handling where it makes sense (give users reasonable error messages for common problems)
  * - Javadoc
  */
 
 /**
  * <p>Installer class.</p>
- *
- * @author ranger
- * @version $Id: $
  */
 public class Installer {
 
+	private static final Logger LOG = LoggerFactory.getLogger(Installer.class);
+	
     static final String LIBRARY_PROPERTY_FILE = "libraries.properties";
 
     String m_opennms_home = null;
@@ -104,6 +110,7 @@ public class Installer {
     boolean m_ignore_database_version = false;
     boolean m_do_not_revert = false;
     boolean m_remove_database = false;
+    boolean m_skip_upgrade_tools = false;
 
     String m_etc_dir = "";
     String m_tomcat_conf = null;
@@ -157,12 +164,12 @@ public class Installer {
         	final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
             
             InputStream is = new FileInputStream(cfgFile);
-            final JdbcDataSource adminDsConfig = ConnectionFactoryUtil.marshalDataSourceFromConfig(is, ADMIN_DATA_SOURCE_NAME);
+            final JdbcDataSource adminDsConfig = new DataSourceConfigurationFactory(is).getJdbcDataSource(ADMIN_DATA_SOURCE_NAME);
             final DataSource adminDs = new SimpleDataSource(adminDsConfig);
             is.close();
 
             is = new FileInputStream(cfgFile);
-            final JdbcDataSource dsConfig = ConnectionFactoryUtil.marshalDataSourceFromConfig(is, OPENNMS_DATA_SOURCE_NAME);
+            final JdbcDataSource dsConfig = new DataSourceConfigurationFactory(is).getJdbcDataSource(OPENNMS_DATA_SOURCE_NAME);
             final DataSource ds = new SimpleDataSource(dsConfig);
             is.close();
 
@@ -171,10 +178,8 @@ public class Installer {
             m_installerDb.setNoRevert(m_do_not_revert);
             m_installerDb.setAdminDataSource(adminDs);
             m_installerDb.setPostgresOpennmsUser(dsConfig.getUserName());
-            m_installerDb.setPostgresOpennmsPassword(dsConfig.getPassword());
             m_installerDb.setDataSource(ds);
             m_installerDb.setDatabaseName(dsConfig.getDatabaseName());
-            m_installerDb.setSchemaName(dsConfig.getSchemaName());
 
             m_migrator.setDataSource(ds);
             m_migrator.setAdminDataSource(adminDs);
@@ -186,10 +191,26 @@ public class Installer {
             m_migration.setAdminPassword(adminDsConfig.getPassword());
             m_migration.setDatabaseUser(dsConfig.getUserName());
             m_migration.setDatabasePassword(dsConfig.getPassword());
-            m_migration.setChangeLog("changelog.xml");
+            m_migration.setChangeLog("classpath*:/changelog.xml");
         }
 
         checkIPv6();
+
+        /*
+         * Make sure we can execute the rrdtool binary when the
+         * JniRrdStrategy is enabled.
+         */
+
+        boolean using_jni_rrd_strategy = System.getProperty("org.opennms.rrd.strategyClass", "")
+                .contains("JniRrdStrategy");
+
+        if (using_jni_rrd_strategy) {
+            File rrd_binary = new File(System.getProperty("rrd.binary"));
+            if (!rrd_binary.canExecute()) {
+                throw new Exception("Cannot execute the rrdtool binary '" + rrd_binary.getAbsolutePath()
+                        + "' required by the current RRD strategy. Update the rrd.binary field in opennms.properties appropriately.");
+            }
+        }
 
         /*
          * make sure we can load the ICMP library before we go any farther
@@ -199,9 +220,10 @@ public class Installer {
             String icmp_path = findLibrary("jicmp", m_library_search_path, false);
             String icmp6_path = findLibrary("jicmp6", m_library_search_path, false);
             String jrrd_path = findLibrary("jrrd", m_library_search_path, false);
-            writeLibraryConfig(icmp_path, icmp6_path, jrrd_path);
+            String jrrd2_path = findLibrary("jrrd2", m_library_search_path, false);
+            writeLibraryConfig(icmp_path, icmp6_path, jrrd_path, jrrd2_path);
         }
-        
+
         /*
          * Everything needs to use the administrative data source until we
          * verify that the opennms database is created below (and where we
@@ -236,6 +258,7 @@ public class Installer {
 
         if (doDatabase) {
             m_installerDb.checkUnicode();
+            m_installerDb.checkTime();
         }
         
         handleConfigurationChanges();
@@ -249,7 +272,7 @@ public class Installer {
 
             for (final Resource resource : context.getResources("classpath*:/changelog.xml")) {
                 System.out.println("- Running migration for changelog: " + resource.getDescription());
-                m_migration.setAccessor(new ExistingResourceAccessor(resource));
+                m_migration.setChangeLog(resource);
                 m_migrator.migrate(m_migration);
             }
         }
@@ -289,6 +312,13 @@ public class Installer {
 
         System.out.println();
         System.out.println("Installer completed successfully!");
+
+        if (!m_skip_upgrade_tools) {
+            System.setProperty("opennms.manager.class", "org.opennms.upgrade.support.Upgrade");
+            Bootstrap.main(new String[] {});
+        }
+
+        context.close();
     }
 
 	private void checkIPv6() {
@@ -347,7 +377,9 @@ public class Installer {
      */
     public void createConfiguredFile() throws IOException {
         File f = new File(m_opennms_home + File.separator + "etc" + File.separator + "configured");
-        f.createNewFile();
+        if (!f.createNewFile()) {
+        	LOG.warn("Could not create file: {}", f.getPath());
+        }
     }
 
     /**
@@ -382,10 +414,15 @@ public class Installer {
         m_etc_dir = fetchProperty("install.etc.dir");
         
         loadEtcPropertiesFile("opennms.properties");
-        loadEtcPropertiesFile("model-importer.properties");
+        // Used to retrieve 'org.opennms.rrd.strategyClass'
+        loadEtcPropertiesFile("rrd-configuration.properties");
         
         m_install_servletdir = fetchProperty("install.servlet.dir");
-        m_import_dir = fetchProperty("importer.requisition.dir");
+        try {
+            m_import_dir = fetchProperty("importer.requisition.dir");
+        } catch (Exception e) {
+            m_import_dir = m_opennms_home + File.separator + "etc" + File.separator + "imports";
+        }
 
         final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
 
@@ -504,6 +541,10 @@ public class Installer {
         options.addOption("r", "rpm-install", false,
                           "RPM install (deprecated)");
 
+        // upgrade tools options
+        options.addOption("S", "skip-upgrade-tools", false,
+                "Skip the execution of the upgrade tools (post-processing tasks)");
+
         CommandLineParser parser = new PosixParser();
         m_commandLine = parser.parse(options, argv);
 
@@ -563,12 +604,16 @@ public class Installer {
         m_update_unicode = m_commandLine.hasOption("U");
         m_do_vacuum = m_commandLine.hasOption("v");
         m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
+
         m_installerDb.setDebug(m_commandLine.hasOption("x"));
+        Configurator.setRootLevel(Level.WARN);
         if (m_commandLine.hasOption("x")) {
-        	m_migrator.enableDebug();
+            Configurator.setRootLevel(Level.DEBUG);
         }
+
         m_fix_constraint_remove_rows = m_commandLine.hasOption("X");
         m_install_webapp = m_commandLine.hasOption("y");
+        m_skip_upgrade_tools = m_commandLine.hasOption("S");
 
         if (m_commandLine.getArgList().size() > 0) {
             usage(options, m_commandLine, "Unknown command-line arguments: "
@@ -676,7 +721,7 @@ public class Installer {
      */
     public void checkServerXmlOldOpennmsContext() throws Exception {
         String search_regexp = "(?ms).*<Context\\s+path=\"/opennms\".*";
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
 
         File f = new File(m_webappdir + File.separator + ".."
                 + File.separator + "conf" + File.separator + "server.xml");
@@ -689,7 +734,7 @@ public class Installer {
             return;
         }
 
-        Reader fr = new InputStreamReader(new FileInputStream(f), "UTF-8");
+        Reader fr = new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8);
         BufferedReader r = new BufferedReader(fr);
         String line;
 
@@ -772,20 +817,22 @@ public class Installer {
             throw new Exception("unable to create file: " + destinationFile);
         }
         FileChannel from = null;
+        FileInputStream fisFrom = null;
         FileChannel to = null;
+        FileOutputStream fisTo = null;
         try {
-            from = new FileInputStream(sourceFile).getChannel();
-            to = new FileOutputStream(destinationFile).getChannel();
+            fisFrom = new FileInputStream(sourceFile);
+            from = fisFrom.getChannel();
+            fisTo = new FileOutputStream(destinationFile);
+            to = fisTo.getChannel();
             to.transferFrom(from, 0, from.size());
         } catch (FileNotFoundException e) {
             throw new Exception("unable to copy " + sourceFile + " to " + destinationFile, e);
         } finally {
-            if (from != null) {
-                from.close();
-            }
-            if (to != null) {
-                to.close();
-            }
+            IOUtils.closeQuietly(fisTo);
+            IOUtils.closeQuietly(to);
+            IOUtils.closeQuietly(fisFrom);
+            IOUtils.closeQuietly(from);
         }
         System.out.println("DONE");
     }
@@ -845,8 +892,8 @@ public class Installer {
 
         System.out.print("- setting tomcat4 user to 'root'... ");
 
-        BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
-        StringBuffer b = new StringBuffer();
+        BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8));
+        final StringBuilder b = new StringBuilder();
         String line;
 
         while ((line = r.readLine()) != null) {
@@ -859,8 +906,10 @@ public class Installer {
         }
         r.close();
 
-        f.renameTo(new File(m_tomcat_conf + ".before-opennms-"
-                + System.currentTimeMillis()));
+        if(!f.renameTo(new File(m_tomcat_conf + ".before-opennms-"
+                + System.currentTimeMillis()))) {
+        	LOG.warn("Could not rename file: {}", f.getPath());
+        }
 
         f = new File(m_tomcat_conf);
         PrintWriter w = new PrintWriter(new FileOutputStream(f));
@@ -941,7 +990,10 @@ public class Installer {
      * @throws java.lang.Exception if any.
      */
     public static void main(String[] argv) throws Exception {
+        final Map<String,String> mdc = Logging.getCopyOfContextMap();
+        Logging.putPrefix("install");
         new Installer().install(argv);
+        Logging.setContextMap(mdc);
     }
 
     /**
@@ -978,7 +1030,7 @@ public class Installer {
             return null;
         }
         Pattern p = Pattern.compile("The Tomcat (\\S+) Servlet/JSP Container");
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
         for (int i = 0; i < 5; i++) {
             String line = in.readLine();
             if (line == null) { // EOF
@@ -1008,7 +1060,7 @@ public class Installer {
     public String findLibrary(String libname, String path, boolean isRequired) throws Exception {
         String fullname = System.mapLibraryName(libname);
 
-        ArrayList<String> searchPaths = new ArrayList<String>();
+        ArrayList<String> searchPaths = new ArrayList<>();
 
         if (path != null) {
             for (String entry : path.split(File.pathSeparator)) {
@@ -1025,8 +1077,8 @@ public class Installer {
             for (final Object k : p.keySet()) {
                 String key = (String)k;
                 if (key.startsWith("opennms.library")) {
-                    final String value = p.getProperty(key);
-                    value.replaceAll(File.separator + "[^" + File.separator + "]*$", "");
+                    String value = p.getProperty(key);
+                    value = value.replaceAll(File.separator + "[^" + File.separator + "]*$", "");
                     searchPaths.add(value);
                 }
             }
@@ -1080,7 +1132,7 @@ public class Installer {
         }
 
         if (isRequired) {
-            StringBuffer buf = new StringBuffer();
+            final StringBuilder buf = new StringBuilder();
             for (final String pathEntry : System.getProperty("java.library.path").split(File.pathSeparator)) {
                 buf.append(" ");
                 buf.append(pathEntry);
@@ -1122,7 +1174,7 @@ public class Installer {
      * @param jrrd_path a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
      */
-    public void writeLibraryConfig(final String jicmp_path, final String jicmp6_path, final String jrrd_path)
+    public void writeLibraryConfig(final String jicmp_path, final String jicmp6_path, final String jrrd_path, final String jrrd2_path)
             throws IOException {
         Properties libraryProps = new Properties();
 
@@ -1138,10 +1190,16 @@ public class Installer {
             libraryProps.put("opennms.library.jrrd", jrrd_path);
         }
 
+        if (jrrd2_path != null && jrrd2_path.length() != 0) {
+            libraryProps.put("opennms.library.jrrd2", jrrd2_path);
+        }
+
         File f = null;
         try {
             f = new File(m_opennms_home + File.separator + "etc" + File.separator + LIBRARY_PROPERTY_FILE);
-            f.createNewFile();
+            if(!f.createNewFile()) {
+            	LOG.warn("Could not create file: {}", f.getPath());
+            }
             FileOutputStream os = new FileOutputStream(f);
             libraryProps.store(os, null);
         } catch (IOException e) {
@@ -1171,7 +1229,7 @@ public class Installer {
         Pinger pinger;
         try {
        
-            pinger = PingerFactory.getInstance();
+            pinger = new BestMatchPingerFactory().getInstance();
         
         } catch (UnsatisfiedLinkError e) {
             System.out.println("UnsatisfiedLinkError while creating an ICMP Pinger.  Most likely failed to load "
@@ -1186,7 +1244,7 @@ public class Installer {
             		"or libjicmp6.so.");
             throw e;
         } catch (Exception e) {
-            System.out.println("Exception while creating an Pinger.");
+            System.out.println("Exception while creating Pinger.");
             throw e;
         }
         
@@ -1199,17 +1257,8 @@ public class Installer {
         if (rtt == null) {
             System.out.println("failed.!");
         } else {
-            System.out.printf("successful.. round trip time: %.3f ms\n", rtt.doubleValue() / 1000.0);
+            System.out.printf("successful.. round trip time: %.3f ms%n", rtt.doubleValue() / 1000.0);
         }
         
-    }
-
-    /**
-     * <p>getInstallerDb</p>
-     *
-     * @return a {@link org.opennms.install.db.InstallerDb} object.
-     */
-    public InstallerDb getInstallerDb() {
-        return m_installerDb;
     }
 }

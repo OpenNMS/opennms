@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,6 +33,8 @@
 
   Modifications:
 
+  2014 Dec 30: Happy new year - jeffg@opennms.org
+  2014 Jan 20: Happy new year - jeffg@opennms.org
   2013 Jan 04: Happy new year - jeffg@opennms.org
   2011 Jan 01: Happy new year - jeffg@opennms.org
   2010 Feb 09: Happy new year - jeffg@opennms.org
@@ -52,78 +54,74 @@
 --%>
 
 <%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="java.io.File"
+        contentType="text/html"
+        session="true"
+        import="java.io.File,
+                org.opennms.core.resource.Vault,
+                org.opennms.web.servlet.XssRequestWrapper"
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-  <!-- End of Content -->
-  <div class="spacer"><!-- --></div>
+<%
+    XssRequestWrapper req = new XssRequestWrapper(request);
+%>
+
+<!-- End of Content -->
+<div class="spacer"><!-- --></div>
 <%-- This </div> tag is unmatched in this file (its matching tag is in the
      header), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
-<%= "</div>" %><!-- id="content" -->
 
 <c:choose>
-  <c:when test="${param.quiet == 'true'}">
-    <!-- Not displaying footer -->
-  </c:when>
+    <c:when test="${param.superQuiet == 'true'}">
+        <%-- nothing to do --%>
+    </c:when>
+    <c:otherwise>
+        <%= "</div>" %><!-- id="content" -->
+    </c:otherwise>
+</c:choose>
 
-  <c:otherwise>
-    <!-- Footer -->
+<c:choose>
+    <c:when test="${param.quiet == 'true'}">
+        <!-- Not displaying footer -->
+    </c:when>
 
-    <div id="prefooter"></div>
+    <c:otherwise>
+        <!-- Footer -->
 
-    <div id="footer">
-      <p class="jlogofooter">
-<!--        OpenNMS <a href="support/about.jsp">Copyright</a> &copy; 2002-2012
-	    <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
-	    OpenNMS&reg; is a registered trademark of
-        <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>  -->
-	  </p>
-    </div>
-  </c:otherwise>
+        <div id="prefooter"></div>
+
+        <div id="footer">
+            <p>
+                OpenNMS <a href="about/index.jsp">Copyright</a> &copy; 2002-2020
+                <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
+                OpenNMS&reg; is a registered trademark of
+                <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
+                <%
+                    if (req.getUserPrincipal() != null) {
+                        out.print(" - Version: " + Vault.getProperty("version.display"));
+                    }
+                %>
+
+            </p>
+        </div>
+    </c:otherwise>
 </c:choose>
 
 <%
-  File extraIncludes = new File(request.getSession().getServletContext().getRealPath("includes") + File.separator + "custom-footer");
-  if (extraIncludes.exists()) {
-	  for (File file : extraIncludes.listFiles()) {
-		  if (file.isFile()) {
-			  pageContext.setAttribute("file", "custom-footer/" + file.getName());
+    File extraIncludes = new File(request.getSession().getServletContext().getRealPath("includes") + File.separator + "custom-footer");
+    if (extraIncludes.exists()) {
+        for (File file : extraIncludes.listFiles()) {
+            if (file.isFile()) {
+                pageContext.setAttribute("file", "custom-footer/" + file.getName());
 %>
-<jsp:include page="${file}" />
+<jsp:include page="${file}"/>
 <%
-		  }
-	  }
-  }
+            }
+        }
+    }
 %>
-
-
-<%--
-  Pass user session timeout reset events back to JxMainUI.js
---%>
-<script>
-  if (window.top != window.self) { // inside an iframe
-    document.onclick = function(e) {
-                        if (parent.resetIdle != null)
-                            parent.resetIdle();
-                     }
-
-    document.onkeypress = function(e) {
-                        if (parent.resetIdle != null)
-                            parent.resetIdle();
-                     }
-
-    document.onmousemove = function(e) {
-                        if (parent.resetIdle != null)
-                            parent.resetIdle();
-                     }
-  } 
-</script>
-
 <%-- The </body> and </html> tags are unmatched in this file (the matching
      tags are in the header), so we hide them in JSP code fragments so the
      Eclipse HTML validator doesn't complain.  See bug #1728. --%>

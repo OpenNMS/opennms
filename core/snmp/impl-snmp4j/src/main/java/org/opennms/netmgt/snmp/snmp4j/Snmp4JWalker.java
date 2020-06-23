@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.snmp.snmp4j;
 import java.io.IOException;
 
 import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SnmpException;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -130,27 +131,31 @@ public class Snmp4JWalker extends SnmpWalker {
     }
 
     /**
-     * TODO: Merge this logic with {@link Snmp4JStrategy#processResponse()}
+     * TODO: Merge this logic with {@link org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy} processResponse()
      */
     public class Snmp4JResponseListener implements ResponseListener {
 
-        private void processResponse(PDU response) {
+        private void processResponse(final PDU response) throws SnmpException {
             try {
                 LOG.debug("Received a tracker PDU of type {} from {} of size {}, errorStatus = {}, errorStatusText = {}, errorIndex = {}", PDU.getTypeString(response.getType()), getAddress(), response.size(), response.getErrorStatus(), response.getErrorStatusText(), response.getErrorIndex());
                 if (response.getType() == PDU.REPORT) {
                     handleAuthError("A REPORT PDU was returned from the agent.  This is most likely an authentication problem.  Please check the config");
                 } else {
                     if (!processErrors(response.getErrorStatus(), response.getErrorIndex())) {
-                        for (int i = 0; i < response.size(); i++) {
-                            VariableBinding vb = response.get(i);
-                            SnmpObjId receivedOid = SnmpObjId.get(vb.getOid().getValue());
-                            SnmpValue val = new Snmp4JValue(vb.getVariable());
-                            Snmp4JWalker.this.processResponse(receivedOid, val);
+                        if (response.size() == 0) { // NMS-6484
+                            handleError("A PDU with no errors and 0 varbinds was returned from the agent at " + getAddress() + ". This seems to be related with a broken SNMP agent.");
+                        } else {
+                            for (int i = 0; i < response.size(); i++) {
+                                final VariableBinding vb = response.get(i);
+                                final SnmpObjId receivedOid = SnmpObjId.get(vb.getOid().getValue());
+                                final SnmpValue val = new Snmp4JValue(vb.getVariable());
+                                Snmp4JWalker.this.processResponse(receivedOid, val);
+                            }
                         }
                     }
                     buildAndSendNextPdu();
                 }
-            } catch (Throwable e) {
+            } catch (final RuntimeException|SnmpException e) {
                 handleFatalError(e);
             }
         }
@@ -171,7 +176,11 @@ public class Snmp4JWalker extends SnmpWalker {
                 handleError(getName()+": snmpInternalError: " + responseEvent.getError() + " for: " + getAddress(), responseEvent.getError());
             // If we have a PDU in the response, process it
             } else {
-                processResponse(responseEvent.getResponse());
+                try {
+                    processResponse(responseEvent.getResponse());
+                } catch (final SnmpException e) {
+                    handleFatalError(e);
+                }
             }
             
         }
@@ -185,7 +194,7 @@ public class Snmp4JWalker extends SnmpWalker {
     private final Snmp4JAgentConfig m_agentConfig;
 
     public Snmp4JWalker(Snmp4JAgentConfig agentConfig, String name, CollectionTracker tracker) {
-        super(agentConfig.getInetAddress(), name, agentConfig.getMaxVarsPerPdu(), agentConfig.getMaxRepetitions(), tracker);
+        super(agentConfig.getInetAddress(), name, agentConfig.getMaxVarsPerPdu(), agentConfig.getMaxRepetitions(), agentConfig.getRetries(), tracker);
         
         m_agentConfig = agentConfig;
         
@@ -196,7 +205,7 @@ public class Snmp4JWalker extends SnmpWalker {
         @Override
     public void start() {
         
-        LOG.info("Walking {} for {} using version {} with config: {}", getName(), getAddress(), m_agentConfig.getVersionString(), m_agentConfig);
+        LOG.debug("Walking {} for {} using version {} with config: {}", getName(), getAddress(), m_agentConfig.getVersionString(), m_agentConfig);
             
         super.start();
     }
@@ -209,25 +218,43 @@ public class Snmp4JWalker extends SnmpWalker {
     }
 
         @Override
-    protected void sendNextPdu(WalkerPduBuilder pduBuilder) throws IOException {
+    protected void sendNextPdu(WalkerPduBuilder pduBuilder) throws SnmpException {
         Snmp4JPduBuilder snmp4JPduBuilder = (Snmp4JPduBuilder)pduBuilder;
-        if (m_session == null) {
-            m_session = m_agentConfig.createSnmpSession();
-            m_session.listen();
+        try {
+            if (m_session == null) {
+                m_session = m_agentConfig.createSnmpSession();
+                Snmp4JStrategy.trackSession(m_session);
+                m_session.listen();
+            }
+        } catch (final IOException e) {
+            close();
+            throw new SnmpException(e);
         }
-        
+
         LOG.debug("Sending tracker pdu of size {}", snmp4JPduBuilder.getPdu().size());
-        m_session.send(snmp4JPduBuilder.getPdu(), m_tgt, null, m_listener);
+        try {
+            m_session.send(snmp4JPduBuilder.getPdu(), m_tgt, null, m_listener);
+        } catch (final IOException e) {
+            LOG.debug("Failed to send pdu of size {}", snmp4JPduBuilder.getPdu().size(), e);
+            close();
+            throw new SnmpException(e);
+        }
     }
     
     protected int getVersion() {
         return m_tgt.getVersion();
     }
 
-        @Override
-    protected void close() throws IOException {
+    @Override
+    public void close() {
         if (m_session != null) {
-            m_session.close();
+            try {
+                m_session.close();
+            } catch (IOException e) {
+                LOG.error("{}: Unexpected Error occured closing SNMP session for: {}", getName(), m_agentConfig, e);
+            } finally {
+                Snmp4JStrategy.reapSession(m_session);
+            }
             m_session = null;
         }
     }

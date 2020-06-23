@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -43,6 +43,7 @@ import org.opennms.integration.otrs.ticketservice.TicketServiceLocator;
 import org.opennms.integration.otrs.ticketservice.TicketServicePort_PortType;
 import org.opennms.integration.otrs.ticketservice.TicketStateUpdate;
 import org.opennms.integration.otrs.ticketservice.TicketWithArticles;
+import org.opennms.netmgt.ticketer.otrs.common.DefaultOtrsConfigDao;
 
 import org.opennms.api.integration.ticketing.*;
 
@@ -210,11 +211,8 @@ public class OtrsTicketerPlugin implements Plugin {
 		
 		stateUpdate.setStateID(otrsStateId);
 		stateUpdate.setTicketNumber(Long.parseLong(ticket.getId()));
-		if (ticket.getUser() != null) {
-			stateUpdate.setUser(ticket.getUser());
-		} else {
-			stateUpdate.setUser(m_configDao.getDefaultUser());
-		}
+		stateUpdate.setUser(m_configDao.getDefaultUser());
+
 		LOG.debug("Updating ticket with new state");
 		LOG.debug("Ticket ID:     {}", ticket.getId());
 		LOG.debug("OpenNMS State: {}", ticket.getState().toString());
@@ -230,15 +228,9 @@ public class OtrsTicketerPlugin implements Plugin {
 		
 		TicketCore newOtrsTicket = new TicketCore();
 		
-		newOtrsTicket.setTitle(newTicket.getSummary());
+		newOtrsTicket.setTitle(newTicket.getSummary().replaceAll("\\<.*?\\>", ""));
 		
-		// TODO: Could remove this once we have the userid reliably in the the ticket
-		
-		if (newTicket.getUser() != null) {
-			newOtrsTicket.setUser(newTicket.getUser());
-		} else {
-			newOtrsTicket.setUser(m_configDao.getDefaultUser());
-		}
+		newOtrsTicket.setUser(m_configDao.getDefaultUser());
 		
 		newOtrsTicket.setStateID(openNMSToOTRSState(newTicket.getState()));
 		
@@ -273,13 +265,9 @@ public class OtrsTicketerPlugin implements Plugin {
 		
 		newOtrsArticle.setFrom(m_configDao.getArticleFrom());
 		
-		if (newTicket.getUser() != null) {
-			newOtrsArticle.setUser(newTicket.getUser());
-		} else {
-			newOtrsArticle.setUser(m_configDao.getDefaultUser());
-		}
+		newOtrsArticle.setUser(m_configDao.getDefaultUser());
 		
-		newOtrsArticle.setSubject(newTicket.getSummary());
+		newOtrsArticle.setSubject(newTicket.getSummary().replaceAll("\\<.*?\\>", ""));
 		
 		// All OTRS article fields from defaults
 			
@@ -323,15 +311,9 @@ public class OtrsTicketerPlugin implements Plugin {
 
 		newOtrsArticle.setTicketNumber(otrsTicketNumber);
 		
-		// TODO: Could remove this once we have the userid reliably in the the ticket
-		
 		newOtrsArticle.setFrom(m_configDao.getArticleFrom());
 		
-		if (newTicket.getUser() != null) {
-			newOtrsArticle.setUser(newTicket.getUser());
-		} else {
-			newOtrsArticle.setUser(m_configDao.getDefaultUser());
-		}
+		newOtrsArticle.setUser(m_configDao.getDefaultUser());
 		
 		newOtrsArticle.setSubject(m_configDao.getArticleUpdateSubject());
 		

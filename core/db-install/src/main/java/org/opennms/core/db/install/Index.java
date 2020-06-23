@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -85,7 +85,7 @@ public class Index {
      * @return a {@link org.opennms.netmgt.dao.db.Index} object.
      */
     public static Index findIndexInString(String create) {
-        Matcher m = m_pattern.matcher(create.toString());
+        Matcher m = m_pattern.matcher(create);
         if (!m.find()) {
             return null;
         }
@@ -166,7 +166,7 @@ public class Index {
      * @return a {@link java.lang.String} object.
      */
     public String getSql() {
-        StringBuffer sql = new StringBuffer();
+        final StringBuilder sql = new StringBuilder();
         sql.append("CREATE ");
         if (m_unique) {
             sql.append("UNIQUE ");
@@ -234,7 +234,7 @@ public class Index {
      * @return a {@link java.lang.String} object.
      * @throws java.lang.Exception if any.
      */
-    public String getIndexUniquenessQuery() throws Exception {
+    public String getIndexUniquenessQuery() {
         String firstColumn = getColumns().get(0);
         String columnList = StringUtils.collectionToDelimitedString(getColumns(), ", ");
         
@@ -242,7 +242,7 @@ public class Index {
          * E.g. select * from foo where (a, b) in (select a, b from foo
          *      group by a, b having count(a) > 1 order by a, b);
          */
-        StringBuffer sql = new StringBuffer();
+        final StringBuilder sql = new StringBuilder();
         sql.append("SELECT * FROM " + getTable() + " WHERE ( "
                    + columnList + " ) IN ( SELECT "  + columnList + " FROM "
                    + getTable() + " GROUP BY " + columnList + " HAVING count("

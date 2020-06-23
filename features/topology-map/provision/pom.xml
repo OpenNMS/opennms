@@ -5,7 +5,7 @@
     <relativePath>../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -22,20 +22,20 @@
   -->
 
   <dependencies>
-    <!--
     <dependency>
-      <groupId>org.ops4j.pax.web</groupId>
-      <artifactId>pax-web-extender-whiteboard</artifactId>
-      <version>1.1.3</version>
-    </dependency>
-    -->
-    <dependency>
-      <groupId>org.ops4j.pax.vaadin</groupId>
-      <artifactId>service</artifactId>
+      <groupId>org.opennms.features.vaadin-components</groupId>
+      <artifactId>extender-service</artifactId>
     </dependency>
   </dependencies>
 
   <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
     <repository>
       <snapshots><enabled>true</enabled></snapshots>
       <releases><enabled>false</enabled></releases>

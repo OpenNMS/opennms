@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,6 +38,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -61,14 +62,16 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
 
     private static final long serialVersionUID = 4307231598310473690L;
 
-    @XmlAttribute(name="name")
+    @XmlAttribute(name="name", required=true)
+    @NotNull
     private String m_name;
 
-    @XmlAttribute(name="class")
+    @XmlAttribute(name="class", required=true)
+    @NotNull
     private String m_pluginClass;
 
     @XmlElement(name="parameter")
-    private Set<PluginParameter> m_parameters = new LinkedHashSet<PluginParameter>();
+    private Set<PluginParameter> m_parameters = new LinkedHashSet<>();
 
     /**
      * Creates an empty plugin configuration.
@@ -219,7 +222,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * @return a {@link java.util.Set} object.
      */
     public Set<String> getAvailableParameterKeys() {
-        Set<String> keys = new TreeSet<String>();
+        Set<String> keys = new TreeSet<>();
         try {
             PluginWrapper pw = new PluginWrapper(m_pluginClass);
             keys = pw.getOptionalKeys();

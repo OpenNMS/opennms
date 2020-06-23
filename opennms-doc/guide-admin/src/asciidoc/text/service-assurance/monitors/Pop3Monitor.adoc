@@ -1,0 +1,59 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== Pop3Monitor
+
+The _POP3_ monitor tests for _POP3_ service availability on a node.
+The monitor first tries to establish a _TCP_ connection on the specified port.
+If a connection is established, a service banner should have been received.
+The monitor makes sure the service banner is a valid _POP3_ banner (ie: starts with `+OK`).
+If the banner is valid, the monitor sends a `QUIT` _POP3_ command and makes sure the service answers with a valid response (ie: a response that starts with `+OK`).
+The service is considered available if the service's answer to the `QUIT` command is valid.
+
+The behaviour can be simulated with `telnet`:
+
+ $ telnet mail.opennms.org 110
+ Trying 192.168.0.100
+ Connected to mail.opennms.org.
+ Escape character is '^]'.
+ +OK <21860.1076718099@mail.opennms.org>
+ quit
+ +OK
+ Connection closed by foreign host.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.Pop3Monitor`
+| Remote Enabled | true
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the Pop3Monitor
+[options="header, autowidth"]
+|===
+| Parameter            | Description                                                                           | Required | Default value
+| `port`               | TCP port to connect to.                                                               | optional | `110`
+| `retry`              | Number of attempts to find the service available.                                     | optional | `0`
+| `strict-timeout`     | If set to `true`, makes sure that at least `timeout` milliseconds are elapsed between
+                         attempts.                                                                             | optional | `false`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+[source, xml]
+----
+<service name="POP3" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-base-name" value="pop3"/>
+  <parameter key="ds-name" value="pop3"/>
+</service>
+<monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
+----

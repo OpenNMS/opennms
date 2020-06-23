@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -44,11 +45,15 @@ public class Wallboard {
     /**
      * A {@link List} holding the associated {@link DashletSpec} instances
      */
-    private List<DashletSpec> m_dashletSpecs = new LinkedList<DashletSpec>();
+    private List<DashletSpec> m_dashletSpecs = new LinkedList<>();
     /**
      * The title of this wallboard
      */
     private String m_title;
+    /**
+     * Is this one the default?
+     */
+    private boolean m_default = false;
 
     /**
      * Default constructor
@@ -66,6 +71,22 @@ public class Wallboard {
         for (DashletSpec dashletSpec : wallboard.getDashletSpecs()) {
             this.m_dashletSpecs.add(dashletSpec.clone());
         }
+    }
+
+    /**
+     * Returns whether this wallboard is the default wallboard.
+     *
+     * @return default value
+     */
+    public boolean isDefault() {
+        return m_default;
+    }
+
+    /**
+     * Sets the default value.
+     */
+    public void setDefault(boolean defaultValue) {
+        m_default = defaultValue;
     }
 
     /**

@@ -8,6 +8,7 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-inventory">
+		<validCheckSum>3:b6820c052a3951d49f18198e2b7f7ed6</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="inventory" /></not>
 		</preConditions> 
@@ -26,12 +27,12 @@
 			</column>
 
 			<!-- The timestamp of the creation of the inventory. -->
-			<column name="createtime" type="DATETIME">
+			<column name="createtime" type="TIMESTAMP WITH TIME ZONE">
 				<constraints nullable="false" />
 			</column>
 
 			<!-- The timestamp of last download of the inventory. -->
-			<column name="lastpolltime" type="DATETIME">
+			<column name="lastpolltime" type="TIMESTAMP WITH TIME ZONE">
 				<constraints nullable="false" />
 			</column>
 

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,10 +33,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
 import org.opennms.core.tasks.BatchTask;
 import org.opennms.core.tasks.ContainerTask;
-import org.opennms.core.tasks.Task;
+import org.opennms.core.tasks.AbstractTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.provision.service.lifecycle.annotations.Activity;
@@ -50,9 +51,9 @@ import org.opennms.netmgt.provision.service.lifecycle.annotations.Attribute;
  */
 public class Phase extends BatchTask {
     private static final Logger LOG = LoggerFactory.getLogger(Phase.class);
-    private LifeCycleInstance m_lifecycle;
-    private String m_name;
-    private Object[] m_providers;
+    private final LifeCycleInstance m_lifecycle;
+    private final String m_name;
+    private final Object[] m_providers;
         
     /**
      * <p>Constructor for Phase.</p>
@@ -66,7 +67,7 @@ public class Phase extends BatchTask {
         super(lifecycle.getCoordinator(), parent);
         m_lifecycle = lifecycle;
         m_name = name;
-        m_providers = providers;
+        m_providers = Arrays.copyOf(providers, providers.length);
 
         addPhaseMethods();
     }
@@ -135,7 +136,7 @@ public class Phase extends BatchTask {
 //    }
 //    
 //    private PhaseMethod[] findPhaseMethods(Object provider) {
-//        List<PhaseMethod> methods = new ArrayList<PhaseMethod>();
+//        List<PhaseMethod> methods = new ArrayList<>();
 //        for(Method method : provider.getClass().getMethods()) {
 //            if (isPhaseMethod(method)) {
 //                methods.add(new PhaseMethod(this, provider, method));
@@ -157,9 +158,9 @@ public class Phase extends BatchTask {
     }
     
     public static class PhaseMethod extends BatchTask {
-        private Phase m_phase;
-        private Object m_target;
-        private Method m_method;
+        private final Phase m_phase;
+        private final Object m_target;
+        private final Method m_method;
         
         public PhaseMethod(Phase phase, Object target, Method method, String schedulingHint) {
             super(phase.getCoordinator(), phase);
@@ -197,8 +198,8 @@ public class Phase extends BatchTask {
             if (retValAttr != null) {
                 lifeCycle.setAttribute(retValAttr.value(), retVal);
             }
-            else if (retVal instanceof Task) {
-                add((Task)retVal);
+            else if (retVal instanceof AbstractTask) {
+                add((AbstractTask)retVal);
             } else if (retVal != null) {
                 lifeCycle.setAttribute(retVal.getClass().getName(), retVal);
             }

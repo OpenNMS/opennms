@@ -1,45 +1,97 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
 xsi:schemaLocation="
-http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
-http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
-    
+http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
+
     <cm:property-placeholder id="appConfig" persistent-id="org.opennms.features.topology.app" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="servletAlias" value="/topology"/>
-            <cm:property name="widgetset" value="org.opennms.features.topology.widgetset.gwt.TopologyWidgetset"/>
-            <cm:property name="theme" value="topo_default" />
             <cm:property name="showHeader" value="true" />
+            <cm:property name="autoRefresh.enabled" value="false" />
+            <cm:property name="autoRefresh.interval" value="60" />
+            <cm:property name="hiddenCategoryPrefix" value="" />
+            <cm:property name="topologyServiceCacheTimeout" value="60" /> <!-- seconds -->
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <reference id="topologyProvider" interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory" />
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+    <reference id="geolocationService" interface="org.opennms.features.geolocation.api.GeolocationService" availability="mandatory" />
+    <reference id="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration" availability="mandatory" />
+    <reference id="layoutDao" interface="org.opennms.netmgt.topology.persistence.api.LayoutDao" availability="mandatory" />
+    <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
+    <reference id="topologyEntityCache" interface="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache" availability="mandatory"/>
 
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
-        <argument ref="commandManager"/>
+        <argument ref="operationManager"/>
         <argument ref="historyManager"/>
         <argument ref="veGraphContainer" />
         <argument ref="iconRepoManager"/>
-        <argument>
-            <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager"/>
-        </argument>
-        <!-- <property name="theme" value="${theme}"/> -->
+        <argument ref="layoutManager"/>
+        <argument ref="transactionOperations"/>
         <property name="widgetManager" ref="widgetManager"/>
-        <property name="treeWidgetManager" ref="treeWidgetManager"/>
         <property name="headerProvider" ref="onmsHeaderProvider" />
         <property name="showHeader" value="${showHeader}" />
         <property name="serviceManager" ref="blueprintBundleContext"/>
     </bean>
-    
+
     <bean id="veGraphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer" scope="prototype">
-        <argument ref="topologyProvider" />
-        <argument ref="providerManager" />
         <property name="bundleContext" ref="blueprintBundleContext" />
+        <property name="autoRefreshSupport" ref="defaultAutoRefreshSupport"/>
+        <property name="topologyService" ref="topologyService" />
+        <property name="layoutManager" ref="layoutManager" />
     </bean>
-    
+
     <!--  Header reference -->
     <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="mandatory" />
+
+    <bean id="defaultAutoRefreshSupport" class="org.opennms.features.topology.app.internal.DefaultAutoRefreshSupport" scope="prototype">
+        <property name="interval" value="${autoRefresh.interval}"/>
+        <property name="enabled" value="${autoRefresh.enabled}"/>
+    </bean>
+
+    <reference id="categoryDao" interface="org.opennms.netmgt.dao.api.CategoryDao" availability="mandatory" />
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
+    <reference id="assetRecordDao" interface="org.opennms.netmgt.dao.api.AssetRecordDao" availability="mandatory" />
+
+    <reference id="measurementsService" interface="org.opennms.netmgt.measurements.api.MeasurementsService" availability="mandatory"/>
+
+    <service id="ipLikeSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
+        <bean class="org.opennms.features.topology.app.internal.IpLikeSearchProvider" >
+            <argument ref="ipInterfaceProvider"/>
+        </bean>
+    </service>
+    <bean id="ipInterfaceProvider" class="org.opennms.features.topology.app.internal.IpInterfaceDaoProvider">
+        <argument ref="ipInterfaceDao"/>
+    </bean>
+
+    <bean id="bundleContextServiceLocator" class="org.opennms.features.topology.app.internal.service.BundleContextServiceLocator">
+        <argument ref="blueprintBundleContext" />
+    </bean>
+    <service ref="bundleContextServiceLocator" interface="org.opennms.features.topology.api.support.ServiceLocator" />
+
+    <service id="categorySearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
+        <bean class="org.opennms.features.topology.app.internal.CategorySearchProvider">
+            <argument ref="topologyService"/>
+            <argument ref="categoryProvider"/>
+            <property name="hiddenCategoryPrefix" value="${hiddenCategoryPrefix}" />
+        </bean>
+    </service>
+    <bean id="categoryProvider" class="org.opennms.features.topology.app.internal.CategoryDaoProvider">
+        <argument ref="categoryDao"/>
+        <argument ref="nodeDao"/>
+    </bean>
+
+    <service id="alarmSearchProvider" interface="org.opennms.features.topology.api.topo.SearchProvider" >
+        <bean class="org.opennms.features.topology.app.internal.AlarmSearchProvider" >
+            <argument ref="alarmProvider"/>
+        </bean>
+    </service>
+    <bean id="alarmProvider" class="org.opennms.features.topology.app.internal.AlarmDaoProvider">
+        <argument ref="alarmDao"/>
+    </bean>
 
     <bean id="topologyUIFactory" class="org.opennms.features.topology.app.internal.TopologyUIFactory" >
         <!-- Blueprint container bean -->
@@ -48,124 +100,88 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument value="topologyApplication"/>
     </bean>
 
-    <service interface="org.ops4j.pax.vaadin.ApplicationFactory" ref="topologyUIFactory">
+    <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="topologyUIFactory">
         <service-properties>
-            <entry key="alias" value="${servletAlias}"/>
-            <entry key="widgetset" value="${widgetset}"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/topology/*"/>
+            <entry key="servlet.init.widgetset" value="org.opennms.features.topology.app.internal.gwt.TopologyAppWidgetSet"/>
         </service-properties>
     </service>
     
-    <bean id="topologySelector" class="org.opennms.features.topology.app.internal.operations.TopologySelector">
+    <bean id="metaTopologySelector" class="org.opennms.features.topology.app.internal.operations.MetaTopologySelector">
     	<property name="bundleContext" ref="blueprintBundleContext" />
     </bean>
-    
-    <reference-list interface="org.opennms.features.topology.api.topo.GraphProvider" availability="mandatory">
-        <reference-listener bind-method="addGraphProvider" unbind-method="removeGraphProvider" ref="topologySelector" />
-    </reference-list>
-    
-    <bean id="statusSelector" class="org.opennms.features.topology.app.internal.operations.StatusSelector">
-        <property name="bundleContext" ref="blueprintBundleContext" />
-    </bean>
 
-    <reference-list interface="org.opennms.features.topology.api.topo.StatusProvider" availability="optional">
-        <reference-listener bind-method="addStatusProvider" unbind-method="removeStatusProvider" ref="statusSelector" />
+    <reference-list interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" availability="mandatory">
+        <reference-listener bind-method="addMetaTopologyProvider" unbind-method="removeMetaTopologyProvider" ref="metaTopologySelector" />
     </reference-list>
 
     <!-- default icon repository -->
     <service>
       <interfaces>
-        <value>org.opennms.features.topology.api.IconRepository</value>
+        <value>org.opennms.features.topology.api.ConfigurableIconRepository</value>
         <value>org.osgi.service.cm.ManagedService</value>
       </interfaces>
       <service-properties>
-        <entry key="service.pid" value="org.opennms.features.topology.app.icons"/>
+        <entry key="service.pid" value="org.opennms.features.topology.app.icons.default"/>
       </service-properties>
-       <bean class="org.opennms.features.topology.api.support.ConfigurableIconRepository" />
+      <bean class="org.opennms.features.topology.api.support.DefaultIconRepository" />
     </service>
 
     <!-- Icon Repository Manager -->
     <bean id="iconRepoManager" class="org.opennms.features.topology.app.internal.support.IconRepositoryManager"/>
-    
+    <reference-list interface="org.opennms.features.topology.api.ConfigurableIconRepository" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
+    </reference-list>
     <reference-list interface="org.opennms.features.topology.api.IconRepository" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
     </reference-list>
 
-    <service interface="org.opennms.features.topology.api.IconRepository">
-        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
-            <property name="iconMap">
-                <map>
-                    <entry key="default" value="generic" />
-                    <entry key="group" value="cloud"/>
-                    
-                    <!--  TODO: move these into VMWare ToPr -->
-                    <entry key="NETWORK_ICON" value="vmware-network"/>
-                    <entry key="HOSTSYSTEM_ICON_ON" value="vmware-hostsystem-on"/>
-                    <entry key="HOSTSYSTEM_ICON_OFF" value="vmware-hostsystem-off"/>
-                    <entry key="HOSTSYSTEM_ICON_STANDBY" value="vmware-hostsystem-standby"/>
-                    <entry key="HOSTSYSTEM_ICON_UNKNOWN" value="vmware-hostsystem-unknown"/>
-                    <entry key="VIRTUALMACHINE_ICON_ON" value="vmware-virtualmachine-on"/>
-                    <entry key="VIRTUALMACHINE_ICON_OFF" value="vmware-virtualmachine-off"/>
-                    <entry key="VIRTUALMACHINE_ICON_SUSPENDED" value="vmware-virtualmachine-suspended"/>
-                    <entry key="VIRTUALMACHINE_ICON_UNKNOWN" value="vmware-virtualmachine-unknown"/>
-                    <entry key="DATASTORE_ICON" value="vmware-datastore"/>
-                    <entry key="DATACENTER_ICON" value="vmware-datacenter"/>
+    <!-- Topology Service -->
+    <bean id="topologyService" class="org.opennms.features.topology.app.internal.service.DefaultTopologyService" >
+        <argument value="${topologyServiceCacheTimeout}"/>
+        <property name="serviceLocator" ref="bundleContextServiceLocator"/>
+        <property name="topologyEntityCache" ref="topologyEntityCache"/>
+    </bean>
+    <service ref="topologyService" interface="org.opennms.features.topology.api.TopologyService" />
 
-					<!-- linkd icon information has been moved into the linkd ToPr's blueprint.xml file -->
-                </map>
-            </property>
-            <property name="SVGDefs">
-                <list>
-                    <value>theme://svg/default_icons.svg</value>
-                    <value>theme://svg/vmware_icons.svg</value>
-                </list>
-            </property>
-        </bean>
-    </service>
-    
-    <bean id="providerManager" class="org.opennms.features.topology.app.internal.ProviderManager" />
-    
-    <reference-list interface="org.opennms.features.topology.api.topo.EdgeProvider" availability="optional">
-        <reference-listener bind-method="onEdgeProviderBind" unbind-method="onEdgeProviderUnbind" ref="providerManager"/>
-    </reference-list>
+    <!-- Listener to invalidate the Topology Service Cache -->
+    <bean id="topologyEventListener"
+          class="org.opennms.features.topology.app.internal.service.TopologyServiceEventListener"
+          init-method="init" destroy-method="destroy">
+        <argument ref="topologyService"/>
+        <argument ref="eventIpcManager"/>
+    </bean>
 
-    <reference-list interface="org.opennms.features.topology.api.topo.VertexProvider" availability="optional">
-        <reference-listener bind-method="onVertexProviderBind" unbind-method="onVertexProviderUnbind" ref="providerManager"/>
-    </reference-list>
-    
-    <bean id="widgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
-    <bean id="treeWidgetManager" class="org.opennms.features.topology.app.internal.WidgetManager" />
-    
+    <bean id="widgetManager" class="org.opennms.features.topology.api.WidgetManager" />
+
     <reference-list interface="org.opennms.features.topology.api.IViewContribution" availability="optional" filter="(location=bottom)">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="widgetManager"/>
     </reference-list>
-    
-    <reference-list interface="org.opennms.features.topology.api.IViewContribution" availability="optional" filter="(location=left)">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="treeWidgetManager"/>
-    </reference-list>
-    
+
     <service interface="org.osgi.service.cm.ManagedService" >
         <service-properties>
             <entry key="service.pid" value="org.opennms.features.topology.app.menu"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.MenuConfigManagedService">
-            <property name="commandManager" ref="commandManager"/>
+        <bean class="org.opennms.features.topology.app.internal.menu.MenuConfigManagedService">
+            <property name="operationManager" ref="operationManager"/>
         </bean>
     </service>
     
-    <bean id="commandManager" class="org.opennms.features.topology.app.internal.CommandManager" />
-    
-    <reference-list interface="org.opennms.features.topology.app.internal.Command" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
-        </reference-listener>
-    </reference-list>
-    
+    <bean id="operationManager" class="org.opennms.features.topology.app.internal.menu.OperationManager" />
+
+    <!-- Set up Layout Manager -->
+    <bean id="layoutManager" class="org.opennms.features.topology.app.internal.support.LayoutManager">
+        <argument ref="layoutDao"/>
+        <argument ref="transactionOperations"/>
+    </bean>
+
     <reference-list interface="org.opennms.features.topology.api.Operation" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="operationManager">
         </reference-listener>
     </reference-list>
     
     <reference-list interface="org.opennms.features.topology.api.CheckedOperation" availability="optional">
-        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="commandManager">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="operationManager">
         </reference-listener>
     </reference-list>
 
@@ -176,13 +192,49 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.CircleLayoutOperation"/>
     </service>
-    
+
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="Hierarchy Layout?group=layout"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.HierarchyLayoutOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="Grid Layout?group=layout"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.GridLayoutOperation"/>
+    </service>
+
+    <!--
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>
             <entry key="operation.label" value="FR Layout?group=layout"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.FRLayoutOperation"/>
+    </service>
+    -->
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="FR Layout?group=layout"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.TopoFRLayoutOperation"/>
+    </service>
+
+    <!-- D3 Layout-->
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="D3 Layout?group=layout"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.D3TopoLayoutOperation"/>
     </service>
 
 
@@ -215,60 +267,84 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.menuLocation" value="View"/>
             <entry key="operation.label" value="Manual Layout?group=layout"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.ManualLayoutOperation"/>
+        <bean class="org.opennms.features.topology.app.internal.operations.ManualLayoutOperation">
+            <argument ref="layoutManager"/>
+        </bean>
     </service>
 
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>
-            <entry key="operation.label" value="Redo Layout?group=additions"/>
+            <entry key="operation.label" value="Refresh Now?group=additions"/>
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.RedoLayoutOperation"/>
     </service>
-    
+
     <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.label" value="Clear Focus?group=additions"/>
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.ClearFocusOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device"/>
+            <entry key="operation.label" value="Change Icon" />
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.icons.IconSelectionOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device"/>
+            <entry key="operation.label" value="Reset Icon" />
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.icons.IconResetOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation">
+        <service-properties>
+            <entry key="operation.contextMenuLocation" value="" />
+            <entry key="operation.label" value="Set As Focal Point" />
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.SetFocusVertexOperation" />
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Add To Focus"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.AddFocusVerticesOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Remove From Focus"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.RemoveFocusVerticesOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Remove All Others From Focus"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.RemoveFocusOtherVerticesOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
             <entry key="operation.menuLocation" value="View"/>
-            <entry key="operation.label" value="Create Group?group=grouping"/>
+            <entry key="operation.label" value="Automatic Refresh?group=additions"/>
         </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.CreateGroupOperation"/>
-    </service>
-    
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <!-- <entry key="operation.menuLocation" value="View"/> -->
-            <entry key="operation.contextMenuLocation" value=""/>
-            <entry key="operation.label" value="Rename Group"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.RenameGroupOperation"/>
-    </service>
-
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <!-- <entry key="operation.menuLocation" value="View"/> -->
-            <entry key="operation.contextMenuLocation" value=""/>
-            <entry key="operation.label" value="Delete Group"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.DeleteGroupOperation"/>
-    </service>
-
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <!-- <entry key="operation.menuLocation" value="View"/> -->
-            <entry key="operation.contextMenuLocation" value=""/>
-            <entry key="operation.label" value="Add This Item To a Group"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.AddVertexToGroupOperation"/>
-    </service>
-
-    <service interface="org.opennms.features.topology.api.Operation" >
-        <service-properties>
-            <!-- <entry key="operation.menuLocation" value="View"/> -->
-            <entry key="operation.contextMenuLocation" value=""/>
-            <entry key="operation.label" value="Remove item from this Group"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.RemoveVertexFromGroupOperation"/>
+        <bean class="org.opennms.features.topology.app.internal.operations.AutoRefreshToggleOperation"/>
     </service>
 
     <!-- removed for SPC-247
@@ -302,4 +378,39 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <reference id="historyManager" interface="org.opennms.features.topology.api.HistoryManager" availability="mandatory">
     </reference>
 
+	<bean id="topoMapsLink" class="org.opennms.features.topology.app.internal.TopoMapNavEntry">
+		<property name="name" value="View in Topology" />
+	</bean>
+
+	<service id="nodeMapsLinkService" interface="org.opennms.web.navigate.ConditionalPageNavEntry" ref="topoMapsLink">
+		<service-properties>
+			<entry key="Page" value="node" />
+			<entry key="registration.export" value="true" />
+		</service-properties>
+	</service>
+
+    <!-- Info Items -->
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultVertexInfoPanelItemProvider" />
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.ui.info.NodeInfoPanelItemProvider" >
+            <argument ref="nodeDao"/>
+        </bean>
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultEdgeInfoPanelItemProvider" />
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.info.GenericInfoPanelItemProvider">
+            <argument ref="nodeDao" />
+            <argument ref="measurementsService"/>
+        </bean>
+    </service>
+    <service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
+        <bean class="org.opennms.features.topology.app.internal.info.LocationInfoPanelItemProvider">
+            <argument ref="geolocationService" />
+            <argument ref="geolocationConfiguration" />
+        </bean>
+    </service>
 </blueprint>

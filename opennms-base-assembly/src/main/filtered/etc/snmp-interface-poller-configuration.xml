@@ -1,22 +1,17 @@
-<?xml version="1.0"?>
-<?castor class-name="org.opennms.netmgt.snmpinterfacepoller.SnmpInterfacePollerConfiguration"?>
-<snmp-interface-poller-configuration threads="30" service="SNMP"> 
-  <node-outage>
-    <critical-service name="ICMP" />
-    <critical-service name="SNMP" />
-  </node-outage>
-  <package name="example1">
-    <filter>IPADDR != '0.0.0.0'</filter>
-    <include-range begin="1.1.1.1" end="1.1.1.1" />
-    <include-range begin="::1" end="::1" />
-    <interface name="Ethernet" criteria="snmpiftype = 6" interval="300000" user-defined="false" status="on"/>
-  </package>
-
-  <!--  package name="overwritesnmpvalues">
-    <filter>IPADDR != '0.0.0.0'</filter>
-    <include-range begin="1.1.1.1" end="254.254.254.254" />
-    <interface name="Ethernet" criteria="snmpiftype = 6" interval="300000" user-defined="false" status="on"
-    port="161" timeout="1000" retry="1" max-vars-per-pdu="10" />
-  </package-->
-
+<snmp-interface-poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/snmpinterfacepoller" threads="30" service="SNMP">
+   <node-outage>
+      <critical-service name="ICMP"/>
+      <critical-service name="SNMP"/>
+   </node-outage>
+   <package name="example1">
+      <filter>IPADDR != '0.0.0.0'</filter>
+      <include-range begin="1.1.1.1" end="1.1.1.1"/>
+      <include-range begin="::1" end="::1"/>
+      <interface criteria="snmpiftype = 6" name="Ethernet" interval="300000" user-defined="false" status="on"/>
+   </package>
+   <!--  package name="overwritesnmpvalues">
+      <filter>IPADDR != '0.0.0.0'</filter>
+       <include-range begin="1.1.1.1" end="254.254.254.254" />
+       <interface name="Ethernet" criteria="snmpiftype = 6" interval="300000" user-defined="false" status="on" port="161" timeout="1000" retry="1" max-vars-per-pdu="10" />
+   </package-->
 </snmp-interface-poller-configuration>

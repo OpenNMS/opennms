@@ -1,0 +1,74 @@
+#!/usr/bin/make -f
+
+export CONTAINER_TYPE=sentinel
+export CONTAINER_PREFIX=/usr/share/$(CONTAINER_TYPE)
+
+export DH_VERBOSE=1
+export JAVA_HOME=$(shell bin/find-java.sh 1.8 11.9999)
+export PACKAGE_NAME=opennms-$(CONTAINER_TYPE)
+
+export RUNTIME_PREFIX=/var/lib/$(CONTAINER_TYPE)
+export REPO_PREFIX=$(CONTAINER_PREFIX)/repositories
+export LOGDIR=/var/log/$(CONTAINER_TYPE)
+export SYSCONFDIR=/etc/default
+export ETCDIR=/etc/$(CONTAINER_TYPE)
+export PIDFILE=$(LOGDIR)/$(CONTAINER_TYPE).pid
+
+%:
+	dh $@
+
+# disable these
+override_dh_update_autotools_config override_dh_strip_nondeterminism:
+
+override_dh_auto_install:
+	# make all the target directories
+	mkdir -p \
+		$$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX) \
+		$$(pwd)/debian/$(PACKAGE_NAME)$(RUNTIME_PREFIX) \
+		$$(pwd)/debian/$(PACKAGE_NAME)$(LOGDIR) \
+		$$(pwd)/debian/$(PACKAGE_NAME)$(SYSCONFDIR)
+	
+	# copy all the files from the build tarball
+	rsync -avr --exclude=debian $$(pwd)/ $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/
+	
+	# translate container prefix and etc directories in the init script, and put it in place
+	sed -e "s,/opt/$(CONTAINER_TYPE)/etc,$(SYSCONFDIR),g" \
+			-e "s,RUNAS=root,RUNAS=$(CONTAINER_TYPE),g" \
+			-e "s,/opt/$(CONTAINER_TYPE)/data/log/$(CONTAINER_TYPE).pid,$(PIDFILE),g" \
+			-e "s,/opt/$(CONTAINER_TYPE),$(CONTAINER_PREFIX),g" \
+			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
+			$$(pwd)/etc/$(CONTAINER_TYPE).init > $$(pwd)/debian/$(PACKAGE_NAME).$(CONTAINER_TYPE).init \
+		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc/$(CONTAINER_TYPE).init \
+		&& sed -e "s,/opt/$(CONTAINER_TYPE)/etc,$(SYSCONFDIR),g" \
+			-e "s,RUNAS=root,RUNAS=$(CONTAINER_TYPE),g" \
+			-e "s,/opt/$(CONTAINER_TYPE)/data/log/$(CONTAINER_TYPE).pid,$(PIDFILE),g" \
+			-e "s,/opt/$(CONTAINER_TYPE),$(CONTAINER_PREFIX),g" \
+			-e 's,PING_REQUIRED=FALSE,PING_REQUIRED=TRUE,g' \
+			$$(pwd)/etc/$(CONTAINER_TYPE).service > $$(pwd)/debian/$(CONTAINER_TYPE).service \
+		&& rm -f $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc/$(CONTAINER_TYPE).service
+	
+	# move etc / data / deploy directories to where they will live
+	mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR) \
+		&& ln -s ../../..$(ETCDIR) $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/etc \
+		&& mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/data $$(pwd)/debian/$(PACKAGE_NAME)$(RUNTIME_PREFIX)/ \
+		&& ln -s ../../..$(RUNTIME_PREFIX)/data $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/data \
+		&& mv $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/deploy $$(pwd)/debian/$(PACKAGE_NAME)$(RUNTIME_PREFIX)/ \
+		&& ln -s ../../..$(RUNTIME_PREFIX)/deploy $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/deploy \
+	
+	# take care of some packaging/lintian warnings
+	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)/usr/share/lintian/overrides
+	install -c -m 644 $$(pwd)/debian/$(PACKAGE_NAME).lintian-overrides $$(pwd)/debian/$(PACKAGE_NAME)/usr/share/lintian/overrides/$(PACKAGE_NAME)
+	rm -rf $$(pwd)/debian/$(PACKAGE_NAME)$(CONTAINER_PREFIX)/COPYING
+	
+	# move the .conf to /etc/defaults and change the default RUNAS
+	sed -e "s,RUNAS=root,RUNAS=$(CONTAINER_TYPE),g" \
+		$$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/$(CONTAINER_TYPE).conf > $$(pwd)/debian/$(PACKAGE_NAME)$(SYSCONFDIR)/$(CONTAINER_TYPE) \
+		&& rm -rf $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/$(CONTAINER_TYPE).conf
+	
+	# change the logging directory
+	sed -e "s,.{karaf.log},$(LOGDIR),g" -e "s,.{karaf.data}/log,$(LOGDIR),g" -e 's,/karaf.log,/$(CONTAINER_TYPE).log,g' $$(pwd)/etc/org.ops4j.pax.logging.cfg > $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.ops4j.pax.logging.cfg
+	
+	# install the startup scripts
+	dh_systemd_enable --name=$(CONTAINER_TYPE) --no-enable debian/$(CONTAINER_TYPE).service
+	dh_installinit --package=$(PACKAGE_NAME) --name=$(CONTAINER_TYPE) --no-start -u"defaults 21 19"
+	dh_systemd_start --name=$(CONTAINER_TYPE) --no-restart-after-upgrade

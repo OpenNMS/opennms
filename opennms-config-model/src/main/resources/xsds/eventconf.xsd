@@ -19,7 +19,7 @@
     <complexType mixed="true">
       <choice minOccurs="0" maxOccurs="unbounded">
         <element maxOccurs="1" minOccurs="0" ref="this:global"/>
-        <element maxOccurs="unbounded" minOccurs="1" ref="this:event"/>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:event"/>
         <element maxOccurs="unbounded" minOccurs="0" name="event-file" type="string"/>
       </choice>
     </complexType>
@@ -67,6 +67,14 @@
         <element maxOccurs="1" minOccurs="1" name="uei" type="string">
           <annotation>
             <documentation>The Universal Event Identifier</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="priority" type="nonNegativeInteger">
+          <annotation>
+            <documentation>The Priority of the Event Definition.
+                Events with a higher priority value are evaluated for matching before events with lower priority.
+                Events without a priority are assigned a working priority of 0.</documentation>
           </annotation>
         </element>
 
@@ -125,6 +133,14 @@
           <annotation>
             <documentation>The varbind decoding tag used to decode value 
             into a string</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter">
+          <annotation>
+            <documentation>An optional parameter (name-value pair) to be 
+            assigned to the event. If this parameter duplciates an existing
+            parameter of the event, it will be ignored.</documentation>
           </annotation>
         </element>
 
@@ -205,7 +221,6 @@
     <complexType>
       <sequence>
         <element maxOccurs="unbounded" minOccurs="1" ref="this:maskelement"/>
-
         <element maxOccurs="unbounded" minOccurs="0" ref="this:varbind"/>
       </sequence>
     </complexType>
@@ -243,8 +258,11 @@
             <documentation>The mask element value. A case-sensitive, exact
             match is performed. If the mask value has a "%" as the last
             character, it will match zero or more characters at the end of the
-            string being matched. The mask element value matching is performed
-            by
+            string being matched. If the mask value starts with a "~", the 
+            mask element value will be evaluated as a regular expression to be
+            matched. If several mask element values are provided, the match will
+            succeed when at least one of  the mask element values matches
+           ('OR' condition). The mask element value matching is performed by
             org.opennms.netmgt.eventd.datablock.EventConfData#eventValuePassesMaskValue.</documentation>
           </annotation>
         </element>
@@ -584,6 +602,7 @@
     <complexType>
       <sequence>
         <element ref="this:update-field" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:managed-object" minOccurs="0" maxOccurs="1" />
       </sequence>
       <attribute name="reduction-key" type="string" use="required" />
       <attribute name="alarm-type" use="required" >
@@ -604,6 +623,13 @@
     <complexType>
       <attribute name="field-name" type="string" use="required" />
       <attribute name="update-on-reduction" type="boolean" use="optional" default="true" />
+      <attribute name="value-expression" type="string" use="optional" default="" />
+    </complexType>
+  </element>
+
+  <element name="managed-object">
+    <complexType>
+      <attribute name="type" type="string" use="required" />
     </complexType>
   </element>
   
@@ -625,20 +651,28 @@
     </annotation>
 
     <complexType mixed="true">
-      <choice minOccurs="0" maxOccurs="unbounded">
-        <element maxOccurs="1" minOccurs="1" name="vbnumber" type="int">
+      <sequence minOccurs="0" maxOccurs="1">
+        <element minOccurs="1" maxOccurs="1" name="vbnumber" type="int">
           <annotation>
             <documentation>The varbind element number</documentation>
           </annotation>
         </element>
 
-        <element maxOccurs="unbounded" minOccurs="1" name="vbvalue" type="string">
+        <element minOccurs="1" maxOccurs="unbounded" name="vbvalue" type="string">
           <annotation>
             <documentation>The varbind element value</documentation>
           </annotation>
         </element>
-      </choice>
+      </sequence>
       <attribute name="textual-convention" type="this:rfc1903-snmp-tc" use="optional" />
+    </complexType>
+  </element>
+
+  <element name="parameter">
+    <complexType>
+      <attribute name="name" type="string" use="required" />
+      <attribute name="value" type="string" use="required" />
+      <attribute name="expand" type="boolean" use="optional" default="false" />
     </complexType>
   </element>
 </schema>

@@ -1,0 +1,38 @@
+==== Step 2: Install the repository and Sentinel package
+
+Connect with _SSH_ to your remote _RHEL_ system where the _Sentinel_ should be installed.
+
+.Install the Yum repository
+[source, shell]
+----
+dnf install -y https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
+rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+
+.Install the Sentinel package
+[source, bash]
+----
+dnf -y install opennms-sentinel
+----
+
+With the successful installed packages the _Sentinel_ is installed in the following directory structure:
+
+[source, shell]
+----
+[root@localhost /opt/sentinel]# $ tree -L 1
+.
+|-- bin
+|-- COPYING
+|-- data
+|-- deploy
+|-- etc
+|-- lib
+`-- system
+----
+
+The Sentinel's startup configuration can be changed by editing the `/etc/sysconfig/sentinel` file.
+It allows to override the defaults used at startup including:
+
+* Location of the JDK
+* Memory usage
+* User to run as

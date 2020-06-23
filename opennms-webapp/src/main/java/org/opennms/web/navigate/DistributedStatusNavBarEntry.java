@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,7 +30,7 @@ package org.opennms.web.navigate;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 
 /**
  * <p>DistributedStatusNavBarEntry class.</p>
@@ -40,12 +40,13 @@ import org.opennms.netmgt.dao.api.LocationMonitorDao;
  * @since 1.8.1
  */
 public class DistributedStatusNavBarEntry extends LocationBasedNavBarEntry {
-    private LocationMonitorDao m_locationMonitorDao;
-    
+
+    private MonitoringLocationDao m_monitoringLocationDao;
+
     /** {@inheritDoc} */
     @Override
     public DisplayStatus evaluate(HttpServletRequest request) {
-        if (m_locationMonitorDao.findAllMonitoringLocationDefinitions().size() > 0) {
+        if (m_monitoringLocationDao.findAll().size() > 0) {
             return super.evaluate(request);
         } else {
             return DisplayStatus.NO_DISPLAY;
@@ -53,20 +54,20 @@ public class DistributedStatusNavBarEntry extends LocationBasedNavBarEntry {
     }
 
     /**
-     * <p>getLocationMonitorDao</p>
+     * <p>getMonitoringLocationDao</p>
      *
-     * @return a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
+     * @return a {@link org.opennms.netmgt.dao.api.MonitoringLocationDao} object.
      */
-    public LocationMonitorDao getLocationMonitorDao() {
-        return m_locationMonitorDao;
+    public MonitoringLocationDao getMonitoringLocationDao() {
+        return m_monitoringLocationDao;
     }
 
     /**
      * <p>setLocationMonitorDao</p>
      *
-     * @param locationMonitorDao a {@link org.opennms.netmgt.dao.api.LocationMonitorDao} object.
+     * @param monitoringLocationDao a {@link org.opennms.netmgt.dao.api.MonitoringLocationDao} object.
      */
-    public void setLocationMonitorDao(LocationMonitorDao locationMonitorDao) {
-        m_locationMonitorDao = locationMonitorDao;
+    public void setMonitoringLocationDao(MonitoringLocationDao monitoringLocationDao) {
+        m_monitoringLocationDao = monitoringLocationDao;
     }
 }

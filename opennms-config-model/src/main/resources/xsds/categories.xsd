@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/categories"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/categories"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the categories.xml configuration file. This
+    file contains categories for the UI and reports. Version:
+    $Id$.</documentation>
+  </annotation>
+
+  <element name="catinfo">
+    <annotation>
+      <documentation>Top-level element for the categories.xml configuration
+      file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="this:header">
+          <annotation>
+            <documentation>Header for this file.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:categorygroup">
+          <annotation>
+            <documentation>The category groups.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="header">
+    <annotation>
+      <documentation>Header containing information about this configuration
+      file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="rev" type="string">
+          <annotation>
+            <documentation>Revision of this file.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="created" type="string">
+          <annotation>
+            <documentation>Creation time in the 'dow mon dd hh:mm:ss zzz yyyy'
+            format.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="mstation" type="string">
+          <annotation>
+            <documentation>Monitoring station? This is seemingly
+            unused.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="categorygroup">
+    <annotation>
+      <documentation>A category group containing categories. The only parts of
+      the category group that seem to be used are the common element and the
+      list of categories.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="name" type="string">
+          <annotation>
+            <documentation>The name of the category group. This is seemingly
+            unused.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="comment" type="string">
+          <annotation>
+            <documentation>A comment describing the category group. This is
+            seemingly unused.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" ref="this:common">
+          <annotation>
+            <documentation>Common attributes that apply to all categories in
+            the group.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" ref="this:categories">
+          <annotation>
+            <documentation>The categories belonging to this category
+            group.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="common">
+    <annotation>
+      <documentation>Common attributes that apply to all categories in a
+      group.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="rule" type="string">
+          <annotation>
+            <documentation>A common rule that will be applied to all
+            categories in this group in addition to the category's
+            rule.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="categories">
+    <annotation>
+      <documentation>Categories belonging to a category group.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:category">
+          <annotation>
+            <documentation>A category.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="category">
+    <annotation>
+      <documentation>A category.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="label" type="string">
+          <annotation>
+            <documentation>The category label. NOTE: category labels will need
+            to be unique across category groups.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="comment" type="string">
+          <annotation>
+            <documentation>A comment describing the category.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="normal" type="double">
+          <annotation>
+            <documentation>The normal threshold value for the category in
+            percent. The UI displays the category in green if the overall
+            availability for the category is equal to or greater than this
+            value.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="warning" type="double">
+          <annotation>
+            <documentation>The warning threshold value for the category in
+            percent. The UI displays the category in yellow if the overall
+            availability for the category is equal to or greater than this
+            value but less than the normal threashold. If availability is less
+            than this value, category is displayed in red.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" name="service"
+                 type="string">
+          <annotation>
+            <documentation>A service relevant to this category. For a
+            nodeid/ip/service tuple to be added to a category, it will need to
+            pass the rule(categorygroup rule &amp; category rule) and the
+            service will need to be in the category service list. If there are
+            no services defined, all tuples that pass the rule are added to
+            the category.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="rule" type="string">
+          <annotation>
+            <documentation>The category rule.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+</schema>

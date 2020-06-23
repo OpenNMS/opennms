@@ -1,0 +1,82 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== StrafePingMonitor
+
+This monitor is used to monitor http://en.wikipedia.org/wiki/Packet_delay_variation[packet delay variation] to a specific endpoint using _ICMP_.
+The main use case is to monitor a _WAN_ end point and visualize packet loss and _ICMP_ packet round trip time deviation.
+The _StrafePingMonitor_ performs multiple _ICMP echo requests_ (ping) and stores the response-time of each as well as the packet loss, in a _RRD_ file.
+Credit is due to Tobias Oetiker, as this graphing feature is an adaptation of the http://oss.oetiker.ch/smokeping/[SmokePing] tool that he developed.
+
+.Visualization of a graph from the StrafePingMonitor
+image::service-assurance/monitors/01_strafeping.png[]
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.StrafePingMonitor`
+| Remote Enabled | false
+|===
+
+===== Configuration and Usage
+
+Monitor specific parameters for the StrafePingMonitor
+[options="header, autowidth"]
+|===
+| Parameter             | Description                                                                                | Required | Default value
+| `timeout`             | Time in milliseconds to wait before assuming that a packet has not responded               | optional | `800`
+| `retry`               | The number of retries to attempt when a packet fails to respond in the given timeout       | optional | `2`
+| `ping-count`          | The number of pings to attempt each interval                                               | required | `20`
+| `failure-ping-count`  | The number of pings that need to fail for the service to be considered down                | required | `20`
+| `allow-fragmentation` | Whether to set the "Don't Fragment" bit on outgoing packets                                | optional | `true`
+| `dscp`                | DSCP traffic-control value.                                                                | optional | `0`
+| `packet-size`         | Number of bytes of the ICMP packet to send.                                                | optional | `64`
+| `wait-interval`       | Time in milliseconds to wait between each _ICMP_ _echo-request_ packet                     | required | `50`
+| `rrd-repository`      | The location to write _RRD data_. Generally, you will not want to change this from default | required | `$OPENNMS_HOME/share/rrd/response`
+| `rrd-base-name`       | The name of the RRD file to write (minus the extension, `.rrd` or `.jrb`)                  | required | `strafeping`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+The _StrafePingMonitor_ is typically used on WAN connections and not activated for every ICMP enabled device in your network.
+Further this monitor is much I/O heavier than just a simple RRD graph with a single ICMP response time measurement.
+By default you can find a separate _poller package_ in the 'poller-configuration.xml' called _strafer_.
+Configure the `include-range` or a `filter` to enable monitoring for devices with the service _StrafePing_.
+
+TIP: Don't forget to assign the service _StrafePing_ on the IP interface to be activated.
+
+The following example enables the monitoring for the service _StrafePing_ on IP interfaces in the range 10.0.0.1 until 10.0.0.20.
+Additionally the Nodes have to be in a _surveillance category_ named `Latency`.
+
+[source, xml]
+----
+<package name="strafer" >
+   <filter>categoryName == 'Latency'</filter>
+   <include-range begin="10.0.0.1" end="10.0.0.20"/>
+   <rrd step="300">
+     <rra>RRA:AVERAGE:0.5:1:2016</rra>
+     <rra>RRA:AVERAGE:0.5:12:1488</rra>
+     <rra>RRA:AVERAGE:0.5:288:366</rra>
+     <rra>RRA:MAX:0.5:288:366</rra>
+     <rra>RRA:MIN:0.5:288:366</rra>
+   </rrd>
+   <service name="StrafePing" interval="300000" user-defined="false" status="on">
+     <parameter key="retry" value="0"/>
+     <parameter key="timeout" value="3000"/>
+     <parameter key="ping-count" value="20"/>
+     <parameter key="failure-ping-count" value="20"/>
+     <parameter key="wait-interval" value="50"/>
+     <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+     <parameter key="rrd-base-name" value="strafeping"/>
+   </service>
+   <downtime interval="30000" begin="0" end="300000"/>
+   <downtime interval="300000" begin="300000" end="43200000"/>
+   <downtime interval="600000" begin="43200000" end="432000000"/>
+   <downtime begin="432000000" delete="true"/>
+ </package>
+ <monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor"/>
+----

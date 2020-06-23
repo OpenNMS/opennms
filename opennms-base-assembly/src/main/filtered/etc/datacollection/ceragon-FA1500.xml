@@ -1,0 +1,105 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Ceragon">
+   <resourceType name="faEtherStatsTableIndex" label="Ethernet Trunk Stats" resourceLabel="Ethernet Interface (ifIndex ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="faDrawerLevelStatsIndex" label="Drawer Level Stats" resourceLabel="Drawer (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="faMuxLevelStatsIndex" label="SDH Regenerator Stats" resourceLabel="SDH/SONET STM-1 Radio (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="faAccessStatTableIndex" label="E1 Trib Stats" resourceLabel="E1 Port (ifIndex ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <!-- Ceragon FA1500 Ethernet Interfaces - Data from RMON (MIB-2) sources & Enterprise MIBS -->
+   <group name="ceragonfa1500-eth-stats" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.1" instance="faEtherStatsTableIndex" alias="etherStatsIndex" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.3" instance="faEtherStatsTableIndex" alias="eSDropEvents" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.4" instance="faEtherStatsTableIndex" alias="eSOctets" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.5" instance="faEtherStatsTableIndex" alias="eSPkts" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.6" instance="faEtherStatsTableIndex" alias="eSBroadcastPkts" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.7" instance="faEtherStatsTableIndex" alias="eSMulticastPkts" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.8" instance="faEtherStatsTableIndex" alias="eSCRCAlignErrors" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.9" instance="faEtherStatsTableIndex" alias="eSUndersizePkts" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.10" instance="faEtherStatsTableIndex" alias="eSOversizePkts" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.11" instance="faEtherStatsTableIndex" alias="eSFragments" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.12" instance="faEtherStatsTableIndex" alias="eSJabbers" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.13" instance="faEtherStatsTableIndex" alias="eSCollisions" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.14" instance="faEtherStatsTableIndex" alias="eSPkts64Oct" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.15" instance="faEtherStatsTableIndex" alias="eSPkts65to127Oct" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.16" instance="faEtherStatsTableIndex" alias="eSPkts128to255Oct" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.17" instance="faEtherStatsTableIndex" alias="eSPkts256to511Oct" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.18" instance="faEtherStatsTableIndex" alias="eSPkts512to1023Oct" type="counter"/>
+      <mibObj oid=".1.3.6.1.2.1.16.1.1.1.19" instance="faEtherStatsTableIndex" alias="eSPkts1024to1518Oct" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.4.14.1.1.2" instance="faEtherStatsTableIndex" alias="eSAFrameReceivedOk" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.4.14.1.1.16" instance="faEtherStatsTableIndex" alias="eSRadioTransFrames" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.4.14.1.1.20" instance="faEtherStatsTableIndex" alias="eSRadioRecdFrames" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.4.14.1.1.22" instance="faEtherStatsTableIndex" alias="eSRadioRecdCrcFrame" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.4.14.1.1.24" instance="faEtherStatsTableIndex" alias="eSSyncUnlockEvents" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.4.14.1.1.26" instance="faEtherStatsTableIndex" alias="eSAFrameTransOk" type="counter"/>
+   </group>
+   <!-- Ceragon FA1500 - Unit - Most Severe Alarm - Node Level Stats -->
+   <group name="ceragonfa1500-device-status" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.2281.2.1.20" instance="0" alias="genMostSevereAlarm" type="integer"/>
+   </group>
+   <!-- Ceragon FA1500 - Drawer Level Stats - ODU & IDU/Modem -->
+   <group name="ceragonfa1500-drawer-stats" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.2281.2.1.9.1.2" instance="faDrawerLevelStatsIndex" alias="genStatCelciusTemp" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.1.5.1.2" instance="faDrawerLevelStatsIndex" alias="oduStatCelciusTemp" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.1.4.1.3" instance="faDrawerLevelStatsIndex" alias="oduRLPerfMonThresh1" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.1.4.1.4" instance="faDrawerLevelStatsIndex" alias="oduRLPerfMonThresh2" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.1.4.1.30" instance="faDrawerLevelStatsIndex" alias="oduUnfadedRefRsl" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.1.5.1.5" instance="faDrawerLevelStatsIndex" alias="oduStatsRxLevel" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.1.6.1.1.16" instance="faDrawerLevelStatsIndex" alias="oduXpi" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.1.6.1.1.23" instance="faDrawerLevelStatsIndex" alias="oduMse" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.1.3.1.4" instance="faDrawerLevelStatsIndex" alias="mdmType" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.1.3.1.13" instance="faDrawerLevelStatsIndex" alias="mdmDefectBlocks" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.1.3.1.19" instance="faDrawerLevelStatsIndex" alias="mdmFecBlockCount" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.1.3.1.20" instance="faDrawerLevelStatsIndex" alias="mdmCurVoltage" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.1.3.1.21" instance="faDrawerLevelStatsIndex" alias="mdmXpicModeStat" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.1.5.1.13" instance="faDrawerLevelStatsIndex" alias="mdmMsePmThresh" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.1.3.1.21" instance="faDrawerLevelStatsIndex" alias="mdmXpiPmThresh" type="integer"/>
+   </group>
+   <!-- Ceragon FA1500 - Radio Interface and SDH Interface Stats -->
+   <group name="ceragonfa1500-mux-stats" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.3.2.1.2" instance="faMuxLevelStatsIndex" alias="rstStatBER" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.3.3.1.1.1" instance="faMuxLevelStatsIndex" alias="rstMonCurBBE" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.3.3.1.1.2" instance="faMuxLevelStatsIndex" alias="rstMonCurUAS" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.3.3.1.1.3" instance="faMuxLevelStatsIndex" alias="rstMonDayES" type="Integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.3.3.1.1.4" instance="faMuxLevelStatsIndex" alias="rstMonDaySES" type="Integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.3.3.1.1.5" instance="faMuxLevelStatsIndex" alias="rstMonDayBBE" type="Integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.3.3.1.1.6" instance="faMuxLevelStatsIndex" alias="rstMonDayUAS" type="Integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.3.2.3.3.1.1.7" instance="faMuxLevelStatsIndex" alias="rstMonDayOFS" type="Integer"/>
+   </group>
+   <!-- Ceragon FA1500 - E1 Error watching -->
+   <group name="ceragonfa1500-E1-levels" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.2281.4.2.1.1.1" instance="faAccessStatTableIndex" alias="accStatInterfaceBer" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.4.5.1.1.1" instance="faAccessStatTableIndex" alias="accStatES" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.4.5.1.1.2" instance="faAccessStatTableIndex" alias="accStatSES" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.4.5.1.1.3" instance="faAccessStatTableIndex" alias="accStatBBE" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.4.5.1.1.4" instance="faAccessStatTableIndex" alias="accStatUAS" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2281.4.5.1.1.5" instance="faAccessStatTableIndex" alias="accStatCV" type="gauge"/>
+   </group>
+   <systemDef name="Ceragon Fibreair 1500P">
+      <sysoid>.1.3.6.1.4.1.2281.1.4</sysoid>
+      <collect>
+         <includeGroup>ceragonfa1500-eth-stats</includeGroup>
+         <includeGroup>ceragonfa1500-drawer-stats</includeGroup>
+         <includeGroup>ceragonfa1500-mux-stats</includeGroup>
+         <includeGroup>ceragonfa1500-device-status</includeGroup>
+         <includeGroup>ceragonfa1500-E1-levels</includeGroup>
+      </collect>
+   </systemDef>
+   <systemDef name="Ceragon Fibreair 1500R">
+      <sysoid>.1.3.6.1.4.1.2281.1.4.4</sysoid>
+      <collect>
+         <includeGroup>ceragonfa1500-drawer-stats</includeGroup>
+         <includeGroup>ceragonfa1500-mux-stats</includeGroup>
+         <includeGroup>ceragonfa1500-device-status</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,9 +30,11 @@ package org.opennms.netmgt.provision.persist;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
 
 /**
@@ -45,6 +47,7 @@ public class OnmsIpInterfaceRequisition {
     
     private RequisitionInterface m_iface;
     private final List<OnmsMonitoredServiceRequisition> m_svcReqs;
+    private final List<OnmsInterfaceMetaDataRequisition> m_metaDataReqs;
 
     /**
      * <p>Constructor for OnmsIpInterfaceRequisition.</p>
@@ -54,6 +57,7 @@ public class OnmsIpInterfaceRequisition {
     public OnmsIpInterfaceRequisition(RequisitionInterface iface) {
         m_iface = iface;
         m_svcReqs = constructSvcReqs();
+        m_metaDataReqs = constructMetaDataRequistions();
     }
     
     RequisitionInterface getInterface() {
@@ -68,6 +72,12 @@ public class OnmsIpInterfaceRequisition {
         return reqs;
     }
 
+    private List<OnmsInterfaceMetaDataRequisition> constructMetaDataRequistions() {
+        return m_iface.getMetaData().stream()
+                .map(OnmsInterfaceMetaDataRequisition::new)
+                .collect(Collectors.toList());
+    }
+
     /**
      * <p>visit</p>
      *
@@ -78,6 +88,9 @@ public class OnmsIpInterfaceRequisition {
         for(OnmsMonitoredServiceRequisition svcReq : m_svcReqs) {
             svcReq.visit(visitor);
         }
+
+        m_metaDataReqs.forEach(r -> r.visit(visitor));
+
         visitor.completeInterface(this);
     }
 

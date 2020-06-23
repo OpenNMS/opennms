@@ -1,0 +1,27 @@
+{
+    "count": 1, 
+    "offset": 0, 
+    "notification": [
+        {
+            "ackId": 1, 
+            "ackTime": null,
+            "ackUser": null,
+            "destinations": [],
+            "eventId": 1,
+            "id": 1,
+            "ipAddress": "192.168.1.1",
+            "nodeId": 1,
+            "nodeLabel": "node1",
+            "queueId": null,
+            "serviceType": {
+                "id": 1,
+                "name": "ICMP"
+            },
+            "severity": "INDETERMINATE",
+            "textMessage": "This is a test notification",
+            "type": "NOTIFICATION",
+            "uei": "uei.opennms.org/test"
+        }
+    ], 
+    "totalCount": 1
+}

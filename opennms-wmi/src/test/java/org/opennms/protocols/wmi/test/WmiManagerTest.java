@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -120,7 +120,7 @@ public class WmiManagerTest extends TestCase {
 	 */
 	public final void testInit() throws WmiException {
 		// Set up WMI mock client.
-		m_WmiMock.connect("127.0.0.1", "Administrator", "password");
+		m_WmiMock.connect("127.0.0.1", "Administrator", "password", WmiParams.WMI_DEFAULT_NAMESPACE);
 		replay(m_WmiMock);
 
 		// Create a manager.
@@ -144,7 +144,7 @@ public class WmiManagerTest extends TestCase {
 		// Set up WMI mock client.
 		// 1) Expect a call to connect() with a bad hostname.
 		// 2) Throw a new WmiException indictating a bad hostname.
-		m_WmiMock.connect("bad-hostname", "Administrator", "password");
+		m_WmiMock.connect("bad-hostname", "Administrator", "password", WmiParams.WMI_DEFAULT_NAMESPACE);
 		expectLastCall()
 				.andThrow(
 						new WmiException(
@@ -179,7 +179,7 @@ public class WmiManagerTest extends TestCase {
 		// Set up WMI mock client.
 		// 1) Expect a call to connect() with a bad hostname.
 		// 2) Throw a new WmiException indictating a user or password.
-		m_WmiMock.connect("127.0.0.1", "Administrator", "wrongpassword");
+		m_WmiMock.connect("127.0.0.1", "Administrator", "wrongpassword", WmiParams.WMI_DEFAULT_NAMESPACE);
 		expectLastCall()
 				.andThrow(
 						new WmiException(
@@ -215,7 +215,7 @@ public class WmiManagerTest extends TestCase {
 		// Set up WMI mock client.
 		// 1) Expect a call to connect()
 		// 2) Expect a call to disconnect()
-		m_WmiMock.connect("127.0.0.1", "Administrator", "password");
+		m_WmiMock.connect("127.0.0.1", "Administrator", "password", WmiParams.WMI_DEFAULT_NAMESPACE);
 		m_WmiMock.disconnect();
 		replay(m_WmiMock);
 
@@ -279,7 +279,7 @@ public class WmiManagerTest extends TestCase {
 		// Set up WMI mock client.
 		// 1) Expect a call to connect() with a bad hostname.
 		// 2) Throw a new WmiException indictating a bad hostname.
-		m_WmiMock.connect("127.0.0.1", "Administrator", "password");
+		m_WmiMock.connect("127.0.0.1", "Administrator", "password", WmiParams.WMI_DEFAULT_NAMESPACE);
         m_WmiMock.performInstanceOf("Win32_BISO");
         
         expectLastCall()
@@ -336,7 +336,7 @@ public class WmiManagerTest extends TestCase {
                 )
         );
         
-        m_WmiMock.connect("127.0.0.1", "Administrator", "password");
+        m_WmiMock.connect("127.0.0.1", "Administrator", "password", WmiParams.WMI_DEFAULT_NAMESPACE);
         expect(m_WmiMock.performInstanceOf("Win32_BIOS")).andReturn(wos);
 		replay(m_WmiMock);
 
@@ -385,7 +385,7 @@ public class WmiManagerTest extends TestCase {
                 )
         );
 
-        m_WmiMock.connect("127.0.0.1", "Administrator", "password");
+        m_WmiMock.connect("127.0.0.1", "Administrator", "password", WmiParams.WMI_DEFAULT_NAMESPACE);
         expect(m_WmiMock.performInstanceOf("Win32_BIOS")).andReturn(wos);
 		replay(m_WmiMock);
 

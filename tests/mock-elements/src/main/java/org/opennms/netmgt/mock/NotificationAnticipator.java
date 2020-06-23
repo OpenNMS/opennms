@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.opennms.test.mock.MockUtil;
 
@@ -42,10 +42,10 @@ import org.opennms.test.mock.MockUtil;
  */
 public class NotificationAnticipator {
 
-    List<MockNotification> m_anticipated = new ArrayList<MockNotification>();
-    List<MockNotification> m_unanticipated = new ArrayList<MockNotification>();
-    List<MockNotification[]> m_earlyArrival = new ArrayList<MockNotification[]>();
-    List<MockNotification[]> m_lateBloomers = new ArrayList<MockNotification[]>();
+    List<MockNotification> m_anticipated = new ArrayList<>();
+    List<MockNotification> m_unanticipated = new ArrayList<>();
+    List<MockNotification[]> m_earlyArrival = new ArrayList<>();
+    List<MockNotification[]> m_lateBloomers = new ArrayList<>();
 
     long m_expectedDiff = 1000;
 
@@ -115,8 +115,8 @@ public class NotificationAnticipator {
     }
 
     public void reset() {
-        m_anticipated = new ArrayList<MockNotification>();
-        m_unanticipated = new ArrayList<MockNotification>();
+        m_anticipated = new ArrayList<>();
+        m_unanticipated = new ArrayList<>();
     }
 
     /**
@@ -149,7 +149,7 @@ public class NotificationAnticipator {
 
     public void verifyAnticipated(long lastNotifyTime, long waitTime,
             long sleepTime) {
-        StringBuffer problems = new StringBuffer();
+        final StringBuilder problems = new StringBuilder();
 
         long totalWaitTime = Math.max(0, lastNotifyTime + waitTime
                 - System.currentTimeMillis());
@@ -196,7 +196,7 @@ public class NotificationAnticipator {
 
     private static String listNotifications(String prefix,
             Collection<?> notifications) {
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
 
         for (Object o : notifications) {
             MockNotification notification;

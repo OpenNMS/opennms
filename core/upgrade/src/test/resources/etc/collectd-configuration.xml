@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<collectd-configuration threads="50">
+	<package name="example1">
+		<filter>IPADDR != '0.0.0.0'</filter>
+		<include-range begin="1.1.1.1" end="254.254.254.254" />
+		<service name="SNMP" interval="30000" user-defined="false" status="on">
+			<parameter key="collection" value="default" />
+			<parameter key="thresholding-enabled" value="true" />
+		</service>
+		<service name="OpenNMS-JVM" interval="30000" user-defined="false" status="on">
+			<parameter key="port" value="18980" />
+			<parameter key="retry" value="2" />
+			<parameter key="timeout" value="3000" />
+			<parameter key="protocol" value="rmi" />
+			<parameter key="urlPath" value="/jmxrmi" />
+			<parameter key="rrd-base-name" value="java" />
+			<parameter key="ds-name" value="opennms-jvm" />
+			<parameter key="friendly-name" value="opennms-jvm" />
+			<parameter key="collection" value="jsr160" />
+			<parameter key="thresholding-enabled" value="true" />
+		</service>
+	</package>
+	<collector service="SNMP"
+		class-name="org.opennms.netmgt.collectd.SnmpCollector" />
+	<collector service="OpenNMS-JVM"
+		class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
+	<!--
+		Define a JMX-Based collector not used in any package.
+		This is to verify issue NMS-7792.
+	 -->
+	<collector service="CUSTOM" class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
+</collectd-configuration>
+

@@ -8,6 +8,7 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="dhustace" id="1.7.1-ackd">
+		<validCheckSum>3:2e973f05e0c80c1f4dd954355c6681d7</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="acks" /></not>
 		</preConditions>
@@ -16,7 +17,7 @@
 			<column name="id" type="integer">
 				<constraints primaryKey="true" nullable="false" />
 			</column>
-			<column name="acktime" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP">
+			<column name="acktime" type="TIMESTAMP WITH TIME ZONE" defaultValueDate="CURRENT_TIMESTAMP">
 				<constraints nullable="false" />
 			</column>
 			<column name="ackuser" type="varchar(64)" defaultValue="admin">

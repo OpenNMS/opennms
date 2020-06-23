@@ -1,0 +1,80 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== WS-Man Detector
+
+The WS-Management detector attempts to connect to the agent defined in `wsman-config.xml` and issues an Identify command.
+If the Identify command is successful, the service is marked as detected and the product details returned by the command are optionally stored in the asset fields (see details bellow.)
+
+===== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.wsman.WsManDetector`
+|===
+
+===== Configuration and Usage
+
+.Parameters for the <DETECTOR-NAME-HERE>
+[options="header, autowidth"]
+|===
+| Parameter      | Description                                                                                        | Required | Default value
+| `updateAssets` | Stores the product vendor and product version in the `vendor` and `modelNumber` asset fields       | false    | `true`
+|===
+
+===== Examples
+
+If a valid response to the Identify command is received, the product vendor and product version are stored in the `vendor` and `modelNumber` fields of the associated node`s assets table.
+
+For example, a Windows Server 2008 machine returns:
+
+|===
+| *Product Vendor*  | Microsoft Corporation
+| *Product Version* | OS: 6.1.7601 SP: 1.0 Stack: 2.0
+|===
+
+If these assets field are being used for another purpose, this behavior can be disabled by settings the `updateAssets` parameters to `false` in the detector configuration of the appropriate foreign source.
+
+NOTE: Some agents may respond to the Identify command with generic identities such as `Openwsman` `2.0.0`.
+      These values can be overridden by specifying the `product-vendor` and `product-version` attributes in `wsman-config.xml`.
+
+Example detector configuration:
+
+[source, xml]
+----
+<detector name="WS-Man" class="org.opennms.netmgt.provision.detector.wsman.WsManDetector">
+    <parameter key="updateAssets" value="true"/>
+</detector>
+----
+
+The response is logged as _DEBUG_ information in `provisiond.log` and looks like the following:
+
+[source, xml]
+----
+ID: 3
+Response-Code: 200
+309Encoding: UTF-8
+Content-Type: application/soap+xml;charset=UTF-8
+Headers: {Content-Length=[787], content-type=[application/soap+xml;charset=UTF-8], Date=[Mon, 08 Feb 2016 14:21:20 GMT], Server=[Microsoft-HTTPAPI/2.0]}
+Payload:
+<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xml:lang="en-US">
+  <s:Header/>
+  <s:Body>
+    <wsmid:IdentifyResponse xmlns:wsmid="http://schemas.dmtf.org/wbem/wsman/identity/1/wsmanidentity.xsd">
+    <wsmid:ProtocolVersion>http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd</wsmid:ProtocolVersion>
+    <wsmid:ProductVendor>Microsoft Corporation</wsmid:ProductVendor><1>
+    <wsmid:ProductVersion>OS: 6.2.9200 SP: 0.0 Stack: 3.0</wsmid:ProductVersion><2>
+    <wsmid:SecurityProfiles>
+      <wsmid:SecurityProfileName>http://schemas.dmtf.org/wbem/wsman/1/wsman/secprofile/http/basic</wsmid:SecurityProfileName>
+      <wsmid:SecurityProfileName>http://schemas.dmtf.org/wbem/wsman/1/wsman/secprofile/http/spnego-kerberos</wsmid:SecurityProfileName>
+    </wsmid:SecurityProfiles>
+    </wsmid:IdentifyResponse>
+  </s:Body>
+</s:Envelope>
+----
+
+<1> `ProductVendor`: Stored to the asset field `vendor`
+<2> `ProductVersion`: Stored in the asset field `modelNumber`
+
+NOTE: The information of the asset fields are used in the _System Definition Rule_ to decide which performance metrics will be gathered from _Collectd_.

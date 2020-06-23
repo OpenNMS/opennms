@@ -1,6 +1,38 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal.gwt.client;
 
-public class SharedVertex {
+import java.io.Serializable;
+
+public class SharedVertex implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String m_key;
     private int m_initialX;
@@ -14,6 +46,9 @@ public class SharedVertex {
     private String m_label;
     private String m_tooltipText;
     private String m_statusCount = "0";
+    private String m_styleName = "vertex";
+    private boolean m_targets;
+    private int m_edgePathOffset;
 
     /**
      * @return the statusCount
@@ -51,10 +86,6 @@ public class SharedVertex {
 
     public void setSelected(boolean selected) {
         m_selected = selected;
-    }
-
-    public void setIconUrl(String iconUrl) {
-        m_iconUrl = iconUrl;
     }
 
     public void setLabel(String label) {
@@ -119,5 +150,29 @@ public class SharedVertex {
 
     public void setSVGIconId(String m_svgIconId) {
         this.m_svgIconId = m_svgIconId;
+    }
+
+    public void setStyleName(String CSSStyle) {
+        m_styleName = CSSStyle;
+    }
+
+    public String getStyleName() {
+        return m_styleName;
+    }
+
+    public boolean isTargets() {
+        return m_targets;
+    }
+
+    public void setTargets(boolean targets) {
+        m_targets = targets;
+    }
+
+    public void setEdgePathOffset(int edgePathOffset) {
+        m_edgePathOffset = edgePathOffset;
+    }
+
+    public int getEdgePathOffset() {
+        return m_edgePathOffset;
     }
 }

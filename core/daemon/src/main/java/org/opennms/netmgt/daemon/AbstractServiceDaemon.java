@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -55,16 +55,16 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     /**
      * The current status of this fiber
      */
-    private int m_status;
+    private volatile int m_status;
 
-    private String m_name;
+    private final String m_name;
     
-    private Object m_statusLock = new Object();
+    private final Object m_statusLock = new Object();
 
     /**
      * <p>onInit</p>
      */
-    abstract protected void onInit();
+    protected abstract void onInit();
 
     /**
      * <p>onPause</p>
@@ -92,7 +92,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * @return a {@link java.lang.String} object.
      */
     @Override
-    final public String getName() { return m_name; }
+    public final String getName() { return m_name; }
 
     /**
      * <p>Constructor for AbstractServiceDaemon.</p>
@@ -215,7 +215,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
     /**
      * <p>init</p>
      */
-    final public void init() {
+    public final void init() {
         
         Logging.withPrefix(getName(), new Runnable() {
 
@@ -237,7 +237,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>pause</p>
      */
     @Override
-    final public void pause() {
+    public final void pause() {
         Logging.withPrefix(getName(), new Runnable() {
 
             @Override
@@ -260,7 +260,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>resume</p>
      */
     @Override
-    final public void resume() {
+    public final void resume() {
         
         Logging.withPrefix(getName(), new Runnable() {
 
@@ -285,7 +285,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * <p>start</p>
      */
     @Override
-    final public synchronized void start() {
+    public final synchronized void start() {
         
         Logging.withPrefix(getName(), new Runnable() {
 
@@ -309,7 +309,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * the command is silently discarded.
      */
     @Override
-    final public synchronized void stop() {
+    public final synchronized void stop() {
         
         Logging.withPrefix(getName(), new Runnable() {
 
@@ -332,7 +332,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, SpringServ
      * Destroys the current service.
      */
     @Override
-    final public void destroy() {
+    public final void destroy() {
         stop();
     }
 

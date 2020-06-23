@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,8 +31,10 @@ package org.opennms.nrtg.nrtbroker.local.internal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opennms.nrtg.api.NrtBroker;
 import org.opennms.nrtg.api.ProtocolCollector;
@@ -48,7 +50,7 @@ import org.slf4j.LoggerFactory;
 
 public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
 
-    private class TimedOutMap {
+    private static class TimedOutMap {
         private Map<String, List<MeasurementSet>> m_measurementSets = new HashMap<String, List<MeasurementSet>>();
         private Map<String, Date> m_lastAccess = new HashMap<String, Date>();
 
@@ -62,7 +64,7 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
 
         public synchronized void addMeasurementSets(final Map<String, MeasurementSet> measurementSets) {
             for (final Map.Entry<String, MeasurementSet> entry : measurementSets.entrySet()) {
-                String arr[] = entry.getKey().split(",");
+                String[] arr = entry.getKey().split(",");
 
                 for (String destination : arr) {
                     addMeasurementSet(destination.trim(), entry.getValue());
@@ -82,14 +84,16 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
         }
 
         private synchronized void doHousekeeping() {
-            for (final String key : m_lastAccess.keySet()) {
-                final Date lastAccess = m_lastAccess.get(key);
+            final Iterator<Entry<String,Date>> it = m_lastAccess.entrySet().iterator();
+            while (it.hasNext()) {
+                final Entry<String,Date> entry = it.next();
+                final Date lastAccess = entry.getValue();
                 final Date now = new Date();
                 if (now.getTime() - lastAccess.getTime() > 120000) {
-                    m_lastAccess.remove(key);
-                    m_measurementSets.remove(key);
+                    it.remove(); // removes entry from m_lastAccess to avoid ConcurrentModificationException
+                    m_measurementSets.remove(entry.getKey());
 
-                    logger.warn("Timed out object removed '{}'", key);
+                    logger.warn("Timed out object removed '{}'", entry.getKey());
                 }
             }
         }
@@ -99,7 +103,7 @@ public class NrtBrokerLocal implements NrtBroker, NrtBrokerLocalMBean {
         }
     }
 
-    private static Logger logger = LoggerFactory.getLogger("OpenNMS.WEB." + NrtBrokerLocal.class);
+    private static Logger logger = LoggerFactory.getLogger(NrtBrokerLocal.class);
 
     private List<ProtocolCollector> m_protocolCollectors;
     private TimedOutMap m_measurementSets = new TimedOutMap();

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -55,7 +55,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public String getVertexNamespace() {
+	public String getNamespace() {
 		return m_namespace;
 	}
 
@@ -66,31 +66,23 @@ public class SimpleVertexProvider implements VertexProvider {
 
 	@Override
 	public Vertex getVertex(String namespace, String id) {
-		if (getVertexNamespace().equals(namespace)) {
-			return m_vertexMap.get(id);
-		}
-		return null;
+		return getVertex(new DefaultVertexRef(namespace, id));
 	}
 
 	@Override
-	public Vertex getVertex(VertexRef reference) {
+	public Vertex getVertex(VertexRef reference, Criteria... criteria) {
 		return getSimpleVertex(reference);
 	}
 
 	private Vertex getSimpleVertex(VertexRef reference) {
-		if (reference != null && getVertexNamespace().equals(reference.getNamespace())) {
+		if (reference != null && getNamespace().equals(reference.getNamespace())) {
 			return m_vertexMap.get(reference.getId());
 		}
 		return null;
 	}
 
 	@Override
-	public List<Vertex> getVertices() {
-		return Collections.unmodifiableList(new ArrayList<Vertex>(m_vertexMap.values()));
-	}
-
-	@Override
-	public List<Vertex> getVertices(Collection<? extends VertexRef> references) {
+	public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
 		List<Vertex> vertices = new ArrayList<Vertex>();
 		for(VertexRef ref : references) {
 			Vertex vertex = getSimpleVertex(ref);
@@ -159,7 +151,7 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public List<Vertex> getChildren(VertexRef group) {
+	public List<Vertex> getChildren(VertexRef group, Criteria... criteria) {
 		Set<VertexRef> children = m_children.get(group);
 		return children == null ? Collections.<Vertex>emptyList() : getVertices(children);
 	}
@@ -196,9 +188,9 @@ public class SimpleVertexProvider implements VertexProvider {
 		m_listeners.remove(vertexListener);
 	}
 
-	private void removeVertices(List<? extends VertexRef> all) {
-		for(VertexRef vertex : all) {
-			LoggerFactory.getLogger(this.getClass()).debug("Removing vertex: {}", vertex);
+	private void removeVertices(List<? extends VertexRef> vertices) {
+		for(VertexRef vertex : vertices) {
+			LoggerFactory.getLogger(this.getClass()).trace("Removing vertex: {}", vertex);
 			// Remove the vertex from the main map
 			m_vertexMap.remove(vertex.getId());
 			// Remove the vertex from the parent and child maps
@@ -213,7 +205,7 @@ public class SimpleVertexProvider implements VertexProvider {
 				LoggerFactory.getLogger(this.getClass()).warn("Discarding invalid vertex: {}", vertex);
 				continue;
 			}
-			LoggerFactory.getLogger(this.getClass()).debug("Adding vertex: {}", vertex);
+			LoggerFactory.getLogger(this.getClass()).trace("Adding vertex: {}", vertex);
 			m_vertexMap.put(vertex.getId(), vertex);
 		}
 	}
@@ -243,8 +235,9 @@ public class SimpleVertexProvider implements VertexProvider {
 	}
 
 	@Override
-	public List<Vertex> getVertices(Criteria criteria) {
-		throw new UnsupportedOperationException("VertexProvider.getVertices is not yet implemented.");
+	public List<Vertex> getVertices(Criteria... criteria) {
+		// TODO: Change code to properly filter on Criteria
+		return Collections.unmodifiableList(new ArrayList<>(m_vertexMap.values()));
 	}
 
 	@Override
@@ -260,17 +253,22 @@ public class SimpleVertexProvider implements VertexProvider {
 		fireVerticesRemoved(all);
 	}
 
-	/**
+    @Override
+    public int getVertexTotalCount() {
+        return m_vertexMap.size();
+    }
+
+    /**
 	 * @deprecated You should search by the namespace and ID tuple instead
 	 */
 	@Override
 	public boolean containsVertexId(String id) {
-		return containsVertexId(new AbstractVertexRef(getVertexNamespace(), id));
+		return containsVertexId(new DefaultVertexRef(getNamespace(), id));
 	}
 
 	@Override
-	public boolean containsVertexId(VertexRef id) {
-		return getVertex(id) != null;
+	public boolean containsVertexId(VertexRef id, Criteria... criteria) {
+		return getVertex(id, criteria) != null;
 	}
 
 }

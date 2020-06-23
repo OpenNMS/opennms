@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,11 +25,20 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.config.ui;
 
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.*;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
+
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.Table;
 
 /**
  * This class is used to display an brief overview about existing {@link Wallboard} configurations.
@@ -60,7 +69,6 @@ public class WallboardOverview extends VerticalLayout {
          * Setting the member fields
          */
         this.m_wallboardConfigView = wallboardConfigView;
-        m_beanItemContainer = WallboardProvider.getInstance().getBeanContainer();
 
         /**
          * Setting up the layout component
@@ -74,6 +82,7 @@ public class WallboardOverview extends VerticalLayout {
 
         Button button = new Button("Help");
         button.setStyleName("small");
+        button.setDescription("Display help and usage");
 
         button.addClickListener(new HelpClickListener(this, m_wallboardConfigView.getDashletSelector()));
 
@@ -91,12 +100,12 @@ public class WallboardOverview extends VerticalLayout {
          * Adding the table with the required {@link Table.ColumnGenerator} objects
          */
         m_table = new Table();
-        m_table.setContainerDataSource(m_beanItemContainer);
         m_table.setSizeFull();
 
         m_table.addGeneratedColumn("Edit", new Table.ColumnGenerator() {
             public Object generateCell(Table source, final Object itemId, Object columnId) {
                 Button button = new Button("Edit");
+                button.setDescription("Edit this Ops Board configuration");
                 button.setStyleName("small");
                 button.addClickListener(new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent clickEvent) {
@@ -110,10 +119,13 @@ public class WallboardOverview extends VerticalLayout {
         m_table.addGeneratedColumn("Remove", new Table.ColumnGenerator() {
             public Object generateCell(Table source, final Object itemId, Object columnId) {
                 Button button = new Button("Remove");
+                button.setDescription("Delete this Ops Board configuration");
                 button.setStyleName("small");
                 button.addClickListener(new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent clickEvent) {
+                        m_wallboardConfigView.removeTab(((Wallboard) itemId).getTitle());
                         WallboardProvider.getInstance().removeWallboard((Wallboard) itemId);
+                        refreshTable();
                     }
                 });
                 return button;
@@ -123,13 +135,45 @@ public class WallboardOverview extends VerticalLayout {
         m_table.addGeneratedColumn("Preview", new Table.ColumnGenerator() {
             public Object generateCell(Table source, final Object itemId, Object columnId) {
                 Button button = new Button("Preview");
+                button.setDescription("Preview this Ops Board configuration");
                 button.setStyleName("small");
                 button.addClickListener(new PreviewClickListener(WallboardOverview.this, (Wallboard) itemId));
                 return button;
             }
         });
 
-        m_table.setVisibleColumns(new Object[]{"title", "Edit", "Remove", "Preview"});
+        m_table.addGeneratedColumn("Default", new Table.ColumnGenerator() {
+            public Object generateCell(Table source, final Object itemId, Object columnId) {
+                CheckBox checkBox = new CheckBox();
+                checkBox.setImmediate(true);
+                checkBox.setDescription("Make this Ops Board configuration the default");
+
+                final Wallboard wallboard = m_beanItemContainer.getItem(itemId).getBean();
+                checkBox.setValue(wallboard.isDefault());
+
+                checkBox.addValueChangeListener(new Property.ValueChangeListener() {
+                    @Override
+                    public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                        boolean newValue = ((Boolean) valueChangeEvent.getProperty().getValue());
+
+                        if (newValue) {
+                            for (Wallboard wallboard1 : m_beanItemContainer.getItemIds()) {
+                                wallboard1.setDefault(false);
+                            }
+                        }
+
+                        wallboard.setDefault(newValue);
+
+                        m_table.refreshRowCache();
+
+                        WallboardProvider.getInstance().save();
+                    }
+                });
+                return checkBox;
+            }
+        });
+
+        refreshTable();
 
         /**
          * Adding the table
@@ -137,5 +181,16 @@ public class WallboardOverview extends VerticalLayout {
         addComponent(m_table);
 
         setExpandRatio(m_table, 1.0f);
+    }
+
+    void refreshTable() {
+        if (m_table != null) {
+            m_beanItemContainer = WallboardProvider.getInstance().getBeanContainer();
+            m_table.setContainerDataSource(m_beanItemContainer);
+            m_table.setVisibleColumns(new Object[]{"title", "Edit", "Remove", "Preview", "Default"});
+            m_table.setColumnHeader("title", "Title");
+            m_table.sort();
+            m_table.refreshRowCache();
+        }
     }
 }

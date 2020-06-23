@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -39,17 +39,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.resource.Vault;
+import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.categories.CatFactory;
+import org.opennms.netmgt.config.api.CatFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,29 +70,25 @@ public class CategoryModel extends Object {
      *
      * @return a {@link org.opennms.web.category.CategoryModel} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized static CategoryModel getInstance() throws IOException, MarshalException, ValidationException {
+    public static synchronized CategoryModel getInstance() throws IOException {
         if (CategoryModel.m_instance == null) {
             CategoryModel.m_instance = new CategoryModel();
         }
 
-        return (CategoryModel.m_instance );
+        return m_instance;
     }
 
     /** A mapping of category names to category instances. */
-    private HashMap<String, Category> m_categoryMap = new HashMap<String, Category>();
+    private Map<String, Category> m_categoryMap = new HashMap<String, Category>();
 
     /** A reference to the CategoryFactory to get to category definitions. */
     private CatFactory m_factory = null;
 
-    /** The Log4J category for logging status and debug messages. */
-
     /**
      * Create the instance of the CategoryModel.
      */
-    private CategoryModel() throws IOException, MarshalException, ValidationException {
+    private CategoryModel() throws IOException {
         CategoryFactory.init();
         m_factory = CategoryFactory.getInstance();
 
@@ -116,7 +107,7 @@ public class CategoryModel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (Category) m_categoryMap.get(categoryName);
+        return m_categoryMap.get(categoryName);
     }
 
     /**
@@ -175,7 +166,7 @@ public class CategoryModel extends Object {
             org.opennms.netmgt.config.categories.Category category = m_factory.getCategory(categoryName);
     
             if (category != null) {
-                comment = category.getComment();
+                comment = category.getComment().orElse(null);
             }
         } finally {
             m_factory.getReadLock().unlock();
@@ -220,7 +211,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public double getNodeAvailability(int nodeId) throws SQLException {
+    public static double getNodeAvailability(int nodeId) throws SQLException {
         Calendar cal = new GregorianCalendar();
         Date now = cal.getTime();
         cal.add(Calendar.DATE, -1);
@@ -240,7 +231,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public double getNodeAvailability(int nodeId, Date start, Date end) throws SQLException {
+    static double getNodeAvailability(int nodeId, Date start, Date end) throws SQLException {
         if (start == null || end == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -255,9 +246,9 @@ public class CategoryModel extends Object {
 
         double avail = -1;
 
-        final DBUtils d = new DBUtils(getClass());
+        final DBUtils d = new DBUtils(CategoryModel.class);
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             
             PreparedStatement stmt = conn.prepareStatement("select getManagePercentAvailNodeWindow(?, ?, ?) as avail");
@@ -282,91 +273,6 @@ public class CategoryModel extends Object {
 
         return avail;
     }
-    
-    /**
-     * Return the availability percentage for all managed services on the given
-     * nodes for the last 24 hours. If there are no managed services on these
-     * nodes, then a value of -1 is returned.
-     *
-     * @param nodeIds a {@link java.util.Set} object.
-     * @return a {@link java.util.Map} object.
-     * @throws java.sql.SQLException if any.
-     */
-    public Map<Integer, Double> getNodeAvailability(Set<Integer> nodeIds) throws SQLException {
-        Calendar cal = new GregorianCalendar();
-        Date now = cal.getTime();
-        cal.add(Calendar.DATE, -1);
-        Date yesterday = cal.getTime();
-
-        return getNodeAvailability(nodeIds, yesterday, now);
-    }    
-    /**
-     * Return the availability percentage for all managed services on the given
-     * nodes from the given start time until the given end time. If there are no
-     * managed services on these nodes, then a value of -1 is returned.
-     *
-     * @param nodeIds a {@link java.util.Set} object.
-     * @param start a {@link java.util.Date} object.
-     * @param end a {@link java.util.Date} object.
-     * @return a {@link java.util.Map} object.
-     * @throws java.sql.SQLException if any.
-     */
-    public Map<Integer, Double> getNodeAvailability(Set<Integer> nodeIds, Date start, Date end) throws SQLException {
-    	if(nodeIds==null || nodeIds.size()==0){
-    		throw new IllegalArgumentException("Cannot take nodeIds null or with length 0.");
-    	}
-        if (start == null || end == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        if (end.before(start)) {
-            throw new IllegalArgumentException("Cannot have an end time before the start time.");
-        }
-
-        if (end.equals(start)) {
-            throw new IllegalArgumentException("Cannot have an end time equal to the start time.");
-        }
-
-        double avail = -1;
-        int nodeid = 0;
-        Map<Integer, Double> retMap = new TreeMap<Integer, Double>();
-
-        final DBUtils d = new DBUtils(getClass());
-        try {
-            Connection conn = Vault.getDbConnection();
-            d.watch(conn);
-        	StringBuffer sb = new StringBuffer("select nodeid, getManagePercentAvailNodeWindow(nodeid, ?, ?)  from node where nodeid in (");
-        	Iterator<Integer> it = nodeIds.iterator();
-        	while (it.hasNext()){
-        		sb.append(it.next());
-        		if (it.hasNext()) {
-        			sb.append(", ");
-        		}
-        	}
-        	sb.append(")");
-            PreparedStatement stmt = conn.prepareStatement(sb.toString());
-            d.watch(stmt);
-            
-            // yes, these are supposed to be backwards, the end time first
-            stmt.setTimestamp(1, new Timestamp(end.getTime()));
-            stmt.setTimestamp(2, new Timestamp(start.getTime()));
-
-            ResultSet rs = stmt.executeQuery();
-            d.watch(rs);
-
-            while (rs.next()) {
-            	nodeid = rs.getInt(1);
-                avail = rs.getDouble(2);
-                retMap.put(Integer.valueOf(nodeid), Double.valueOf(avail));
-            }
-        } catch (final SQLException e) {
-            LOG.warn("Failed to get node availability for nodeIds {}", nodeIds, e);
-        } finally {
-            d.cleanUp();
-        }
-
-        return Collections.unmodifiableMap(retMap);
-    }    
 
     /**
      * Return the availability percentage for all managed services on the given
@@ -378,7 +284,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public double getInterfaceAvailability(int nodeId, String ipAddr) throws SQLException {
+    public static double getInterfaceAvailability(int nodeId, String ipAddr) throws SQLException {
         if (ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -404,7 +310,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public double getInterfaceAvailability(int nodeId, String ipAddr, Date start, Date end) throws SQLException {
+    static double getInterfaceAvailability(int nodeId, String ipAddr, Date start, Date end) throws SQLException {
         if (ipAddr == null || start == null || end == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -419,9 +325,9 @@ public class CategoryModel extends Object {
 
         double avail = -1;
 
-        final DBUtils d = new DBUtils(getClass());
+        final DBUtils d = new DBUtils(CategoryModel.class);
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
 
             PreparedStatement stmt = conn.prepareStatement("select getManagePercentAvailIntfWindow(?, ?, ?, ?) as avail");
@@ -458,7 +364,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public double getServiceAvailability(int nodeId, String ipAddr, int serviceId) throws SQLException {
+    public static double getServiceAvailability(int nodeId, String ipAddr, int serviceId) throws SQLException {
         if (ipAddr == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -474,8 +380,8 @@ public class CategoryModel extends Object {
     /**
      * Return the availability percentage for a managed service from the given
      * start time until the given end time. If the service is not managed, then
-     * a value of -1 is returned.
-     *
+     * a value of -1.0 is returned.
+     * 
      * @param nodeId a int.
      * @param ipAddr a {@link java.lang.String} object.
      * @param serviceId a int.
@@ -484,7 +390,7 @@ public class CategoryModel extends Object {
      * @return a double.
      * @throws java.sql.SQLException if any.
      */
-    public double getServiceAvailability(int nodeId, String ipAddr, int serviceId, Date start, Date end) throws SQLException {
+    static double getServiceAvailability(int nodeId, String ipAddr, int serviceId, Date start, Date end) throws SQLException {
         if (ipAddr == null || start == null || end == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -497,31 +403,26 @@ public class CategoryModel extends Object {
             throw new IllegalArgumentException("Cannot have an end time equal to the start time.");
         }
 
-        double avail = -1;
-
-        final DBUtils d = new DBUtils(getClass());
+        final DBUtils d = new DBUtils(CategoryModel.class);
         try {
-            Connection conn = Vault.getDbConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             d.watch(conn);
             
-            PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ipinterface.ismanaged='M' and ifservices.nodeid=? and ifservices.ipaddr=? and serviceid=?");
+            PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(ifservices.id, ?, ?) as avail from ifservices, ipinterface, node where ifservices.ipInterfaceId = ipinterface.id and ipInterface.nodeid = node.nodeid and ifservices.status='A' and ipinterface.ismanaged='M' and node.nodetype='A' and node.nodeid=? and ipInterface.ipaddr=? and ifServices.serviceid=?");
             d.watch(stmt);
             
-            stmt.setInt(1, nodeId);
-            stmt.setString(2, ipAddr);
-            stmt.setInt(3, serviceId);
             // yes, these are supposed to be backwards, the end time first
-            stmt.setTimestamp(4, new Timestamp(end.getTime()));
-            stmt.setTimestamp(5, new Timestamp(start.getTime()));
-            stmt.setInt(6, nodeId);
-            stmt.setString(7, ipAddr);
-            stmt.setInt(8, serviceId);
+            stmt.setTimestamp(1, new Timestamp(end.getTime()));
+            stmt.setTimestamp(2, new Timestamp(start.getTime()));
+            stmt.setInt(3, nodeId);
+            stmt.setString(4, ipAddr);
+            stmt.setInt(5, serviceId);
 
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
             
             if (rs.next()) {
-                avail = rs.getDouble("avail");
+                return rs.getDouble("avail");
             }
         } catch (final SQLException e) {
             LOG.warn("Failed to get service availability for nodeId {}, interface {}, serviceId {}", nodeId, ipAddr, serviceId, e);
@@ -529,6 +430,6 @@ public class CategoryModel extends Object {
             d.cleanUp();
         }
 
-        return avail;
+        return -1.0;
     }
 }

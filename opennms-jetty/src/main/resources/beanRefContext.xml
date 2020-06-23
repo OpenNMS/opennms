@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd" default-lazy-init="true">
-        
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd" default-lazy-init="true">
+
    <bean id="jettyServerContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
      <constructor-arg>
        <list>
          <value>META-INF/opennms/applicationContext-jettyServer.xml</value>
        </list>
      </constructor-arg>
-     <!-- comment this out until I actually need it -->
-     <!-- constructor-arg ref="daemonContext" / -->
    </bean>
-   
+
+    <bean id="webContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+        <!-- Use thresholdingContext as the parent so the thresholding and poll outages config DAOs are exposed  -->
+        <constructor-arg ref="thresholdingContext" />
+    </bean>
+
 </beans>

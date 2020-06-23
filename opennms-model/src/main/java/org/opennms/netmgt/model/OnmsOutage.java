@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -50,10 +50,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
-import org.opennms.core.xml.bind.InetAddressXmlAdapter;
-import org.springframework.core.style.ToStringCreator;
+import org.opennms.core.network.InetAddressXmlAdapter;
+
+import com.google.common.base.MoreObjects;
 
 
 /**
@@ -64,7 +67,8 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement(name="outage")
 @Entity
 @Table(name="outages")
-@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
+@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId join ipInterface on x.nodeid = ipInterface.nodeid join ifServices on ipInterface.id = ifServices.ipInterfaceId where ifServices.id = ifServiceId and cg.groupId in (:userGroups))")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsOutage implements Serializable {
 
     /**
@@ -122,6 +126,19 @@ public class OnmsOutage implements Serializable {
      * default constructor
      */
     public OnmsOutage() {
+    }
+
+    /**
+     */
+    public OnmsOutage(Date ifLostService, OnmsMonitoredService monitoredService) {
+        m_ifLostService = ifLostService;
+        m_monitoredService = monitoredService;
+    }
+
+    public OnmsOutage(Date ifLostService, Date ifRegainedService, OnmsMonitoredService monitoredService) {
+        m_ifLostService = ifLostService;
+        m_ifRegainedService = ifRegainedService;
+        m_monitoredService = monitoredService;
     }
 
     /**
@@ -202,7 +219,6 @@ public class OnmsOutage implements Serializable {
         m_ifLostService = ifLostService;
     }
 
-    // @XmlTransient
     /**
      * <p>getServiceLostEvent</p>
      *
@@ -244,7 +260,6 @@ public class OnmsOutage implements Serializable {
         m_ifRegainedService = ifRegainedService;
     }
 
-    // @XmlTransient
     /**
      * <p>getServiceRegainedEvent</p>
      *
@@ -304,16 +319,92 @@ public class OnmsOutage implements Serializable {
     public void setSuppressedBy(String suppressorMan){
     	m_suppressedBy = suppressorMan;
     }
-    
-    
+
+
+    /**
+     * This method is necessary for CXF to be able to introspect
+     * the type of {@link OnmsNode} parameters.
+     *
+     * @return a {@link OnmsNode} object.
+     */
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public OnmsNode getNode() {
+        return getMonitoredService().getIpInterface().getNode();
+    }
+
+    /**
+     * This method is necessary for CXF to be able to introspect
+     * the type of {@link OnmsNode} parameters.
+     */
+    public void setNode(OnmsNode node) {
+        OnmsMonitoredService service = getMonitoredService();
+        if (service == null) {
+            service = new OnmsMonitoredService();
+            setMonitoredService(service);
+        }
+        OnmsIpInterface intf = service.getIpInterface();
+        if (intf == null) {
+            intf = new OnmsIpInterface();
+            service.setIpInterface(intf);
+        }
+        intf.setNode(node);
+    }
+
     /**
      * <p>getNodeId</p>
      *
      * @return a {@link java.lang.Integer} object.
      */
     @Transient
+    @XmlElement(name="nodeId")
     public Integer getNodeId(){
     	return getMonitoredService().getNodeId();
+    }
+
+    /**
+     * <p>getNodeLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Transient
+    @XmlElement(name="nodeLabel")
+    public String getNodeLabel(){
+        return getMonitoredService().getIpInterface().getNode().getLabel();
+    }
+
+    /**
+     * <p>getForeignSource</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Transient
+    @XmlElement(name="foreignSource")
+    public String getForeignSource(){
+        return getMonitoredService().getIpInterface().getNode().getForeignSource();
+    }
+
+    /**
+     * <p>getForeignId</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Transient
+    @XmlElement(name="foreignId")
+    public String getForeignId(){
+        return getMonitoredService().getIpInterface().getNode().getForeignId();
+    }
+
+    /**
+     * <p>getLocationName</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    @Transient
+    @XmlElement(name="locationName")
+    public String getLocationName(){
+        return getMonitoredService().getIpInterface().getNode().getLocation().getLocationName();
     }
 
     /**
@@ -337,6 +428,7 @@ public class OnmsOutage implements Serializable {
      */
     @Transient
     @XmlTransient
+    @JsonIgnore
     public String getIpAddressAsString() {
         return getMonitoredService().getIpAddressAsString();
     }
@@ -350,7 +442,33 @@ public class OnmsOutage implements Serializable {
     public Integer getServiceId() {
     	return getMonitoredService().getServiceId();
     }
-    
+
+    /**
+     * This method is necessary for CXF to be able to introspect
+     * the type of {@link OnmsNode} parameters.
+     *
+     * @return a {@link OnmsServiceType} object.
+     */
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public OnmsServiceType getServiceType() {
+        return getMonitoredService().getServiceType();
+    }
+
+    /**
+     * This method is necessary for CXF to be able to introspect
+     * the type of {@link OnmsServiceType} parameters.
+     */
+    public void setServiceType(OnmsServiceType type) {
+        OnmsMonitoredService service = getMonitoredService();
+        if (service == null) {
+            service = new OnmsMonitoredService();
+            setMonitoredService(service);
+        }
+        service.setServiceType(type);
+    }
+
     /**
      * <p>toString</p>
      *
@@ -358,13 +476,14 @@ public class OnmsOutage implements Serializable {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-            .append("outageId", m_id)
-            .append("ifLostService", m_ifLostService)
-            .append("ifRegainedService", m_ifRegainedService)
-            .append("service", m_monitoredService)
-            .append("suppressedBy", m_suppressedBy)
-            .append("suppressTime", m_suppressTime)
+        return MoreObjects.toStringHelper(this)
+            .add("outageId", m_id)
+            .add("ifLostService", m_ifLostService)
+            .add("ifRegainedService", m_ifRegainedService)
+            .add("ifRegainedServiceEvent", m_serviceRegainedEvent)
+            .add("service", m_monitoredService)
+            .add("suppressedBy", m_suppressedBy)
+            .add("suppressTime", m_suppressTime)
             .toString();
     }
 

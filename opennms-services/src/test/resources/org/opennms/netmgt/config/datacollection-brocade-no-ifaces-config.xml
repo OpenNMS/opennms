@@ -8,15 +8,15 @@
       <rra>RRA:MAX:0.5:12:8784</rra>
     </rrd>
     <resourceType name="brocadeFCPortIndex" label="Brocade Fibre Channel Port">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
     </resourceType>
     <groups>
       <!-- data from standard (mib-2) sources -->
       <group name="brocade-switch-fctable" ifType="all">
         <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.11" instance="brocadeFCPortIndex" alias="swFCPortTxWords" type="counter" />
         <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.12" instance="brocadeFCPortIndex" alias="swFCPortRxWords" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.34" instance="brocadeFCPortIndex" alias="swFCPortWwn" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.34" instance="brocadeFCPortIndex" alias="swFCPortWwn" type="hexstring" />
         <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.36" instance="brocadeFCPortIndex" alias="swFCPortName" type="string" />
       </group>
     </groups>

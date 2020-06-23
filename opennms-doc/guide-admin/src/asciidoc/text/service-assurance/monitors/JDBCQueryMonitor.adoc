@@ -1,0 +1,122 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== JDBCQueryMonitor
+
+The _JDBCQueryMonitor_ runs an SQL query against a database and is able to verify the result of the query.
+A read-only connection is used to run the SQL query, so the data in the database is not altered.
+It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
+This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.JDBCQueryMonitor`
+| Remote Enabled | false
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the JDBCQueryMonitor
+[options="header, autowidth"]
+|===
+| Parameter  | Description                                                            | Required | Default value | Placeholder substitution
+| `driver`   | JDBC driver class to use                                               | required | `org.postgresql.Driver` | No
+| `url`      | JDBC URL to connect to                                                 | required | `jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms` | Yes
+| `user`     | Database user                                                          | required | `postgres` | Yes
+| `password` | Database password                                                      | required | `empty string` | Yes
+| `query`    | The SQL query to run                                                   | required | `-` | No
+| `action`   | What evaluation action to perform                                      | required | `row_count` | No
+| `column`   | The result column to evaluate against when using compare_string method | required | `-` | No
+| `operator` | Operator to use for the evaluation                                     | required | `>=` | No
+| `operand`  | The operand to compare against the SQL query result                    | required | depends on the action | No
+| `message`  | The message to use if the service is down.
+               Both operands and the operator are added to the message too.           | optional | generic message depending on the action | No
+| `retries`  | How many retries should be performed before failing the test           | optional | `0` | No
+|===
+
+NOTE: The +OPENNMS_JDBC_HOSTNAME+ is replaced in the +url+ parameter with the IP or resolved hostname of the interface the monitored service is assigned to.
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+.Available _action_ parameters and their default _operand_
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                                | Default operand
+| `row_count`      | The number of returned rows is compared, not a value of the resulting rows | `1`
+| `compare_string` | Strings are always checked for equality with the operand                   | `-`
+| `compare_int`    | An integer from a column of the first result row is compared               | `1`
+|===
+
+.Available _operand_ parameters
+[options="header, autowidth"]
+|===
+| Parameter | XML entity to use in XML configs
+| `=`       | `=`
+| `<`       | `&amp;lt;`
+| `>`       | `&amp;gt;`
+| `!=`      | `!=`
+| `<=`      | `&amp;lt;=`
+| `>=`      | `&amp;gt;=`
+|===
+
+===== Evaluating the action - operator - operand
+
+Only the first result row returned by the SQL query is evaluated.
+The evaluation can be against the value of one column or the number of rows returned by the SQL query.
+
+===== Provide the database driver
+
+The _JDBCQueryMonitor_ is based on _JDBC_ and requires a JDBC driver to communicate with any database.
+Due to the fact that {opennms-product-name} itself uses a PostgreSQL database, the PostgreSQL JDBC driver is available out of the box.
+For all other database systems a compatible JDBC driver has to be provided to {opennms-product-name} as a _jar-file_.
+To provide a JDBC driver place the _driver-jar_ in the `opennms/lib` folder of your {opennms-product-name}.
+To use the _JDBCQueryMonitor_ from a remote poller, the _driver-jar_ has to be provided to the _Remote Poller_ too.
+This may be tricky or impossible when using the _Java Webstart Remote Poller_, because of code signing requirements.
+
+===== Examples
+
+====== Row Count
+
+The following example checks if the number of events in the {opennms-product-name} database is fewer than 250,000.
+
+[source, xml]
+----
+<service name="OpenNMS-DB-Event-Limit" interval="30000" user-defined="true" status="on">
+  <parameter key="driver" value="org.postgresql.Driver"/>
+  <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
+  <parameter key="user" value="opennms"/>
+  <parameter key="password" value="opennms"/>
+  <parameter key="query" value="select eventid from events" />
+  <parameter key="action" value="row_count" />
+  <parameter key="operand" value="250000" />
+  <parameter key="operator" value="&lt;" />
+  <parameter key="message" value="too many events in OpenNMS database" />
+</service>
+
+<monitor service="OpenNMS-DB-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" />
+----
+
+====== String Comparison
+
+The following example checks if the queried string matches against a defined operand.
+
+[source, xml]
+----
+<service name="MariaDB-Galera" interval="300000" user-defined="false" status="on">
+  <parameter key="driver" value="org.mariadb.jdbc.Driver"/>
+  <parameter key="user" value="opennms"/>
+  <parameter key="password" value="********"/>
+  <parameter key="url" value="jdbc:mysql://OPENNMS_JDBC_HOSTNAME"/>
+  <parameter key="query" value="SELECT VARIABLE_VALUE FROM INFORMATION_SCHEMA.GLOBAL_STATUS WHERE VARIABLE_NAME = 'wsrep_cluster_status'"/>
+  <parameter key="column" value="VARIABLE_VALUE"/>
+  <parameter key="action" value="compare_string"/>
+  <parameter key="operator" value="="/>
+  <parameter key="operand" value="Primary"/>
+  <parameter key="message" value="Galera Node is not in primary component"/>
+</service>
+
+<monitor service="MariaDB-Galera" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" />
+----

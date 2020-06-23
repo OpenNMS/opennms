@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,16 +28,22 @@
 
 package org.opennms.netmgt.snmp;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.opennms.netmgt.snmp.proxy.WalkRequest;
+import org.opennms.netmgt.snmp.proxy.WalkResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SingleInstanceTracker extends CollectionTracker {
-	
-	private static final transient Logger LOG = LoggerFactory.getLogger(SingleInstanceTracker.class);
+    private static final transient Logger LOG = LoggerFactory.getLogger(SingleInstanceTracker.class);
 
     private SnmpObjId m_base;
     private SnmpInstId m_inst;
     private SnmpObjId m_oid;
+    private int m_maxRetries;
+    private Integer m_retries;
     
     public SingleInstanceTracker(SnmpObjId base, SnmpInstId inst) {
         this(base, inst, null);
@@ -59,10 +65,19 @@ public class SingleInstanceTracker extends CollectionTracker {
         // do nothing since we are not a repeater
     }
 
-        @Override
-    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
+    public int getMaxRetries() {
+        return m_maxRetries;
+    }
+
+    @Override
+    public void setMaxRetries(final int maxRetries) {
+        m_maxRetries = maxRetries;
+    }
+
+    @Override
+    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) throws SnmpException {
         if (pduBuilder.getMaxVarsPerPdu() < 1) {
-            throw new IllegalArgumentException("maxVarsPerPdu < 1");
+            throw new SnmpException("maxVarsPerPdu < 1");
         }
         
         SnmpObjId requestOid = m_oid.decrement();
@@ -89,22 +104,41 @@ public class SingleInstanceTracker extends CollectionTracker {
             }
 
             @Override
-            public boolean processErrors(int errorStatus, int errorIndex) {
-                if (errorStatus == NO_ERR) {
-                    return false;
-                } else if (errorStatus == TOO_BIG_ERR) {
-                    throw new IllegalArgumentException("Unable to handle tooBigError for oid request "+m_oid.decrement());
-                } else if (errorStatus == GEN_ERR) {
-                    reportGenErr("Received genErr requesting oid "+m_oid.decrement()+". Marking column is finished.");
+            public boolean processErrors(int errorStatus, int errorIndex) throws SnmpException {
+                if (m_retries == null) m_retries = getMaxRetries();
+                //LOG.trace("processErrors: errorStatus={}, errorIndex={}, retries={}", errorStatus, errorIndex, m_retries);
+
+                final ErrorStatus status = ErrorStatus.fromStatus(errorStatus);
+                if (status == ErrorStatus.TOO_BIG) {
+                    throw new SnmpException("Unable to handle tooBigError for oid request "+m_oid.decrement());
+                } else if (status == ErrorStatus.GEN_ERR) {
+                    reportGenErr("Received genErr requesting oid "+m_oid.decrement()+". Marking column as finished.");
                     errorOccurred();
                     return true;
-                } else if (errorStatus == NO_SUCH_NAME_ERR) {
-                    reportNoSuchNameErr("Received noSuchName reqeusting oid "+m_oid.decrement()+". Marking column is finished.");
+                } else if (status == ErrorStatus.NO_SUCH_NAME) {
+                    reportNoSuchNameErr("Received noSuchName requesting oid "+m_oid.decrement()+". Marking column as finished.");
                     errorOccurred();
                     return true;
-                } else {
-                    throw new IllegalArgumentException("Unexpected error processing oid "+m_oid.decrement()+". Aborting!");
+                } else if (status.isFatal()) {
+                    final ErrorStatusException ex = new ErrorStatusException(status, "Unexpected error processing oid "+m_oid.decrement()+". Marking column as finished!");
+                    LOG.debug("Fatal Error: {}", status, ex);
+                    throw ex;
+                } else if (status != ErrorStatus.NO_ERROR) {
+                    LOG.warn("Non-fatal error encountered: {}. {}", status, status.retry()? "Retrying." : "Giving up.");
                 }
+
+                if (status.retry()) {
+                    if (m_retries-- <= 0) {
+                        final ErrorStatusException ex = new ErrorStatusException(status, "Non-fatal error met maximum number of retries. Aborting!");
+                        reportFatalErr(ex);
+                        throw ex;
+                    }
+                } else {
+                    // On success, reset the retries
+                    m_retries = getMaxRetries();
+                }
+
+                return status.retry();
             }
         };
         
@@ -120,4 +154,21 @@ public class SingleInstanceTracker extends CollectionTracker {
         setFinished(true);
     }
 
+    @Override
+    public List<WalkRequest> getWalkRequests() {
+        final WalkRequest walkRequest = new WalkRequest(m_base);
+        walkRequest.setInstance(m_inst);
+        walkRequest.setMaxRepetitions(1);
+        return Collections.singletonList(walkRequest);
+    }
+
+    @Override
+    public void handleWalkResponses(List<WalkResponse> responses) {
+        // Store the result
+        responses.stream()
+            .flatMap(res -> res.getResults().stream())
+            .filter(res -> m_oid.equals(SnmpObjId.get(res.getBase(), res.getInstance())))
+            .forEach(this::storeResult);
+        setFinished(true);
+    }
 }

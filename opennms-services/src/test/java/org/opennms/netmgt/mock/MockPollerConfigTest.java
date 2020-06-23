@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -97,25 +97,21 @@ public class MockPollerConfigTest extends TestCase {
         assertTrue(m_pollerConfig.isInterfaceInPackage("192.168.1.1", pkg));
         assertFalse(m_pollerConfig.isInterfaceInPackage("192.168.1.7", pkg));
 
-        Enumeration<Service> svcs = pkg.enumerateService();
-        assertNotNull(svcs);
-        
         int svcCount = 0;
         boolean icmpFound = false;
         boolean httpFound = false;
-        while (svcs.hasMoreElements()) {
-            Service svc = svcs.nextElement();
+        for (final Service svc : pkg.getServices()) {
             svcCount++;
             if ("ICMP".equals(svc.getName())) {
                 icmpFound = true;
-                assertEquals(500L, svc.getInterval());
+                assertEquals(Long.valueOf(500L), svc.getInterval());
             }
             else if ("HTTP".equals(svc.getName())) {
                 httpFound = true;
-                assertEquals(750L, svc.getInterval());
+                assertEquals(Long.valueOf(750L), svc.getInterval());
             }
             else {
-                assertEquals(1000L, svc.getInterval());
+                assertEquals(Long.valueOf(1000L), svc.getInterval());
             }
         }
         

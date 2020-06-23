@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.tools;
 
 import org.jrobin.core.RrdDb;
@@ -53,7 +54,7 @@ public class JrbToXml extends Thread {
     /**
      * Queue for files to convert
      */
-    private Queue<String> m_queue = new ConcurrentLinkedQueue<String>();
+    private Queue<String> m_queue = new ConcurrentLinkedQueue<>();
 
     /**
      * Queue closed status
@@ -173,13 +174,16 @@ public class JrbToXml extends Thread {
     public void convertToXml(String path) throws RrdException, IOException {
         RrdDb rrdDb = getRrdDbReference(path + JrbToRrdConverter.FILE_TYPE.JRB.ext());
 
+        RandomAccessFile file = null;
         try {
             byte[] buf = rrdDb.getXml().getBytes();
-            FileChannel writeChannel = new RandomAccessFile(path + JrbToRrdConverter.FILE_TYPE.XML.ext(), "rw").getChannel();
+            file = new RandomAccessFile(path + JrbToRrdConverter.FILE_TYPE.XML.ext(), "rw");
+            FileChannel writeChannel = file.getChannel();
             ByteBuffer wrBuf = writeChannel.map(FileChannel.MapMode.READ_WRITE, 0, buf.length);
             wrBuf.put(buf);
             writeChannel.close();
         } finally {
+        	if (file != null) file.close();
             releaseRrdDbReference(rrdDb);
         }
     }

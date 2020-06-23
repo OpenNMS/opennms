@@ -2,9 +2,14 @@
 <xsd:schema xmlns="http://xmlns.opennms.org/xsd/spring/onms-osgi"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     targetNamespace="http://xmlns.opennms.org/xsd/spring/onms-osgi"
     elementFormDefault="qualified"
-    attributeFormDefault="unqualified">
+    attributeFormDefault="unqualified"
+    
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+    ">
 
    <xsd:import namespace="http://www.springframework.org/schema/beans"/>
 
@@ -33,6 +38,7 @@
             </xsd:annotation>
                
                </xsd:attribute>
+               <xsd:attribute name="depends-on" type="xsd:string" use="optional" />
             </xsd:extension>
          </xsd:complexContent>
       </xsd:complexType>
@@ -43,6 +49,7 @@
          <xsd:complexContent>
             <xsd:extension base="beans:identifiedType">
             	<xsd:attribute name="interface" type="xsd:string" use="required"/>
+                <xsd:attribute name="depends-on" type="xsd:string" use="optional"/>
                 <xsd:attribute name="filter" type="xsd:string" use="optional"/>
             </xsd:extension>
          </xsd:complexContent>

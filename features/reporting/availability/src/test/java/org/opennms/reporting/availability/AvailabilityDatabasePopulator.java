@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,14 +32,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
-import org.opennms.netmgt.dao.api.DataLinkInterfaceDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -47,21 +45,19 @@ import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
-import org.opennms.netmgt.dao.api.OnmsMapDao;
-import org.opennms.netmgt.dao.api.OnmsMapElementDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.UserNotificationDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,16 +105,12 @@ public class AvailabilityDatabasePopulator {
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
     private LocationMonitorDao m_locationMonitorDao;
-    private OnmsMapDao m_onmsMapDao;
-    private OnmsMapElementDao m_onmsMapElementDao;
-    private DataLinkInterfaceDao m_dataLinkInterfaceDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     
     private OnmsNode m_node1;
 
     public void populateDatabase() {
-        OnmsDistPoller distPoller = getDistPoller("localhost", "127.0.0.1");
-        
+
         OnmsCategory ac = getCategory("DEV_AC");
         OnmsCategory mid = getCategory("IMP_mid");
         OnmsCategory ops = getCategory("OPS_Online");
@@ -163,7 +155,7 @@ public class AvailabilityDatabasePopulator {
 //      m_db.update("insert into ifservices (nodeid, ipaddr, serviceid, status, ipInterfaceId) values "
 //              + "(2,'192.168.100.3',1,'A', 3);");
         
-        NetworkBuilder builder = new NetworkBuilder(distPoller);
+        NetworkBuilder builder = new NetworkBuilder();
         
         setNode1(builder.addNode("test1.availability.opennms.org").
                  setId(1).
@@ -202,12 +194,12 @@ public class AvailabilityDatabasePopulator {
         
         
         OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(distPoller);
+        event.setDistPoller(builder.getDistPoller());
         event.setEventUei("uei.opennms.org/test");
         event.setEventTime(new Date());
         event.setEventSource("test");
         event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
+        event.setEventSeverity(OnmsSeverity.INDETERMINATE.getId());
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         getEventDao().save(event);
@@ -279,16 +271,6 @@ public class AvailabilityDatabasePopulator {
             getCategoryDao().flush();
         }
         return cat;
-    }
-
-    private OnmsDistPoller getDistPoller(String localhost, String localhostIp) {
-        OnmsDistPoller distPoller = getDistPollerDao().get(localhost);
-        if (distPoller == null) {
-            distPoller = new OnmsDistPoller(localhost, localhostIp);
-            getDistPollerDao().save(distPoller);
-            getDistPollerDao().flush();
-        }
-        return distPoller;
     }
 
     private OnmsServiceType getServiceType(String name) {
@@ -447,30 +429,6 @@ public class AvailabilityDatabasePopulator {
         m_locationMonitorDao = locationMonitorDao;
     }
 
-    public OnmsMapDao getOnmsMapDao() {
-        return m_onmsMapDao;
-    }
-
-    public void setOnmsMapDao(OnmsMapDao onmsMapDao) {
-        this.m_onmsMapDao = onmsMapDao;
-    }
-
-    public OnmsMapElementDao getOnmsMapElementDao() {
-        return m_onmsMapElementDao;
-    }
-
-    public void setOnmsMapElementDao(OnmsMapElementDao onmsMapElementDao) {
-        this.m_onmsMapElementDao = onmsMapElementDao;
-    }
-
-    public DataLinkInterfaceDao getDataLinkInterfaceDao() {
-        return m_dataLinkInterfaceDao;
-    }
-
-    public void setDataLinkInterfaceDao(DataLinkInterfaceDao dataLinkInterfaceDao) {
-        this.m_dataLinkInterfaceDao = dataLinkInterfaceDao;
-    }
-    
     public AcknowledgmentDao getAcknowledgmentDao() {
         return m_acknowledgmentDao;
     }

@@ -1,23 +1,87 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.topology.app.internal;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
-import org.opennms.features.topology.api.*;
-import org.opennms.features.topology.api.topo.*;
-import org.osgi.framework.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.opennms.features.topology.api.AutoRefreshSupport;
+import org.opennms.features.topology.api.Graph;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.IconManager;
+import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.TopologyService;
+import org.opennms.features.topology.api.TopologyServiceClient;
+import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeListener;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexListener;
+import org.opennms.features.topology.api.topo.VertexProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.service.DefaultGraph;
+import org.opennms.features.topology.app.internal.support.LayoutManager;
+import org.opennms.osgi.VaadinApplicationContext;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
+import com.google.common.collect.Lists;
+import com.vaadin.v7.data.Property;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
-    
+
+
     @SuppressWarnings("serial")
-    public class ScaleProperty implements Property<Double>, Property.ValueChangeNotifier{
+    public static class ScaleProperty implements Property<Double>, Property.ValueChangeNotifier{
         private Double m_scale;
-        private Set<ValueChangeListener> m_listeners = new CopyOnWriteArraySet<Property.ValueChangeListener>();
+        private Set<ValueChangeListener> m_listeners = new CopyOnWriteArraySet<>();
         
         public ScaleProperty(double scale) {
             m_scale = scale;
@@ -86,111 +150,32 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
         
     }
-    
-    public class PseudoEdge extends AbstractEdge {
-
-        public PseudoEdge(String namespace, String id, String styleName, Vertex source, Vertex target) {
-            super(namespace, id, source, target);
-            setLabel(source.getLabel() + " :: " + target.getLabel());
-            setStyleName(styleName);
-        }
-
-        @Override
-        public Item getItem() {
-            return new BeanItem<PseudoEdge>(this);
-        }
-
-    }
-
-    public class VEGraph implements Graph {
-    	
-    	private final Collection<Vertex> m_displayVertices;
-    	private final Collection<Edge> m_displayEdges;
-    	private final Layout m_layout;
-    	
-        public VEGraph(Layout layout, Collection<Vertex> displayVertices,
-				Collection<Edge> displayEdges) {
-			m_displayVertices = displayVertices;
-			m_displayEdges = displayEdges;
-			m_layout = layout;
-		}
-
-		@Override
-        public Layout getLayout() {
-			return m_layout;
-        }
-
-        @Override
-        public Collection<Vertex> getDisplayVertices() {
-        	return Collections.unmodifiableCollection(m_displayVertices);
-        }
-
-        @Override
-        public Collection<Edge> getDisplayEdges() {
-        	return Collections.unmodifiableCollection(m_displayEdges);
-        }
-
-        @Override
-        public Edge getEdgeByKey(String edgeKey) {
-        	for(Edge e : m_displayEdges) {
-        		if (edgeKey.equals(e.getKey())) {
-        			return e;
-        		}
-        	}
-        	return null;
-        }
-
-        @Override
-        public Vertex getVertexByKey(String vertexKey) {
-        	for(Vertex v : m_displayVertices) {
-        		if (vertexKey.equals(v.getKey())) {
-        			return v;
-        		}
-        	}
-        	return null;
-        }
-
-        @Override
-        public void visit(GraphVisitor visitor) throws Exception {
-        	
-        	visitor.visitGraph(this);
-        	
-        	for(Vertex v : m_displayVertices) {
-        		visitor.visitVertex(v);
-        	}
-        	
-        	for(Edge e : m_displayEdges) {
-        		visitor.visitEdge(e);
-        	}
-        	
-        	visitor.completeGraph(this);
-        }
-
-    }
 
     private static final Logger s_log = LoggerFactory.getLogger(VEProviderGraphContainer.class);
 
-    private int m_semanticZoomLevel = 0;
+    private int m_semanticZoomLevel = 1;
     private Property<Double> m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
     private SelectionManager m_selectionManager;
-    private StatusProvider m_statusProvider;
-    private MergingGraphProvider m_mergedGraphProvider;
+    private IconManager m_iconManager;
     private MapViewManager m_viewManager = new DefaultMapViewManager();
-    private String m_userName;
-    private String m_sessionId;
+    private VaadinApplicationContext applicationContext;
     private BundleContext m_bundleContext;
+    private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<>();
+    private AutoRefreshSupport m_autoRefreshSupport;
+    private TopologyService m_topologyService;
+    private Graph m_graph;
+    private LayoutManager m_layoutManager;
     
-    private final Layout m_layout;
-    private VEGraph m_graph;
-    
-    public VEProviderGraphContainer(GraphProvider graphProvider, ProviderManager providerManager) {
-    	m_mergedGraphProvider = new MergingGraphProvider(graphProvider, providerManager);
-    	m_layout = new DefaultLayout(this);
-    	rebuildGraph();
-    }
+    private AtomicBoolean m_containerDirty = new AtomicBoolean(Boolean.TRUE);
+    private TopologyServiceClient m_topologyServiceClient;
 
-    private Set<ChangeListener> m_listeners = new CopyOnWriteArraySet<ChangeListener>();
+    public VEProviderGraphContainer() {
+        m_graph = new DefaultGraph(Lists.newArrayList(), Lists.newArrayList());
+        m_layoutAlgorithm = new FRLayoutAlgorithm();
+        setDirty(false);
+        resetCriteriaDirty();
+    }
 
     @Override
     public int getSemanticZoomLevel() {
@@ -201,11 +186,31 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public void setSemanticZoomLevel(int level) {
         int oldLevel = m_semanticZoomLevel;
         m_semanticZoomLevel = level;
-        
+
+        // Also set the SZL in a Criteria attached to the container so that we can
+        // use the value to optimize some GraphProvider calls
+        SemanticZoomLevelCriteria criteria = getSemanticZoomLevelCriteriaForContainer(this);
+        criteria.setSemanticZoomLevel(level);
+
         if(oldLevel != m_semanticZoomLevel) {
-            rebuildGraph();
+            setDirty(true);
         }
     }
+
+	public static SemanticZoomLevelCriteria getSemanticZoomLevelCriteriaForContainer(GraphContainer graphContainer) {
+		Criteria[] criteria = graphContainer.getCriteria();
+		if (criteria != null) {
+			for (Criteria criterium : criteria) {
+				try {
+					return (SemanticZoomLevelCriteria)criterium;
+				} catch (ClassCastException e) {}
+			}
+		}
+
+		SemanticZoomLevelCriteria hopCriteria = new SemanticZoomLevelCriteria(graphContainer.getSemanticZoomLevel());
+		graphContainer.addCriteria(hopCriteria);
+		return hopCriteria;
+	}
 
     @Override
     public double getScale() {
@@ -226,7 +231,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     public void setLayoutAlgorithm(LayoutAlgorithm layoutAlgorithm) {
         if(m_layoutAlgorithm != layoutAlgorithm) {
             m_layoutAlgorithm = layoutAlgorithm;
-            redoLayout();
+            setDirty(true);
         }
     }
 
@@ -238,29 +243,38 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     @Override
     public void redoLayout() {
         s_log.debug("redoLayout()");
-        // Rebuild the graph vertices and edges
-        rebuildGraph();
-        if(m_layoutAlgorithm != null) {
-            m_layoutAlgorithm.updateLayout(this);
+        long graphHashOld = hash(m_graph);
+        getGraph();
+        long graphHashNew = hash(m_graph);
+        if(m_layoutAlgorithm != null  && graphHashOld != graphHashNew) {
+            m_layoutAlgorithm.updateLayout(m_graph);
             fireGraphChanged();
         }
     }
 
-    @Override
-    public GraphProvider getBaseTopology() {
-        return m_mergedGraphProvider.getBaseGraphProvider();
+    private long hash(Graph graph){
+        // we create a hash for the attributes that will require a redo of the layout, the rest of the
+        // attributes can be ignored.
+        return Objects.hash(graph.getDisplayVertices(), graph.getDisplayEdges(), graph.getLayout());
     }
 
     @Override
-    public void setBaseTopology(GraphProvider graphProvider) {
-        m_mergedGraphProvider.setBaseGraphProvider(graphProvider);
-        rebuildGraph();
+    public void setMetaTopologyId(String metaTopologyId) {
+        getTopologyServiceClient().setMetaTopologyId(metaTopologyId);
+        setDirty(true);
     }
-    
+
     @Override
-    public void setStatusProvider(StatusProvider statusProvider) {
-        m_statusProvider = statusProvider;
-        rebuildGraph();
+    public String getMetaTopologyId() {
+        return getTopologyServiceClient().getMetaTopologyId();
+    }
+
+    @Override
+    public TopologyServiceClient getTopologyServiceClient() {
+        if (m_topologyServiceClient == null) {
+            m_topologyServiceClient = new DefaultTopologyServiceClient(m_topologyService);
+        }
+        return m_topologyServiceClient;
     }
 
     @Override
@@ -273,79 +287,31 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         m_selectionManager = selectionManager;
     }
 
-    public void addVertexProvider(VertexProvider vertexProvider) {
-        m_mergedGraphProvider.addVertexProvider(vertexProvider);
-        rebuildGraph();
-    }
-
-    public void removeVertexProvider(VertexProvider vertexProvider) {
-        m_mergedGraphProvider.removeVertexProvider(vertexProvider);
-        rebuildGraph();
-    }
-
-    public void addEdgeProvider(EdgeProvider edgeProvider) {
-        m_mergedGraphProvider.addEdgeProvider(edgeProvider);
-        rebuildGraph();
-    }
-
-    public void removeEdgeProvider(EdgeProvider edgeProvider) {
-    	m_mergedGraphProvider.removeEdgeProvider(edgeProvider);
-        rebuildGraph();
-    }
-
-    private void rebuildGraph() {
-    	
-    	List<Vertex> displayVertices = new ArrayList<Vertex>();
-    	
-    	for(Vertex v : m_mergedGraphProvider.getVertices()) {
-    		int vzl = m_mergedGraphProvider.getSemanticZoomLevel(v);
-    		if (vzl == getSemanticZoomLevel() || (vzl < getSemanticZoomLevel() && !m_mergedGraphProvider.hasChildren(v))) {
-    			displayVertices.add(v);
-			}
-    	}
-    	
-    	Set<Edge> displayEdges = new HashSet<Edge>();
-
-        final List<Edge> edges = m_mergedGraphProvider.getEdges();
-        for(Edge e : edges) {
-    		VertexRef source = e.getSource().getVertex();
-    		VertexRef target = e.getTarget().getVertex();
-
-    		Vertex displaySource = getDisplayVertex(source);
-			Vertex displayTarget = getDisplayVertex(target);
-			if (refEquals(displaySource, displayTarget)) {
-				// skip this one
-			}
-			else if (refEquals(source, displaySource) && refEquals(target, displayTarget)) {
-				displayEdges.add(e);
-			} else {
-				// we may need to create a pseudo edge to represent this edge
-				String pseudoId = pseudoId(displaySource, displayTarget);
-				PseudoEdge pEdge = new PseudoEdge("pseudo-"+e.getNamespace(), pseudoId, e.getStyleName(), displaySource, displayTarget);
-                //This is a hack to get around the device A to device Z label in NCS Path when going through groups
-                if(e.getStyleName().equals("ncs edge direct")){
-                    pEdge.setTooltipText(e.getTooltipText());
+    // Remove all vertices from focus which are not visible
+    private void removeVerticesWhichAreNotVisible(final Collection<Vertex> displayVertices) {
+        for(Criteria criteria : getCriteria()) {
+            if (criteria instanceof VertexHopCriteria
+                    // CollapsibleCriteria may contain not visible vertices (when collapsed)
+                    // and multiple collapsible criteria may contain the same vertices.
+                    // We do not remove them manually for now
+                    && !(criteria instanceof CollapsibleCriteria)) {
+                final VertexHopCriteria hopCriteria = (VertexHopCriteria) criteria;
+                for(VertexRef vRef : hopCriteria.getVertices()){
+                    if(!displayVertices.contains(vRef)){
+                        removeCriteria(hopCriteria);
+                    }
                 }
-				displayEdges.add(pEdge);
-			}
-    	}
-    	
-    	m_graph = new VEGraph(m_layout, displayVertices, displayEdges);
-
-        unselectVerticesWhichAreNotVisibleAnymore();
-
-    	fireGraphChanged();
-    	
+            }
+        }
     }
 
-    // we have to find out if each selected vertex is still displayable,
-    // if not we deselect it.
-    private void unselectVerticesWhichAreNotVisibleAnymore() {
-        if (m_selectionManager == null) return;
-        List<VertexRef> selectedVertexRefs = new ArrayList<VertexRef>(m_selectionManager.getSelectedVertexRefs());
-        List<VertexRef> newSelectedVertexRefs = new ArrayList<VertexRef>();
+    // we have to find out if each selected vertex/edge is still displayable, if not we deselect it.
+    private static void unselectElementsWhichAreNotVisibleAnymore(Graph graph, SelectionManager selectionManager) {
+        if (selectionManager == null) return;
+        List<VertexRef> selectedVertexRefs = new ArrayList<>(selectionManager.getSelectedVertexRefs());
+        List<VertexRef> newSelectedVertexRefs = new ArrayList<>();
         for (VertexRef eachSelectedVertex : selectedVertexRefs) {
-            for (Vertex eachDisplayableVertex : m_graph.getDisplayVertices()) {
+            for (Vertex eachDisplayableVertex : graph.getDisplayVertices()) {
                 if (eachDisplayableVertex.getNamespace().equals(eachSelectedVertex.getNamespace())
                     && eachDisplayableVertex.getId().equals(eachSelectedVertex.getId())) {
                     newSelectedVertexRefs.add(eachSelectedVertex);
@@ -354,69 +320,156 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             }
         }
 
+        List<EdgeRef> selectedEdgeRefs = new ArrayList<>(selectionManager.getSelectedEdgeRefs());
+        List<EdgeRef> newSelectedEdgeRefs = new ArrayList<>();
+        for (EdgeRef eachSelectedEdgeRef : selectedEdgeRefs) {
+            for (Edge eachDisplayableEdge : graph.getDisplayEdges()) {
+                if (eachDisplayableEdge.getNamespace().equals(eachSelectedEdgeRef.getNamespace())
+                        && eachDisplayableEdge.getId().equals(eachSelectedEdgeRef.getId())) {
+                    newSelectedEdgeRefs.add(eachSelectedEdgeRef);
+                    break;
+                }
+            }
+        }
+
         // if the selection changed, inform selectionManager
         if (!newSelectedVertexRefs.equals(selectedVertexRefs)) {
-            m_selectionManager.setSelectedVertexRefs(newSelectedVertexRefs);
+            selectionManager.setSelectedVertexRefs(newSelectedVertexRefs);
+        }
+        if (!newSelectedEdgeRefs.equals(selectedEdgeRefs)) {
+            selectionManager.setSelectedEdgeRefs(newSelectedEdgeRefs);
         }
     }
 
-    private String pseudoId(VertexRef displaySource, VertexRef displayTarget) {
-		String sourceId = displaySource.getNamespace()+":"+displaySource.getId();
-		String targetId = displayTarget.getNamespace() + ":" + displayTarget.getId();
-		
-		String a = sourceId.compareTo(targetId) < 0 ? sourceId : targetId;
-		String b = sourceId.compareTo(targetId) < 0 ? targetId : sourceId;
+    private void rebuildGraph() {
+        Graph oldGraph = m_graph;
+        m_graph = getTopologyServiceClient().getGraph(getCriteria(), getSemanticZoomLevel());
+        unselectElementsWhichAreNotVisibleAnymore(m_graph, m_selectionManager);
+        removeVerticesWhichAreNotVisible(m_graph.getDisplayVertices());
 
-		return "<" + a + ">-<" + b + ">";
-	}
-    
-    private boolean refEquals(VertexRef a, VertexRef b) {
-        return new RefComparator().compare(a, b) == 0;
-    }
-    
-    private Vertex getDisplayVertex(VertexRef vertexRef) {
-    	int szl = getSemanticZoomLevel();
-    	int vzl = m_mergedGraphProvider.getSemanticZoomLevel(vertexRef);
-    	if (vzl == szl || (vzl < szl && !m_mergedGraphProvider.hasChildren(vertexRef))) {
-    		return m_mergedGraphProvider.getVertex(vertexRef);
-    	} else {
-    		Vertex parent = m_mergedGraphProvider.getParent(vertexRef);
-    		return getDisplayVertex(parent);
-    	}
+        // We must restore the old layout, otherwise the layout is in a weird state
+        if (oldGraph != null) {
+            m_graph.setLayout(oldGraph.getLayout());
+            m_graph.getLayout().updateLocations(new ArrayList<>(m_graph.getDisplayVertices()));
+        }
     }
 
     @Override
     public Graph getGraph() {
+        synchronized(m_containerDirty) {
+            if ((isDirty() || isCriteriaDirty()) && getTopologyServiceClient().getNamespace() != null) {
+                rebuildGraph();
+                setDirty(false);
+                resetCriteriaDirty();
+            }
+        }
         return m_graph;
     }
 
+    private final Set<Criteria> m_criteria = new LinkedHashSet<>();
+
     @Override
-    public Criteria getCriteria(String namespace) {
-    	return m_mergedGraphProvider.getCriteria(namespace);
+    public void clearCriteria() {
+        m_criteria.clear();
+        setDirty(true);
     }
-    
+
+	@Override
+	public Criteria[] getCriteria() {
+		return m_criteria.toArray(new Criteria[0]);
+	}
+
+	@Override
+	public void addCriteria(Criteria criteria) {
+        if (criteria != null) {
+		    m_criteria.add(criteria);
+            setDirty(true);
+        }
+	}
+
+	@Override
+	public void removeCriteria(Criteria criteria) {
+		m_criteria.remove(criteria);
+		setDirty(true);
+	}
+
     public void setBundleContext(final BundleContext bundleContext) {
         m_bundleContext = bundleContext;
     }
-    
-    public void removeCriteria(Criteria criteria) {
-        m_mergedGraphProvider.removeCriteria(criteria);
-        rebuildGraph();
-    }
-    
-    @Override
-    public void setCriteria(Criteria criteria) {
-    	m_mergedGraphProvider.setCriteria(criteria);
-        rebuildGraph();
+
+    public void setTopologyService(final TopologyService topologyService) {
+        m_topologyService = topologyService;
     }
 
-	private void fireGraphChanged() {
+    public void setLayoutManager(LayoutManager layoutManager) {
+        m_layoutManager = layoutManager;
+    }
+
+    @Override
+	public void fireGraphChanged() {
 		for(ChangeListener listener : m_listeners) {
 			listener.graphChanged(this);
 		}
 	}
 
-	@Override
+    @Override
+    public <T extends Criteria> Set<T> findCriteria(Class<T> criteriaType) {
+        Objects.requireNonNull(criteriaType);
+        final Set<T> criteriaSet = new HashSet<>();
+        for (Criteria eachCriteria : getCriteria()) {
+            if (criteriaType.isAssignableFrom(eachCriteria.getClass())) {
+                criteriaSet.add((T) eachCriteria);
+            }
+        }
+        return criteriaSet;
+    }
+
+    @Override
+    public <T extends Criteria> T findSingleCriteria(Class<T> criteriaType) {
+        if (criteriaType == null) {
+            return null;
+        }
+        Set<T> criteriaSet = findCriteria(criteriaType);
+        if (!criteriaSet.isEmpty()) {
+            if (criteriaSet.size() > 1) {
+                s_log.warn("Found more than one criteria of type {}. Returning first.", criteriaType);
+            }
+            return criteriaSet.iterator().next();
+        }
+
+        // not found
+        return null;
+    }
+
+    @Override
+    public IconManager getIconManager() {
+        return m_iconManager;
+    }
+
+    @Override
+    public void setIconManager(IconManager iconManager) {
+        m_iconManager = iconManager;
+    }
+
+    @Override
+    public void selectTopologyProvider(GraphProvider graphProvider, Callback... callbacks) {
+        // Do not get the graph here, as it is received when invoking the "redoLayout" method.
+        setSelectedNamespace(graphProvider.getNamespace());
+        setLayoutAlgorithm(getTopologyServiceClient().getPreferredLayoutAlgorithm());
+        if (callbacks != null) {
+            for (Callback eachCallback : callbacks) {
+                eachCallback.callback(this, graphProvider);
+            }
+        }
+        redoLayout();
+    }
+
+    public void saveLayout() {
+        m_layoutManager.persistLayout(this);
+        fireGraphChanged();
+    }
+
+    @Override
 	public void addChangeListener(ChangeListener listener) {
 		m_listeners.add(listener);
 	}
@@ -428,45 +481,51 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
 	@Override
 	public Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs) {
-		Set<VertexRef> processed = new LinkedHashSet<VertexRef>();
+		Set<VertexRef> processed = new LinkedHashSet<>();
 		for(VertexRef vertexRef : vertexRefs) {
-			addRefTreeToSet(vertexRef, processed);
+			addRefTreeToSet(getTopologyServiceClient(), vertexRef, processed, getCriteria());
 		}
 		return processed;
 	}
-	
-	public void addRefTreeToSet(VertexRef vertexId, Set<VertexRef> processed) {
+
+    @Override
+    public void setSelectedNamespace(String namespace) {
+        getTopologyServiceClient().setNamespace(namespace);
+        setDirty(true);
+    }
+
+    private static void addRefTreeToSet(TopologyServiceClient topologyServiceClient, VertexRef vertexId, Set<VertexRef> processed, Criteria[] criteria) {
 		processed.add(vertexId);
 
-		for(VertexRef childId : getBaseTopology().getChildren(vertexId)) {
+		for(VertexRef childId : topologyServiceClient.getChildren(vertexId, criteria)) {
 			if (!processed.contains(childId)) {
-				addRefTreeToSet(childId, processed);
+				addRefTreeToSet(topologyServiceClient, childId, processed, criteria);
 			}
 		}
 	}
 
 	@Override
 	public void edgeSetChanged(EdgeProvider provider) {
-		rebuildGraph();
+		setDirty(true);
 	}
 
 	@Override
 	public void edgeSetChanged(EdgeProvider provider,
 			Collection<? extends Edge> added, Collection<? extends Edge> updated,
 			Collection<String> removedEdgeIds) {
-		rebuildGraph();
+		setDirty(true);
 	}
 
 	@Override
 	public void vertexSetChanged(VertexProvider provider) {
-		rebuildGraph();
+		setDirty(true);
 	}
 
 	@Override
 	public void vertexSetChanged(VertexProvider provider,
 			Collection<? extends Vertex> added, Collection<? extends Vertex> update,
 			Collection<String> removedVertexIds) {
-		rebuildGraph();
+		setDirty(true);
 	}
 
     @Override
@@ -475,34 +534,28 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
     @Override
-    public StatusProvider getStatusProvider() {
-        return m_statusProvider;
-    }
-
-	@Override
-	public String getUserName() {
-		return m_userName;
-	}
-
-	@Override
-	public void setUserName(String userName) {
-		m_userName = userName;
-	}
-
-    @Override
     public String getSessionId() {
-        return m_sessionId;
+        return applicationContext.getSessionId();
     }
 
-    @Override
-    public void setSessionId(String sessionId) {
-        m_sessionId = sessionId;
+    private void setSessionId(String sessionId) {
         try {
             m_bundleContext.removeServiceListener(this);
-            m_bundleContext.addServiceListener(this, String.format("(&(objectClass=%s)(sessionId=%s))", "org.opennms.features.topology.api.topo.Criteria", m_sessionId));
+            m_bundleContext.addServiceListener(this, String.format("(&(objectClass=%s)(sessionId=%s))", "org.opennms.features.topology.api.topo.Criteria", sessionId));
         } catch (InvalidSyntaxException e) {
             LoggerFactory.getLogger(getClass()).error("registerServiceListener() failed", e);
         }
+    }
+
+    @Override
+    public VaadinApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    @Override
+    public void setApplicationContext(VaadinApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+        setSessionId(applicationContext.getSessionId());
     }
 
     @Override
@@ -513,7 +566,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             case ServiceEvent.REGISTERED:
                 serviceReference = (ServiceReference<Criteria>) event.getServiceReference();
                 criteria = m_bundleContext.getService(serviceReference);
-                setCriteria(criteria);
+                addCriteria(criteria);
                 break;
 
             case ServiceEvent.UNREGISTERING:
@@ -521,6 +574,42 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
                 criteria = m_bundleContext.getService(serviceReference);
                 removeCriteria(criteria);
                 break;
+        }
+    }
+
+    public AutoRefreshSupport getAutoRefreshSupport() {
+        return m_autoRefreshSupport;
+    }
+
+    public boolean hasAutoRefreshSupport() {
+        return m_autoRefreshSupport != null;
+    }
+
+    public void setAutoRefreshSupport(AutoRefreshSupport autoRefreshSupport) {
+        m_autoRefreshSupport = autoRefreshSupport;
+    }
+
+    @Override
+    public void setDirty(boolean isDirty) {
+        m_containerDirty.set(isDirty);
+    }
+
+    private boolean isDirty() {
+        return m_containerDirty.get();
+    }
+
+    private boolean isCriteriaDirty() {
+        for (Criteria eachCriteria : m_criteria) {
+            if (eachCriteria.isDirty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void resetCriteriaDirty() {
+        for (Criteria eachCriteria : m_criteria) {
+            eachCriteria.resetDirty();
         }
     }
 }

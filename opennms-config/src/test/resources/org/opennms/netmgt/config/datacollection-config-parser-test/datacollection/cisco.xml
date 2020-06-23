@@ -1,0 +1,1035 @@
+<?xml version="1.0"?>
+<datacollection-group name="Cisco">
+
+    <resourceType name="cbgpPeerAddrFamilyPrefixEntry" label="Cisco BGP Peer / Address Family"
+                  resourceLabel="Peer ${subIndex(0,4)}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+   <resourceType name="ciscoApCntIndex" label="Cisco Content Switch Content Entries (apCntTable)"
+                 resourceLabel="Owner: ${string(subIndex(0, n))} / Content: ${string(subIndex(n, n))}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+
+    <resourceType name="ciscoEnvMonTemperatureStatusIndex" label="Cisco Temperature"
+                  resourceLabel="${cvmTempStatusDescr} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="ciscoEnvMonVoltageStatusIndex" label="Cisco Voltage"
+                  resourceLabel="${cvmVoltStatusDescr} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+    
+    <resourceType name="ciscoMemoryPoolType" label="Cisco Memory Pool"
+                  resourceLabel="${cscoMemoryPoolName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="ciscoSlbInstance" label="Cisco SLB Instance"
+                  resourceLabel="Cisco SLB (Slot ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="cesServerFarmRserverEntry" label="Cisco SLB Server Farm / Real Server"
+                  resourceLabel="Cisco SLB Entity ${subIndex(0, 1)}, Server Farm ${string(subIndex(1, n))}, Real Server ${string(subIndex(n, n))}, port ${subIndex(n)}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="rttMonCtrlAdminIndex" label="RTTMON Stats (Cisco RTTMON MIB)"
+                  resourceLabel="${rttMonCtrlAdminTag} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <group name="cisco-frame-relay" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.2.1.1" instance="frCircuitIfIndex" alias="frIfName"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.2.1.2" instance="frCircuitIfIndex" alias="frIfType"     type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.2.1.3" instance="frCircuitIfIndex" alias="frSubifIndex" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.1.1.1" instance="frCircuitIfIndex" alias="frDEins"        type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.1.1.2" instance="frCircuitIfIndex" alias="frDEouts"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.49.1.2.1.1.3" instance="frCircuitIfIndex" alias="frDropPktsOuts" type="counter" />
+      </group>
+
+      <!-- Cisco MIBs -->
+
+      <group name = "adsl-line" ifType = "94">
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.5" instance="ifIndex" alias="AturCurAtn"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.2.1.5" instance="ifIndex" alias="AtucCurAtn"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.7" instance="ifIndex" alias="AturCurOPwr" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.2.1.7" instance="ifIndex" alias="AtucCurOPwr" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.3.1.4" instance="ifIndex" alias="AturCurSnr"  type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.10.94.1.1.2.1.4" instance="ifIndex" alias="AtucCurSnr"  type="Gauge32" />
+      </group>
+
+      <group name="altiga" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.25.1.2"  instance="0" alias="altigaCpuUtil"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.25.1.3"  instance="0" alias="altigaActSess"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.25.1.4"  instance="0" alias="altigaThroughput"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.1"  instance="0" alias="alHWCpuVoltage"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.5"  instance="0" alias="alHWPs1Voltage3v"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.9"  instance="0" alias="alHWPs1Voltage5v"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.13" instance="0" alias="alHWPs2Voltage3v"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.17" instance="0" alias="alHWPs2Voltage5v"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.21" instance="0" alias="alHWBoardVoltage3v" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.25" instance="0" alias="alHWBoardVoltage5v" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.29" instance="0" alias="alHWCpuTemp"        type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.33" instance="0" alias="alHWCageTemp"       type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.37" instance="0" alias="alHWFan1Rpm"        type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.41" instance="0" alias="alHWFan2Rpm"        type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.45" instance="0" alias="alHWFan3Rpm"        type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.3076.2.1.2.22.1.61" instance="0" alias="alHWCpuVoltageNom"  type="gauge" />
+      </group>
+
+      <group  name="cisco-ap-dot11-stats" ifType="71">
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.2.1.1" instance="ifIndex" alias="ciscoApActClients"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.1" instance="ifIndex" alias="ciscoApAssociated"   type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.2" instance="ifIndex" alias="ciscoApAuthen"       type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.3" instance="ifIndex" alias="ciscoApRoamedIn"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.4" instance="ifIndex" alias="ciscoApRoamedAway"   type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.5" instance="ifIndex" alias="ciscoApDeauthen"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.273.1.1.3.1.6" instance="ifIndex" alias="ciscoApDisassoc"     type="Counter32" />
+      </group>
+
+      <group name="cisco-bgp-peer-addr-family-prefix-stats" ifType="all">
+        <!-- NB This gauge is a Counter32 that exhibits gauge semantics -->
+        <mibObj oid=".1.3.6.1.4.1.9.9.187.1.2.4.1.1" instance="cbgpPeerAddrFamilyPrefixEntry" alias="cbgpPeerAcceptedPfx" type="gauge" />
+      </group>
+
+      <group name="cisco-cike" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.1"  instance="0" alias="cikeActiveTunnels"   type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.2"  instance="0" alias="cikePreviousTunnels" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.3"  instance="0" alias="cikeInOctets"        type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.4"  instance="0" alias="cikeInPkts"          type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.5"  instance="0" alias="cikeInDropPkts"      type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.6"  instance="0" alias="cikeInNotifys"       type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.7"  instance="0" alias="cikeInP2Exchgs"      type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.8"  instance="0" alias="cikeInP2ExchgInv"    type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.9"  instance="0" alias="cikeInP2ExchgRej"    type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.10" instance="0" alias="cikeInP2SaDelReq"    type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.11" instance="0" alias="cikeOutOctets"       type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.12" instance="0" alias="cikeOutPkts"         type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.13" instance="0" alias="cikeOutDropPkts"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.14" instance="0" alias="cikeOutNotifys"      type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.15" instance="0" alias="cikeOutP2Exchgs"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.16" instance="0" alias="cikeOutP2ExchgInv"   type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.17" instance="0" alias="cikeOutP2ExchgRej"   type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.18" instance="0" alias="cikeOutP2SaDelReq"   type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.19" instance="0" alias="cikeInitTunnels"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.20" instance="0" alias="cikeInitTunnelFails" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.21" instance="0" alias="cikeRespTunnelFails" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.22" instance="0" alias="cikeSysCapFails"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.23" instance="0" alias="cikeAuthFails"       type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.24" instance="0" alias="cikeDecryptFails"    type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.25" instance="0" alias="cikeHashValidFails"  type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.2.1.26" instance="0" alias="cikeNoSaFails"       type="Counter32" />
+      </group>
+
+      <group name="cisco-cipsec" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.1"  instance="0" alias="cipActiveTunnels"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.2"  instance="0" alias="cipPreviousTunnels"  type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.3"  instance="0" alias="cipInOctets"         type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.4"  instance="0" alias="cipHcInOctets"       type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.5"  instance="0" alias="cipInOctWraps"       type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.6"  instance="0" alias="cipInDecompOctets"   type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.7"  instance="0" alias="cipHcInDecompOctets" type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.8"  instance="0" alias="cipInDecompOctWraps" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.9"  instance="0" alias="cipInPkts"           type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.10" instance="0" alias="cipInDrops"          type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.11" instance="0" alias="cipInReplayDrops"    type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.12" instance="0" alias="cipInAuths"          type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.13" instance="0" alias="cipInAuthFails"      type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.14" instance="0" alias="cipInDecrypts"       type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.15" instance="0" alias="cipInDecryptFails"   type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.16" instance="0" alias="cipOutOctets"        type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.17" instance="0" alias="cipHcOutOctets"      type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.18" instance="0" alias="cipOutOctWraps"      type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.19" instance="0" alias="cipOutUncompOct"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.20" instance="0" alias="cipHcOutUncompOct"   type="Counter64" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.21" instance="0" alias="cipOutUncompOctWrps" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.22" instance="0" alias="cipOutPkts"          type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.23" instance="0" alias="cipOutDrops"         type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.24" instance="0" alias="cipOutAuths"         type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.25" instance="0" alias="cipOutAuthFails"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.26" instance="0" alias="cipOutEncrypts"      type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.27" instance="0" alias="cipOutEncryptFails"  type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.28" instance="0" alias="cipProtocolUseFails" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.29" instance="0" alias="cipNoSaFails"        type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.171.1.3.1.30" instance="0" alias="cipSysCapFails"      type="Counter32" />
+      </group>
+
+      <group name="cisco-ccm" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.1"  instance="0" alias="ccmActivePhones"     type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.2"  instance="0" alias="ccmInActivePhones"   type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.3"  instance="0" alias="ccmActiveGateways"   type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.4"  instance="0" alias="ccmInActiveGateways" type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.5"  instance="0" alias="ccmRegPhones"        type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.6"  instance="0" alias="ccmUnregPhones"      type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.7"  instance="0" alias="ccmRejectedPhones"   type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.8"  instance="0" alias="ccmRegGateways"      type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.9"  instance="0" alias="ccmUnregGateways"    type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.10" instance="0" alias="ccmRejectedGateways" type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.11" instance="0" alias="ccmRegMediaDev"      type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.12" instance="0" alias="ccmUnregMediaDev"    type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.13" instance="0" alias="ccmRejMediaDev"      type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.14" instance="0" alias="ccmRegCTIDev"        type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.15" instance="0" alias="ccmUnregCTIDev"      type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.16" instance="0" alias="ccmRejCTIDev"        type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.17" instance="0" alias="ccmRegVMailDev"      type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.18" instance="0" alias="ccmUnregVMailDev"    type="gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.156.1.5.19" instance="0" alias="ccmRejVMailDev"      type="gauge32" />
+      </group>
+
+      <group name="cisco-css" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.2"  instance="ciscoApCntIndex" alias="ciscoApCntName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.18" instance="ciscoApCntIndex" alias="ciscoApCntHits" type="counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.19" instance="ciscoApCntIndex" alias="ciscoApCntRedirs" type="counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.20" instance="ciscoApCntIndex" alias="ciscoApCntDrops" type="counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.25" instance="ciscoApCntIndex" alias="ciscoApCntBytes" type="counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.26" instance="ciscoApCntIndex" alias="ciscoApCntFrames" type="counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.368.1.16.4.1.60" instance="ciscoApCntIndex" alias="ciscoApCntSorry" type="counter32" />
+      </group>
+
+      <group  name="cisco-docs-ext-ifmacchan" ifType="127">
+        <mibObj oid=".1.3.6.1.4.1.9.9.116.1.3.3.1.4" instance="ifIndex" alias="MacCmTotal"  type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.116.1.3.3.1.5" instance="ifIndex" alias="MacCmActive" type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.116.1.3.3.1.6" instance="ifIndex" alias="MacCmReg"    type="Integer32" />
+      </group>
+
+      <group  name="cisco-docs-ext-ifupchannel" ifType="129">
+        <mibObj oid=".1.3.6.1.4.1.9.9.116.1.4.1.1.3" instance="ifIndex" alias="CmTotal"         type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.116.1.4.1.1.4" instance="ifIndex" alias="CmActive"        type="Integer32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.116.1.4.1.1.5" instance="ifIndex" alias="CmRegistered"    type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.10.127.1.1.4.1.5"  instance="ifIndex" alias="intCabUpSNR"    type="Integer32" />
+      </group>
+
+      <group name="cisco-memory" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.5" instance="1" alias="ciscoMemoryPoolUsed" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.6" instance="1" alias="ciscoMemoryPoolFree" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.7" instance="1" alias="ciscoMemoryPoolMax"  type="gauge" />
+      </group>
+
+      <group name="cisco-memory-pool" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.2" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolName" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.5" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolUsed" type="gauge"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.6" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolFree" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.7" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolMax"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.2.1.1" instance="ciscoMemoryPoolType" alias="cscoMemPoolUtl1Min"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.2.1.2" instance="ciscoMemoryPoolType" alias="cscoMemPoolUtl5Min"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.2.1.3" instance="ciscoMemoryPoolType" alias="cscoMemPoolUtl10Min"  type="gauge" />
+      </group>
+
+      <group name="cisco-pix" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.4"    instance="3" alias="cfwBuff4BBmax"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.4"    instance="5" alias="cfwBuff4BBcurr"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.4"    instance="8" alias="cfwBuff4BBmin"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.80"   instance="3" alias="cfwBuff80BBmax"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.80"   instance="5" alias="cfwBuff80BBcurr"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.80"   instance="8" alias="cfwBuff80BBmin"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.256"  instance="3" alias="cfwBuff256BBmax"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.256"  instance="5" alias="cfwBuff256BBcurr"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.256"  instance="8" alias="cfwBuff256BBmin"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.1550" instance="3" alias="cfwBuff1550BBmax"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.1550" instance="5" alias="cfwBuff1550BBcurr"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.1.1.4.1550" instance="8" alias="cfwBuff1550BBmin"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.2.1.5.40"   instance="6" alias="cfwConnectCurr"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.147.1.2.2.2.1.5.40"   instance="7" alias="cfwConnectMax"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.5"        instance="1" alias="cpmCPUTotal5min"    type="integer"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.8"        instance="1" alias="cpmCPUTotal5minRev" type="integer"/>
+      </group>
+
+      <group name="cisco-router" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.2.1.58"          instance="0" alias="avgBusy5"        type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.9.2.1.8"           instance="0" alias="freeMem"         type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.2.1.46"          instance="0" alias="bufferFail"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.2.1.47"          instance="0" alias="bufferNoMem"     type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.5" instance="1" alias="cpmCPUTotal5min" type="integer" />
+      </group>
+
+      <group name="cisco-temperature" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.2" instance="ciscoEnvMonTemperatureStatusIndex" alias="cvmTempStatusDescr" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.13.1.3.1.3" instance="ciscoEnvMonTemperatureStatusIndex" alias="cvmTempStatusValue" type="gauge" />
+      </group>
+
+      <group name="cisco-voltage" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.13.1.2.1.2" instance="ciscoEnvMonVoltageStatusIndex" alias="cvmVoltStatusDescr" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.13.1.2.1.3" instance="ciscoEnvMonVoltageStatusIndex" alias="cvmVoltStatusValue" type="gauge" />
+      </group>
+
+      <group name="cisco-router-interface" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.7"  instance="ifIndex" alias="locIfInPktsSec"     type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.9"  instance="ifIndex" alias="locIfOutPktsSec"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.26" instance="ifIndex" alias="locIfInQueueDrops"  type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.27" instance="ifIndex" alias="locIfOutQueueDrops" type="counter" />
+      </group>
+
+      <group  name = "cisco-aironet-stats" ifType = "ignore">
+        <mibObj oid=".1.3.6.1.4.1.522.3.12.1.8" instance="0" alias="aironetClientAssoc" type="integer"/>
+      </group>
+
+      <group name="cisco-rttmon-latest-jitter-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.2.1.1.3"  instance="rttMonCtrlAdminIndex" alias="rttMonCtrlAdminTag" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.2.2.1.18" instance="rttMonCtrlAdminIndex" alias="echoNumPackets"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.1"  instance="rttMonCtrlAdminIndex" alias="jitterNumRTT"       type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.2"  instance="rttMonCtrlAdminIndex" alias="jitterRTTSum"       type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.3"  instance="rttMonCtrlAdminIndex" alias="jitterRTTSum2"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.4"  instance="rttMonCtrlAdminIndex" alias="jitterRTTMin"       type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.5"  instance="rttMonCtrlAdminIndex" alias="jitterRTTMax"       type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.6"  instance="rttMonCtrlAdminIndex" alias="jitterMinPosSD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.7"  instance="rttMonCtrlAdminIndex" alias="jitterMaxPosSD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.8"  instance="rttMonCtrlAdminIndex" alias="jitterNumPosSD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.9"  instance="rttMonCtrlAdminIndex" alias="jitterSumPosSD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.10" instance="rttMonCtrlAdminIndex" alias="jitterSum2PosSD"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.11" instance="rttMonCtrlAdminIndex" alias="jitterMinNegSD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.12" instance="rttMonCtrlAdminIndex" alias="jitterMaxNegSD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.13" instance="rttMonCtrlAdminIndex" alias="jitterNumNegSD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.14" instance="rttMonCtrlAdminIndex" alias="jitterSumNegSD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.15" instance="rttMonCtrlAdminIndex" alias="jitterSum2NegSD"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.16" instance="rttMonCtrlAdminIndex" alias="jitterMinPosDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.17" instance="rttMonCtrlAdminIndex" alias="jitterMaxPosDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.18" instance="rttMonCtrlAdminIndex" alias="jitterNumPosDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.19" instance="rttMonCtrlAdminIndex" alias="jitterSumPosDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.20" instance="rttMonCtrlAdminIndex" alias="jitterSum2PosDS"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.21" instance="rttMonCtrlAdminIndex" alias="jitterMinNegDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.22" instance="rttMonCtrlAdminIndex" alias="jitterMaxNegDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.23" instance="rttMonCtrlAdminIndex" alias="jitterNumNegDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.24" instance="rttMonCtrlAdminIndex" alias="jitterSumNegDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.25" instance="rttMonCtrlAdminIndex" alias="jitterSum2NegDS"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.26" instance="rttMonCtrlAdminIndex" alias="jitterPktLossSD"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.27" instance="rttMonCtrlAdminIndex" alias="jitterPktLossDS"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.28" instance="rttMonCtrlAdminIndex" alias="jitterPktOOSeq"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.29" instance="rttMonCtrlAdminIndex" alias="jitterPktMIA"       type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.30" instance="rttMonCtrlAdminIndex" alias="jitterPktLateArr"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.33" instance="rttMonCtrlAdminIndex" alias="jitterOWSumSD"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.34" instance="rttMonCtrlAdminIndex" alias="jitterOWSum2SD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.35" instance="rttMonCtrlAdminIndex" alias="jitterOWMinSD"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.36" instance="rttMonCtrlAdminIndex" alias="jitterOWMaxSD"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.37" instance="rttMonCtrlAdminIndex" alias="jitterOWSumDS"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.38" instance="rttMonCtrlAdminIndex" alias="jitterOWSum2DS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.39" instance="rttMonCtrlAdminIndex" alias="jitterOWMinDS"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.40" instance="rttMonCtrlAdminIndex" alias="jitterOWMaxDS"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.41" instance="rttMonCtrlAdminIndex" alias="jitterNumOW"        type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.42" instance="rttMonCtrlAdminIndex" alias="jitterMOS"          type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.43" instance="rttMonCtrlAdminIndex" alias="jitterICPIF"        type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.44" instance="rttMonCtrlAdminIndex" alias="jitterIAJOut"       type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.45" instance="rttMonCtrlAdminIndex" alias="jitterIAJIn"        type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.46" instance="rttMonCtrlAdminIndex" alias="jitterAvgJitter"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.47" instance="rttMonCtrlAdminIndex" alias="jitterAvgSDJ"       type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.48" instance="rttMonCtrlAdminIndex" alias="jitterAvgDSJ"       type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.49" instance="rttMonCtrlAdminIndex" alias="jitterOWAvgSD"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.2.1.50" instance="rttMonCtrlAdminIndex" alias="jitterOWAvgDS"      type="gauge" />
+      </group>
+
+      <group name="cisco-rttmon-latest-rtp-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.1"  instance="rttMonCtrlAdminIndex" alias="rtpOperRTT"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.2"  instance="rttMonCtrlAdminIndex" alias="rtpIAJitterDS"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.3"  instance="rttMonCtrlAdminIndex" alias="rtpPktLossDS"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.4"  instance="rttMonCtrlAdminIndex" alias="rtpPktLateDS"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.5"  instance="rttMonCtrlAdminIndex" alias="rtpPktEarlyDS"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.6"  instance="rttMonCtrlAdminIndex" alias="rtpPktOOSeqDS"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.7"  instance="rttMonCtrlAdminIndex" alias="rtpFrameLossDS" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.8"  instance="rttMonCtrlAdminIndex" alias="rtpRFactorDS"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.9"  instance="rttMonCtrlAdminIndex" alias="rtpMOSCQDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.10" instance="rttMonCtrlAdminIndex" alias="rtpMOSLQDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.13" instance="rttMonCtrlAdminIndex" alias="rtpIAJitterSD"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.14" instance="rttMonCtrlAdminIndex" alias="rtpPktLossSD"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.15" instance="rttMonCtrlAdminIndex" alias="rtpPktsMIA"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.16" instance="rttMonCtrlAdminIndex" alias="rtpRFactorSD"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.17" instance="rttMonCtrlAdminIndex" alias="rtpMOSCQSD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.18" instance="rttMonCtrlAdminIndex" alias="rtpMinOWSD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.19" instance="rttMonCtrlAdminIndex" alias="rtpMaxOWSD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.20" instance="rttMonCtrlAdminIndex" alias="rtpAvgOWSD"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.21" instance="rttMonCtrlAdminIndex" alias="rtpMinOWDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.22" instance="rttMonCtrlAdminIndex" alias="rtpMaxOWDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.23" instance="rttMonCtrlAdminIndex" alias="rtpAvgOWDS"     type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.24" instance="rttMonCtrlAdminIndex" alias="rtpTotalPktsSD" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.42.1.5.3.1.25" instance="rttMonCtrlAdminIndex" alias="rtpTotalPktsDS" type="gauge" />
+      </group>
+
+      <!-- Stats from the CISCO-IPMROUTE-MIB -->
+
+      <group name="cisco-ipmroute-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.1" instance="0" alias="ciscoIpMRouteEnt" type="gauge" />
+      </group>
+
+      <group name="cisco-ipmroute-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.1" instance="ifIndex" alias="csIpMRIfInMCOcts" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.2" instance="ifIndex" alias="csIpMRIfOutMCOcts" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.3" instance="ifIndex" alias="csIpMRIfInMCPkt" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.4" instance="ifIndex" alias="csIpMRIfHCInMCPkt" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.5" instance="ifIndex" alias="csIpMRIfOutMCPkt" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.10.2.1.1.5.1.6" instance="ifIndex" alias="csIpMRIfHCOutMCPkt" type="counter" />
+      </group>
+
+      <!-- Stats from the CISCO-MVPN-MIB -->
+
+      <group name="cisco-mvpn-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.10.113.1.1.1" instance="0" alias="ciscoMvpnMvrfNum" type="gauge" />
+      </group>
+
+      <group name="cisco-mvpn-vrfs" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.10.113.1.2.1.1.3" instance="mplsL3VpnVrf" alias="cscoMvpnGenAssocIfs" type="gauge" />
+      </group>
+
+      <!-- Stats from the CISCO-PIM-MIB -->
+
+      <group name="cisco-pim-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.9.184.1.1.1" instance="0" alias="cpimInvRegMsgsRcvd" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.184.1.1.2" instance="0" alias="cpimInvPrnMsgsRcvd" type="counter" />
+      </group>
+
+      <!-- Stats from the CISCO-IGMP-SNOOPING-MIB -->
+      <group name="cisco-igmp-snooping-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.1" instance="ifIndex" alias="cisTxGeneralQueries" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.2" instance="ifIndex" alias="cisTxGrpSpecQueries" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.3" instance="ifIndex" alias="cisTxReports" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.4" instance="ifIndex" alias="cisTxLeaves" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.5" instance="ifIndex" alias="cisRxGeneralQueries" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.6" instance="ifIndex" alias="cisRxGrpSpecQueries" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.7" instance="ifIndex" alias="cisRxReports" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.8" instance="ifIndex" alias="cisRxLeaves" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.9" instance="ifIndex" alias="cisRxValidPkts" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.10" instance="ifIndex" alias="cisRxInvalidPkts" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.11" instance="ifIndex" alias="cisRxOtherPkts" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.12" instance="ifIndex" alias="cisRxMACGenQueries" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.13" instance="ifIndex" alias="cisRxTopoNotifs" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.14" instance="ifIndex" alias="cisV3Allows" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.15" instance="ifIndex" alias="cisV3Blocks" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.16" instance="ifIndex" alias="cisV3IsIncluded" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.17" instance="ifIndex" alias="cisV3IsExcluded" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.18" instance="ifIndex" alias="cisV3ToIncluded" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.263.1.2.1.1.19" instance="ifIndex" alias="cisV3ToExcluded" type="counter" />
+      </group>
+
+      <!-- Stats from the CISCO-SLB-MIB-->
+      <group name="cisco-slb-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.161.1.1.1.1.7"  instance="ciscoSlbInstance" alias="cSlbCreatedHCConns" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.161.1.1.1.1.9"  instance="ciscoSlbInstance" alias="cSlbEstabHCConns" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.161.1.1.1.1.11" instance="ciscoSlbInstance" alias="cSlbDestroydHCConns" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.161.1.1.1.1.13" instance="ciscoSlbInstance" alias="cSlbReassgdHCConns" type="counter" />
+      </group>
+
+      <!-- Stats from the CISCO-EHANCED-SLB-MIB-->
+
+      <group name="cisco-enhanced-slb-farm-rserver-stats" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.2"  instance="cesServerFarmRserverEntry" alias="cSlbFarmRsAdminWt" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.3"  instance="cesServerFarmRserverEntry" alias="cSlbFarmRsOperWt" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.4"  instance="cesServerFarmRserverEntry" alias="cSlbFarmRsMaxConns" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.5"  instance="cesServerFarmRserverEntry" alias="cSlbFarmRsMinConns" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.8"  instance="cesServerFarmRserverEntry" alias="cSlbFarmRsStateDesc" type="string" />
+        <!-- NB The following connection counters are Counter64 -->
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.11" instance="cesServerFarmRserverEntry" alias="cSlbFarmRsTotalConn" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.12" instance="cesServerFarmRserverEntry" alias="cSlbFarmRsFailConn" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.13" instance="cesServerFarmRserverEntry" alias="cSlbFarmRsDropConn" type="counter" />
+        <!-- NB The following is a Counter64 following Gauge semantics -->
+        <mibObj oid=".1.3.6.1.4.1.9.9.470.1.1.3.1.14" instance="cesServerFarmRserverEntry" alias="cSlbFarmRsCurrConn" type="gauge" />
+      </group>
+
+      <group name="cisco-cids-health-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.1"  instance="0" alias="cidsHlthPktLoss" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.2"  instance="0" alias="cidsHlthPktDenyRate" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.3"  instance="0" alias="cidsHlthAlarmsGend" type="Counter32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.4"  instance="0" alias="cidsHlthFragmentsIn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.5"  instance="0" alias="cidsHlthDatagramsIn" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.6"  instance="0" alias="cidsHlthTcpEmbryo" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.7"  instance="0" alias="cidsHlthTCPEstab" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.8"  instance="0" alias="cidsHlthTcpClosing" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.9"  instance="0" alias="cidsHlthTcpStreams" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.10" instance="0" alias="cidsHlthActiveNodes" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.11" instance="0" alias="cidsHlthTcpDualIpPt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.12" instance="0" alias="cidsHlthUdpDualIpPt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.13" instance="0" alias="cidsHlthIpDualIp" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.14" instance="0" alias="cidsHlthMemCritical" type="Gauge32" />
+      </group>
+
+      <systemDef name="Cisco Altiga">
+        <sysoidMask>.1.3.6.1.4.1.3076.</sysoidMask>
+        <collect>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>altiga</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name = "Cisco Aironet">
+        <sysoid>.1.3.6.1.4.1.9.1.380</sysoid>
+        <collect>
+          <includeGroup>cisco-aironet-stats</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco CSS">
+        <sysoidMask>.1.3.6.1.4.1.9.9.</sysoidMask>
+        <collect>
+          <includeGroup>cisco-css</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name = "Cisco C1200">
+        <sysoid>.1.3.6.1.4.1.9.1.525</sysoid>
+        <collect>
+          <includeGroup>cisco-ap-dot11-stats</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name = "Cisco C1240">
+        <sysoid>.1.3.6.1.4.1.9.1.685</sysoid>
+        <collect>
+          <includeGroup>cisco-ap-dot11-stats</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name = "Cisco C1250">
+        <sysoid>.1.3.6.1.4.1.9.1.758</sysoid>
+        <collect>
+          <includeGroup>cisco-ap-dot11-stats</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX1"><!-- PIX 515 -->
+        <sysoid>.1.3.6.1.4.1.9.1.390</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX2"><!-- PIX 501 -->
+        <sysoid>.1.3.6.1.4.1.9.1.417</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX3"><!-- PIX 515E -->
+        <sysoid>.1.3.6.1.4.1.9.1.451</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX - ciscoPIXFirewall">
+        <sysoid>.1.3.6.1.4.1.9.1.227</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 506">
+        <sysoid>.1.3.6.1.4.1.9.1.389</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 520">
+        <sysoid>.1.3.6.1.4.1.9.1.391</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 525">
+        <sysoid>.1.3.6.1.4.1.9.1.392</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 535">
+        <sysoid>.1.3.6.1.4.1.9.1.393</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 506E">
+        <sysoid>.1.3.6.1.4.1.9.1.450</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 535sc">
+        <sysoid>.1.3.6.1.4.1.9.1.675</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 525sc">
+        <sysoid>.1.3.6.1.4.1.9.1.676</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 515Esc">
+        <sysoid>.1.3.6.1.4.1.9.1.677</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 515sc">
+        <sysoid>.1.3.6.1.4.1.9.1.678</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 515sy">
+        <sysoid>.1.3.6.1.4.1.9.1.768</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 515Esy">
+        <sysoid>.1.3.6.1.4.1.9.1.769</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 525sy">
+        <sysoid>.1.3.6.1.4.1.9.1.770</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco PIX 535sy">
+        <sysoid>.1.3.6.1.4.1.9.1.771</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4210">
+        <sysoid>.1.3.6.1.4.1.9.1.645</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4215">
+        <sysoid>.1.3.6.1.4.1.9.1.646</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4235">
+        <sysoid>.1.3.6.1.4.1.9.1.647</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS 4240">
+        <sysoid>.1.3.6.1.4.1.9.1.648</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4250">
+        <sysoid>.1.3.6.1.4.1.9.1.649</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4250SX">
+        <sysoid>.1.3.6.1.4.1.9.1.650</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4250XL">
+        <sysoid>.1.3.6.1.4.1.9.1.651</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS 4255">
+        <sysoid>.1.3.6.1.4.1.9.1.652</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS IDSM2">
+        <sysoid>.1.3.6.1.4.1.9.1.653</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS NMCIDS">
+        <sysoid>.1.3.6.1.4.1.9.1.654</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS Security Service Module SSM-20">
+        <sysoid>.1.3.6.1.4.1.9.1.655</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS Security Service Module SSM-10">
+        <sysoid>.1.3.6.1.4.1.9.1.662</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco Firewall Service Module">
+        <sysoid>.1.3.6.1.4.1.9.1.674</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4220">
+        <sysoid>.1.3.6.1.4.1.9.1.741</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4230">
+        <sysoid>.1.3.6.1.4.1.9.1.742</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS 4260">
+        <sysoid>.1.3.6.1.4.1.9.1.743</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS virtual sensor">
+        <sysoid>.1.3.6.1.4.1.9.1.806</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4215 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.807</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4235 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.808</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4250 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.809</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4250SX Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.810</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4250XL Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.811</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4240 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.812</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4255 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.813</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS 4260 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.814</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IDS IDSM2 Virtual">
+        <sysoid>.1.3.6.1.4.1.9.1.815</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS Security Service Module SSM-20 virtual sensor">
+        <sysoid>.1.3.6.1.4.1.9.1.816</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS Security Service Module SSM-10 virtual sensor">
+        <sysoid>.1.3.6.1.4.1.9.1.817</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS 4270 Sensor">
+        <sysoid>.1.3.6.1.4.1.9.1.830</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco IPS 4270 Virtual Sensor">
+        <sysoid>.1.3.6.1.4.1.9.1.831</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cids-health-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5510">
+        <sysoid>.1.3.6.1.4.1.9.1.669</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5520">
+        <sysoid>.1.3.6.1.4.1.9.1.670</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5520sc">
+        <sysoid>.1.3.6.1.4.1.9.1.671</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5540">
+        <sysoid>.1.3.6.1.4.1.9.1.672</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5540sc">
+        <sysoid>.1.3.6.1.4.1.9.1.673</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5505">
+        <sysoid>.1.3.6.1.4.1.9.1.745</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5550">
+        <sysoid>.1.3.6.1.4.1.9.1.753</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5550sc">
+        <sysoid>.1.3.6.1.4.1.9.1.763</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5520sy">
+        <sysoid>.1.3.6.1.4.1.9.1.764</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5540sy">
+        <sysoid>.1.3.6.1.4.1.9.1.765</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5550sy">
+        <sysoid>.1.3.6.1.4.1.9.1.766</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5510sc">
+        <sysoid>.1.3.6.1.4.1.9.1.773</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5510sy">
+        <sysoid>.1.3.6.1.4.1.9.1.774</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco Routers">
+        <sysoidMask>.1.3.6.1.4.1.9.1.</sysoidMask>
+        <collect>
+          <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-router</includeGroup>
+          <includeGroup>cisco-temperature</includeGroup>
+          <includeGroup>cisco-voltage</includeGroup>
+          <includeGroup>cisco-router-interface</includeGroup>
+          <includeGroup>adsl-line</includeGroup>
+          <includeGroup>cisco-rttmon-latest-jitter-stats</includeGroup>
+          <includeGroup>cisco-rttmon-latest-rtp-stats</includeGroup>
+          <includeGroup>rfc1315-frame-relay</includeGroup>
+          <includeGroup>cisco-frame-relay</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
+          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
+          <includeGroup>cisco-bgp-peer-addr-family-prefix-stats</includeGroup>
+          <includeGroup>cisco-docs-ext-ifupchannel</includeGroup>
+          <includeGroup>cisco-docs-ext-ifmacchan</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco CallManager">
+        <sysoid>.1.3.6.1.4.1.9.1.583</sysoid>
+        <collect>
+          <includeGroup>cisco-ccm</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ACE Load Balancer 10K9">
+        <sysoid>.1.3.6.1.4.1.9.1.730</sysoid>
+        <collect>
+          <includeGroup>cisco-slb-stats</includeGroup>
+          <includeGroup>cisco-enhanced-slb-farm-rserver-stats</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ACE Load Balancer 4710K9">
+        <sysoid>.1.3.6.1.4.1.9.1.824</sysoid>
+        <collect>
+          <includeGroup>cisco-slb-stats</includeGroup>
+          <includeGroup>cisco-enhanced-slb-farm-rserver-stats</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco TelePresence MCU 4501"> 
+         <sysoid>.1.2.826.0.1.4616240.1.1.4501</sysoid> 
+         <collect> 
+          <includeGroup>mib2-interfaces</includeGroup> 
+        </collect> 
+      </systemDef> 
+
+</datacollection-group>

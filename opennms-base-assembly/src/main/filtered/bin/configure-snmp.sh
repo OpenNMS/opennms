@@ -39,7 +39,7 @@
 
 
 OPENNMS_HOME="${install.dir}"
-SEND_EVENT=${OPENNMS_HOME}/bin/send-event.pl
+SEND_EVENT="${OPENNMS_HOME}/bin/send-event.pl"
 EVENT_UEI=uei.opennms.org/internal/configureSNMP
 
 makeIpRange() {

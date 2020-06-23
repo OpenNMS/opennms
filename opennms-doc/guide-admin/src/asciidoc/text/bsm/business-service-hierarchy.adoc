@@ -1,0 +1,32 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Business Service Hierarchy
+
+_BS_ can depend on each other and build together a _Business Service Hierarchy_.
+It can be visualized using the _Topology User Interface_ with the _Business Services View_.
+The _Operational Status_ of a _BS_ is ultimately calculated from _Alarms_ and their _Severity_.
+To define the class of _Alarms_ a _Reduction Key_ is used and is represented as an _Edge_ of a _BS_.
+Giving more granularity than just _Up_ or _Down_, the _Operational Status_ uses the _Severities_, i.e. _Normal_, _Warning_, _Minor_, _Major_, _Critical_.
+
+Based on the hierarchy, the _Operational Status_ is calculated with _Map_ and _Reduce Functions_.
+A _Map Function_ influences which _Severity_ from the _Edge_ is used as an input to the _BS_.
+A _Reduce Function_ is used to consolidate the _Severities_ from all _Edges_ of a BS and uses them as inputs and reduces them into a single _Severity_, which is the _Operational Status_.
+
+The _Topology User Interface_ allows users to traverse _Business Service Hierarchies_ using the _Semantic Zoom Level (SZL)_.
+The _Semantic Zoom Level_ (SZL, pronounced as 'sizzle') defines how many _Neighbors_ are shown related to the elements which are in _Focus_.
+The number can be interpreted as how many _Hops_ from the _Focus_ should be shown on the _Topology User Interface_.
+
+[[gu-bsm-hierarchy-image]]
+.Business Service Hierarchy components
+image::bsm/02_bsm-service-hierarchy.png[]
+
+<1> A top-level _Business Service_ which depends on other _Business Services_, _Monitored Services_ and _Alarms_ (referenced by _Reduction Key_)
+<2> _Business Service_ as child an the _Operational Status_ is used as input for the top-level _Business Service_
+<3> _IP Service_ _Edge_ used as an input with auto generated _Reduction Keys_ for node down, interface down and node lost service
+<4> _Reduction Key_ _Edge_ used as an input to the top-level _BS_, which references just a node lost service of a _Page Sequence Monitor_ for the user login
+
+To add or remove an additional selected _BS_ or _Edge_ to _Focus_ use in the context menu _Add To Focus_ or _Remove From Focus.
+If you want to have a specific _BS_ or _Edge_ as a single focus use _Set as Focal Point_.
+The _Eye_ icon highlights all elements in the _Topology UI_ which are set to _Focus_.

@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>rancid-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies RANCID</name>
+  <name>OpenNMS :: Dependencies :: RANCID</name>
   <description>
     This module is used to provide a single artifact that the opennms project
     can depend on to use the RANCID library
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>rancid-api</artifactId>
-      <version>1.0.3</version>
+      <version>${rancidApiVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>log4j</groupId>
@@ -29,27 +29,8 @@
   </dependencies>
   <repositories>
     <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
-      <id>sonatype-public-repo</id>
-      <name>Sonatype Public Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/sonatype.org-release</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>

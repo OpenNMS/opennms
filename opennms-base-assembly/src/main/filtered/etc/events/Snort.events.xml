@@ -1,95 +1,95 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.10234.2.1.3</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>1</mevalue>
-                </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/Snort/traps/sidaAlertGeneric</uei>
-        <event-label>SNORT-INTRUSION-DETECTION-ALERT-MIB defined trap event: sidaAlertGeneric</event-label>
-        <descr>
-&lt;p&gt;The Sida Alert Generic Trap is sent whenever an
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10234.2.1.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Snort/traps/sidaAlertGeneric</uei>
+      <event-label>SNORT-INTRUSION-DETECTION-ALERT-MIB defined trap event: sidaAlertGeneric</event-label>
+      <descr>&lt;p>The Sida Alert Generic Trap is sent whenever an
 event is detected by snort (rules) and no specific
-Alert is found applicable.&lt;/p&gt;&lt;table&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+Alert is found applicable.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
 
-        sidaSensorVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        sidaSensorVersion&lt;/b>&lt;/td>&lt;td>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        sidaSensorAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+        sidaSensorAddressType&lt;/b>&lt;/td>&lt;td>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p;>
                 unknown(0)
                 ipv4(1)
                 ipv6(2)
                 dns(16)
-        &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        &lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        sidaSensorAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        sidaSensorAddress&lt;/b>&lt;/td>&lt;td>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        sidaAlertTimeStamp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        sidaAlertTimeStamp&lt;/b>&lt;/td>&lt;td>
+        %parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        sidaAlertMsg&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        sidaAlertMsg&lt;/b>&lt;/td>&lt;td>
+        %parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        sidaAlertMoreInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
-<!--
-        sidaAlertProtocol&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#8]%;&lt;/td&gt;&lt;td&gt;
-        &lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
--->
-        sidaAlertSrcAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#9]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+        sidaAlertMoreInfo&lt;/b>&lt;/td>&lt;td>
+        %parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        <!--
+        sidaAlertProtocol&lt;/b>&lt;/td>&lt;td>
+        %parm[#8]%;&lt;/td>&lt;td>
+        &lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+        -->
+
+        sidaAlertSrcAddressType&lt;/b>&lt;/td>&lt;td>
+        %parm[#9]%;&lt;/td>&lt;td>&lt;p;>
                 unknown(0)
                 ipv4(1)
                 ipv6(2)
                 dns(16)
-        &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        &lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        sidaAlertSrcAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#10]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        sidaAlertSrcAddress&lt;/b>&lt;/td>&lt;td>
+        %parm[#10]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        sidaAlertDstAddressType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#11]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+        sidaAlertDstAddressType&lt;/b>&lt;/td>&lt;td>
+        %parm[#11]%;&lt;/td>&lt;td>&lt;p;>
                 unknown(0)
                 ipv4(1)
                 ipv6(2)
                 dns(16)
-        &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        &lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        sidaAlertDstAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#12]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        sidaAlertDstAddress&lt;/b>&lt;/td>&lt;td>
+        %parm[#12]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        sidaAlertSrcPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#13]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-        &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+        sidaAlertSrcPort&lt;/b>&lt;/td>&lt;td>
+        %parm[#13]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
 
-        sidaAlertDstPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-        %parm[#14]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+        sidaAlertDstPort&lt;/b>&lt;/td>&lt;td>
+        %parm[#14]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
                         Snort Event: sidaAlertGeneric trap received
                         sidaSensorVersion=%parm[#1]%
                         sidaSensorAddressType=%parm[#2]%
@@ -102,8 +102,8 @@ Alert is found applicable.&lt;/p&gt;&lt;table&gt;
                         sidaAlertDstAddressType=%parm[#10]%
                         sidaAlertDstAddress=%parm[#11]%
                         sidaAlertSrcPort=%parm[#12]%
-                        sidaAlertDstPort=%parm[#13]%&lt;/p&gt;
+                        sidaAlertDstPort=%parm[#13]%&lt;/p>
                 </logmsg>
-        <severity>Warning</severity>
-</event>
+      <severity>Warning</severity>
+   </event>
 </events>

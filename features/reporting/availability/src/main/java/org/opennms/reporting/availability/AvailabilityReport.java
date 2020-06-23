@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,15 +38,14 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.reporting.availability.render.HTMLReportRenderer;
 import org.opennms.reporting.availability.render.PDFReportRenderer;
 import org.slf4j.Logger;
@@ -72,7 +71,7 @@ public class AvailabilityReport extends Object {
     private static final String MONTH_FORMAT_CLASSIC = "classic";
 
     /**
-     * Castor object that holds all the information required for the
+     * Object that holds all the information required for the
      * generating xml to be translated to the pdf.
      */
     private Report m_report = null;
@@ -135,7 +134,7 @@ public class AvailabilityReport extends Object {
     }
 
     /**
-     * This when invoked generates the data into report castor classes.
+     * This when invoked generates the data into report classes.
      *
      * @param logourl
      *            location of the logo to be displayed on the report
@@ -170,7 +169,7 @@ public class AvailabilityReport extends Object {
     }
 
     /**
-     * This when invoked populates the castor classes.
+     * This when invoked populates the classes.
      *
      * @param logourl
      *            location of the logo to be displayed on the report
@@ -204,24 +203,19 @@ public class AvailabilityReport extends Object {
     }
 
     /**
-     * This when invoked marshals the report XML from the castor classes.
+     * This when invoked marshals the report XML from the classes.
      *
-     * @throws org.exolab.castor.xml.ValidationException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws java.io.IOException if any.
      * @throws java.lang.Exception if any.
      */
-    public void marshalReport() throws ValidationException, MarshalException,
-    IOException, Exception {
+    public void marshalReport() throws IOException, Exception {
 
         File file = new File(ConfigFileConstants.getHome()
                              + "/share/reports/AvailReport.xml");
         try {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-            Marshaller marshaller = new Marshaller(fileWriter);
-            marshaller.setSuppressNamespaces(true);
-            marshaller.marshal(m_report);
-            LOG.debug("The xml marshalled from the castor classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+            JaxbUtils.marshal(m_report, fileWriter);
+            LOG.debug("The xml marshalled from the JAXB classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
             fileWriter.close();
         } catch (Throwable e) {
             LOG.error("Exception", e);
@@ -229,7 +223,7 @@ public class AvailabilityReport extends Object {
     }
 
     /**
-     * Generate PDF from castor classes.
+     * Generate PDF from classes.
      *
      * @param xsltFileName a {@link java.lang.String} object.
      * @param out a {@link java.io.OutputStream} object.
@@ -246,12 +240,12 @@ public class AvailabilityReport extends Object {
                 File file = new File(ConfigFileConstants.getHome()
                                      + "/share/reports/AvailReport.xml");
                 try {
-                    LOG.debug("The xml marshalled from the castor classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
-                    Reader fileReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+                    LOG.debug("The xml marshalled from the JAXB classes is saved in {}/share/reports/AvailReport.xml", ConfigFileConstants.getHome());
+                    Reader fileReader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
                     if (!format.equals("HTML")) {
-                        new PDFReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
+                        new PDFReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), StandardCharsets.UTF_8));
                     } else {
-                        new HTMLReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), "UTF-8"));
+                        new HTMLReportRenderer().render(fileReader, out, new InputStreamReader(new FileInputStream(xsltFileName), StandardCharsets.UTF_8));
                     }
                 } catch (Throwable e) {
                     LOG.error("Exception", e);
@@ -268,7 +262,7 @@ public class AvailabilityReport extends Object {
      *
      * @param args an array of {@link java.lang.String} objects.
      */
-    public static void main(final String args[]) {
+    public static void main(final String[] args) {
         Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
             @Override public void run() {
                 LOG.debug("main() called with args: {}", StringUtils.arrayToDelimitedString(args, ", "));

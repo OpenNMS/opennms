@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<!-- NOTE: We use '[\\/]' instead of '/' in the paths in order to match
+     the files when compiling with both Linux and Windows. -->
+<suppressions>
+    <!-- BSD and GPL - see headers for details -->
+    <suppress files="org[\\/]opennms[\\/]core[\\/]test[\\/]dns[\\/]DNSServer.java" checks=".*"/>
+    <!-- APLv2 -->
+    <suppress files="org[\\/]opennms[\\/]netmgt[\\/]snmp[\\/]snmp4j[\\/]Integer32IgnoreTooManyBytes.java" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]core[\\/]soa[\\/]support[\\/]OnmsOSGiBridgeActivator.java" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]vaadin[\\/]extender[\\/].*" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]features[\\/]osgi[\\/]script[\\/].*" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]poller[\\/]remote[\\/]Mac.*" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]container[\\/]web[\\/].*" checks=".*"/>
+    <suppress files="org[\\/]apache[\\/]taglibs[\\/]standard[\\/]lang[\\/].*" checks=".*"/>
+
+    <!-- BSD style -->
+    <suppress files="org[\\/]opennms[\\/]netmgt[\\/]syslogd[\\/]SyslogClient.java" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]plugins[\\/]com[\\/]impossibl[\\/]postgres[\\/]jdbc[\\/].*" checks=".*"/>
+    <!-- EPL - see headers for details -->
+    <suppress files="org[\\/]opennms[\\/]protocols[\\/]vmware[\\/]VmwareViJavaAccess.java" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]netmgt[\\/]collectd[\\/]VmwareCimCollector.java" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]netmgt[\\/]poller[\\/]monitors[\\/]VmwareCimMonitor.java" checks=".*"/>
+    <suppress files="org[\\/]opennms[\\/]netmgt[\\/]collectd[\\/]vmware[\\/]VmwareViJavaAccessTest.java" checks=".*"/>
+    <!-- LGPLv3 -->
+    <suppress files="org[\\/]opennms[\\/]reporting[\\/]jasperreports[\\/]compiler[\\/]CustomJRJdtCompiler.java" checks=".*"/>
+</suppressions>

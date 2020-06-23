@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.events;
 
 import java.io.File;
@@ -37,24 +38,25 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.config.EditorToolbar;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.EventConfDao;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.netmgt.xml.eventconf.Mask;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.Property.ValueChangeEvent;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * The Class Event Panel.
@@ -76,6 +78,15 @@ public abstract class EventPanel extends Panel {
     /** The Events File. */
     private File eventFile;
 
+    /** The selected Event ID. */
+    private Object selectedEventId;
+
+    /** The event table. */
+    final EventTable eventTable;
+
+    /** The base event object. */
+    final Events baseEventsObject = new Events();
+
     /**
      * Instantiates a new event panel.
      *
@@ -87,11 +98,13 @@ public abstract class EventPanel extends Panel {
      */
     public EventPanel(final EventConfDao eventConfDao, final EventProxy eventProxy, final File eventFile, final Events events, final Logger logger) {
 
-        if (eventProxy == null)
+        if (eventProxy == null) {
             throw new RuntimeException("eventProxy cannot be null.");
+        }
 
-        if (eventConfDao == null)
+        if (eventConfDao == null) {
             throw new RuntimeException("eventConfDao cannot be null.");
+        }
 
         this.eventConfDao = eventConfDao;
         this.eventProxy = eventProxy;
@@ -100,11 +113,14 @@ public abstract class EventPanel extends Panel {
         setCaption("Events");
         addStyleName("light");
 
+        baseEventsObject.setGlobal(events.getGlobal());
+        baseEventsObject.setEventFiles(events.getEventFiles());
+
         final HorizontalLayout topToolbar = new HorizontalLayout();
         topToolbar.addComponent(new Button("Save Events File", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                processEvents(events, logger);
+                processEvents(logger);
             }
         }));
         topToolbar.addComponent(new Button("Cancel", new Button.ClickListener() {
@@ -115,28 +131,30 @@ public abstract class EventPanel extends Panel {
             }
         }));
 
-        final EventTable eventTable = new EventTable(events.getEventCollection());
+        eventTable = new EventTable(events.getEvents());
 
         final EventForm eventForm = new EventForm();
         eventForm.setVisible(false);
 
         final EditorToolbar bottomToolbar = new EditorToolbar() {
             @Override
-            public void save() {
+            public boolean save() {
                 org.opennms.netmgt.xml.eventconf.Event event = eventForm.getEvent();
                 logger.info("Event " + event.getUei() + " has been " + (isNew ? "created." : "updated."));
                 try {
-                    eventForm.getFieldGroup().commit();
+                    eventForm.commit();
                     eventForm.setReadOnly(true);
                     eventTable.refreshRowCache();
                 } catch (CommitException e) {
                     String msg = "Can't save the changes: " + e.getMessage();
                     logger.error(msg);
                     Notification.show(msg, Notification.Type.ERROR_MESSAGE);
+                    return false;
                 }
+                return true;
             }
             @Override
-            public void delete() {
+            public boolean delete() {
                 Object eventId = eventTable.getValue();
                 if (eventId != null) {
                     org.opennms.netmgt.xml.eventconf.Event event = eventTable.getEvent(eventId);
@@ -145,15 +163,18 @@ public abstract class EventPanel extends Panel {
                     eventTable.removeItem(eventId);
                     eventTable.refreshRowCache();
                 }
+                return true;
             }
             @Override
-            public void edit() {
+            public boolean edit() {
                 eventForm.setReadOnly(false);
+                return true;
             }
             @Override
-            public void cancel() {
-                eventForm.getFieldGroup().discard();
+            public boolean cancel() {
+                eventForm.discard();
                 eventForm.setReadOnly(true);
+                return true;
             }
         };
         bottomToolbar.setVisible(false);
@@ -161,14 +182,20 @@ public abstract class EventPanel extends Panel {
         eventTable.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
-                Object eventId = eventTable.getValue();
-                if (eventId != null) {
-                    eventForm.setEvent(eventTable.getEvent(eventId));
+                if (eventForm.isVisible() && !eventForm.isReadOnly()) {
+                    eventTable.select(selectedEventId);
+                    Notification.show("An event seems to be being edited.\nPlease save or cancel your current changes.", Notification.Type.WARNING_MESSAGE);
+                } else {
+                    Object eventId = eventTable.getValue();
+                    if (eventId != null) {
+                        selectedEventId = eventId;
+                        eventForm.setEvent(eventTable.getEvent(eventId));
+                    }
+                    eventForm.setReadOnly(true);
+                    eventForm.setVisible(eventId != null);
+                    bottomToolbar.setReadOnly(true);
+                    bottomToolbar.setVisible(eventId != null);
                 }
-                eventForm.setReadOnly(true);
-                eventForm.setVisible(eventId != null);
-                bottomToolbar.setReadOnly(true);
-                bottomToolbar.setVisible(eventId != null);
             }
         });   
 
@@ -225,10 +252,9 @@ public abstract class EventPanel extends Panel {
     /**
      * Process events.
      *
-     * @param events the OpenNMS Events
      * @param logger the logger
      */
-    public void processEvents(final Events events, final Logger logger) {
+    public void processEvents(final Logger logger) {
         if (eventFile.exists()) {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
@@ -238,12 +264,12 @@ public abstract class EventPanel extends Panel {
                                new ConfirmDialog.Listener() {
                 public void onClose(ConfirmDialog dialog) {
                     if (dialog.isConfirmed()) {
-                        validateFile(eventFile, events, logger);
+                        validateFile(eventFile, logger);
                     }
                 }
             });
         } else {
-            validateFile(eventFile, events, logger);
+            validateFile(eventFile, logger);
         }
     }
 
@@ -251,27 +277,26 @@ public abstract class EventPanel extends Panel {
      * Validate file.
      *
      * @param file the file
-     * @param events the events
      * @param logger the logger
      */
-    private void validateFile(final File file, final Events events, final Logger logger) {
+    private void validateFile(final File file, final Logger logger) {
         int eventCount = 0;
-        for (org.opennms.netmgt.xml.eventconf.Event e : events.getEventCollection()) {
+        for (org.opennms.netmgt.xml.eventconf.Event e : eventTable.getOnmsEvents()) {
             if (eventConfDao.findByUei(e.getUei()) != null)
                 eventCount++;
         }
         if (eventCount == 0) {
-            saveFile(file, events, logger);
+            saveFile(file, logger);
         } else {
             ConfirmDialog.show(getUI(),
                                "Are you sure?",
-                               eventCount + " of the new events are already on the configuration files.\nDo you really want to override those events ?",
+                               eventCount + " of the new events are already on the configuration files.\nIf you click 'Yes', the existing definitions are going to be ignored.",
                                "Yes",
                                "No",
                                new ConfirmDialog.Listener() {
                 public void onClose(ConfirmDialog dialog) {
                     if (dialog.isConfirmed()) {
-                        saveFile(file, events, logger);
+                        saveFile(file, logger);
                     }
                 }
             });
@@ -282,36 +307,42 @@ public abstract class EventPanel extends Panel {
      * Save file.
      *
      * @param file the file
-     * @param events the events
      * @param logger the logger
      */
-    private void saveFile(final File file, final Events events, final Logger logger) {
+    private void saveFile(final File file, final Logger logger) {
         try {
+            // Updating the base events object with the new events set.
+            baseEventsObject.setEvents(eventTable.getOnmsEvents());
             // Normalize the Event Content (required to avoid marshaling problems)
             // TODO Are other normalizations required ?
-            for (org.opennms.netmgt.xml.eventconf.Event event : events.getEventCollection()) {
+            for (org.opennms.netmgt.xml.eventconf.Event event : baseEventsObject.getEvents()) {
                 logger.debug("Normalizing event " + event.getUei());
-                AlarmData ad = event.getAlarmData();
-                if (ad != null && (ad.getReductionKey() == null || ad.getReductionKey().trim().isEmpty()))
+                final AlarmData ad = event.getAlarmData();
+                if (ad != null && (ad.getReductionKey() == null || ad.getReductionKey().trim().isEmpty() || ad.getAlarmType() == null || ad.getAlarmType() == 0)) {
                     event.setAlarmData(null);
+                }
+                final Mask m = event.getMask();
+                if (m != null && m.getMaskelements().isEmpty()) {
+                    event.setMask(null);
+                }
             }
             // Save the XML of the new events
-            saveEvents(events, file, logger);
+            saveEvents(baseEventsObject, file, logger);
             // Add a reference to the new file into eventconf.xml if there are events
-            String fileName = file.getAbsolutePath().replaceFirst(".*\\/events\\/(.*)", "events/$1");
+            String fileName = file.getAbsolutePath().replaceFirst(".*\\" + File.separatorChar + "events\\" + File.separatorChar + "(.*)", "events" + File.separatorChar + "$1");
             final Events rootEvents = eventConfDao.getRootEvents();
             final File rootFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-            if (events.getEventCount() > 0) {
-                if (!rootEvents.getEventFileCollection().contains(fileName)) {
+            if (baseEventsObject.getEvents().size() > 0) {
+                if (!rootEvents.getEventFiles().contains(fileName)) {
                     logger.info("Adding a reference to " + fileName + " inside eventconf.xml.");
-                    rootEvents.getEventFileCollection().add(0, fileName);
+                    rootEvents.getEventFiles().add(0, fileName);
                     saveEvents(rootEvents, rootFile, logger);
                 }
             } else {
                 // If a reference to an empty events file exist, it should be removed.
-                if (rootEvents.getEventFileCollection().contains(fileName)) {
+                if (rootEvents.getEventFiles().contains(fileName)) {
                     logger.info("Removing a reference to " + fileName + " inside eventconf.xml because there are no events.");
-                    rootEvents.getEventFileCollection().remove(fileName);
+                    rootEvents.getEventFiles().remove(fileName);
                     saveEvents(rootEvents, rootFile, logger);
                 }
             }

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,7 +31,7 @@ package org.opennms.netmgt.dao;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
@@ -47,35 +47,15 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
-public class TransactionAwareEventForwarder implements EventForwarder,
-        InitializingBean {
+public class TransactionAwareEventForwarder implements EventForwarder, InitializingBean {
 
-    /**
-     * <p>Constructor for TransactionAwareEventForwarder.</p>
-     */
-    public TransactionAwareEventForwarder() {
-    }
-
-    /**
-     * <p>Constructor for TransactionAwareEventForwarder.</p>
-     *
-     * @param forwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
-     * @throws java.lang.Exception if any.
-     */
-    public TransactionAwareEventForwarder(EventForwarder forwarder)
-            throws Exception {
-        setEventForwarder(forwarder);
-        afterPropertiesSet();
-    }
-
-    public static class PendingEventsSynchronization extends
-            TransactionSynchronizationAdapter {
+    public static class PendingEventsSynchronization extends TransactionSynchronizationAdapter {
 
         private PendingEventsHolder m_eventsHolder;
         private EventForwarder m_eventForwarder;
 
         public PendingEventsSynchronization(PendingEventsHolder eventsHolder,
-                EventForwarder eventForwarder) {
+                                            EventForwarder eventForwarder) {
             m_eventsHolder = eventsHolder;
             m_eventForwarder = eventForwarder;
         }
@@ -137,20 +117,19 @@ public class TransactionAwareEventForwarder implements EventForwarder,
 
     private EventForwarder m_eventForwarder;
 
-    /**
-     * <p>setEventForwarder</p>
-     *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
-     */
+
+    public TransactionAwareEventForwarder() {
+    }
+
+    public TransactionAwareEventForwarder(EventForwarder forwarder) throws Exception {
+        setEventForwarder(forwarder);
+        afterPropertiesSet();
+    }
+
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
     }
 
-    /**
-     * <p>afterPropertiesSet</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_eventForwarder != null,
@@ -167,11 +146,6 @@ public class TransactionAwareEventForwarder implements EventForwarder,
         sendNow(eventLog);
     }
 
-    /**
-     * <p>sendNow</p>
-     *
-     * @param eventLog a {@link org.opennms.netmgt.xml.event.Log} object.
-     */
     @Override
     public void sendNow(Log eventLog) {
         List<Log> pendingEvents = requestPendingEventsList();
@@ -181,11 +155,16 @@ public class TransactionAwareEventForwarder implements EventForwarder,
         releasePendingEventsList(pendingEvents);
     }
 
-    /**
-     * <p>requestPendingEventsList</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
+    @Override
+    public void sendNowSync(Event event) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sendNowSync(Log eventLog) {
+        throw new UnsupportedOperationException();
+    }
+
     public List<Log> requestPendingEventsList() {
         PendingEventsHolder eventsHolder = (PendingEventsHolder) TransactionSynchronizationManager
                 .getResource(m_eventForwarder);
@@ -199,7 +178,7 @@ public class TransactionAwareEventForwarder implements EventForwarder,
             return eventsHolder.getPendingEvents();
         }
 
-        List<Log> pendingEvents = new LinkedList<Log>();
+        List<Log> pendingEvents = new LinkedList<>();
 
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             PendingEventsHolder holderToUse = eventsHolder;
@@ -222,11 +201,6 @@ public class TransactionAwareEventForwarder implements EventForwarder,
         return pendingEvents;
     }
 
-    /**
-     * <p>releasePendingEventsList</p>
-     *
-     * @param pendingEvents a {@link java.util.List} object.
-     */
     public void releasePendingEventsList(List<Log> pendingEvents) {
         if (pendingEvents == null) {
             return;
@@ -247,11 +221,11 @@ public class TransactionAwareEventForwarder implements EventForwarder,
 
     }
 
-    private boolean eventHolderHolds(PendingEventsHolder eventsHolder,
-            List<Log> passedInEvents) {
+    private boolean eventHolderHolds(PendingEventsHolder eventsHolder, List<Log> passedInEvents) {
         if (!eventsHolder.hasPendingEvents()) {
             return false;
         }
         return (eventsHolder.getPendingEvents() == passedInEvents);
     }
+
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi
+           http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+  <context:annotation-config />
+
+  <!--
+    The bean is defined twice. Once here, and in component-measurement.xml.
+    The "component-measurement.xml" application context does not need to know about the "osgi:" definition, otherwise all
+    modules need to depend on core-soa and include "component-soa.xml and component-soa-osgi.xml".
+    To prevent this, only for the inclusion of the "onmsgi:service" the bean with id "measurementFetchStrategyFactory" is defined twice.
+  -->
+  <!-- This annotated bean will produce the measurementFetchStrategy bean -->
+  <bean id="measurementFetchStrategyFactory" class="org.opennms.netmgt.measurements.api.MeasurementFetchStrategyFactory"/>
+  <onmsgi:service interface="org.opennms.netmgt.measurements.api.MeasurementFetchStrategy" ref="measurementFetchStrategy"/>
+</beans>

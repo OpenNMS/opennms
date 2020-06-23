@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -47,9 +47,11 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.api.UserConfig.ContactType;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.netmgt.model.OnmsUser;
 
 public class UserGroupManagerTest {
     private GroupManager m_groupManager;
@@ -105,6 +107,29 @@ public class UserGroupManagerTest {
     }
     
     @Test
+    public void testContactInfo() throws Exception {
+    	// verify that email address is loadable by default
+    	User admin = m_userManager.getUser("admin");
+    	String adminEmail = m_userManager.getContactInfo("admin",  ContactType.email);
+    	
+    	OnmsUser onmsAdmin = m_userManager.getOnmsUser("admin");
+    	String onmsAdminEmail = onmsAdmin.getEmail();
+    	
+    	assertEquals("admin@opennms.org", adminEmail);
+    	assertEquals(adminEmail, onmsAdminEmail);
+    	
+    	// verify that email is overwritten
+    	onmsAdmin.setEmail("admin@opennms.com");
+    	m_userManager.save(onmsAdmin); 
+    	assertEquals("admin@opennms.com", m_userManager.getContactInfo("admin", ContactType.email));
+
+    	m_userManager.setContactInfo("admin", ContactType.email, "admin@opennms.org"); // reset
+    	admin = m_userManager.getUser("admin"); // reload
+    	m_userManager.saveUser("admin", admin); // should be saved too
+    	assertEquals("admin@opennms.org", m_userManager.getContactInfo("admin", ContactType.email));
+    }
+    
+    @Test
     public void testGetUserNames() throws Exception {
         List<String> userNameList = m_userManager.getUserNames();
         assertEquals(4, userNameList.size());
@@ -122,9 +147,9 @@ public class UserGroupManagerTest {
         assertEquals(4, userNameList.size());
         assertTrue(userNameList.contains("brozow2"));
         
-        List<String> group1Users = m_groupManager.getGroup("InitialGroup").getUserCollection();
-        List<String> group2Users = m_groupManager.getGroup("EscalationGroup").getUserCollection();
-        List<String> group3Users = m_groupManager.getGroup("UpGroup").getUserCollection();
+        List<String> group1Users = m_groupManager.getGroup("InitialGroup").getUsers();
+        List<String> group2Users = m_groupManager.getGroup("EscalationGroup").getUsers();
+        List<String> group3Users = m_groupManager.getGroup("UpGroup").getUsers();
         
         assertFalse(group1Users.contains("brozow"));
         assertFalse(group2Users.contains("brozow"));

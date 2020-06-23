@@ -1,2 +1,1 @@
-<?xml version="1.0"?>
-<snmp-config read-community="public" retry="3" timeout="2000" version="v2c" />
+<snmp-config xmlns="http://xmlns.opennms.org/xsd/config/snmp" version="v2c" read-community="public" timeout="1800" retry="1"/>

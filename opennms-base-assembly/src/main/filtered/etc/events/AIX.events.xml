@@ -1,61 +1,57 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: IBM-AIX-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/AIX/aixFileSystemMounted</uei>
-	<event-label>IBM-AIX-MIB defined trap event: aixFileSystemMounted</event-label>
-	<descr>
-&lt;p&gt;When a file system is mounted or unmounted through 
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/AIX/aixFileSystemMounted</uei>
+      <event-label>IBM-AIX-MIB defined trap event: aixFileSystemMounted</event-label>
+      <descr>&lt;p>When a file system is mounted or unmounted through 
 SNMP, an event is generated.  aixFsName is defined in 
-aixFsTable.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+aixFsTable.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixFsName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	aixFsName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			aixFileSystemMounted trap received 
-			aixFsName=%parm[#1]%&lt;/p&gt;
+			aixFsName=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-		<varbind>
-			<vbnumber>3</vbnumber>
-			<vbvalue>0</vbvalue>
-		</varbind>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/AIX/aixFileSystemCompletelyFull</uei>
-	<event-label>IBM-AIX-MIB defined trap event: aixFileSystemFull</event-label>
-	<descr>
-&lt;p&gt;When the current sampled used percentage of a file 
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>0</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/AIX/aixFileSystemCompletelyFull</uei>
+      <event-label>IBM-AIX-MIB defined trap event: aixFileSystemFull</event-label>
+      <descr>&lt;p>When the current sampled used percentage of a file 
 system is above aixFsThreshold and the value at  
 last interval is less than the aixFsThreshold, an the
 event will be generated. 
@@ -64,53 +60,51 @@ the total size of the file system and available size.
 aixFsName - file system name,
 aixFsSize - file system size in megabytes
 aixFsFree - free file system size in megabytes
-aixFsThreshold - the threshold for the file system size&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+aixFsThreshold - the threshold for the file system size&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixFsName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixFsName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixFsSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixFsSize&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixFsFree&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixFsFree&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixFsThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	aixFsThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			aixFileSystemFull trap received 
 			aixFsName=%parm[#1]% 
 			aixFsSize=%parm[#2]% 
 			aixFsFree=%parm[#3]% 
-			aixFsThreshold=%parm[#4]%&lt;/p&gt;
+			aixFsThreshold=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/IBM/AIX/aixFileSystemFull:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/AIX/aixFileSystemFull</uei>
-	<event-label>IBM-AIX-MIB defined trap event: aixFileSystemFull</event-label>
-	<descr>
-&lt;p&gt;When the current sampled used percentage of a file 
+      <severity>Major</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/IBM/AIX/aixFileSystemFull:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/AIX/aixFileSystemFull</uei>
+      <event-label>IBM-AIX-MIB defined trap event: aixFileSystemFull</event-label>
+      <descr>&lt;p>When the current sampled used percentage of a file 
 system is above aixFsThreshold and the value at  
 last interval is less than the aixFsThreshold, an the
 event will be generated. 
@@ -119,53 +113,51 @@ the total size of the file system and available size.
 aixFsName - file system name,
 aixFsSize - file system size in megabytes
 aixFsFree - free file system size in megabytes
-aixFsThreshold - the threshold for the file system size&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+aixFsThreshold - the threshold for the file system size&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixFsName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixFsName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixFsSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixFsSize&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixFsFree&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixFsFree&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixFsThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	aixFsThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			aixFileSystemFull trap received 
 			aixFsName=%parm[#1]% 
 			aixFsSize=%parm[#2]% 
 			aixFsFree=%parm[#3]% 
-			aixFsThreshold=%parm[#4]%&lt;/p&gt;
+			aixFsThreshold=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/AIX/aixVolumeGroupFull</uei>
-	<event-label>IBM-AIX-MIB defined trap event: aixVolumeGroupFull</event-label>
-	<descr>
-&lt;p&gt;When the current sampled used percentage of a volume 
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/AIX/aixVolumeGroupFull</uei>
+      <event-label>IBM-AIX-MIB defined trap event: aixVolumeGroupFull</event-label>
+      <descr>&lt;p>When the current sampled used percentage of a volume 
 group is above aixVgThreshold and the value at the last 
 interval is less than the aixVgThreshold, an event 
 will be generated. This event message contains the 
@@ -174,57 +166,55 @@ threshold.
 aixVgName - the name of the volume group.
 aixVgSize - the total size of the volume group.
 aixVgFree - the free size of the volume group.
-aixVgThreshold - the threshold for the volume group.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+aixVgThreshold - the threshold for the volume group.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixVgName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixVgName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixVgSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixVgSize&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixVgFree&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixVgFree&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixVgThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	aixVgThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			aixVolumeGroupFull trap received 
 			aixVgName=%parm[#1]% 
 			aixVgSize=%parm[#2]% 
 			aixVgFree=%parm[#3]% 
-			aixVgThreshold=%parm[#4]%&lt;/p&gt;
+			aixVgThreshold=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-		<varbind>
-			<vbnumber>2</vbnumber>
-			<vbvalue>100</vbvalue>
-		</varbind>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/AIX/aixPageCompletelyFull</uei>
-	<event-label>IBM-AIX-MIB defined trap event: aixPageFull</event-label>
-	<descr>
-&lt;p&gt;When the current used percentage of a paging 
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>100</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/AIX/aixPageCompletelyFull</uei>
+      <event-label>IBM-AIX-MIB defined trap event: aixPageFull</event-label>
+      <descr>&lt;p>When the current used percentage of a paging 
 space is above aixPageThreshold and the value at the last 
 interval is less than the aixPageThreshold, an event will
 be generated. The event message includes the 
@@ -234,48 +224,46 @@ threshold value.
 aixPageName - the paging space name
 aixPagePercentUsed - percentage of used Paging space.
 aixPageThreshold - the threshold value of the paging 
-		   space. &lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		   space. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixPageName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixPageName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixPagePercentUsed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixPagePercentUsed&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixPageThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	aixPageThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			aixPageFull trap received 
 			aixPageName=%parm[#1]% 
 			aixPagePercentUsed=%parm[#2]% 
-			aixPageThreshold=%parm[#3]%&lt;/p&gt;
+			aixPageThreshold=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-	<alarm-data reduction-key="uei.opennms.org/vendor/IBM/AIX/aixPageFull:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/AIX/aixPageFull</uei>
-	<event-label>IBM-AIX-MIB defined trap event: aixPageFull</event-label>
-	<descr>
-&lt;p&gt;When the current used percentage of a paging 
+      <severity>Major</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/IBM/AIX/aixPageFull:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/AIX/aixPageFull</uei>
+      <event-label>IBM-AIX-MIB defined trap event: aixPageFull</event-label>
+      <descr>&lt;p>When the current used percentage of a paging 
 space is above aixPageThreshold and the value at the last 
 interval is less than the aixPageThreshold, an event will
 be generated. The event message includes the 
@@ -285,158 +273,148 @@ threshold value.
 aixPageName - the paging space name
 aixPagePercentUsed - percentage of used Paging space.
 aixPageThreshold - the threshold value of the paging 
-		   space. &lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+		   space. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixPageName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixPageName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixPagePercentUsed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixPagePercentUsed&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixPageThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	aixPageThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			aixPageFull trap received 
 			aixPageName=%parm[#1]% 
 			aixPagePercentUsed=%parm[#2]% 
-			aixPageThreshold=%parm[#3]%&lt;/p&gt;
+			aixPageThreshold=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false" />
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/AIX/aixUserLoginFailed</uei>
-	<event-label>IBM-AIX-MIB defined trap event: aixUserLoginFailed</event-label>
-	<descr>
-&lt;p&gt;If a user fails to log into the system in the number of
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/AIX/aixUserLoginFailed</uei>
+      <event-label>IBM-AIX-MIB defined trap event: aixUserLoginFailed</event-label>
+      <descr>&lt;p>If a user fails to log into the system in the number of
 attempts defined by aixLoginFailedThreshold in the last 
 time period defined by aixFailedLoginTimePeriod, 
 an event is generated. The event message includes the 
 attempts of all users who failed to log into the 
 system and the time period during which these 
-attempts occurred.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+attempts occurred.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixFailedLoginTimePeriod&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	aixFailedLoginTimePeriod&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			aixUserLoginFailed trap received 
-			aixFailedLoginTimePeriod=%parm[#1]%&lt;/p&gt;
+			aixFailedLoginTimePeriod=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/AIX/aixUtilizationCPU</uei>
-	<event-label>IBM-AIX-MIB defined trap event: aixUtilizationCPU</event-label>
-	<descr>
-&lt;p&gt;When the CPU utilization reaches the threshold, an 
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/AIX/aixUtilizationCPU</uei>
+      <event-label>IBM-AIX-MIB defined trap event: aixUtilizationCPU</event-label>
+      <descr>&lt;p>When the CPU utilization reaches the threshold, an 
 event is generated. The event contains the utilization,
 and threshold values.
 aixSeCPUUtilization -  CPU Utilization value.
-aixSeThresholdCPU - Threshold value.  &lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+aixSeThresholdCPU - Threshold value.  &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixSeCPUUtilization&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	aixSeCPUUtilization&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	aixSeCPUThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	aixSeCPUThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			aixUtilizationCPU trap received 
 			aixSeCPUUtilization=%parm[#1]% 
-			aixSeCPUThreshold=%parm[#2]%&lt;/p&gt;
+			aixSeCPUThreshold=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false" />
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/AIX/aixSnmptrapHolder</uei>
-	<event-label>IBM-AIX-MIB defined trap event: aixSnmptrapHolder</event-label>
-	<descr>
-&lt;p&gt;Together with the agent, the snmptrap command is 
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.191.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/AIX/aixSnmptrapHolder</uei>
+      <event-label>IBM-AIX-MIB defined trap event: aixSnmptrapHolder</event-label>
+      <descr>&lt;p>Together with the agent, the snmptrap command is 
 delivered. The snmptrap command sends a trap message 
 to the agent. This object is place holder for 
-snmptrap command. &lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			aixSnmptrapHolder trap received&lt;/p&gt;
+snmptrap command. &lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			aixSnmptrapHolder trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2.6.191.%</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/IBM/AIX/unknownTrap</uei>
-	<event-label>IBM-AIX defined trap event: aixSnmptrapHolder</event-label>
-	<descr>
-&lt;p&gt;This is the default event generated when an
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2.6.191.%</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/IBM/AIX/unknownTrap</uei>
+      <event-label>IBM-AIX defined trap event: aixSnmptrapHolder</event-label>
+      <descr>&lt;p>This is the default event generated when an
 AIX-specific trap is received for which no event definition
 has been configured.
-&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Unknown AIX-specific trap received (enterprise:%id% generic:%generic%
-                        specific:%specific%. %parm[##]% varbinds:%parm[all]%&lt;/p&gt;
+                        specific:%specific%. %parm[##]% varbinds:%parm[all]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: IBM-AIX-MIB -->
+      <severity>Indeterminate</severity>
+   </event>
 </events>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jmx-datacollection-config xmlns="http://xmlns.opennms.org/xsd/config/jmx-datacollection">
+    <jmx-collection name="JSR160-anyservice">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+            <mbean name="java.lang.GarbageCollector" objectname="java.lang:type=GarbageCollector,name=ConcurrentMarkSweep">
+                <attrib name="CollectionCount" alias="0CollectionCnt" type="gauge"/>
+                <attrib name="CollectionTime" alias="0CollectionTime" type="gauge"/>
+                <comp-attrib name="LastGcInfo" alias="LastGcInfo" type="Composite">
+                    <comp-member name="GcThreadCount" alias="0LasGcInfoGcThreCnt" type="gauge"/>
+                    <comp-member name="duration" alias="0LastGcInfoDuration" type="gauge"/>
+                    <comp-member name="endTime" alias="0LastGcInfoEndTime" type="gauge"/>
+                    <comp-member name="id" alias="0LastGcInfoId" type="gauge"/>
+                    <comp-member name="startTime" alias="0LastGcInfoStarTime" type="gauge"/>
+                </comp-attrib>
+            </mbean>
+            <mbean name="java.lang.Memory" objectname="java.lang:type=Memory">
+                <attrib name="ObjectPendingFinalizationCount" alias="0ObjecPendiFinalCnt" type="gauge"/>
+                <comp-attrib name="HeapMemoryUsage" alias="HeapMemoryUsage" type="Composite">
+                    <comp-member name="committed" alias="0HeapMemUsageCommit" type="gauge"/>
+                    <comp-member name="init" alias="0HeapMemUsageInit" type="gauge"/>
+                    <comp-member name="max" alias="0HeapMemUsageMax" type="gauge"/>
+                    <comp-member name="used" alias="0HeapMemUsageUsed" type="gauge"/>
+                </comp-attrib>
+                <comp-attrib name="NonHeapMemoryUsage" alias="NonHeapMemoryUsage" type="Composite">
+                    <comp-member name="committed" alias="0NonHeapMemUsagComm" type="gauge"/>
+                    <comp-member name="init" alias="0NonHeapMemUsagInit" type="gauge"/>
+                    <comp-member name="max" alias="0NonHeapMemUsageMax" type="gauge"/>
+                    <comp-member name="used" alias="0NonHeapMemUsagUsed" type="gauge"/>
+                </comp-attrib>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.Compaction" objectname="org.apache.cassandra.metrics:type=Compaction,name=BytesCompacted">
+                <attrib name="Count" alias="0Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.Compaction" objectname="org.apache.cassandra.metrics:type=Compaction,name=TotalCompactionsCompleted">
+                <attrib name="Count" alias="1Cnt" type="gauge"/>
+                <attrib name="MeanRate" alias="0MeanRate" type="gauge"/>
+                <attrib name="OneMinuteRate" alias="0OneMinuteRate" type="gauge"/>
+                <attrib name="FiveMinuteRate" alias="0FiveMinuteRate" type="gauge"/>
+                <attrib name="FifteenMinuteRate" alias="0FifteenMinuteRate" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=BINARY,name=Dropped">
+                <attrib name="Count" alias="2Cnt" type="gauge"/>
+                <attrib name="MeanRate" alias="1MeanRate" type="gauge"/>
+                <attrib name="OneMinuteRate" alias="1OneMinuteRate" type="gauge"/>
+                <attrib name="FiveMinuteRate" alias="1FiveMinuteRate" type="gauge"/>
+                <attrib name="FifteenMinuteRate" alias="1FifteenMinuteRate" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=COUNTER_MUTATION,name=Dropped">
+                <attrib name="Count" alias="3Cnt" type="gauge"/>
+                <attrib name="MeanRate" alias="2MeanRate" type="gauge"/>
+                <attrib name="OneMinuteRate" alias="2OneMinuteRate" type="gauge"/>
+                <attrib name="FiveMinuteRate" alias="2FiveMinuteRate" type="gauge"/>
+                <attrib name="FifteenMinuteRate" alias="2FifteenMinuteRate" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=MUTATION,name=Dropped">
+                <attrib name="Count" alias="4Cnt" type="gauge"/>
+                <attrib name="MeanRate" alias="3MeanRate" type="gauge"/>
+                <attrib name="OneMinuteRate" alias="3OneMinuteRate" type="gauge"/>
+                <attrib name="FiveMinuteRate" alias="3FiveMinuteRate" type="gauge"/>
+                <attrib name="FifteenMinuteRate" alias="3FifteenMinuteRate" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=PAGED_RANGE,name=Dropped">
+                <attrib name="Count" alias="5Cnt" type="gauge"/>
+                <attrib name="MeanRate" alias="4MeanRate" type="gauge"/>
+                <attrib name="OneMinuteRate" alias="4OneMinuteRate" type="gauge"/>
+                <attrib name="FiveMinuteRate" alias="4FiveMinuteRate" type="gauge"/>
+                <attrib name="FifteenMinuteRate" alias="4FifteenMinuteRate" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=RANGE_SLICE,name=Dropped">
+                <attrib name="Count" alias="6Cnt" type="gauge"/>
+                <attrib name="MeanRate" alias="5MeanRate" type="gauge"/>
+                <attrib name="OneMinuteRate" alias="5OneMinuteRate" type="gauge"/>
+                <attrib name="FiveMinuteRate" alias="5FiveMinuteRate" type="gauge"/>
+                <attrib name="FifteenMinuteRate" alias="5FifteenMinuteRate" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=READ,name=Dropped">
+                <attrib name="Count" alias="7Cnt" type="gauge"/>
+                <attrib name="MeanRate" alias="6MeanRate" type="gauge"/>
+                <attrib name="OneMinuteRate" alias="6OneMinuteRate" type="gauge"/>
+                <attrib name="FiveMinuteRate" alias="6FiveMinuteRate" type="gauge"/>
+                <attrib name="FifteenMinuteRate" alias="6FifteenMinuteRate" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=READ_REPAIR,name=Dropped">
+                <attrib name="Count" alias="8Cnt" type="gauge"/>
+                <attrib name="MeanRate" alias="7MeanRate" type="gauge"/>
+                <attrib name="OneMinuteRate" alias="7OneMinuteRate" type="gauge"/>
+                <attrib name="FiveMinuteRate" alias="7FiveMinuteRate" type="gauge"/>
+                <attrib name="FifteenMinuteRate" alias="7FifteenMinuteRate" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=REQUEST_RESPONSE,name=Dropped">
+                <attrib name="Count" alias="9Cnt" type="gauge"/>
+                <attrib name="MeanRate" alias="8MeanRate" type="gauge"/>
+                <attrib name="OneMinuteRate" alias="8OneMinuteRate" type="gauge"/>
+                <attrib name="FiveMinuteRate" alias="8FiveMinuteRate" type="gauge"/>
+                <attrib name="FifteenMinuteRate" alias="8FifteenMinuteRate" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.DroppedMessage" objectname="org.apache.cassandra.metrics:type=DroppedMessage,scope=_TRACE,name=Dropped">
+                <attrib name="Count" alias="10Cnt" type="gauge"/>
+                <attrib name="MeanRate" alias="9MeanRate" type="gauge"/>
+                <attrib name="OneMinuteRate" alias="9OneMinuteRate" type="gauge"/>
+                <attrib name="FiveMinuteRate" alias="9FiveMinuteRate" type="gauge"/>
+                <attrib name="FifteenMinuteRate" alias="9FifteenMinuteRate" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.Storage" objectname="org.apache.cassandra.metrics:type=Storage,name=Exceptions">
+                <attrib name="Count" alias="11Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.Storage" objectname="org.apache.cassandra.metrics:type=Storage,name=Load">
+                <attrib name="Count" alias="12Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.Storage" objectname="org.apache.cassandra.metrics:type=Storage,name=TotalHints">
+                <attrib name="Count" alias="13Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.Storage" objectname="org.apache.cassandra.metrics:type=Storage,name=TotalHintsInProgress">
+                <attrib name="Count" alias="14Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=AntiEntropyStage,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="15Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=CacheCleanupExecutor,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="16Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=CommitLogArchiver,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="17Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=CompactionExecutor,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="18Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=GossipStage,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="19Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=HintedHandoff,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="20Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=InternalResponseStage,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="21Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtableFlushWriter,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="22Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtablePostFlush,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="23Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtableReclaimMemory,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="24Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MigrationStage,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="25Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MiscStage,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="26Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=PendingRangeCalculator,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="27Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=Sampler,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="28Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=ValidationExecutor,name=CurrentlyBlockedTasks">
+                <attrib name="Count" alias="29Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=AntiEntropyStage,name=TotalBlockedTasks">
+                <attrib name="Count" alias="30Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=CacheCleanupExecutor,name=TotalBlockedTasks">
+                <attrib name="Count" alias="31Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=CommitLogArchiver,name=TotalBlockedTasks">
+                <attrib name="Count" alias="32Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=CompactionExecutor,name=TotalBlockedTasks">
+                <attrib name="Count" alias="33Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=GossipStage,name=TotalBlockedTasks">
+                <attrib name="Count" alias="34Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=HintedHandoff,name=TotalBlockedTasks">
+                <attrib name="Count" alias="35Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=InternalResponseStage,name=TotalBlockedTasks">
+                <attrib name="Count" alias="36Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtableFlushWriter,name=TotalBlockedTasks">
+                <attrib name="Count" alias="37Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtablePostFlush,name=TotalBlockedTasks">
+                <attrib name="Count" alias="38Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MemtableReclaimMemory,name=TotalBlockedTasks">
+                <attrib name="Count" alias="39Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MigrationStage,name=TotalBlockedTasks">
+                <attrib name="Count" alias="40Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=MiscStage,name=TotalBlockedTasks">
+                <attrib name="Count" alias="41Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=PendingRangeCalculator,name=TotalBlockedTasks">
+                <attrib name="Count" alias="42Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=Sampler,name=TotalBlockedTasks">
+                <attrib name="Count" alias="43Cnt" type="gauge"/>
+            </mbean>
+            <mbean name="org.apache.cassandra.metrics.ThreadPools" objectname="org.apache.cassandra.metrics:type=ThreadPools,path=internal,scope=ValidationExecutor,name=TotalBlockedTasks">
+                <attrib name="Count" alias="44Cnt" type="gauge"/>
+            </mbean>
+        </mbeans>
+    </jmx-collection>
+</jmx-datacollection-config>

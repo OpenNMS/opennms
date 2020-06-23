@@ -1,0 +1,145 @@
+// Global settings
+:ascii-ids:
+:encoding: UTF-8
+:lang: en
+:icons: font
+:toc: left
+:toclevels: 2
+:numbered:
+
+[[gi]]
+= Installation Guide
+:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
+:revnumber: {opennms-product-name} {opennms-version}
+:revdate: {last-update-label} {docdatetime}
+:version-label!:
+
+[[gi-compatibility]]
+include::text/compatibility.adoc[]
+
+// Basic Setup OpenNMS
+include::text/basic-setup-opennms/setting-up-opennms.adoc[]
+
+// Basic Setup OpenNMS - RHEL
+include::text/basic-setup-opennms/rhel/installing-on-rhel.adoc[]
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+include::text/basic-setup-opennms/rhel/step-1-install-opennms.adoc[]
+include::text/basic-setup-opennms/rhel/step-2-postgresql.adoc[]
+include::text/basic-setup-opennms/rhel/step-3-initialize-opennms.adoc[]
+include::text/basic-setup-opennms/rhel/step-4-change-admin-password.adoc[]
+include::text/_general/nextsteps.adoc[]
+
+ifndef::opennms-prime[]
+// Enable section numbers
+:sectnums:
+
+// Basic Setup OpenNMS - Debian
+include::text/basic-setup-opennms/debian/installing-on-debian.adoc[]
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+include::text/basic-setup-opennms/debian/step-1-install-opennms.adoc[]
+include::text/basic-setup-opennms/debian/step-2-postgresql.adoc[]
+include::text/basic-setup-opennms/debian/step-3-initialize-opennms.adoc[]
+include::text/basic-setup-opennms/debian/step-4-change-admin-password.adoc[]
+include::text/_general/nextsteps.adoc[]
+
+// Enable section numbers
+:sectnums:
+
+// Basic Setup OpenNMS - Windows
+include::text/basic-setup-opennms/windows/installing-on-windows.adoc[]
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+include::text/basic-setup-opennms/windows/step-1-postgresql.adoc[]
+include::text/basic-setup-opennms/windows/step-2-graphical-installer.adoc[]
+include::text/basic-setup-opennms/windows/step-3-configure-postgres-opennms.adoc[]
+include::text/basic-setup-opennms/windows/step-4-change-admin-password.adoc[]
+include::text/_general/nextsteps.adoc[]
+
+// Enable section numbers
+:sectnums:
+
+// Run OpenNMS in Docker
+include::text/basic-setup-opennms/docker/opennms-docker.adoc[]
+include::text/basic-setup-opennms/docker/opennms-config.adoc[]
+
+endif::opennms-prime[]
+
+// Basic Setup Minion
+include::text/monitor-location-minion/setting-up-minion.adoc[]
+
+// Basic Setup Minion - RHEL
+include::text/monitor-location-minion/rhel/installing-on-rhel.adoc[]
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+include::text/monitor-location-minion/rhel/step-1-setup-opennms.adoc[]
+include::text/monitor-location-minion/rhel/step-2-install-minion.adoc[]
+include::text/monitor-location-minion/rhel/step-3-starting-minion.adoc[]
+include::text/monitor-location-minion/rhel/step-4-configure-minion.adoc[]
+include::text/monitor-location-minion/rhel/step-5-verify-connectivity.adoc[]
+
+ifndef::opennms-prime[]
+// Enable section numbers
+:sectnums:
+
+// Basic Setup Minion - Debian
+include::text/monitor-location-minion/debian/installing-on-debian.adoc[]
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+include::text/monitor-location-minion/debian/step-1-setup-opennms.adoc[]
+include::text/monitor-location-minion/debian/step-2-install-minion.adoc[]
+include::text/monitor-location-minion/debian/step-3-starting-minion.adoc[]
+include::text/monitor-location-minion/debian/step-4-configure-minion.adoc[]
+include::text/monitor-location-minion/debian/step-5-verify-connectivity.adoc[]
+
+// Enable section numbers
+:sectnums:
+
+// Run Minion in Docker
+include::text/monitor-location-minion/docker/minion-docker.adoc[]
+include::text/monitor-location-minion/docker/minion-config.adoc[]
+
+endif::opennms-prime[]
+
+// Sentinel
+include::text/sentinel/setting-up-sentinel.adoc[]
+include::text/sentinel/rhel/rhel.adoc[]
+ifndef::opennms-prime[]
+include::text/sentinel/debian/debian.adoc[]
+
+endif::opennms-prime[]
+
+// Alternate ways of doing it
+include::text/minion-custom-messaging-system/introduction.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/introduction.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/steps-horizon.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/steps-minion.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/tuning-kafka.adoc[]
+
+include::text/install-opennms-versions.adoc[]
+include::text/minion-config-file.adoc[]
+include::text/run-in-non-root.adoc[]
+
+// Add more features
+include::text/r-statistical-computing.adoc[]
+
+// Use other time series technology from default
+include::text/time-series-storage/introduction.adoc[]
+include::text/time-series-storage/rrdtool/rrdtool.adoc[]
+include::text/time-series-storage/rrdtool/rhel.adoc[]
+ifndef::opennms-prime[]
+include::text/time-series-storage/rrdtool/debian.adoc[]
+endif::opennms-prime[]
+
+include::text/time-series-storage/newts.adoc[]

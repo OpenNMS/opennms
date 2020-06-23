@@ -1,0 +1,104 @@
+<div id="ruleModal">
+  <div class="modal-header">
+    <h5 class="modal-title" ng-show="classification.id === undefined">Create Classification Rule</h5>
+    <h5 class="modal-title" ng-show="classification.id !== undefined">Edit Classification Rule</h5>
+  </div>
+  <div class="modal-body">
+    <form name="ruleForm" novalidate>
+      <div class="form-group">
+        <div ng-show="error.entity" class="form-text text-danger">{{error.entity}}</div>
+      </div>
+      <div class="form-group form-row">
+        <label class="col-form-label" for="rule.group">Group</label>
+        <select class="form-control custom-select"
+                ng-options="group as group.name for group in selectableGroups track by group.id"
+                ng-model="classification.group"
+                ng-disabled="classification.id === undefined"
+                id="rule.group" ></select>
+      </div>
+      <div class="form-group form-row">
+        <label class="col-form-label" for="rule.position">Position</label>
+        <button class="btn btn-link"
+                uib-popover-html="'<div>Rules on low positions will be evaluated first:<br>position 0 -&gt; position 1 -&gt; position 2 -&gt; ...</div>'"
+                popover-trigger="'outsideClick'"><i class="fa fa-question-circle"/></button>
+        <input class="form-control" id="rule.position" name="position" placeholder="{{maxPosition}}" type="number" min="0" max="{{maxPosition}}" step="1" pattern="[0-9]*" ng-model="classification.position"
+               ng-class="{ 'is-invalid' : ruleForm.position.$invalid || error.position }" />
+        <div ng-show="ruleForm.position.$invalid" class="invalid-feedback">Position must be between 0 and {{maxPosition}}.</div>
+      </div>
+      <div class="form-group form-row">
+        <label class="col-form-label" for="rule.name">Application Name</label>
+        <input class="form-control" type="text" id="rule.name" name="name" placeholder="HTTP" ng-model="classification.name"
+               ng-class="{ 'is-invalid' : ruleForm.name.$invalid || error.name }" required/>
+        <div ng-show="ruleForm.name.$invalid" class="invalid-feedback">The name is required.</div>
+        <div ng-show="error.name" class="invalid-feedback">{{error.name}}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-8">
+          <label class="col-form-label" for="rule.srcAddress">Source IP Address</label>
+          <input class="form-control" type="text" id="rule.srcAddress" name="srcAddress" placeholder="127.0.0.1,10.0.0.0/24,10.0.0.0-10.255.255.255" ng-model="classification.srcAddress"
+                 ng-class="{ 'is-invalid' : ruleForm.srcAddress.$invalid || error.srcAddress}"/>
+          <div ng-show="error.srcAddress" class="invalid-feedback">{{error.srcAddress}}</div>
+        </div>
+        <div class="form-group col-md-4">
+          <label class="col-form-label" for="rule.srcPort">Source Port</label>
+          <input class="form-control" type="text" id="rule.srcPort" name="srcPort" placeholder="80,8080" ng-model="classification.srcPort"
+                 ng-class="{ 'is-invalid' : ruleForm.srcPort.$invalid || error.srcPort }"/>
+          <div ng-show="error.srcPort" class="invalid-feedback">{{error.srcPort}}</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-8">
+          <label class="col-form-label" for="rule.dstAddress">Destination IP Address</label>
+          <input class="form-control" type="text" id="rule.dstAddress" name="dstAddress" placeholder="127.0.0.1,10.0.0.0/24,10.0.0.0-10.255.255.255" ng-model="classification.dstAddress"
+                 ng-class="{ 'is-invalid' : ruleForm.dstAddress.$invalid || error.dstAddress}"/>
+          <div ng-show="error.dstAddress" class="invalid-feedback">{{error.dstAddress}}</div>
+        </div>
+        <div class="form-group col-md-4">
+          <label class="col-form-label" for="rule.dstPort">Destination Port</label>
+          <input class="form-control" type="text" id="rule.dstPort" name="dstPort" placeholder="80,8080" ng-model="classification.dstPort"
+                 ng-class="{ 'is-invalid' : ruleForm.dstPort.$invalid || error.dstPort }"/>
+          <div ng-show="error.dstPort" class="invalid-feedback">{{error.dstPort}}</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-form-label" for="rule.omnidirectional">Omnidirectional</label>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="rule.omnidirectional" name="omnidirectional" ng-model="classification.omnidirectional"
+                 ng-class="{ 'is-invalid' : ruleForm.omnidirectional.$invalid || error.omnidirectional }" />
+          <label class="form-check-label" for="rule.omnidirectional">Enable matching independent of the flow direction</label>
+          <div ng-show="error.omnidirectional" class="invalid-feedback">{{error.omnidirectional}}</div>
+        </div>
+      </div>
+      <div class="form-group form-row">
+        <label class="col-form-label" for="rule.exporterFilter">Exporter Filter</label>
+        <button class="btn btn-link"
+                uib-popover-html="'<div>The rule is only applied if the exporter of the flow matches the defined <a href=https://wiki.opennms.org/wiki/Filters target=_blank>filter</a>.</div>'"
+                popover-trigger="'outsideClick'"><i class="fa fa-question-circle"/></button>
+        <input class="form-control" type="text" id="rule.exporterFilter" name="exporterFilter" placeholder="categoryName == 'Exporters' | ipAddr == '10.0.0.1'" ng-model="classification.exporterFilter"
+               ng-class="{ 'is-invalid' : ruleForm.exporterFilter.$invalid || error.exporterFilter }"/>
+        <div ng-show="error.exporterFilter" class="invalid-feedback">{{error.exporterFilter}}</div>
+      </div>
+      <div class="form-group form-row" >
+        <label class="col-form-label" for="rule.protocol">IP Protocol</label>
+        <input class="form-control" type="text"
+               id="rule.protocol"
+               name="protocol"
+               ng-model="currentSelection"
+               placeholder="tcp"
+               typeahead-on-select="insertProtocol($item)"
+               typeahead-min-length="0"
+               uib-typeahead="protocol.keyword for protocol in protocols | filter:$viewValue"
+               typeahead-editable="false"
+               ng-class="{ 'is-invalid' : ruleForm.protocol.$invalid || error.protocol }"/>
+        <span ng-repeat="protocol in selectedProtocols" class="badge badge-secondary mt-2 mr-2">
+          {{protocol.keyword | uppercase}} <a href class="text-danger" name="remove-protocol" ng-click="removeProtocol(protocol)"><i class="fa fa-remove" title="remove protocol"></i></a>
+        </span>
+        <div ng-show="error.protocol" class="invalid-feedback">{{error.protocol}}</div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" id="save-rule" ng-click="save()" ng-disabled="ruleForm.$invalid">{{buttonName}}</button>
+    <button type="button" class="btn btn-secondary" id="cancel-rule" ng-click="cancel()" >Cancel</button>
+  </div>
+</div>

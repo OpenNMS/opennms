@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -58,15 +59,10 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:david@opennms.com">David Hustace </a>
  * @author <a href="mailto:brozow@opennms.com">Mathew Brozowski </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:david@opennms.com">David Hustace </a>
- * @author <a href="mailto:brozow@opennms.com">Mathew Brozowski </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @author <a href="mailto:david@opennms.com">David Hustace </a>
- * @author <a href="mailto:brozow@opennms.com">Mathew Brozowski </a>
- * @author <a href="http://www.opennms.org/">OpenNMS </a>
- * @version $Id: $
  */
 public final class VacuumdConfigFactory {
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
     /**
      * The singleton instance of this factory
      */
@@ -177,7 +173,7 @@ public final class VacuumdConfigFactory {
      * @return a {@link java.util.Collection} object.
      */
     public synchronized Collection<Automation> getAutomations() {
-        return m_config.getAutomations().getAutomationCollection();
+        return m_config.getAutomations();
     }
     
 	/**
@@ -186,7 +182,7 @@ public final class VacuumdConfigFactory {
 	 * @return a {@link java.util.Collection} object.
 	 */
 	public synchronized Collection<Trigger> getTriggers() {
-        return m_config.getTriggers().getTriggerCollection();
+        return m_config.getTriggers();
     }
 
     /**
@@ -195,7 +191,7 @@ public final class VacuumdConfigFactory {
      * @return a {@link java.util.Collection} object.
      */
     public synchronized Collection<Action> getActions() {
-        return m_config.getActions().getActionCollection();
+        return m_config.getActions();
     }
 
     /**
@@ -205,7 +201,7 @@ public final class VacuumdConfigFactory {
      * @return a {@link java.util.Collection} object.
      */
     public synchronized Collection<AutoEvent> getAutoEvents() {
-        return m_config.getAutoEvents().getAutoEventCollection();
+        return m_config.getAutoEvents();
     }
 
     /**
@@ -214,7 +210,7 @@ public final class VacuumdConfigFactory {
      * @return a {@link java.util.Collection} object.
      */
     public synchronized Collection<ActionEvent> getActionEvents() {
-        return m_config.getActionEvents().getActionEventCollection();
+        return m_config.getActionEvents();
     }
 
     /**
@@ -293,12 +289,9 @@ public final class VacuumdConfigFactory {
      * @return an array of {@link java.lang.String} objects.
      */
     public synchronized String[] getSqlStatements() {
-        Statement[] stmts = m_config.getStatement();
-        String[] sql = new String[stmts.length];
-        for (int i = 0; i < stmts.length; i++) {
-            sql[i] = stmts[i].getContent();
-        }
-        return sql;
+        return m_config.getStatements().parallelStream()
+            .map(Statement::getContent)
+            .collect(Collectors.toList()).toArray(EMPTY_STRING_ARRAY);
     }
     
     /**
@@ -307,7 +300,7 @@ public final class VacuumdConfigFactory {
      * @return a {@link java.util.List} object.
      */
     public synchronized List<Statement> getStatements() {
-    	return m_config.getStatementCollection();
+    	return m_config.getStatements();
     }
 
     /**

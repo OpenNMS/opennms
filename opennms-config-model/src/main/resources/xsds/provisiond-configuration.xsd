@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+        targetNamespace="http://xmlns.opennms.org/xsd/config/provisiond-configuration" 
+        xmlns:this="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
+        elementFormDefault="qualified">
+        
+  <element name="provisiond-configuration" >
+    <annotation>
+      <documentation>
+        Behavior configuration for the Provisioner Daemon
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="this:requisition-def" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="importThreads" type="positiveInteger" use="optional" default="8"/>
+      <attribute name="scanThreads" type="positiveInteger" use="optional" default="10" />
+      <attribute name="rescanThreads" type="positiveInteger" use="optional" default="10" />
+      <attribute name="writeThreads" type="positiveInteger" use="optional" default="8" />
+      <attribute name="requistion-dir" type="string" use="optional" default="${install.dir}/etc/imports" />
+      <attribute name="foreign-source-dir" type="string" use="optional" default="${install.dir}/etc/foreign-sources" />
+    </complexType>
+  </element>
+  
+  <element name="requisition-def"  >
+    <annotation>
+      <documentation>
+      
+      Defines an import job with a cron expression
+        
+        http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger
+          Field Name     Allowed Values      Allowed Special Characters
+          Seconds        0-59                , - * /
+          Minutes        0-59                , - * /
+          Hours          0-23                , - * /
+          Day-of-month   1-31                , - * ? / L W C
+          Month          1-12 or JAN-DEC     , - * /
+          Day-of-Week    1-7 or SUN-SAT      , - * ? / L C #
+          Year (Opt)     empty, 1970-2099    , - * /
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="cron-schedule" minOccurs="1" maxOccurs="1" type="string" />
+      </sequence>
+      <attribute name="import-url-resource" type="this:supported-protocols" use="required" />
+      <attribute name="import-name" type="string" use="required" />
+      <attribute name="rescan-existing" type="this:rescan-existing" use="optional" default="true" />
+    </complexType>
+  </element>
+
+  <simpleType name="rescan-existing" >
+    <annotation>
+      <documentation>
+         false: only add/remove nodes from the DB skipping the scan phase.
+         true (default): perform all the DB updates and execute the scan phase.
+         dbonly: perform all the DB updates skipping the scan phase.
+      </documentation>
+    </annotation>
+    <restriction base="string" >
+      <pattern value="(true|false|dbonly)">
+      </pattern>
+    </restriction>
+  </simpleType>
+ 
+  <simpleType name="supported-protocols" >
+    <annotation>
+      <documentation>
+        This type specifies the URLs currently supported by the Provisioner with
+        a mild syntax restriction.  Currently support URLs: for the protocols: http,
+        https, file, dns
+      </documentation>
+    </annotation>
+    <restriction base="string" >
+      <pattern value="(dns|file|http|https|vmware|requisition)://.*">
+      </pattern>
+    </restriction>
+  </simpleType>
+  
+</schema>

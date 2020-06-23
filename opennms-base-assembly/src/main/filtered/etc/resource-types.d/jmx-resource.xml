@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<resource-types>
+    <!-- Kafka Offset Lag-->
+    <resourceType name="kafkaLag" label="Kafka Lag"
+                  resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+		   <parameter key="sibling-column-name" value="name" />
+      </storageStrategy>
+    </resourceType>
+  <!-- Kafka Ingestion rate-->
+    <resourceType name="kafkaIngestionRate" label="Kafka Ingestion Rate"
+                  resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+		   <parameter key="sibling-column-name" value="topic" />
+      </storageStrategy>
+    </resourceType>
+
+    <!-- Telemetry -->
+    <resourceType name="telemetryAdapters" label="Telemetry Adapters" resourceLabel="${index}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+            <parameter key="sibling-column-name" value="name"/>
+            <parameter key="replace-first" value="s/.*?\.//"/>
+            <parameter key="replace-all" value="s/\..*//"/>
+        </storageStrategy>
+    </resourceType>
+
+    <resourceType name="telemetryListeners" label="Telemetry Listeners" resourceLabel="${index}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+            <parameter key="sibling-column-name" value="name"/>
+            <parameter key="replace-first" value="s/.*?\.//"/>
+            <parameter key="replace-all" value="s/\..*//"/>
+        </storageStrategy>
+    </resourceType>
+
+  <!-- Sink Producer Metrics -->
+    <resourceType name="sinkProducerMetrics" label="Sink Producer Metrics"
+                resourceLabel="${index}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+            <parameter key="sibling-column-name" value="name" />
+            <parameter key="replace-all" value="s/.([^.]+)$//"/>
+        </storageStrategy>
+    </resourceType>
+
+  <!-- Sink Consumer Metrics -->
+    <resourceType name="sinkConsumerMetrics" label="Sink Consumer Metrics"
+                  resourceLabel="${index}">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+            <parameter key="sibling-column-name" value="name" />
+            <parameter key="replace-all" value="s/.([^.]+)$//"/>
+        </storageStrategy>
+    </resourceType>
+     
+    <!-- RPC Metrics -->
+    <resourceType name="rpcMetrics" label="RPC Metrics" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="name" />
+        <!-- Replace .resourceName in 'module.location.resourceName' with empty string -->
+        <parameter key="replace-all" value="s/.([^.]+)$//"/>
+      </storageStrategy>
+    </resourceType>
+
+</resource-types>

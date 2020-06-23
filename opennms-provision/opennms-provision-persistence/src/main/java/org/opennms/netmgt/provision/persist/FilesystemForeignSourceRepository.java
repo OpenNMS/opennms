@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -35,6 +35,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
@@ -53,19 +54,16 @@ import org.springframework.util.Assert;
 
 /**
  * <p>FilesystemForeignSourceRepository class.</p>
- *
- * @author ranger
- * @version $Id: $
  */
 public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepository implements InitializingBean {
     
     private static final Logger LOG = LoggerFactory.getLogger(FilesystemForeignSourceRepository.class);
-    private String m_requisitionPath;
-    private String m_foreignSourcePath;
+    protected String m_requisitionPath;
+    protected String m_foreignSourcePath;
     
-    private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
-    private final Lock m_readLock = m_globalLock.readLock();
-    private final Lock m_writeLock = m_globalLock.writeLock();
+    protected final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
+    protected final Lock m_readLock = m_globalLock.readLock();
+    protected final Lock m_writeLock = m_globalLock.writeLock();
 
     /**
      * <p>Constructor for FilesystemForeignSourceRepository.</p>
@@ -91,7 +89,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     public Set<String> getActiveForeignSourceNames() {
         m_readLock.lock();
         try {
-            final Set<String> fsNames = new TreeSet<String>();
+            final Set<String> fsNames = new TreeSet<>();
             File directory = new File(m_foreignSourcePath);
             if (directory.exists()) {
                 for (final File file : directory.listFiles()) {
@@ -141,7 +139,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         m_readLock.lock();
         try {
             final File directory = new File(m_foreignSourcePath);
-            final TreeSet<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
+            final TreeSet<ForeignSource> foreignSources = new TreeSet<>();
             if (directory.exists()) {
                 for (final File file : directory.listFiles()) {
                     if (file.getName().endsWith(".xml")) {
@@ -178,7 +176,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
 
     /** {@inheritDoc} */
     @Override
-    public void save(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public final void save(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
     	if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("can't save a null foreign source!");
         }
@@ -197,7 +195,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             Writer writer = null;
             try {
                 outputStream = new FileOutputStream(outputFile);
-                writer = new OutputStreamWriter(outputStream, "UTF-8");
+                writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
                 JaxbUtils.marshal(foreignSource, writer);
             } catch (final Throwable e) {
                 throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
@@ -212,14 +210,14 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
 
     /** {@inheritDoc} */
     @Override
-    public void delete(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public final void delete(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         m_writeLock.lock();
         try {
             LOG.debug("Deleting foreign source {} from {} (if necessary)", foreignSource.getName(), m_foreignSourcePath);
-            final File deleteFile = RequisitionFileUtils.getOutputFileForForeignSource(m_foreignSourcePath, foreignSource);
-            if (deleteFile.exists()) {
-                if (!deleteFile.delete()) {
-                    throw new ForeignSourceRepositoryException("unable to delete foreign source file " + deleteFile);
+            final File fileToDelete = RequisitionFileUtils.getOutputFileForForeignSource(m_foreignSourcePath, foreignSource);
+            if (fileToDelete.exists()) {
+                if (!fileToDelete.delete()) {
+                    throw new ForeignSourceRepositoryException("unable to delete foreign source file " + fileToDelete);
                 }
             }
         } finally {
@@ -238,7 +236,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
         m_readLock.lock();
         try {
             final File directory = new File(m_requisitionPath);
-            final TreeSet<Requisition> requisitions = new TreeSet<Requisition>();
+            final TreeSet<Requisition> requisitions = new TreeSet<>();
             if (directory.exists()) {
                 for (final File file : directory.listFiles()) {
                     if (file.getName().endsWith(".xml")) {
@@ -283,7 +281,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
     @Override
-    public Requisition getRequisition(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
+    public final Requisition getRequisition(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         if (foreignSource == null) {
             throw new ForeignSourceRepositoryException("can't get a requisition with a null foreign source name!");
         }
@@ -302,7 +300,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
     @Override
-    public void save(final Requisition requisition) throws ForeignSourceRepositoryException {
+    public final void save(final Requisition requisition) throws ForeignSourceRepositoryException {
         if (requisition == null) {
             throw new ForeignSourceRepositoryException("can't save a null requisition!");
         }
@@ -317,7 +315,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
             OutputStream outputStream = null;
             try {
                 outputStream = new FileOutputStream(outputFile);
-                writer = new OutputStreamWriter(outputStream, "UTF-8");
+                writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
                 JaxbUtils.marshal(requisition, writer);
             } catch (final Throwable e) {
                 throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
@@ -337,7 +335,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      * @throws org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException if any.
      */
     @Override
-    public void delete(final Requisition requisition) throws ForeignSourceRepositoryException {
+    public final void delete(final Requisition requisition) throws ForeignSourceRepositoryException {
         if (requisition == null) {
             throw new ForeignSourceRepositoryException("can't delete a null requisition!");
         }
@@ -362,7 +360,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      *
      * @param path a {@link java.lang.String} object.
      */
-    public void setRequisitionPath(final String path) {
+    public final void setRequisitionPath(final String path) {
         m_writeLock.lock();
         try {
             m_requisitionPath = path;
@@ -375,7 +373,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
      *
      * @param path a {@link java.lang.String} object.
      */
-    public void setForeignSourcePath(final String path) {
+    public final void setForeignSourcePath(final String path) {
         m_writeLock.lock();
         try {
             m_foreignSourcePath = path;
@@ -386,7 +384,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
 
     /** {@inheritDoc} */
     @Override
-    public Date getRequisitionDate(final String foreignSource) throws ForeignSourceRepositoryException {
+    public final Date getRequisitionDate(final String foreignSource) throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
             final Requisition requisition = getRequisition(foreignSource);
@@ -413,7 +411,7 @@ public class FilesystemForeignSourceRepository extends AbstractForeignSourceRepo
     }
 
     @Override
-    public void flush() throws ForeignSourceRepositoryException {
+    public final void flush() throws ForeignSourceRepositoryException {
         // Unnecessary, there is no caching/delayed writes in FilesystemForeignSourceRepository
         LOG.debug("flush() called");
     }

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,19 +34,18 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.InetAddressUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * <p>SimpleUDPServer class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class SimpleUDPServer {
-    
-    public static interface RequestMatcher{
+    private static Logger LOG = LoggerFactory.getLogger(SimpleUDPServer.class);
+
+    public static interface RequestMatcher {
         public boolean matches(DatagramPacket input);
     }
     
@@ -109,9 +108,11 @@ public class SimpleUDPServer {
     private Thread m_serverThread = null;
     private int m_timeout;
     private DatagramSocket m_socket;
-    private List<Exchange> m_conversation = new ArrayList<Exchange>();
+    private List<Exchange> m_conversation = new ArrayList<>();
     private int m_port = DEFAULT_TEST_PORT;
     private InetAddress m_testInetAddress;
+
+    private SimpleServerRunnable m_runnable;
     
     /**
      * <p>onInit</p>
@@ -125,9 +126,15 @@ public class SimpleUDPServer {
      *
      * @throws java.lang.Exception if any.
      */
-    public void startServer() throws Exception{
-        m_serverThread = new Thread(getRunnable(), this.getClass().getSimpleName());
+    public void startServer() throws IOException {
+        m_runnable = getRunnable();
+        m_serverThread = new Thread(m_runnable, this.getClass().getSimpleName());
         m_serverThread.start();
+        try {
+            m_runnable.awaitStartup();
+        } catch (final InterruptedException e) {
+            LOG.debug("Interrupted while shutting down.", e);
+        }
     }
     
     /**
@@ -136,15 +143,15 @@ public class SimpleUDPServer {
      * @throws java.io.IOException if any.
      */
     public void stopServer() throws IOException {
-        if(getServerSocket() != null ){
-            getServerSocket().close();
-        }
+        IOUtils.closeQuietly(getServerSocket());
+        IOUtils.closeQuietly(m_socket);
         if(m_serverThread != null && m_serverThread.isAlive()) { 
-            
-            if(m_socket != null && !m_socket.isClosed()) {
-                m_socket.close();  
-            }
-            
+            m_serverThread.interrupt();
+        }
+        try {
+            m_runnable.awaitShutdown();
+        } catch (final InterruptedException e) {
+            LOG.debug("Interrupted while shutting down.", e);
         }
     }
     
@@ -158,26 +165,34 @@ public class SimpleUDPServer {
      * @return a {@link java.lang.Runnable} object.
      * @throws java.lang.Exception if any.
      */
-    public Runnable getRunnable() throws Exception{
-        return new Runnable(){
+    public SimpleServerRunnable getRunnable() throws IOException {
+        return new SimpleServerRunnable() {
             
             @Override
-            public void run(){
+            public void run() {
                 try{
                     m_socket = new DatagramSocket(getPort(), getInetAddress());
                     m_socket.setSoTimeout(getTimeout());
-                    
+                    ready();
+
                     attemptConversation(m_socket);
-                    
-                    m_socket.close();
-                }catch(Throwable e){
+                } catch(Throwable e) {
                     throw new UndeclaredThrowableException(e);
+                } finally {
+                    IOUtils.closeQuietly(m_socket);
+                    finished();
+                    try {
+                        // just in case we're stopping because of an exception
+                        stopServer();
+                    } catch (final Exception e) {
+                        LOG.info("error while stopping server", e);
+                    }
                 }
             }
             
         };
     }
-    
+
     /**
      * <p>setPort</p>
      *
@@ -241,7 +256,7 @@ public class SimpleUDPServer {
      * @param response an array of byte.
      */
     protected void addRequestResponse(DatagramPacket request, byte[] response){
-        m_conversation.add(new SimpleServerExchange(recievedPacket(request), response));
+        m_conversation.add(new SimpleServerExchange(recievedPacket(request), Arrays.copyOf(response, response.length)));
     }
     
     /**

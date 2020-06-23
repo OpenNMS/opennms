@@ -1,0 +1,41 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <reference id="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao"/>
+    <reference id="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao"/>
+    <reference id="pollOutagesDao" interface="org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao"/>
+    <reference id="ifLabelDao" interface="org.opennms.netmgt.dao.api.IfLabel"/>
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao"/>
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
+    <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+    <reference id="blobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore"/>
+
+    <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProviderImpl">
+        <property name="nodeDao" ref="nodeDao"/>
+        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+        <property name="sessionUtils" ref="sessionUtils"/>
+    </bean>
+    
+    <bean id="thresholdingSetPersister" class="org.opennms.netmgt.threshd.DefaultThresholdingSetPersister">
+        <property name="threshdDao" ref="threshdDao"/>
+        <property name="thresholdingDao" ref="thresholdingDao"/>
+        <property name="pollOutagesDao" ref="pollOutagesDao"/>
+        <property name="ifLabelDao" ref="ifLabelDao"/>
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
+    </bean>
+    
+    <bean id="thresholdStateMonitor" class="org.opennms.netmgt.threshd.BlobStoreAwareMonitor">
+        <argument ref="blobStore"/>
+    </bean>
+    <service ref="thresholdStateMonitor" interface="org.opennms.netmgt.threshd.api.ThresholdStateMonitor"/>
+    
+    <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
+    <service interface="org.opennms.netmgt.threshd.api.ThresholdingService">
+        <bean class="org.opennms.netmgt.threshd.ThresholdingServiceImpl" init-method="initOsgi">
+            <property name="eventProxy" ref="eventForwarder"/>
+            <property name="thresholdingSetPersister" ref="thresholdingSetPersister"/>
+            <property name="kvStore" ref="blobStore"/>
+            <property name="thresholdStateMonitor" ref="thresholdStateMonitor"/>
+        </bean>
+    </service>
+</blueprint>

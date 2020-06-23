@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,12 +31,11 @@ package org.opennms.netmgt.mock;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.model.PollStatus;
-import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -46,7 +45,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class MockService extends MockElement implements MonitoredService {
-    
+
+    private static final AtomicInteger ID_COUNTER = new AtomicInteger(1);
+
     public static enum SvcMgmtStatus {
         ACTIVE("A"),
         DELETED("D"),
@@ -82,15 +83,15 @@ public class MockService extends MockElement implements MonitoredService {
     
     private PollStatus m_pollStatus;
 
+    private final int m_id;
+
     private int m_serviceId;
 
     private final String m_svcName;
     
     private SvcMgmtStatus m_mgmtStatus = SvcMgmtStatus.ACTIVE;
 
-    private List<PollAnticipator> m_triggers = new ArrayList<PollAnticipator>();
-
-    private NetworkInterface<InetAddress> m_netAddr;
+    private List<PollAnticipator> m_triggers = new ArrayList<>();
 
    /**
     * <p>Constructor for MockService.</p>
@@ -101,6 +102,7 @@ public class MockService extends MockElement implements MonitoredService {
     */
    public MockService(MockInterface iface, String svcName, int serviceId) {
         super(iface);
+        m_id = ID_COUNTER.getAndIncrement();
         m_svcName = svcName;
         m_serviceId = serviceId;
         m_pollStatus = PollStatus.up();
@@ -133,11 +135,19 @@ public class MockService extends MockElement implements MonitoredService {
      * @return a int.
      */
     public int getId() {
+        return m_id;
+    }
+
+    /**
+     * <p>getId</p>
+     *
+     * @return a int.
+     */
+    public int getSvcId() {
         return m_serviceId;
     }
 
-
-    public void setId(Integer nextServiceId) {
+    public void setSvcId(Integer nextServiceId) {
         m_serviceId = nextServiceId;
     }
 
@@ -222,6 +232,11 @@ public class MockService extends MockElement implements MonitoredService {
         return getNode().getLabel();
     }
 
+    @Override
+    public String getNodeLocation() {
+        return getNode().getLocation();
+    }
+
     // stats
     /**
      * <p>getPollCount</p>
@@ -237,7 +252,7 @@ public class MockService extends MockElement implements MonitoredService {
     /**
      * <p>getPollStatus</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     @Override
     public PollStatus getPollStatus() {
@@ -252,7 +267,7 @@ public class MockService extends MockElement implements MonitoredService {
     public SvcMgmtStatus getMgmtStatus() {
         return m_mgmtStatus;
     }
-    
+
     /**
      * <p>setMgmtStatus</p>
      *
@@ -266,7 +281,7 @@ public class MockService extends MockElement implements MonitoredService {
     /**
      * <p>poll</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus poll() {
         m_pollCount++;
@@ -299,7 +314,7 @@ public class MockService extends MockElement implements MonitoredService {
     /**
      * <p>setPollStatus</p>
      *
-     * @param status a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param status a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public void setPollStatus(PollStatus status) {
         m_pollStatus = status;
@@ -386,19 +401,6 @@ public class MockService extends MockElement implements MonitoredService {
     }
 
     /**
-     * <p>getNetInterface</p>
-     *
-     * @return a {@link org.opennms.netmgt.poller.NetworkInterface} object.
-     */
-    @Override
-    public NetworkInterface<InetAddress> getNetInterface() {
-        if (m_netAddr == null)
-            m_netAddr = new InetNetworkInterface(getAddress());
-        
-        return m_netAddr;
-    }
-
-    /**
      * <p>getAddress</p>
      *
      * @return a {@link java.net.InetAddress} object.
@@ -408,19 +410,11 @@ public class MockService extends MockElement implements MonitoredService {
         return getInterface().getAddress();    
     }
 
-	/**
-	 * <p>createDemandPollEvent</p>
-	 *
-	 * @param demandPollId a int.
-	 * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-	 */
-	public Event createDemandPollEvent(int demandPollId) {
-		return MockEventUtil.createDemandPollServiceEvent("Test", this, demandPollId);
-	}
+    public Event createOutageCreatedEvent() {
+        return MockEventUtil.createOutageCreatedEvent("Test", this, null);
+    }
 
-    @Override
-	public String getSvcUrl() {
-		return null;
-	}
-
+    public Event createOutageResolvedEvent() {
+        return MockEventUtil.createOutageResolvedEvent("Test", this, null);
+    }
 }

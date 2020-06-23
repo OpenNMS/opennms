@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,11 +38,14 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.ErrorStatus;
+import org.opennms.netmgt.snmp.ErrorStatusException;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 
-abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTracker {
+public abstract class SnmpTable<T extends SnmpTableEntry> extends AggregateTracker {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpTable.class);
     private Map<SnmpInstId, T> m_results = new TreeMap<SnmpInstId, T>();
     private InetAddress m_address;
@@ -53,7 +56,7 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
      *
      * @param address a {@link java.net.InetAddress} object.
      * @param tableName a {@link java.lang.String} object.
-     * @param columns an array of {@link org.opennms.netmgt.provision.service.snmp.NamedSnmpVar} objects.
+     * @param columns an array of {@link org.opennms.netmgt.snmp.NamedSnmpVar} objects.
      * @param <T> a T object.
      */
     protected SnmpTable(InetAddress address, String tableName, NamedSnmpVar[] columns) {
@@ -64,7 +67,7 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
      *
      * @param address a {@link java.net.InetAddress} object.
      * @param tableName a {@link java.lang.String} object.
-     * @param columns an array of {@link org.opennms.netmgt.provision.service.snmp.NamedSnmpVar} objects.
+     * @param columns an array of {@link org.opennms.netmgt.snmp.NamedSnmpVar} objects.
      * @param instances a {@link java.util.Set} object.
      */
     protected SnmpTable(InetAddress address, String tableName, NamedSnmpVar[] columns, Set<SnmpInstId> instances) {
@@ -117,6 +120,16 @@ abstract public class SnmpTable<T extends SnmpTableEntry> extends AggregateTrack
         LOG.warn("Error retrieving {} from {}. {}", msg, m_tableName, m_address);
     }
     
+    @Override
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        LOG.warn("Error retrieving {} from {}. {}", m_tableName, m_address, ex.getMessage(), ex);
+    }
+
+    @Override
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        LOG.info("Non-fatal error ({}) encountered retrieving {} from {}. {}", status, m_tableName, m_address, status.retry()? "Retrying." : "Giving up.");
+    }
+
     /**
      * <p>getEntry</p>
      *

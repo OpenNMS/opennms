@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -46,7 +46,7 @@ public class PercentileDataAnalyzer implements DataAnalyzer {
 	}
 	
 	public List<Integer> findSamplesInViolation(double[] values) {
-		List<Integer> violatorIndices = new ArrayList<Integer>();
+		List<Integer> violatorIndices = new ArrayList<>();
 		
 		calculatePercentile(values);
 		double absThreshold = m_percentileValue * m_thresholdMultiplier;
@@ -70,7 +70,7 @@ public class PercentileDataAnalyzer implements DataAnalyzer {
 		if (m_verbose) {
 			SpikeHunter.printToUser("Before removing NaN values, " + values.length + " values are in the set");
 		}
-		ArrayList<Double> sortedValues = new ArrayList<Double>();
+		ArrayList<Double> sortedValues = new ArrayList<>();
 		for (double thisVal : values) {
 			if (! Double.toString(thisVal).equals(Double.toString(Double.NaN))) {
 				sortedValues.add(thisVal);

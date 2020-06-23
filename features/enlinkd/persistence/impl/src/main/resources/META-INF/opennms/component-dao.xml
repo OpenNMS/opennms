@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi
+           http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <context:annotation-config />
+
+    <bean id="cdpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.CdpLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.CdpLinkDao" ref="cdpLinkDao" />
+
+    <bean id="cdpElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.CdpElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.CdpElementDao" ref="cdpElementDao" />
+
+    <bean id="lldpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.LldpLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.LldpLinkDao" ref="lldpLinkDao" />
+
+    <bean id="lldpElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.LldpElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao" ref="lldpElementDao" />
+
+    <bean id="ospfLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.OspfLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.OspfLinkDao" ref="ospfLinkDao" />
+
+    <bean id="ospfElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.OspfElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.OspfElementDao" ref="ospfElementDao" />
+
+    <bean id="isisLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.IsIsLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.IsIsLinkDao" ref="isisLinkDao" />
+
+    <bean id="isisElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.IsIsElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.IsIsElementDao" ref="isisElementDao" />
+
+    <bean id="ipNetToMediaDao" class="org.opennms.netmgt.enlinkd.persistence.impl.IpNetToMediaDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.IpNetToMediaDao" ref="ipNetToMediaDao" />
+
+    <bean id="bridgeMacLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.BridgeMacLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.BridgeMacLinkDao" ref="bridgeMacLinkDao" />
+
+    <bean id="bridgeBridgeLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.BridgeBridgeLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.BridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
+
+    <bean id="bridgeStpLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.BridgeStpLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.BridgeStpLinkDao" ref="bridgeStpLinkDao" />
+
+    <bean id="bridgeElementDao" class="org.opennms.netmgt.enlinkd.persistence.impl.BridgeElementDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.BridgeElementDao" ref="bridgeElementDao" />
+
+    <bean id="topologyEntityDao" class="org.opennms.netmgt.enlinkd.persistence.impl.TopologyEntityDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityDao" ref="topologyEntityDao" />
+
+    <bean id="topologyEntityCache" class="org.opennms.netmgt.enlinkd.persistence.impl.TopologyEntityCacheImpl">
+        <property name="topologyEntityDao" ref="topologyEntityDao" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.TopologyEntityCache" ref="topologyEntityCache" />
+
+    <bean id="userDefinedLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.UserDefinedLinkDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.UserDefinedLinkDao" ref="userDefinedLinkDao" />
+
+</beans>

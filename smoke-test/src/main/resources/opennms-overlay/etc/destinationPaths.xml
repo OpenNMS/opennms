@@ -1,0 +1,13 @@
+<destinationPaths xmlns="http://xmlns.opennms.org/xsd/destinationPaths">
+   <header>
+      <rev>25</rev>
+      <created>Thursday, June 13, 2019 12:10:00 AM EST</created>
+      <mstation>beer</mstation>
+   </header>
+   <path name="Browser">
+      <target>
+         <name>Admin</name>
+         <command>browser</command>
+      </target>
+   </path>
+</destinationPaths>

@@ -5,14 +5,14 @@
 
     <parent>
         <groupId>org.opennms</groupId>
-        <artifactId>container</artifactId>
-        <version>1.13.0-SNAPSHOT</version>
+        <artifactId>org.opennms.container</artifactId>
+        <version>25.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
     <artifactId>org.opennms.container.servlet</artifactId>
     <packaging>war</packaging>
-    <name>OpenNMS OSGi Container - Web Servlet</name>
+    <name>OpenNMS :: OSGi Container :: Web Servlet</name>
 
     <properties>
         <jetty.port>8080</jetty.port>
@@ -42,26 +42,18 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.http.proxy</artifactId>
-            <version>${felixVersion}</version>
+            <groupId>org.opennms.container.bridge</groupId>
+            <artifactId>org.opennms.container.bridge.proxy</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!--  TEMPORARILY ADDED SO SOURCE IS ADDED TO ECLIPSE -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.framework</artifactId>
-            <version>4.0.3</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

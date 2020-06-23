@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.datacollection;
 
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
@@ -46,7 +47,7 @@ public class PersistSelectorStrategyField extends AbstractStrategyField<Persiste
         // If the strategy from the XML is different, it will be added automatically to the combo-box
         // The following list is not using class references to avoid add a dependency against opennms-services
         super(caption, new String[] {
-                "org.opennms.netmgt.collectd.PersistAllSelectorStrategy",
+                "org.opennms.netmgt.collection.support.PersistAllSelectorStrategy",
                 "org.opennms.netmgt.collectd.PersistRegexSelectorStrategy"
         });
     }
@@ -64,10 +65,9 @@ public class PersistSelectorStrategyField extends AbstractStrategyField<Persiste
      */
     @Override
     protected void setInternalValue(PersistenceSelectorStrategy strategy) {
-        super.setInternalValue(strategy); // TODO Is this required ?
         setComboValue(strategy.getClazz());
         container.removeAllItems();
-        container.addAll(strategy.getParameterCollection());
+        container.addAll(strategy.getParameters());
     }
 
     /* (non-Javadoc)

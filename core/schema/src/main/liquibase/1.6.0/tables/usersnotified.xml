@@ -8,6 +8,7 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<changeSet author="rangerrick" id="1.6.0-usersnotified">
+		<validCheckSum>3:9758b84f83242eb088bf33746fb6eb60</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="usersnotified" /></not>
 		</preConditions> 
@@ -28,7 +29,7 @@
 			<column name="notifyid" type="integer" />
 
 			<!-- The timestamp of when the notification was sent -->
-			<column name="notifytime" type="DATETIME" />
+			<column name="notifytime" type="TIMESTAMP WITH TIME ZONE" />
 
 			<!-- A string describing the type of contact being made, ie text page, numeric page, email, etc... -->
 			<column name="media" type="varchar(32)" />

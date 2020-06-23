@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,7 +30,7 @@ package org.opennms.netmgt.mock;
 
 import java.util.Date;
 
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -61,7 +61,7 @@ abstract public class MockElement {
      *
      * @param trigger a {@link org.opennms.netmgt.mock.PollAnticipator} object.
      */
-    abstract public void addAnticipator(PollAnticipator trigger);
+    public abstract void addAnticipator(PollAnticipator trigger);
 
     // test
     /**
@@ -120,15 +120,15 @@ abstract public class MockElement {
      *
      * @return a int.
      */
-    abstract public int getPollCount();
+    public abstract int getPollCount();
 
     // test
     /**
      * <p>getPollStatus</p>
      *
-     * @return a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
-    abstract public PollStatus getPollStatus();
+    public abstract PollStatus getPollStatus();
 
     // model
     /**
@@ -148,13 +148,13 @@ abstract public class MockElement {
      *
      * @param trigger a {@link org.opennms.netmgt.mock.PollAnticipator} object.
      */
-    abstract public void removeAnticipator(PollAnticipator trigger);
+    public abstract void removeAnticipator(PollAnticipator trigger);
 
     // stats
     /**
      * <p>resetPollCount</p>
      */
-    abstract public void resetPollCount();
+    public abstract void resetPollCount();
 
     // model
     void setParent(MockContainer<?,? extends MockElement> parent) {
@@ -165,7 +165,7 @@ abstract public class MockElement {
     /**
      * <p>setServicePollStatus</p>
      *
-     * @param newStatus a {@link org.opennms.netmgt.model.PollStatus} object.
+     * @param newStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     protected void setServicePollStatus(final PollStatus newStatus) {
         MockVisitor statusSetter = new MockVisitorAdapter() {
@@ -194,14 +194,14 @@ abstract public class MockElement {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    abstract public Event createDownEvent();
+    public abstract Event createDownEvent();
     
     /**
      * <p>createUpEvent</p>
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    abstract public Event createUpEvent();
+    public abstract Event createUpEvent();
     
 
     /**
@@ -233,13 +233,13 @@ abstract public class MockElement {
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    abstract public Event createNewEvent();
+    public abstract Event createNewEvent();
 
     /**
      * <p>createDeleteEvent</p>
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    abstract public Event createDeleteEvent();
+    public abstract Event createDeleteEvent();
 
 }

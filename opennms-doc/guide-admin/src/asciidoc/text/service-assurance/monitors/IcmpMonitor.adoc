@@ -1,0 +1,69 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[poller-icmp-monitor]]
+==== IcmpMonitor
+The ICMP monitor tests for ICMP service availability by sending _echo request_ ICMP messages.
+The service is considered available when the node sends back an _echo reply_ ICMP message within the specified amount of time.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.IcmpMonitor`
+| Remote Enabled | true with some restrictions (see <<poller-icmp-monitor-remote,below>>)
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the IcmpMonitor
+[options="header, autowidth"]
+|===
+| Parameter               | Description                                                 | Required | Default value
+| `timeout`               | Time in milliseconds to wait for a response.                | optional | `800`
+| `allow-fragmentation`   | Whether to set the "Don't Fragment" bit on outgoing packets | optional | `true`
+| `dscp`                  | DSCP traffic-control value.                                 | optional | `0`
+| `packet-size`           | Number of bytes of the ICMP packet to send.                 | optional | `64`
+| `thresholding-enabled`  | Enables ICMP thresholding.                                  | optional | `true`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+[source, xml]
+----
+<service name="ICMP" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-base-name" value="icmp"/>
+  <parameter key="ds-name" value="icmp"/>
+</service>
+<monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
+----
+
+[source, xml]
+----
+<!-- Advanced example: set DSCP bits and send a large packet with allow-fragmentation=false -->
+<service name="ICMP" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="3000"/>
+  <parameter key="dscp" value="0x1C"/> <!-- AF32: Class 3, Medium drop probability -->
+  <parameter key="allow-fragmentation" value="false"/>
+  <parameter key="packet-size" value="2048"/>
+  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-base-name" value="icmp"/>
+  <parameter key="ds-name" value="icmp"/>
+</service>
+<monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor"/>
+----
+
+[[poller-icmp-monitor-remote]]
+===== Note on Remote Poller
+
+The IcmpMonitor needs the JNA ICMP implementation to function on remote poller.
+Though, corner cases exist where the IcmpMonitor monitor won't work on remote poller.
+Examples of such corner cases are: Windows when the remote poller isn't running has administrator, and Linux on ARM / Rasperry Pi.
+JNA is the default ICMP implementation used in the remote poller.

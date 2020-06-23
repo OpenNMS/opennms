@@ -1,0 +1,23 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Fortinet-Fortigate-HA-v5.2">
+   <resourceType name="fgHaStatsindex" label="Fortigate High Availability" resourceLabel="Hostname: ${fgHaStatsHostname}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <group name="fgHaTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.13.2.1.1.3" instance="fgHaStatsindex" alias="fgHaStatsCpuUsage" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.13.2.1.1.4" instance="fgHaStatsindex" alias="fgHaStatsMemUsage" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.13.2.1.1.5" instance="fgHaStatsindex" alias="fgHaStatsNetUsage" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.13.2.1.1.6" instance="fgHaStatsindex" alias="fgHaStatsSesCount" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.13.2.1.1.7" instance="fgHaStatsindex" alias="fgHaStatsPktCount" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.13.2.1.1.8" instance="fgHaStatsindex" alias="fgHaStatsByteCount" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.13.2.1.1.9" instance="fgHaStatsindex" alias="fgHaStatsIdsCount" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.13.2.1.1.10" instance="fgHaStatsindex" alias="fgHaStatsAvCount" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.13.2.1.1.11" instance="fgHaStatsindex" alias="fgHaStatsHostname" type="String"/>
+   </group>
+   <systemDef name="Fortinet-Fortigate-HA-v5.2">
+      <sysoidMask>.1.3.6.1.4.1.12356.</sysoidMask>
+      <collect>
+         <includeGroup>fgHaTable</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

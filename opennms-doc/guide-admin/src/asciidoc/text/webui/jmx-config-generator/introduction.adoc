@@ -1,0 +1,9 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+_{opennms-product-name}_ implements the _JMX_ protocol to collect long term performance data for _Java_ applications.
+There are a huge variety of metrics available and administrators have to select which information should be collected.
+The _JMX Configuration Generator Tools_ is build to help generating valid complex _JMX_ data collection configuration and _RRD graph_ definitions for _{opennms-product-name}_.
+
+This tool is available as CLI and a web based version.

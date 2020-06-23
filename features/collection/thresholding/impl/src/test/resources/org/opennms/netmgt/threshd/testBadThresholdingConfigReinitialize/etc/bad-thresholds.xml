@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thresholding-config xmlns="http://xmlns.opennms.org/xsd/config/thresholding">
+    <group name="mib2" rrdRepository="/tmp/rrd/snmp/">
+        <threshold
+            description="Trigger an alert if one or more incoming packets on the whole node were not received due to an error for one measurement interval"
+            type="high" ds-type="node" value="1.0" rearm="0.0"
+            trigger="1" filterOperator="or" ds-name="tcpInErrors"/>
+        <expression
+            description="Trigger an alert if one or more incoming or outgoing packets on an interface were not transmitted due to error for two consecutive measurement intervals"
+            type="high" ds-type="if" value="1.0" rearm="0.0" trigger="2"
+            ds-label="ifName" filterOperator="or" expression="ifInErrors + ifOutErrors"/>
+        <expression
+            description="Trigger an alert if one or more incoming or outgoing packets on an interface were discarded even though no errors were detected (possibly to free up buffer space) for two consecutive measurement intervals"
+            type="high" ds-type="if" value="1.0" rearm="0.0" trigger="2"
+            ds-label="ifName" filterOperator="or" expression="ifInDiscards + ifOutDiscards"/>
+        <expression
+            description="Trigger an alert if incoming usage of any interface reaches or goes above 90% of its maximum speed for three consecutive measurement intervals (only for interfaces that have a maximum speed value defined)"
+            type="high" ds-type="if" value="90.0" rearm="75.0"
+            trigger="3" ds-label="ifName" filterOperator="or" expression="ifInOctets * 8 / 1000000 / ifHighSpeed * 100">
+            <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
+        </expression>
+        <expression
+            description="Trigger an alert if outgoing usage of an interface reaches or goes above 90% of its maximum speed for three consecutive measurement intervals (only for interfaces that have a maximum speed value defined)"
+            type="high" ds-type="if" value="90.0" rearm="75.0"
+            trigger="3" ds-label="ifName" filterOperator="or" expression="ifOutOctets * 8 / 1000000 / ifHighSpeed * 100">
+            <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
+        </expression>
+    <group> <!-- this should be </group> -->
+</thresholding-config>

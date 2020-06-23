@@ -1,23 +1,20 @@
 <?xml version="1.0"?>
 <syslogd-configuration>
+    <!--
+      optional attribute "timezone":
+          - if set it will be used as default timezone if no timezone is given
+          - if not set the system time zone will be used
+    -->
     <configuration
-            syslog-port="514"
+            syslog-port="10514"
             new-suspect-on-message="false"
-            parser="org.opennms.netmgt.syslogd.Rfc5424SyslogParser"
-
-	    forwarding-regexp="^((.+?) (.*))\r?\n?$"
-            matching-group-host="2"
-            matching-group-message="3"
-
-            discard-uei="DISCARD-MATCHING-MESSAGES"
-            />
-
- <!--
+            parser="org.opennms.netmgt.syslogd.RadixTreeSyslogParser"
             forwarding-regexp="^.*\s(19|20)\d\d([-/.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])(\s+)(\S+)(\s)(\S.+)"
             matching-group-host="6"
             matching-group-message="8"
-
- -->
+            discard-uei="DISCARD-MATCHING-MESSAGES"
+            timezone=""
+            />
 
     <!--
         NOTE: This uses the CustomSyslogParser and forwarding-regexp for backwards compatibility.  If your
@@ -29,10 +26,15 @@
         * org.opennms.netmgt.syslogd.CustomSyslogParser: A backwards-compatible parser that has the same behavior
           as OpenNMS 1.8 (and previous).  It has relaxed standards and can usually pull data out of most BSD-
           or Syslog-NG-style traps.
-        * org.opennms.netmgt.syslogd.SyslogNGParser: A stricter variant of the CustomSyslogParser which parses
+        * org.opennms.netmgt.syslogd.RadixTreeSyslogParser: This parser uses a set of patterns to match all 
+          RFC 3164, RFC 5424, and syslog-ng message formats. Because it is the most flexible parser, it is the
+          preferred implementation in most cases. Like the legacy Rfc5424SyslogParser, it currently discards 
+          RFC 5424 structured data. It ignores the forwarding-regexp, matching-group-host, and matching-group-message 
+          parameters in favor of using an internal set of patterns.
+        * DEPRECATED: org.opennms.netmgt.syslogd.SyslogNGParser: A stricter variant of the CustomSyslogParser which parses
           Syslog-NG's default format.  It ignores forwarding-regexp, matching-group-host, and matching-group-message
           and instead relies on a well-known properly-formatted syslog message.
-        * org.opennms.netmgt.syslogd.Rfc5424SyslogParser: A parser that handles the new Syslog standard (as
+        * DEPRECATED: org.opennms.netmgt.syslogd.Rfc5424SyslogParser: A parser that handles the new Syslog standard (as
           defined in RFC5424).  It has strict parsing that should match the grammar specified in the RFC, although
           it currently discards structured data.  Like the SyslogNGParser, it ignores forwarding-regexp,
           matching-group-host, and matching-group-message in favor of stricter parsing of the known grammer.
@@ -44,96 +46,13 @@
         cause extreme slowdowns, especially with large amounts of <ueiMatch> tags.
     -->
 
-     <ueiList>
-      <!-- CFM defect: RDI CCM detected by MEP on Level: 3 MD: customer1 MA: customer-site1 Interface: ge-5/0/2.0
-      --> 
-      <ueiMatch>
-        <match type="regex" expression="CFM defect: RDI CCM detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)" default-parameter-mapping="false" /> 
-        <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rdi</uei> 
-        <parameter-assignment matching-group="1" parameter-name="cfmLevel" /> 
-        <parameter-assignment matching-group="2" parameter-name="cfmMD" /> 
-        <parameter-assignment matching-group="3" parameter-name="cfmMA" /> 
-        <parameter-assignment matching-group="4" parameter-name="cfmMEPInterface" /> 
-      </ueiMatch>
-      <!-- CFM defect: Remote CCM timeout detected by MEP on Level: 0 MD: customer MA: customer-site1 Interface: ge-5/0/2.0
-      --> 
-      <ueiMatch>
-        <match type="regex" expression="CFM defect: Remote CCM timeout detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)" default-parameter-mapping="false" /> 
-        <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_rmep</uei> 
-        <parameter-assignment matching-group="1" parameter-name="cfmLevel" /> 
-        <parameter-assignment matching-group="2" parameter-name="cfmMD" /> 
-        <parameter-assignment matching-group="3" parameter-name="cfmMA" /> 
-        <parameter-assignment matching-group="4" parameter-name="cfmMEPInterface" /> 
-      </ueiMatch>
-      <!-- CFM defect: Error CCM detected by MEP on Level: 6 MD: customer MA: customer-site1 Interface: ge-5/0/2.0
-      --> 
-      <ueiMatch>
-        <match type="regex" expression="CFM defect: Error CCM detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)" default-parameter-mapping="false" /> 
-        <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_error</uei> 
-        <parameter-assignment matching-group="1" parameter-name="cfmLevel" /> 
-        <parameter-assignment matching-group="2" parameter-name="cfmMD" /> 
-        <parameter-assignment matching-group="3" parameter-name="cfmMA" /> 
-        <parameter-assignment matching-group="4" parameter-name="cfmMEPInterface" /> 
-      </ueiMatch>
-      <!-- CFM defect: None detected by MEP on Level: 3 MD: MD_service_level MA: PW_126 Interface: ge-1/3/2.1
-      --> 
-      <ueiMatch>
-        <match type="regex" expression="CFM defect: None detected by MEP on Level: ([-\w\/\.]+) MD: ([-\w\/\.]+) MA: ([-\w\/\.]+) Interface: ([-\w\/\.]+)" default-parameter-mapping="false" /> 
-        <uei>uei.opennms.org/vendor/Juniper/syslog/cfmd_ccm_defect_none</uei> 
-        <parameter-assignment matching-group="1" parameter-name="cfmLevel" /> 
-        <parameter-assignment matching-group="2" parameter-name="cfmMD" /> 
-        <parameter-assignment matching-group="3" parameter-name="cfmMA" /> 
-        <parameter-assignment matching-group="4" parameter-name="cfmMEPInterface" /> 
-      </ueiMatch>
-      <ueiMatch>
-        <match type="regex" expression="BFD session for MPLS path (.*) went down on LSP (.*)" default-parameter-mapping="false" /> 
-        <uei>uei.opennms.org/vendor/Juniper/syslog/rpd_mpls_path_bfd_down</uei> 
-        <parameter-assignment matching-group="2" parameter-name="lspName" /> 
-      </ueiMatch>
-     <ueiMatch>
-       <match type="regex" expression="BFD session for MPLS path (.*) came up on LSP (.*)" default-parameter-mapping="false" /> 
-       <uei>uei.opennms.org/vendor/Juniper/syslog/rpd_mpls_path_bfd_up</uei> 
-       <parameter-assignment matching-group="2" parameter-name="lspName" /> 
-     </ueiMatch>
-     <ueiMatch>
-            <match type="regex" expression=".*?foo: (\d+) out of (\d+) tests failed for (\S+)$"/>
-            <uei>uei.opennms.org/tests/syslogd/regexUeiRewriteTest</uei>
-      </ueiMatch>
-     <ueiMatch>
-       <match type="regex" expression="\((.*)\): 802.3ah link-fault status changed to good" default-parameter-mapping="false" /> 
-       <uei>uei.opennms.org/vendor/Juniper/syslog/lfmd_3ah_linkup</uei> 
-       <parameter-assignment matching-group="1" parameter-name="lfmLinkName" /> 
-     </ueiMatch>
-     <ueiMatch>
-       <match type="regex" expression="\((.*)\): 802.3ah link-fault status changed to fault with reason (.*)" default-parameter-mapping="false" /> 
-       <uei>uei.opennms.org/vendor/Juniper/syslog/lfmd_3ah_linkdown</uei> 
-       <parameter-assignment matching-group="1" parameter-name="lfmLinkName" /> 
-       <parameter-assignment matching-group="2" parameter-name="reason" />
-     </ueiMatch>
-     <ueiMatch>
-       <match type="regex" expression="Threshold crossing alarms generated on Service:(.*) ParameterName:(.*) ThresholdValue:(.*) CurrentValue:(.*) UserMessage:(.*) TCAProfile:(.*)" default-parameter-mapping="false" />
-       <uei>uei.opennms.org/vendor/Juniper/syslog/threshold_crossing_defect</uei>
-       <parameter-assignment matching-group="1" parameter-name="Service" />
-       <parameter-assignment matching-group="2" parameter-name="Parameter" />
-       <parameter-assignment matching-group="3" parameter-name="ThresholdValue" />
-       <parameter-assignment matching-group="4" parameter-name="CurrentValue" />
-       <parameter-assignment matching-group="5" parameter-name="Message" />
-       <parameter-assignment matching-group="6" parameter-name="TCAProfile" />
-     </ueiMatch>
-     <ueiMatch>
-       <match type="regex" expression="Threshold crossing alarms cleared on Service:(.*) ParameterName:(.*) ClearValue:(.*) TCAProfile:(.*)" default-parameter-mapping="false" />
-       <uei>uei.opennms.org/vendor/Juniper/syslog/threshold_crossing_defect_cleared</uei>
-       <parameter-assignment matching-group="1" parameter-name="Service" />
-       <parameter-assignment matching-group="2" parameter-name="Parameter" />
-       <parameter-assignment matching-group="3" parameter-name="ClearValue" />
-       <parameter-assignment matching-group="4" parameter-name="TCAProfile" />
-     </ueiMatch>
-    </ueiList>
-      
     <import-file>syslog/ApacheHTTPD.syslog.xml</import-file>
     <import-file>syslog/LinuxKernel.syslog.xml</import-file>
+    <import-file>syslog/NetgearProsafeSmartSwitch.syslog.xml</import-file>
     <import-file>syslog/OpenSSH.syslog.xml</import-file>
+    <import-file>syslog/OpenWrt.syslog.xml</import-file>
+    <import-file>syslog/Procmail.syslog.xml</import-file>
+    <import-file>syslog/Postfix.syslog.xml</import-file>
     <import-file>syslog/Sudo.syslog.xml</import-file>
 
 </syslogd-configuration>
-

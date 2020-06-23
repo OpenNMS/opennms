@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<userinfo xmlns="http://xmlns.opennms.org/xsd/users">
+    <header>
+        <rev>.9</rev>
+        <created>Friday, September 9, 2016 3:07:53 PM GMT</created>
+        <mstation>master.nmanage.com</mstation>
+    </header>
+    <users>
+        <user>
+            <user-id>admin</user-id>
+            <full-name>Administrator</full-name>
+            <user-comments>Default administrator, do not delete</user-comments>
+            <password>21232F297A57A5A743894A0E4A801FC3</password>
+        </user>
+        <user>
+            <user-id>agalue</user-id>
+            <full-name>Alejandro Galue</full-name>
+            <user-comments></user-comments>
+            <password>21232F297A57A5A743894A0E4A801FC3</password>
+        </user>
+        <user>
+            <user-id>operator</user-id>
+            <full-name>Operator</full-name>
+            <user-comments></user-comments>
+            <password>21232F297A57A5A743894A0E4A801FC3</password>
+        </user>
+        <user read-only="true">
+            <user-id>manager</user-id>
+            <full-name>Operator</full-name>
+            <user-comments></user-comments>
+            <password>21232F297A57A5A743894A0E4A801FC3</password>
+        </user>
+        <user>
+            <user-id>jmx_operator</user-id>
+            <full-name>JMX Operator (for JMX Remote Access Only)</full-name>
+            <user-comments></user-comments>
+            <password>21232F297A57A5A743894A0E4A801FC3</password>
+        </user>
+    </users>
+</userinfo>

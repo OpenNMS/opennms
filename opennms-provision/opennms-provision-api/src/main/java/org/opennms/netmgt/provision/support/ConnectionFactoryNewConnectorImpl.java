@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,20 +31,14 @@ package org.opennms.netmgt.provision.support;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.CloseFuture;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.service.IoHandler;
-import org.apache.mina.core.service.IoProcessor;
-import org.apache.mina.core.service.SimpleIoProcessorPool;
 import org.apache.mina.core.session.IoSessionInitializer;
 import org.apache.mina.transport.socket.SocketConnector;
-import org.apache.mina.transport.socket.nio.NioProcessor;
-import org.apache.mina.transport.socket.nio.NioSession;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,9 +57,9 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
     
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionFactoryNewConnectorImpl.class);
     
-    private static final Executor m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-    private static final IoProcessor<NioSession> m_processor = new SimpleIoProcessorPool<NioSession>(NioProcessor.class, m_executor);
-    private ThreadLocal<Integer> m_port = new ThreadLocal<Integer>();
+    //private static final Executor m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    //private static final IoProcessor<NioSession> m_processor = new SimpleIoProcessorPool<NioSession>(NioProcessor.class, m_executor);
+    private ThreadLocal<Integer> m_port = new ThreadLocal<>();
     private final Object m_portMutex = new Object();
 
     /**
@@ -77,7 +71,15 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
 
     private static final NioSocketConnector getSocketConnector(long timeout, IoHandler handler) {
         // Create a new NioSocketConnector
-        NioSocketConnector connector = new NioSocketConnector(m_executor, m_processor);
+        //NioSocketConnector connector = new NioSocketConnector(m_executor, m_processor);
+
+        // To address bug NMS-6412, I'm changing this to use the default constructor so that the
+        // Executor pool and IoProcessor pools are created and destroyed for every connector.
+        // This slows things down but might be an acceptable tradeoff for more reliable detection.
+        //
+        // @see http://issues.opennms.org/browse/NMS-6412
+        //
+        NioSocketConnector connector = new NioSocketConnector(Runtime.getRuntime().availableProcessors());
 
         // Enable SO_REUSEADDR on the socket so that TIMED_WAIT connections that are bound on the
         // same port do not block new outgoing connections. If the connections are blocked, then

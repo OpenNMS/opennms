@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,11 +28,9 @@
 
 package org.opennms.web.springframework.security;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.UserManager;
-import org.opennms.netmgt.model.OnmsUser;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -73,9 +71,10 @@ public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationPr
     public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
         final String authUsername = authentication.getPrincipal().toString();
         final String authPassword = authentication.getCredentials().toString();
-        final OnmsUser user = m_userDao.getByUsername(authUsername);
+        final SpringSecurityUser user = m_userDao.getByUsername(authUsername);
 
         if (user == null) {
+            LOG.warn("User not found: " + authUsername);
             throw new BadCredentialsException("Bad credentials");
         }
 
@@ -98,21 +97,23 @@ public class HybridOpenNMSUserAuthenticationProvider implements AuthenticationPr
         return new OnmsAuthenticationToken(user);
     }
 
-    protected void checkUserPassword(final String authUsername, final String authPassword, final OnmsUser user) throws AuthenticationException {
+    protected void checkUserPassword(final String authUsername, final String authPassword, final SpringSecurityUser user) throws AuthenticationException {
         final String existingPassword = user.getPassword();
         boolean hasUser = false;
         try {
             hasUser = m_userManager.hasUser(user.getUsername());
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             throw new AuthenticationServiceException("An error occurred while checking for " + authUsername + " in the UserManager", e);
         }
 
         if (hasUser) {
             if (!m_userManager.comparePasswords(authUsername, authPassword)) {
+                LOG.warn("Password auth failed for user: " + authUsername);
                 throw new BadCredentialsException("Bad credentials");
             }
         } else {
             if (!m_userManager.checkSaltedPassword(authPassword, existingPassword)) {
+                LOG.warn("Salted password auth failed for user: " + authUsername);
                 throw new BadCredentialsException("Bad credentials");
             }
         }

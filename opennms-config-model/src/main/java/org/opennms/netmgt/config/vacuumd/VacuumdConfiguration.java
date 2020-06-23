@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -26,99 +26,83 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/**
- * This class was original generated with Castor, but is no longer.
- */
 package org.opennms.netmgt.config.vacuumd;
-
-//---------------------------------/
-//- Imported classes and packages -/
-//---------------------------------/
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Top-level element for the vacuumd-configuration.xml configuration file.
- *
- * @version $Revision$ $Date$
  */
 @XmlRootElement(name = "VacuumdConfiguration")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ValidateUsing("vacuumd-configuration.xsd")
 public class VacuumdConfiguration implements Serializable {
-    private static final long serialVersionUID = -3370783056683052503L;
-
-    // --------------------------/
-    // - Class/Member Variables -/
-    // --------------------------/
+    private static final long serialVersionUID = 2L;
 
     /**
      * how often to vacuum the database in seconds
      */
-    @XmlAttribute(name = "period")
-    private Integer _period;
+    @XmlAttribute(name = "period", required = true)
+    private Integer m_period;
 
     /**
      * This represents the SQL that is performed every <period> seconds
      */
     @XmlElement(name = "statement")
-    private List<Statement> _statementList = new ArrayList<Statement>(0);
+    private List<Statement> m_statements = new ArrayList<>();
 
     /**
-     * Field _automations.
+     * Field m_automations.
      */
-    @XmlElement(name = "automations")
-    private Automations _automations = new Automations();
+    @XmlElementWrapper(name = "automations")
+    @XmlElement(name = "automation")
+    private List<Automation> m_automations = new ArrayList<>();
 
     /**
      * A collection of triggers
      */
-    @XmlElement(name = "triggers")
-    private Triggers _triggers = new Triggers();
+    @XmlElementWrapper(name = "triggers")
+    @XmlElement(name = "trigger")
+    private List<Trigger> m_triggers = new ArrayList<>();
 
     /**
      * A collection of actions
      */
-    @XmlElement(name = "actions")
-    private Actions _actions = new Actions();
+    @XmlElementWrapper(name = "actions")
+    @XmlElement(name = "action")
+    private List<Action> m_actions = new ArrayList<>();
 
-    /**
-     * Field _autoEvents.
-     */
-    @XmlElement(name = "auto-events")
-    private AutoEvents _autoEvents = new AutoEvents();;
+    @XmlElementWrapper(name = "auto-events")
+    @XmlElement(name = "auto-event")
+    private List<AutoEvent> m_autoEvents = new ArrayList<>();
 
-    /**
-     * Field _actionEvents.
-     */
-    @XmlElement(name = "action-events")
-    private ActionEvents _actionEvents = new ActionEvents();
-
-    // ----------------/
-    // - Constructors -/
-    // ----------------/
+    @XmlElementWrapper(name = "action-events")
+    @XmlElement(name = "action-event")
+    private List<ActionEvent> m_actionEvents = new ArrayList<>();
 
     public VacuumdConfiguration() {
         super();
     }
 
-    public VacuumdConfiguration(final int period,
-            final List<Statement> statements, final Automations automations,
-            final Triggers triggers, final Actions actions,
-            final AutoEvents autoEvents, final ActionEvents actionEvents) {
-        super();
+    public VacuumdConfiguration(final Integer period,
+        final List<Statement> statements, final List<Automation> automations,
+        final List<Trigger> triggers, final List<Action> actions,
+        final List<AutoEvent> autoEvents, final List<ActionEvent> actionEvents) {
         setPeriod(period);
-        setStatement(statements);
+        setStatements(statements);
         setAutomations(automations);
         setTriggers(triggers);
         setActions(actions);
@@ -126,382 +110,148 @@ public class VacuumdConfiguration implements Serializable {
         setActionEvents(actionEvents);
     }
 
-    // -----------/
-    // - Methods -/
-    // -----------/
-
-    /**
-     *
-     *
-     * @param vStatement
-     * @throws IndexOutOfBoundsException
-     *             if the index given is outside the bounds of the collection
-     */
-    public void addStatement(final Statement vStatement)
-            throws IndexOutOfBoundsException {
-        this._statementList.add(vStatement);
+    public Integer getPeriod() {
+        return m_period == null ? 0 : m_period;
     }
 
-    /**
-     *
-     *
-     * @param index
-     * @param vStatement
-     * @throws IndexOutOfBoundsException
-     *             if the index given is outside the bounds of the collection
-     */
-    public void addStatement(final int index, final Statement vStatement)
-            throws IndexOutOfBoundsException {
-        this._statementList.add(index, vStatement);
+    public void setPeriod(final Integer period) {
+        m_period = ConfigUtils.assertNotNull(period, "period");
     }
 
-    /**
-     * Method enumerateStatement.
-     *
-     * @return an Enumeration over all possible elements of this collection
-     */
-    public Enumeration<Statement> enumerateStatement() {
-        return Collections.enumeration(this._statementList);
+    public List<Statement> getStatements() {
+        return m_statements;
     }
 
-    /**
-     * Overrides the Object.equals method.
-     *
-     * @param obj
-     * @return true if the objects are equal.
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        VacuumdConfiguration other = (VacuumdConfiguration) obj;
-        if (_actionEvents == null) {
-            if (other._actionEvents != null)
-                return false;
-        } else if (!_actionEvents.equals(other._actionEvents))
-            return false;
-        if (_actions == null) {
-            if (other._actions != null)
-                return false;
-        } else if (!_actions.equals(other._actions))
-            return false;
-        if (_autoEvents == null) {
-            if (other._autoEvents != null)
-                return false;
-        } else if (!_autoEvents.equals(other._autoEvents))
-            return false;
-        if (_automations == null) {
-            if (other._automations != null)
-                return false;
-        } else if (!_automations.equals(other._automations))
-            return false;
-        if (_period == null) {
-            if (other._period != null)
-                return false;
-        } else if (!_period.equals(other._period))
-            return false;
-        if (_statementList == null) {
-            if (other._statementList != null)
-                return false;
-        } else if (!_statementList.equals(other._statementList))
-            return false;
-        if (_triggers == null) {
-            if (other._triggers != null)
-                return false;
-        } else if (!_triggers.equals(other._triggers))
-            return false;
-        return true;
+    public void setStatements(final List<Statement> statements) {
+        if (statements == m_statements) return;
+        m_statements.clear();
+        if (statements != null) m_statements.addAll(statements);
     }
 
-    /**
-     * Returns the value of field 'actionEvents'.
-     *
-     * @return the value of field 'ActionEvents'.
-     */
-    public ActionEvents getActionEvents() {
-        return this._actionEvents;
+    public void addStatement(final Statement statement) {
+        m_statements.add(statement);
     }
 
-    /**
-     * Returns the value of field 'actions'. The field 'actions' has the
-     * following description: A collection of actions
-     *
-     * @return the value of field 'Actions'.
-     */
-    public Actions getActions() {
-        return this._actions;
+    public boolean removeStatement(final Statement statement) {
+        return m_statements.remove(statement);
     }
 
-    /**
-     * Returns the value of field 'autoEvents'.
-     *
-     * @return the value of field 'AutoEvents'.
-     */
-    public AutoEvents getAutoEvents() {
-        return this._autoEvents;
+    public List<Automation> getAutomations() {
+        return m_automations;
     }
 
-    /**
-     * Returns the value of field 'automations'.
-     *
-     * @return the value of field 'Automations'.
-     */
-    public Automations getAutomations() {
-        return this._automations;
+    public void setAutomations(final List<Automation> automations) {
+        if (automations == m_automations) return;
+        m_automations.clear();
+        if (automations != null) m_automations.addAll(automations);
     }
 
-    /**
-     * Returns the value of field 'period'. The field 'period' has the
-     * following description: how often to vacuum the database in seconds
-     *
-     * @return the value of field 'Period'.
-     */
-    public int getPeriod() {
-        return _period == null ? 0 : _period;
+    public void addAutomation(final Automation automation) {
+        m_automations.add(automation);
     }
 
-    /**
-     * Method getStatement.
-     *
-     * @param index
-     * @throws IndexOutOfBoundsException
-     *             if the index given is outside the bounds of the collection
-     * @return the value of the Statement at the given inde
-     */
-    public Statement getStatement(final int index)
-            throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._statementList.size()) {
-            throw new IndexOutOfBoundsException("getStatement: Index value '"
-                    + index + "' not in range [0.."
-                    + (this._statementList.size() - 1) + "]");
-        }
-
-        return (Statement) _statementList.get(index);
+    public boolean removeAutomation(final Automation automation) {
+        return m_automations.remove(automation);
     }
 
-    /**
-     * Method getStatement.Returns the contents of the collection in an Array.
-     * <p>
-     * Note: Just in case the collection contents are changing in another
-     * thread, we pass a 0-length Array of the correct type into the API call.
-     * This way we <i>know</i> that the Array returned is of exactly the
-     * correct length.
-     *
-     * @return this collection as an Array
-     */
-    public Statement[] getStatement() {
-        Statement[] array = new Statement[0];
-        return (Statement[]) this._statementList.toArray(array);
+    public List<Trigger> getTriggers() {
+        return m_triggers;
     }
 
-    /**
-     * Method getStatementCollection.Returns a reference to '_statementList'.
-     * No type checking is performed on any modifications to the Vector.
-     *
-     * @return a reference to the Vector backing this class
-     */
-    public List<Statement> getStatementCollection() {
-        return this._statementList;
+    public void setTriggers(final List<Trigger> triggers) {
+        if (triggers == m_triggers) return;
+        m_triggers.clear();
+        if (triggers != null) m_triggers.addAll(triggers);
     }
 
-    /**
-     * Method getStatementCount.
-     *
-     * @return the size of this collection
-     */
-    public int getStatementCount() {
-        return this._statementList.size();
+    public void addTrigger(final Trigger trigger) {
+        m_triggers.add(trigger);
     }
 
-    /**
-     * Returns the value of field 'triggers'. The field 'triggers' has the
-     * following description: A collection of triggers
-     *
-     * @return the value of field 'Triggers'.
-     */
-    public Triggers getTriggers() {
-        return this._triggers;
+    public boolean removeTrigger(final Trigger trigger) {
+        return m_triggers.remove(trigger);
     }
 
-    /**
-     * Overrides the Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming Language
-     * Guide</b> by Joshua Bloch, Chapter 3
-     *
-     * @return a hash code value for the object.
-     */
+    public List<Action> getActions() {
+        return m_actions;
+    }
+
+    public void setActions(final List<Action> actions) {
+        if (actions == m_actions) return;
+        m_actions.clear();
+        if (actions != null) m_actions.addAll(actions);
+    }
+
+    public void addAction(final Action action) {
+        m_actions.add(action);
+    }
+
+    public boolean removeAction(final Action action) {
+        return m_actions.remove(action);
+    }
+
+    public List<AutoEvent> getAutoEvents() {
+        return m_autoEvents;
+    }
+
+    public void setAutoEvents(final List<AutoEvent> autoEvents) {
+        if (autoEvents == m_autoEvents) return;
+        m_autoEvents.clear();
+        if (autoEvents != null) m_autoEvents.addAll(autoEvents);
+    }
+
+    public void addAutoEvent(final AutoEvent autoEvent) {
+        m_autoEvents.add(autoEvent);
+    }
+
+    public boolean removeAutoEvent(final AutoEvent autoEvent) {
+        return m_autoEvents.remove(autoEvent);
+    }
+
+    public List<ActionEvent> getActionEvents() {
+        return m_actionEvents;
+    }
+
+    public void setActionEvents(final List<ActionEvent> actionEvents) {
+        if (actionEvents == m_actionEvents) return;
+        m_actionEvents.clear();
+        if (actionEvents != null) m_actionEvents.addAll(actionEvents);
+    }
+
+    public void addActionEvent(final ActionEvent actionEvent) {
+        m_actionEvents.add(actionEvent);
+    }
+
+    public boolean removeActionEvent(final ActionEvent actionEvent) {
+        return m_actionEvents.remove(actionEvent);
+    }
+
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((_actionEvents == null) ? 0 : _actionEvents.hashCode());
-        result = prime * result
-                + ((_actions == null) ? 0 : _actions.hashCode());
-        result = prime * result
-                + ((_autoEvents == null) ? 0 : _autoEvents.hashCode());
-        result = prime * result
-                + ((_automations == null) ? 0 : _automations.hashCode());
-        result = prime * result
-                + ((_period == null) ? 0 : _period.hashCode());
-        result = prime * result
-                + ((_statementList == null) ? 0 : _statementList.hashCode());
-        result = prime * result
-                + ((_triggers == null) ? 0 : _triggers.hashCode());
-        return result;
+        return Objects.hash(m_period,
+                            m_statements,
+                            m_automations,
+                            m_triggers,
+                            m_actions,
+                            m_autoEvents,
+                            m_actionEvents);
     }
 
-    /**
-     * Method iterateStatement.
-     *
-     * @return an Iterator over all possible elements in this collection
-     */
-    public Iterator<Statement> iterateStatement() {
-        return this._statementList.iterator();
-    }
-
-    /**
-     */
-    public void removeAllStatement() {
-        this._statementList.clear();
-    }
-
-    /**
-     * Method removeStatement.
-     *
-     * @param vStatement
-     * @return true if the object was removed from the collection.
-     */
-    public boolean removeStatement(final Statement vStatement) {
-        boolean removed = _statementList.remove(vStatement);
-        return removed;
-    }
-
-    /**
-     * Method removeStatementAt.
-     *
-     * @param index
-     * @return the element removed from the collection
-     */
-    public Statement removeStatementAt(final int index) {
-        Object obj = this._statementList.remove(index);
-        return (Statement) obj;
-    }
-
-    /**
-     * Sets the value of field 'actionEvents'.
-     *
-     * @param actionEvents
-     *            the value of field 'actionEvents'.
-     */
-    public void setActionEvents(final ActionEvents actionEvents) {
-        this._actionEvents = actionEvents;
-    }
-
-    /**
-     * Sets the value of field 'actions'. The field 'actions' has the
-     * following description: A collection of actions
-     *
-     * @param actions
-     *            the value of field 'actions'.
-     */
-    public void setActions(final Actions actions) {
-        this._actions = actions;
-    }
-
-    /**
-     * Sets the value of field 'autoEvents'.
-     *
-     * @param autoEvents
-     *            the value of field 'autoEvents'.
-     */
-    public void setAutoEvents(final AutoEvents autoEvents) {
-        this._autoEvents = autoEvents;
-    }
-
-    /**
-     * Sets the value of field 'automations'.
-     *
-     * @param automations
-     *            the value of field 'automations'.
-     */
-    public void setAutomations(final Automations automations) {
-        this._automations = automations;
-    }
-
-    /**
-     * Sets the value of field 'period'. The field 'period' has the following
-     * description: how often to vacuum the database in seconds
-     *
-     * @param period
-     *            the value of field 'period'.
-     */
-    public void setPeriod(final int period) {
-        this._period = period;
-    }
-
-    /**
-     *
-     *
-     * @param index
-     * @param vStatement
-     * @throws IndexOutOfBoundsException
-     *             if the index given is outside the bounds of the collection
-     */
-    public void setStatement(final int index, final Statement vStatement)
-            throws IndexOutOfBoundsException {
-        // check bounds for index
-        if (index < 0 || index >= this._statementList.size()) {
-            throw new IndexOutOfBoundsException("setStatement: Index value '"
-                    + index + "' not in range [0.."
-                    + (this._statementList.size() - 1) + "]");
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
         }
-
-        this._statementList.set(index, vStatement);
-    }
-
-    /**
-     *
-     *
-     * @param vStatementArray
-     */
-    public void setStatement(final Statement[] vStatementArray) {
-        // -- copy array
-        _statementList.clear();
-
-        for (int i = 0; i < vStatementArray.length; i++) {
-            this._statementList.add(vStatementArray[i]);
+        if (obj instanceof VacuumdConfiguration) {
+            final VacuumdConfiguration that = (VacuumdConfiguration) obj;
+            return Objects.equals(this.m_period, that.m_period) &&
+                    Objects.equals(this.m_statements, that.m_statements) &&
+                    Objects.equals(this.m_automations, that.m_automations) &&
+                    Objects.equals(this.m_triggers, that.m_triggers) &&
+                    Objects.equals(this.m_actions, that.m_actions) &&
+                    Objects.equals(this.m_autoEvents, that.m_autoEvents) &&
+                    Objects.equals(this.m_actionEvents, that.m_actionEvents);
         }
-    }
-
-    /**
-     * Sets the value of '_statementList' by copying the given Vector. All
-     * elements will be checked for type safety.
-     *
-     * @param vStatementList
-     *            the Vector to copy.
-     */
-    public void setStatement(final List<Statement> vStatementList) {
-        // copy vector
-        this._statementList.clear();
-
-        this._statementList.addAll(vStatementList);
-    }
-
-    /**
-     * Sets the value of field 'triggers'. The field 'triggers' has the
-     * following description: A collection of triggers
-     *
-     * @param triggers
-     *            the value of field 'triggers'.
-     */
-    public void setTriggers(final Triggers triggers) {
-        this._triggers = triggers;
+        return false;
     }
 }

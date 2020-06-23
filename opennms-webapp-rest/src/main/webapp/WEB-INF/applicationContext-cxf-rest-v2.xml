@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:util="http://www.springframework.org/schema/util"
+        xmlns:cxf="http://cxf.apache.org/core"
+        xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+                http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+                http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+                http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+                http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+
+    <tx:annotation-driven />
+    <context:annotation-config/>
+
+    <!-- Automatically scan for @Component beans -->
+    <context:component-scan base-package="org.opennms.web.rest.v2, org.opennms.web.rest.mapper.v2" />
+
+    <import resource="classpath:/META-INF/cxf/cxf.xml" />
+    <import resource="classpath:/META-INF/cxf/cxf-servlet.xml" />
+
+    <!--
+      This ResourceContextProvider will manually tell CXF to use the Spring context to 
+      fetch subresource instances. I'm not sure exactly WHY this is necessary but I can't
+      get the subresources to load the autowired Spring beans without it. :)
+    -->
+    <bean id="springResourceContextProvider" class="org.opennms.web.rest.support.SpringResourceContextProvider"/>
+
+    <jaxrs:server id="cxf-rest-v2" address="/" basePackages="org.opennms.web.rest.v2,org.opennms.web.rest.v2.bsm,,org.opennms.web.rest.v2.status">
+      <jaxrs:properties>
+        <!-- Use the ResourceContextProvider defined above -->
+        <entry key="org.apache.cxf.jaxrs.resource.context.provider" value-ref="springResourceContextProvider"/>
+        <!-- URL-decode FIQL search values so that reserved characters can be URL-encoded -->
+        <entry key="search.decode.values" value="true"/>
+        <!-- NMS-7866: Don't replace 127.0.0.1 with localhost -->
+        <entry key="replace.loopback.address.with.localhost" value="false"/>
+        <!-- Use the ISO-8601 date format (note that the timezone is not exactly ISO-8601) -->
+        <entry key="search.date-format" value="yyyy-MM-dd'T'HH:mm:ss.SSSZ"/>
+        <!-- Do not strip any colons in the timezone (because the timezone is not exactly ISO-8601) -->
+        <entry key="search.timezone.support" value="false"/>
+      </jaxrs:properties>
+      <jaxrs:extensionMappings>
+        <entry key="json" value="application/json" />
+        <entry key="xml" value="application/xml" />
+        <entry key="atom" value="application/atom+xml" />
+      </jaxrs:extensionMappings>
+      <jaxrs:providers>
+        <ref bean="lenientJaxbProvider"/>
+        <ref bean="jaxbProvider"/>
+        <ref bean="jacksonJaxbJsonProvider"/>
+        <ref bean="atomEntryProvider"/>
+        <ref bean="atomFeedProvider"/>
+        <!-- <ref bean="atomPojoProvider"/> -->
+        <ref bean="searchContextProvider"/>
+        <ref bean="noSuchElementProvider" />
+        <ref bean="errorResponseProvider" />
+        <ref bean="serviceUnavailableResponseProvider" />
+      </jaxrs:providers>
+      <jaxrs:outInterceptors>
+        <ref bean="gzipOutInterceptor" />
+      </jaxrs:outInterceptors>
+    </jaxrs:server>
+
+</beans>

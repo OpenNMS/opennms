@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+<datacollection-group name="IBM">
+
+    <!-- IBM-AIX-MIB resource types -->
+    <resourceType name="aixVolumeGroup" label="AIX Volume Group"
+                  resourceLabel="${aixVgName} (ID ${aixVgIdentifier})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="aixVgName" />
+		<parameter key="replace-all" value="s/\+s//" />
+      </storageStrategy>
+    </resourceType>
+
+    <resourceType name="aixPhysicalVolume" label="AIX Physical Volume"
+                  resourceLabel="${aixPvName} (VG ${aixPvNameVG})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="aixPvName" />
+		<parameter key="replace-all" value="s/\s+//" />
+      </storageStrategy>
+    </resourceType>
+
+    <resourceType name="aixPagingSpace" label="AIX Paging Space"
+                  resourceLabel="${aixPageName} (VG ${aixPvNameVG}, PV ${aixPageNamePV})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="aixPageName" />
+		<parameter key="replace-all" value="s/\s+//" />
+      </storageStrategy>
+    </resourceType>
+
+    <resourceType name="aixPrintQueue" label="AIX Print Queue"
+                  resourceLabel="${aixPrtQueName} (${aixPrtQueDevice})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="aixPrtQueName" />
+		<parameter key="replace-all" value="s/\s+//" />
+      </storageStrategy>
+    </resourceType>
+
+    <resourceType name="aixFilesystem" label="AIX Filesystem"
+                  resourceLabel="${aixFsName} (${aixFsMountPoint})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="aixFsMountPoint" />
+		<parameter key="replace-first" value="s/^-$/_root_fs/" />
+		<parameter key="replace-all" value="s/^-//" />
+		<parameter key="replace-all" value="s/\s//" />
+      </storageStrategy>
+    </resourceType>
+
+      <!-- IBM-AIX-MIB -->
+
+      <!-- This copy of sysObjectID just enables the aix.teaser graph -->
+      <group name="aix-teaser" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.1.2" instance="0" alias="aixSysObjectID" type="string" />
+      </group>
+
+      <group name="aix-system-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.1.2.1" instance="0" alias="aixSeCPUUtilization" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.1.2.2" instance="0" alias="aixSeCPUThreshold" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.7.1" instance="0" alias="aixProcNum" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.5.1.1" instance="0" alias="aixSubSystemNum" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.5.2.1" instance="0" alias="aixSubSrvNum" type="Gauge32" />
+      </group>
+
+      <group name="aix-volume-groups" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.1.2.1.1" instance="aixVolumeGroup" alias="aixVgName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.1.2.1.2" instance="aixVolumeGroup" alias="aixVgIdentifier" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.1.2.1.4" instance="aixVolumeGroup" alias="aixVgSize" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.1.2.1.5" instance="aixVolumeGroup" alias="aixVgFree" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.1.2.1.6" instance="aixVolumeGroup" alias="aixVgCurNumLVs" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.1.2.1.7" instance="aixVolumeGroup" alias="aixVgOpenLVs" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.1.2.1.8" instance="aixVolumeGroup" alias="aixVgActivePVs" type="Gauge32" />
+      </group>
+
+      <group name="aix-physical-volume" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.3.1.1.1" instance="aixPhysicalVolume" alias="aixPvName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.3.1.1.2" instance="aixPhysicalVolume" alias="aixPvNameVG" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.3.1.1.4" instance="aixPhysicalVolume" alias="aixPvSize" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.3.1.1.5" instance="aixPhysicalVolume" alias="aixPvFree" type="Gauge32" />
+      </group>
+
+      <group name="aix-paging-space" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.4.2.1.1" instance="aixPagingSpace" alias="aixPageName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.4.2.1.2" instance="aixPagingSpace" alias="aixPageNameVG" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.4.2.1.3" instance="aixPagingSpace" alias="aixPageNamePV" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.4.2.1.4" instance="aixPagingSpace" alias="aixPageSize" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.2.4.2.1.5" instance="aixPagingSpace" alias="aixPagePercentUsed" type="Gauge32" />
+      </group>
+
+      <group name="aix-print-queue" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.3.1.1.1.1" instance="aixPrintQueue" alias="aixPrtQueName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.3.1.1.1.2" instance="aixPrintQueue" alias="aixPrtQueDevice" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.3.1.1.1.9" instance="aixPrintQueue" alias="aixPrtQueJobNum" type="Gauge32" />
+      </group>
+
+      <group name="aix-filesystem" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.6.2.1.2" instance="aixFilesystem" alias="aixFsName" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.6.2.1.3" instance="aixFilesystem" alias="aixFsMountPoint" type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.6.2.1.5" instance="aixFilesystem" alias="aixFsSize" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.6.2.1.6" instance="aixFilesystem" alias="aixFsFree" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.6.2.1.7" instance="aixFilesystem" alias="aixFsNumINodes" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.2.6.191.6.2.1.8" instance="aixFilesystem" alias="aixFsUsedInodes" type="Gauge32" />
+      </group>
+
+      <!-- IBM MIBs -->
+      <group name="domino-stats" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.6.3.6"   instance="0" alias="attachedUsers"       type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.4.1"     instance="0" alias="deadMail"            type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.4.2"     instance="0" alias="deliveredMail"       type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.4.5"     instance="0" alias="transferredMail"     type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.4.6"     instance="0" alias="waitingMail"         type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.4.7"     instance="0" alias="msgsWaitForDlvry"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.4.9"     instance="0" alias="aveMailDeliveryTime" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.4.11"    instance="0" alias="aveMailSizeDlvrd"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.4.19"    instance="0" alias="mailTxFailures"      type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.5.6.4.0" instance="0" alias="replFailures"        type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.6.3.2"   instance="0" alias="aveTransactPerMin"   type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.6.3.9"   instance="0" alias="maxUsers"            type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.9.2"     instance="0" alias="allocatedMem"        type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.9.5"     instance="0" alias="freeMemory"          type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.8.3.1.4" instance="1" alias="1stHDDFreeSpace"     type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.8.3.1.4" instance="2" alias="2ndHDDFreeSpace"     type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.16.1"    instance="0" alias="totalApptmtReserv"   type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.334.72.1.1.16.6"    instance="0" alias="totalCalendarUsers"  type="integer" />
+      </group>
+
+      <systemDef name="IBM-AIX">
+        <sysoid>.1.3.6.1.4.1.2.3.1.2.1.1.3</sysoid>
+        <collect>
+          <includeGroup>mib2-host-resources-storage</includeGroup>
+          <includeGroup>mib2-host-resources-system</includeGroup>
+          <includeGroup>mib2-host-resources-memory</includeGroup>
+          <includeGroup>mib2-host-resources-processor</includeGroup>
+          <includeGroup>aix-teaser</includeGroup>
+          <includeGroup>aix-system-scalars</includeGroup>
+          <includeGroup>aix-volume-groups</includeGroup>
+          <includeGroup>aix-paging-space</includeGroup>
+          <includeGroup>aix-filesystem</includeGroup>
+          <!-- AIX Physical Volume objects tend to time out -->
+          <!-- <includeGroup>aix-physical-volume</includeGroup> -->
+          <!-- Uncomment if you want AIX print queue stats -->
+          <!-- <includeGroup>aix-print-queue</includeGroup> -->
+        </collect>
+      </systemDef>
+
+     <systemDef name="IBM-AS400">
+        <sysoid>.1.3.6.1.4.1.2.6.11</sysoid>
+        <collect>
+          <includeGroup>mib2-host-resources-storage-non-unique</includeGroup>
+          <includeGroup>mib2-host-resources-system</includeGroup>
+          <includeGroup>mib2-host-resources-memory</includeGroup>
+          <includeGroup>mib2-host-resources-processor</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

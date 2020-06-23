@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision.service.snmp;
 
 import org.opennms.netmgt.snmp.AbstractSnmpStore;
+import org.opennms.netmgt.snmp.NamedSnmpVar;
 
 /**
  * <P>
@@ -60,37 +61,37 @@ public final class IfXTableEntry extends SnmpTableEntry {
     /**
      * Lookup strings for specific table entries
      */
-    public final static String IF_NAME = "ifName";
+    public static final String IF_NAME = "ifName";
 
     /** Constant <code>IF_IN_MCAST_PKTS="ifInMulticastPkts"</code> */
-    public final static String IF_IN_MCAST_PKTS = "ifInMulticastPkts";
+    public static final String IF_IN_MCAST_PKTS = "ifInMulticastPkts";
 
     /** Constant <code>IF_IN_BCAST_PKTS="ifInBroadcastPkts"</code> */
-    public final static String IF_IN_BCAST_PKTS = "ifInBroadcastPkts";
+    public static final String IF_IN_BCAST_PKTS = "ifInBroadcastPkts";
 
     /** Constant <code>IF_OUT_MCAST_PKTS="ifOutMulticastPkts"</code> */
-    public final static String IF_OUT_MCAST_PKTS = "ifOutMulticastPkts";
+    public static final String IF_OUT_MCAST_PKTS = "ifOutMulticastPkts";
 
     /** Constant <code>IF_OUT_BCAST_PKTS="ifOutBroadcastPkts"</code> */
-    public final static String IF_OUT_BCAST_PKTS = "ifOutBroadcastPkts";
+    public static final String IF_OUT_BCAST_PKTS = "ifOutBroadcastPkts";
 
     /** Constant <code>IF_LINK_UP_DOWN_TRAP_ENABLE="ifLinkUpDownTrapEnable"</code> */
-    public final static String IF_LINK_UP_DOWN_TRAP_ENABLE = "ifLinkUpDownTrapEnable";
+    public static final String IF_LINK_UP_DOWN_TRAP_ENABLE = "ifLinkUpDownTrapEnable";
 
     /** Constant <code>IF_HIGH_SPEED="ifHighSpeed"</code> */
-    public final static String IF_HIGH_SPEED = "ifHighSpeed";
+    public static final String IF_HIGH_SPEED = "ifHighSpeed";
 
     /** Constant <code>IF_PROMISCUOUS_MODE="ifPromiscuousMode"</code> */
-    public final static String IF_PROMISCUOUS_MODE = "ifPromiscuousMode";
+    public static final String IF_PROMISCUOUS_MODE = "ifPromiscuousMode";
 
     /** Constant <code>IF_CONNECTOR_PRESENT="ifConnectorPresent"</code> */
-    public final static String IF_CONNECTOR_PRESENT = "ifConnectorPresent";
+    public static final String IF_CONNECTOR_PRESENT = "ifConnectorPresent";
 
     /** Constant <code>IF_ALIAS="ifAlias"</code> */
-    public final static String IF_ALIAS = "ifAlias";
+    public static final String IF_ALIAS = "ifAlias";
 
     /** Constant <code>IF_COUNTER_DISCONTINUITY_TIME="ifCounterDiscontinuityTime"</code> */
-    public final static String IF_COUNTER_DISCONTINUITY_TIME = "ifCounterDiscontinuityTime";
+    public static final String IF_COUNTER_DISCONTINUITY_TIME = "ifCounterDiscontinuityTime";
 
     // 
     // Special case: Lookup string for ifIndex
@@ -102,7 +103,7 @@ public final class IfXTableEntry extends SnmpTableEntry {
     // as the ifIndex of the entry. This value will be stored
     // in the map along with the "ifIndex" lookup string as key.
     /** Constant <code>IF_INDEX="AbstractSnmpStore.IFINDEX"</code> */
-    public final static String IF_INDEX = AbstractSnmpStore.IFINDEX;
+    public static final String IF_INDEX = AbstractSnmpStore.IFINDEX;
 
     /**
      * Number of object identifiers making up the interface extensions table

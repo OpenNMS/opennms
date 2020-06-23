@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>nrtg</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>jar</artifactId>
-  <name>OpenNMS Features NRTG JAR</name>
+  <name>OpenNMS :: Features :: NRTG :: JAR</name>
   <url>http://www.OpenNMS.org</url>
   <packaging>pom</packaging>
   <modules>

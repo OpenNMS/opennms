@@ -1,0 +1,44 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== ActiveMQMonitor
+
+This monitor tests the availablity of an ActiveMQ Broker.
+The service is considered available if a successful connection is made.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.ActiveMQMonitor`
+| Remote Enabled | true or false if the monitor can be used by the {opennms-product-name} remote poller
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the ActiveMQMonitor
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                                                        | Required | Default value
+| `broker-url`     | The ActiveMQ Broker URL to connect to.                                                             | required | `vm://localhost?create=false&broker.persistent=false`
+| `user`           | The user name used to login to the ActiveMQ broker.                                                | optional | `-`
+| `password`       | The password used to authenticate the user on the ActiveMQ broker.                                 | optional | `-`
+| `use-nodelabel`  | A boolean to enable using the nodelabel when connecting to the ActiveMQ broker.                    | optional | `false`
+| `create-session` | A boolean to enable creating a JMS Session when connecting to the ActiveMQ broker.                 | optional | `false`
+| `client-id`      | The client ID to use when connecting to the ActiveMQ broker.                                       | optional | `-`
+|===
+
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+
+===== Examples
+
+Some example configuration how to configure the monitor in the `poller-configuration.xml`.
+
+[source, xml]
+----
+<parameter key="broker-url" value="failover://auto+ssl://192.168.1.1:61616/"/>
+<parameter key="use-nodelabel" value="true"/>
+----

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.19.1.xsd
+">
+
+  <context:annotation-config />
+  <tx:annotation-driven/>
+  <aop:aspectj-autoproxy proxy-target-class="true" />
+
+  <bean id="daemon" class="org.opennms.netmgt.eventd.Eventd">
+    <property name="eventdServiceManager" ref="eventdServiceManager"/>
+    <property name="receiver" ref="broadcastEventProcessor"/>
+  </bean>
+
+  <!--
+  <onmsgi:reference id="eventdConfigManager" interface="org.opennms.netmgt.config.api.EventdConfig"/>
+  <onmsgi:reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao"/>
+  <onmsgi:reference id="eventdServiceManager" interface="org.opennms.netmgt.dao.api.EventdServiceManager"/>
+  -->
+
+  <bean id="eventExpander" class="org.opennms.netmgt.eventd.EventExpander">
+    <constructor-arg ref="eventdMetricRegistry"/>
+    <property name="eventConfDao" ref="eventConfDao"/>
+    <property name="eventUtil" ref="eventUtil"/>
+  </bean>
+  
+  <bean id="eventParmRegexFilter" class="org.opennms.netmgt.eventd.processor.EventParmRegexFilterProcessor">
+    <property name="eventConfDao" ref="eventConfDao"/>
+  </bean>
+
+  <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl">
+    <constructor-arg ref="eventdMetricRegistry"/>
+    <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
+    <property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength"/>
+    <property name="eventHandler" ref="eventdEventHandler"/>
+  </bean>
+
+  <onmsgi:service ref="eventIpcManagerImpl">
+    <onmsgi:interfaces>
+      <value>org.opennms.netmgt.events.api.EventForwarder</value>
+      <value>org.opennms.netmgt.events.api.EventIpcBroadcaster</value>
+      <value>org.opennms.netmgt.events.api.EventIpcManager</value>
+      <value>org.opennms.netmgt.events.api.EventProxy</value>
+      <value>org.opennms.netmgt.events.api.EventSubscriptionService</value>
+    </onmsgi:interfaces>
+  </onmsgi:service>
+
+  <bean id="eventIpcManagerFactory-setInstance" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventIpcManagerImpl">
+    <property name="staticMethod"><value>org.opennms.netmgt.events.api.EventIpcManagerFactory.setIpcManager</value></property>
+    <property name="arguments">
+      <list>
+        <ref bean="eventIpcManagerImpl"/>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="eventIpcManagerHandlerPoolSize" factory-bean="eventdConfigManager" factory-method="getReceivers"/>
+  <bean id="eventIpcManagerHandlerQueueLength" factory-bean="eventdConfigManager" factory-method="getQueueLength"/>
+  <bean id="shouldLogEventSummaries" factory-bean="eventdConfigManager" factory-method="shouldLogEventSummaries"/>
+
+  <bean id="eventdEventHandler" class="org.opennms.netmgt.eventd.DefaultEventHandlerImpl">
+    <constructor-arg ref="eventdMetricRegistry"/>
+    <property name="eventProcessors">
+      <list>
+        <!-- 
+          This EventProcessor can be used to perform regex replacements on incoming parm values.
+          It was added in 1.11 and because of performance concerns, it is commented-out for now.
+        -->
+        <!-- <ref bean="eventParmRegexFilter"/> -->
+        <ref bean="eventExpander"/>
+        <ref bean="eventWriter"/>
+        <ref bean="eventIpcBroadcastProcessor"/>
+      </list>
+    </property>
+    <property name="logEventSummaries" ref="shouldLogEventSummaries" />
+    <property name="nodeDao" ref="nodeDao" />
+  </bean>
+
+  <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
+    <constructor-arg ref="eventdMetricRegistry"/>
+  </bean>
+
+  <bean id="eventIpcBroadcastProcessor" class="org.opennms.netmgt.eventd.processor.EventIpcBroadcastProcessor">
+    <constructor-arg ref="eventdMetricRegistry"/>
+    <property name="eventIpcBroadcaster" ref="eventIpcManagerImpl"/>
+  </bean>
+
+  <bean id="eventHandler" class="org.opennms.netmgt.eventd.adaptors.EventIpcManagerEventHandlerProxy" depends-on="eventIpcManagerImpl">
+    <property name="eventIpcManager" ref="eventIpcManagerImpl"/>
+  </bean>
+
+  <bean id="broadcastEventProcessor" class="org.opennms.netmgt.eventd.BroadcastEventProcessor" depends-on="eventIpcManagerImpl">
+    <constructor-arg ref="eventIpcManagerImpl"/>
+    <constructor-arg ref="eventConfDao"/>
+  </bean>
+
+  <bean id="eventdMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+      <constructor-arg ref="eventdMetricRegistry"/>
+  </bean>
+
+  <bean id="eventdMetricRegistryDomainedJmxReporterBuilder" factory-bean="eventdMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+      <constructor-arg value="org.opennms.netmgt.eventd"/>
+  </bean>
+
+  <bean id="eventdMetricRegistryJmxReporter"
+        factory-bean="eventdMetricRegistryDomainedJmxReporterBuilder"
+        factory-method="build"
+        init-method="start"
+        destroy-method="stop" />
+
+  <bean id="tcpListener" class="org.opennms.netmgt.eventd.listener.TcpListener" init-method="start" destroy-method="stop">
+    <constructor-arg ref="eventdConfigManager" />
+    <constructor-arg ref="eventIpcManagerImpl" />
+  </bean>
+
+  <bean id="udpListener" class="org.opennms.netmgt.eventd.listener.UdpListener" init-method="start" destroy-method="stop">
+    <constructor-arg ref="eventdConfigManager" />
+    <constructor-arg ref="eventIpcManagerImpl" />
+  </bean>
+
+  <!-- Consume events from sink component -->
+  <bean id="eventSinkConsumer" class="org.opennms.netmgt.eventd.sink.EventSinkConsumer">
+  </bean>
+
+</beans>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+        targetNamespace="http://xmlns.opennms.org/xsd/config/reportd-configuration" 
+        xmlns:this="http://xmlns.opennms.org/xsd/config/reportd-configuration"
+        elementFormDefault="qualified">
+        
+  <element name="reportd-configuration" >
+    <annotation>
+      <documentation>
+        Behavior configuration for the Enterprise Reporting Daemon
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="this:report" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+    <attribute name="storage-location" type="string" use="required">
+      <annotation>
+        <documentation>The base directory rendered reports are saved on the file system.</documentation>
+      </annotation>
+    </attribute>
+    <attribute name="persist-reports" use="required" >
+      <annotation>
+        <documentation>Should reports be kept after delivered?</documentation>
+      </annotation>
+      <simpleType>
+          <restriction base="string">
+            <pattern value="(yes|no|on|off)"/>
+          </restriction>
+        </simpleType>
+    </attribute>
+    </complexType>
+  </element>
+  
+  <element name="report"  >
+    <annotation>
+      <documentation>
+      
+      Defines an report schedule with a cron expression
+        
+        http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger
+          Field Name     Allowed Values      Allowed Special Characters
+          Seconds        0-59                , - * /
+          Minutes        0-59                , - * /
+          Hours          0-23                , - * /
+          Day-of-month   1-31                , - * ? / L W C
+          Month          1-12 or JAN-DEC     , - * /
+          Day-of-Week    1-7 or SUN-SAT      , - * ? / L C #
+          Year (Opt)     empty, 1970-2099    , - * /
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element name="cron-schedule" minOccurs="1" maxOccurs="1" type="string" />
+        <element name="recipient" minOccurs="0" maxOccurs="unbounded" type="string" />
+        <element name="mailer" minOccurs="0" maxOccurs="1" type="string" />
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter"/>
+      </sequence>
+      <attribute name="report-template" type="string" use="required" />
+      <attribute name="report-name" type="string" use="required" />
+      <attribute name="report-format" use="optional" default="pdf">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(pdf|csv|html)"/> 
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="report-engine" use="optional" default="opennms">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(jdbc|opennms)" />
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+  
+  <element name="parameter">
+    <complexType>
+      <sequence>
+        <any id="configuration" minOccurs="0" maxOccurs="1" />
+      </sequence>
+      <attribute name="name" type="string" use="required"/>
+      <attribute name="value" type="string" use="required" />
+    </complexType>
+  </element>
+ 
+</schema>

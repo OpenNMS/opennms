@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,7 +34,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ec" uri="http://www.extremecomponents.org" %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Statistics Report" />
   <jsp:param name="headTitle" value="Statistics Report" />
   <jsp:param name="location" value="reports" />
@@ -43,28 +43,34 @@
   <jsp:param name="breadcrumb" value="Report"/>
 </jsp:include>
 
+<div class="card">
+  <div class="card-header">
+    <span>Statistics Report: ${model.report.description}</span>
+  </div>
+  <div class="card-body">
+
 <c:choose>
   <c:when test="${empty model}">
-    <h3>Report: ${model.report.description}</h3>
-    <div class="boxWrapper">
       <p>
         None found.
       </p>
-    </div>
   </c:when>
 
   <c:otherwise>
-    <!-- We need the </script>, otherwise IE7 breaks -->
-    <script type="text/javascript" src="js/extremecomponents.js"></script>
-      
-    <link rel="stylesheet" type="text/css" href="css/onms-extremecomponents.css"/>
-        
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="extremecomponents-js" />
+      <jsp:param name="asset-type" value="js" />
+    </jsp:include>
+
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="onms-extremecomponents" />
+    </jsp:include>
+
     <form id="form" action="${relativeRequestPath}" method="post">
       <ec:table items="model.data" var="row"
         action="${relativeRequestPath}?${pageContext.request.queryString}"
         filterable="false"
         imagePath="images/table/compact/*.gif"
-        title="Statistics Report: ${model.report.description}"
         tableId="reportList"
         form="form"
         rowsDisplayed="25"
@@ -109,28 +115,7 @@
             	${row.prettyResource.label}
             </c:if>
           </ec:column>
-          
-          <%--
-          <ec:column property="resource" sortable="false">
-            <c:choose>
-              <c:when test="${!empty row.resourceThrowable}">
-                <span title="Exception: ${row.resourceThrowable}">Could not find resource: ${row.resourceThrowableId}</span>
-              </c:when>
-              
-              <c:when test="${!empty row.resource.link}">
-                ${row.resource.resourceType.label}:
-                <c:url var="resourceLink" value="${row.resource.link}"/>
-                <a href="${resourceLink}">${row.resource.label}</a>
-              </c:when>
-                
-              <c:otherwise>
-                ${row.resource.resourceType.label}:
-                ${row.resource.label}
-              </c:otherwise>
-            </c:choose>
-          </ec:column>
-          --%>
-      
+
           <ec:column property="value"/>
           
           <c:if test="${empty param.reportList_ev}"> <%-- We are in a web view (exclude the Graphs column from PDF and XLS exports) --%>
@@ -157,6 +142,7 @@
     </form>
   </c:otherwise>
 </c:choose>
+  </div> <!-- card-body -->
+</div> <!-- panel -->
 
-
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

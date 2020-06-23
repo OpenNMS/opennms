@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.provisioning</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Provisioning</name>
+  <name>OpenNMS :: Features :: Provisioning</name>
   <modules>
     <module>api</module>
     <module>lib</module>

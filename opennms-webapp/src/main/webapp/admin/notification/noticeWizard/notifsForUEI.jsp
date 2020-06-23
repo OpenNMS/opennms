@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -51,10 +51,9 @@
 %>
 
 <%
-    HttpSession user = request.getSession(true);
 	String uei=request.getParameter("uei");
 	Map<String, Notification> allNotifications=NotificationFactory.getInstance().getNotifications();
-	List<Notification> notifsForUEI=new ArrayList<Notification>();
+	List<Notification> notifsForUEI=new ArrayList<>();
 	for(String key : allNotifications.keySet()) {
 	    Notification notif=allNotifications.get(key);
 		if(notif.getUei().equals(uei)) {
@@ -63,13 +62,13 @@
 	}
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Choose Event" />
   <jsp:param name="headTitle" value="Choose Event" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/notification/noticeWizard/eventNotices.jsp'>Event Notifications</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/noticeWizard/eventNotices.htm'>Event Notifications</a>" />
   <jsp:param name="breadcrumb" value="Existing notifications for UEI" />
 </jsp:include>
 
@@ -105,8 +104,11 @@
 	<input type="hidden" name="uei" value="<%=uei%>"/>
 </form>
 
-<h2>Existing Notifications for UEI <%=uei%></h2>
-      <table width="50%" cellspacing="2" cellpadding="2" border="0">
+<div class="card">
+  <div class="card-header">
+    <span>Existing Notifications for UEI <%=uei%></span>
+  </div>
+      <table class="table table-sm">
       	 <tr><th>Name</th><th>Description</th><th>Rule</th><th>Destination path</th><th>Varbinds</th><th>Actions</th></tr>
       <% for(Notification notif : notifsForUEI) { 
           	String varbindDescription="";
@@ -117,13 +119,17 @@
       		%>
 	        <tr>
 	        	<td><%=notif.getName()%></td>
-	        	<td><%=notif.getDescription()!=null?notif.getDescription():""%></td>
+	        	<td><%=notif.getDescription().orElse("")%></td>
 	        	<td><%=notif.getRule()%></td>
 	        	<td><%=notif.getDestinationPath()%></td>
 	        	<td><%=varbindDescription%></td>
 	        	<td><a href="javascript: void submitEditForm('<%=notif.getName()%>');">Edit</a></td>
 			</tr>
 <% } %>
-		<tr><td colspan="6"><a href="javascript: document.newNotificationForm.submit()">Create a new notification</a></td></tr>
-      </table>
-<jsp:include page="/includes/footer.jsp" flush="false" />
+	  </table>
+	<div class="card-footer">
+		<a class="btn btn-secondary" href="javascript: document.newNotificationForm.submit()">Create a new notification</a>
+	</div>
+</div> <!-- panel -->
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

@@ -1,0 +1,37 @@
+
+==== Step 3: Initialize and start {opennms-product-name}
+
+.Detect of _Java_ environment and persist in /opt/opennms/etc/java.conf
+[source, shell]
+----
+${OPENNMS_HOME}/bin/runjava -s
+----
+
+.Initialize the database and detect system libraries persisted in /opt/opennms/etc/libraries.properties
+[source, shell]
+----
+${OPENNMS_HOME}/bin/install -dis
+----
+
+.Configure systemd to start {opennms-product-name} on system boot
+[source, shell]
+----
+systemctl enable opennms
+----
+
+.Start {opennms-product-name}
+[source, shell]
+----
+systemctl start opennms
+----
+
+.Allow connection to the Web UI from your network
+[source, shell]
+----
+firewall-cmd --permanent --add-port=8980/tcp
+systemctl reload firewalld
+----
+
+TIP: If you want to receive SNMP Traps or Syslog messages you have to allow incoming traffic on your host firewall as well.
+     By default OpenNMS SNMP trap daemon is listening on 162/udp and Syslog daemon is listening on 10514/udp.
+     The SNMP Trap daemon is enabled by default, the OpenNMS Syslog daemon is disabled.

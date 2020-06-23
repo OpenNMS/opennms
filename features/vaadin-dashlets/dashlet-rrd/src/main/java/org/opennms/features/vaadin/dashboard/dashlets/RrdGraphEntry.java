@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,13 +25,21 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Page;
-import com.vaadin.ui.*;
-import com.vaadin.ui.themes.BaseTheme;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import org.opennms.features.vaadin.components.graph.GraphContainer;
 import org.opennms.netmgt.dao.api.NodeDao;
+
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.Label;
+import com.vaadin.v7.ui.themes.BaseTheme;
 
 public class RrdGraphEntry extends Panel {
     /**
@@ -51,9 +59,9 @@ public class RrdGraphEntry extends Panel {
     private Button m_removeButton = new Button("Remove");
 
     /**
-     * the preview image
+     * create layout for storing the graph
      */
-    private Image m_previewImage = new Image();
+    private VerticalLayout m_graphLayout = new VerticalLayout();
 
     /**
      * labels for node and graph information
@@ -69,11 +77,6 @@ public class RrdGraphEntry extends Panel {
     int m_calendarDiff = 1;
 
     /**
-     * the rrd graph helper instance
-     */
-    private RrdGraphHelper m_rrdGraphHelper;
-
-    /**
      * Constrcutor for creating new instances of this class.
      *
      * @param nodeDao        the node dao instance to be used
@@ -87,7 +90,6 @@ public class RrdGraphEntry extends Panel {
          */
         this.m_x = x;
         this.m_y = y;
-        this.m_rrdGraphHelper = rrdGraphHelper;
 
         /**
          * setting up the buttons
@@ -127,6 +129,10 @@ public class RrdGraphEntry extends Panel {
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
+        m_graphLayout.setSizeUndefined();
+        m_graphLayout.setWidth(200, Unit.PIXELS);
+        m_graphLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+
         /**
          * adding the components
          */
@@ -134,7 +140,7 @@ public class RrdGraphEntry extends Panel {
         verticalLayout.addComponent(m_graphLabelComponent);
         verticalLayout.addComponent(m_changeButton);
         verticalLayout.addComponent(m_removeButton);
-        verticalLayout.addComponent(m_previewImage);
+        verticalLayout.addComponent(m_graphLayout);
 
         m_nodeLabelComponent.setSizeUndefined();
         m_graphLabelComponent.setSizeUndefined();
@@ -146,7 +152,12 @@ public class RrdGraphEntry extends Panel {
         /**
          * inject the preview style
          */
-        Page.getCurrent().getStyles().add(".preview { width:175px; }");
+        addAttachListener(new AttachListener() {
+            @Override
+            public void attach(AttachEvent attachEvent) {
+                getUI().getPage().getStyles().add(".preview { width:175px; }");
+            }
+        });
 
         /**
          * initial update
@@ -172,23 +183,32 @@ public class RrdGraphEntry extends Panel {
      * Updates the labels and buttons according to the properties set.
      */
     public void update() {
+        m_graphLayout.removeAllComponents();
         if (m_graphId == null) {
             m_nodeLabelComponent.setValue("No Rrd graph");
             m_graphLabelComponent.setValue("selected");
             m_changeButton.setCaption("Select Rrd graph");
-            m_previewImage.setVisible(false);
             m_removeButton.setVisible(false);
         } else {
-            m_previewImage.setSource(new ExternalResource(m_rrdGraphHelper.imageUrlForGraph(getGraphUrl(), 150, 50, m_calendarField, m_calendarDiff)));
-            m_previewImage.addStyleName("preview");
-            m_graphLabelComponent.setValue(m_graphId);
+            String graphName = RrdGraphHelper.getGraphNameFromQuery(m_graphUrl);
+            GraphContainer graph = new GraphContainer(graphName, m_resourceId);
+            graph.setTitle(m_graphLabel);
+            // Setup the time span
+            Calendar cal = new GregorianCalendar();
+            graph.setEnd(cal.getTime());
+            cal.add(m_calendarField, -m_calendarDiff);
+            graph.setStart(cal.getTime());
+            // Use all of the available width
+            graph.setWidthRatio(1.0d);
+            graph.setHeightRatio(0.2d);
+            m_graphLayout.addComponent(graph);
+
+            m_graphLabelComponent.setValue(m_resourceTypeLabel + ": " + m_resourceLabel);
             m_nodeLabelComponent.setValue(getNodeLabel());
             m_changeButton.setCaption("Change Rrd graph");
-            m_previewImage.setVisible(true);
             m_removeButton.setVisible(true);
         }
     }
-
 
     public String getGraphId() {
         return m_graphId;

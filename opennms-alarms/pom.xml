@@ -3,17 +3,22 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarms</artifactId>
-  <name>OpenNMS Alarms</name>
+  <name>OpenNMS :: Alarms</name>
   <packaging>pom</packaging>
   <modules>
     <module>api</module>
     <module>daemon</module>
+    <module>email-northbounder</module>
     <module>http-northbounder</module>
+    <module>integration-tests</module>
     <module>jms-northbounder</module>
     <module>syslog-northbounder</module>
+    <module>snmptrap-northbounder</module>
+    <module>bsf-northbounder</module>
+    <module>drools-northbounder</module>
   </modules>
 </project>

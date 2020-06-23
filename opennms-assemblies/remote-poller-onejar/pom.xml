@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -16,7 +16,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.4</version>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.reporting</groupId>
@@ -117,6 +116,7 @@
           </execution>
         </executions>
         <configuration>
+          <skip>${skipSignJar}</skip>
           <archive>${project.build.directory}/${project.build.FinalName}.one-jar.${project.packaging}</archive>
           <verbose>true</verbose>
         </configuration>
@@ -136,7 +136,18 @@
   <pluginRepositories>
     <pluginRepository>
       <id>onejar-maven-plugin.googlecode.com</id>
-      <url>http://maven.opennms.org/content/groups/onejar.googlecode.com-release</url>
+      <url>http://maven.opennms.org/content/repositories/onejar-maven-plugin.googlecode.com/</url>
     </pluginRepository>
   </pluginRepositories>
+
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+  </repositories>
+
 </project>

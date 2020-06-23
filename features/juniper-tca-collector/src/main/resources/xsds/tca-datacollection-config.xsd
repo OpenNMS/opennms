@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0" targetNamespace="http://xmlns.opennms.org/xsd/config/tca-datacollection" xmlns:tns="http://xmlns.opennms.org/xsd/config/tca-datacollection" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="rrd" type="tns:tcaRrd"/>
+
+  <xs:element name="tca-collection" type="tns:tcaDataCollection"/>
+
+  <xs:element name="tca-datacollection-config" type="tns:tcaDataCollectionConfig"/>
+
+  <xs:complexType name="tcaDataCollection">
+    <xs:sequence>
+      <xs:element ref="tns:rrd"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="tcaRrd">
+    <xs:sequence>
+      <xs:element name="rra" type="xs:string" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tcaDataCollectionConfig">
+    <xs:sequence>
+      <xs:element ref="tns:tca-collection" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="rrdRepository" type="xs:string" use="required"/>
+  </xs:complexType>
+</xs:schema>
+

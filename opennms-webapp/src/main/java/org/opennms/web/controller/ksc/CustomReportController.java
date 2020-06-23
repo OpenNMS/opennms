@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -40,8 +40,8 @@ import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.web.graph.KscResultSet;
-import org.opennms.web.svclayer.KscReportService;
-import org.opennms.web.svclayer.ResourceService;
+import org.opennms.web.svclayer.api.KscReportService;
+import org.opennms.web.svclayer.api.ResourceService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -72,9 +72,10 @@ public class CustomReportController extends AbstractController implements Initia
 //        int report_index = getReportFactory().getWorkingReportIndex();      
 //        String number_graphs[] = {"1", "2", "3", "4", "5", "6"};
         
-        ArrayList<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphCount());
-        for (int i = 0; i < report.getGraphCount(); i++) { 
-            Graph current_graph = report.getGraph(i); 
+        ArrayList<KscResultSet> resultSets = new ArrayList<KscResultSet>(report.getGraphs().size());
+        for (int i = 0; i < report.getGraphs().size(); i++) { 
+            final int index = i;
+            Graph current_graph = report.getGraphs().get(index); 
             PrefabGraph display_graph = getResourceService().getPrefabGraph(current_graph.getGraphtype());
             
             OnmsResource resource = getKscReportService().getResourceFromGraph(current_graph);
@@ -89,9 +90,9 @@ public class CustomReportController extends AbstractController implements Initia
 
         ModelAndView modelAndView = new ModelAndView("KSC/customReport");
 
-        modelAndView.addObject("showTimeSpan", report.getShow_timespan_button());
-        modelAndView.addObject("showGraphType", report.getShow_graphtype_button());
-        modelAndView.addObject("graphsPerLine", report.getGraphs_per_line());
+        modelAndView.addObject("showTimeSpan", report.getShowTimespanButton().orElse(null));
+        modelAndView.addObject("showGraphType", report.getShowGraphtypeButton().orElse(null));
+        modelAndView.addObject("graphsPerLine", report.getGraphsPerLine().orElse(0));
         
         modelAndView.addObject("title", report.getTitle());
         modelAndView.addObject("resultSets", resultSets);
@@ -120,7 +121,7 @@ public class CustomReportController extends AbstractController implements Initia
     /**
      * <p>getKscReportService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.KscReportService} object.
+     * @return a {@link org.opennms.web.svclayer.api.KscReportService} object.
      */
     public KscReportService getKscReportService() {
         return m_kscReportService;
@@ -129,7 +130,7 @@ public class CustomReportController extends AbstractController implements Initia
     /**
      * <p>setKscReportService</p>
      *
-     * @param kscReportService a {@link org.opennms.web.svclayer.KscReportService} object.
+     * @param kscReportService a {@link org.opennms.web.svclayer.api.KscReportService} object.
      */
     public void setKscReportService(KscReportService kscReportService) {
         m_kscReportService = kscReportService;
@@ -138,7 +139,7 @@ public class CustomReportController extends AbstractController implements Initia
     /**
      * <p>getResourceService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.ResourceService} object.
+     * @return a {@link org.opennms.web.svclayer.api.ResourceService} object.
      */
     public ResourceService getResourceService() {
         return m_resourceService;
@@ -147,7 +148,7 @@ public class CustomReportController extends AbstractController implements Initia
     /**
      * <p>setResourceService</p>
      *
-     * @param resourceService a {@link org.opennms.web.svclayer.ResourceService} object.
+     * @param resourceService a {@link org.opennms.web.svclayer.api.ResourceService} object.
      */
     public void setResourceService(ResourceService resourceService) {
         m_resourceService = resourceService;

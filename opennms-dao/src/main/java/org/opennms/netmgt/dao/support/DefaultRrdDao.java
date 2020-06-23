@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,6 +34,7 @@ import java.io.InputStream;
 import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.RrdGraphAttribute;
+import org.opennms.netmgt.rrd.RrdFileConstants;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.slf4j.Logger;
@@ -93,12 +94,12 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
                 "-",
                 "--start=" + (startTimeInMillis / 1000),
                 "--end=" + (endTimeInMillis / 1000),
-                "DEF:ds=" + RrdFileConstants.escapeForGraphing(rrdAttribute.getRrdRelativePath()) + ":" + attribute.getName() + ":" + rraConsolidationFunction,
+                "DEF:ds1=" + RrdFileConstants.escapeForGraphing(rrdAttribute.getRrdRelativePath()) + ":" + attribute.getName() + ":" + rraConsolidationFunction,
         };
         
         String[] printDefs = new String[printFunctions.length];
         for (int i = 0; i < printFunctions.length; i++) {
-            printDefs[i] = "PRINT:ds:" + printFunctions[i] + ":\"%le\""; 
+            printDefs[i] = "PRINT:ds1:" + printFunctions[i] + ":\"%le\""; 
         }
         
         String commandString = StringUtils.arrayToDelimitedString(command, " ") + ' ' + StringUtils.arrayToDelimitedString(printDefs, " ");
@@ -125,11 +126,11 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
         double[] values = new double[printLines.length];
         
         for (int i = 0; i < printLines.length; i++) {
-            if (printLines[i].endsWith("nan")) {
+            if (printLines[i].toLowerCase().endsWith("nan")) {
                 values[i] = Double.NaN;
             } else {
                 try {
-                    values[i] = Double.parseDouble(printLines[i]);
+                    values[i] = Double.parseDouble(printLines[i].replace(",", ".")); // To avoid NMS-5592 ~ 2,670374e+03 floating point issue.
                 } catch (NumberFormatException e) {
                     throw new DataAccessResourceFailureException("Value of line " + (i + 1) + " of output from RRD is not a valid floating point number: '" + printLines[i] + "'");
                 }
@@ -212,9 +213,9 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
      * @see org.opennms.netmgt.dao.api.RrdDao#createGraph(java.lang.String, java.io.File)
      */
     @Override
-    public InputStream createGraph(String command, File workDir) throws DataRetrievalFailureException {
+    public InputStream createGraph(String command) throws DataRetrievalFailureException {
        try {
-           return m_rrdStrategy.createGraph(command, workDir);
+           return m_rrdStrategy.createGraph(command, m_rrdBaseDirectory);
        } catch (Throwable e) {
            throw new DataRetrievalFailureException("Could not create graph: " + e, e);
        }
@@ -287,4 +288,5 @@ public class DefaultRrdDao implements RrdDao, InitializingBean {
             throw new DataAccessResourceFailureException("Failure to fetch last value from file '" + rrdFile + "' with interval " + interval + " and range " + range, e);
         }
     }
+
 }

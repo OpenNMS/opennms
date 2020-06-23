@@ -18,6 +18,7 @@
     <include-collection dataCollectionGroup="Net-SNMP"/>
     <include-collection dataCollectionGroup="Nortel"/>
     <include-collection dataCollectionGroup="Novell"/>
+    <include-collection dataCollectionGroup="Printers"/>
     <include-collection dataCollectionGroup="Routers"/>
     <include-collection dataCollectionGroup="SUN Microsystems"/>
     <include-collection dataCollectionGroup="WMI"/>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,19 +28,19 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.opennms.core.utils.TimeKeeper;
-import org.opennms.netmgt.config.collector.CollectionAttribute;
-import org.opennms.netmgt.config.collector.CollectionAttributeType;
-import org.opennms.netmgt.config.collector.CollectionResource;
-import org.opennms.netmgt.config.collector.CollectionSetVisitor;
-import org.opennms.netmgt.config.collector.Persister;
-import org.opennms.netmgt.config.collector.ServiceParameters;
-import org.opennms.netmgt.model.RrdRepository;
+import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.collection.api.CollectionAttribute;
+import org.opennms.netmgt.collection.api.CollectionAttributeType;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
+import org.opennms.netmgt.collection.api.Persister;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * MockCollectionResource
@@ -49,15 +49,28 @@ import org.opennms.netmgt.model.RrdRepository;
  */
 public class MockCollectionResource implements CollectionResource {
     
-    private String parent;
+    private final ResourcePath parent;
     private String instance;
-    private String type;
-    private Map<String,String> attributes = new HashMap<String,String>();
+    private String unmodifiedInstance;
+    private final String type;
+    private final Map<String,String> attributes = new HashMap<String,String>();
     
-    public MockCollectionResource(String parent, String instance, String type) {
+    public MockCollectionResource(ResourcePath parent, String instance, String type) {
+        this(parent, instance, instance, type);
+    }
+
+    public MockCollectionResource(ResourcePath parent, String instance, String unmodifiedInstance, String type) {
         this.parent = parent;
-        this.instance = instance;
+        this.instance = sanitizeInstance(instance);
+        this.unmodifiedInstance = unmodifiedInstance;
         this.type = type;
+    }
+
+    /**
+     * Copied from GenericTypeResource
+     */
+    public static String sanitizeInstance(String instance) {
+        return instance.replaceAll("\\s+", "_").replaceAll(":", "_").replaceAll("\\\\", "_").replaceAll("[\\[\\]]", "_");
     }
 
     @Override
@@ -66,7 +79,7 @@ public class MockCollectionResource implements CollectionResource {
     }
 
     @Override
-    public File getResourceDir(RrdRepository repository) {
+    public ResourcePath getPath() {
         return null;
     }
 
@@ -92,7 +105,13 @@ public class MockCollectionResource implements CollectionResource {
                 @Override
                 public String getStringValue() { return attrValue; }
                 @Override
-                public String getNumericValue() { return attrValue; }
+                public Double getNumericValue() {
+                    try {
+                        return Double.parseDouble(attrValue);
+                    } catch (NumberFormatException|NullPointerException e) {
+                        return null;
+                    }
+                }
                 @Override
                 public String getName() { return attrName; }
                 @Override
@@ -104,7 +123,7 @@ public class MockCollectionResource implements CollectionResource {
                 @Override
                 public void visit(CollectionSetVisitor visitor) { }
                 @Override
-                public String getType() { return "string"; }
+                public AttributeType getType() { return AttributeType.STRING; }
                 @Override
                 public String getMetricIdentifier() { return "MOCK_"+getName(); }
             };
@@ -113,17 +132,12 @@ public class MockCollectionResource implements CollectionResource {
     }
 
     @Override
-    public int getType() {
-        return 0;
-    }
-
-    @Override
     public String getResourceTypeName() {
         return type;
     }
 
     @Override
-    public String getParent() {
+    public ResourcePath getParent() {
         return parent;
     }
 
@@ -137,11 +151,20 @@ public class MockCollectionResource implements CollectionResource {
     }
 
     @Override
-    public String getLabel() {
+    public String getUnmodifiedInstance() {
+        return unmodifiedInstance;
+    }
+
+    public void setUnmodifiedInstance(String instance) {
+        this.unmodifiedInstance = instance;
+    }
+
+    @Override
+    public String getInterfaceLabel() {
         return null;
     }
     
-    public Map<String,String> getAttribtueMap() {
+    public Map<String,String> getAttributeMap() {
         return attributes;
     }
 

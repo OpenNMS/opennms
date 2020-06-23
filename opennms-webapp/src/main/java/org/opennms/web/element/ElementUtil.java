@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,8 +28,6 @@
 
 package org.opennms.web.element;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -591,68 +589,36 @@ public abstract class ElementUtil {
      * <p>getNodeByParams</p>
      *
      * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @param nodeIdParam a {@link java.lang.String} object.
+     * @param nodeLookupParam a {@link java.lang.String} object.
      * @return a {@link OnmsNode} object.
      * @throws javax.servlet.ServletException if any.
      * @throws java.sql.SQLException if any.
      */
     public static OnmsNode getNodeByParams(HttpServletRequest request,
-            String nodeIdParam, ServletContext servletContext) throws ServletException, SQLException {
-        if (request.getParameter(nodeIdParam) == null) {
-            throw new MissingParameterException(nodeIdParam, new String[] { "node" });
+            String nodeLookupParam, ServletContext servletContext) throws ServletException, SQLException {
+        if (request.getParameter(nodeLookupParam) == null) {
+            throw new MissingParameterException(nodeLookupParam, new String[] { "node" });
         }
 
-        String nodeIdString = request.getParameter(nodeIdParam);
-
-        int nodeId;
-
-        try {
-            nodeId = Integer.parseInt(nodeIdString);
-        } catch (NumberFormatException e) {
-            throw new ElementIdNotFoundException("Wrong data type for \""
-                    + nodeIdParam + "\", should be integer", nodeIdString, 
-                    "node", "element/node.jsp", "node", "element/nodeList.htm");
+        String nodeLookupString = request.getParameter(nodeLookupParam);
+        if (!nodeLookupString.contains(":")) {
+            try {
+                Integer.parseInt(nodeLookupString);
+            } catch (NumberFormatException e) {
+                throw new ElementIdNotFoundException("Wrong data type for \""
+                        + nodeLookupString + "\", should be integer", nodeLookupString, 
+                        "node", "element/node.jsp", "node", "element/nodeList.htm");
+            }
         }
 
-        OnmsNode node = NetworkElementFactory.getInstance(servletContext).getNode(nodeId);
+        OnmsNode node = NetworkElementFactory.getInstance(servletContext).getNode(nodeLookupString);
 
         if (node == null) {
             throw new ElementNotFoundException("No such node in database", "node", "element/node.jsp", "node", "element/nodeList.htm");
         }
         
         return node;
-}
-
-    public static IpRouteInterface[] getIpRouteByParams(HttpServletRequest request, ServletContext servletContext) {
-        return getIpRouteInterfaceByParams(request, "node", servletContext);
-
     }
-    
-    
-    public static IpRouteInterface[] getIpRouteInterfaceByParams(
-			HttpServletRequest request, String nodeIdParam,
-			ServletContext servletContext) {
-        if (request.getParameter(nodeIdParam) == null) {
-            throw new MissingParameterException(nodeIdParam, new String[] { "node" });
-        }
-
-        String nodeIdString = request.getParameter(nodeIdParam);
-
-        int nodeId;
-
-        try {
-            nodeId = Integer.parseInt(nodeIdString);
-        } catch (NumberFormatException e) {
-            throw new ElementIdNotFoundException("Wrong data type for \""
-                    + nodeIdParam + "\", should be integer", nodeIdString, 
-                    "node", "element/node.jsp", "node", "element/nodeList.htm");
-        }
-        
-        IpRouteInterface[] ipri = NetworkElementFactory.getInstance(servletContext).getIpRoute(nodeId);
-        if (ipri ==  null )
-        	return new IpRouteInterface[0];
-        return ipri;
-	}
 
 	/**
      * <p>getInterfaceByParams</p>
@@ -967,35 +933,5 @@ public abstract class ElementUtil {
         }
         
         return svcs;
-    }
-
-    /**
-     * <p>isRouteInfoNodeByParams</p>
-     *
-     * @param request a {@link javax.servlet.http.HttpServletRequest} object.
-     * @return a boolean.
-     * @throws java.sql.SQLException if any.
-     */
-    public static boolean isRouteInfoNodeByParams(HttpServletRequest request, ServletContext servletContext) throws SQLException {
-    	int nodeId;
-    	
-    	try {
-    		nodeId = Integer.parseInt(request.getParameter("node"));
-    	} catch (NumberFormatException nfe) {
-    		throw new ElementIdNotFoundException("Wrong type for parameter \"node\" (should be integer)",
-    					request.getParameter("node"), "node", "element/node.jsp", "node", "element/nodeList.jsp");
-    	}
-    	return NetworkElementFactory.getInstance(servletContext).isRouteInfoNode(nodeId);
-    }
-    
-    @SuppressWarnings("unused")
-    private static String encodeUrl(String in) {
-    	String out = "";
-		try {
-			out = URLEncoder.encode(in, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// ignore
-		}
-		return out;
     }
 }

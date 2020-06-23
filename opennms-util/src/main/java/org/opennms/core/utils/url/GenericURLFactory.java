@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,6 +36,7 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Convenience factory class to generate URL connections with customized protocol handler.
@@ -48,17 +49,17 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
     /**
      * Logging to output.log
      */
-    private final Logger logger = LoggerFactory.getLogger("OpenNMS.Output." + GenericURLFactory.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(GenericURLFactory.class);
 
     /**
      * Map with protocol and URL connections
      */
-    private HashMap<String, String> urlConnections = new HashMap<String, String>();
+    private Map<String, String> urlConnections = new HashMap<String, String>();
 
     /**
      * Map with protocol and URL default ports
      */
-    private HashMap<String, Integer> urlDefaultPorts = new HashMap<String, Integer>();
+    private Map<String, Integer> urlDefaultPorts = new HashMap<String, Integer>();
 
     /**
      * URL factory
@@ -72,11 +73,11 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
         // Map the protocol dns against the DNS implementation
         addURLConnection("dns", "org.opennms.netmgt.provision.service.dns.DnsRequisitionUrlConnection", 53);
         addURLConnection("vmware", "org.opennms.netmgt.provision.service.vmware.VmwareRequisitionUrlConnection", 443);
+        addURLConnection("requisition", "org.opennms.netmgt.provision.service.requisition.RequisitionUrlConnection", 443);
     }
 
     /**
      * <p>initialize</p>
-     * <p/>
      * Initializing the URL Factory
      */
     public static void initialize() {
@@ -89,7 +90,6 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
 
     /**
      * <p>getInstance</p>
-     * <p/>
      * Implement the GenericURLFactory as singleton
      *
      * @return a {org.opennms.core.utils.url.GenericURLFactory} object.
@@ -100,12 +100,11 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
 
     /**
      * <p>addURLConnection</p>
-     * <p/>
      * Add protocol URL connection handler with specific class name
      *
      * @param protocol    name as {@link java.lang.String} object.
      * @param classname   full qualified classname as {@link java.lang.String} object.
-     * @param defaultPort the default port for given protocol as {@java.lang.int} object.
+     * @param defaultPort the default port for given protocol as {@link java.lang.Integer} object.
      */
     public void addURLConnection(String protocol, String classname, int defaultPort) {
         urlConnections.put(protocol, classname);
@@ -114,7 +113,6 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
 
     /**
      * <p>addURLConnection</p>
-     * <p/>
      * Add protocol URL connection handler with specific class name
      *
      * @param protocol  name as {@link java.lang.String} object.
@@ -126,7 +124,6 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
 
     /**
      * <p>removeURLConnection</p>
-     * <p/>
      * Remove a protocol URL connection handler
      *
      * @param protocol name as {@link java.lang.String} object.
@@ -141,22 +138,20 @@ public class GenericURLFactory implements URLStreamHandlerFactory {
 
     /**
      * <p>getURLConnections</p>
-     * <p/>
      * Get the map with protocol and implementation classes for customized URL connections
      *
      * @return a {@link java.util.HashMap} object
      */
-    public HashMap<String, String> getURLConnections() {
+    public Map<String, String> getURLConnections() {
         return urlConnections;
     }
 
     /**
      * <p>createURLStreamHandler</p>
-     * <p/>
      * Create stream handler
      *
      * @param protocol name as {@link java.lang.String} object.
-     * @return a {@java.net.URLStreamHandler} object.
+     * @return a {@link java.net.URLStreamHandler} object.
      */
     @SuppressWarnings("unchecked")
     @Override

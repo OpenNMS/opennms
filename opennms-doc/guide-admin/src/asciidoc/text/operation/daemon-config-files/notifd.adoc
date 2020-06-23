@@ -1,0 +1,25 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-opennms-operation-daemon-config-files-notifd]]
+==== Notifd
+
+[options="header, autowidth"]
+|===
+| Internal Daemon Name | Reload Event
+| _Notifd_            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Notifd'`
+|===
+
+.Notifd configuration file overview
+[options="header, autowidth"]
+|===
+| File                                | Restart Required | Reload Event | Description
+| `notifd-configuration.xml`          | no               | yes          | Describes auto-acknowledge prefix, e.g. prefix "RESOLVED: " for nodeUp/nodeDown events.
+| `notificationCommands.xml`          | no               | no           | Configuration for notification media, e.g. scripts, XMPP or HTTP Post, immediately applied.
+| `notifications.xml`                 | no               | no           | Event notification definitions and changes are immediately applied.
+| `destinationPaths.xml`              | no               | no           | Contains paths for notification targets, e.g. JavaMail, XMPP or external scripts.
+| `users.xml`                         | no               | no           | Contain pager and address information for notification destination paths.
+| `groups.xml`                        | no               | no           | Groups can be used as target for notifications.
+| `javamail-configuration.properties` | no               | no           | Configuration to send notification mails via specific mail servers.
+|===

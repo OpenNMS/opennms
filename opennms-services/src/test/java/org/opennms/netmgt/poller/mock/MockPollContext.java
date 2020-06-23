@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -37,13 +37,13 @@ import java.util.List;
 
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
@@ -60,7 +60,7 @@ public class MockPollContext implements PollContext, EventListener {
     private EventIpcManager m_eventMgr;
     private MockDatabase m_db;
     private MockNetwork m_mockNetwork;
-    private List<PendingPollEvent> m_pendingPollEvents = new LinkedList<PendingPollEvent>();
+    private List<PendingPollEvent> m_pendingPollEvents = new LinkedList<>();
     
 
     @Override
@@ -119,7 +119,6 @@ public class MockPollContext implements PollContext, EventListener {
     @Override
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
         EventBuilder e = MockEventUtil.createEventBuilder("Test", uei, nodeId, (address == null ? null : InetAddressUtils.str(address)), svcName, reason);
-        e.setCreationTime(date);
         e.setTime(date);
         return e.getEvent();
     }
@@ -139,7 +138,7 @@ public class MockPollContext implements PollContext, EventListener {
     
     private void writeOutage(PollableService pSvc, PollEvent svcLostEvent) {
         MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
-        Timestamp eventTime = m_db.convertEventTimeToTimeStamp(EventConstants.formatToString(svcLostEvent.getDate()));
+        Timestamp eventTime = new Timestamp(svcLostEvent.getDate().getTime());
         MockUtil.println("Opening Outage for "+mSvc);
         m_db.createOutage(mSvc, svcLostEvent.getEventId(), eventTime);
 
@@ -160,20 +159,21 @@ public class MockPollContext implements PollContext, EventListener {
     
     public void closeOutage(PollableService pSvc, PollEvent svcRegainEvent) {
         MockService mSvc = m_mockNetwork.getService(pSvc.getNodeId(), pSvc.getIpAddr(), pSvc.getSvcName());
-        Timestamp eventTime = m_db.convertEventTimeToTimeStamp(EventConstants.formatToString(svcRegainEvent.getDate()));
+        Timestamp eventTime = new Timestamp(svcRegainEvent.getDate().getTime());
         MockUtil.println("Resolving Outage for "+mSvc);
         m_db.resolveOutage(mSvc, svcRegainEvent.getEventId(), eventTime);
     }
-    
-    @Override
-    public void reparentOutages(String ipAddr, int oldNodeId, int newNodeId) {
-        m_db.update("update outages set nodeId = ? where nodeId = ? and ipaddr = ?", newNodeId, oldNodeId, ipAddr);
-    }
-    
+
     @Override
     public boolean isServiceUnresponsiveEnabled() {
         return m_serviceUnresponsiveEnabled;
     }
+
+    @Override
+    public void trackPoll(PollableService service, PollStatus result) {
+        // pass, nothing to track
+    }
+
     public void setServiceUnresponsiveEnabled(boolean serviceUnresponsiveEnabled) {
         m_serviceUnresponsiveEnabled = serviceUnresponsiveEnabled;
     }

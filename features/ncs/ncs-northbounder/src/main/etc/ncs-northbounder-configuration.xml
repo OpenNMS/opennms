@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ncs-northbounder-config enabled="true" nagles-delay="1000" 
-	scheme="http" host="jmp-CLUSTER" port="8080" path="/fmpm/restful/NotificationMessageRelay">
-	<uei>uei.opennms.org/internal/ncs/componentImpacted</uei>
-	<uei>uei.opennms.org/internal/ncs/componentResolved</uei>
-</ncs-northbounder-config>

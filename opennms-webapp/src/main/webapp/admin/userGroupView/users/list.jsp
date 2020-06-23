@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,12 +34,11 @@
 	session="true"
 %>
 <%@page import="java.util.*" %>
-<%@page import="javax.servlet.*" %>
 <%@page import="org.opennms.netmgt.config.*" %>
 <%@page import="org.opennms.netmgt.config.users.*" %>
 <%
 	UserManager userFactory;
-  	Map users = null;
+  	Map<String,User> users = null;
 	
 	try
     	{
@@ -53,7 +52,7 @@
 	}
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="User Configuration" />
   <jsp:param name="headTitle" value="List" />
   <jsp:param name="headTitle" value="Users" />
@@ -114,46 +113,35 @@
 <input type="hidden" name="newID"/>
 <input type="hidden" name="password"/>
 
-<h3>User Configuration</h3>
-
 <p>
   Click on the <i>User ID</i> link to view detailed information about a
   user.
 </p>
-<%--
-<a id="doNewUser" href="javascript:addNewUser()"><img src="images/add1.gif" alt="Add new user" border="0"></a>
-<a href="javascript:addNewUser()">Add New User</a>
---%>
-<br/>
-<br/>
 
-     <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+<p>
+  <a id="doNewUser" href="javascript:addNewUser()">
+    <i class="fa fa-plus-circle fa-2x"></i> Add new user
+  </a>
+</p>
 
-         <tr bgcolor="#999999">
-<%--
-          <td width="5%"><b>Delete</b></td>
---%>
-          <td width="5%"><b>Modify</b></td>
-<%--
-          <td width="5%"><b>Rename</b></td>
---%>
-          <td width="5%"><b>User ID</b></td>
-          <td width="15%"><b>Full Name</b></td>
-          <td width="15%"><b>Email</b></td>
-          <td width="15%"><b>Pager Email</b></td>
-          <td width="15%"><b>XMPP Address</b></td>
-          <!--
-          <td width="10%"><b>Num Service</b></td>
-          <td width="10%"><b>Num Pin</b></td>
-          <td width="15%"><b>Text Service</b></td>
-          <td width="15%"><b>Text Pin</b></td>
-          -->
-        </tr>
-        <% Iterator i = users.keySet().iterator();
+   <div class="card">
+     <table class="table table-sm table-bordered">
+        <thead>
+          <tr>
+          <th width="5%">Delete</th>
+          <th width="5%">Modify</th>
+          <th width="5%">Rename</th>
+          <th width="5%">User ID</th>
+          <th width="15%">Full Name</th>
+          <th width="15%">Email</th>
+          <th width="15%">Pager Email</th>
+          <th width="15%">XMPP Address</th>
+          </tr>
+        </thead>
+        <tbody>
+        <% 
            int row = 0;
-           while(i.hasNext()) 
-           {
-              User curUser = (User)users.get(i.next());
+           for (User curUser : users.values()) {
 	      String userid = curUser.getUserId();
 	      String email = userFactory.getEmail(userid);
 	      String pagerEmail = userFactory.getPagerEmail(userid);
@@ -163,93 +151,62 @@
 	      String numericPin = userFactory.getNumericPin(userid);
 	      String textPin = userFactory.getTextPin(userid);
          %>
-         <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
-<%--
-          <% if (!curUser.getUserId().equals("admin")) { %>
-          <td width="5%" rowspan="2" align="center"> 
-            <a id="<%= "users("+curUser.getUserId()+").doDelete" %>" href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>?')"><img src="images/trash.gif" alt="<%="Delete " + curUser.getUserId()%>"></a> 
-            
+         <tr id="user-<%= userid %>">
+          <% if (!curUser.getUserId().equals("admin") && !curUser.getUserId().equals("rtc")) { %>
+          <td rowspan="2" class="text-center"> 
+            <a id="<%= "users("+curUser.getUserId()+").doDelete" %>" href="javascript:deleteUser('<%=curUser.getUserId()%>')" onclick="return confirm('Are you sure you want to delete the user <%=curUser.getUserId()%>?')"><i class="fa fa-trash-o fa-2x"></i></a> 
           </td>
           <% } else { %>
-          <td width="5%" rowspan="2" align="center">
-            <img id="<%= "users("+curUser.getUserId()+").doDelete" %>" src="images/trash.gif" alt="Cannot delete admin user">
+          <td rowspan="2" class="text-center">
+            <i class="fa fa-trash-o fa-2x" onclick="alert('Sorry, the admin user cannot be deleted.')"></i>
           </td>
           <% } %>
---%>
-          <td width="5%" rowspan="2" align="center">
-            <a id="<%= "users("+curUser.getUserId()+").doModify" %>" href="javascript:modifyUser('<%=curUser.getUserId()%>')"><img src="images/modify.gif"></a>
+          <td rowspan="2" class="text-center">
+            <a id="<%= "users("+curUser.getUserId()+").doModify" %>" href="javascript:modifyUser('<%=curUser.getUserId()%>')"><i class="fa fa-edit fa-2x"></i></a>
           </td>
-<%--
-          <td width="5%" rowspan="2" align="center">
+          <td rowspan="2" class="text-center">
             <% if ( !curUser.getUserId().equals("admin")) { %>
-                <input id="<%= "users("+curUser.getUserId()+").doRename" %>" type="button" name="rename" value="Rename" onclick="renameUser('<%=curUser.getUserId()%>')">
+                <button id="<%= "users("+curUser.getUserId()+").doRename" %>" class="btn btn-secondary"  name="rename" onclick="renameUser('<%=curUser.getUserId()%>')">Rename</button>
               <% } else { %>
-                <input id="<%= "users("+curUser.getUserId()+").doRename" %>" type="button" name="rename" value="Rename" onclick="alert('Sorry, the admin user cannot be renamed.')">
+                <button id="<%= "users("+curUser.getUserId()+").doRename" %>" class="btn btn-secondary"  name="rename" onclick="alert('Sorry, the admin user cannot be renamed.')">Rename</button>
               <% } %>
           </td>
---%>
-          <td width="5%">
+          <td>
             <a id="<%= "users("+curUser.getUserId()+").doDetails" %>" href="javascript:detailUser('<%=curUser.getUserId()%>')"><%=curUser.getUserId()%></a>
           </td>
-          <td width="15%">
+          <td>
            <div id="<%= "users("+curUser.getUserId()+").fullName" %>">
-	    <% if(curUser.getFullName() != null){ %>
-		    <%= (curUser.getFullName().equals("") ? "&nbsp;" : curUser.getFullName()) %>
-	    <% } %>
+		    <%= (curUser.getFullName().orElse("")) %>
 	      </div>
           </td>
-          <td width="15%">
+          <td>
             <div id="<%= "users("+curUser.getUserId()+").email" %>">
             <%= ((email == null || email.equals("")) ? "&nbsp;" : email) %>
             </div>
           </td>
-          <td width="15%">
+          <td>
            <div id="<%= "users("+curUser.getUserId()+").pagerEmail" %>">
             <%= ((pagerEmail == null || pagerEmail.equals("")) ? "&nbsp;" : pagerEmail) %>
             </div>
           </td>
-          <td width="15">
+          <td>
            <div id="<%= "users("+curUser.getUserId()+").xmppAddress" %>">
             <%= ((xmppAddress == null || xmppAddress.equals("")) ? "&nbsp;" : xmppAddress) %>
            </div>
           </td>
-          <!--
-          <td width="10%">
-            <div id="<%= "users("+curUser.getUserId()+").numericService" %>">
-            <%= ((numericService == null || numericService.equals("")) ? "&nbsp;" : numericService) %>
-            </div>
-          </td>
-          <td width="10%">
-            <div id="<%= "users("+curUser.getUserId()+").numericPin" %>">
-            <%= ((numericPin == null || numericPin.equals("")) ? "&nbsp;" : numericPin) %>
-            </div>
-          </td>
-          <td width="15%">
-           <div id="<%= "users("+curUser.getUserId()+").textService" %>">
-            <%= ((textService == null || textService.equals("")) ? "&nbsp;" : textService) %>
-            </div>
-          </td>
-          <td width="15%">
-           <div id="<%= "users("+curUser.getUserId()+").textPin" %>">
-            <%= ((textPin == null || textPin.equals("")) ? "&nbsp;" : textPin) %>
-           </div>
-          </td>
-          -->
           </tr>
-          <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
+          <tr>
             <td colspan="5">
              <div id="<%= "users("+curUser.getUserId()+").userComments" %>">
-	      <% if(curUser.getUserComments() != null){ %>
-		      <%= (curUser.getUserComments().equals("") ? "No Comments" : curUser.getUserComments()) %>
-		   
-	      <% } %>
+             <%= (curUser.getUserComments().orElse("No Comments")) %>
 	        </div>
             </td>
           </tr>
          <% row++;
             } %>
+       </tbody>
      </table>
-
+  </div> <!-- panel -->
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

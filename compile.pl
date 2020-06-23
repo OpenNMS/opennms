@@ -13,8 +13,8 @@ require(File::Spec->catfile($PREFIX, 'bin', 'functions.pl'));
 
 
 if (not grep { $_ =~ /^[^-]/ } @ARGS) {
-	debug("no maven targets specified, adding 'install' to the command-line");
-	push(@ARGS, "install");
+	debug("no maven targets specified, adding '" . join("', '", @DEFAULT_GOALS) . "' to the command-line");
+	push(@ARGS, @DEFAULT_GOALS);
 }
 
 my @command = ($MVN, @ARGS);

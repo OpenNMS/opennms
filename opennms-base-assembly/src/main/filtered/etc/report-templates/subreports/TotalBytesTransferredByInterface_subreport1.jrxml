@@ -1,15 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="1.0"/>
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-08-25T11:48:18 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TotalBytesTransferredByInterface_subreport1" pageWidth="555" pageHeight="802" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="e04abde3-0cb3-408f-a0d2-fa6d0fd88a9b">
+	<property name="ireport.zoom" value="1.3310000000000013"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
-	<style name="Table_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<style name="Table_Body" hAlign="Center" vAlign="Middle" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<parameter name="rrdDir" class="java.lang.String" isForPrompting="false"/>
-	<parameter name="nodeid" class="java.lang.Integer" isForPrompting="false"/>
-	<parameter name="startDate" class="java.util.Date" isForPrompting="false"/>
-	<parameter name="endDate" class="java.util.Date" isForPrompting="false"/>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_PASSWORD" class="java.lang.String"/>
+	<parameter name="MEASUREMENT_INTERVAL" class="java.lang.Integer" isForPrompting="false">
+		<parameterDescription><![CDATA[The time interval between two measurement samples]]></parameterDescription>
+		<defaultValueExpression><![CDATA[300]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MEASUREMENT_INTERVAL_millisecond" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{MEASUREMENT_INTERVAL} * 1000]]></defaultValueExpression>
+	</parameter>
+	<parameter name="nodeid" class="java.lang.Integer"/>
+	<parameter name="foreignsource" class="java.lang.String"/>
+	<parameter name="foreignid" class="java.lang.String"/>
+	<parameter name="startDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date"/>
 	<parameter name="snmpifalias" class="java.lang.String"/>
 	<parameter name="snmpifname" class="java.lang.String"/>
 	<parameter name="snmpifdescr" class="java.lang.String"/>
@@ -18,51 +33,44 @@
 		<defaultValueExpression><![CDATA[$P{snmpifname} == null || "".equals($P{snmpifname}) ? $P{snmpifdescr} : $P{snmpifname}]]></defaultValueExpression>
 	</parameter>
 	<parameter name="interface" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getInterfaceDirectory($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getInterfaceDescriptor($P{snmpifname}, $P{snmpifdescr}, $P{snmpphysaddr})]]></defaultValueExpression>
 	</parameter>
-	<parameter name="inOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
+	<parameter name="startDateTime" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{startDate}.getTime()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="outOctets" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsDataSource($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
+	<parameter name="endDateTime" class="java.lang.Long" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{endDate}.getTime()]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ifInOctets_PATH" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfInOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
+	<parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ifOutOctets_PATH" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[new org.opennms.netmgt.jasper.helper.JRobinDirectoryUtil().getIfOutOctetsJrb($P{rrdDir}, String.valueOf($P{nodeid}), $P{interface})]]></defaultValueExpression>
-	</parameter>
-	<queryString language="jrobin">
-		<![CDATA[--start $P{startDate} --end $P{endDate}
-		DEF:xx=$P{ifInOctets_PATH}:$P{inOctets}:AVERAGE
-		DEF:yy=$P{ifOutOctets_PATH}:$P{outOctets}:AVERAGE
-		XPORT:xx:IfHCInOctets
-		XPORT:yy:IfHCOutOctets]]>
+	<queryString language="measurement">
+		<![CDATA[<query-request step="$P{MEASUREMENT_INTERVAL_millisecond}" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="5000">
+  <source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" fallback-attribute="ifInOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
+  <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" fallback-attribute="ifOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
+</query-request>]]>
 	</queryString>
-	<field name="Timestamp" class="java.util.Date">
-		<fieldDescription><![CDATA[Timestamp]]></fieldDescription>
+	<field name="IfInOctets" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="IfHCInOctets" class="java.lang.Double">
-		<fieldDescription><![CDATA[IfHCInOctets]]></fieldDescription>
+	<field name="IfOutOctets" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="IfHCOutOctets" class="java.lang.Double">
-		<fieldDescription><![CDATA[IfHCOutOctets]]></fieldDescription>
-	</field>
-	<field name="Step" class="java.lang.Long"/>
+	<sortField name="IfInOctets"/>
 	<variable name="received_SUM" class="java.lang.Double" calculation="Sum">
-		<variableExpression><![CDATA[$F{IfHCInOctets}]]></variableExpression>
+		<variableExpression><![CDATA[$F{IfInOctets} * $P{MEASUREMENT_INTERVAL}]]></variableExpression>
 	</variable>
 	<variable name="RECEIVED_BYTES_TOTAL" class="java.lang.Double">
-		<variableExpression><![CDATA[$V{received_SUM} * $F{Step}]]></variableExpression>
+		<variableExpression><![CDATA[$V{received_SUM}]]></variableExpression>
 	</variable>
 	<variable name="RECEIVED_BITS_TOTAL" class="java.lang.Double">
 		<variableExpression><![CDATA[$V{RECEIVED_BYTES_TOTAL} * 8]]></variableExpression>
 	</variable>
 	<variable name="transmitted_SUM" class="java.lang.Double" calculation="Sum">
-		<variableExpression><![CDATA[$F{IfHCOutOctets}]]></variableExpression>
+		<variableExpression><![CDATA[$F{IfOutOctets} * $P{MEASUREMENT_INTERVAL}]]></variableExpression>
 	</variable>
 	<variable name="TRANSMITTED_BYTES_TOTAL" class="java.lang.Double">
-		<variableExpression><![CDATA[$V{transmitted_SUM} * $F{Step}]]></variableExpression>
+		<variableExpression><![CDATA[$V{transmitted_SUM}]]></variableExpression>
 	</variable>
 	<variable name="TRANSMITTED_BITS_TOTAL" class="java.lang.Double">
 		<variableExpression><![CDATA[$V{TRANSMITTED_BYTES_TOTAL} * 8]]></variableExpression>
@@ -70,7 +78,7 @@
 	<variable name="TOTAL_BYTES_IN_OUT" class="java.lang.Double">
 		<variableExpression><![CDATA[$V{RECEIVED_BYTES_TOTAL} + $V{TRANSMITTED_BYTES_TOTAL}]]></variableExpression>
 	</variable>
-	<filterExpression><![CDATA[!$F{IfHCInOctets}.isNaN() || !$F{IfHCOutOctets}.isNaN()]]></filterExpression>
+	<filterExpression><![CDATA[!$F{IfInOctets}.isNaN() || !$F{IfOutOctets}.isNaN()]]></filterExpression>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -93,63 +101,59 @@
 		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="32" splitType="Stretch">
+		<band height="37" splitType="Stretch">
 			<textField pattern="###0.00">
-				<reportElement style="Table_Body" x="36" y="16" width="150" height="16"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{RECEIVED_BYTES_TOTAL} > 1000000000 ? String.format("%10.2f", $V{RECEIVED_BYTES_TOTAL}/new Double("1000000000.0")) + " GB" : ($V{RECEIVED_BYTES_TOTAL} > 1000000 ? String.format("%10.2f", $V{RECEIVED_BYTES_TOTAL}/new Double("1000000.0")) + " MB" : String.format("%10.2f", $V{RECEIVED_BYTES_TOTAL}/new Double("1000.0")) + " KB")]]></textFieldExpression>
+				<reportElement style="Table-Body" x="36" y="16" width="150" height="16" uuid="fae79def-e41e-4228-8839-10912c40212c"/>
+				<textFieldExpression><![CDATA[$V{RECEIVED_BYTES_TOTAL} > 1000000000 ? String.format("%10.2f", $V{RECEIVED_BYTES_TOTAL}/new Double("1000000000.0")) + " GB" : ($V{RECEIVED_BYTES_TOTAL} > 1000000 ? String.format("%10.2f", $V{RECEIVED_BYTES_TOTAL}/new Double("1000000.0")) + " MB" : String.format("%10.2f", $V{RECEIVED_BYTES_TOTAL}/new Double("1000.0")) + " KB")]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement style="Table_Body" x="186" y="16" width="150" height="16"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{TRANSMITTED_BYTES_TOTAL} > 1000000000 ? String.format("%10.2f", $V{TRANSMITTED_BYTES_TOTAL}/new Double("1000000000.0")) + " GB" : ($V{TRANSMITTED_BITS_TOTAL} > 1000000 ? String.format("%10.2f", $V{TRANSMITTED_BYTES_TOTAL}/new Double("1000000.0")) + " MB" : String.format("%10.2f", $V{TRANSMITTED_BYTES_TOTAL}/new Double("1000.0")) + " KB")]]></textFieldExpression>
+				<reportElement style="Table-Body" x="186" y="16" width="150" height="16" uuid="da98f4d2-e819-4f5c-b880-5298664406e2"/>
+				<textFieldExpression><![CDATA[$V{TRANSMITTED_BYTES_TOTAL} > 1000000000 ? String.format("%10.2f", $V{TRANSMITTED_BYTES_TOTAL}/new Double("1000000000.0")) + " GB" : ($V{TRANSMITTED_BITS_TOTAL} > 1000000 ? String.format("%10.2f", $V{TRANSMITTED_BYTES_TOTAL}/new Double("1000000.0")) + " MB" : String.format("%10.2f", $V{TRANSMITTED_BYTES_TOTAL}/new Double("1000.0")) + " KB")]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="Table_Header" x="36" y="0" width="150" height="16"/>
-				<textElement/>
+				<reportElement style="Table-Header" x="36" y="0" width="150" height="16" uuid="fd4fff4e-9b70-4f81-b37c-a0d7d8073dab"/>
 				<text><![CDATA[Bytes Received]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Table_Header" x="186" y="0" width="150" height="16"/>
-				<textElement/>
+				<reportElement style="Table-Header" x="186" y="0" width="150" height="16" uuid="9d8d2d14-0f41-43ce-8287-f97d83de133c"/>
 				<text><![CDATA[Bytes Transmitted]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Table_Header" x="336" y="0" width="150" height="16"/>
-				<textElement/>
+				<reportElement style="Table-Header" x="336" y="0" width="150" height="16" uuid="7d8fe9cc-2d2c-4297-a9ca-38d8b340a655"/>
 				<text><![CDATA[Total Bytes In+Out]]></text>
 			</staticText>
 			<textField pattern="###0.00">
-				<reportElement style="Table_Body" x="336" y="16" width="150" height="16"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{TOTAL_BYTES_IN_OUT} > 1000000000 ? String.format("%10.2f", $V{TOTAL_BYTES_IN_OUT}/new Double("1000000000.0")) + " GB" : ($V{TOTAL_BYTES_IN_OUT} > 1000000 ? String.format("%10.2f", ($V{TOTAL_BYTES_IN_OUT})/new Double("1000000.0")) + " MB" : String.format("%10.2f", ($V{TOTAL_BYTES_IN_OUT})/new Double("1000.0")) + " KB")]]></textFieldExpression>
+				<reportElement style="Table-Body" x="336" y="16" width="150" height="16" uuid="d732eda8-c849-4238-9c2d-b0baa66d6438"/>
+				<textFieldExpression><![CDATA[$V{TOTAL_BYTES_IN_OUT} > 1000000000 ? String.format("%10.2f", $V{TOTAL_BYTES_IN_OUT}/new Double("1000000000.0")) + " GB" : ($V{TOTAL_BYTES_IN_OUT} > 1000000 ? String.format("%10.2f", ($V{TOTAL_BYTES_IN_OUT})/new Double("1000000.0")) + " MB" : String.format("%10.2f", ($V{TOTAL_BYTES_IN_OUT})/new Double("1000.0")) + " KB")]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>
 	<noData>
-		<band height="50">
+		<band height="42">
 			<staticText>
-				<reportElement style="Table_Header" x="36" y="2" width="150" height="16"/>
-				<textElement/>
+				<reportElement style="Table-Header" x="36" y="2" width="150" height="16" uuid="b1d1fdc8-257e-4a97-a569-646168658670"/>
 				<text><![CDATA[Bytes Received]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Table_Header" x="186" y="2" width="150" height="16"/>
-				<textElement/>
+				<reportElement style="Table-Header" x="186" y="2" width="150" height="16" uuid="c77daca4-3941-40e6-8bfa-88b0ed52657e"/>
 				<text><![CDATA[Bytes Transmitted]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Table_Header" x="336" y="2" width="150" height="16"/>
-				<textElement/>
+				<reportElement style="Table-Header" x="336" y="2" width="150" height="16" uuid="4c39633f-3c9f-48b4-ad66-4fde82df204d"/>
 				<text><![CDATA[Total Bytes In+Out]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="149" y="22" width="226" height="20"/>
-				<textElement textAlignment="Center">
-					<font size="14"/>
-				</textElement>
-				<text><![CDATA[No Data For this Interface]]></text>
-			</staticText>
+			<textField pattern="###0.00">
+				<reportElement style="Table-Body" x="36" y="18" width="150" height="16" uuid="222b018c-9403-46bf-943f-a70098f10a4c"/>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement style="Table-Body" x="336" y="18" width="150" height="16" uuid="30c52419-3f5d-4421-afde-4dae9abbd10b"/>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement style="Table-Body" x="186" y="18" width="150" height="16" uuid="9d82de26-853e-446f-b527-d3436ea6cbc2"/>
+				<textFieldExpression><![CDATA["-"]]></textFieldExpression>
+			</textField>
 		</band>
 	</noData>
 </jasperReport>

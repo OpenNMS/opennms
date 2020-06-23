@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.datacollection;
 
 import java.util.List;
@@ -32,39 +33,35 @@ import java.util.List;
 import org.opennms.netmgt.config.datacollection.Collect;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.BeanItem;
+import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 
 /**
  * The Class System Definition Form.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-// TODO when a new group is added, the group list passed to SystemDefFieldFactory must be updated.
+// TODO when a new group is added, the group list passed to this form (i.e. groupNames) must be updated.
 @SuppressWarnings("serial")
 public class SystemDefForm extends CustomComponent {
 
     /** The name. */
-    @PropertyId("name")
     final TextField name = new TextField("Group Name");
 
     /** The system definition choice. */
-    @PropertyId("systemDefChoice")
     final SystemDefChoiceField systemDefChoice = new SystemDefChoiceField("System OID/Mask");
 
     /** The collect field. */
-    @PropertyId("collect")
-    final CollectField collectField;
+    final CollectField collect;
 
     /** The Event editor. */
-    private final FieldGroup systemDefEditor = new FieldGroup();
+    final BeanFieldGroup<SystemDef> systemDefEditor = new BeanFieldGroup<SystemDef>(SystemDef.class);
 
     /** The event layout. */
-    private final FormLayout systemDefLayout = new FormLayout();
+    final FormLayout systemDefLayout = new FormLayout();
 
     /**
      * Instantiates a new system definition form.
@@ -82,12 +79,15 @@ public class SystemDefForm extends CustomComponent {
         systemDefChoice.setRequired(true);
         systemDefLayout.addComponent(systemDefChoice);
 
-        collectField = new CollectField("MIB Groups", groupNames);
-        collectField.setRequired(true);
-        systemDefLayout.addComponent(collectField);
+        collect = new CollectField("MIB Groups", groupNames);
+        collect.setRequired(true);
+        systemDefLayout.addComponent(collect);
 
         setSystemDef(createBasicSystemDef());
-        systemDefEditor.bindMemberFields(this);
+
+        systemDefEditor.bind(name, "name");
+        systemDefEditor.bind(systemDefChoice, "systemDefChoice");
+        systemDefEditor.bind(collect, "collect");
 
         setCompositionRoot(systemDefLayout);
     }
@@ -97,9 +97,8 @@ public class SystemDefForm extends CustomComponent {
      *
      * @return the system definition
      */
-    @SuppressWarnings("unchecked")
     public SystemDef getSystemDef() {
-        return ((BeanItem<SystemDef>) systemDefEditor.getItemDataSource()).getBean();
+        return systemDefEditor.getItemDataSource().getBean();
     }
 
     /**
@@ -108,7 +107,7 @@ public class SystemDefForm extends CustomComponent {
      * @param systemDef the new system definition
      */
     public void setSystemDef(SystemDef systemDef) {
-        systemDefEditor.setItemDataSource(new BeanItem<SystemDef>(systemDef));
+        systemDefEditor.setItemDataSource(systemDef);
     }
 
     /**
@@ -125,12 +124,19 @@ public class SystemDefForm extends CustomComponent {
     }
 
     /**
-     * Gets the field group.
-     *
-     * @return the field group
+     * Discard.
      */
-    public FieldGroup getFieldGroup() {
-        return systemDefEditor;
+    public void discard() {
+        systemDefEditor.discard();
+    }
+
+    /**
+     * Commit.
+     *
+     * @throws CommitException the commit exception
+     */
+    public void commit() throws CommitException {
+        systemDefEditor.commit();
     }
 
     /* (non-Javadoc)
@@ -138,7 +144,6 @@ public class SystemDefForm extends CustomComponent {
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         systemDefEditor.setReadOnly(readOnly);
     }
 
@@ -147,6 +152,15 @@ public class SystemDefForm extends CustomComponent {
      */
     @Override
     public boolean isReadOnly() {
-        return super.isReadOnly() && systemDefEditor.isReadOnly();
+        return systemDefEditor.isReadOnly();
+    }
+
+    /**
+     * Gets the system definition name.
+     *
+     * @return the system definition name
+     */
+    public String getSystemDefName() {
+        return name.getValue();
     }
 }

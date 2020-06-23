@@ -3,147 +3,19 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.opennms.integration-tests</artifactId>
-  <packaging>jar</packaging>
-  <name>OpenNMS Integration Tests</name>
-  <build>
-    <plugins>
-      <!-- 
-        Generate the META-INF/maven/dependencies.properties that is required by the
-        org.apache.karaf.testing.AbstractIntegrationTest Maven URL resolver.
-      -->
-      <plugin>
-        <groupId>org.apache.servicemix.tooling</groupId>
-        <artifactId>depends-maven-plugin</artifactId>
-        <version>1.2</version>
-        <executions>
-          <execution>
-            <id>generate-depends-file</id>
-            <goals>
-              <goal>generate-depends-file</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.servicemix.tooling </groupId>
-                    <artifactId>depends-maven-plugin</artifactId>
-                    <versionRange>[1.2,)</versionRange>
-                    <goals><goal>generate-depends-file</goal></goals>
-                  </pluginExecutionFilter>
-                  <action><execute /></action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
-
-  <dependencies>
-    <!-- Contains beans for ServiceConfigurationPublicConstructorTest -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-asterisk</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-jetty</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- Contains model code for the WillItUnmarshall test -->
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-config-model</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.jdbc-collector</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-vmware</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-alarm-northbounder-syslog</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.access-point-monitor</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-correlator</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.model</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- OpenNMS Karaf container so that we can crank it up with the pax-exam-karaf unit test framework -->
-    <dependency>
-      <groupId>org.opennms.container</groupId>
-      <artifactId>karaf</artifactId>
-      <type>tar.gz</type>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>pax-exam-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology</groupId>
-      <artifactId>api</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- Needed to run Vaadin -->
+  <artifactId>integration-tests</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS :: Integration Tests</name>
+  <modules>
+    <module>config</module>
+    <module>trend-configuration</module>
     <!--
-    <dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>vaadin</artifactId>
-      <version>6.8.2</version>
-      <scope>provided</scope>
-    </dependency>
+      Commenting this out because it relies on the http-remoting webapp and the dependency list
+      for it is too long to run here right now.
     -->
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>servlet-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-  </dependencies>
+    <!-- <module>remote-poller-18</module> -->
+  </modules>
 </project>

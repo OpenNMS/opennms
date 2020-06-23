@@ -1,0 +1,45 @@
+
+== Use R for statistical computing
+
+link:https://www.r-project.org/[R] is a free software environment for statistical computing and graphics.
+_{opennms-product-name}_ can leverage the power of _R_ for forecasting and advanced calculations on collected time series data.
+
+_{opennms-product-name}_ interfaces with _R_ via _stdin_ and _stdout_, and for this reason, _R_ must be installed on the same host
+as _{opennms-product-name}_.
+Note that installing _R_ is optional, and not required by any of the core components.
+
+IMPORTANT: The _R_ integration is not supported on _Microsoft Windows_ systems.
+
+=== Install R on RHEL
+
+.Ensure the dnf plugin config-manager is installed
+[source, bash]
+----
+dnf -y install dnf-plugins-core
+----
+
+.Enable the PowerTools repository for R dependencies
+[source, bash]
+----
+dnf config-manager --set-enabled PowerTools
+----
+
+.Install the epel-release repository with R packages
+[source, bash]
+----
+dnf -y install epel-release
+----
+
+.Install R-core package
+[source, bash]
+----
+dnf -y install R-core
+----
+
+=== Install R on Debian
+
+.Install R
+[source, bash]
+----
+apt -y install r-recommended
+----

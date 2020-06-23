@@ -10,23 +10,28 @@
           <assignment name="uei" type="field" >
             <value type="constant" result="uei.opennms.org/translator/traps/SNMP_Link_Down" />
           </assignment>
-          <assignment name="ifDescr" type="parameter">
+          <assignment name="ifDescr" type="parameter" default="Unknown">
             <value type="sql" result="SELECT snmp.snmpIfDescr FROM snmpInterface snmp WHERE snmp.nodeid = ?::integer AND snmp.snmpifindex = ?::integer" >
               <value type="field" name="nodeid" matches=".*" result="${0}" />
               <value type="parameter" name="~^\.1\.3\.6\.1\.2\.1\.2\.2\.1\.1\.([0-9]*)$" matches=".*" result="${0}" />
             </value>
           </assignment>
-          <assignment name="ifName" type="parameter">
+          <assignment name="ifName" type="parameter" default="Unknown">
             <value type="sql" result="SELECT snmp.snmpIfName FROM snmpInterface snmp WHERE snmp.nodeid = ?::integer AND snmp.snmpifindex = ?::integer" >
               <value type="field" name="nodeid" matches=".*" result="${0}" />
               <value type="parameter" name="~^\.1\.3\.6\.1\.2\.1\.2\.2\.1\.1\.([0-9]*)$" matches=".*" result="${0}" />
             </value>
           </assignment>
-          <assignment name="ifAlias" type="parameter">
+          <assignment name="ifAlias" type="parameter" default="Unknown">
             <value type="sql" result="SELECT snmp.snmpIfAlias FROM snmpInterface snmp WHERE snmp.nodeid = ?::integer AND snmp.snmpifindex = ?::integer" >
               <value type="field" name="nodeid" matches=".*" result="${0}" />
               <value type="parameter" name="~^\.1\.3\.6\.1\.2\.1\.2\.2\.1\.1\.([0-9]*)$" matches=".*" result="${0}" />
             </value>
+          </assignment>
+        </mapping>
+        <mapping>
+          <assignment name="uei" type="field" >
+            <value type="constant" result="uei.opennms.org/internal/topology/linkDown" />
           </assignment>
         </mapping>
       </mappings>
@@ -37,23 +42,28 @@
           <assignment name="uei" type="field" >
             <value type="constant" result="uei.opennms.org/translator/traps/SNMP_Link_Up" />
           </assignment>
-          <assignment name="ifDescr" type="parameter">
+          <assignment name="ifDescr" type="parameter" default="Unknown">
             <value type="sql" result="SELECT snmp.snmpIfDescr FROM snmpInterface snmp WHERE snmp.nodeid = ?::integer AND snmp.snmpifindex = ?::integer" >
               <value type="field" name="nodeid" matches=".*" result="${0}" />
               <value type="parameter" name="~^\.1\.3\.6\.1\.2\.1\.2\.2\.1\.1\.([0-9]*)$" matches=".*" result="${0}" />
             </value>
           </assignment>
-          <assignment name="ifName" type="parameter">
+          <assignment name="ifName" type="parameter" default="Unknown">
             <value type="sql" result="SELECT snmp.snmpIfName FROM snmpInterface snmp WHERE snmp.nodeid = ?::integer AND snmp.snmpifindex = ?::integer" >
               <value type="field" name="nodeid" matches=".*" result="${0}" />
               <value type="parameter" name="~^\.1\.3\.6\.1\.2\.1\.2\.2\.1\.1\.([0-9]*)$" matches=".*" result="${0}" />
             </value>
           </assignment>
-          <assignment name="ifAlias" type="parameter">
+          <assignment name="ifAlias" type="parameter" default="Unknown">
             <value type="sql" result="SELECT snmp.snmpIfAlias FROM snmpInterface snmp WHERE snmp.nodeid = ?::integer AND snmp.snmpifindex = ?::integer" >
               <value type="field" name="nodeid" matches=".*" result="${0}" />
               <value type="parameter" name="~^\.1\.3\.6\.1\.2\.1\.2\.2\.1\.1\.([0-9]*)$" matches=".*" result="${0}" />
             </value>
+          </assignment>
+        </mapping>
+        <mapping>
+          <assignment name="uei" type="field" >
+            <value type="constant" result="uei.opennms.org/internal/topology/linkUp" />
           </assignment>
         </mapping>
       </mappings>
@@ -109,7 +119,24 @@
         </mapping>
       </mappings>
     </event-translation-spec>
-  
+
+    <!-- Translations for clock skew detection -->
+    <event-translation-spec uei="uei.opennms.org/internal/telemetry/clockSkewDetected" >
+      <mappings>
+        <mapping>
+          <assignment name="uei" type="field" >
+            <value type="constant" result="uei.opennms.org/translator/telemetry/clockSkewDetected" />
+          </assignment>
+          <assignment name="nodeid" type="field" >
+            <value type="sql" result="SELECT n.nodeid FROM node n, ipinterface i WHERE n.nodeid = i.nodeid AND i.ipaddr = ? AND n.location = ?" >
+              <value type="field" name="interface"  matches=".*" result="${0}" />
+              <value type="parameter" name="monitoringSystemLocation" matches=".*" result="${0}" />
+            </value>
+          </assignment>
+        </mapping>
+      </mappings>
+    </event-translation-spec>
+
   </translation>
 
 </event-translator-configuration>

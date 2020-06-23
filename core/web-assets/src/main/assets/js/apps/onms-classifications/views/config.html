@@ -1,0 +1,58 @@
+<div class="card-body">
+    <div class="btn-toolbar pull-right mb-2">
+        <div class="btn-group ml-2" role="group">
+            <button id="action.refresh" class="btn btn-secondary" ng-click="refresh()" title="Refresh list"><i class="fa fa-refresh"></i></button>
+        </div>
+        <div class="btn-group ml-2" role="group">
+            <button id="action.addGroup" class="btn btn-secondary" ng-click="addGroup()" title="Add new classification group"><i class="fa fa-plus"></i></button>
+        </div>
+    </div>
+    <div ng-show="groups.length == 0">No groups defined.</div>
+    <pagination model="query" ng-show="groups.length > 0" position="bottom" on-change="refresh">
+        <table class="table table-striped">
+            <thead>
+            <tr class="d-flex">
+                <th class="col-md-1 text-nowrap">Position</th>
+                <th class="col-md-3 text-nowrap">Name</th>
+                <th class="col-md-5 text-nowrap">Description</th>
+                <th class="col-md-1 text-nowrap">Editable</th>
+                <th class="col-md-1 text-nowrap">Enabled</th>
+                <th class="col-md-1 text-nowrap">Actions</th>
+            </tr>
+            </thead>
+            <tbody ng-model="groups" ui-sortable="sortableGroups">
+            <tr class="d-flex" ng-repeat="group in groups" data-row="{{group.name}}" ng-class="{'unsortable': group['readOnly']}">
+                <td class="col-md-1 text-nowrap">
+                    <i class="fa fa-bars text-muted" style="padding-right:1em"
+                        ng-style="{'visibility': !group['readOnly'] ? 'visible' : 'hidden'}"></i>
+                    {{group['position']}}</td>
+                <td class="col-md-3 text-nowrap">{{group['name']}}</td>
+                <td class="col-md-5 text-nowrap">{{group['description']}}</td>
+                <td class="col-md-1 text-nowrap">{{!group['readOnly']}}</td>
+                <td class="col-md-1 text-nowrap">
+                    <toggle id="action.{{group.name}}.toggle" size="btn-sm" ng-model="group['enabled']" ng-change="updateGroup(group)"></toggle>
+                </td>
+                <td class="col-md-1 text-nowrap">
+                    <div class="pull-right">
+                        <button id="action.{{group.position}}.edit" class="btn btn-sm btn-secondary" ng-click="editGroup(group)" title="edit group" ng-show="!group.readOnly"><i class="fa fa-edit"></i></button>
+
+                        <button
+                                id="action.{{group.position}}.delete"
+                                class="btn btn-sm btn-secondary"
+                                mwl-confirm
+                                title="delete group"
+                                message="Do you want to delete group '{{group.name}}' with {{group.ruleCount}} rule(s)?"
+                                on-confirm="deleteGroup(group)"
+                                placement="left"
+                                confirm-button-type="danger"
+                                cancel-button-type="secondary"
+                                confirm-text="Yes"
+                                cancel-text="No"
+                                ng-show="!group.readOnly"><i class="fa fa-trash-o"></i></button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </pagination>
+</div>

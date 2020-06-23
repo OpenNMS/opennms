@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet debug page</title>
+
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="../css/screen.css" />
+
+	<script type="text/javascript" src="../../build/deps.js"></script>
+	<script src="../leaflet-include.js"></script>
+	<style>
+    #map {
+      width:600px;
+      height:400px;
+    }
+	div {
+      margin: 0.5em;
+    }
+    div span {
+      border: 1px solid black;
+      margin: 0.2em;
+      padding: 0.2em;
+    }
+	</style>
+</head>
+<body>
+  <div id='map'></div>
+
+  <div>
+    <span id='ctrl'>ctrl</span>
+    <span id='shift'>shift</span>
+    <span id='alt'>alt</span>
+    <span id='meta'>meta</span>
+  </div>
+
+  <script>
+    // Remember to include either the Leaflet 0.7.3 or the Leaflet 1.0.0-beta1 library
+
+    var myCenter = new L.LatLng(50.5, 30.51);
+    var map = new L.Map('map', {center: myCenter, zoom: 15});
+
+    var positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+    }).addTo(map);
+
+
+    L.DomEvent.on(map.getContainer(), 'mousewheel', function(ev){
+      console.log(ev);
+
+      document.getElementById('alt').style.background =
+        ev.altKey ? 'green' : 'transparent';
+
+      document.getElementById('shift').style.background =
+        ev.shiftKey ? 'green' : 'transparent';
+
+      document.getElementById('ctrl').style.background =
+        ev.ctrlKey ? 'green' : 'transparent';
+
+      document.getElementById('meta').style.background =
+        ev.metaKey ? 'green' : 'transparent';
+
+    })
+
+
+
+  </script>
+</body>
+</html>

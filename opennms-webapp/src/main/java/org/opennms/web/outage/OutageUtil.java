@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -40,10 +40,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.api.Util;
+import org.opennms.web.outage.filter.LocationFilter;
+import org.opennms.web.outage.filter.NegativeLocationFilter;
 import org.opennms.web.filter.Filter;
+import org.opennms.web.outage.filter.AssetFilter;
+import org.opennms.web.outage.filter.ForeignSourceFilter;
 import org.opennms.web.outage.filter.InterfaceFilter;
 import org.opennms.web.outage.filter.LostServiceDateAfterFilter;
 import org.opennms.web.outage.filter.LostServiceDateBeforeFilter;
+import org.opennms.web.outage.filter.NegativeForeignSourceFilter;
 import org.opennms.web.outage.filter.NegativeInterfaceFilter;
 import org.opennms.web.outage.filter.NegativeNodeFilter;
 import org.opennms.web.outage.filter.NegativeServiceFilter;
@@ -92,18 +97,22 @@ public abstract class OutageUtil extends Object {
 
         if (type.equals(NodeFilter.TYPE)) {
             filter = new NodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
+        } else if (type.equals(ForeignSourceFilter.TYPE)) {
+            filter = new ForeignSourceFilter(value);
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(value);
         } else if (type.equals(ServiceFilter.TYPE)) {
-            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new ServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(OutageIdFilter.TYPE)) {
             filter = new OutageIdFilter(WebSecurityUtils.safeParseInt(value));
+        } else if (type.equals(NegativeForeignSourceFilter.TYPE)) {
+            filter = new NegativeForeignSourceFilter(value);
         } else if (type.equals(NegativeNodeFilter.TYPE)) {
             filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {
             filter = new NegativeInterfaceFilter(value);
         } else if (type.equals(NegativeServiceFilter.TYPE)) {
-            filter = new NegativeServiceFilter(WebSecurityUtils.safeParseInt(value));
+            filter = new NegativeServiceFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(LostServiceDateBeforeFilter.TYPE)) {
             filter = new LostServiceDateBeforeFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(LostServiceDateAfterFilter.TYPE)) {
@@ -112,6 +121,12 @@ public abstract class OutageUtil extends Object {
             filter = new RegainedServiceDateBeforeFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(RegainedServiceDateAfterFilter.TYPE)) {
             filter = new RegainedServiceDateAfterFilter(WebSecurityUtils.safeParseLong(value));
+        } else if (type.startsWith(AssetFilter.TYPE)) {
+            filter = new AssetFilter(type, value);
+        } else if (type.startsWith(LocationFilter.TYPE)) {
+            filter = new LocationFilter(value);
+        } else if (type.startsWith(NegativeLocationFilter.TYPE)) {
+            filter = new NegativeLocationFilter(value);
         }
 
         return filter;

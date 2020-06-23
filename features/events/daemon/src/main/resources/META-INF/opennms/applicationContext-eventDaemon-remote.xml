@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:osgi="http://www.springframework.org/schema/osgi"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+">
+
+  <bean id="securityContextHolder-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetClass" value="org.springframework.security.core.context.SecurityContextHolder" />
+    <property name="targetMethod" value="setStrategyName" />
+    <property name="arguments">
+      <list>
+        <util:constant static-field="org.springframework.security.core.context.SecurityContextHolder.MODE_GLOBAL"/>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="securityContext" class="org.springframework.security.core.context.SecurityContextHolder" factory-method="getContext" depends-on="securityContextHolder-init"/>
+
+  <bean id="securityContext-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="securityContext" />
+    <property name="targetMethod" value="setAuthentication" />
+    <property name="arguments">
+      <list>
+        <bean class="org.springframework.security.authentication.UsernamePasswordAuthenticationToken">
+          <constructor-arg value="admin"/>
+          <constructor-arg value="admin"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <!-- Import the serviceRegistry so that the onmsgi namespace works -->
+  <osgi:reference id="serviceRegistry" interface="org.opennms.core.soa.ServiceRegistry"/>
+
+  <!-- Use opennms-remoting interfaces -->
+  <bean id="dataSource" class="org.opennms.core.spring.web.ServiceRegistryHttpInvokerProxyFactoryBean" depends-on="securityContext-init">
+    <property name="serviceUrl" value="http://127.0.0.1:8980/opennms-remoting/serviceRegistry"/>
+    <property name="serviceInterface" value="javax.sql.DataSource"/>
+    <property name="httpInvokerRequestExecutor">
+      <bean class="org.springframework.security.remoting.httpinvoker.AuthenticationSimpleHttpInvokerRequestExecutor"/>
+    </property>
+  </bean>
+
+  <bean id="eventConfDao" class="org.opennms.core.spring.web.ServiceRegistryHttpInvokerProxyFactoryBean" depends-on="securityContext-init">
+    <property name="serviceUrl" value="http://127.0.0.1:8980/opennms-remoting/serviceRegistry"/>
+    <property name="serviceInterface" value="org.opennms.netmgt.config.api.EventConfDao"/>
+    <property name="httpInvokerRequestExecutor">
+      <bean class="org.springframework.security.remoting.httpinvoker.AuthenticationSimpleHttpInvokerRequestExecutor"/>
+    </property>
+  </bean>
+
+  <bean id="eventUtil" class="org.opennms.core.spring.web.ServiceRegistryHttpInvokerProxyFactoryBean" depends-on="securityContext-init">
+    <property name="serviceUrl" value="http://127.0.0.1:8980/opennms-remoting/serviceRegistry"/>
+    <property name="serviceInterface" value="org.opennms.netmgt.eventd.EventUtil"/>
+    <property name="httpInvokerRequestExecutor">
+      <bean class="org.springframework.security.remoting.httpinvoker.AuthenticationSimpleHttpInvokerRequestExecutor"/>
+    </property>
+  </bean>
+
+  <bean id="eventdConfigManager" class="org.opennms.core.spring.web.ServiceRegistryHttpInvokerProxyFactoryBean" depends-on="securityContext-init">
+    <property name="serviceUrl" value="http://127.0.0.1:8980/opennms-remoting/serviceRegistry"/>
+    <property name="serviceInterface" value="org.opennms.netmgt.config.api.EventdConfig"/>
+    <property name="httpInvokerRequestExecutor">
+      <bean class="org.springframework.security.remoting.httpinvoker.AuthenticationSimpleHttpInvokerRequestExecutor"/>
+    </property>
+  </bean>
+
+  <bean id="eventdServiceManager" class="org.opennms.core.spring.web.ServiceRegistryHttpInvokerProxyFactoryBean" depends-on="securityContext-init">
+    <property name="serviceUrl" value="http://127.0.0.1:8980/opennms-remoting/serviceRegistry"/>
+    <property name="serviceInterface" value="org.opennms.netmgt.dao.api.EventdServiceManager"/>
+    <property name="httpInvokerRequestExecutor">
+      <bean class="org.springframework.security.remoting.httpinvoker.AuthenticationSimpleHttpInvokerRequestExecutor"/>
+    </property>
+  </bean>
+
+  <osgi:service ref="eventIpcManagerImpl">
+    <osgi:interfaces>
+      <value>org.opennms.netmgt.events.api.EventForwarder</value>
+      <value>org.opennms.netmgt.events.api.EventIpcBroadcaster</value>
+      <value>org.opennms.netmgt.events.api.EventIpcManager</value>
+      <value>org.opennms.netmgt.events.api.EventProxy</value>
+      <value>org.opennms.netmgt.events.api.EventSubscriptionService</value>
+    </osgi:interfaces>
+  </osgi:service>
+
+</beans>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,15 +28,16 @@
 
 package org.opennms.netmgt.model;
 
-import java.util.Date;
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
@@ -47,9 +48,10 @@ import org.springframework.beans.PropertyAccessorFactory;
  * <p>NetworkBuilder class.</p>
  */
 public class NetworkBuilder {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(NetworkBuilder.class);
 
+    private static final Logger LOG = LoggerFactory.getLogger(NetworkBuilder.class);
+
+    private final OnmsMonitoringLocation m_location;
 
     private final OnmsDistPoller m_distPoller;
 
@@ -61,13 +63,11 @@ public class NetworkBuilder {
 
     OnmsSnmpInterface m_currentSnmpIf;
 
-    OnmsArpInterface m_currentAtIf;
-
     OnmsMonitoredService m_currentMonSvc;
 
-    private Map<String,OnmsServiceType> m_serviceTypeCache = new HashMap<String,OnmsServiceType>();
+    private Map<String, OnmsServiceType> m_serviceTypeCache = new HashMap<String, OnmsServiceType>();
 
-    private Map<String,OnmsCategory> m_categoryCache = new HashMap<String,OnmsCategory>();
+    private Map<String, OnmsCategory> m_categoryCache = new HashMap<String, OnmsCategory>();
 
     /**
      * <p>Constructor for NetworkBuilder.</p>
@@ -75,24 +75,35 @@ public class NetworkBuilder {
      * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
      */
     public NetworkBuilder(final OnmsDistPoller distPoller) {
+        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
+        m_location = new OnmsMonitoringLocation("Default", "Default");
+
         m_distPoller = distPoller;
     }
 
     /**
      * <p>Constructor for NetworkBuilder.</p>
      *
-     * @param name a {@link java.lang.String} object.
-     * @param ipAddress a {@link java.lang.String} object.
-     */
-    public NetworkBuilder(final String name, final String ipAddress) {
-        m_distPoller = new OnmsDistPoller(name, ipAddress);
-    }
-
-    /**
-     * Totally bogus
+     * @param distPollerId a {@link java.lang.String} object.
      */
     public NetworkBuilder() {
-        this("localhost", "127.0.0.1");
+        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
+        m_location = new OnmsMonitoringLocation("Default", "Default");
+
+        // org.opennms.netmgt.dao.api.DistPollerDao.DEFAULT_DIST_POLLER_ID
+        m_distPoller = new OnmsDistPoller("00000000-0000-0000-0000-000000000000");
+        m_distPoller.setLabel("localhost");
+        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
+        m_distPoller.setLocation("Default");
+        m_distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
+    }
+
+    public OnmsMonitoringLocation getLocation() {
+        return m_location;
+    }
+
+    public OnmsDistPoller getDistPoller() {
+        return m_distPoller;
     }
 
     /**
@@ -102,13 +113,12 @@ public class NetworkBuilder {
      * @return a {@link org.opennms.netmgt.model.NetworkBuilder.NodeBuilder} object.
      */
     public NodeBuilder addNode(String label) {
-        m_currentNode = new OnmsNode(m_distPoller);
-        m_currentNode.setLabel(label);
+        m_currentNode = new OnmsNode(m_location, label);
         m_assetBean = PropertyAccessorFactory.forBeanPropertyAccess(m_currentNode.getAssetRecord());
         return new NodeBuilder(m_currentNode);
     }
 
-    public class NodeBuilder {
+    public static class NodeBuilder {
         OnmsNode m_node;
 
         NodeBuilder(final OnmsNode node) {
@@ -131,6 +141,17 @@ public class NetworkBuilder {
 
         public NodeBuilder setForeignId(final String foreignId) {
             m_node.setForeignId(foreignId);
+            return this;
+        }
+
+        public NodeBuilder setLocation(final String locationName) {
+            if (locationName != null) {
+                final OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+                location.setLocationName(locationName);
+                m_node.setLocation(location);
+            } else {
+                m_node.setLocation(null);
+            }
             return this;
         }
 
@@ -162,14 +183,12 @@ public class NetworkBuilder {
 
     }
 
-    /**
-     * <p>addInterface</p>
-     *
-     * @param ipAddr a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder} object.
-     */
     public InterfaceBuilder addInterface(final String ipAddr) {
-        m_currentIf = new OnmsIpInterface(InetAddressUtils.addr(ipAddr), m_currentNode);
+        return addInterface(addr(ipAddr));
+    }
+
+    public InterfaceBuilder addInterface(final InetAddress ipAddr) {
+        m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
         return new InterfaceBuilder(m_currentIf);
     }
 
@@ -178,6 +197,15 @@ public class NetworkBuilder {
 
         InterfaceBuilder(final OnmsIpInterface iface) {
             m_iface = iface;
+        }
+
+        public InterfaceBuilder setNetMask(final InetAddress mask) {
+            m_iface.setNetMask(mask);
+            return this;
+        }
+
+        public InterfaceBuilder setNetMask(final String mask) {
+            return this.setNetMask(addr(mask));
         }
 
         public InterfaceBuilder setIsManaged(final String managed) {
@@ -215,43 +243,6 @@ public class NetworkBuilder {
         }
     }
 
-    public class AtInterfaceBuilder {
-        final OnmsArpInterface m_iface;
-
-        AtInterfaceBuilder(final OnmsArpInterface iface) {
-            m_iface = iface;
-        }
-
-        public AtInterfaceBuilder setStatus(final char managed) {
-            m_iface.setStatus(StatusType.get(managed));
-            return this;
-        }
-
-        public AtInterfaceBuilder setIfIndex(final int ifIndex) {
-            m_iface.setIfIndex(ifIndex);
-            return this;
-        }
-
-        public AtInterfaceBuilder setSourceNode(final OnmsNode node) {
-            m_iface.setSourceNode(node);
-            return this;
-        }
-
-        public OnmsArpInterface getInterface() {
-            return m_iface;
-        }
-
-        public AtInterfaceBuilder setId(final int id) {
-            m_iface.setId(id);
-            return this;
-        }
-
-        public AtInterfaceBuilder setLastPollTime(final Date timestamp) {
-            m_iface.setLastPoll(timestamp);
-            return this;
-        }
-    }
-
     /**
      * <p>addInterface</p>
      *
@@ -260,18 +251,10 @@ public class NetworkBuilder {
      * @return a {@link org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder} object.
      */
     public InterfaceBuilder addInterface(final String ipAddr, final OnmsSnmpInterface snmpInterface) {
-        m_currentIf = new OnmsIpInterface(InetAddressUtils.addr(ipAddr), m_currentNode);
+        m_currentIf = new OnmsIpInterface(addr(ipAddr), m_currentNode);
         m_currentIf.setSnmpInterface(snmpInterface);
         return new InterfaceBuilder(m_currentIf);
     }
-
-    /**
-     */
-    public AtInterfaceBuilder addAtInterface(final OnmsNode sourceNode, final String ipAddr, final String physAddr) {
-        m_currentAtIf = new OnmsArpInterface(sourceNode, m_currentNode, ipAddr, physAddr);
-        return new AtInterfaceBuilder(m_currentAtIf);
-    }
-
 
     /**
      * <p>addSnmpInterface</p>
@@ -297,12 +280,14 @@ public class NetworkBuilder {
         m_serviceTypeCache.put(serviceType.getName(), serviceType);
         if (m_currentIf != null) {
             m_currentMonSvc = new OnmsMonitoredService(m_currentIf, serviceType);
+            m_currentMonSvc.setStatus("A");
             return m_currentMonSvc;
         } else {
             final Set<OnmsIpInterface> ipInterfaces = m_currentSnmpIf.getIpInterfaces();
             if (m_currentSnmpIf != null && ipInterfaces != null && ipInterfaces.size() > 0) {
                 final OnmsIpInterface current = ipInterfaces.toArray(new OnmsIpInterface[]{})[ipInterfaces.size() - 1];
                 m_currentMonSvc = new OnmsMonitoredService(current, serviceType);
+                m_currentMonSvc.setStatus("A");
                 return m_currentMonSvc;
             }
         }
@@ -388,6 +373,24 @@ public class NetworkBuilder {
         }
     }
 
+    public void setNodeMetaDataEntry(final String context, final String key, final String value) {
+        if (m_currentNode != null) {
+            m_currentNode.addMetaData(context, key, value);
+        }
+    }
+
+    public void setInterfaceMetaDataEntry(final String context, final String key, final String value) {
+        if (m_currentIf != null) {
+            m_currentIf.addMetaData(context, key, value);
+        }
+    }
+
+    public void setServiceMetaDataEntry(final String context, final String key, final String value) {
+        if (m_currentMonSvc != null) {
+            m_currentNode.addMetaData(context, key, value);
+        }
+    }
+
     public OnmsServiceType getServiceType(final String serviceName) {
         if (!m_serviceTypeCache.containsKey(serviceName)) {
             m_serviceTypeCache.put(serviceName, new OnmsServiceType(serviceName));
@@ -399,6 +402,6 @@ public class NetworkBuilder {
         if (!m_categoryCache.containsKey(categoryName)) {
             m_categoryCache.put(categoryName, new OnmsCategory(categoryName));
         }
-        return m_categoryCache .get(categoryName);
+        return m_categoryCache.get(categoryName);
     }
 }

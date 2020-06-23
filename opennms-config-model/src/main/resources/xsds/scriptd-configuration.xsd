@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/scriptd"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/scriptd"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the scriptd-configuration.xml configuration
+    file. Version: $Id$</documentation>
+  </annotation>
+
+  <element name="scriptd-configuration">
+    <annotation>
+      <documentation>Top-level element for the scriptd-configuration.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:engine"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:start-script"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:stop-script"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:reload-script"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:event-script"/>
+
+      </sequence>
+
+      <attribute name="transactional" type="boolean" default="true">
+        <annotation>
+          <documentation>Runs event scripts inside a Hibernate Transaction by default.
+           Disable if scripts doesn't need to run in a transaction.</documentation>
+        </annotation>
+      </attribute>
+
+    </complexType>
+  </element>
+
+  <element name="engine">
+    <complexType>
+      <attribute name="language" type="string" use="required"/>
+
+      <attribute name="className" type="string" use="required"/>
+
+      <attribute name="extensions" type="string"/>
+    </complexType>
+  </element>
+
+  <element name="start-script">
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="language" type="string" use="required"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="stop-script">
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="language" type="string" use="required"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="reload-script">
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="language" type="string" use="required"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="event-script">
+    <complexType mixed="true">
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" name="uei">
+          <complexType>
+            <attribute name="name" type="string" use="required"/>
+          </complexType>
+        </element>
+      </sequence>
+
+      <attribute name="language" type="string" use="required"/>
+    </complexType>
+  </element>
+
+
+
+</schema>

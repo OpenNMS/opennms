@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,10 +32,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Map;
+import java.util.regex.Pattern;
 
-import org.apache.regexp.RE;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.model.PollStatus;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.provision.detector.ssh.request.NullRequest;
 import org.opennms.netmgt.provision.detector.ssh.response.SshResponse;
 import org.opennms.netmgt.provision.support.Client;
@@ -51,47 +51,47 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  */
 public class SshClient implements Client<NullRequest, SshResponse> {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(SshClient.class);
     private boolean m_isAvailable = false;
-    
+
     private String m_banner = null;
     private String m_match = null;
     private String m_clientBanner = Ssh.DEFAULT_CLIENT_BANNER;
-    
+
     public static final int DEFAULT_RETRY = 0;
-    
+
     /**
      * <p>close</p>
      */
     @Override
     public void close() {
-        
+
     }
 
     /** {@inheritDoc} */
     @Override
-    public void connect(InetAddress address, int port, int timeout) throws IOException, Exception {
+    public void connect(final InetAddress address, final int port, final int timeout) throws Exception {
         Map<String,?> emptyMap = Collections.emptyMap();
         TimeoutTracker tracker = new TimeoutTracker(emptyMap, SshClient.DEFAULT_RETRY, timeout);
-        
+
         String banner = m_banner;
         String match = m_match;
         String clientBanner = m_clientBanner;
         PollStatus ps = PollStatus.unavailable();
-        
+
         Ssh ssh = new Ssh(address, port, tracker.getConnectionTimeout());
         ssh.setClientBanner(clientBanner);
-        
-        RE regex = null;
+
+        Pattern regex = null;
         if (match == null && (banner == null || banner.equals("*"))) {
             regex = null;
         } else if (match != null) {
-            regex = new RE(match);
+            regex = Pattern.compile(match);
         } else if (banner != null) {
-            regex = new RE(banner);
+            regex = Pattern.compile(banner);
         }
-        
+
         for (tracker.reset(); tracker.shouldRetry() && !ps.isAvailable(); tracker.nextAttempt()) {
             try {
                 ps = ssh.poll(tracker);
@@ -99,20 +99,20 @@ public class SshClient implements Client<NullRequest, SshResponse> {
                 LOG.error("Caught InsufficientParametersException: {}", e.getMessage(), e);
                 break;
             }
-        
+
         }
-        
+
         // If banner matching string is null or wildcard ("*") then we
         // only need to test connectivity and we've got that!
-        
+
         if (regex != null && ps.isAvailable()) {
             String response = ssh.getServerBanner();
-        
+
             if (response == null) {
                 ps = PollStatus.unavailable("server closed connection before banner was recieved.");
             }
-        
-            if (!regex.match(response)) {
+
+            if (!regex.matcher(response).find()) {
                 // Got a response but it didn't match... no need to attempt
                 // retries
                 LOG.debug("isServer: NON-matching response='{}'", response);
@@ -122,7 +122,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
             }
         }
         PollStatus result = ps;
-        
+
         m_isAvailable = result.isAvailable();
     }
 
@@ -152,7 +152,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
     public SshResponse sendRequest(NullRequest request) throws IOException, Exception {
         return null;
     }
-    
+
     /**
      * <p>setBanner</p>
      *
@@ -161,7 +161,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
     public void setBanner(String banner) {
         m_banner = banner;
     }
-    
+
     /**
      * <p>setMatch</p>
      *
@@ -170,7 +170,7 @@ public class SshClient implements Client<NullRequest, SshResponse> {
     public void setMatch(String match) {
         m_match = match;
     }
-    
+
     /**
      * <p>setClientBanner</p>
      *

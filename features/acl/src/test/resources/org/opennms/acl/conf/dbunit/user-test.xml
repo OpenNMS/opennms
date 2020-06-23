@@ -1,7 +1,0 @@
-<!DOCTYPE dataset SYSTEM "src/test/resources/org/opennms/acl/conf/dbunit/database-schema.dtd">
-<dataset>
-  <authentication username="max" password="0706025b2bbcec1ed8d64822f4eccd96314938d0" enabled="1" id="1"/>
-  <authentication username="paperone" password="c502f3b1e4361215a96909b9bf17003eb6e9160a" enabled="1" id="5"/>
-  <authentication username="pippo" password="pippo" enabled="1" id="2"/>
-  <authentication username="pluto" password="pluto" enabled="0" id="8"/>
-</dataset>

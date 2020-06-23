@@ -1,0 +1,33 @@
+<div
+        class="popover px-2 py-2"
+        ng-class="[vm.$attrs.placement || vm.defaults.placement, 'bs-popover-' + (vm.$attrs.placement || vm.defaults.placement), vm.$attrs.popoverClass || vm.defaults.popoverClass, {fade: vm.animation}]">
+    <div class="popover-arrow arrow" style="top: 50px"></div>
+    <h3 class="popover-title" ng-bind-html="vm.$attrs.title"></h3>
+    <div class="popover-content">
+        <p ng-bind-html="vm.$attrs.message"></p>
+        <div class="row">
+            <div
+                    class="col-sm-6"
+                    ng-if="!vm.$attrs.hideConfirmButton && !vm.defaults.hideConfirmButton"
+                    ng-class="{'col-sm-offset-3': vm.$attrs.hideCancelButton || vm.defaults.hideCancelButton}">
+                <button
+                        class="btn btn-block confirm-button"
+                        ng-class="'btn-' + (vm.$attrs.confirmButtonType || vm.defaults.confirmButtonType)"
+                        ng-click="vm.onConfirm(); vm.hidePopover()"
+                        ng-bind-html="vm.$attrs.confirmText || vm.defaults.confirmText">
+                </button>
+            </div>
+            <div
+                    class="col-sm-6"
+                    ng-if="!vm.$attrs.hideCancelButton && !vm.defaults.hideCancelButton"
+                    ng-class="{'col-sm-offset-3': vm.$attrs.hideConfirmButton || vm.defaults.hideConfirmButton}">
+                <button
+                        class="btn btn-block cancel-button"
+                        ng-class="'btn-' + (vm.$attrs.cancelButtonType || vm.defaults.cancelButtonType)"
+                        ng-click="vm.onCancel(); vm.hidePopover()"
+                        ng-bind-html="vm.$attrs.cancelText || vm.defaults.cancelText">
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

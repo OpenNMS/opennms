@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2013 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2013 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,16 +30,18 @@ package org.opennms.netmgt.provision.persist;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.NetworkBuilder.InterfaceBuilder;
 import org.opennms.netmgt.model.NetworkBuilder.NodeBuilder;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,28 +50,25 @@ import org.slf4j.LoggerFactory;
  * OnmsNodeRequistion
  *
  * @author brozow
- * @version $Id: $
  */
 public class OnmsNodeRequisition {
-    
     private static final Logger LOG = LoggerFactory.getLogger(OnmsNodeRequisition.class);
     
     private String m_foreignSource;
     private RequisitionNode m_node;
     private List<OnmsAssetRequisition> m_assetReqs;
+    private List<OnmsNodeMetaDataRequisition> m_metaDataReqs;
     private List<OnmsIpInterfaceRequisition> m_ifaceReqs;
     private List<OnmsNodeCategoryRequisition> m_categoryReqs;
 
-    /**
-     * <p>Constructor for OnmsNodeRequisition.</p>
-     *
-     * @param foreignSource a {@link java.lang.String} object.
-     * @param node a {@link org.opennms.netmgt.provision.persist.requisition.RequisitionNode} object.
-     */
+    public OnmsNodeRequisition() {
+    }
+
     public OnmsNodeRequisition(final String foreignSource, final RequisitionNode node) {
         m_foreignSource = foreignSource;
         m_node = node;
         m_assetReqs = constructAssetRequistions();
+        m_metaDataReqs = constructMetaDataRequistions();
         m_ifaceReqs = constructIpInterfaceRequistions();
         m_categoryReqs = constructCategoryRequistions();
     }
@@ -92,6 +91,12 @@ public class OnmsNodeRequisition {
             reqs.add(new OnmsAssetRequisition(asset));
         }
         return reqs;
+    }
+
+    private List<OnmsNodeMetaDataRequisition> constructMetaDataRequistions() {
+        return m_node.getMetaData().stream()
+                .map(OnmsNodeMetaDataRequisition::new)
+                .collect(Collectors.toList());
     }
 
     private List<OnmsIpInterfaceRequisition> constructIpInterfaceRequistions() {
@@ -129,6 +134,9 @@ public class OnmsNodeRequisition {
         for(final OnmsAssetRequisition assetReq : m_assetReqs) {
             assetReq.visit(visitor);
         }
+
+        m_metaDataReqs.forEach(r -> r.visit(visitor));
+
         visitor.completeNode(this);
     }
     
@@ -142,6 +150,21 @@ public class OnmsNodeRequisition {
         @Override
         public void visitAsset(final OnmsAssetRequisition assetReq) {
             bldr.setAssetAttribute(assetReq.getName(), assetReq.getValue());
+        }
+
+        @Override
+        public void visitNodeMetaData(OnmsNodeMetaDataRequisition metaDataReq) {
+            bldr.setNodeMetaDataEntry(metaDataReq.getContext(), metaDataReq.getKey(), metaDataReq.getValue());
+        }
+
+        @Override
+        public void visitInterfaceMetaData(OnmsInterfaceMetaDataRequisition metaDataReq) {
+            bldr.setInterfaceMetaDataEntry(metaDataReq.getContext(), metaDataReq.getKey(), metaDataReq.getValue());
+        }
+
+        @Override
+        public void visitServiceMetaData(OnmsServiceMetaDataRequisition metaDataReq) {
+            bldr.setServiceMetaDataEntry(metaDataReq.getContext(), metaDataReq.getKey(), metaDataReq.getValue());
         }
 
         @Override
@@ -176,10 +199,10 @@ public class OnmsNodeRequisition {
             nodeBldr.setType(NodeType.ACTIVE);
             nodeBldr.setForeignSource(nodeReq.getForeignSource());
             nodeBldr.setForeignId(nodeReq.getForeignId());
+            nodeBldr.setLocation(nodeReq.getLocation());
             nodeBldr.getAssetRecord().setBuilding(nodeReq.getBuilding());
-            nodeBldr.getAssetRecord().setCity(nodeReq.getCity());
+            nodeBldr.getAssetRecord().getGeolocation().setCity(nodeReq.getCity());
         }
-        
     }
     
     /* (non-Javadoc)
@@ -278,6 +301,10 @@ public class OnmsNodeRequisition {
      */
     public String getParentNodeLabel() {
         return m_node.getParentNodeLabel();
+    }
+
+    public String getLocation() {
+        return m_node.getLocation();
     }
 
     /* (non-Javadoc)

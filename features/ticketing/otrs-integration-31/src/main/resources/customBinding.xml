@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bindings version="2.1" xmlns="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+	<globalBindings collectionType="indexed">
+		<serializable></serializable>
+		<xjc:javaType name="java.math.BigInteger" xmlType="xsd:integer"
+			adapter="org.opennms.netmgt.ticketer.otrs31.BigIntegerAdapter" />
+	</globalBindings>
+</bindings>

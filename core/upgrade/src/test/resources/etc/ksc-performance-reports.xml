@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReportsList>
+	<Report id="1" title="SampleReport" show_timespan_button="true"
+		show_graphtype_button="true" graphs_per_line="1">
+		<Graph title="Bits In/Out (High Speed)" resourceId="node[1].interfaceSnmp[eth0]"
+			timespan="1_day" graphtype="mib2.HCbits" />
+		<Graph title="Bits In/Out (High Speed)" resourceId="node[1].interfaceSnmp[eth1]-005056c00009"
+			timespan="1_day" graphtype="mib2.HCbits" />
+	</Report>
+</ReportsList>

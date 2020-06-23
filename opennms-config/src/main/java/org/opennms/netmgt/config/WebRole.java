@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -49,7 +49,7 @@ public abstract class WebRole {
     private String m_description;
     private WebUser m_defaultUser;
     private WebGroup m_membershipGroup;
-    private List<WebSchedEntry> m_newEntries = new ArrayList<WebSchedEntry>();
+    private final List<WebSchedEntry> m_newEntries = new ArrayList<>();
     
     
     /**
@@ -57,7 +57,7 @@ public abstract class WebRole {
      */
     public WebRole() {
     }
-    
+
     /**
      * <p>Constructor for WebRole.</p>
      *
@@ -139,23 +139,23 @@ public abstract class WebRole {
      * @param schedIndex a int.
      * @return a {@link org.opennms.netmgt.config.groups.Schedule} object.
      */
-    abstract public Schedule getSchedule(int schedIndex);
+    public abstract Schedule getSchedule(int schedIndex);
     
     /**
      * <p>getTime</p>
      *
      * @param schedIndex a int.
      * @param timeIndex a int.
-     * @return a {@link org.opennms.netmgt.config.common.Time} object.
+     * @return a {@link org.opennms.netmgt.config.poller.outages.common.Time} object.
      */
-    abstract public Time getTime(int schedIndex, int timeIndex);
+    public abstract Time getTime(int schedIndex, int timeIndex);
 
     /**
      * <p>getCurrentUsers</p>
      *
      * @return a {@link java.util.Collection} object.
      */
-    abstract public Collection<WebUser> getCurrentUsers();
+    public abstract Collection<WebUser> getCurrentUsers();
     
     /**
      * <p>getWeeklyCalendar</p>
@@ -181,7 +181,7 @@ public abstract class WebRole {
      * @param month a {@link java.util.Date} object.
      * @return a {@link org.opennms.netmgt.config.WebCalendar} object.
      */
-    abstract public WebCalendar getCalendar(Date month);
+    public abstract WebCalendar getCalendar(Date month);
 
     /**
      * <p>addEntry</p>

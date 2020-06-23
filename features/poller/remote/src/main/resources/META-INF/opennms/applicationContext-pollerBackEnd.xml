@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+  <tx:annotation-driven />
+  <context:annotation-config />
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <!-- 
+      We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+      preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+      the issue documented here:
+
+      https://jira.springsource.org/browse/SPR-6428
+
+      TODO: Fix this behavior after upgrading to Spring 3.1.
+    -->
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    <property name="properties">
+      <props>
+        <prop key="opennms.pollerBackend.monitorCheckInterval">10000</prop>
+        <prop key="opennms.pollerBackend.disconnectedTimeout">600000</prop>
+        <prop key="opennms.pollerBackend.minimumConfigurationReloadInterval">300000</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
+    <property name="monitoringLocationDao">
+      <onmsgi:reference interface="org.opennms.netmgt.dao.api.MonitoringLocationDao"/>
+    </property>
+    <property name="locationMonitorDao">
+      <onmsgi:reference interface="org.opennms.netmgt.dao.api.LocationMonitorDao"/>
+    </property>
+    <property name="monitoredServiceDao">
+      <onmsgi:reference interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
+    </property>
+    <property name="scanReportDao">
+      <onmsgi:reference interface="org.opennms.netmgt.dao.api.ScanReportDao"/>
+    </property>
+    <property name="pollerConfig" ref="pollerConfig" />
+    <property name="timeKeeper" ref="timeKeeper" />
+    <property name="eventIpcManager">
+      <onmsgi:reference interface="org.opennms.netmgt.events.api.EventIpcManager"/>
+    </property>
+    <property name="disconnectedTimeout" value="${opennms.pollerBackend.disconnectedTimeout}" />
+    <property name="minimumConfigurationReloadInterval" value="${opennms.pollerBackend.minimumConfigurationReloadInterval}" />
+  </bean>
+
+  <bean name="backend" class="org.opennms.netmgt.poller.remote.support.ExceptionProtectedPollerBackEnd">
+    <property name="delegate" ref="daemon" />
+  </bean>
+
+  <bean name="pollerBackEndEventProcessor" class="org.opennms.netmgt.poller.remote.support.PollerBackEndEventProcessor" >
+    <property name="pollerBackEnd" ref="daemon" />
+  </bean>
+
+  <bean name="pollerBackEndEventListenerAdapter" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="pollerBackEndEventProcessor" />
+    <property name="eventSubscriptionService">
+      <onmsgi:reference interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+    </property>
+  </bean>
+
+  <bean id="methodInvokingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    <property name="targetObject" ref="daemon" />
+    <property name="targetMethod" value="checkForDisconnectedMonitors" />
+  </bean>
+
+  <bean id="monitorCheckTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+    <property name="repeatInterval" value="${opennms.pollerBackend.monitorCheckInterval}" />
+    <property name="jobDetail" ref="methodInvokingJobDetail" />
+  </bean>
+
+  <bean
+    class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <property name="schedulerName" value="PollerBackEnd" />
+    <property name="triggers">
+      <list>
+        <ref bean="monitorCheckTrigger" />
+      </list>
+    </property>
+  </bean>
+
+</beans>

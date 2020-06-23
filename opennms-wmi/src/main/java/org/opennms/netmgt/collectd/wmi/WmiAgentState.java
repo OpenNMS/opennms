@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.protocols.wmi.IWmiClient;
 import org.opennms.protocols.wmi.WmiClient;
@@ -60,22 +59,16 @@ public class WmiAgentState {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(WmiAgentState.class);
 
-    private WmiManager m_manager;
+    private final WmiManager m_manager;
     private IWmiClient m_wmiClient;
 
-    private WmiAgentConfig m_agentConfig;
-    private String m_address;
-    private HashMap<String, WmiGroupState> m_groupStates = new HashMap<String, WmiGroupState>();
+    private final WmiAgentConfig m_agentConfig;
+    private final String m_address;
+    private Map<String, WmiGroupState> m_groupStates = new HashMap<String, WmiGroupState>();
 
-    /**
-     * <p>Constructor for WmiAgentState.</p>
-     *
-     * @param address a {@link java.net.InetAddress} object.
-     * @param parameters a {@link java.util.Map} object.
-     */
-    public WmiAgentState(final InetAddress address, final Map<?,?> parameters) {
+    public WmiAgentState(final InetAddress address, final WmiAgentConfig agentConfig, final Map<?,?> parameters) {
         m_address = InetAddressUtils.str(address);
-        m_agentConfig = WmiPeerFactory.getInstance().getAgentConfig(address);
+        m_agentConfig = agentConfig;
         m_manager = new WmiManager(m_address, m_agentConfig.getUsername(), m_agentConfig.getPassword(), m_agentConfig.getDomain());
 
         try {
@@ -87,10 +80,12 @@ public class WmiAgentState {
 
     /**
      * <p>connect</p>
+     * 
+     * @param namespace the WMI namespace to request
      */
-    public void connect() {
+    public void connect(final String namespace) {
         try {
-            m_wmiClient.connect(m_agentConfig.getDomain(), m_agentConfig.getUsername(), m_agentConfig.getPassword());
+            m_wmiClient.connect(m_agentConfig.getDomain(), m_agentConfig.getUsername(), m_agentConfig.getPassword(), namespace);
         } catch(final WmiException e) {
             LOG.error("Failed to connect to host.", e);
         }

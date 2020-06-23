@@ -40,6 +40,13 @@
           </documentation>
         </annotation>
       </attribute>
+      <attribute name="parent-foreign-source" type="string" use="optional" >
+        <annotation>
+          <documentation>
+          This optional attribute can be used to facilitate building node relationships.
+          </documentation>
+        </annotation>
+      </attribute>
       <attribute name="parent-foreign-id" type="string" use="optional" >
         <annotation>
           <documentation>

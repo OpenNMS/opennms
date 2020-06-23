@@ -31,14 +31,14 @@ function runsql() {
 #
 function runSetup() {
   runsql "CREATE SEQUENCE $PG_TXID_SEQ;"
-  runsql "insert into events (eventid, eventuei, eventtime, eventsource, eventdpname, eventcreatetime, eventseverity, eventlog, eventdisplay) values (0, 'uei.opennms.org/internal/archivedEvent', now(), 'Script', 'localhost', now(), 1, 'N', 'N');"
+  runsql "insert into events (eventid, eventuei, eventtime, eventsource, eventcreatetime, eventseverity, eventlog, eventdisplay, systemid) values (0, 'uei.opennms.org/internal/archivedEvent', now(), 'Script', 'localhost', now(), 1, 'N', 'N', '00000000-0000-0000-0000-000000000000');"
   runsql "UPDATE $PG_ARCH_TABLE SET eventtime = now() WHERE eventid = 0";
   runsql "CREATE TABLE $PG_ARCH_TABLE (LIKE events);"
   runsql "ALTER TABLE $PG_ARCH_TABLE ADD COLUMN txid bigint;"
   runsql "CREATE INDEX "$PG_ARCH_TABLE"_txid ON $PG_ARCH_TABLE (txid);"
   runsql "CREATE UNIQUE INDEX "$PG_ARCH_TABLE"_eventid ON $PG_ARCH_TABLE (eventid);"
   runsql "CREATE INDEX "$PG_ARCH_TABLE"_eventid_txid ON $PG_ARCH_TABLE (eventid,txid);"
-  runsql "CREATE INDEX "$PG_ARCH_TABLE"_eventtime ON $PG_ARCH_TABLE (eventtime);
+  runsql "CREATE INDEX "$PG_ARCH_TABLE"_eventtime ON $PG_ARCH_TABLE (eventtime);"
 }
 
 #
@@ -46,13 +46,13 @@ function runSetup() {
 #
 function runDbMaint() {
   # One time maintenance things
-  #runsql 'DELETE FROM outages where iflostservice < \'2007/1/1\'::timestamp;'
+  #runsql "DELETE FROM outages where iflostservice < '2007/1/1'::timestamp;"
 
   # Table trimming
-  runsql 'DELETE FROM events e WHERE e.eventid IN (SELECT o.svcregainedeventid FROM outages o WHERE o.svcregainedeventid IS NOT NULL AND  (ifregainedservice - iflostservice)::interval < interval \'35 seconds\');'
+  runsql "DELETE FROM events e WHERE e.eventid IN (SELECT o.svcregainedeventid FROM outages o WHERE o.svcregainedeventid IS NOT NULL AND  (ifregainedservice - iflostservice)::interval < interval '35 seconds');"
 
-  runsql 'DELETE FROM notifications WHERE pagetime < now() - interval \'3 months\';'
-  runsql 'DELETE 
+  runsql "DELETE FROM notifications WHERE pagetime < now() - interval '3 months';"
+  runsql "DELETE 
             FROM events 
             WHERE NOT EXISTS (
            SELECT svclosteventid 
@@ -66,13 +66,13 @@ function runDbMaint() {
            SELECT eventid 
              FROM notifications 
             WHERE eventid = events.eventid)
-              AND eventtime < now() - interval \'6 weeks\');'
+              AND eventtime < now() - interval '6 weeks';"
 
   # Routine maintenance if autovacuum isn't running
-  #runsql 'VACUUM;'
-  #runsql 'VACUUM ANALYZE;'
-  #runsql 'VACUUM events;'
-  #runsql 'REINDEX TABLE events;'
+  #runsql "VACUUM;"
+  #runsql "VACUUM ANALYZE;"
+  #runsql "VACUUM events;"
+  #runsql "REINDEX TABLE events;"
 }
 
 #

@@ -1,0 +1,47 @@
+body {
+	font-family: "lucida grande", verdana, sans-serif;
+	font-size: small;
+}
+
+#headerinfo, #header, .breadcrumb {
+	display: none;
+}
+
+.graph-aux-controls, .modal, #results-sidebar {
+	display: none;
+}
+
+#footer, .pager, .key, input, #linkbar  {
+	display: none;
+}
+
+#graph-results div form {
+	display: none;
+}
+
+#graph-results {
+	text-align: center;
+}
+
+p, li, td, th  { font-size:small; }
+table { width:100%; border-collapse:collapse; }
+td { border:1px solid black; }
+th { text-align:left; }
+
+h2 { font-size: small; }
+
+h3 {
+	text-align: center;
+        border:1px solid #366903;
+        margin-top: 7px;
+        margin-bottom: 4px;
+        font-size: 70%;
+        padding: 6px;
+} 
+
+a {
+        color: #366903;
+	text-decoration: none;
+}
+
+select { font-size: small; }

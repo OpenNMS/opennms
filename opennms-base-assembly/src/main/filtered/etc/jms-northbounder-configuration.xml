@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jms-northbounder-config>
+   <enabled>false</enabled>
+   <nagles-delay>1000</nagles-delay>
+   <batch-size>100</batch-size>
+   <queue-size>300000</queue-size>
+   <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}; ${logMsg}</message-format>
+   <destination>
+      <first-occurence-only>true</first-occurence-only>
+      <send-as-object-message>false</send-as-object-message>
+      <jms-destination>SingleAlarmQueue</jms-destination>
+   </destination>
+   <!-- More than one destination can be specified 
+   <destination>
+      <first-occurence-only>false</first-occurence-only>
+      <send-as-object-message>false</send-as-object-message>
+      <jms-destination>AllAlarmQueue</jms-destination>
+   </destination> -->
+</jms-northbounder-config>

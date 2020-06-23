@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,26 +28,27 @@
 
 package org.opennms.netmgt.snmpinterfacepoller;
 
-import static org.opennms.core.utils.InetAddressUtils.*;
-
 import java.util.Date;
 import java.util.List;
 
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Represents a DefaultPollContext
@@ -63,10 +64,20 @@ public class DefaultPollContext implements PollContext {
     private volatile EventIpcManager m_eventManager;
     private volatile String m_name;
     private volatile String m_localHostName;
+
+    @Autowired
     private SnmpInterfaceDao m_snmpInterfaceDao;
+
+    @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
-    private String m_serviceName="SNMP";
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private LocationAwareSnmpClient locationAwareSnmpClient;
+
+    private String m_serviceName = "SNMP";
 
     /**
      * <p>getIpInterfaceDao</p>
@@ -75,15 +86,6 @@ public class DefaultPollContext implements PollContext {
      */
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
-    }
-
-    /**
-     * <p>setIpInterfaceDao</p>
-     *
-     * @param ipInterfaceDao a {@link org.opennms.netmgt.dao.api.IpInterfaceDao} object.
-     */
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
     }
 
     /**
@@ -96,18 +98,9 @@ public class DefaultPollContext implements PollContext {
     }
 
     /**
-     * <p>setSnmpInterfaceDao</p>
-     *
-     * @param snmpInterfaceDao a {@link org.opennms.netmgt.dao.api.SnmpInterfaceDao} object.
-     */
-    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
-    }
-
-    /**
      * <p>getEventManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventManager() {
         return m_eventManager;
@@ -116,7 +109,7 @@ public class DefaultPollContext implements PollContext {
     /**
      * <p>setEventManager</p>
      *
-     * @param eventManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventManager(EventIpcManager eventManager) {
         m_eventManager = eventManager;
@@ -195,14 +188,17 @@ public class DefaultPollContext implements PollContext {
      */
     /** {@inheritDoc} */
     @Override
-    public Event createEvent(String uei, int nodeId, String address, Date date, OnmsSnmpInterface snmpinterface) {
+    public Event createEvent(final String uei, final int nodeId, final String addr, final String netMask, final Date date, final OnmsSnmpInterface snmpinterface) {
         
-            log().debug("createEvent: uei = " + uei + " nodeid = " + nodeId + " date = " + date);
+        log().debug("createEvent: uei = " + uei + " nodeid = " + nodeId + " date = " + date);
         
         EventBuilder bldr = new EventBuilder(uei, this.getName(), date);
         bldr.setNodeid(nodeId);
-        if (address != null) {
-            bldr.setInterface(addr(address));
+        if (addr != null) {
+            bldr.setInterface(InetAddressUtils.addr(addr));
+        }
+        if (netMask != null) {
+            bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_MASK, InetAddressUtils.normalize(netMask));
         }
         bldr.setService(getServiceName());
 
@@ -214,7 +210,6 @@ public class DefaultPollContext implements PollContext {
         if (snmpinterface.getIfName() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_NAME, snmpinterface.getIfName());
         if (snmpinterface.getIfDescr() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_DESC, snmpinterface.getIfDescr());
         if (snmpinterface.getIfAlias() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_ALIAS, snmpinterface.getIfAlias());
-        if (snmpinterface.getNetMask() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_MASK, str(snmpinterface.getNetMask()));        
         
         return bldr.getEvent();
     }
@@ -257,5 +252,18 @@ public class DefaultPollContext implements PollContext {
                 builder.eq("isSnmpPrimary", PrimaryType.PRIMARY).eq("isManaged", "M");
 		return getIpInterfaceDao().findMatching(builder.toCriteria());
 	}
+
+    @Override
+    public String getLocation(Integer nodeId) {
+        return m_nodeDao.getLocationForId(nodeId);
+    }
+
+    public LocationAwareSnmpClient getLocationAwareSnmpClient() {
+        return locationAwareSnmpClient;
+    }
+
+    public void setLocationAwareSnmpClient(LocationAwareSnmpClient locationAwareSnmpClient) {
+        this.locationAwareSnmpClient = locationAwareSnmpClient;
+    }
 
 }

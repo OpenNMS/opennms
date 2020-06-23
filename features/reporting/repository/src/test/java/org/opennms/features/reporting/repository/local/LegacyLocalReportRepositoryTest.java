@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -43,8 +43,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * <p>LegacyLocalReportRepositoryTest class.</p>
@@ -56,7 +56,7 @@ import static junit.framework.Assert.assertNotNull;
  * @since 1.8.1
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingRepositoryTest.xml"})
+@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-reportingRepositoryTest.xml"})
 public class LegacyLocalReportRepositoryTest {
 
     private LegacyLocalReportRepository m_legacyLocalReportRepository;
@@ -71,8 +71,8 @@ public class LegacyLocalReportRepositoryTest {
     @Before
     public void setUp() throws Exception {
         // Mocked report list as a result from DAOs
-        List<BasicReportDefinition> reports = new ArrayList<BasicReportDefinition>();
-        List<BasicReportDefinition> onlineReports = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> reports = new ArrayList<>();
+        List<BasicReportDefinition> onlineReports = new ArrayList<>();
 
         reports.add(new LegacyLocalReportDefinition());
         reports.add(new LegacyLocalReportDefinition());

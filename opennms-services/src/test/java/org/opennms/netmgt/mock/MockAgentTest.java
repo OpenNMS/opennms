@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -97,7 +97,11 @@ public class MockAgentTest extends TestCase {
         MapSubAgent interfaces = new MapSubAgent("1.3.6.1.2.1.2");
         interfaces.put("1.0", new Integer32(2));
         
-        m_proxy = new MockProxy(9161);
+        try {
+            m_proxy = new MockProxy(9161);
+        } catch (Throwable t) {
+            throw new Exception("Could not start MockProxy on 9161: " + t, t);
+        }
         
         MockAgent agent = new MockAgent();
         agent.addSubAgent(systemGroup);
@@ -110,6 +114,16 @@ public class MockAgentTest extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         m_proxy.stop();
+
+        /*
+         * Future calls to setUp() fail due to the port still being in use
+         * if I don't have the sleep:
+         *
+         * OpenJDK Runtime Environment (build 1.8.0_45-b13) on Amazon Linux AMI release 2015.03
+         *
+         * I hate it when resources don't get fully deallocated.
+         */
+	Thread.sleep(5);
         
         MockLogAppender.assertNoWarningsOrGreater();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
@@ -130,7 +144,7 @@ public class MockAgentTest extends TestCase {
         target.setRetries(3);
         
         // Implements snmp4j API
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
         List results = walker.getTable(target, new OID[] {new OID("1.3.6.1.2.1.1")}, null, null);
         
         assertNotNull(results);

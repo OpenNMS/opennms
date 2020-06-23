@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,7 +29,6 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,18 +48,18 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.hibernate.annotations.Type;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.RrdLabelUtils;
-import org.opennms.core.xml.bind.InetAddressXmlAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.style.ToStringCreator;
+
+import com.google.common.base.MoreObjects;
 
 /**
  * <p>OnmsSnmpInterface class.</p>
@@ -68,20 +67,12 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement(name = "snmpInterface")
 @Entity
 @Table(name = "snmpInterface")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(OnmsSnmpInterface.class);
-
-    
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5396189389666285305L;
+    private static final long serialVersionUID = 4688655131862954563L;
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsSnmpInterface.class);
 
     private Integer m_id;
-
-    /** identifier field */
-    private InetAddress m_netMask;
 
     /** identifier field */
     private String m_physAddr;
@@ -114,13 +105,15 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     private String m_collect = "N";
     
-    private String m_poll = "N";
+    private String m_poll;
 
     private Date m_lastSnmpPoll;
 
     private OnmsNode m_node;
 
-    private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<OnmsIpInterface>();
+    private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<>();
+
+    private boolean m_hasFlows;
 
     /**
      * <p>Constructor for OnmsSnmpInterface.</p>
@@ -128,7 +121,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      * @param ifIndex a int.
      */
     public OnmsSnmpInterface(OnmsNode node, int ifIndex) {
-        this(node, new Integer(ifIndex));
+        this(node, Integer.valueOf(ifIndex));
     }
 
     /**
@@ -173,27 +166,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_id = id;
     }
 
-    /**
-     * <p>getNetMask</p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
-    @Column(name = "snmpIpAdEntNetMask")
-    @Type(type="org.opennms.netmgt.model.InetAddressUserType")
-    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
-    public InetAddress getNetMask() {
-        return m_netMask;
-    }
-
-    /**
-     * <p>setNetMask</p>
-     * 
-     * @param snmpipadentnetmask a {@link java.lang.String} object.
-     */
-    public void setNetMask(InetAddress snmpipadentnetmask) {
-        m_netMask = snmpipadentnetmask;
-    }
-    
     /**
      * <p>getPhysAddr</p>
      *
@@ -506,10 +478,12 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    @XmlIDREF
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "nodeId")
     @XmlElement(name="nodeId")
+    //@XmlIDREF
+    @XmlJavaTypeAdapter(NodeIdAdapter.class)
+    @JsonIgnore
     public OnmsNode getNode() {
         return m_node;
     }
@@ -523,6 +497,25 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_node = node;
     }
 
+    @Transient
+    @XmlTransient
+    public Integer getNodeId() {
+        if (m_node != null) {
+            return m_node.getId();
+        }
+        return null;
+    }
+
+    @Column(name="hasFlows", nullable=false)
+    @XmlAttribute(name="hasFlows")
+    public boolean getHasFlows() {
+        return m_hasFlows;
+    }
+
+    public void setHasFlows(boolean hasFlows) {
+        this.m_hasFlows = hasFlows;
+    }
+
     /**
      * <p>toString</p>
      *
@@ -530,22 +523,22 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-            .append("snmpipadentnetmask", getNetMask())
-            .append("snmpphysaddr", getPhysAddr())
-            .append("snmpifindex", getIfIndex())
-            .append("snmpifdescr", getIfDescr())
-            .append("snmpiftype", getIfType())
-            .append("snmpifname", getIfName())
-            .append("snmpifspeed", getIfSpeed())
-            .append("snmpifadminstatus", getIfAdminStatus())
-            .append("snmpifoperstatus", getIfOperStatus())
-            .append("snmpifalias", getIfAlias())
-            .append("snmpCollect", getCollect())
-            .append("snmpPoll", getPoll())
-            .append("nodeId", getNode() == null ? null : getNode().getId())
-            .append("lastCapsdPoll", getLastCapsdPoll())
-            .append("lastSnmpPoll", getLastSnmpPoll())
+        return MoreObjects.toStringHelper(this)
+            .add("snmpphysaddr", getPhysAddr())
+            .add("snmpifindex", getIfIndex())
+            .add("snmpifdescr", getIfDescr())
+            .add("snmpiftype", getIfType())
+            .add("snmpifname", getIfName())
+            .add("snmpifspeed", getIfSpeed())
+            .add("snmpifadminstatus", getIfAdminStatus())
+            .add("snmpifoperstatus", getIfOperStatus())
+            .add("snmpifalias", getIfAlias())
+            .add("snmpCollect", getCollect())
+            .add("snmpPoll", getPoll())
+            .add("nodeId", getNode() == null ? null : getNode().getId())
+            .add("lastCapsdPoll", getLastCapsdPoll())
+            .add("lastSnmpPoll", getLastSnmpPoll())
+            .add("hasFlows", getHasFlows())
             .toString();
     }
 
@@ -561,8 +554,10 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      *
      * @return a {@link java.util.Set} object.
      */
-    @XmlIDREF
     @OneToMany(mappedBy = "snmpInterface", fetch = FetchType.LAZY)
+    //@XmlIDREF
+    @XmlJavaTypeAdapter(SnmpInterfaceIdAdapter.class)
+    @JsonIgnore
     public Set<OnmsIpInterface> getIpInterfaces() {
         return m_ipInterfaces;
     }
@@ -596,6 +591,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      */
     @Transient
     @XmlTransient
+    @JsonIgnore
     public OnmsIpInterface getPrimaryIpInterface() {
         return getNode().getPrimaryInterface();
     }
@@ -642,12 +638,15 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
          * underscores to ensure that the resuling string will make a decent
          * file name and that RRD won't have any problems using it
          */
+	String firstChoice = RrdLabelUtils.PREFER_IFDESCR ? getIfDescr() : getIfName();
+	String secondChoice = RrdLabelUtils.PREFER_IFDESCR ? getIfName() : getIfDescr();
         String label = null;
-        if (getIfName() != null) {
-            label = AlphaNumeric.parseAndReplace(getIfName(), '_');
-        } else if (getIfDescr() != null) {
-            label = AlphaNumeric.parseAndReplace(getIfDescr(), '_');
+        if (firstChoice != null) {
+            label = RrdLabelUtils.DONT_SANITIZE_IFNAME ? firstChoice : AlphaNumeric.parseAndReplace(firstChoice, '_');
+        } else if (secondChoice != null) {
+            label = RrdLabelUtils.DONT_SANITIZE_IFNAME ? secondChoice : AlphaNumeric.parseAndReplace(secondChoice, '_');
         } else {
+            // TODO: Use IfLabel.NO_IFLABEL instead of "no_ifLabel"
             LOG.info("Interface ({}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", this);
             label = "no_ifLabel";
         }
@@ -706,10 +705,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         
         if (hasNewValue(scannedSnmpIface.getIfType(), getIfType())) {
             setIfType(scannedSnmpIface.getIfType());
-        }
-        
-        if (hasNewValue(scannedSnmpIface.getNetMask(), getNetMask())) {
-            setNetMask(scannedSnmpIface.getNetMask());
         }
         
         if (hasNewValue(scannedSnmpIface.getPhysAddr(), getPhysAddr())) {

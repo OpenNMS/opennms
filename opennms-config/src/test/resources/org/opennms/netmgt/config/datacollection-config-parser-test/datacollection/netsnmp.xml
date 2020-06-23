@@ -1,0 +1,240 @@
+<?xml version="1.0"?>
+<datacollection-group name="Net-SNMP">
+
+    <resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)"
+                  resourceLabel="${diskIODevice} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+        <parameter key="match-expression" value="not(#diskIODevice matches '^(loop|ram).*')" />
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="diskIODevice" />
+		<parameter key="replace-all" value="s/^-//" />
+		<parameter key="replace-all" value="s/\s//" />
+		<parameter key="replace-all" value="s/:\\.*//" />
+      </storageStrategy>
+    </resourceType>
+
+    <resourceType name="dskIndex" label="Disk Table Index (UCD-SNMP MIB)"
+                  resourceLabel="${ns-dskPath} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="ns-dskPath" />
+		<parameter key="replace-first" value="s/^-$/_root_fs/" />
+		<parameter key="replace-all" value="s/^-//" />
+		<parameter key="replace-all" value="s/\s//" />
+		<parameter key="replace-all" value="s/:\\.*//" />
+      </storageStrategy>
+    </resourceType>
+
+    <resourceType name="lmTempIndex" label="Hardware Sensors: Temperature (lmSensors MIB)" 
+                  resourceLabel="${lms-tempdevice} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="lmFanIndex" label="Hardware Sensors: Fan (lmSensors MIB)"
+                  resourceLabel="${lms-fandevice} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="lmVoltIndex" label="Hardware Sensors: Voltage (lmSensors MIB)"
+                  resourceLabel="${lms-voltdevice} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <!-- Net-SNMP MIBs -->
+      <group name="net-snmp-disk" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="dskIndex" alias="ns-dskPath"    type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="dskIndex" alias="ns-dskTotal"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="dskIndex" alias="ns-dskAvail"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="dskIndex" alias="ns-dskUsed"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="dskIndex" alias="ns-dskPercent" type="gauge" />
+      </group>
+
+      <group name="net-snmp-disk-more" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.3"  instance="dskIndex" alias="ns-dskDevice"      type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.10" instance="dskIndex" alias="ns-dskPercentNode" type="gauge" />
+      </group>
+
+      <group name="net-snmp-disk-highlow" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.11" instance="dskIndex" alias="ns-dskTotalLow"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.12" instance="dskIndex" alias="ns-dskTotalHigh" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.13" instance="dskIndex" alias="ns-dskAvailLow"  type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.14" instance="dskIndex" alias="ns-dskAvailHigh" type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.15" instance="dskIndex" alias="ns-dskUsedLow"   type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.2021.9.1.16" instance="dskIndex" alias="ns-dskUsedHigh"  type="gauge" />
+      </group>
+
+      <group name="ucd-loadavg" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="1" alias="loadavg1"  type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="2" alias="loadavg5"  type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="3" alias="loadavg15" type="integer" />
+      </group>
+
+      <group name="ucd-memory" ifType="ignore">
+        <!-- Total Swap Size configured for the host. -->
+        <mibObj oid=".1.3.6.1.4.1.2021.4.3"   instance="0" alias="memTotalSwap" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.4.4"   instance="0" alias="memAvailSwap" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.4.5"   instance="0" alias="memTotalReal" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.4.6"   instance="0" alias="memAvailReal" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.4.11"  instance="0" alias="memTotalFree" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.4.13"  instance="0" alias="memShared"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.4.14"  instance="0" alias="memBuffer"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.4.15"  instance="0" alias="memCached"    type="integer" />
+        <!-- Error flag.  1 indicates very little swap space left -->
+        <mibObj oid=".1.3.6.1.4.1.2021.4.100" instance="0" alias="memSwapError" type="integer" />
+      </group>
+
+      <group name="ucd-sysstat" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.2021.11.3"  instance="0" alias="SwapIn"          type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.4"  instance="0" alias="SwapOut"         type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.7"  instance="0" alias="SysInterrupts"   type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.8"  instance="0" alias="SysContext"      type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.50" instance="0" alias="CpuRawUser"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.51" instance="0" alias="CpuRawNice"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.52" instance="0" alias="CpuRawSystem"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.53" instance="0" alias="CpuRawIdle"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.54" instance="0" alias="CpuRawWait"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.55" instance="0" alias="CpuRawKernel"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.56" instance="0" alias="CpuRawInterrupt" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.57" instance="0" alias="IORawSent"       type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.58" instance="0" alias="IORawReceived"   type="counter" />
+      </group>
+
+      <group name="ucd-sysstat-raw" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.2021.11.59" instance="0" alias="SysRawInterrupts" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.60" instance="0" alias="SysRawContext"    type="counter" />
+      </group>
+
+      <group name="ucd-sysstat-raw-more" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.2021.11.61" instance="0" alias="CpuRawSoftIRQ" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.62" instance="0" alias="RawBlksSwapIn" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.11.63" instance="0" alias="RawBlksSwapOut" type="counter" />
+      </group>
+
+      <group name="ucd-diskio" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.2" instance="diskIOIndex" alias="diskIODevice"   type="string" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.3" instance="diskIOIndex" alias="diskIONRead"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.4" instance="diskIOIndex" alias="diskIONWritten" type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.5" instance="diskIOIndex" alias="diskIOReads"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.2021.13.15.1.1.6" instance="diskIOIndex" alias="diskIOWrites"   type="counter" />
+      </group>
+
+      <!-- lmsensors MIBs -->
+      <group name="lmsensors-temp" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.13.16.2.1.2" instance="lmTempIndex" alias="lms-tempdevice" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2021.13.16.2.1.3" instance="lmTempIndex" alias="lms-temp" type="gauge32"/>
+      </group>
+
+      <group name="lmsensors-fan" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.13.16.3.1.2" instance="lmFanIndex" alias="lms-fandevice" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2021.13.16.3.1.3" instance="lmFanIndex" alias="lms-fan" type="gauge32"/>
+      </group>
+
+      <group name="lmsensors-volt" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.2021.13.16.4.1.2" instance="lmVoltIndex" alias="lms-voltdevice" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.2021.13.16.4.1.3" instance="lmVoltIndex" alias="lms-volt" type="gauge32"/>
+      </group>
+
+      <systemDef name="Net-SNMP (UCD)">
+        <sysoidMask>.1.3.6.1.4.1.2021.250.</sysoidMask>
+        <collect>
+          <includeGroup>mib2-host-resources-system</includeGroup>
+          <includeGroup>mib2-host-resources-memory</includeGroup>
+          <includeGroup>mib2-host-resources-storage</includeGroup>
+          <includeGroup>net-snmp-disk</includeGroup>
+          <includeGroup>net-snmp-disk-more</includeGroup>
+          <includeGroup>net-snmp-disk-highlow</includeGroup>
+          <includeGroup>ucd-loadavg</includeGroup>
+          <includeGroup>ucd-memory</includeGroup>
+          <includeGroup>ucd-sysstat</includeGroup>
+          <includeGroup>ucd-sysstat-raw</includeGroup>
+          <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>lmsensors-temp</includeGroup>
+          <includeGroup>lmsensors-fan</includeGroup>
+          <includeGroup>lmsensors-volt</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Net-SNMP">
+        <sysoidMask>.1.3.6.1.4.1.8072.3.</sysoidMask>
+        <collect>
+          <includeGroup>mib2-host-resources-system</includeGroup>
+          <includeGroup>mib2-host-resources-memory</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
+          <includeGroup>net-snmp-disk</includeGroup>
+          <includeGroup>net-snmp-disk-more</includeGroup>
+          <includeGroup>net-snmp-disk-highlow</includeGroup>
+          <includeGroup>openmanage-coolingdevices</includeGroup>
+          <includeGroup>openmanage-temperatureprobe</includeGroup>
+          <includeGroup>openmanage-powerusage</includeGroup>
+          <includeGroup>ucd-loadavg</includeGroup>
+          <includeGroup>ucd-memory</includeGroup>
+          <includeGroup>ucd-sysstat</includeGroup>
+          <includeGroup>ucd-sysstat-raw</includeGroup>
+          <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>lmsensors-temp</includeGroup>
+          <includeGroup>lmsensors-fan</includeGroup>
+          <includeGroup>lmsensors-volt</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Net-SNMP 5.5 with sysObjectID bug on i386">
+        <sysoid>.1.3</sysoid>
+        <collect>
+          <includeGroup>mib2-interfaces</includeGroup>
+          <includeGroup>mib2-tcp</includeGroup>
+          <includeGroup>mib2-icmp</includeGroup>
+          <includeGroup>mib2-powerethernet</includeGroup>
+          <includeGroup>mib2-host-resources-system</includeGroup>
+          <includeGroup>mib2-host-resources-memory</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
+          <includeGroup>net-snmp-disk</includeGroup>
+          <includeGroup>net-snmp-disk-more</includeGroup>
+          <includeGroup>net-snmp-disk-highlow</includeGroup>
+          <includeGroup>openmanage-coolingdevices</includeGroup>
+          <includeGroup>openmanage-temperatureprobe</includeGroup>
+          <includeGroup>openmanage-powerusage</includeGroup>
+          <includeGroup>ucd-loadavg</includeGroup>
+          <includeGroup>ucd-memory</includeGroup>
+          <includeGroup>ucd-sysstat</includeGroup>
+          <includeGroup>ucd-sysstat-raw</includeGroup>
+          <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>lmsensors-temp</includeGroup>
+          <includeGroup>lmsensors-fan</includeGroup>
+          <includeGroup>lmsensors-volt</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Net-SNMP 5.5 with sysObjectID bug on x86_64">
+        <sysoid>.0.1</sysoid>
+        <collect>
+          <includeGroup>mib2-interfaces</includeGroup>
+          <includeGroup>mib2-tcp</includeGroup>
+          <includeGroup>mib2-icmp</includeGroup>
+          <includeGroup>mib2-powerethernet</includeGroup>
+          <includeGroup>mib2-host-resources-system</includeGroup>
+          <includeGroup>mib2-host-resources-memory</includeGroup>
+          <includeGroup>mib2-X-interfaces</includeGroup>
+          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
+          <includeGroup>net-snmp-disk</includeGroup>
+          <includeGroup>net-snmp-disk-more</includeGroup>
+          <includeGroup>net-snmp-disk-highlow</includeGroup>
+          <includeGroup>openmanage-coolingdevices</includeGroup>
+          <includeGroup>openmanage-temperatureprobe</includeGroup>
+          <includeGroup>openmanage-powerusage</includeGroup>
+          <includeGroup>ucd-loadavg</includeGroup>
+          <includeGroup>ucd-memory</includeGroup>
+          <includeGroup>ucd-sysstat</includeGroup>
+          <includeGroup>ucd-sysstat-raw</includeGroup>
+          <includeGroup>ucd-sysstat-raw-more</includeGroup>
+          <includeGroup>lmsensors-temp</includeGroup>
+          <includeGroup>lmsensors-fan</includeGroup>
+          <includeGroup>lmsensors-volt</includeGroup>
+        </collect>
+      </systemDef>
+</datacollection-group>

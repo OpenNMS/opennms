@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,17 +36,16 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.categories.CatFactory;
-import org.opennms.netmgt.config.categories.Categorygroup;
+import org.opennms.netmgt.config.api.CatFactory;
+import org.opennms.netmgt.config.categories.CategoryGroup;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.reporting.availability.svclayer.AvailabilityDataService;
 import org.opennms.reporting.datablock.Node;
@@ -118,14 +117,12 @@ public class AvailabilityData {
      * @param startDate a {@link java.lang.String} object.
      * @param startYear a {@link java.lang.String} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.lang.Exception if any.
      */
     public void fillReport(String categoryName, Report report,
             String format, String monthFormat,
             String startMonth, String startDate, String startYear)
-            throws IOException, MarshalException, ValidationException,
+            throws IOException,
             Exception {
       
         Calendar cal = new GregorianCalendar();
@@ -150,13 +147,11 @@ public class AvailabilityData {
      * @param monthFormat a {@link java.lang.String} object.
      * @param periodEndDate a {@link java.util.Date} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.lang.Exception if any.
      */
     public void fillReport(String categoryName, Report report,
             String format, String monthFormat, Date periodEndDate)
-            throws IOException, MarshalException, ValidationException,
+            throws IOException,
             Exception {
        generateData(categoryName, report, format, monthFormat, periodEndDate);
     }
@@ -165,7 +160,7 @@ public class AvailabilityData {
     private void generateData(final String categoryName, final Report report,
             final String format, final String monthFormat,
             final Date periodEndDate)
-            throws IOException, MarshalException, ValidationException,
+            throws IOException,
             Exception {
         
         Logging.withPrefix(LOG4J_CATEGORY, new Callable<Void>() {
@@ -186,12 +181,6 @@ public class AvailabilityData {
                 } catch (IOException e) {
                     LOG.error("Initializing CategoryFactory", e);
                     throw e;
-                } catch (MarshalException e) {
-                    LOG.error("Initializing CategoryFactory", e);
-                    throw e;
-                } catch (ValidationException e) {
-                    LOG.error("Initializing CategoryFactory", e);
-                    throw e;
                 }
                 
                 // FIXME There's some magic in here regarding multiple categories in a report
@@ -204,9 +193,9 @@ public class AvailabilityData {
                         int catCount = 0;
                         LOG.debug("catCount {}", catCount);
                         
-                        for(final Categorygroup cg : config.getCategorygroupCollection()) {
+                        for(final CategoryGroup cg : config.getCategoryGroups()) {
                         
-                            for(org.opennms.netmgt.config.categories.Category cat : cg.getCategories().getCategoryCollection()) {
+                            for(org.opennms.netmgt.config.categories.Category cat : cg.getCategories()) {
                 
                                 LOG.debug("CATEGORY {}", cat.getLabel());
                                 catCount++;
@@ -246,7 +235,7 @@ public class AvailabilityData {
      * @param cat
      *            Category
      * @param report
-     *            Report Castor class
+     *            Report class
      * @param format
      *            SVG-specific/all reports
      */
@@ -259,7 +248,7 @@ public class AvailabilityData {
         LOG.debug("Inside populate data Structures");
         try {
 
-            List<String> monitoredServices = new ArrayList<String>(cat.getServiceCollection());
+            List<String> monitoredServices = new ArrayList<String>(cat.getServices());
 
             if (m_availabilityDataService == null) {
                 LOG.debug("DATA SERVICE IS NULL");
@@ -281,7 +270,7 @@ public class AvailabilityData {
             }
             LOG.debug("Cleaned Nodes {}", m_nodes);
             
-            TreeMap<Double, List<String>> topOffenders = getPercentNode();
+            Map<Double, List<String>> topOffenders = getPercentNode();
 
             LOG.debug("TOP OFFENDERS {}", topOffenders);
             if (m_nodes.size() <= 0) {
@@ -295,9 +284,9 @@ public class AvailabilityData {
                                                                             monitoredServices,
                                                                             report,
                                                                             topOffenders,
-                                                                            cat.getWarning(),
-                                                                            cat.getNormal(),
-                                                                            cat.getComment(),
+                                                                            cat.getWarningThreshold(),
+                                                                            cat.getNormalThreshold(),
+                                                                            cat.getComment().orElse(null),
                                                                             cat.getLabel(),
                                                                             format,
                                                                             monthFormat,
@@ -307,7 +296,7 @@ public class AvailabilityData {
                 report.setSectionCount(m_sectionIndex - 1);
             } else {
                 org.opennms.reporting.availability.Category category = new org.opennms.reporting.availability.Category();
-                category.setCatComments(cat.getComment());
+                category.setCatComments(cat.getComment().orElse(null));
                 category.setCatName(cat.getLabel());
                 category.setCatIndex(catIndex);
                 category.setNodeCount(0);
@@ -393,7 +382,7 @@ public class AvailabilityData {
      *
      * @return a {@link java.util.TreeMap} object.
      */
-    public TreeMap<Double, List<String>> getPercentNode() {
+    public Map<Double, List<String>> getPercentNode() {
         int days = m_daysInLastMonth;
         long endTime = m_lastMonthEndTime;
         Calendar cal = new GregorianCalendar();

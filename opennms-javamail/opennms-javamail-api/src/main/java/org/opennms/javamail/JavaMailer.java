@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -68,6 +68,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import com.google.common.base.Strings;
+
 /**
  * Sends an email message using the Java Mail API
  *
@@ -79,6 +81,7 @@ public class JavaMailer {
 	private static final Logger LOG = LoggerFactory.getLogger(JavaMailer.class);
 
     private static final String DEFAULT_FROM_ADDRESS = "root@[127.0.0.1]";
+    private static final String DEFAULT_REPLY_TO_ADDRESS = "";
 //  private static final String DEFAULT_TO_ADDRESS = "root@[127.0.0.1]";
     private static final String DEFAULT_MAIL_HOST = "127.0.0.1";
     private static final boolean DEFAULT_AUTHENTICATE = false;
@@ -112,6 +115,7 @@ public class JavaMailer {
     private String m_mailer;
     private String m_transport;
     private String m_from;
+    private String m_replyTo;
     private boolean m_authenticate;
     private String m_user;
     private String m_password;
@@ -191,6 +195,7 @@ public class JavaMailer {
         m_mailer = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.mailer", DEFAULT_MAILER);
         m_transport = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.transport", DEFAULT_TRANSPORT);
         m_from = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.fromAddress", DEFAULT_FROM_ADDRESS);
+        m_replyTo = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.replyToAddress", DEFAULT_REPLY_TO_ADDRESS);
         m_authenticate = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.authenticate", DEFAULT_AUTHENTICATE);
         m_user = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.authenticateUser", DEFAULT_AUTHENTICATE_USER);
         m_password = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.authenticatePassword", DEFAULT_AUTHENTICATE_PASSWORD);
@@ -290,8 +295,9 @@ public class JavaMailer {
                 BodyPart streamBodyPart = new MimeBodyPart();
                 streamBodyPart.setDataHandler(new DataHandler(new InputStreamDataSource(m_inputStreamName, m_inputStreamContentType, m_inputStream)));
                 streamBodyPart.setFileName(m_inputStreamName);
-                streamBodyPart.setHeader("Content-Transfer-Encoding", "base64");  
-                streamBodyPart.setDisposition(Part.ATTACHMENT); 
+                streamBodyPart.setHeader("Content-Type", m_inputStreamContentType);
+                streamBodyPart.setHeader("Content-Transfer-Encoding", "base64");
+                streamBodyPart.setDisposition(Part.ATTACHMENT);
                 MimeMultipart mp = new MimeMultipart();
                 mp.addBodyPart(streamBodyPart);
                 message.setContent(mp);
@@ -333,6 +339,9 @@ public class JavaMailer {
         MimeMessage message;
         message = new MimeMessage(getSession());
         message.setFrom(new InternetAddress(getFrom()));
+        if (!Strings.isNullOrEmpty(getReplyTo())) {
+            message.setReplyTo(new Address[]{new InternetAddress(getReplyTo())});
+        }
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(getTo(), false));
         message.setSubject(getSubject(), m_charSet);
         for (final String key : getExtraHeaders().keySet()) {
@@ -345,11 +354,15 @@ public class JavaMailer {
      * @return
      */
     private String createSendLogMsg() {
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append("\n\tTo: ");
         sb.append(getTo());
         sb.append("\n\tFrom: ");
         sb.append(getFrom());
+        if (!Strings.isNullOrEmpty(getReplyTo())) {
+            sb.append("\n\tReply-To: ");
+            sb.append(getReplyTo());
+        }
         sb.append("\n\tSubject is: ");
         sb.append(getSubject());
         sb.append("\n\tFile: ");
@@ -467,7 +480,7 @@ public class JavaMailer {
         }
     }
     
-    private class InputStreamDataSource implements DataSource { 
+    private static class InputStreamDataSource implements DataSource { 
     	
 
         
@@ -580,6 +593,15 @@ public class JavaMailer {
      */
     public String getFrom() {
         return m_from;
+    }
+
+    /**
+     * <p>getReplyTo</p>
+     *
+     * @return Returns the replyTo address.
+     */
+    public String getReplyTo() {
+        return m_replyTo;
     }
 
     /**
@@ -852,9 +874,9 @@ public class JavaMailer {
     	
     	private static final Logger LOG = LoggerFactory.getLogger(LoggingTransportListener.class);
 
-        private List<Address> m_invalidAddresses = new ArrayList<Address>();
-        private List<Address> m_validSentAddresses = new ArrayList<Address>();
-        private List<Address> m_validUnsentAddresses = new ArrayList<Address>();
+        private List<Address> m_invalidAddresses = new ArrayList<>();
+        private List<Address> m_validSentAddresses = new ArrayList<>();
+        private List<Address> m_validUnsentAddresses = new ArrayList<>();
 
         
 

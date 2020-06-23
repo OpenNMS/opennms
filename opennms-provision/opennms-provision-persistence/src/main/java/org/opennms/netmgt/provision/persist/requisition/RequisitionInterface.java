@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -59,16 +60,19 @@ import org.opennms.netmgt.provision.persist.PrimaryTypeAdapter;
  * <p>RequisitionInterface class.</p>
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name="", propOrder = { "m_monitoredServices", "m_categories" })
+@XmlType(name="", propOrder = { "m_monitoredServices", "m_categories", "m_metaData" })
 @XmlRootElement(name = "interface")
 public class RequisitionInterface implements Comparable<RequisitionInterface> {
 
     //TODO Change these to be sets so that we don't have to verify duplicates in the lists
     @XmlElement(name="monitored-service")
-    protected List<RequisitionMonitoredService> m_monitoredServices = new ArrayList<RequisitionMonitoredService>();
+    protected List<RequisitionMonitoredService> m_monitoredServices = new ArrayList<>();
 
     @XmlElement(name="category")
-    protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();
+    protected List<RequisitionCategory> m_categories = new ArrayList<>();
+
+    @XmlElement(name="meta-data")
+    protected List<RequisitionMetaData> m_metaData = new ArrayList<>();
 
     @XmlAttribute(name="descr")
     protected String m_description;
@@ -113,7 +117,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      */
     public List<RequisitionMonitoredService> getMonitoredServices() {
         if (m_monitoredServices == null) {
-            m_monitoredServices = new ArrayList<RequisitionMonitoredService>();
+            m_monitoredServices = new ArrayList<>();
         }
         return m_monitoredServices;
     }
@@ -211,7 +215,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      */
     public List<RequisitionCategory> getCategories() {
         if (m_categories == null) {
-            m_categories = new ArrayList<RequisitionCategory>();
+            m_categories = new ArrayList<>();
         }
         return m_categories;
     }
@@ -268,6 +272,14 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
                 }
             }
         }
+    }
+
+    public List<RequisitionMetaData> getMetaData() {
+        return m_metaData;
+    }
+
+    public void setMetaData(List<RequisitionMetaData> metaData) {
+        m_metaData = metaData;
     }
 
     /**
@@ -335,12 +347,19 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     /**
      * <p>getSnmpPrimary</p>
      *
+     * @deprecated It's not a good idea to have side-effects on a getter, like returning
+     * a value that does not exactly reflect the internal state of the object.
+     *
      * @return a {@link java.lang.String} object.
      */
     @XmlAttribute(name="snmp-primary")
     @XmlJavaTypeAdapter(PrimaryTypeAdapter.class)
     public PrimaryType getSnmpPrimary() {
-        return m_snmpPrimary;
+        if (m_snmpPrimary == null) {
+            return PrimaryType.NOT_ELIGIBLE;
+        } else {
+            return m_snmpPrimary;
+        }
     }
 
     /**
@@ -357,7 +376,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      *
      * @return a int.
      */
-    public int getStatus() {
+    public Integer getStatus() {
         if (m_status == null) {
             return  1;
         } else {
@@ -374,11 +393,23 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
         m_status = value;
     }
 
+    public void validate() throws ValidationException {
+        if (m_ipAddress == null) {
+            throw new ValidationException("Requisition interface 'ip-addr' is a required attribute!");
+        }
+        if (m_monitoredServices != null) {
+            for (final RequisitionMonitoredService svc : m_monitoredServices) {
+                svc.validate();
+            }
+        }
+    }
+
     @Override
     public int hashCode() {
         final int prime = 67;
         int result = 1;
         result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
+        result = prime * result + ((m_metaData == null) ? 0 : m_metaData.hashCode());
         result = prime * result + ((m_description == null) ? 0 : m_description.hashCode());
         result = prime * result + ((m_ipAddress == null) ? 0 : m_ipAddress.hashCode());
         result = prime * result + ((m_isManaged == null) ? 0 : m_isManaged.hashCode());
@@ -397,6 +428,11 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
         if (m_categories == null) {
             if (other.m_categories != null) return false;
         } else if (!m_categories.equals(other.m_categories)) {
+            return false;
+        }
+        if (m_metaData == null) {
+            if (other.m_metaData != null) return false;
+        } else if (!m_metaData.equals(other.m_metaData)) {
             return false;
         }
         if (m_description == null) {
@@ -421,7 +457,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
         }
         if (m_snmpPrimary == null) {
             if (other.m_snmpPrimary != null) return false;
-        } else if (!m_snmpPrimary.equals(other.m_snmpPrimary)) {
+        } else if (!getSnmpPrimary().equals(other.getSnmpPrimary())) {
             return false;
         }
         if (m_status == null) {
@@ -436,6 +472,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
     public String toString() {
         return "RequisitionInterface [monitoredServices="
                 + m_monitoredServices + ", categories=" + m_categories
+                + ", metaData=" + m_metaData
                 + ", description=" + m_description + ", ipAddress="
                 + m_ipAddress + ", isManaged=" + m_isManaged
                 + ", snmpPrimary=" + m_snmpPrimary + ", status="
@@ -448,9 +485,10 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
             .append(m_ipAddress, other.m_ipAddress)
             .append(m_status, other.m_status)
             .append(m_isManaged, other.m_isManaged)
-            .append(m_snmpPrimary, other.m_snmpPrimary)
+            .append(getSnmpPrimary(), other.getSnmpPrimary())
             .append(m_monitoredServices, other.m_monitoredServices)
             .append(m_categories, other.m_categories)
+            .append(m_metaData, other.m_metaData)
             .append(m_description, other.m_description)
             .toComparison();
     }

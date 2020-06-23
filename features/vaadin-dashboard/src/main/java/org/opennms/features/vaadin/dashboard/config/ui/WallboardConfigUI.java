@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,6 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.config.ui;
 
 import com.vaadin.annotations.Theme;
@@ -42,17 +43,12 @@ import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
  */
 @SuppressWarnings("serial")
 @Theme("dashboard")
-@Title("OpenNMS Dashboard")
+@Title("OpenNMS Ops Board")
 public class WallboardConfigUI extends UI implements DashletSelectorAccess {
     /**
      * The {@link DashletSelector} instance used for querying configuration data
      */
     private DashletSelector m_dashletSelector;
-
-    /**
-     * A {@link Notification} instance for displaying messages
-     */
-    private static Notification m_notification = new Notification("Message", Notification.Type.TRAY_NOTIFICATION);
 
     /**
      * Default constructor for instantiating a new instance
@@ -95,12 +91,13 @@ public class WallboardConfigUI extends UI implements DashletSelectorAccess {
      * @param description the description of this message
      */
     public void notifyMessage(String message, String description) {
-        m_notification.setCaption(message);
-        m_notification.setDescription(description);
-        m_notification.setDelayMsec(1000);
+        final Notification notification = new Notification("Message", Notification.Type.TRAY_NOTIFICATION);
+        notification.setCaption(message);
+        notification.setDescription(description);
+        notification.setDelayMsec(1000);
         if (getUI() != null) {
             if (getPage() != null) {
-                m_notification.show(getUI().getPage());
+                notification.show(getUI().getPage());
             }
         }
     }

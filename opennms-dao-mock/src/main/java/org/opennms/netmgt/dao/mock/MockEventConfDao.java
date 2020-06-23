@@ -1,8 +1,37 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.netmgt.dao.mock;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,10 +42,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.netmgt.config.EnterpriseIdPartition;
-import org.opennms.netmgt.config.EventConfDao;
-import org.opennms.netmgt.config.EventLabelComparator;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.xml.eventconf.EnterpriseIdPartition;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.EventLabelComparator;
+import org.opennms.netmgt.xml.eventconf.EventOrdering;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Events.EventCallback;
 import org.opennms.netmgt.xml.eventconf.Events.EventCriteria;
@@ -29,7 +60,6 @@ import org.springframework.util.Assert;
 public class MockEventConfDao implements EventConfDao, InitializingBean {
     private Resource m_resource;
     private Events m_events;
-    private EnterpriseIdPartition m_partition;
 
     public void setResource(final Resource resource) {
         m_resource = resource;
@@ -51,10 +81,10 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
         try {
             is = m_resource.getInputStream();
             isr = new InputStreamReader(is);
-            m_events = Events.unmarshal(isr);
+            final Reader reader = isr;
+            m_events = JaxbUtils.unmarshal(Events.class, reader);
             m_events.loadEventFiles(m_resource);
-            m_partition = new EnterpriseIdPartition();
-            m_events.initialize(m_partition);
+            m_events.initialize(new EnterpriseIdPartition(), new EventOrdering());
         } catch (final IOException e) {
             throw new DataRetrievalFailureException("Failed to read from " + m_resource.toString(), e);
         } finally {
@@ -65,7 +95,7 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
 
     @Override
     public List<Event> getEvents(final String uei) {
-        final List<Event> events = new ArrayList<Event>();
+        final List<Event> events = new ArrayList<>();
         m_events.forEachEvent(events, new EventCallback<List<Event>>() {
             @Override
             public List<Event> process(final List<Event> events, final Event event) {
@@ -80,7 +110,7 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
 
     @Override
     public List<String> getEventUEIs() {
-        final Set<String> ueis = new HashSet<String>();
+        final Set<String> ueis = new HashSet<>();
         m_events.forEachEvent(ueis, new EventCallback<Set<String>>() {
             @Override
             public Set<String> process(final Set<String> ueis, final Event event) {

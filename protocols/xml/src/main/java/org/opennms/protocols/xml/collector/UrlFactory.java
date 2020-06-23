@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,7 +28,6 @@
 
 package org.opennms.protocols.xml.collector;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -40,6 +39,8 @@ import org.opennms.protocols.sftp.Sftp3gppUrlHandler;
 import org.opennms.protocols.sftp.SftpUrlConnection;
 import org.opennms.protocols.sftp.SftpUrlHandler;
 import org.opennms.protocols.xml.config.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A factory for creating URL objects.
@@ -47,6 +48,9 @@ import org.opennms.protocols.xml.config.Request;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class UrlFactory {
+
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(UrlFactory.class);
 
     /**
      * Instantiates a new URL factory.
@@ -88,12 +92,17 @@ public class UrlFactory {
      * Disconnect.
      *
      * @param connection the URL connection
-     * @throws IOException Signals that an I/O exception has occurred.
      */
-    public static void disconnect(URLConnection connection) throws IOException {
-        if (connection != null && connection instanceof SftpUrlConnection) // We need to be sure to close the connections for SFTP
-            ((SftpUrlConnection)connection).disconnect();
-        if (connection != null && connection instanceof HttpUrlConnection)
-            ((HttpUrlConnection)connection).disconnect();
+    public static void disconnect(URLConnection connection) {
+        try {
+            if (connection == null)
+                return;
+            if (connection instanceof SftpUrlConnection) // We need to be sure to close the connections for SFTP
+                ((SftpUrlConnection)connection).disconnect();
+            if (connection instanceof HttpUrlConnection)
+                ((HttpUrlConnection)connection).disconnect();
+        } catch (Exception e) {
+            LOG.error("Can't close open connection.", e);
+        }
     }
 }

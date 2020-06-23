@@ -1,0 +1,8 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Legacy_MIB2-Interfaces">
+   <systemDef name="Legacy MIB-2 Interfaces">
+      <sysoidMask>.1.3.6.1.4.1.</sysoidMask>
+      <collect>
+         <includeGroup>mib2-interfaces</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

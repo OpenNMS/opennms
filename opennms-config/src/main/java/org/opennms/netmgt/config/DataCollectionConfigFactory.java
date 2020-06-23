@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,7 +31,9 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.IOException;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -43,7 +45,7 @@ import org.springframework.core.io.FileSystemResource;
  *
  * @author <a href="mailto:weave@oculan.com">Weave </a>
  */
-public final class DataCollectionConfigFactory {
+public abstract class DataCollectionConfigFactory {
 	
     /**
      * The singleton instance of this factory
@@ -53,7 +55,7 @@ public final class DataCollectionConfigFactory {
     /**
      * <p>setInstance</p>
      *
-     * @param instance a {@link org.opennms.netmgt.config.DataCollectionConfigDao} object.
+     * @param instance a {@link org.opennms.netmgt.config.api.DataCollectionConfigDao} object.
      */
     public static void setInstance(DataCollectionConfigDao instance) {
         m_singleton = instance;
@@ -68,12 +70,10 @@ public final class DataCollectionConfigFactory {
      * @throws java.io.IOException if any.
      */
     public static synchronized void init() throws IOException {
+        // In theory, this method should not be called, as the factory will be initialized by Spring.
+        // The file container inside DefaultDataCollectionConfigDao should handle the configuration reloading.
         if (m_singleton == null) {
-            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
-            DefaultDataCollectionConfigDao dataCollectionDao = new DefaultDataCollectionConfigDao();
-            dataCollectionDao.setConfigResource(new FileSystemResource(cfgFile));
-            dataCollectionDao.afterPropertiesSet();
-            m_singleton = dataCollectionDao;
+            m_singleton = BeanUtils.getBean("daoContext", "dataCollectionConfigDao", DataCollectionConfigDao.class);
         }
     }
 
@@ -85,8 +85,9 @@ public final class DataCollectionConfigFactory {
      * @throws java.io.IOException if any.
      */
     public static synchronized void reload() throws IOException {
-        m_singleton = null;
-        init();
+        if (m_singleton == null)
+            throw new IllegalStateException("The factory has not been initialized");
+        m_singleton.reload();
     }
 
     /**
@@ -102,14 +103,14 @@ public final class DataCollectionConfigFactory {
     
     public static void main(String[] args) {
         try {
-            DataCollectionConfigFactory.init();
-            DataCollectionConfigDao config = DataCollectionConfigFactory.getInstance();
-            if (config == null) {
-                System.err.println("ERROR: can't get a reference to DataCollectionConfig object");
-            } else {
-                config.getConfiguredResourceTypes();
-                System.out.println("OK: no errors found");
-            }
+            // Because DataCollectionConfigFactory.init() requires Spring initialization, it is better to instantiate a local copy
+            // for testing the data collection configuration.
+            File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DATA_COLLECTION_CONF_FILE_NAME);
+            DefaultDataCollectionConfigDao config = new DefaultDataCollectionConfigDao();
+            config.setConfigResource(new FileSystemResource(cfgFile));
+            config.afterPropertiesSet();
+            config.getConfiguredResourceTypes();
+            System.out.println("OK: no errors found");
         } catch (Throwable e) {
             System.err.println("ERROR: " + e.getMessage());
         }

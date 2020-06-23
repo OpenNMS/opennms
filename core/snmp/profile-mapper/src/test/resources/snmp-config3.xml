@@ -1,0 +1,7 @@
+<snmp-config xmlns="http://xmlns.opennms.org/xsd/config/snmp" version="v2c" read-community="public" timeout="1800" retry="1">
+  <profiles>
+    <profile version="v1" timeout="6000" ttl="7000">
+      <label>profile1</label>
+    </profile>
+  </profiles>
+</snmp-config>

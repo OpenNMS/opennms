@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+        targetNamespace="http://xmlns.opennms.org/xsd/mail-transport-test" 
+        xmlns:this="http://xmlns.opennms.org/xsd/mail-transport-test"
+        elementFormDefault="qualified">
+        
+  <element name="mail-transport-test" >
+    <annotation>
+      <documentation>
+      
+        Use this element to define a mail test with the MailTransportMonitor.  Supported
+        use cases for the sequence are:
+        
+        a) Class will test that it can successfully send an email.
+        b) Class will test that it can successfully connect to a mail server and get mailbox contents.
+        c) Class will test that it can successfully read a new email message from a mail server.
+        d) Class will test that it can send an email and read that same email from a mail server.
+        
+        The sequence support a max of one send and one receive server.  If each are specified, the complete
+        sequence is delivery of a message from one mail host to another.
+      
+      </documentation>
+    </annotation>
+    
+    <complexType>
+      <sequence>
+        <element ref="this:mail-test" minOccurs="1" maxOccurs="1" />
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="mail-test" >
+    <annotation>
+      <documentation>
+        Defines a use case for testing mail.  If both a send and a read test are
+        configured, then the use case (d) will be executed.
+      </documentation>
+    </annotation>
+    
+    <complexType>
+      <sequence>
+        <element ref="this:sendmail-test" minOccurs="0" maxOccurs="1" />
+        <element ref="this:readmail-test" minOccurs="0" maxOccurs="1" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="sendmail-test" >
+    <annotation>
+      <documentation>
+      
+        This entity defines the test for sending mail.  Attributes are used to
+        derive values of java mail properties, or, they can be specified directly
+        as key value pairs.  Attributes will are easier to read but there isn't 
+        an attribute for every javamail property possible (some are fairly obscure).
+        
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="this:javamail-property" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:sendmail-host" minOccurs="1" maxOccurs="1" />
+        <element ref="this:sendmail-protocol" minOccurs="1" maxOccurs="1" />
+        <element ref="this:sendmail-message" minOccurs="1" maxOccurs="1" />
+        <element ref="this:user-auth" minOccurs="0" maxOccurs="1" />
+      </sequence>
+      <attribute name="debug" type="boolean" use="optional" default="true" />
+      <attribute name="use-authentication" type="boolean" use="optional" default="false" />
+      <attribute name="use-jmta" type="boolean" use="optional" default="true" />
+      <attribute name="attempt-interval" type="integer" use="optional" default="3000" />
+    </complexType>
+  </element>
+  
+  <element name="sendmail-message" >
+  
+    <annotation>
+      <documentation>
+      
+        Define the to, from, subject, and body of a message.  If not defined, one will be defined
+        for your benefit (or confusion ;-)
+        
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="to" type="string" use="optional" default="root@localhost" />
+      <attribute name="from" type="string" use="optional" default="root@[127.0.0.1]" />
+      <attribute name="subject" type="string" use="optional" default="OpenNMS Test Message" />
+      <attribute name="body" type="string" use="optional" default="This is an OpenNMS test message." />
+    </complexType>
+  </element>
+  
+  <element name="sendmail-protocol" >
+    <annotation>
+      <documentation>
+      
+        Basically attributes that help setup the javamailer's confusion set of properties.
+        
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="char-set" type="string" use="optional" default="us-ascii"/>
+      <attribute name="mailer" type="string" use="optional" default="smtpsend" />
+      <attribute name="message-content-type" type="string" use="optional" default="text/plain" />
+      <attribute name="message-encoding" type="string" use="optional" default="7-bit" />
+      <attribute name="quit-wait" type="boolean" use="optional" default="true" />
+      <attribute name="transport" type="this:transport-types" use="optional" default="smtp" />
+      <attribute name="ssl-enable" type="boolean" use="optional" default="false" />
+      <attribute name="start-tls" type="boolean" use="optional" default="false" />
+    </complexType>
+  </element>
+  
+  <element name="sendmail-host" >
+    <annotation>
+      <documentation>
+      
+        Define the host and port of the sendmail server.  If you don't, defaults will be used and
+        ${ipaddr} is replaced with the IP address of the service.
+        
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="host" type="string" use="optional" default="${ipaddr}" />
+      <attribute name="port" type="integer" use="optional" default="25" />
+    </complexType>
+  </element>
+  
+  
+  <element name="readmail-test" >
+    <complexType>
+      <sequence>
+        <element ref="this:javamail-property" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:readmail-host" minOccurs="1" maxOccurs="1" />
+        <element ref="this:user-auth" minOccurs="0" maxOccurs="1" />
+      </sequence>
+      <attribute name="debug" type="boolean" use="optional" default="true" />
+      <attribute name="mail-folder" type="string" use="optional" default="INBOX" />
+      <attribute name="subject-match" type="string" use="optional" />
+      <attribute name="attempt-interval" type="integer" use="optional" default="1000" />
+      <attribute name="delete-all-mail" type="boolean" use="optional" default="false" />
+    </complexType>
+  </element>
+
+  <element name="readmail-host" >
+    <annotation>
+      <documentation>
+      
+        Define the host and port of the sendmail server.  If you don't, defaults will be used and
+        ${ipaddr} is replaced with the IP address of the service.
+        
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="this:readmail-protocol" minOccurs="1" maxOccurs="1" />
+      </sequence>
+      <attribute name="host" type="string" use="optional" default="${ipaddr}" />
+      <attribute name="port" type="integer" use="optional" default="110" />
+    </complexType>
+  </element>
+  
+  <element name="readmail-protocol" >
+    <annotation>
+      <documentation>
+      
+        Basically attributes that help setup the javamailer's confusion set of properties.
+        
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="transport" type="this:read-mail-protocol" use="optional" default="pop3" />
+      <attribute name="ssl-enable" type="boolean" use="optional" default="false" />
+      <attribute name="start-tls" type="boolean" use="optional" default="false" />
+    </complexType>
+  </element>
+
+  <element name="user-auth" >
+    <annotation>
+      <documentation>
+      
+        Configure user based authentication.
+        
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="user-name" type="string" use="optional" default="opennms"/>
+      <attribute name="password" type="string" use="optional" default="opennms" />
+    </complexType>
+  </element>
+
+  <simpleType name="read-mail-protocol" >
+    <annotation>
+      <documentation>
+      
+        Don't allow poorly configured read protocols.  These are case sensitive.
+        
+      </documentation>
+    </annotation>
+    <restriction base="string" >
+      <pattern value="pop3|pop3s|imap|imaps" />
+    </restriction>
+  </simpleType>
+  
+  <simpleType name="transport-types" >
+    <restriction base="string" >
+      <pattern value="smtp|smtps" />
+    </restriction>
+  </simpleType>
+  
+  <element name="javamail-property">
+    <annotation>
+      <documentation>
+      
+        Use these name value pairs to configure freeform properties from the JavaMail class.
+        
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="name" type="string" use="required" />
+      <attribute name="value" type ="string" use="required" />
+    </complexType>
+  </element>
+  
+</schema>

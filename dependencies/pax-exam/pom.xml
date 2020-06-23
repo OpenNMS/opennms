@@ -3,27 +3,36 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>pax-exam-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies Apache Pax Exam</name>
-  
+  <name>OpenNMS :: Dependencies :: Apache Pax Exam</name>
+
+  <properties>
+    <org.ops4j.base.version>1.5.0</org.ops4j.base.version>
+  </properties>
+
   <dependencies>
+
+    <!-- OSGi API -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!--
-    <dependency>
-      <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-container-native</artifactId>
-      <version>${paxExamVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-container-forked</artifactId>
-      <version>${paxExamVersion}</version>
-    </dependency>
+      Basic PAX Exam Karaf Container dependencies
+      @see https://ops4j1.jira.com/wiki/display/PAXEXAM4/Karaf+Container
     -->
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-container-karaf</artifactId>
+      <version>${paxExamVersion}</version>
+    </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
       <artifactId>pax-exam-junit4</artifactId>
@@ -31,49 +40,105 @@
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-link-mvn</artifactId>
+      <artifactId>pax-exam</artifactId>
       <version>${paxExamVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.url</groupId>
-      <artifactId>pax-url-mvn</artifactId>
-      <version>1.3.5</version>
+      <artifactId>pax-url-aether</artifactId>
+      <!-- Make sure this matches the version in Karaf -->
+      <version>2.6.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-    <!--
-      Declare the version of the Karaf container so that it is available inside
-      unit tests.
-    -->
-    <!--
     <dependency>
-      <groupId>org.apache.karaf</groupId>
-      <artifactId>apache-karaf</artifactId>
-      <version>${karafVersion}</version>
-      <type>tar.gz</type>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
     </dependency>
-    -->
-    <!-- 
-      This test-jar contains the org.apache.karaf.itests.KarafTestSupport class
-      which provides useful utility functions when running Pax Exam testing inside
-      Karaf.
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
 
-      @see org.apache.karaf.itests.KarafTestSupport
-    -->
+    <!-- Pax Exam features.xml -->
     <dependency>
-      <groupId>org.apache.karaf.itests</groupId>
-      <artifactId>itests</artifactId>
-      <version>${karafVersion}</version>
-      <classifier>tests</classifier>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-features</artifactId>
+      <version>${paxExamVersion}</version>
+      <type>xml</type>
     </dependency>
-    <!--
-      This JAR provides a org.ops4j.pax.exam.TestContainerFactory that will launch
-      a Karaf container to perform unit tests.
 
-      @see org.apache.karaf.tooling.exam.container.internal.KarafTestContainerFactory
+    <!--
+      These dependencies are required to populate the test-repo
+      with all of the bundles from the Pax Exam features.xml
+      to get Pax Exam stuff working inside the Karaf container.
     -->
     <dependency>
-      <groupId>org.apache.karaf.tooling.exam</groupId>
-      <artifactId>org.apache.karaf.tooling.exam.container</artifactId>
-      <version>${karafVersion}</version>
+      <groupId>org.ops4j.base</groupId>
+      <artifactId>ops4j-base-monitors</artifactId>
+      <version>${org.ops4j.base.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.ops4j.base</groupId>
+      <artifactId>ops4j-base-io</artifactId>
+      <version>${org.ops4j.base.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.base</groupId>
+      <artifactId>ops4j-base-net</artifactId>
+      <version>${org.ops4j.base.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.swissbox</groupId>
+      <artifactId>pax-swissbox-core</artifactId>
+      <version>${paxSwissboxVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.swissbox</groupId>
+      <artifactId>pax-swissbox-framework</artifactId>
+      <version>${paxSwissboxVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.swissbox</groupId>
+      <artifactId>pax-swissbox-extender</artifactId>
+      <version>${paxSwissboxVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.tipi</groupId>
+      <artifactId>org.ops4j.pax.tipi.hamcrest.core</artifactId>
+      <version>1.3.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.tipi</groupId>
+      <artifactId>org.ops4j.pax.tipi.junit</artifactId>
+      <version>4.12.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-extender-service</artifactId>
+      <version>${paxExamVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-invoker-junit</artifactId>
+      <version>${paxExamVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-inject</artifactId>
+      <version>${paxExamVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-atinject_1.0_spec</artifactId>
+      <version>1.0</version>
+    </dependency>
+
   </dependencies>
+
 </project>

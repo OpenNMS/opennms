@@ -3,11 +3,11 @@
   <parent>
     <groupId>org.opennms.core.test-api</groupId>
     <artifactId>org.opennms.core.test-api.schema</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.test-api.schema</groupId>
   <artifactId>org.opennms.core.test-api.schema.b</artifactId>
-  <name>OpenNMS Core Test API (Test Schema B)</name>
+  <name>OpenNMS :: Core :: Test API :: Test Schema B</name>
   <packaging>jar</packaging>
 </project>

@@ -1,0 +1,112 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+	<reference id="applicationDao"  interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory" />
+	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+
+	<!-- TransactionAwareBeanProxyFactory -->
+	<bean id="transactionAwareBeanProxyFactory" class="org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory">
+		<argument ref="transactionTemplate" />
+	</bean>
+
+	<bean id="applicationTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
+		<property name="name" value="Application Topology Provider"/>
+		<property name="description" value="This Topology Provider displays all defined Applications and their calculated states."/>
+		<property name="hierarchical" value="true" />
+	</bean>
+
+	<!-- Topology Provider -->
+	<bean id="applicationTopologyProvider" scope="prototype" class="org.opennms.features.topology.plugins.topo.application.ApplicationTopologyProvider">
+		<argument ref="applicationDao"/>
+		<property name="topologyProviderInfo" ref="applicationTopologyProviderInfo"/>
+	</bean>
+	<!-- Make it hop aware -->
+	<bean id="applicationTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
+		<argument ref="applicationTopologyProvider" />
+	</bean>
+
+    <!-- Meta topology provider -->
+    <bean id="applicationMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+        <argument ref="applicationTopologyHopProvider" />
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="applicationMetaTopologyProvider">
+        <service-properties>
+            <entry key="label" value="Application" />
+        </service-properties>
+    </service>
+
+	<!-- status provider -->
+	<bean id="statusProvider" class="org.opennms.features.topology.plugins.topo.application.ApplicationStatusProvider">
+		<argument ref="applicationDao" />
+	</bean>
+	<service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="statusProvider" />
+
+	<!-- Application Table -->
+	<bean id="applicationTableSelectionLinkGenerator" class="org.opennms.features.topology.plugins.topo.application.browsers.ApplicationSelectionLinkGenerator">
+		<argument value="id" />
+		<argument value="name" />
+	</bean>
+	<bean id="applicationDaoContainer" class="org.opennms.features.topology.plugins.topo.application.browsers.ApplicationDaoContainer" scope="prototype">
+		<argument ref="applicationDao"/>
+        <argument ref="transactionTemplate" />
+	</bean>
+	<bean id="applicationTable" class="org.opennms.features.topology.plugins.topo.application.browsers.ApplicationTable" scope="prototype">
+		<argument value="Applications"/>
+		<argument ref="applicationDaoContainer"/>
+		<property name="columnReorderingAllowed" value="true" />
+		<property name="columnCollapsingAllowed" value="true" />
+		<property name="sortContainerPropertyId" value="name" />
+		<property name="columnGenerators">
+			<map>
+				<entry key="id" value-ref="applicationTableSelectionLinkGenerator" />
+				<entry key="name" value-ref="applicationTableSelectionLinkGenerator" />
+			</map>
+		</property>
+		<property name="visibleColumns">
+			<array>
+				<value>id</value>
+				<value>name</value>
+			</array>
+		</property>
+		<property name="columnHeaders">
+			<array>
+				<value>ID</value>
+				<value>Name</value>
+			</array>
+		</property>
+	</bean>
+	<bean id="applicationViewContribution" class="org.opennms.features.topology.api.support.BlueprintIViewContribution">
+		<argument ref="blueprintContainer" />
+		<argument value="applicationTable" />
+		<property name="title" value="Applications" />
+	</bean>
+	<service interface="org.opennms.features.topology.api.IViewContribution" ref="applicationViewContribution">
+		<description>Application table IViewContribution service.</description>
+		<service-properties>
+			<entry key="location" value="bottom" />
+			<entry key="name" value="applicationView" />
+		</service-properties>
+	</service>
+
+	<!-- Search Provider -->
+	<bean id="applicationSearchProvider" class="org.opennms.features.topology.plugins.topo.application.ApplicationSearchProvider">
+		<argument ref="transactionAwareBeanProxyFactory" />
+		<property name="applicationDao" ref="applicationDao" />
+	</bean>
+	<service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="applicationSearchProvider" />
+
+	<!-- Icon definition -->
+	<service>
+		<interfaces>
+			<value>org.opennms.features.topology.api.ConfigurableIconRepository</value>
+			<value>org.osgi.service.cm.ManagedService</value>
+		</interfaces>
+		<service-properties>
+			<entry key="service.pid" value="org.opennms.features.topology.app.icons.application"/>
+		</service-properties>
+		<bean class="org.opennms.features.topology.api.support.DefaultIconRepository" />
+	</service>
+</blueprint>
+

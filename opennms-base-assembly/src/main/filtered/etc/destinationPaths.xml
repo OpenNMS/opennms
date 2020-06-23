@@ -1,14 +1,13 @@
-<?xml version="1.0"?>
-<destinationPaths>
-    <header>
-        <rev>1.2</rev>
-        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
-        <mstation>localhost</mstation>
-    </header>
-    <path name="Email-Admin">
-        <target>
-                <name>Admin</name>
-                <command>javaEmail</command>
-        </target>
-    </path>
+<destinationPaths xmlns="http://xmlns.opennms.org/xsd/destinationPaths">
+   <header>
+      <rev>1.2</rev>
+      <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+      <mstation>localhost</mstation>
+   </header>
+   <path name="Email-Admin">
+      <target>
+         <name>Admin</name>
+         <command>javaEmail</command>
+      </target>
+   </path>
 </destinationPaths>

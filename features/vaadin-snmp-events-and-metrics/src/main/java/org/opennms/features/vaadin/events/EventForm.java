@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,28 +25,25 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.events;
 
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.fieldgroup.PropertyId;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.NestedMethodProperty;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.v7.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextArea;
+import com.vaadin.v7.ui.TextField;
 
-/*
- * According with the following JUnit test, the nested properties binding is supported:
- * https://github.com/vaadin/vaadin/blob/master/uitest/src/com/vaadin/tests/fieldgroup/FormWithNestedProperties.java
- */
 /**
  * The Class Event Form.
  * 
@@ -55,67 +52,57 @@ import com.vaadin.ui.TextField;
 @SuppressWarnings("serial")
 public class EventForm extends CustomComponent {
 
-    /** The event uei. */
-    @PropertyId("uei")
+    /** The event UEI. */
     final TextField eventUei = new TextField("Event UEI");
 
     /** The event label. */
-    @PropertyId("eventLabel")
     final TextField eventLabel = new TextField("Event Label");
 
-    /** The descr. */
-    @PropertyId("descr")
+    /** The event description. */
     final TextArea eventDescr = new TextArea("Description");
 
-    /** The logmsg dest. */
-    @PropertyId("logMsgDest")
+    /** The log message destination. */
     final ComboBox logMsgDest = new ComboBox("Destination");
 
-    /** The logmsg content. */
-    @PropertyId("logMsgContent")
+    /** The log message content. */
     final TextArea logMsgContent = new TextArea("Log Message");
 
-    /** The severity. */
-    @PropertyId("severity")
+    /** The event severity. */
     final ComboBox eventSeverity = new ComboBox("Severity");
 
-    /** The alarm data alarm type. */
-    @PropertyId("alarmDataAlarmType")
+    /** The has alarm data field. */
+    final CheckBox hasAlarmData = new CheckBox("Add Alarm Data");
+
+    /** The alarm data type. */
     final ComboBox alarmDataAlarmType = new ComboBox("Alarm Type");
 
-    /** The alarm data auto clean. */
-    @PropertyId("alarmDataAutoClean")
+    /** The alarm data clean. */
     final CheckBox alarmDataAutoClean = new CheckBox("Auto Clean");
 
     /** The alarm data reduction key. */
-    @PropertyId("alarmDataReductionKey")
     final TextField alarmDataReductionKey = new TextField("Reduction Key");
 
     /** The alarm data clear key. */
-    @PropertyId("alarmDataClearKey")
     final TextField alarmDataClearKey = new TextField("Clear Key");
 
-    /** The oper. */
-    @PropertyId("operinstruct")
+    /** The operator instructions. */
     final TextArea eventOperInstruct = new TextArea("Operator Instructions");
 
-    /** The mask elements. */
-    @PropertyId("maskElements")
+    /** The mask element collection. */
     final MaskElementField maskElements = new MaskElementField("Mask Elements");
 
-    /** The mask varbinds. */
-    @PropertyId("maskVarbinds")
+    /** The mask varbind collection. */
     final MaskVarbindField maskVarbinds = new MaskVarbindField("Mask Varbinds");
 
-    /** The varbinds decodes. */
-    @PropertyId("varbindsdecodeCollection")
+    /** The varbinds decodes collection. */
     final VarbindsDecodeField varbindsDecodes = new VarbindsDecodeField("Varbind Decodes");
 
     /** The Event editor. */
-    private final FieldGroup eventEditor = new FieldGroup();
+    final BeanFieldGroup<org.opennms.netmgt.xml.eventconf.Event> eventEditor =
+            new BeanFieldGroup<org.opennms.netmgt.xml.eventconf.Event>(org.opennms.netmgt.xml.eventconf.Event.class);
 
     /** The event layout. */
-    private final FormLayout eventLayout = new FormLayout();
+    final FormLayout eventLayout = new FormLayout();
 
     /**
      * Instantiates a new event form.
@@ -153,22 +140,38 @@ public class EventForm extends CustomComponent {
         logMsgContent.setNullRepresentation("");
         eventLayout.addComponent(logMsgContent);
 
-        alarmDataAlarmType.addItem(new Integer(1));
-        alarmDataAlarmType.addItem(new Integer(2));
-        alarmDataAlarmType.addItem(new Integer(3));
+        hasAlarmData.setWidth("100%");
+        hasAlarmData.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                enableAlarmData(hasAlarmData.getValue());
+            }
+        });
+        eventLayout.addComponent(hasAlarmData);
+
+        alarmDataAlarmType.addItem(Integer.valueOf(1));
+        alarmDataAlarmType.addItem(Integer.valueOf(2));
+        alarmDataAlarmType.addItem(Integer.valueOf(3));
         alarmDataAlarmType.setDescription("<b>1</b> to be a problem that has a possible resolution, alarm-type set to <b>2</b> to be a resolution event, and alarm-type set to <b>3</b> for events that have no possible resolution");
         alarmDataAlarmType.setNullSelectionAllowed(false);
+        alarmDataAlarmType.setVisible(false);
+        alarmDataAlarmType.setRequired(true);
         eventLayout.addComponent(alarmDataAlarmType);
 
         alarmDataAutoClean.setWidth("100%");
+        alarmDataAutoClean.setVisible(false);
         eventLayout.addComponent(alarmDataAutoClean);
 
         alarmDataReductionKey.setWidth("100%");
         alarmDataReductionKey.setNullRepresentation("");
+        alarmDataReductionKey.setVisible(false);
+        alarmDataReductionKey.setRequired(true);
         eventLayout.addComponent(alarmDataReductionKey);
 
+        // TODO the clear-key is required only when the alarm-type is 2
         alarmDataClearKey.setWidth("100%");
         alarmDataClearKey.setNullRepresentation("");
+        alarmDataClearKey.setVisible(false);
         eventLayout.addComponent(alarmDataClearKey);
 
         for (String sev : OnmsSeverity.names()) {
@@ -194,9 +197,52 @@ public class EventForm extends CustomComponent {
         eventLayout.addComponent(varbindsDecodes);
 
         setEvent(createBasicEvent());
-        eventEditor.bindMemberFields(this);
+
+        eventEditor.bind(eventUei, "uei");
+        eventEditor.bind(eventLabel, "eventLabel");
+        eventEditor.bind(eventDescr, "descr");
+        eventEditor.bind(logMsgDest, "logmsg.dest");
+        eventEditor.bind(logMsgContent, "logmsg.content");
+        eventEditor.bind(eventSeverity, "severity");
+        eventEditor.bind(eventOperInstruct, "operinstruct");
+        eventEditor.bind(maskElements, "mask.maskelements");
+        eventEditor.bind(maskVarbinds, "mask.varbinds");
+        eventEditor.bind(varbindsDecodes, "varbindsdecodes");
 
         setCompositionRoot(eventLayout);
+    }
+
+    /**
+     * Enable alarm data.
+     *
+     * @param enable the enable
+     */
+    public void enableAlarmData(boolean enable) {
+        if (hasAlarmData.getValue() != enable) {
+            hasAlarmData.setValue(enable);
+        }
+        alarmDataAlarmType.setVisible(enable);
+        alarmDataAutoClean.setVisible(enable);
+        alarmDataReductionKey.setVisible(enable);
+        alarmDataClearKey.setVisible(enable);
+        if (enable) {
+            if (getEvent().getAlarmData() == null) {
+                getEvent().setAlarmData(new AlarmData());
+            }
+            eventEditor.bind(alarmDataAlarmType, "alarmData.alarmType");
+            eventEditor.bind(alarmDataAutoClean, "alarmData.autoClean");
+            eventEditor.bind(alarmDataReductionKey, "alarmData.reductionKey");
+            eventEditor.bind(alarmDataClearKey, "alarmData.clearKey");
+        } else {
+            if (eventEditor.getPropertyId(alarmDataAlarmType) != null)
+                eventEditor.unbind(alarmDataAlarmType);
+            if (eventEditor.getPropertyId(alarmDataAutoClean) != null)
+                eventEditor.unbind(alarmDataAutoClean);
+            if (eventEditor.getPropertyId(alarmDataReductionKey) != null)
+                eventEditor.unbind(alarmDataReductionKey);
+            if (eventEditor.getPropertyId(alarmDataClearKey) != null)
+                eventEditor.unbind(alarmDataClearKey);
+        }
     }
 
     /**
@@ -204,9 +250,8 @@ public class EventForm extends CustomComponent {
      *
      * @return the OpenNMS event
      */
-    @SuppressWarnings("unchecked")
     public org.opennms.netmgt.xml.eventconf.Event getEvent() {
-        return ((BeanItem<org.opennms.netmgt.xml.eventconf.Event>) eventEditor.getItemDataSource()).getBean();
+        return eventEditor.getItemDataSource().getBean();
     }
 
     /**
@@ -216,21 +261,11 @@ public class EventForm extends CustomComponent {
      */
     public void setEvent(org.opennms.netmgt.xml.eventconf.Event event) {
         // Normalize the Event Content (required to avoid UI problems)
-        if (event.getMask() == null)
+        if (event.getMask() == null) {
             event.setMask(new Mask());
-        if (event.getAlarmData() == null)
-            event.setAlarmData(new AlarmData());
-        // Create the BeanItem
-        BeanItem<org.opennms.netmgt.xml.eventconf.Event> item = new BeanItem<org.opennms.netmgt.xml.eventconf.Event>(event);
-        item.addItemProperty("logMsgContent", new NestedMethodProperty<String>(item.getBean(), "logmsg.content"));
-        item.addItemProperty("logMsgDest", new NestedMethodProperty<String>(item.getBean(), "logmsg.dest"));
-        item.addItemProperty("alarmDataReductionKey", new NestedMethodProperty<String>(item.getBean(), "alarmData.ReductionKey"));
-        item.addItemProperty("alarmDataClearKey", new NestedMethodProperty<String>(item.getBean(), "alarmData.ClearKey"));
-        item.addItemProperty("alarmDataAlarmType", new NestedMethodProperty<String>(item.getBean(), "alarmData.AlarmType"));
-        item.addItemProperty("alarmDataAutoClean", new NestedMethodProperty<String>(item.getBean(), "alarmData.AutoClean"));
-        item.addItemProperty("maskElements", new NestedMethodProperty<String>(item.getBean(), "mask.maskelementCollection"));
-        item.addItemProperty("maskVarbinds", new NestedMethodProperty<String>(item.getBean(), "mask.varbindCollection"));
-        eventEditor.setItemDataSource(item);
+        }
+        enableAlarmData(event.getAlarmData() != null);
+        eventEditor.setItemDataSource(event);
     }
 
     /**
@@ -245,20 +280,26 @@ public class EventForm extends CustomComponent {
         e.setDescr("New Event Description");
         e.setLogmsg(new Logmsg());
         e.getLogmsg().setContent("New Event Log Message");
-        e.getLogmsg().setDest("logndisplay");
+        e.getLogmsg().setDest(LogDestType.LOGNDISPLAY);
         e.setSeverity("Indeterminate");
         e.setMask(new Mask());
-        e.setAlarmData(new AlarmData());
         return e;
     }
 
     /**
-     * Gets the field group.
-     *
-     * @return the field group
+     * Discard.
      */
-    public FieldGroup getFieldGroup() {
-        return eventEditor;
+    public void discard() {
+        eventEditor.discard();
+    }
+
+    /**
+     * Commit.
+     *
+     * @throws CommitException the commit exception
+     */
+    public void commit() throws CommitException {
+        eventEditor.commit();
     }
 
     /* (non-Javadoc)
@@ -266,8 +307,8 @@ public class EventForm extends CustomComponent {
      */
     @Override
     public void setReadOnly(boolean readOnly) {
-        super.setReadOnly(readOnly);
         eventEditor.setReadOnly(readOnly);
+        hasAlarmData.setVisible(!readOnly);
     }
 
     /* (non-Javadoc)
@@ -275,7 +316,7 @@ public class EventForm extends CustomComponent {
      */
     @Override
     public boolean isReadOnly() {
-        return super.isReadOnly() && eventEditor.isReadOnly();
+        return eventEditor.isReadOnly();
     }
-    
+
 }

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,6 +29,7 @@
 package org.opennms.web.category;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
@@ -37,9 +38,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.web.api.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,11 +71,16 @@ public class RTCPostServlet extends HttpServlet {
     public void init() throws ServletException {
         try {
             this.model = CategoryModel.getInstance();
+
+            // Subscribe to all categories now that the servlet is initialized.
+            //
+            // This doesn't actually work because the backend will try to POST
+            // RTC updates in the several milliseconds before the servlet can 
+            // actually handle requests, resulting in {@link ConnectException} 
+            // exceptions and no RTC data.
+            // 
+            //new RTCPostSubscriberTimerTask().run();
         } catch (IOException e) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        } catch (MarshalException e) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        } catch (ValidationException e) {
             throw new ServletException("Could not instantiate the CategoryModel", e);
         }
     }
@@ -106,26 +110,14 @@ public class RTCPostServlet extends HttpServlet {
 
         org.opennms.netmgt.xml.rtc.Category category = null;
 
-        try {
-            ServletInputStream inStream = request.getInputStream();
-
-            // note the unmarshaller closes the input stream, so don't try to
-            // close
-            // it again or the servlet container will complain
-            org.opennms.netmgt.xml.rtc.EuiLevel level = CastorUtils.unmarshal(org.opennms.netmgt.xml.rtc.EuiLevel.class, inStream);
+        try (ServletInputStream inStream = request.getInputStream();
+                InputStreamReader isr = new InputStreamReader(inStream)) {
+            org.opennms.netmgt.xml.rtc.EuiLevel level = JaxbUtils.unmarshal(org.opennms.netmgt.xml.rtc.EuiLevel.class, isr);
 
             // for now we only deal with the first category, they're only sent
             // one
             // at a time anyway
-            category = level.getCategory(0);
-        } catch (MarshalException ex) {
-            LOG.error("Failed to load configuration", ex);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid XML input: MarshalException: " + ex.getMessage());
-            return;
-        } catch (ValidationException ex) {
-            LOG.error("Failed to load configuration", ex);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid XML input: ValidationException" + ex.getMessage());
-            return;
+            category = level.getCategory().get(0);
         }
 
         // make sure we got data for the category we are interested in

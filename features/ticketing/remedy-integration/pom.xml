@@ -2,13 +2,26 @@
 	<parent>
 		<groupId>org.opennms.features</groupId>
 		<artifactId>org.opennms.features.ticketing</artifactId>
-		<version>1.13.0-SNAPSHOT</version>
+		<version>25.0.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>opennms-integration-remedy</artifactId>
-	<name>OpenNMS Remedy Integration</name>
+	<name>OpenNMS :: Features :: Ticketing :: Remedy</name>
+	<packaging>bundle</packaging>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${project.version}</Bundle-Version>
+					</instructions>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>axistools-maven-plugin</artifactId>
@@ -20,16 +33,41 @@
 					</execution>
 				</executions>
 				<configuration>
-					<urls>
-						<url>file:///${project.basedir}/src/main/wsdl/HPD_IncidentInterface_WS.wsdl</url>
-						<url>file:///${project.basedir}/src/main/wsdl/HPD_IncidentInterface_Create_WS.wsdl</url>
-					</urls>
 					<packageSpace>
 						org.opennms.integration.remedy.ticketservice
 					</packageSpace>
 					<testCases>false</testCases>
 					<serverSide>false</serverSide>
-                    <!--subPackageByFileName>true</subPackageByFileName-->
+					<!--subPackageByFileName>true</subPackageByFileName -->
+				</configuration>
+			</plugin>
+			<!-- Mark all wsdl2java-generated classes with @SuppressWarnings -->
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>maven-replacer-plugin</artifactId>
+				<version>1.4.1</version>
+				<executions>
+					<execution>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<includes>
+						<include>target/generated-sources/axistools/wsdl2java/org/opennms/integration/remedy/ticketservice/*.java</include>
+					</includes>
+					<regex>true</regex>
+					<regexFlags>
+						<regexFlag>MULTILINE</regexFlag>
+					</regexFlags>
+					<replacements>
+						<replacement>
+							<token>^public class</token>
+							<value>@SuppressWarnings("all") public class</value>
+						</replacement>
+					</replacements>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -47,19 +85,41 @@
 			<groupId>axis</groupId>
 			<artifactId>axis</artifactId>
 			<exclusions>
-			  <exclusion>
-			    <groupId>commons-logging</groupId>
-			    <artifactId>commons-logging</artifactId>
-			  </exclusion>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>axis</groupId>
+					<artifactId>axis-wsdl4j</artifactId>
+				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-configuration</groupId>
 			<artifactId>commons-configuration</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-beanutils</groupId>
+					<artifactId>commons-beanutils-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

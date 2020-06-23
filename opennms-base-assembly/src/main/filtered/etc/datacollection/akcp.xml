@@ -1,132 +1,131 @@
-<?xml version="1.0"?>
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="AKCP sensorProbe">
+   <resourceType name="hhmsSensorArrayTemp" label="AKCP" resourceLabel="${spTempDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="hhmsSensorArrayHumid" label="AKCP" resourceLabel="${spHumidityDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <!-- AKCP securityProbe -->
+   <resourceType name="secTempIndex" label="Temperature sensor" resourceLabel="(Index: ${secTempIdx}) Temperature: ${secTempDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="secHumidityIndex" label="Humidity sensor" resourceLabel="(Index: ${secHumidityIdx}) Humidity: ${secHumidityDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="sec4to20maIndex" label="4 to 20mA sensor" resourceLabel="(Index: ${sec4to20maIdx}) 4 to 20mA: ${sec4to20maDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="secDcVoltIndex" label="DC Voltage" resourceLabel="(Index: ${secDcVoltIdx}) DC Voltage: ${secDcVoltDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="secAirflowIndex" label="Airflow" resourceLabel="(Index: ${secAirflowIdx}) Airflow: ${secAirflowDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="secThermostatIndex" label="Thermostat" resourceLabel="(Index: ${secThermostatIdx}) Thermostat: ${secThermostatDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <!-- AKCP sensorProbe -->
+   <group name="akcp-sensor-temperature" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.1" instance="hhmsSensorArrayTemp" alias="spTempDescr" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.3" instance="hhmsSensorArrayTemp" alias="spTempDegree" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.7" instance="hhmsSensorArrayTemp" alias="spTempHWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.8" instance="hhmsSensorArrayTemp" alias="spTempHCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.9" instance="hhmsSensorArrayTemp" alias="spTempLWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.10" instance="hhmsSensorArrayTemp" alias="spTempLCrit" type="integer"/>
+   </group>
+   <group name="akcp-sensor-humidity" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.1" instance="hhmsSensorArrayHumid" alias="spHumidityDescr" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.3" instance="hhmsSensorArrayHumid" alias="spHumidityPercent" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.7" instance="hhmsSensorArrayHumid" alias="spHumidityHWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.8" instance="hhmsSensorArrayHumid" alias="spHumidityHCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.9" instance="hhmsSensorArrayHumid" alias="spHumidityLWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.10" instance="hhmsSensorArrayHumid" alias="spHumidityLCrit" type="integer"/>
+   </group>
+   <!-- AKCP securityProbe -->
+   <group name="securityProbe-temperature" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.1" instance="secTempIndex" alias="secTempIdx" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.2" instance="secTempIndex" alias="secTempDescr" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.5" instance="secTempIndex" alias="secTempUnit" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.9" instance="secTempIndex" alias="secTempLCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.10" instance="secTempIndex" alias="secTempLWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.11" instance="secTempIndex" alias="secTempHWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.12" instance="secTempIndex" alias="secTempHCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.20" instance="secTempIndex" alias="secTempDegree" type="integer"/>
+   </group>
+   <group name="securityProbe-humidity" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.1" instance="secHumidityIndex" alias="secHumidityIdx" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.2" instance="secHumidityIndex" alias="secHumidityDescr" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.4" instance="secHumidityIndex" alias="secHumidityPercent" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.5" instance="secHumidityIndex" alias="secHumidityUnit" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.9" instance="secHumidityIndex" alias="secHumidityLCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.10" instance="secHumidityIndex" alias="secHumidityLWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.11" instance="secHumidityIndex" alias="secHumidityHWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.12" instance="secHumidityIndex" alias="secHumidityHCrit" type="integer"/>
+   </group>
+   <group name="securityProbe-4to20ma" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.1" instance="sec4to20maIndex" alias="sec4to20maIdx" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.2" instance="sec4to20maIndex" alias="sec4to20maDescr" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.5" instance="sec4to20maIndex" alias="sec4to20maUnit" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.9" instance="sec4to20maIndex" alias="sec4to20maLCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.10" instance="sec4to20maIndex" alias="sec4to20maLWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.11" instance="sec4to20maIndex" alias="sec4to20maHWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.12" instance="sec4to20maIndex" alias="sec4to20maHCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.20" instance="sec4to20maIndex" alias="sec4to20maValue" type="integer"/>
+   </group>
+   <group name="securityProbe-DCVoltage" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.1" instance="secDcVoltIndex" alias="secDcVoltIdx" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.2" instance="secDcVoltIndex" alias="secDcVoltDescr" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.5" instance="secDcVoltIndex" alias="secDcVoltUnit" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.9" instance="secDcVoltIndex" alias="secDcVoltLCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.10" instance="secDcVoltIndex" alias="secDcVoltLWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.11" instance="secDcVoltIndex" alias="secDcVoltHWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.12" instance="secDcVoltIndex" alias="secDcVoltHCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.20" instance="secDcVoltIndex" alias="secDcVoltValue" type="integer"/>
+   </group>
+   <group name="securityProbe-Airflow" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.1" instance="secAirflowIndex" alias="secAirflowIdx" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.2" instance="secAirflowIndex" alias="secAirflowDescr" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.5" instance="secAirflowIndex" alias="secAirflowUnit" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.9" instance="secAirflowIndex" alias="secAirflowLCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.10" instance="secAirflowIndex" alias="secAirflowLWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.11" instance="secAirflowIndex" alias="secAirflowHWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.12" instance="secAirflowIndex" alias="secAirflowHCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.20" instance="secAirflowIndex" alias="secAirflowValue" type="integer"/>
+   </group>
+   <group name="securityProbe-Thermostat" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.1" instance="secThermostatIndex" alias="secThermostatIdx" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.2" instance="secThermostatIndex" alias="secThermostatDescr" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.5" instance="secThermostatIndex" alias="secThermostatUnit" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.4" instance="secThermostatIndex" alias="secThermostatValue" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.9" instance="secThermostatIndex" alias="secThermostatLCrit" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.10" instance="secThermostatIndex" alias="secThermostatLWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.11" instance="secThermostatIndex" alias="secThermostatHWarn" type="integer"/>
+      <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.12" instance="secThermostatIndex" alias="secThermostatHCrit" type="integer"/>
+   </group>
+   <systemDef name="AKCP sensorProbe">
+      <sysoid>.1.3.6.1.4.1.3854.1</sysoid>
+      <collect>
+         <includeGroup>akcp-sensor-temperature</includeGroup>
+         <includeGroup>akcp-sensor-humidity</includeGroup>
+         <includeGroup>securityProbe-temperature</includeGroup>
+         <includeGroup>securityProbe-humidity</includeGroup>
 
-<datacollection-group name="AKCP sensorProbe">
+         <!-- SNMP MIB support has to be verified, and is prepared -->
+         <!--
+         <includeGroup>securityProbe-4to20ma</includeGroup>
+         <includeGroup>securityProbe-DCVoltage</includeGroup>
+         <includeGroup>securityProbe-Airflow</includeGroup>
+         -->
 
-  <!-- AKCP sensorProbe -->
-  <resourceType name="hhmsSensorArrayTemp" label="AKCP" resourceLabel="${spTempDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-  <resourceType name="hhmsSensorArrayHumid" label="AKCP" resourceLabel="${spHumidityDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-
-  <!-- AKCP securityProbe -->
-  <resourceType name="secTempIndex" label="Temperature sensor" resourceLabel="(Index: ${secTempIdx}) Temperature: ${secTempDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-  <resourceType name="secHumidityIndex" label="Humidity sensor" resourceLabel="(Index: ${secHumidityIdx}) Humidity: ${secHumidityDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-  <resourceType name="sec4to20maIndex" label="4 to 20mA sensor" resourceLabel="(Index: ${sec4to20maIdx}) 4 to 20mA: ${sec4to20maDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-  <resourceType name="secDcVoltIndex" label="DC Voltage" resourceLabel="(Index: ${secDcVoltIdx}) DC Voltage: ${secDcVoltDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-  <resourceType name="secAirflowIndex" label="Airflow" resourceLabel="(Index: ${secAirflowIdx}) Airflow: ${secAirflowDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-  <resourceType name="secThermostatIndex" label="Thermostat" resourceLabel="(Index: ${secThermostatIdx}) Thermostat: ${secThermostatDescr}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-
-  <!-- AKCP sensorProbe -->
-  <group name = "akcp-sensor-temperature" ifType = "all">
-    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.1" instance="hhmsSensorArrayTemp" alias="spTempDescr"  type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.16.1.3" instance="hhmsSensorArrayTemp" alias="spTempDegree" type="gauge" />
-  </group>
-  <group name = "akcp-sensor-humidity" ifType = "all">
-    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.1" instance="hhmsSensorArrayHumid" alias="spHumidityDescr"   type="string"/>
-    <mibObj oid=".1.3.6.1.4.1.3854.1.2.2.1.17.1.3" instance="hhmsSensorArrayHumid" alias="spHumidityPercent" type="gauge"/>
-  </group>
-
-  <!-- AKCP securityProbe -->
-  <group name="securityProbe-temperature" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.1" instance="secTempIndex" alias="secTempIdx" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.2" instance="secTempIndex" alias="secTempDescr" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.5" instance="secTempIndex" alias="secTempUnit" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.9" instance="secTempIndex" alias="secTempLCrit" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.10" instance="secTempIndex" alias="secTempLWarn" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.11" instance="secTempIndex" alias="secTempHWarn" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.12" instance="secTempIndex" alias="secTempHCrit" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.2.1.20" instance="secTempIndex" alias="secTempDegree" type="integer" />
-  </group>
-  <group name="securityProbe-humidity" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.1" instance="secHumidityIndex" alias="secHumidityIdx" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.2" instance="secHumidityIndex" alias="secHumidityDescr" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.4" instance="secHumidityIndex" alias="secHumidityPercent" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.5" instance="secHumidityIndex" alias="secHumidityUnit" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.9" instance="secHumidityIndex" alias="secHumidityLCrit" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.10" instance="secHumidityIndex" alias="secHumidityLWarn" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.11" instance="secHumidityIndex" alias="secHumidityHWarn" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.3.1.12" instance="secHumidityIndex" alias="secHumidityHCrit" type="integer" />
-  </group>
-  <group name="securityProbe-4to20ma" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.1" instance="sec4to20maIndex" alias="sec4to20maIdx" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.2" instance="sec4to20maIndex" alias="sec4to20maDescr" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.5" instance="sec4to20maIndex" alias="sec4to20maUnit" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.9" instance="sec4to20maIndex" alias="sec4to20maLCrit" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.10" instance="sec4to20maIndex" alias="sec4to20maLWarn" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.11" instance="sec4to20maIndex" alias="sec4to20maHWarn" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.12" instance="sec4to20maIndex" alias="sec4to20maHCrit" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.5.1.20" instance="sec4to20maIndex" alias="sec4to20maValue" type="integer" />
-  </group>
-  <group name="securityProbe-DCVoltage" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.1" instance="secDcVoltIndex" alias="secDcVoltIdx" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.2" instance="secDcVoltIndex" alias="secDcVoltDescr" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.5" instance="secDcVoltIndex" alias="secDcVoltUnit" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.9" instance="secDcVoltIndex" alias="secDcVoltLCrit" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.10" instance="secDcVoltIndex" alias="secDcVoltLWarn" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.11" instance="secDcVoltIndex" alias="secDcVoltHWarn" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.12" instance="secDcVoltIndex" alias="secDcVoltHCrit" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.6.1.20" instance="secDcVoltIndex" alias="secDcVoltValue" type="integer" />
-  </group>
-  <group name="securityProbe-Airflow" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.1" instance="secAirflowIndex" alias="secAirflowIdx" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.2" instance="secAirflowIndex" alias="secAirflowDescr" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.5" instance="secAirflowIndex" alias="secAirflowUnit" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.9" instance="secAirflowIndex" alias="secAirflowLCrit" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.10" instance="secAirflowIndex" alias="secAirflowLWarn" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.11" instance="secAirflowIndex" alias="secAirflowHWarn" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.12" instance="secAirflowIndex" alias="secAirflowHCrit" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.7.1.20" instance="secAirflowIndex" alias="secAirflowValue" type="integer" />
-  </group>
-  <group name="securityProbe-Thermostat" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.1" instance="secThermostatIndex" alias="secThermostatIdx" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.2" instance="secThermostatIndex" alias="secThermostatDescr" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.5" instance="secThermostatIndex" alias="secThermostatUnit" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.4" instance="secThermostatIndex" alias="secThermostatValue" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.9" instance="secThermostatIndex" alias="secThermostatLCrit" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.10" instance="secThermostatIndex" alias="secThermostatLWarn" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.11" instance="secThermostatIndex" alias="secThermostatHWarn" type="integer" />
-    <mibObj oid=".1.3.6.1.4.1.3854.2.3.20.1.12" instance="secThermostatIndex" alias="secThermostatHCrit" type="integer" />
-  </group>
-
-  <systemDef name = "AKCP sensorProbe">
-    <sysoid>.1.3.6.1.4.1.3854.1</sysoid>
-    <collect>
-      <includeGroup>akcp-sensor-temperature</includeGroup>
-      <includeGroup>akcp-sensor-humidity</includeGroup>
-      <includeGroup>securityProbe-temperature</includeGroup>
-      <includeGroup>securityProbe-humidity</includeGroup>
-
-      <!-- SNMP MIB support has to be verified, and is prepared -->
-      <!--
-      <includeGroup>securityProbe-4to20ma</includeGroup>
-      <includeGroup>securityProbe-DCVoltage</includeGroup>
-      <includeGroup>securityProbe-Airflow</includeGroup>
-      -->
-
-      <includeGroup>securityProbe-Thermostat</includeGroup>
-    </collect>
-  </systemDef>
-
+         <includeGroup>securityProbe-Thermostat</includeGroup>
+      </collect>
+   </systemDef>
 </datacollection-group>

@@ -1,0 +1,19 @@
+#!/bin/sh - 
+
+JAVA_OPTIONS="-Xmx256m"
+OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
+OPENNMS_SHAREDIR="${install.share.dir}"
+
+APP_CLASS=org.opennms.netmgt.provision.service.vmware.VmwareRequisitionTool
+
+# If you want to enable DEBUG, edit $OPENNMS_HOME/etc/log4j2-tools.xml
+
+exec "$OPENNMS_BINDIR"/runjava -r -- $JAVA_OPTIONS \
+	-Dopennms.home="$OPENNMS_HOME" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-Drrd.base.dir="$OPENNMS_SHAREDIR"/rrd \
+	-Drrd.binary="${install.rrdtool.bin}" \
+	-Dopennms.manager.class="$APP_CLASS" \
+	-jar "$OPENNMS_HOME"/lib/opennms_bootstrap.jar \
+	"$@"

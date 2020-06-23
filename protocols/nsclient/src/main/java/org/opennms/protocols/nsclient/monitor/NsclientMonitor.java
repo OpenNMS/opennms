@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,12 +34,10 @@ import java.util.Map;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.opennms.protocols.nsclient.NSClientAgentConfig;
 import org.opennms.protocols.nsclient.NsclientCheckParams;
 import org.opennms.protocols.nsclient.NsclientException;
@@ -56,7 +54,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
  */
-
 @Distributable
 public class NsclientMonitor extends AbstractServiceMonitor {
 	
@@ -97,14 +94,6 @@ public class NsclientMonitor extends AbstractServiceMonitor {
         // Used to track how long the request took.
         Double responseTime = null;
 
-        NetworkInterface<InetAddress> iface = svc.getNetInterface();
-
-        // Validate the interface type.
-        if (iface.getType() != NetworkInterface.TYPE_INET) {
-            throw new NetworkInterfaceNotSupportedException(
-                                                            "Unsupported interface type, only TYPE_INET currently supported");
-        }
-
         // NSClient related parameters.
         String command = ParameterMap.getKeyedString(
                                                      parameters,
@@ -125,7 +114,7 @@ public class NsclientMonitor extends AbstractServiceMonitor {
 
 
         // Get the address we're going to poll.
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = svc.getAddress();
 
         for (tracker.reset(); tracker.shouldRetry() && serviceStatus != PollStatus.SERVICE_AVAILABLE; tracker.nextAttempt()) {
             try {
@@ -133,7 +122,7 @@ public class NsclientMonitor extends AbstractServiceMonitor {
                 tracker.startAttempt();
 
                 // Create a client, set up details and connect.
-                NsclientManager client = new NsclientManager(InetAddressUtils.str(ipv4Addr),
+                NsclientManager client = new NsclientManager(InetAddressUtils.str(ipAddr),
                                                              port, password);
                 client.setTimeout(tracker.getSoTimeout());
                 client.setPassword(password);

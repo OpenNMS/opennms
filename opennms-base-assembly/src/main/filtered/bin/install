@@ -1,10 +1,58 @@
 #!/bin/sh -
 
 OPENNMS_HOME="${install.dir}"
+OPENNMS_BINDIR="${install.bin.dir}"
+
+RUNAS="root"
+
+# if we have ulimit, attempt to raise it
+ulimit -a >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+	for SIZE in 1024 2048 4096 8192 16384 20480; do
+		CURRENT=`ulimit -n`
+		if [ $CURRENT = "unlimited" ]; then
+			break
+		fi
+		if [ $CURRENT -lt $SIZE ]; then
+			ulimit -n $SIZE >/dev/null 2>&1
+			if [ $? -gt 0 ]; then
+				break
+			fi
+		fi
+	done
+fi
+
+myuser="`id -u -n`"
+if [ x"$myuser" = x"$RUNAS" ]; then
+	true # all is well
+else
+	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
+	exit 4 # According to LSB: 4 - user had insufficient privileges
+fi
 
 if [ -f "$OPENNMS_HOME/etc/opennms.conf" ]; then
 	. "$OPENNMS_HOME/etc/opennms.conf"
 fi
 
-exec ${install.bin.dir}/runjava -r -- \
-     $ADDITIONAL_MANAGER_OPTIONS -Dopennms.home="$OPENNMS_HOME" -cp "$OPENNMS_HOME/lib/opennms_bootstrap.jar" org.opennms.bootstrap.InstallerBootstrap "$@"
+OPTIONS=""
+for opt in $ADDITIONAL_MANAGER_OPTIONS; do
+	case "$opt" in
+		-Dcom.sun.management.jmxremote.*)
+			# skip this option for the installer
+			;;
+		-Dopennms.poller.server.serverHost*)
+			# skip this option for the installer
+			;;
+		*)
+			OPTIONS="$OPTIONS $opt"
+			;;
+	esac
+done
+
+exec "$OPENNMS_BINDIR"/runjava -r -- \
+	$OPTIONS \
+	-Dopennms.home="$OPENNMS_HOME" \
+	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
+	-cp "$OPENNMS_HOME/lib/opennms_bootstrap.jar" \
+	org.opennms.bootstrap.InstallerBootstrap \
+	"$@"

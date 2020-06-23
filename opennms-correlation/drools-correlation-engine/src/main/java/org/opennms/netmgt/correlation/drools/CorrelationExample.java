@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,20 +29,18 @@
 package org.opennms.netmgt.correlation.drools;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.drools.RuleBase;
-import org.drools.RuleBaseFactory;
-import org.drools.WorkingMemory;
-import org.drools.audit.WorkingMemoryFileLogger;
-import org.drools.compiler.PackageBuilder;
+import org.drools.core.io.impl.ClassPathResource;
+import org.kie.api.KieServices;
+import org.kie.api.logger.KieRuntimeLogger;
+import org.kie.api.runtime.KieSession;
+import org.kie.internal.utils.KieHelper;
 
 /**
  * <p>CorrelationExample class.</p>
@@ -50,7 +48,7 @@ import org.drools.compiler.PackageBuilder;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class CorrelationExample {
+public abstract class CorrelationExample {
 
     /**
      * <p>main</p>
@@ -59,39 +57,26 @@ public class CorrelationExample {
      * @throws java.lang.Exception if any.
      */
     public static void main(final String[] args) throws Exception {
+        final KieSession session = new KieHelper()
+            .addResource(new ClassPathResource("CorrelationExample.drl"))
+            .build()
+            .newKieSession();
 
-        final PackageBuilder builder = new PackageBuilder();
-        builder.addPackageFromDrl( new InputStreamReader( CorrelationExample.class.getResourceAsStream( "CorrelationExample.drl" ), "UTF-8" ) );
-
-        final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
-        ruleBase.addPackage( builder.getPackage() );
-
-        final WorkingMemory workingMemory = ruleBase.newStatefulSession();
-
-        final WorkingMemoryFileLogger logger = new WorkingMemoryFileLogger( workingMemory );
-        logger.setFileName( "log/correlation" );
-        
-        final InputStream in = CorrelationExample.class.getResourceAsStream("simulation");
-        try {
+        KieRuntimeLogger logger = KieServices.Factory.get().getLoggers().newFileLogger(session, "log/correlation");
+        try (InputStream in = CorrelationExample.class.getResourceAsStream("simulation")) {
         	final Simulation simulation = new Simulation();
         	System.out.println("Loading Simulation");
         	simulation.load(in);
         	System.out.println("Executing Simulation");
-        	simulation.simulate(workingMemory);
-        	
-        } finally {
-        	if (in != null) in.close();
+        	simulation.simulate(session);
         }
-        
-        	
-        logger.writeToDisk();
+        logger.close();
     }
     
     private static void sleep(final int delay) {
     	try { Thread.sleep(delay); } catch (InterruptedException e) {}
-		
 	}
-    
+
     public static class Simulation {
     	
     	public static class SimItem {
@@ -103,18 +88,17 @@ public class CorrelationExample {
     			m_event = event;
     		}
 
-			public void simulate(final WorkingMemory memory) {
+			public void simulate(final KieSession session) {
 				sleep(m_delay);
     			System.out.println("Start simulation of "+this);
-				memory.insert(m_event);
-				memory.fireAllRules();
+    			session.insert(m_event);
+    			session.fireAllRules();
     			System.out.println("End simulation of "+this);
 			}
-    		
     	}
-    	
+
     	final Map<Integer, Node> m_nodes = new HashMap<Integer, Node>();
-    	final List<SimItem> m_eventSequence = new LinkedList<SimItem>();
+    	final List<SimItem> m_eventSequence = new LinkedList<>();
     	
     	public void load(final InputStream in) {
     		
@@ -162,15 +146,14 @@ public class CorrelationExample {
             		m_eventSequence.add(item);
             		
             	}
-            	
+            	scanner.close();
             }
     	}
-    	
-    	
-    	public  void simulate(final WorkingMemory memory) {
+
+    	public  void simulate(final KieSession session) {
     		for (final SimItem item : m_eventSequence) {
-    			item.simulate(memory);
-    			System.out.println("Memory Size = " + getObjectCount(memory) );
+    			item.simulate(session);
+    			System.out.println("Memory Size = " + session.getObjects().size() );
     		}
     	}
     }
@@ -319,21 +302,4 @@ public class CorrelationExample {
 				.toString();
 		}
     }
-
-
-
-    /**
-     * <p>getObjectCount</p>
-     *
-     * @param memory a {@link org.drools.WorkingMemory} object.
-     * @return a int.
-     */
-    public static int getObjectCount(final WorkingMemory memory) {
-    	int count = 0;
-        for(final Iterator<?> it = memory.iterateObjects(); it.hasNext(); it.next()) {
-            count++;
-        }
-        return count;
-    }
-
 }

@@ -1,397 +1,369 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: CBS-HARDWARE-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwPowerSupplyFailed</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwPowerSupplyFailed</event-label>
-	<descr>
-&lt;p&gt;One of the redundent power supplies or DC filters has 
-failed or been removed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			cbsHwPowerSupplyFailed trap received&lt;/p&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwPowerSupplyFailed</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwPowerSupplyFailed</event-label>
+      <descr>&lt;p>One of the redundent power supplies or DC filters has 
+failed or been removed.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			cbsHwPowerSupplyFailed trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwPowerSupplyRecovered</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwPowerSupplyRecovered</event-label>
-	<descr>
-&lt;p&gt;A redundent power supply or DC filter that was previously 
-failed or missing has been replaced.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			cbsHwPowerSupplyRecovered trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwPowerSupplyRecovered</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwPowerSupplyRecovered</event-label>
+      <descr>&lt;p>A redundent power supply or DC filter that was previously 
+failed or missing has been replaced.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			cbsHwPowerSupplyRecovered trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwPowerFeedFailed</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwPowerFeedFailed</event-label>
-	<descr>
-&lt;p&gt;One of the redundent backplane power feed has failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			cbsHwPowerFeedFailed trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwPowerFeedFailed</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwPowerFeedFailed</event-label>
+      <descr>&lt;p>One of the redundent backplane power feed has failed.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			cbsHwPowerFeedFailed trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwPowerFeedRecovered</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwPowerFeedRecovered</event-label>
-	<descr>
-&lt;p&gt;One of the redundent backplane power feed that previously not
-working has become operational.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			cbsHwPowerFeedRecovered trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwPowerFeedRecovered</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwPowerFeedRecovered</event-label>
+      <descr>&lt;p>One of the redundent backplane power feed that previously not
+working has become operational.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			cbsHwPowerFeedRecovered trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwUpperFanTrayInserted</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwUpperFanTrayInserted</event-label>
-	<descr>
-&lt;p&gt;A fan tray has been inserted into the system.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			cbsHwUpperFanTrayInserted trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwUpperFanTrayInserted</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwUpperFanTrayInserted</event-label>
+      <descr>&lt;p>A fan tray has been inserted into the system.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			cbsHwUpperFanTrayInserted trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwUpperFanTrayRemoved</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwUpperFanTrayRemoved</event-label>
-	<descr>
-&lt;p&gt;A fan tray has been removed from the system.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			cbsHwUpperFanTrayRemoved trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwUpperFanTrayRemoved</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwUpperFanTrayRemoved</event-label>
+      <descr>&lt;p>A fan tray has been removed from the system.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			cbsHwUpperFanTrayRemoved trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwLowerFanTrayInserted</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwLowerFanTrayInserted</event-label>
-	<descr>
-&lt;p&gt;A fan tray has been inserted into the system.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			cbsHwLowerFanTrayInserted trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwLowerFanTrayInserted</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwLowerFanTrayInserted</event-label>
+      <descr>&lt;p>A fan tray has been inserted into the system.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			cbsHwLowerFanTrayInserted trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwLowerFanTrayRemoved</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwLowerFanTrayRemoved</event-label>
-	<descr>
-&lt;p&gt;A fan tray has been removed from the system.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			cbsHwLowerFanTrayRemoved trap received&lt;/p&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwLowerFanTrayRemoved</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwLowerFanTrayRemoved</event-label>
+      <descr>&lt;p>A fan tray has been removed from the system.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			cbsHwLowerFanTrayRemoved trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwFanFailed</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwFanFailed</event-label>
-	<descr>
-&lt;p&gt;One of the system cooling fans has failed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwFanFailed</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwFanFailed</event-label>
+      <descr>&lt;p>One of the system cooling fans has failed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsFanStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	cbsFanStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		up(1)
 		down(2)
 		not-present(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsHwFanFailed trap received 
-			cbsFanStatus=%parm[#1]%&lt;/p&gt;
+			cbsFanStatus=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>10</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwFanRecovered</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwFanRecovered</event-label>
-	<descr>
-&lt;p&gt;A Fan that was inoperative has recovered.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwFanRecovered</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwFanRecovered</event-label>
+      <descr>&lt;p>A Fan that was inoperative has recovered.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsFanStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	cbsFanStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		up(1)
 		down(2)
 		not-present(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsHwFanRecovered trap received 
-			cbsFanStatus=%parm[#1]%&lt;/p&gt;
+			cbsFanStatus=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>11</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwSystemAlarmTrap</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwSystemAlarmTrap</event-label>
-	<descr>
-&lt;p&gt;Indicates that the alarm state of the system has changed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwSystemAlarmTrap</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwSystemAlarmTrap</event-label>
+      <descr>&lt;p>Indicates that the alarm state of the system has changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwSystemAlarm&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	cbsHwSystemAlarm&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		none(1)
 		minor(2)
 		major(3)
 		critical(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsHwSystemAlarmTrap trap received 
-			cbsHwSystemAlarm=%parm[#1]%&lt;/p&gt;
+			cbsHwSystemAlarm=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>12</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwChassisTempExceeded</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwChassisTempExceeded</event-label>
-	<descr>
-&lt;p&gt;Indicates the the chassis temperature, as measure at the exhaust fan
-has exceeded the maximum.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwChassisTempExceeded</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwChassisTempExceeded</event-label>
+      <descr>&lt;p>Indicates the the chassis temperature, as measure at the exhaust fan
+has exceeded the maximum.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwSystemChassisTemp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsHwSystemChassisTemp&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsHwChassisTempExceeded trap received 
-			cbsHwSystemChassisTemp=%parm[#1]%&lt;/p&gt;
+			cbsHwSystemChassisTemp=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>13</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwChassisTempNormal</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwChassisTempNormal</event-label>
-	<descr>
-&lt;p&gt;Indicates the the chassis temperature, as measure at the exhaust fan
-has returned to normal.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwChassisTempNormal</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwChassisTempNormal</event-label>
+      <descr>&lt;p>Indicates the the chassis temperature, as measure at the exhaust fan
+has returned to normal.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwSystemChassisTemp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsHwSystemChassisTemp&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsHwChassisTempNormal trap received 
-			cbsHwSystemChassisTemp=%parm[#1]%&lt;/p&gt;
+			cbsHwSystemChassisTemp=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>14</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwModuleStatusChanged</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwModuleStatusChanged</event-label>
-	<descr>
-&lt;p&gt;The status of a processor module has changed, the new status of
-the module that has changed is reported.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwModuleStatusChanged</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwModuleStatusChanged</event-label>
+      <descr>&lt;p>The status of a processor module has changed, the new status of
+the module that has changed is reported.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwModuleStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	cbsHwModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		unavailable(1)
 		down(2)
 		initializing(3)
@@ -400,547 +372,509 @@ the module that has changed is reported.&lt;/p&gt;&lt;table&gt;
 		bootwait(6)
 		offline(7)
 		maintenance(8)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsHwModuleStatusChanged trap received 
-			cbsHwModuleStatus=%parm[#1]%&lt;/p&gt;
+			cbsHwModuleStatus=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>15</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwModuleInserted</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwModuleInserted</event-label>
-	<descr>
-&lt;p&gt;A processor module been inserted into the system, reports the slot
-number of the module that has been inserted.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwModuleInserted</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwModuleInserted</event-label>
+      <descr>&lt;p>A processor module been inserted into the system, reports the slot
+number of the module that has been inserted.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwModuleID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsHwModuleID&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsHwModuleInserted trap received 
-			cbsHwModuleID=%parm[#1]%&lt;/p&gt;
+			cbsHwModuleID=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>16</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwModuleRemoved</uei>
-	<event-label>Crossbeam Hardware Event: cbsHwModuleRemoved</event-label>
-	<descr>
-&lt;p&gt;A processor module been removed into the system, reports the slot
-number of the module that has been removed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsHwModuleRemoved</uei>
+      <event-label>Crossbeam Hardware Event: cbsHwModuleRemoved</event-label>
+      <descr>&lt;p>A processor module been removed into the system, reports the slot
+number of the module that has been removed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwModuleID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsHwModuleID&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsHwModuleRemoved trap received 
-			cbsHwModuleID=%parm[#1]%&lt;/p&gt;
+			cbsHwModuleID=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>17</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsModuleTempExceeded</uei>
-	<event-label>Crossbeam Hardware Event: cbsModuleTempExceeded</event-label>
-	<descr>
-&lt;p&gt;Indicates that the module CPU temperature has execeeded the high limit.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsModuleTempExceeded</uei>
+      <event-label>Crossbeam Hardware Event: cbsModuleTempExceeded</event-label>
+      <descr>&lt;p>Indicates that the module CPU temperature has execeeded the high limit.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwModuleCpuTemp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsHwModuleCpuTemp&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsModuleTempExceeded trap received 
-			cbsHwModuleCpuTemp=%parm[#1]%&lt;/p&gt;
+			cbsHwModuleCpuTemp=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>18</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsModuleTempNormal</uei>
-	<event-label>Crossbeam Hardware Event: cbsModuleTempNormal</event-label>
-	<descr>
-&lt;p&gt;Indicates that the module CPU temperature has returned to the normal 
-operating range.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>18</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsModuleTempNormal</uei>
+      <event-label>Crossbeam Hardware Event: cbsModuleTempNormal</event-label>
+      <descr>&lt;p>Indicates that the module CPU temperature has returned to the normal 
+operating range.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwModuleCpuTemp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsHwModuleCpuTemp&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsModuleTempNormal trap received 
-			cbsHwModuleCpuTemp=%parm[#1]%&lt;/p&gt;
+			cbsHwModuleCpuTemp=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>19</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsDbhaLinkUp</uei>
-	<event-label>Crossbeam Hardware Event: cbsDbhaLinkUp</event-label>
-	<descr>
-&lt;p&gt;The DBHA link on this CPM has come up.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsDbhaLinkUp</uei>
+      <event-label>Crossbeam Hardware Event: cbsDbhaLinkUp</event-label>
+      <descr>&lt;p>The DBHA link on this CPM has come up.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwModuleID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsHwModuleID&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsDbhaLinkUp trap received 
-			cbsHwModuleID=%parm[#1]%&lt;/p&gt;
+			cbsHwModuleID=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>20</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsDbhaLinkDown</uei>
-	<event-label>Crossbeam Hardware Event: cbsDbhaLinkDown</event-label>
-	<descr>
-&lt;p&gt;The DBHA link on this CPM has failed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsDbhaLinkDown</uei>
+      <event-label>Crossbeam Hardware Event: cbsDbhaLinkDown</event-label>
+      <descr>&lt;p>The DBHA link on this CPM has failed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwModuleID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsHwModuleID&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsDbhaLinkDown trap received 
-			cbsHwModuleID=%parm[#1]%&lt;/p&gt;
+			cbsHwModuleID=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>21</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsModuleCpu2TempExceeded</uei>
-	<event-label>Crossbeam Hardware Event: cbsModuleCpu2TempExceeded</event-label>
-	<descr>
-&lt;p&gt;Temperature has execeeded the high limit for module's 2nd CPU.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>21</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsModuleCpu2TempExceeded</uei>
+      <event-label>Crossbeam Hardware Event: cbsModuleCpu2TempExceeded</event-label>
+      <descr>&lt;p>Temperature has execeeded the high limit for module's 2nd CPU.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwModuleCpu2Temp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsHwModuleCpu2Temp&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsModuleCpu2TempExceeded trap received 
-			cbsHwModuleCpu2Temp=%parm[#1]%&lt;/p&gt;
+			cbsHwModuleCpu2Temp=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>22</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsModuleCpu2TempNormal</uei>
-	<event-label>Crossbeam Hardware Event: cbsModuleCpu2TempNormal</event-label>
-	<descr>
-&lt;p&gt;Temperature has returned to the normal operating range for module's 2nd CPU.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsModuleCpu2TempNormal</uei>
+      <event-label>Crossbeam Hardware Event: cbsModuleCpu2TempNormal</event-label>
+      <descr>&lt;p>Temperature has returned to the normal operating range for module's 2nd CPU.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwModuleCpu2Temp&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsHwModuleCpu2Temp&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsModuleCpu2TempNormal trap received 
-			cbsHwModuleCpu2Temp=%parm[#1]%&lt;/p&gt;
+			cbsHwModuleCpu2Temp=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>23</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsAFTUsageHigh</uei>
-	<event-label>Crossbeam Hardware Event: cbsAFTUsageHigh</event-label>
-	<descr>
-&lt;p&gt;The Active Flow Table's usage on this NPM module is excessive.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsAFTUsageHigh</uei>
+      <event-label>Crossbeam Hardware Event: cbsAFTUsageHigh</event-label>
+      <descr>&lt;p>The Active Flow Table's usage on this NPM module is excessive.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwModuleID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsHwModuleID&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsAFTUsageHigh trap received 
-			cbsHwModuleID=%parm[#1]%&lt;/p&gt;
+			cbsHwModuleID=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>24</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsAFTUsageNormal</uei>
-	<event-label>Crossbeam Hardware Event: cbsAFTUsageNormal</event-label>
-	<descr>
-&lt;p&gt;The Active Flow Table's usage on this NPM, that was previously 
-excessive, has returned to normal level.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>24</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsHwTraps/cbsAFTUsageNormal</uei>
+      <event-label>Crossbeam Hardware Event: cbsAFTUsageNormal</event-label>
+      <descr>&lt;p>The Active Flow Table's usage on this NPM, that was previously 
+excessive, has returned to normal level.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsHwModuleID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsHwModuleID&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsAFTUsageNormal trap received 
-			cbsHwModuleID=%parm[#1]%&lt;/p&gt;
+			cbsHwModuleID=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<!-- End of auto generated data from MIB: CBS-HARDWARE-MIB -->
-<!-- Start of auto generated data from MIB: CBS-MODULE-RESOURCES-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsModuleResourceTraps/cbsModuleCPULoadExceeded</uei>
-	<event-label>Crossbeam Module Event: cbsModuleCPULoadExceeded</event-label>
-	<descr>
-&lt;p&gt;The CPU load on one of the processor modules is excessive. The
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsModuleResourceTraps/cbsModuleCPULoadExceeded</uei>
+      <event-label>Crossbeam Module Event: cbsModuleCPULoadExceeded</event-label>
+      <descr>&lt;p>The CPU load on one of the processor modules is excessive. The
 current value of the one minute load on the CPU module
-that is experinceing excessive load is sent.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+that is experinceing excessive load is sent.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsModuleCPULoad1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsModuleCPULoad1&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsModuleCPULoadExceeded trap received 
-			cbsModuleCPULoad1=%parm[#1]%&lt;/p&gt;
+			cbsModuleCPULoad1=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsModuleResourceTraps/cbsModuleCPULoadNormal</uei>
-	<event-label>Crossbeam Module Event: cbsModuleCPULoadNormal</event-label>
-	<descr>
-&lt;p&gt;The CPU load on one of the processor modules has returned to
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsModuleResourceTraps/cbsModuleCPULoadNormal</uei>
+      <event-label>Crossbeam Module Event: cbsModuleCPULoadNormal</event-label>
+      <descr>&lt;p>The CPU load on one of the processor modules has returned to
 normal. The current value of the one minute load on the CPU module
-that has returned to normal is sent.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+that has returned to normal is sent.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsModuleCPULoad1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsModuleCPULoad1&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsModuleCPULoadNormal trap received 
-			cbsModuleCPULoad1=%parm[#1]%&lt;/p&gt;
+			cbsModuleCPULoad1=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsModuleResourceTraps/cbsModuleMemoryUsageExceeded</uei>
-	<event-label>Crossbeam Module Event: cbsModuleMemoryUsageExceeded</event-label>
-	<descr>
-&lt;p&gt;The memory usage on the processor modules is excessive. The
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsModuleResourceTraps/cbsModuleMemoryUsageExceeded</uei>
+      <event-label>Crossbeam Module Event: cbsModuleMemoryUsageExceeded</event-label>
+      <descr>&lt;p>The memory usage on the processor modules is excessive. The
 current values of total and free memory for the module are
-sent.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+sent.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsModuleMemoryTotal&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	cbsModuleMemoryTotal&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsModuleMemoryUsed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsModuleMemoryUsed&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsModuleMemoryUsageExceeded trap received 
 			cbsModuleMemoryTotal=%parm[#1]% 
-			cbsModuleMemoryUsed=%parm[#2]%&lt;/p&gt;
+			cbsModuleMemoryUsed=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsModuleResourceTraps/cbsModuleMemoryUsageNormal</uei>
-	<event-label>Crossbeam Module Event: cbsModuleMemoryUsageNormal</event-label>
-	<descr>
-&lt;p&gt;The memory usage on the processor modules that was excessive
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsModuleResourceTraps/cbsModuleMemoryUsageNormal</uei>
+      <event-label>Crossbeam Module Event: cbsModuleMemoryUsageNormal</event-label>
+      <descr>&lt;p>The memory usage on the processor modules that was excessive
 has returned to normal. The current values of total and free
-memory for the module are sent.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+memory for the module are sent.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsModuleMemoryTotal&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	cbsModuleMemoryTotal&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsModuleMemoryUsed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsModuleMemoryUsed&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsModuleMemoryUsageNormal trap received 
 			cbsModuleMemoryTotal=%parm[#1]% 
-			cbsModuleMemoryUsed=%parm[#2]%&lt;/p&gt;
+			cbsModuleMemoryUsed=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsModuleResourceTraps/cbsModuleCPUUtilExceeded</uei>
-	<event-label>Crossbeam Module Event: cbsModuleCPUUtilExceeded</event-label>
-	<descr>
-&lt;p&gt;The CPU utilization on one of the processor modules is excessive. The
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsModuleResourceTraps/cbsModuleCPUUtilExceeded</uei>
+      <event-label>Crossbeam Module Event: cbsModuleCPUUtilExceeded</event-label>
+      <descr>&lt;p>The CPU utilization on one of the processor modules is excessive. The
 current value of the one minute utilization on the CPU module
-that is experinceing excessive load is sent.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+that is experinceing excessive load is sent.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsModuleCPUUtil1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsModuleCPUUtil1&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsModuleCPUUtilExceeded trap received 
-			cbsModuleCPUUtil1=%parm[#1]%&lt;/p&gt;
+			cbsModuleCPUUtil1=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsModuleResourceTraps/cbsModuleCPUUtilNormal</uei>
-	<event-label>Crossbeam Module Event: cbsModuleCPUUtilNormal</event-label>
-	<descr>
-&lt;p&gt;The CPU utilization on one of the processor modules has returned to
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsModuleResourceTraps/cbsModuleCPUUtilNormal</uei>
+      <event-label>Crossbeam Module Event: cbsModuleCPUUtilNormal</event-label>
+      <descr>&lt;p>The CPU utilization on one of the processor modules has returned to
 normal. The current value of the one minute utilization on the CPU module
-that has returned to normal is sent.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+that has returned to normal is sent.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsModuleCPUUtil1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsModuleCPUUtil1&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsModuleCPUUtilNormal trap received 
-			cbsModuleCPUUtil1=%parm[#1]%&lt;/p&gt;
+			cbsModuleCPUUtil1=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<!-- End of auto generated data from MIB: CBS-MODULE-RESOURCES-MIB -->
-<!-- Start of auto generated data from MIB: CBS-VAPGROUP-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.3</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsVapGroupsTraps/cbsVapStatusChanged</uei>
-	<event-label>Crossbeam VAP-Group Event: cbsVapStatusChanged</event-label>
-	<descr>
-&lt;p&gt;The vAP Status for the given vAP has changed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsVapGroupsTraps/cbsVapStatusChanged</uei>
+      <event-label>Crossbeam VAP-Group Event: cbsVapStatusChanged</event-label>
+      <descr>&lt;p>The vAP Status for the given vAP has changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsVmVapStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	cbsVmVapStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		unavailable(1)
 		down(2)
 		initializing(3)
@@ -949,112 +883,104 @@ that has returned to normal is sent.&lt;/p&gt;&lt;table&gt;
 		bootwait(6)
 		offline(7)
 		maintenance(8)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsVmVapName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	cbsVmVapName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsVapStatusChanged trap received 
 			cbsVmVapStatus=%parm[#1]% 
-			cbsVmVapName=%parm[#2]%&lt;/p&gt;
+			cbsVmVapName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<!-- End of auto generated data from MIB: CBS-VAPGROUP-MIB -->
-<!-- Start of auto generated data from MIB: CBS-VRRP-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsVrrpTraps/cbsVrrpTrapNewMaster</uei>
-	<event-label>Crossbeam VRRP Event: cbsVrrpTrapNewMaster</event-label>
-	<descr>
-&lt;p&gt;The newMaster trap indicates that the sending agent
-has transitioned to 'Master' state.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsVrrpTraps/cbsVrrpTrapNewMaster</uei>
+      <event-label>Crossbeam VRRP Event: cbsVrrpTrapNewMaster</event-label>
+      <descr>&lt;p>The newMaster trap indicates that the sending agent
+has transitioned to 'Master' state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsVrrpTrapNewMasterFailGrName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	cbsVrrpTrapNewMasterFailGrName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsVrrpTrapNewMasterVrId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	cbsVrrpTrapNewMasterVrId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsVrrpTrapNewMasterCirId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	cbsVrrpTrapNewMasterCirId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsVrrpTrapNewMasterCirName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	cbsVrrpTrapNewMasterCirName&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsVrrpTrapNewMasterReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	cbsVrrpTrapNewMasterReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
 		priority(0)
 		preempted(1)
 		masterNoResponse(2)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsVrrpTrapNewMaster trap received 
 			cbsVrrpTrapNewMasterFailGrName=%parm[#1]% 
 			cbsVrrpTrapNewMasterVrId=%parm[#2]% 
 			cbsVrrpTrapNewMasterCirId=%parm[#3]% 
 			cbsVrrpTrapNewMasterCirName=%parm[#4]% 
-			cbsVrrpTrapNewMasterReason=%parm[#5]%&lt;/p&gt;
+			cbsVrrpTrapNewMasterReason=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6848.4.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsVrrpTraps/cbsVrrpTrapProtoError</uei>
-	<event-label>Crossbeam VRRP Event: cbsVrrpTrapProtoError</event-label>
-	<descr>
-&lt;p&gt;The error trap indicates that the sending agent has
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6848.4.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/crossbeamSystems/cbsTraps/cbsVrrpTraps/cbsVrrpTrapProtoError</uei>
+      <event-label>Crossbeam VRRP Event: cbsVrrpTrapProtoError</event-label>
+      <descr>&lt;p>The error trap indicates that the sending agent has
 encountered the protocol error indicated by
-vrrpTrapProtoErrorReason.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+vrrpTrapProtoErrorReason.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	cbsVrrpTrapProtoErrReason&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	cbsVrrpTrapProtoErrReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		hopLimitError(0)
 		versionError(1)
 		checksumError(2)
 		vridError(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			cbsVrrpTrapProtoError trap received 
-			cbsVrrpTrapProtoErrReason=%parm[#1]%&lt;/p&gt;
+			cbsVrrpTrapProtoErrReason=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<!-- End of auto generated data from MIB: CBS-VRRP-MIB -->
+      <severity>Minor</severity>
+   </event>
 </events>

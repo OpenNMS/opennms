@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,15 +36,16 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.utils.BeanUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -143,23 +144,23 @@ public class CollectionPolicyTest implements InitializingBean {
         assertNotNull(node2);
         assertEquals("node2", node2.getLabel());
         
-        node1 = policy.apply(node1);
+        node1 = policy.apply(node1, Collections.emptyMap());
         assertNotNull(node1);
         assertFalse(node1.hasCategory(TEST_CATEGORY));
         
-        node2 = policy.apply(node2);
+        node2 = policy.apply(node2, Collections.emptyMap());
         assertNotNull(node1);
-        assertTrue(node2.hasCategory(TEST_CATEGORY));
+        assertTrue(node2.getRequisitionedCategories().contains(TEST_CATEGORY));
     }
 
     private static void matchPolicy(List<OnmsSnmpInterface> interfaces, MatchingSnmpInterfacePolicy p, InetAddress matchingIp) {
         OnmsSnmpInterface o;
-        List<OnmsSnmpInterface> populatedInterfaces = new ArrayList<OnmsSnmpInterface>();
-        List<OnmsSnmpInterface> matchedInterfaces = new ArrayList<OnmsSnmpInterface>();
+        List<OnmsSnmpInterface> populatedInterfaces = new ArrayList<>();
+        List<OnmsSnmpInterface> matchedInterfaces = new ArrayList<>();
         
         for (OnmsSnmpInterface iface : interfaces) {
             System.err.println(iface);
-            o = p.apply(iface);
+            o = p.apply(iface, Collections.emptyMap());
             if (o != null) {
                 matchedInterfaces.add(o);
             }

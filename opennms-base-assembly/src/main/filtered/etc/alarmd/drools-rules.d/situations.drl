@@ -1,0 +1,158 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.netmgt.alarmd.drools;
+
+import java.util.Date;
+import java.util.List;
+import org.kie.api.time.SessionClock;
+import org.opennms.netmgt.model.OnmsAcknowledgment;
+import org.opennms.netmgt.model.AckAction;
+import org.opennms.netmgt.model.AlarmAssociation;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
+import java.util.LinkedList;
+
+global org.opennms.netmgt.alarmd.drools.AlarmService alarmService;
+
+declare org.opennms.netmgt.model.OnmsAlarm
+    @role(event)
+    @timestamp(lastUpdateTime)
+end
+
+rule "setSituationSeverityToMaxAlarmSeverity"
+  when
+    $sessionClock : SessionClock()
+    $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds )
+    $relatedAlarms : LinkedList() from collect( OnmsAlarm($relatedAlarmIds contains id) )
+    $maxSeverity : OnmsSeverity( isLessThanOrEqual(OnmsSeverity.NORMAL) ) from accumulate( OnmsAlarm( $severity : severity ) from $relatedAlarms, maxSeverity( $severity ) )
+    OnmsAlarm( this == $situation, severity != $maxSeverity )
+  then
+    alarmService.setSeverity($situation, $maxSeverity, new Date($sessionClock.getCurrentTime()));
+end
+
+rule "escalateSituationSeverity"
+  when
+    $sessionClock : SessionClock()
+    $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds )
+    $relatedAlarms : LinkedList() from collect( OnmsAlarm($relatedAlarmIds contains id) )
+    $maxSeverity : OnmsSeverity( isGreaterThan(OnmsSeverity.NORMAL) ) from accumulate( OnmsAlarm( $severity : severity ) from $relatedAlarms, maxSeverity( $severity ) )
+    OnmsAlarm( this == $situation, severity != OnmsSeverity.escalate($maxSeverity) )
+  then
+    alarmService.setSeverity($situation, OnmsSeverity.escalate($maxSeverity), new Date($sessionClock.getCurrentTime()));
+end
+
+rule "SituationHasBeenAcknowledged"
+  when
+    $sessionClock : SessionClock()
+    // The Situation has been Acknowledged.
+    $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == true )
+    // There is an ACKNOWLEDGE ack in working memory.
+    $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.ACKNOWLEDGE)
+    // There are NO alarm ACKs after the Situation ACK.
+    $relatedAlarmAcks : LinkedList( size == 0 ) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackTime > $situationAck.getAckTime() ) )
+    // There is at least one related alarm that is not acknowledged and it was correlated before the Situation ACK.
+    $relatedAlarms : LinkedList( size > 0 ) from collect( OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == false ) )
+    // There is a related alarm that is unacknowleged
+    $relatedAlarm : OnmsAlarm($relatedAlarmIds contains id, $unAkedAlarmId : id, isAcknowledged() == false )
+    // The UN-ACK time for that alarm is prior to the Situation ACK
+    $unAcknowledgment : OnmsAcknowledgment(refId == $unAkedAlarmId, ackAction == AckAction.UNACKNOWLEDGE, ackTime < $situationAck.getAckTime() )
+    // The association time of that alarm is before the ACK time on the situation
+    $unAkedRelatedAlarmAssociation : AlarmAssociation(situationAlarm == $situation, $unAcknowledgment.refId == relatedAlarm.getId(), mappedTime < $situationAck.getAckTime() )
+  then
+    Date acknowledgeTime = new Date($sessionClock.getCurrentTime());
+    // Acknowledge all of the alarms in one go or we will trigger more rule evaluations
+    for (int i=0; i < $relatedAlarms.size(); i++) {
+       alarmService.acknowledgeAlarm((OnmsAlarm)$relatedAlarms.get(i), acknowledgeTime);
+    }
+end
+
+rule "SituationHasBeenUnAcknowledged"
+  when
+    $sessionClock : SessionClock()
+    // The Situation has been Unacknowledged (or was never Acknowledged)
+    $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == false )
+    // Un-Ack'd and Non-Ack'd Alarms will have an UNACKNOWLEDGE ack in working memory.
+    $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.UNACKNOWLEDGE)
+    // There are NO alarm ACKs after the Situation ACK
+    $relatedAlarmAcks : LinkedList( size == 0 ) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.ACKNOWLEDGE, ackTime > $situationAck.getAckTime() ) )
+    // There is NO NAK on any of the Related Alarms BEFORE the Situation NAK - it would have triggered the Situation NAK and should not be propagated.
+    $triggeringNaks : LinkedList( size == 0 ) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.UNACKNOWLEDGE, ackTime < $situationAck.getAckTime() ) )
+    // The list of Alarms to Un-Acknowledge
+    $relatedAlarms : LinkedList( size > 0 ) from collect (OnmsAlarm($relatedAlarmIds contains id, isAcknowledged() == true) )
+  then
+    Date acknowledgeTime = new Date($sessionClock.getCurrentTime());
+    for (int i=0; i < $relatedAlarms.size(); i++) {
+        alarmService.unacknowledgeAlarm((OnmsAlarm)$relatedAlarms.get(i), acknowledgeTime);
+    }
+end
+
+rule "AllRelatedAlarmsAcknowledged"
+  when
+    $sessionClock : SessionClock()
+    // The Situation has been Unacknowledged (or was never Acknowledged)
+    $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == false )
+    // Un-Ack'd and Non-Ack'd Alarms will have an UNACKNOWLEDGE ack in working memory.
+    $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.UNACKNOWLEDGE)
+    // All the relatedAlarms are Acknowledged.
+    List(size == $relatedAlarmIds.size) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.ACKNOWLEDGE ) )
+    // There is at least one alarm ACK after the Situation ACK.
+    $triggeringAlarmAcks : LinkedList( size > 0 ) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.ACKNOWLEDGE, ackTime > $situationAck.getAckTime() ) )
+  then
+   	alarmService.acknowledgeAlarm((OnmsAlarm)$situation, new Date($sessionClock.getCurrentTime()));
+end
+
+rule "newAlarmsUnAcknowledgesSituation"
+  when
+    $sessionClock : SessionClock()
+    // There is an Acknowledged Situation.
+    $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == true )
+    // The Situation Acknowledgment is in Working Memory.
+    $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.ACKNOWLEDGE )
+    // There is at least one un-Acknowledgment for one of the related alarms with a time after the Situation was acknowledged.
+    $unAkedRelatedAlarms : LinkedList(size > 0) from collect (OnmsAcknowledgment($relatedAlarmIds contains refId, ackAction == AckAction.UNACKNOWLEDGE, ackTime > $situationAck.getAckTime() ) )
+  then
+   	alarmService.unacknowledgeAlarm($situation, new Date($sessionClock.getCurrentTime()));
+end
+
+rule "oldAlarmsUnAcknowledgesSituation"
+  when
+    $sessionClock : SessionClock()
+    // There is an Acknowledged Situation.
+    $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds, isAcknowledged() == true )
+    // The Situation Acknowledgment is in Working Memory.
+    $situationAck : OnmsAcknowledgment( refId == $situation.id, ackAction == AckAction.ACKNOWLEDGE )
+    // There is a related alarm that is unacknowleged
+    // The UN-ACK time for that alarm is prior to the Situation ACK
+    $unAcknowledgment : OnmsAcknowledgment($relatedAlarmIds contains refId, $unAkedAlarmId : refId, ackAction == AckAction.UNACKNOWLEDGE, ackTime < $situationAck.getAckTime() )
+    // The association time of that alarm is later than the ACK time on the situation
+	$unAkedRelatedAlarmAssociation : AlarmAssociation(situationAlarm == $situation, $unAcknowledgment.refId == relatedAlarm.getId(), mappedTime > $situationAck.getAckTime() )
+  then
+   	alarmService.unacknowledgeAlarm($situation, new Date($sessionClock.getCurrentTime()));
+end

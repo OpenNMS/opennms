@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+  <context:annotation-config />
+
+  <!-- Start an ActiveMQ broker based on the opennms-activemq.xml config file -->
+  <bean id="brokerService" class="org.apache.activemq.xbean.BrokerFactoryBean" destroy-method="destroy">
+    <constructor-arg value="file:${opennms.home}/etc/opennms-activemq.xml" />
+  </bean>
+
+  <!-- Expose the broker via OSGi via our ManagedBroker interface -->
+  <bean id="managedBroker" class="org.opennms.features.activemq.broker.impl.ManagedBrokerImpl">
+    <constructor-arg ref="brokerService" />
+  </bean>
+  <onmsgi:service ref="managedBroker" interface="org.opennms.features.activemq.broker.api.ManagedBroker" />
+
+</beans>

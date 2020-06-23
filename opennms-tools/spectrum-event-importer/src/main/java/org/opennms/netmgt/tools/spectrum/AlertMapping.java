@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -43,7 +43,7 @@ public class AlertMapping {
         }
         m_alertCode = alertCode;
         m_eventCode = null;
-        m_oidMappings = new ArrayList<OidMapping>();
+        m_oidMappings = new ArrayList<>();
     }
     
     public AlertMapping(String alertCode, String eventCode, List<OidMapping> oidMappings) {
@@ -55,7 +55,7 @@ public class AlertMapping {
         if (oidMappings != null) {
             m_oidMappings = oidMappings;
         } else {
-            m_oidMappings = new ArrayList<OidMapping>();
+            m_oidMappings = new ArrayList<>();
         }
     }
     
@@ -100,7 +100,7 @@ public class AlertMapping {
             throw new IllegalArgumentException("The OID mapping must not be null");
         }
         if (m_oidMappings == null) {
-            m_oidMappings = new ArrayList<OidMapping>();
+            m_oidMappings = new ArrayList<>();
         }
         if (! m_oidMappings.contains(oidMapping)) {
             m_oidMappings.add(oidMapping);
@@ -117,7 +117,7 @@ public class AlertMapping {
     
     public String getTrapOid() {
         String[] oidComponents = getAlertCodeOidComponents();
-        StringBuilder trapOidBuilder = new StringBuilder("");
+        final StringBuilder trapOidBuilder = new StringBuilder("");
         for (int i = 0; i < (oidComponents.length - 2); i++) {
             trapOidBuilder.append(".").append(oidComponents[i]);
         }

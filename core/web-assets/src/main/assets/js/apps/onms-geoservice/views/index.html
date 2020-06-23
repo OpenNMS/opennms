@@ -1,0 +1,31 @@
+<style type="text/css">
+    toggle.is-invalid ~ .invalid-feedback {
+        display: block;
+    }
+</style>
+
+<div class="alert alert-danger" ng-if="globalError">
+    <span>{{globalError}}</span>
+    <pre ng-show="globalErrorDetails">{{globalErrorDetails}}</pre>
+</div>
+
+<div class="" class="w-100" ng-if="!globalError">
+    <ul id="tabs" class="nav nav-tabs">
+        <li role="presentation" class="nav-item">
+            <a ui-sref-active="active" ui-sref="geocoding.config" data-name="settings" class="nav-link">Settings</a>
+        </li>
+
+        <li role="presentation" ng-repeat="geocoder in geocoders" class="nav-item">
+            <a ui-sref-active="active" ui-sref="geocoding.details({'id': geocoder.id})" title="{{geocoder.name | capitalize}}" data-name={{geocoder.id}} class="nav-link">
+                {{geocoder.name | capitalize}}
+                <span ng-if="geocoder.id === config.activeGeocoderId && !geocoder.error" class="text-success" title="Geocoder is enabled"><i class="fa fa-circle"></i></span>
+                <span ng-if="geocoder.id === config.activeGeocoderId && geocoder.error" class="text-danger" title="Geocoder is enabled but not configured properly"><i class="fa fa-exclamation-triangle"></i></span>
+            </a>
+        </li>
+    </ul>
+    <div growl></div>
+    <div class="card border-top-0">
+        <div class="card-body" ui-view>
+        </div>
+    </div>
+</div>

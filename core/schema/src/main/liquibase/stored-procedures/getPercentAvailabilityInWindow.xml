@@ -9,17 +9,18 @@
 
 <changeSet runOnChange="true" author="rangerrick" id="getPercentAvailabilityInWindow">
 <createProcedure>
-CREATE OR REPLACE FUNCTION getPercentAvailabilityInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone)
+<!-- Drop any old versions of the procedure -->
+DROP FUNCTION IF EXISTS getPercentAvailabilityInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone);
+
+CREATE OR REPLACE FUNCTION getPercentAvailabilityInWindow(integer,timestamp without time zone,timestamp without time zone)
         RETURNS float8 AS '
    DECLARE
-        nid ALIAS FOR $1;
-        ipid ALIAS FOR $2;
-        sid ALIAS FOR $3;
-        xtime ALIAS FOR $4;
-        ytime ALIAS FOR $5;
+        ipifid ALIAS FOR $1;
+        xtime ALIAS FOR $2;
+        ytime ALIAS FOR $3;
         downtime float8;
    BEGIN
-        downtime := getOutageTimeInWindow(nid, ipid, sid, xtime, ytime);
+        downtime := getOutageTimeInWindow(ipifid, xtime, ytime);
         IF xtime &gt; ytime THEN
                 RETURN 100 * (1 - (downtime / (EXTRACT(EPOCH FROM (xtime - ytime))* 1000)));
         ELSE
@@ -30,7 +31,7 @@ CREATE OR REPLACE FUNCTION getPercentAvailabilityInWindow(integer,varchar(16),in
 </createProcedure>
 
 <rollback>
-  <sql>DROP FUNCTION IF EXISTS getPercentAvailabilityInWindow(integer,varchar(16),integer,timestamp without time zone,timestamp without time zone);</sql>
+  <sql>DROP FUNCTION IF EXISTS getPercentAvailabilityInWindow(integer,timestamp without time zone,timestamp without time zone);</sql>
 </rollback>
 
 </changeSet>

@@ -179,7 +179,7 @@
           is operational and available.  'halted' indicates that the
           service is operational but not available.  'congested'
           indicates that the service is operational but no additional
-          inbound associations can be accomodated.  'restarting'
+          inbound associations can be accommodated.  'restarting'
           indicates that the service is currently unavailable but is
           in the process of restarting and will be available soon."
        ::= {applEntry 6}

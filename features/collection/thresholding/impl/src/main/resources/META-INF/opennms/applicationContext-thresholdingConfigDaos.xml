@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+    ">
+    <bean name="threshdDao" class="org.opennms.netmgt.config.dao.thresholding.impl.OnmsThreshdDao">
+        <constructor-arg ref="jsonStore"/>
+    </bean>
+    <bean name="thresholdingDao" class="org.opennms.netmgt.config.dao.thresholding.impl.OnmsThresholdingDao">
+        <constructor-arg ref="jsonStore"/>
+    </bean>
+    <onmsgi:service ref="threshdDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao" />
+    <onmsgi:service ref="thresholdingDao" interface="org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao" />
+</beans>

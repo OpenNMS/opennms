@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,16 +31,20 @@ package org.opennms.netmgt.snmp.snmp4j;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.snmp4j.CommunityTarget;
+import org.snmp4j.MessageDispatcher;
+import org.snmp4j.MessageDispatcherImpl;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.UserTarget;
+import org.snmp4j.mp.MPv1;
+import org.snmp4j.mp.MPv2c;
 import org.snmp4j.mp.MPv3;
-import org.snmp4j.mp.MessageProcessingModel;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.AuthSHA;
@@ -58,10 +62,12 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class Snmp4JAgentConfig {
     
     private SnmpAgentConfig m_config;
-    
+
     public Snmp4JAgentConfig(SnmpAgentConfig config) {
         m_config = config;
     }
@@ -116,8 +122,6 @@ public class Snmp4JAgentConfig {
 
     /**
      * Returns a string representation of the SNMP4J version constant
-     * @param version
-     * @return
      */
     public String getVersionString() {
         switch (getVersion()) {
@@ -148,11 +152,10 @@ public class Snmp4JAgentConfig {
      * TODO: This needs to be updated when the protocol flag is added to the SNMP Config
      * so that UDP or TCP can be used in v3 operations.
      */
-    private Address convertAddress(InetAddress address, int port) {
+    public static Address convertAddress(InetAddress address, int port) {
         String transportAddress = address.getHostAddress();
         transportAddress += "/" + port;
-        Address targetAddress = new UdpAddress(transportAddress);
-        return targetAddress;
+        return new UdpAddress(transportAddress);
     }
 
     /**
@@ -173,9 +176,9 @@ public class Snmp4JAgentConfig {
         }
     }
 
-    private OctetString createOctetString(String s) {
+    private static OctetString createOctetString(String s) {
         
-        if (s == null) {
+        if (StringUtils.isBlank(s)) {
             return null;
         }
         
@@ -204,7 +207,7 @@ public class Snmp4JAgentConfig {
          * Returning null here is okay because the SNMP4J library supports
          * this value as null when creating the SNMP session.
          */
-        if (privProtocol == null) {
+        if (StringUtils.isBlank(privProtocol)) {
             return null;
         }
         
@@ -226,19 +229,19 @@ public class Snmp4JAgentConfig {
      * Adapts the OpenNMS SNMPv3 community name to an SNMP4J compatible
      * community name (String -> OctetString)
      * 
-     * @param agentConfig
+     * @param community
      * @return
      */
-    private OctetString convertCommunity(String community) {
+    private static OctetString convertCommunity(String community) {
         return new OctetString(community);
     }
 
-    private OID convertAuthProtocol(String authProtocol) {
+    private static OID convertAuthProtocol(String authProtocol) {
         /*
          * Returning null here is okay because the SNMP4J library supports
          * this value as null when creating the SNMP session.
          */
-        if (authProtocol == null) {
+        if (StringUtils.isBlank(authProtocol)) {
             return null;
         }
         
@@ -251,7 +254,8 @@ public class Snmp4JAgentConfig {
         }            
     }
 
-    protected Target getTarget() {
+    @VisibleForTesting
+    public Target getTarget() {
         Target target = createTarget();
         target.setVersion(getVersion());
         target.setRetries(getRetries());
@@ -299,6 +303,14 @@ public class Snmp4JAgentConfig {
         return createOctetString(m_config.getPrivPassPhrase());
     }
 
+    public OctetString getContextName() {
+        return createOctetString(m_config.getContextName());
+    }
+
+    public OctetString getContextEngineID() {
+        return createOctetString(m_config.getContextEngineId());
+    }
+
     /**
      * This method adapts the OpenNMS SNMPv3 security level constants
      * to SNMP4J defined constants.
@@ -325,12 +337,18 @@ public class Snmp4JAgentConfig {
     }
 
     public Snmp createSnmpSession() throws IOException {
-        TransportMapping transport = new DefaultUdpTransportMapping();
-        Snmp session = new Snmp(transport);
-        
-        if (isSnmpV3()) {
+        final TransportMapping<?> transport = new DefaultUdpTransportMapping();
+        final MessageDispatcher disp = new MessageDispatcherImpl();
+        final Snmp session;
+        // Here we create the SNMP session, while only adding the message processing
+        // models we need for the specific agent
+        if (!isSnmpV3()) {
+            disp.addMessageProcessingModel(new MPv1());
+            disp.addMessageProcessingModel(new MPv2c());
+            session = new Snmp(disp, transport);
+        } else {
             // Make a new USM
-            USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+            final USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
             // Add the specified user to the USM
             usm.addUser(
                 getSecurityName(),
@@ -342,18 +360,12 @@ public class Snmp4JAgentConfig {
                     getPrivPassPhrase()
                 )
             );
-            // Remove the old SNMPv3 MessageProcessingModel. If you don't do this, you'll end up with
-            // two SNMPv3 MessageProcessingModel instances in the dispatcher and connections will fail.
-            MessageProcessingModel oldModel = session.getMessageDispatcher().getMessageProcessingModel(MessageProcessingModel.MPv3);
-            if (oldModel != null) {
-                session.getMessageDispatcher().removeMessageProcessingModel(oldModel);
-            }
-            // Add a new SNMPv3 MessageProcessingModel with the newly-created USM
-            session.getMessageDispatcher().addMessageProcessingModel(new MPv3(usm));
+            disp.addMessageProcessingModel(new MPv3(usm));
+            session = new Snmp(disp, transport);
         }
-        
         return session;
     }
+
 
     /**
      * Creates an SNMP4J PDU based on the SNMP4J version constants.
@@ -363,7 +375,19 @@ public class Snmp4JAgentConfig {
      * @return
      */
     public PDU createPdu(int type) {
-        PDU pdu = getVersion() == SnmpConstants.version3 ? new ScopedPDU() : new PDU();
+        PDU pdu = null;
+        if (isSnmpV3()) {
+            pdu = new ScopedPDU();
+            ScopedPDU scopedPDU = (ScopedPDU) pdu;
+            OctetString contextName = getContextName();
+            if (contextName != null)
+                scopedPDU.setContextName(contextName);
+            OctetString contextEngineID = getContextEngineID();
+            if (contextEngineID != null)
+                scopedPDU.setContextEngineID(contextEngineID);
+        } else {
+            pdu = new PDU();
+        }
         pdu.setType(type);
         return pdu;
     }

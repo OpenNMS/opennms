@@ -1,0 +1,7 @@
+opennms-minion: codeless-jar usr/share/minion/system/org/apache/aries/blueprint/org.apache.aries.blueprint.core.compatibility/1.0.0/org.apache.aries.blueprint.core.compatibility-1.0.0.jar
+opennms-minion: debian-revision-not-well-formed
+opennms-minion: debian-revision-should-not-be-zero
+opennms-minion: executable-not-elf-or-script usr/share/minion/bin/contrib/karaf-*
+opennms-minion: misplaced-extra-member-in-deb
+opennms-minion: package-has-long-file-name
+opennms-minion: unknown-java-class-version

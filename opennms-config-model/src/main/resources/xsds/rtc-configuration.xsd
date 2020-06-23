@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/rtc"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/rtc"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the rtc-configuration.xml configuration
+    file. Version: $Id$</documentation>
+  </annotation>
+
+  <element name="RTCConfiguration">
+    <annotation>
+      <documentation>Top-level element for the rtc-configuration.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+    <simpleContent>
+    <extension base="string">
+
+      <attribute name="updaters" use="required">
+        <annotation>
+          <documentation>Maximum number of threads reading the events and
+          updating the RTC data.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </attribute>
+
+      <attribute name="senders" use="required">
+        <annotation>
+          <documentation>Maximum number of threads sending data to the
+          UI.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+          </restriction>
+        </simpleType>      
+      </attribute>
+
+      <attribute name="rollingWindow" type="string" use="required">
+        <annotation>
+          <documentation>The rolling window over which availability is
+          calculated. It can be specified as a combination of
+          hours/minutes/seconds. E.g.: 10h20m5s</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="maxEventsBeforeResend" type="int" use="required">
+        <annotation>
+          <documentation>The number of received events that prompts an
+          immediate send of RTC data to the UI. This causes data to be sent
+          immediately instead of waiting for a timer to go
+          off.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="lowThresholdInterval" type="string" use="required">
+        <annotation>
+          <documentation>Low threshold timer interval.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="highThresholdInterval" type="string" use="required">
+        <annotation>
+          <documentation>High threshold timer interval.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="userRefreshInterval" type="string" use="required">
+        <annotation>
+          <documentation>User threshold timer interval. Used to send RTC data
+          to the UI when no events are coming in.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="errorsBeforeUrlUnsubscribe" type="int"
+                 use="required">
+        <annotation>
+          <documentation>Number of times a URL post is tried with errors
+          before automatically unsubscribing the URL. A negative value means
+          the URL is not unsubscribed until an 'unsubscribe' event is
+          received.</documentation>
+        </annotation>
+      </attribute>
+
+    </extension>
+    </simpleContent>
+    </complexType>
+  </element>
+</schema>

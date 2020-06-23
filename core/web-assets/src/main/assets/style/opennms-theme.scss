@@ -1,0 +1,368 @@
+/*
+Bootstrap Theme Specific Stylesheet
+ * Contents:
+ *  1.0 - Structure
+ *  2.0 - Menu
+ *  3.0 - Buttons
+ *  4.0 - Typography
+ *  5.0 - Alerts
+ *  6.0 - Content Boxes
+ *  7.0 - Form Elements
+ *  8.0 - Progress Bars
+ *  9.0 - List Groups
+ *  10.0 - Dropdowns
+ *  11.0 - Navs and Navbars
+ *  12.0 - Panels
+ *  13.0 - Dialogs
+ *  14.0 - Tables
+ *  15.0 - Miscellaneous and Workarounds
+ */
+
+@import "properties.scss";
+@import "~bootstrap/scss/_functions.scss";
+@import "~bootstrap/scss/_variables.scss";
+@import "severities.scss";
+
+/* =1.0 Structure
+----------------------------------------------- */
+
+/* centered columns styles */
+.row-centered {
+  text-align:center;
+}
+
+.col-centered {
+  display:inline-block;
+  float:none;
+  /* reset the text-align */
+  text-align:left;
+  /* inline-block space fix */
+  margin-right:-4px;
+}
+
+
+/* =2.0 Menu
+----------------------------------------------- */
+
+
+/* =3.0 Buttons
+----------------------------------------------- */
+
+
+/* =4.0 Typography
+----------------------------------------------- */
+
+
+/* =5.0 Alerts
+----------------------------------------------- */
+
+
+/* =6.0 Content Boxes
+----------------------------------------------- */
+
+.box {
+  margin-bottom:20px;
+  clear:both;
+  background:#fff;
+  box-shadow: 0px 0px 8px #000;
+}
+.box .bottom {
+  padding: 15px;
+}
+.box h2.module-title {
+  padding: 12px 15px;
+  margin:0;
+  font-weight:500;
+  background-color: #f5f5f5;
+  background-image: -moz-linear-gradient(top, rgba(255,255,255,0.35) 0%, rgba(170,170,170,0.15) 66%, rgba(0,0,0,0.05) 100%);
+  background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.35) 0%,rgba(170,170,170,0.15) 66%,rgba(0,0,0,0.05) 100%);
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.35) 0%,rgba(170,170,170,0.15) 66%,rgba(0,0,0,0.05) 100%);
+  //color:$color_opennms_dark;
+  font-size: 17px;
+  line-height: 30px;
+  border-bottom:1px solid #ccc;
+}
+.box h2 .button {
+  font-size: 14px;
+  float: right;
+  padding: 6px 10px;
+}
+
+/* =7.0 Form Elements
+----------------------------------------------- */
+
+.multi-select {
+  min-width: 90%;
+}
+
+/* =8.0 Progress Bars
+----------------------------------------------- */
+
+
+/* =9.0 List Groups
+----------------------------------------------- */
+
+.list-group-item.active {
+  color:            #212529; // Equivalent to gray-900 (or body-color)
+  background-color: #d6d8db; // Equivalent to table-secondary
+  border-color:     #d6d8db; // Equivalent to table-secondary
+}
+
+/* =10.0 Dropdowns
+----------------------------------------------- */
+
+/* Allow hovering over dropdown to show elements */
+.dropdown:hover > .dropdown-menu {
+  display: block;
+}
+/*
+ Between the menu item and the (showing) dropdown menu is a space of >1 pixel.
+ If the mouse is moved very slowly from the menu item to the dropdown menu the menu is
+ disappearing before the user reaches the dropdown menu.
+ The following css prevents this, by simply moving the dropdown-menu a little bit closer to
+ the menu item.
+*/
+.dropdown > .dropdown-menu {
+  top: calc(100% - 2px);
+}
+
+
+/* =11.0 Navs and Navbars
+----------------------------------------------- */
+
+#notificationOff {
+  color: $danger;
+}
+
+#notificationOn {
+  color: $success;
+}
+
+/* =12.0 Panels
+----------------------------------------------- */
+
+
+/* =13.0 Panels
+----------------------------------------------- */
+
+
+
+/* =14.0 Tables
+----------------------------------------------- */
+// for dragging by ui-sortable:
+.ui-sortable-helper {
+  cursor: move;
+}
+
+
+/* =15.0 Miscellaneous and Workarounds
+----------------------------------------------- */
+
+.graph-aux-controls {
+  text-align: right;
+}
+
+.graph-container {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* report list page action buttons */
+.o-report-deliver,  .o-report-schedule, .o-report-online{
+  width: 24px;
+  vertical-align: middle;
+  text-align: center;
+  a {
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+}
+
+.o-report-deliver {
+
+  a {
+    background: url(../images/reportDeliver_grey.png);
+  }
+  a:hover{
+    background: url(../images/reportDeliver.png);
+  }
+}
+
+.o-report-schedule {
+  a {
+    background: url(../images/reportSchedule_grey.png);
+  }
+  a:hover{
+    background: url(../images/reportSchedule.png);
+  }
+}
+
+.o-report-online {
+  a{
+    background: url(../images/reportOnline_grey.png);
+  }
+
+  a:hover {
+    background: url(../images/reportOnline.png);
+  }
+}
+
+
+.top-buffer {
+  margin-top: 5px;
+}
+
+/* Add a margin to the left of the elements equilavent to one &nbsp */
+.space-on-the-left {
+  margin-left: 3px;
+}
+
+/* Used to set the color when using font-awesome icons */
+.icon-black {
+  color: black;
+}
+
+/* --------------------------------------------------
+    :: Styles for DBIDs, foreign-source, and foreign-ID
+    :: spans in the node list and node details pages
+    -------------------------------------------------- */
+
+span.NLdbid, span.NLfs, span.NLfid, span.NLloc, span.NLflows {
+  display: none;
+}
+
+div.NLnode {
+  line-height: 2em;
+}
+
+div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.NLfid, div.NLnode:hover span.NLloc, div.NLnode:hover span.NLflows {
+  display: inline;
+}
+
+/* Removes the bullet, but keeps the padding. */
+.list-no-bullet {
+  list-style-type: none;
+}
+
+/* Resource Graph sidebar classes inspired by Bootstrap Docs: Begin */
+
+.sidebar-fixed {
+  position: fixed;
+}
+/* sidebar */
+.resource-graphs-sidebar {
+  padding-left: 0px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.resource-graphs-sidebar > ul {
+  overflow-y: auto;
+  height: 100%;
+}
+/* all links */
+.resource-graphs-sidebar .nav>li>a {
+  color: #999;
+  border-left: 2px solid transparent;
+  padding: 4px 5px;
+  font-size: 13px;
+  font-weight: 400;
+}
+/* nested links */
+.resource-graphs-sidebar .nav .nav>li>a {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 15px;
+  font-size: 12px;
+}
+/* active & hover links */
+.resource-graphs-sidebar .nav>li>a.active,
+.resource-graphs-sidebar .nav>li>a:hover,
+.resource-graphs-sidebar .nav>li>a:focus {
+  color: $link-color;
+  text-decoration: none;
+  background-color: transparent;
+  border-left-color: $link-color;
+}
+/* all active links */
+.resource-graphs-sidebar .nav>li>a.active,
+.resource-graphs-sidebar .nav>li>a.active:hover,
+.resource-graphs-sidebar .nav>li>a.active:focus {
+  font-weight: 700;
+}
+/* nested active links */
+.resource-graphs-sidebar .nav .nav>li>a.active,
+.resource-graphs-sidebar .nav .nav>li>a.active:hover,
+.resource-graphs-sidebar .nav .nav>li>a.active:focus {
+  font-weight: 500;
+}
+/* hide inactive nested list */
+.resource-graphs-sidebar .nav ul.nav {
+  display: none;
+}
+/* show active nested list */
+.resource-graphs-sidebar .nav>li>a.active ~ ul.nav {
+  display: block;
+}
+/* Resource Graph sidebar classes inspired by Bootstrap Docs: End */
+
+#navbar {
+  margin-top: auto;
+}
+
+#footer {
+  text-align: center;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.card {
+  margin-bottom: $spacer * 1.0; // equivalent of mb-3
+  //margin-bottom: $spacer * 1.5; // equivalent of mb-4
+}
+
+// To make headers a bit more distinguishable between other components, the font is increased slightly
+.card-header {
+  font-size: 110%;
+}
+
+// requisition ui uses bootbox for modals, however it is not yet bootstrap 4 compatible
+// (bootbox v5 will be, release is imminent), see https://github.com/makeusabrew/bootbox/issues/566
+// Until then use this hack
+.bootbox .modal-header h4 {
+  order: 0;
+}
+.bootbox .modal-header button {
+  order: 1;
+}
+
+// With bootstrap 4 height=100% does not work anymore, this workaround is enforcing 100% height
+iframe.vaadin-fullscreen {
+  height: calc(100vh - 67px /* header */- 63px /* footer */ - 46px /* navbar */ - 30px /* padding */);
+  width:100%;
+}
+
+#content {
+  padding-top: 15px;
+
+  // Revert padding as growl added this, which was required in bootstrap 3 but is
+  // no longer required, so without this the padding to the right is too much
+  .growl-container > .growl-item {
+    padding: $alert-padding-y $alert-padding-x;
+  }
+
+  // Also revert manual positioning of the background image to make it align correctly
+  // with the same spacing as the content
+  .growl-container > div.growl-item {
+    background-position: $alert-padding-x center;
+    background-repeat: no-repeat;
+
+  }
+}
+
+// Tables have by default a margin-bottom.
+// Use no margin for the last table in cards
+.card table:last-of-type {
+  margin-bottom: 0px;
+}

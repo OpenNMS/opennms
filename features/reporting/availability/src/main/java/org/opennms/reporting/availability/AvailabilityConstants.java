@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,22 +34,22 @@ package org.opennms.reporting.availability;
  *
  * @author <A HREF="mailto:jacinta@oculan.com">Jacinta Remedios </A>
  */
-public class AvailabilityConstants {
+public abstract class AvailabilityConstants {
     /**
-     * The sql statement that is used to get node information for an IP address.
+     * The SQL statement that is used to get node information for an IP address.
      */
-    public final static String DB_GET_INFO_FOR_IP = "SELECT  node.nodeid, node.nodelabel FROM " + "node, ipInterface WHERE ((ipInterface.ipaddr = ?) AND " + "(ipInterface.nodeid = node.nodeid) AND (node.nodeType = 'A') AND (ipinterface.ismanaged = 'M') )";
+    public static final String DB_GET_INFO_FOR_IP = "SELECT node.nodeid, node.nodelabel FROM node, ipInterface WHERE ipInterface.ipaddr = ? AND ipInterface.nodeid = node.nodeid AND node.nodeType = 'A' AND ipinterface.ismanaged = 'M'";
 
     /**
-     * The sql statement that is used to get services information for a
+     * The SQL statement that is used to get services information for a
      * nodeid/IP address.
      */
-    public final static String DB_GET_SVC_ENTRIES = "SELECT ifServices.serviceid, service.servicename FROM ifServices, ipInterface, node, " + "service WHERE ((ifServices.nodeid = ? ) AND (ifServices.ipaddr = ?) AND ipinterface.ipaddr = ? AND ipinterface.isManaged ='M' AND " + "(ifServices.serviceid = service.serviceid) AND (ifservices.status = 'A')) AND node.nodeid = ? AND node.nodetype = 'A'";
+    public static final String DB_GET_SVC_ENTRIES = "SELECT ifServices.serviceid, service.servicename FROM ifServices, ipInterface, node, service WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND ipInterface.ipaddr = ? AND ipinterface.isManaged ='M' AND ifServices.serviceid = service.serviceid AND ifservices.status = 'A' AND node.nodeid = ? AND node.nodetype = 'A'";
 
     /**
-     * The sql statement for getting outage entries for a nodeid/ip/serviceid
+     * The SQL statement for getting outage entries for a nodeid/ip/serviceid
      */
-    public final static String DB_GET_OUTAGE_ENTRIES = "SELECT ifLostService, ifRegainedService from outages " + "where  (outages.nodeid = ?) AND (outages.ipaddr = ?) AND (outages.serviceid = ?)"; // and
+    public static final String DB_GET_OUTAGE_ENTRIES = "SELECT ifLostService, ifRegainedService FROM outages, ifServices, ipInterface, node WHERE outages.ifServiceId = ifServices.id AND ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND node.nodeid = ? AND ipInterface.ipaddr = ? AND ifServices.serviceid = ?"; // and
                                                                                                                                                                                                         // ((ifRegainedService
                                                                                                                                                                                                         // IS
                                                                                                                                                                                                         // null)

@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.geocoder</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.geocoder</groupId>
   <artifactId>org.opennms.features.geocoder.google</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS Google Geocoder</name>
+  <name>OpenNMS :: Features :: Geocoder :: Google</name>
 
   <description>Google Geocoder implementation</description>
   <properties>
@@ -26,13 +26,21 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-RequiredExecutionEnvironment>JavaSE-1.6</Bundle-RequiredExecutionEnvironment>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${project.version}"</Export-Package>
             <Private-Package>${bundle.namespace}.internal.*</Private-Package>
-            <Embed-Dependency>geocoder-java,gson,commons-httpclient</Embed-Dependency>
+            <Embed-Dependency>*;artifactId=google-maps-services|gson|okhttp|okio</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
+            <Import-Package>
+              android.os;resolution:=optional,
+              android.util;resolution:=optional,
+              org.conscrypt;resolution:=optional,
+              com.google.appengine.api.urlfetch;resolution:=optional,
+              javax.annotation.meta;resolution:=optional,
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -44,16 +52,31 @@
       <groupId>org.opennms.features.geocoder</groupId>
       <artifactId>org.opennms.features.geocoder.api</artifactId>
     </dependency>
+     <!--https://mvnrepository.com/artifact/com.google.maps/google-maps-services-->
     <dependency>
-      <groupId>com.google.code.geocoder-java</groupId>
-      <artifactId>geocoder-java</artifactId>
-      <version>0.11</version>
-			<exclusions>
-			  <exclusion>
-			    <groupId>commons-logging</groupId>
-			    <artifactId>commons-logging</artifactId>
-			  </exclusion>
-			</exclusions>
+      <groupId>com.google.maps</groupId>
+      <artifactId>google-maps-services</artifactId>
+      <version>0.9.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.sysprops</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

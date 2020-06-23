@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+	<context:annotation-config />
+
+	<bean name="timeAdjustment" class="org.opennms.netmgt.poller.remote.DefaultTimeAdjustment" />
+
+	<bean name="pollService" class="org.opennms.netmgt.poller.remote.DefaultPollService">
+		<property name="timeAdjustment" ref="timeAdjustment" />
+	</bean>
+
+	<bean name="pollerFrontEnd" class="org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd" scope="prototype">
+		<property name="timeAdjustment" ref="timeAdjustment" />
+		<property name="pollerBackEnd" ref="pollerBackEnd" />
+		<property name="pollService" ref="pollService" />
+	</bean>
+
+</beans>

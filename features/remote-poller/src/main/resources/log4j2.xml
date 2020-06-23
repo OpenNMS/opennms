@@ -1,13 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration status="WARN">
+<!-- WARN here is just for internal log4j messages and does not effect logging in general -->
+<configuration status="WARN" monitorInterval="60">
+  <Properties>
+    <Property name="poller.logfile">/var/log/opennms-remote-poller.log</Property>
+    <Property name="poller.logfile.windows">${sys:java.io.tmpdir}/opennms-remote-poller.log</Property>
+  </Properties>
+
   <appenders>
-    <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    <!--
+     When running in headless mode, output the logs to both the console and the log file specified by the
+     'poller.logfile' system property.
+
+     Otherwise, only write to the console.
+    -->
+    <Routing name="ConditionalFileLogger">
+      <Routes>
+        <Script name="ConditionalFileLoggerInit" language="JavaScript"><![CDATA[
+          var System = Java.type('java.lang.System');
+          var result = 'other';
+           // Check the OS to determine the log path
+           var os = System.getProperty('os.name');
+           if (typeof os === 'string' && os.toLowerCase().indexOf('windows') >= 0) {
+             result = 'windows';
+           } else {
+             result = 'other';
+           }
+          result;
+        ]]></Script>
+        <Route key="other">
+          <!-- Write to the log file specified by the 'poller.logfile' system property (or the default value defined in <Properties>) -->
+          <RollingFile name="RollingFile" fileName="${sys:poller.logfile}" filePattern="${sys:poller.logfile}-%d{MM-dd-yyyy}.gz" ignoreExceptions="false">
+            <PatternLayout>
+              <Pattern>%d %-5p [%t] %c{1.}: %m%n</Pattern>
+            </PatternLayout>
+
+            <!-- Rotate logs at 10MB-->
+            <SizeBasedTriggeringPolicy size="10MB" />
+
+            <!-- Rotate through 4 logs -->
+            <DefaultRolloverStrategy max="4" fileIndex="min" />
+          </RollingFile>
+        </Route>
+        <Route key="windows">
+          <!-- Write to the log file specified by the 'poller.logfile.windows' system property (or the default value defined in <Properties>) -->
+          <RollingFile name="RollingFile" fileName="${sys:poller.logfile.windows}" filePattern="${sys:poller.logfile.windows}-%d{MM-dd-yyyy}.gz" ignoreExceptions="false">
+            <PatternLayout>
+              <Pattern>%d %-5p [%t] %c{1.}: %m%n</Pattern>
+            </PatternLayout>
+
+            <!-- Rotate logs at 10MB-->
+            <SizeBasedTriggeringPolicy size="10MB" />
+
+            <!-- Rotate through 4 logs -->
+            <DefaultRolloverStrategy max="4" fileIndex="min" />
+          </RollingFile>
+        </Route>
+      </Routes>
+    </Routing>
+
+    <Console name="ConsoleAppender" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d %-5p [%t] %c{1.}: %m%n"/>
     </Console>
   </appenders>
+
   <loggers>
-    <root level="debug">
-      <appender-ref ref="Console"/>
+    <!--
+      Set the threshold for individual loggers that may be too chatty at the default
+      level for their prefix.
+    -->
+    <logger name="httpclient" additivity="false" level="INFO">
+      <appender-ref ref="ConditionalFileLogger"/>
+      <appender-ref ref="ConsoleAppender"/>
+    </logger>
+    <logger name="net.sf.jasperreports" additivity="false" level="INFO">
+      <appender-ref ref="ConditionalFileLogger"/>
+      <appender-ref ref="ConsoleAppender"/>
+    </logger>
+    <logger name="org.apache.bsf" additivity="false" level="INFO">
+      <appender-ref ref="ConditionalFileLogger"/>
+      <appender-ref ref="ConsoleAppender"/>
+    </logger>
+    <logger name="org.apache.commons" additivity="false" level="WARN">
+      <appender-ref ref="ConditionalFileLogger"/>
+      <appender-ref ref="ConsoleAppender"/>
+    </logger>
+    <logger name="org.asteriskjava" additivity="false" level="WARN">
+      <appender-ref ref="ConditionalFileLogger"/>
+      <appender-ref ref="ConsoleAppender"/>
+    </logger>
+    <logger name="org.eclipse.jetty.webapp" additivity="false" level="INFO">
+      <appender-ref ref="ConditionalFileLogger"/>
+      <appender-ref ref="ConsoleAppender"/>
+    </logger>
+    <logger name="org.quartz" additivity="false" level="INFO">
+      <appender-ref ref="ConditionalFileLogger"/>
+      <appender-ref ref="ConsoleAppender"/>
+    </logger>
+    <logger name="org.springframework" additivity="false" level="INFO">
+      <appender-ref ref="ConditionalFileLogger"/>
+      <appender-ref ref="ConsoleAppender"/>
+    </logger>
+    <!-- Allow any message to pass through the root logger -->
+    <root level="DEBUG">
+      <appender-ref ref="ConditionalFileLogger"/>
+      <appender-ref ref="ConsoleAppender"/>
     </root>
   </loggers>
 </configuration>

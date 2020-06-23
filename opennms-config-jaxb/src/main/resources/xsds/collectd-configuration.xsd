@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/collectd"
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/collectd"
+	elementFormDefault="qualified">
+	<annotation>
+		<documentation>XML Schema for the collectd-configuration.xml configuration file.</documentation>
+	</annotation>
+
+	<element name="collectd-configuration">
+		<annotation>
+			<documentation>Top-level element for the collectd-configuration.xml configuration file.</documentation>
+		</annotation>
+
+		<complexType>
+			<sequence>
+				<element maxOccurs="unbounded" minOccurs="1" ref="this:package">
+					<annotation>
+						<documentation>
+							Package encapsulating addresses eligible to have
+							SNMP data collected from them.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="unbounded" minOccurs="1" ref="this:collector">
+					<annotation>
+						<documentation>Service collectors</documentation>
+					</annotation>
+				</element>
+			</sequence>
+
+			<attribute name="threads" use="optional" default="50">
+				<annotation>
+					<documentation>The maximum number of threads used for data collection.</documentation>
+				</annotation>
+				<simpleType>
+					<restriction base="int">
+						<minInclusive value="1" />
+					</restriction>
+				</simpleType>
+			</attribute>
+		</complexType>
+	</element>
+
+	<element name="collector">
+		<annotation>
+			<documentation>Collector for a service</documentation>
+		</annotation>
+
+		<complexType>
+			<sequence>
+				<element maxOccurs="unbounded" minOccurs="0" ref="this:parameter">
+					<annotation>
+						<documentation>
+							The parameters for performing data collection via
+							this service.
+						</documentation>
+					</annotation>
+				</element>
+			</sequence>
+
+			<attribute name="service" type="string" use="required">
+				<annotation>
+					<documentation>The service name</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="class-name" type="string" use="required">
+				<annotation>
+					<documentation>The class used to perform data collection via the service.</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+
+	<element name="package">
+		<annotation>
+			<documentation>
+				Package encapsulating addresses eligible to have SNMP
+				data collected from them.
+			</documentation>
+		</annotation>
+
+		<complexType>
+			<choice maxOccurs="unbounded">
+				<element maxOccurs="1" minOccurs="1" ref="this:filter">
+					<annotation>
+						<documentation>
+							A rule which addresses belonging to this package
+							must pass. This package is applied only to addresses that pass
+							this filter.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="unbounded" minOccurs="0" name="specific" type="string">
+					<annotation>
+						<documentation>addresses in this package</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="unbounded" minOccurs="0" ref="this:include-range">
+					<annotation>
+						<documentation>Range of addresses in this package.</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="unbounded" minOccurs="0"
+					ref="this:exclude-range">
+					<annotation>
+						<documentation>Range of addresses to be excluded from this package.</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="unbounded" minOccurs="0" name="include-url" type="string">
+					<annotation>
+						<documentation>
+							A file URL holding specific addresses to be polled.
+							Each line in the URL file can be one of:
+							"&lt;IP&gt;&lt;space&gt;#&lt;comments&gt;"; "&lt;IP&gt;";
+							"#&lt;comments&gt;"; Lines starting with a '#' are ignored and so
+							are characters after a '&lt;space&gt;#' in a line.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="1" minOccurs="0" name="storeByIfAlias" type="string">
+					<annotation>
+						<documentation>
+							Flag for storing collected data by domain/ifAlias.
+							Defaults to false. Allowable values are true, false.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="1" minOccurs="0" name="storeByNodeID" type="string">
+					<annotation>
+						<documentation>
+							Flag for storing collected data by nodeid/interface name.
+							Defaults to normal. Allowable values are true, false, normal.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="1" minOccurs="0" name="ifAliasDomain" type="string">
+					<annotation>
+						<documentation>
+							The name of the domain covered by this collection
+							package. Defaults to package name.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="1" minOccurs="0" name="storFlagOverride" type="string">
+					<annotation>
+						<documentation>
+							Flag for controlling how interfaces are selected for
+							data collection by domain/ifAlias. If true, storage will occur for
+							any interface on the node found to have an valid ifAlias. Otherwise
+							data will be stored only if the interface is configured for data
+							collection. Defaults to false.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="1" minOccurs="0" name="ifAliasComment" type="string">
+					<annotation>
+						<documentation>
+							A character or string for terminating ifAlias text.
+							In effect, any text beginning with this character or string becomes
+							a comment and is not considered part of the ifAlias when naming
+							storage files and displaying data. Defaults to null.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="unbounded" minOccurs="0" ref="this:service">
+					<annotation>
+						<documentation>Services for which data is to be collected in this package.</documentation>
+					</annotation>
+				</element>
+
+				<element maxOccurs="unbounded" minOccurs="0" name="outage-calendar" type="string">
+					<annotation>
+						<documentation>
+							Scheduled outages - data collection is not
+							performed during scheduled outages.
+						</documentation>
+					</annotation>
+				</element>
+			</choice>
+
+			<attribute name="name" type="string" use="required">
+				<annotation>
+					<documentation>The name or identifier for this package.</documentation>
+				</annotation>
+			</attribute>
+      <attribute name="remote" type="boolean" use="optional" default="false" >
+        <annotation>
+          <documentation>
+            Boolean representing whether this is a package for a remote location.
+            If true, this package will be ignored by collectd.
+          </documentation>
+        </annotation>
+      </attribute>
+		</complexType>
+	</element>
+
+	<element name="filter">
+		<annotation>
+			<documentation>
+				A rule which addresses belonging to this package must
+				pass. This package is applied only to addresses that pass this
+				filter.
+			</documentation>
+		</annotation>
+
+		<complexType>
+			<simpleContent>
+				<extension base="string">
+					<attribute name="name" type="string" use="optional">
+						<annotation>
+							<documentation>
+								An optional name for the filter, which should be unique.
+								If none is provided, the package name is used.
+							</documentation>
+						</annotation>
+					</attribute>
+				</extension>
+			</simpleContent>
+		</complexType>
+	</element>
+
+	<element name="include-range">
+		<annotation>
+			<documentation>Range of addresses to be included in this package.</documentation>
+		</annotation>
+
+		<complexType>
+			<attribute name="begin" type="string" use="required">
+				<annotation>
+					<documentation>Starting address of the range</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="end" type="string" use="required">
+				<annotation>
+					<documentation>Ending address of the range.</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+
+	<element name="exclude-range">
+		<annotation>
+			<documentation>Range of addresses to be excluded from this package.</documentation>
+		</annotation>
+
+		<complexType>
+			<attribute name="begin" type="string" use="required">
+				<annotation>
+					<documentation>Starting address of the range.</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="end" type="string" use="required">
+				<annotation>
+					<documentation>Ending address of the range.</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+
+	<element name="service">
+		<annotation>
+			<documentation>Service to be collected for addresses in this package.</documentation>
+		</annotation>
+
+		<complexType>
+			<sequence>
+				<element maxOccurs="unbounded" minOccurs="0" ref="this:parameter">
+					<annotation>
+						<documentation>
+							Parameters to be used for collecting data via this service.
+							"collection": name of data collection in datacollection-config.xml ("SNMP" specific);
+							SNMP parameters ("read-community", "version", etc) will override
+							defaults set in snmp-config.xml.
+						</documentation>
+					</annotation>
+				</element>
+			</sequence>
+
+			<attribute name="name" type="string" use="required">
+				<annotation>
+					<documentation>The service name.</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="interval" type="long" use="required">
+				<annotation>
+					<documentation>The interval at which the service is to be collected.</documentation>
+				</annotation>
+			</attribute>
+
+			<attribute name="user-defined" use="optional">
+				<annotation>
+					<documentation>Marker to say if service is user defined, used specifically for UI purposes.</documentation>
+				</annotation>
+
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(true|false)" />
+					</restriction>
+				</simpleType>
+			</attribute>
+
+			<attribute name="status" use="optional">
+				<annotation>
+					<documentation>status of the service, service is collected only if on.</documentation>
+				</annotation>
+
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(on|off)" />
+					</restriction>
+				</simpleType>
+			</attribute>
+		</complexType>
+	</element>
+
+	<element name="parameter">
+		<annotation>
+			<documentation>
+				Parameters to be used for collecting this service.
+				Parameters are specific to the service monitor.
+			</documentation>
+		</annotation>
+
+		<complexType>
+			<attribute name="key" type="string" use="required" />
+			<attribute name="value" type="string" use="required" />
+		</complexType>
+	</element>
+</schema>

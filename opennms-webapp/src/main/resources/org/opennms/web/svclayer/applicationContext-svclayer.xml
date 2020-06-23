@@ -4,14 +4,36 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xmlns:tx="http://www.springframework.org/schema/tx" 
 xmlns:context="http://www.springframework.org/schema/context"
 xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi" 
-xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
         http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 ">
   <tx:annotation-driven/>
   <context:annotation-config/>
-  <bean name="groupService" class="org.opennms.web.services.GroupService"/>
+
+  <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <!-- 
+      We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+      preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+      the issue documented here:
+
+      https://jira.springsource.org/browse/SPR-6428
+
+      TODO: Fix this behavior after upgrading to Spring 3.1.
+    -->
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    <property name="properties">
+      <props>
+        <prop key="importer.foreign-source.dir">${opennms.home}/etc/foreign-sources</prop>
+        <prop key="importer.requisition.dir">${opennms.home}/etc/imports</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean name="filterService" class="org.opennms.web.services.FilterFavoriteService"/>
+  <bean name="groupService" class="org.opennms.web.svclayer.support.DefaultGroupService"/>
   <bean name="alarmRepository" class="org.opennms.netmgt.dao.hibernate.AlarmRepositoryHibernate"/>
   <bean name="webEventRepository" class="org.opennms.web.event.DaoWebEventRepository"/>
   <bean name="webNotificationRepository" class="org.opennms.web.notification.DaoWebNotificationRepository"/>
@@ -25,51 +47,21 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="surveillanceConfigDao" ref="surveillanceViewConfigDao"/>
   </bean>
   <!-- Site Status beans -->
-  <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSiteStatusViewConfigDao"/>
+  <bean id="siteStatusViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSiteStatusViewConfigDao"/>
   <bean id="siteStatusViewService" class="org.opennms.web.svclayer.support.DefaultSiteStatusViewService">
     <property name="nodeDao" ref="nodeDao"/>
     <property name="categoryDao" ref="categoryDao"/>
     <property name="siteStatusViewConfigDao" ref="siteStatusViewConfigDao"/>
   </bean>
-  <!-- Suppress Outage Service beans -->
-  <bean id="outageService" class="org.opennms.web.svclayer.outage.DefaultOutageService">
-    <property name="dao" ref="outageDao"/>
-  </bean>
-  <bean id="outageTable" class="org.opennms.web.svclayer.outage.OutageTable"/>
   <!-- Category Status View beans (note: categoryConfigDao is different that the DAO for the categories table -->
   <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao"/>
+  <onmsgi:service interface="org.opennms.web.svclayer.dao.CategoryConfigDao" ref="categoryConfigDao"/>
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao"/>
   <bean id="eventProxy" class="org.opennms.web.api.Util" factory-method="createEventProxy"/>
-  <bean id="pollerApi" class="org.opennms.web.services.DefaultPollerService">
-    <property name="eventProxy" ref="eventProxy"/>
-  </bean>
-  <bean id="demandPollService" class="org.opennms.web.svclayer.support.DefaultDemandPollService">
-    <property name="demandPollDao" ref="demandPollDao"/>
-    <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
-    <property name="pollerAPI" ref="pollerApi"/>
-  </bean>
   <bean id="troubleTicketProxy" class="org.opennms.web.svclayer.support.DefaultTroubleTicketProxy">
     <property name="alarmDao" ref="alarmDao"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <bean name="nodeProvisionService" class="org.opennms.netmgt.provision.persist.DefaultNodeProvisionService">
-    <property name="foreignSourceRepository" ref="deployedForeignSourceRepository"/>
-    <property name="eventProxy" ref="eventProxy"/>
-  </bean>
-  <!-- Daemon Status Service beans -->
-  <!--
-  <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
-    <property name="locateExistingServerIfPossible" value="true"/>
-  </bean>
-
-  <bean id="daemonStatusDao" class="org.opennms.netmgt.dao.jmx.JmxDaemonStatusDao">
-    <property name="mbeanServer" ref="mbeanServer" />
-  </bean>
-  
-  <bean id="daemonStatusService" class="org.opennms.web.svclayer.daemonstatus.support.DefaultDaemonStatusService">
-    <property name="daemonStatusDao" ref="daemonStatusDao" />
-  </bean>
-  -->
   <!-- Category Service Status beans -->
   <bean id="categoryStatusService" class="org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService">
     <property name="categoryConfigDao" ref="categoryConfigDao"/>
@@ -79,6 +71,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <!-- Distributed Status Service Status beans -->
   <bean id="distributedStatusService" class="org.opennms.web.svclayer.support.DefaultDistributedStatusService">
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+    <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
     <property name="locationMonitorDao" ref="locationMonitorDao"/>
     <property name="applicationDao" ref="applicationDao"/>
     <property name="resourceDao" ref="resourceDao"/>
@@ -86,6 +79,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="layoutApplicationsVertically" value="${distributed.layoutApplicationsVertically}"/>
   </bean>
   <bean id="distributedPollerService" class="org.opennms.web.svclayer.support.DefaultDistributedPollerService">
+    <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
     <property name="locationMonitorDao" ref="locationMonitorDao"/>
   </bean>
   <!--  Graphing beans -->
@@ -118,17 +112,9 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="nodeDao" ref="nodeDao"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <!--  Manual Provisioning -->
-  <bean id="manualProvisioningDao" class="org.opennms.web.svclayer.dao.support.DefaultManualProvisioningDao">
-    <property name="importFileDirectory" value="${importer.requisition.dir}"/>
-  </bean>
-  <bean id="manualProvisioningService" class="org.opennms.web.svclayer.support.DefaultManualProvisioningService">
-    <property name="deployedForeignSourceRepository" ref="deployedForeignSourceRepository"/>
-    <property name="pendingForeignSourceRepository" ref="pendingForeignSourceRepository"/>
-    <property name="nodeDao" ref="nodeDao"/>
-    <property name="categoryDao" ref="categoryDao"/>
-    <property name="serviceTypeDao" ref="serviceTypeDao"/>
-    <property name="capsdConfig" ref="capsdConfig"/>
+  <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
+      <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
+      <property name="deployedForeignSourceRepository" ref="selectedDeployedForeignSourceRepository"/>
   </bean>
   <!-- Graphing -->
   <bean id="resourceService" class="org.opennms.web.svclayer.support.DefaultResourceService">
@@ -136,22 +122,20 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="graphDao" ref="graphDao"/>
     <property name="eventProxy" ref="eventProxy"/>
   </bean>
-  <bean id="chooseResourceService" class="org.opennms.web.svclayer.support.DefaultChooseResourceService">
-    <property name="resourceDao" ref="resourceDao"/>
-  </bean>
   <bean id="graphResultsService" class="org.opennms.web.svclayer.support.DefaultGraphResultsService">
     <property name="resourceDao" ref="resourceDao"/>
     <property name="graphDao" ref="graphDao"/>
     <property name="nodeDao" ref="nodeDao"/>
     <property name="rrdDao" ref="rrdDao"/>
     <property name="eventProxy" ref="eventProxy"/>
+    <property name="jsonStore" ref="jsonStore"/>
   </bean>
   <bean id="rrdGraphService" class="org.opennms.web.svclayer.support.DefaultRrdGraphService">
     <property name="resourceDao" ref="resourceDao"/>
     <property name="graphDao" ref="graphDao"/>
     <property name="rrdDao" ref="rrdDao"/>
   </bean>
-  <bean id="rrdSummaryService" class="org.opennms.web.svclayer.support.DefaultRrdSummaryService">
+  <bean id="rrdSummaryService" class="org.opennms.web.svclayer.rrd.support.DefaultRrdSummaryService">
     <property name="nodeDao" ref="nodeDao"/>
     <property name="filterDao" ref="filterDao"/>
     <property name="resourceDao" ref="resourceDao"/>
@@ -178,16 +162,13 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean id="databaseReportListService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportListService">
     <property name="globalReportRepository" ref="defaultGlobalReportRepository"/>
   </bean>
+  <onmsgi:service interface="org.opennms.web.svclayer.DatabaseReportListService" ref="databaseReportListService" />
   <bean id="reportSchedulerService" class="org.opennms.web.svclayer.support.DefaultSchedulerService">
-    <property name="scheduler">
-      <ref local="schedulerFactory"/>
-    </property>
-    <property name="jobDetail">
-      <ref local="batchReportJobDetail"/>
-    </property>
+    <property name="scheduler" ref="schedulerFactory"/>
+    <property name="jobDetail" ref="batchReportJobDetail"/>
     <property name="triggerGroup" value="reporting"/>
-    <property name="reportWrapperService" ref="reportWrapperService"/>
   </bean>
+  <onmsgi:service interface="org.opennms.web.svclayer.SchedulerService" ref="reportSchedulerService" />
   <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
     <property name="schedulerName" value="databaseReport"/>
     <property name="dataSource" ref="dataSource"/>
@@ -197,6 +178,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="waitForJobsToCompleteOnShutdown">
       <value>true</value>
     </property>
+    <property name="autoStartup" value="${opennms.report.scheduler.enabled:true}" />
     <property name="quartzProperties">
       <props>
         <!-- Configure Main Scheduler Properties -->
@@ -214,20 +196,12 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
       </props>
     </property>
   </bean>
-  <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+  <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
     <property name="jobClass">
       <value>org.opennms.reporting.core.BatchReportJob</value>
     </property>
     <property name="durability" value="true"/>
   </bean>
-  <!-- Validators for Database Report web flow -->
-  <bean id="deliveryOptionsValidator" class="org.opennms.web.report.database.DeliveryOptionsValidator">
-    <property name="reportSchedulerService">
-      <ref local="reportSchedulerService"/>
-    </property>
-  </bean>
-  <bean id="reportParametersValidator" class="org.opennms.web.report.database.ReportParametersValidator"/>
-  <bean id="triggerDetailsValidator" class="org.opennms.web.report.database.model.TriggerDetailsValidator"/>
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>
   </bean>
@@ -283,5 +257,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>
     <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
   </bean>
-  <bean id="foreignSourceAndRequistionAccessService" class="org.opennms.web.rest.RequisitionAccessService"></bean>
+  <bean id="foreignSourceAndRequisitionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
+  <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />
 </beans>

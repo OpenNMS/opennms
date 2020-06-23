@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,15 +28,22 @@
 
 package org.opennms.netmgt.correlation;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import org.opennms.core.logging.Logging;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
-import org.opennms.netmgt.xml.event.Event;
 import org.springframework.util.Assert;
 
 /**
@@ -46,12 +53,14 @@ import org.springframework.util.Assert;
  * @version $Id: $
  */
 public class Correlator extends AbstractServiceDaemon implements CorrelationEngineRegistrar {
-    private static final Logger LOG = LoggerFactory.getLogger(Correlator.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Correlator.class);
 
+	// when reloading daemon, set this event param to "false" to not to reload state ( default, it reloads previous state.)
+	public static final String EVENT_PARM_PERSIST_STATE = "persistState";
 	private EventIpcManager m_eventIpcManager;
-	private List<CorrelationEngine> m_engines;
-	private final List<EngineAdapter> m_adapters = new LinkedList<EngineAdapter>();
-    private boolean m_initialized = false;
+	private Map<String,CorrelationEngine> m_engines = new HashMap<>();
+	private final List<EngineAdapter> m_adapters = new LinkedList<>();
+	private boolean m_initialized = false;
 	
 	
 	private class EngineAdapter implements EventListener {
@@ -62,19 +71,70 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		public EngineAdapter(final CorrelationEngine engine) {
 			m_engine = engine;
 			m_name = m_engine.getClass().getSimpleName() + '-' + m_engine.getName() ;
-			m_eventIpcManager.addEventListener(this, m_engine.getInterestingEvents());
+			Map<String,String> mdc = Logging.getCopyOfContextMap();
+			Logging.putPrefix(m_name);
+			registerEventListeners();
+			Logging.setContextMap(mdc);
 		}
 
-                @Override
+		@Override
 		public String getName() {
 			return m_name;
 		}
 
-                @Override
+		@Override
 		public void onEvent(final Event e) {
-			m_engine.correlate(e);
+		    if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
+		        handleReloadEvent(e);
+		        return;
+		    }
+		    m_engine.correlate(e);
 		}
-		
+
+		public void tearDown() {
+		    m_eventIpcManager.removeEventListener(this);
+		}
+
+		private void registerEventListeners() {
+                    final List<String> interesting = m_engine.getInterestingEvents();
+                    if (interesting.contains(EventHandler.ALL_UEIS)) {
+                            LOG.warn("Registering engine {} for ALL events", m_engine.getName());
+                            m_eventIpcManager.addEventListener(this);
+                    } else {
+                            m_eventIpcManager.addEventListener(this, interesting);
+                            m_eventIpcManager.addEventListener(this, EventConstants.RELOAD_DAEMON_CONFIG_UEI);
+                    }
+		}
+
+		private void handleReloadEvent(Event e) {
+			boolean engineNameMatched = false;
+			// By default always persist state.
+			boolean persistState = true;
+		    List<Parm> parmCollection = e.getParmCollection();
+		    for (Parm parm : parmCollection) {
+		        String parmName = parm.getParmName();
+		        if(EventConstants.PARM_DAEMON_NAME.equals(parmName)) {
+		            if (parm.getValue() == null || parm.getValue().getContent() == null) {
+		                LOG.warn("The daemonName parameter has no value, ignoring.");
+		                return;
+		            }
+		            if (parm.getValue().getContent().contains(getName())) {
+						engineNameMatched = true;
+		            }
+		        }
+		        if(parmName.equals(EVENT_PARM_PERSIST_STATE)) {
+		        	if(parm.getValue() != null && parm.getValue().getContent() != null && parm.getValue().getContent().equals("false")) {
+						persistState = false;
+					}
+				}
+		    }
+		    if (engineNameMatched) {
+				m_eventIpcManager.removeEventListener(this);
+				m_engine.reloadConfig(persistState);
+				registerEventListeners();
+			}
+			return;
+		}
 	}
 
 	/**
@@ -90,7 +150,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		Assert.notNull(m_eventIpcManager, "property eventIpcManager must be set");
 		Assert.notNull(m_engines, "property engines must be set");
         
-		for(final CorrelationEngine engine : m_engines) {
+		for(final CorrelationEngine engine : m_engines.values()) {
 			LOG.info("Registering correlation engine: {}", engine);
 			m_adapters.add(new EngineAdapter(engine));
 		}
@@ -99,19 +159,29 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		
 	}
 
+	/** {@inheritDoc} */
+    @Override
+	protected void onStop() {
+        for(final CorrelationEngine engine : m_engines.values()) {
+            LOG.info("Tearing down correlation engine: {}", engine);
+            engine.tearDown();
+        }
+    }
+
 	/**
 	 * <p>setCorrelationEngines</p>
 	 *
 	 * @param engines a {@link java.util.List} object.
 	 */
-	public void setCorrelationEngines(final List<CorrelationEngine> engines) {
-		m_engines = engines;
+	public void setCorrelationEngines(final Collection<CorrelationEngine> engines) {
+		m_engines.clear();
+		engines.stream().forEach(engine -> m_engines.put(engine.getName(), engine));
 	}
 
 	/**
 	 * <p>setEventIpcManager</p>
 	 *
-	 * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+	 * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
 	 */
 	public void setEventIpcManager(final EventIpcManager eventIpcManager) {
 		m_eventIpcManager = eventIpcManager;
@@ -121,14 +191,24 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
      * @see org.opennms.netmgt.correlation.CorrelationEngineRegistrar#addCorrelationEngine(org.opennms.netmgt.correlation.CorrelationEngine)
      */
     /** {@inheritDoc} */
-        @Override
+    @Override
     public void addCorrelationEngine(final CorrelationEngine engine) {
-        m_engines.add(engine);
+        m_engines.put(engine.getName(), engine);
         if (m_initialized) {
+            LOG.debug("addCorrelationEngine: adding engine {}", engine.getName());
             m_adapters.add(new EngineAdapter(engine));
         }
     }
     
+    public void removeCorrelationEngine(final String engineName) {
+        m_adapters.stream().filter(a -> a.getName().endsWith(engineName)).findFirst().ifPresent(a -> {
+            LOG.debug("removeCorrelationEngine: removing engine {}", engineName);
+            a.tearDown();
+            m_adapters.remove(a);
+            m_engines.get(engineName).tearDown();
+            m_engines.remove(engineName);
+        });
+    }
     
 
     @Override
@@ -139,14 +219,9 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 	}
 
 	/** {@inheritDoc} */
-        @Override
+    @Override
     public CorrelationEngine findEngineByName(final String name) {
-    	for (final CorrelationEngine engine : m_engines) {
-            if (name.equals(engine.getName())) {
-                return engine;
-            }
-        }
-        return null;
+        return m_engines.get(name);
     }
 
     /**
@@ -154,8 +229,8 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
      *
      * @return a {@link java.util.List} object.
      */
-        @Override
-    public List<CorrelationEngine> getEngines() {
-        return m_engines;
+    @Override
+    public Collection<CorrelationEngine> getEngines() {
+        return m_engines.values();
     }
 }

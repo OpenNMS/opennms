@@ -3,39 +3,94 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Features</name>
+  <name>OpenNMS :: Features</name>
   <modules>
-    <module>acl</module>
-    <module>instrumentationLogReader</module>
+
+    <!-- Enlinkd -->
+    <module>enlinkd</module>
+
+    <!-- Topologies -->
+    <module>topologies</module>
+
+    <!-- ActiveMQ broker -->
+    <module>activemq</module>
+
+    <module>api-layer</module>
+
+    <!-- Alarms -->
+    <module>alarms</module>
+
+    <!-- AMQP Event Gateway and Alarm Northbounder -->
+    <module>amqp</module>
+
+    <!-- DHCP integration -->
+    <module>dhcpd</module>
+
+    <!-- OpenNMS Provisioning API and implementations -->
+    <module>provisioning</module>
+
+    <!-- OpenNMS Polling API -->
+    <module>poller</module>
+
+    <!-- Events -->
+    <module>events</module>
+
+    <!-- Flows -->
+    <module>flows</module>
+
+    <!-- Graphml -->
+    <module>graphml</module>
+
+    <module>kafka</module>
+
+    <!-- Executor factories -->
+    <module>executor-factory</module>
+
+    <!-- OpenNMS Collection API and implementations -->
+    <module>collection</module>
     <module>jdbc-collector</module>
     <module>juniper-tca-collector</module>
-    <module>ncs</module>
-    <module>poller</module>
-    <module>provisioning</module>
+    <module>telemetry</module>
+    <module>wsman</module>
+
+    <!-- Discovery -->
+    <module>discovery</module>
+
+    <!-- OpenNMS Reporting API and implementations -->
     <module>reporting</module>
+
+    <!-- OpenNMS Remote Poller daemon and UI -->
     <module>remote-poller</module>
-    <module>remote-poller-jnlp</module>
-    <module>remote-poller-gwt</module>
-    <module>request-tracker</module>
-    <module>springframework-security</module>
-    <module>system-report</module>
+    <module>remote-poller-jnlp</module> 
+
+    <!-- OpenNMS Ticketing API and implementations -->
     <module>ticketing</module>
-    <module>geocoder</module>
-    <module>name-cutter</module>
+    <module>request-tracker</module>
 
-   <!-- OpenNMS OSGI Core -->
-   <module>opennms-osgi-core</module>
+    <!-- OpenNMS REST -->
+    <module>rest</module>
 
-    <!-- Jmx config generator -->
+    <!-- OpenNMS rest provider module -->
+    <module>rest-provider</module>
+
+    <!-- OpenNMS OSGI Core -->
+    <module>opennms-osgi-core</module>
+    
+    <!-- OSGi Script Engine -->
+    <module>osgi-jsr223</module>
+    <module>opennms-osgi-core-rest</module>
+
+    <!-- JMX config generator -->
     <module>jmx-config-generator</module>
-    <module>jmx-config-generator-webui</module>   
+    <module>vaadin-jmxconfiggenerator</module>
  
     <!-- SNMP MIB Parser and Event/Collection Configuration -->
+    <module>mib-compiler</module>
     <module>vaadin-snmp-events-and-metrics</module>
 
     <!-- Near Real Time Graphing -->
@@ -45,33 +100,78 @@
     <module>topology-map</module>
     <module>vaadin-node-maps</module>
 
-    <!-- SMS monitoring -->
-    <module>phonebook</module>
-    <module>sms-reflector</module>
-
     <!-- webapps -->
     <module>root-webapp</module>
 
-    <!-- GWT UI plugins -->
-    <module>node-page-list</module>
-    <module>opennms-gwt-theme</module>
-    <module>gwt-suggestion-combobox</module>
-    <module>gwt-ksc-combobox</module>
-    <module>gwt-ksc-add</module>
-    <module>gwt-graph-resource-list</module>
-    <module>gwt-snmpselect-list</module>
-    <module>gwt-tableresources</module>
+    <!-- Measurements API -->
+    <module>measurements</module>
 
-    <!-- Notifications -->
+    <!-- Newts -->
+    <module>newts</module>
+    <module>newts-repository-converter</module>
+
+    <!-- OpenNMS Notifications -->
     <module>notifications</module>
-
-    <!-- Access point monitor -->
-    <module>access-point-monitor</module>
 
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
 
-      <module>vaadin-dashboard</module>
-      <module>vaadin-dashlets</module>
+    <!-- Vaadin Feature -->
+    <module>vaadin</module>
+
+    <!-- Generic Vaadin components -->
+    <module>vaadin-components</module>
+
+    <!-- Dashboard and dashlet UI elements -->
+    <module>vaadin-dashboard</module>
+    <module>vaadin-dashlets</module>
+
+    <!-- OpenNMS Vaadin Surveillance Views -->
+    <module>vaadin-surveillance-views</module>
+
+    <!-- Data Choices -->
+    <module>datachoices</module>
+
+    <!-- Other projects -->
+    <module>distributed</module>
+    <module>endpoints</module>
+    <module>geocoder</module>
+    <module>geolocation</module>
+    <module>instrumentationLogReader</module>
+    <module>name-cutter</module>
+    <module>springframework-security</module>
+    <module>status</module>
+    <module>system-report</module>
+    <module>timeformat</module>
+    <module>timeseries-evaluate</module>
+
+    <!-- Business Service Monitor -->
+    <module>bsm</module>
+
+    <!-- Standalone Karaf Containers -->
+    <module>container</module>
+
+    <!-- Sentinel -->
+    <module>sentinel</module>
+
+    <!-- Minion -->
+    <module>minion</module>
+    <module>scv</module>
+
+    <!-- ReST Elasticsearch Integration -->
+    <module>opennms-es-rest</module>
+
+    <!-- Correlation Feedback -->
+    <module>situation-feedback</module>
+
+    <!-- Event Integration Facility Adapter -->
+    <module>eif-adapter</module>
+
+    <!-- IfTtt integration -->
+    <module>ifttt</module>
+
+    <module>jest</module>
+    <module>dnsresolver</module>
+    <module>karaf-health</module>
   </modules>
 </project>

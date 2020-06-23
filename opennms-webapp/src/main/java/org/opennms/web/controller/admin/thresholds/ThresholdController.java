@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,29 +28,47 @@
 
 package org.opennms.web.controller.admin.thresholds;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.TreeMultimap;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.EventConfDao;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
-import org.opennms.netmgt.config.threshd.*;
-import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.dao.support.GenericIndexResourceType;
-import org.opennms.netmgt.model.OnmsResourceType;
-import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.eventconf.Logmsg;
-import org.opennms.web.api.Util;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.config.dao.thresholding.api.WriteableThresholdingDao;
+import org.opennms.netmgt.config.threshd.Basethresholddef;
+import org.opennms.netmgt.config.threshd.Expression;
+import org.opennms.netmgt.config.threshd.FilterOperator;
+import org.opennms.netmgt.config.threshd.Group;
+import org.opennms.netmgt.config.threshd.ResourceFilter;
+import org.opennms.netmgt.config.threshd.Threshold;
+import org.opennms.netmgt.config.threshd.ThresholdType;
+import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.dao.support.GenericIndexResourceType;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.eventconf.AlarmData;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
+import org.opennms.netmgt.xml.eventconf.Logmsg;
+import org.opennms.web.api.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
+
+import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeMultimap;
 
 /**
  * <p>ThresholdController class.</p>
@@ -62,6 +80,7 @@ import java.util.*;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog</a>
  */
 public class ThresholdController extends AbstractController implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(ThresholdController.class);
 
     private static final String SAVE_BUTTON_TITLE = "Save";
     private static final String CANCEL_BUTTON_TITLE = "Cancel";
@@ -78,13 +97,15 @@ public class ThresholdController extends AbstractController implements Initializ
 
     private boolean eventConfChanged = false;
 
+    @Autowired
+    private WriteableThresholdingDao thresholdingDao;
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView modelAndView;
-        ThresholdingConfigFactory.init();
         String editGroup = request.getParameter("editGroup");
         String deleteThreshold = request.getParameter("deleteThreshold");
         String editThreshold = request.getParameter("editThreshold");
@@ -139,9 +160,8 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoGroupEdit(String groupName) {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", configFactory.getGroup(groupName));
+        modelAndView.addObject("group", thresholdingDao.getWriteableConfig().getGroup(groupName));
         return modelAndView;
     }
 
@@ -156,7 +176,14 @@ public class ThresholdController extends AbstractController implements Initializ
             if (resourceType instanceof GenericIndexResourceType)
             // Put these in by label to sort them, we'll get them out in a moment
             {
-                genericDsTypes.put(resourceType.getLabel(), resourceType.getName());
+                final String label = resourceType.getLabel();
+                final String name = resourceType.getName();
+                if (label == null) {
+                    LOG.warn("Label should not be null for resource {}", resourceType);
+                    genericDsTypes.put(name, name);
+                } else {
+                    genericDsTypes.put(label, name);
+                }
             }
         }
 
@@ -176,17 +203,16 @@ public class ThresholdController extends AbstractController implements Initializ
         // Finally, set the sorted resource types into the model
         modelAndView.addObject("dsTypes", dsTypes);
 
-        Collection<String> thresholdTypes = new ArrayList<String>();
-        thresholdTypes.add("high");
-        thresholdTypes.add("low");
-        thresholdTypes.add("relativeChange");
-        thresholdTypes.add("absoluteChange");
-        thresholdTypes.add("rearmingAbsoluteChange");
+        Collection<String> thresholdTypes = new ArrayList<>();
+        for (final ThresholdType tt : ThresholdType.values()) {
+            thresholdTypes.add(tt.getEnumName());
+        }
         modelAndView.addObject("thresholdTypes", thresholdTypes);
 
-        Collection<String> filterOperators = new ArrayList<String>();
-        filterOperators.add("and");
-        filterOperators.add("or");
+        Collection<String> filterOperators = new ArrayList<>();
+        for (final FilterOperator fo : FilterOperator.values()) {
+            filterOperators.add(fo.getEnumName());
+        }
         modelAndView.addObject("filterOperators", filterOperators);
 
         modelAndView.addObject("saveButtonTitle", SAVE_BUTTON_TITLE);
@@ -200,18 +226,17 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoNewThreshold(String groupName) {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
-
-        Group group = configFactory.getGroup(groupName);
+        final Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
+        final List<Threshold> thresholds = group.getThresholds();
 
         //We're assuming that adding a threshold puts it at the end of the current list (i.e. that the Group implementation
         // uses a simple List structure, probably ArrayList).  We can be a bit cleverer later on and check though, so we should
-        int thresholdIndex = group.getThresholdCount();
+        int thresholdIndex = thresholds.size();
 
         //Check if last threshold has dsName. If not, we assume that is a new definition (not saved yet on thresholds.xml)
         Threshold threshold = null;
         if (thresholdIndex > 0) {
-            threshold = group.getThreshold(thresholdIndex - 1);
+            threshold = thresholds.get(thresholdIndex - 1);
             if (threshold.getDsName() == null || threshold.getDsName().equals("")) {
                 thresholdIndex--;
             }
@@ -225,16 +250,16 @@ public class ThresholdController extends AbstractController implements Initializ
             threshold = new Threshold();
             //Set the two default values which need to be set for the UI to work properly
             threshold.setDsType("node");
-            threshold.setType("high");
+            threshold.setType(ThresholdType.HIGH);
             threshold.setTrigger(1); //Default to 1 - 0 will give an error, so we may as well be helpful
             group.addThreshold(threshold);
         }
 
         //Double check the guess index, just in case:
-        if (threshold != group.getThreshold(thresholdIndex)) {
+        if (threshold != thresholds.get(thresholdIndex)) {
             //Ok, our guesses on indexing were completely wrong.  Failover and check each threshold in the group
-            for (int i = 0; i < group.getThresholdCount(); i++) {
-                if (threshold == group.getThreshold(i)) {
+            for (int i = 0; i < thresholds.size(); i++) {
+                if (threshold == thresholds.get(i)) {
                     thresholdIndex = i;
                     break; //out of the for loop
                 }
@@ -254,18 +279,17 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoNewExpression(String groupName) {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
-
-        Group group = configFactory.getGroup(groupName);
+        final Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
+        final List<Expression> expressions = group.getExpressions();
 
         //We're assuming that adding a expression puts it at the end of the current list (i.e. that the Group implementation
         // uses a simple List structure, probably ArrayList).  We can be a bit cleverer later on and check though, so we should
-        int expressionIndex = group.getExpressionCount();
+        int expressionIndex = expressions.size();
 
         //Check if last expression has expression def. If not, we assume that is a new definition (not saved yet on thresholds.xml)
         Expression expression = null;
         if (expressionIndex > 0) {
-            expression = group.getExpression(expressionIndex - 1);
+            expression = expressions.get(expressionIndex - 1);
             if (expression.getExpression() == null || expression.getExpression().equals("")) {
                 expressionIndex--;
             }
@@ -279,16 +303,16 @@ public class ThresholdController extends AbstractController implements Initializ
             expression = new Expression();
             //Set the two default values which need to be set for the UI to work properly
             expression.setDsType("node");
-            expression.setType("high");
+            expression.setType(ThresholdType.HIGH);
             expression.setTrigger(1); //Default to 1 - 0 will give an error, so we may as well be helpful
             group.addExpression(expression);
         }
 
         //Double check the guess index, just in case:
-        if (expression != group.getExpression(expressionIndex)) {
+        if (expression != expressions.get(expressionIndex)) {
             //Ok, our guesses on indexing were completely wrong.  Failover and check each threshold in the group
-            for (int i = 0; i < group.getExpressionCount(); i++) {
-                if (expression == group.getExpression(i)) {
+            for (int i = 0; i < expressions.size(); i++) {
+                if (expression == expressions.get(i)) {
                     expressionIndex = i;
                     break; //out of the for loop
                 }
@@ -308,14 +332,16 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoEditThreshold(String thresholdIndexString, String groupName) throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         if (thresholdIndexString == null) {
             throw new ServletException("thresholdIndex parameter required to edit a threshold");
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
 
-        Threshold threshold = configFactory.getGroup(groupName).getThreshold(thresholdIndex);
+        Threshold threshold = thresholdingDao.getWriteableConfig()
+                .getGroup(groupName)
+                .getThresholds()
+                .get(thresholdIndex);
         modelAndView = new ModelAndView("admin/thresholds/editThreshold");
 
         modelAndView.addObject("threshold", threshold);
@@ -328,11 +354,11 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private void moveThresholdFilter(Basethresholddef threshold, int oldPos, int newPos) {
-        if (newPos >= 0 && newPos < threshold.getResourceFilterCount()) {
-            ResourceFilter oldFilter = (ResourceFilter) threshold.getResourceFilterCollection().get(oldPos);
-            ResourceFilter newFilter = (ResourceFilter) threshold.getResourceFilterCollection().get(newPos);
-            threshold.getResourceFilterCollection().set(newPos, oldFilter);
-            threshold.getResourceFilterCollection().set(oldPos, newFilter);
+        if (newPos >= 0 && newPos < threshold.getResourceFilters().size()) {
+            ResourceFilter oldFilter = (ResourceFilter) threshold.getResourceFilters().get(oldPos);
+            ResourceFilter newFilter = (ResourceFilter) threshold.getResourceFilters().get(newPos);
+            threshold.getResourceFilters().set(newPos, oldFilter);
+            threshold.getResourceFilters().set(oldPos, newFilter);
         }
     }
 
@@ -373,7 +399,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
         List<ResourceFilter> saved = getFilterList(request, true);
         if (saved == null || saved.size() == 0) {
-            saved = new ArrayList<ResourceFilter>(threshold.getResourceFilterCollection());
+            saved = new ArrayList<ResourceFilter>(threshold.getResourceFilters());
             setFilterList(request, saved);
         }
 
@@ -395,13 +421,13 @@ public class ThresholdController extends AbstractController implements Initializ
             }
         }
         else if (DELETE_BUTTON_TITLE.equals(submitAction)) {
-            threshold.getResourceFilterCollection().remove(filterIndex);
+            threshold.getResourceFilters().remove(filterIndex);
         }
         else if (EDIT_BUTTON_TITLE.equals(submitAction)) {
             modelAndView.addObject("filterSelected", request.getParameter("filterSelected"));
         }
         else if (UPDATE_BUTTON_TITLE.equals(submitAction)) {
-            ResourceFilter filter = (ResourceFilter) threshold.getResourceFilterCollection().get(filterIndex);
+            ResourceFilter filter = (ResourceFilter) threshold.getResourceFilters().get(filterIndex);
             filter.setField(request.getParameter("updateFilterField"));
             filter.setContent(request.getParameter("updateFilterRegexp"));
         }
@@ -440,14 +466,16 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView gotoEditExpression(String expressionIndexString, String groupName) throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         if (expressionIndexString == null) {
             throw new ServletException("expressionIndex parameter required to edit a threshold");
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
 
-        Expression expression = configFactory.getGroup(groupName).getExpression(expressionIndex);
+        Expression expression = thresholdingDao.getWriteableConfig()
+                .getGroup(groupName)
+                .getExpressions()
+                .get(expressionIndex);
         modelAndView = new ModelAndView("admin/thresholds/editExpression");
 
         modelAndView.addObject("expression", expression);
@@ -475,9 +503,8 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private void saveChanges() throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         try {
-            configFactory.saveCurrent();
+            thresholdingDao.saveConfig();
             EventBuilder ebldr = createEventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI);
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Threshd");
             ebldr.addParam(EventConstants.PARM_CONFIG_FILE_NAME, "thresholds.xml");
@@ -499,17 +526,16 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView deleteThreshold(String thresholdIndexString, String groupName) throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         if (thresholdIndexString == null) {
             throw new ServletException("thresholdIndex parameter required to delete a threshold");
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
-        Group group = configFactory.getGroup(groupName);
-        group.removeThreshold(group.getThreshold(thresholdIndex));
+        Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
+        group.removeThreshold(group.getThresholds().get(thresholdIndex));
         //and setup the group view again
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", configFactory.getGroup(groupName));
+        modelAndView.addObject("group", group);
         saveChanges();
         return modelAndView;
     }
@@ -527,19 +553,18 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView deleteExpression(String expressionIndexString, String groupName) throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         if (expressionIndexString == null) {
             throw new ServletException("expressionIndex parameter required to delete a threshold expression");
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
-        Group group = configFactory.getGroup(groupName);
-        group.removeExpression(group.getExpression(expressionIndex));
+        Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
+        group.removeExpression(group.getExpressions().get(expressionIndex));
         saveChanges();
 
         //and setup the group view again
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", configFactory.getGroup(groupName));
+        modelAndView.addObject("group", group);
         return modelAndView;
     }
 
@@ -560,71 +585,141 @@ public class ThresholdController extends AbstractController implements Initializ
             baseDef.setDescription(description);
         }
 
+        final String dsType = request.getParameter("dsType");
+        final String thresholdType = request.getParameter("type");
+
+        baseDef.setDsType(dsType == null? null : dsType);
+        baseDef.setType(thresholdType == null? null : ThresholdType.forName(thresholdType));
+        try {
+            baseDef.setRearm(WebSecurityUtils.safeParseDouble(request.getParameter("rearm")));
+        } catch (final NumberFormatException e) {
+            LOG.warn("Failed to parse rearm ('{}') as a number.", request.getParameter("rearm"));
+        }
+        try {
+            baseDef.setTrigger(WebSecurityUtils.safeParseInt(request.getParameter("trigger")));
+        } catch (final NumberFormatException e) {
+            LOG.warn("Failed to parse trigger ('{}') as a number.", request.getParameter("trigger"));
+        }
+        try {
+            baseDef.setValue(WebSecurityUtils.safeParseDouble(request.getParameter("value")));
+        } catch (final NumberFormatException e) {
+            LOG.warn("Failed to parse value ('{}') as a number.", request.getParameter("value"));
+        }
+
+        String clearKey = null;
+
         String triggeredUEI = request.getParameter("triggeredUEI");
         if (triggeredUEI == null || "".equals(triggeredUEI)) {
             baseDef.setTriggeredUEI(null); //Must set null in correct circumstances - empty string isn't quite the same thing
         }
         else {
+            org.opennms.netmgt.xml.eventconf.Event source = getSourceEvent(baseDef.getType(), true);
+            if (source != null && source.getAlarmData() != null && source.getAlarmData().getReductionKey() != null) {
+                clearKey = source.getAlarmData().getReductionKey().replace("%uei%", triggeredUEI);
+            }
             baseDef.setTriggeredUEI(triggeredUEI);
-            this.ensureUEIInEventConf(triggeredUEI, "exceeded");
+            this.ensureUEIInEventConf(source, triggeredUEI, baseDef.getType(), null, true);
         }
 
         String rearmedUEI = request.getParameter("rearmedUEI");
-        if (rearmedUEI == null || "".equals(rearmedUEI)) {
+        if (rearmedUEI == null || "".equals(rearmedUEI) || baseDef.getType().equals(ThresholdType.RELATIVE_CHANGE) || baseDef.getType().equals(ThresholdType.ABSOLUTE_CHANGE)) { // It doesn't make sense a rearm UEI for relativeChange or absoluteChange
             baseDef.setRearmedUEI(null); //Must set null in correct circumstances - empty string isn't quite the same thing
         }
         else {
+            org.opennms.netmgt.xml.eventconf.Event source = getSourceEvent(baseDef.getType(), false);
             baseDef.setRearmedUEI(rearmedUEI);
-            this.ensureUEIInEventConf(rearmedUEI, "rearmed");
+            this.ensureUEIInEventConf(source, rearmedUEI, baseDef.getType(), clearKey, false);
         }
-        baseDef.setDsType(request.getParameter("dsType"));
-        baseDef.setType(request.getParameter("type"));
-        baseDef.setRearm(WebSecurityUtils.safeParseDouble(request.getParameter("rearm")));
-        baseDef.setTrigger(WebSecurityUtils.safeParseInt(request.getParameter("trigger")));
-        baseDef.setValue(WebSecurityUtils.safeParseDouble(request.getParameter("value")));
-
+    }
+    
+    private  org.opennms.netmgt.xml.eventconf.Event getSourceEvent(ThresholdType thresholdType, boolean isTrigger) {
+        String sourceUei = null;
+        switch(thresholdType) {
+        case HIGH:
+            sourceUei = isTrigger ? EventConstants.HIGH_THRESHOLD_EVENT_UEI : EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI;
+            break;
+        case LOW:
+            sourceUei = isTrigger ? EventConstants.LOW_THRESHOLD_EVENT_UEI : EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI;
+            break;
+        case RELATIVE_CHANGE:
+                sourceUei = isTrigger ? EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI : null;
+            break;
+        case ABSOLUTE_CHANGE:
+            sourceUei = isTrigger ? EventConstants.ABSOLUTE_CHANGE_THRESHOLD_EVENT_UEI : null;
+            break;
+        case REARMING_ABSOLUTE_CHANGE:
+            sourceUei = isTrigger ? EventConstants.REARMING_ABSOLUTE_CHANGE_EXCEEDED_EVENT_UEI : EventConstants.REARMING_ABSOLUTE_CHANGE_REARM_EVENT_UEI;
+            break;
+        }
+        if (sourceUei == null) {
+            return null;
+        }
+        List<org.opennms.netmgt.xml.eventconf.Event> eventsForUEI = m_eventConfDao.getEvents(sourceUei);
+        if (eventsForUEI != null && eventsForUEI.size() > 0) {
+            return eventsForUEI.get(0);
+        }
+        return null;
     }
 
-    private void ensureUEIInEventConf(String uei, String typeDesc) {
-        List<org.opennms.netmgt.xml.eventconf.Event> eventsForUEI = m_eventConfDao.getEvents(uei);
+    private void ensureUEIInEventConf(org.opennms.netmgt.xml.eventconf.Event source, String targetUei, ThresholdType thresholdType, String clearKey, boolean isTrigger) {
+        List<org.opennms.netmgt.xml.eventconf.Event> eventsForUEI = m_eventConfDao.getEvents(targetUei);
         if (eventsForUEI == null || eventsForUEI.size() == 0) {
-            //UEI doesn't exist.  Add it
+            String typeDesc = isTrigger ? "exceeded" : "rearmed";
             org.opennms.netmgt.xml.eventconf.Event event = new org.opennms.netmgt.xml.eventconf.Event();
-            event.setUei(uei);
-            event.setEventLabel("User-defined threshold event " + uei);
-            event.setDescr("Threshold " + typeDesc + " for %service% datasource " +
-                    "%parm[ds]% on interface %interface%, parms: %parm[all]%");
+            event.setUei(targetUei);
+            event.setEventLabel("User-defined " + thresholdType + " threshold event " + typeDesc + ": " + targetUei);
             Logmsg logmsg = new Logmsg();
-            logmsg.setDest("logndisplay");
-            logmsg.setContent("Threshold " + typeDesc + " for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
             event.setLogmsg(logmsg);
-            event.setSeverity("Warning");
+            if (source == null) {
+                event.setDescr("Threshold " + typeDesc + " for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
+                logmsg.setDest(LogDestType.LOGNDISPLAY);
+                logmsg.setContent("Threshold " + typeDesc + " for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%");
+                event.setLogmsg(logmsg);
+                event.setSeverity("Warning");
+            } else {
+                event.setDescr(source.getDescr());
+                event.setSeverity(source.getSeverity());
+                event.setOperinstruct(source.getOperinstruct());
+                logmsg.setDest(source.getLogmsg().getDest());
+                logmsg.setContent(source.getLogmsg().getContent());
+                if (source.getAlarmData() != null) {
+                    final AlarmData alarmData = new AlarmData();
+                    final AlarmData sourceAlarmData = source.getAlarmData();
+                    alarmData.setAlarmType(sourceAlarmData.getAlarmType());
+                    alarmData.setAutoClean(sourceAlarmData.getAutoClean());
+                    alarmData.setReductionKey(sourceAlarmData.getReductionKey());
+                    if (!isTrigger && clearKey != null) {
+                        alarmData.setClearKey(clearKey);
+                    }
+                    event.setAlarmData(alarmData);
+                }
+            }
             m_eventConfDao.addEventToProgrammaticStore(event);
             eventConfChanged = true;
         }
     }
 
     private ModelAndView finishThresholdEdit(HttpServletRequest request) throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         String groupName = request.getParameter("groupName");
         String submitAction = request.getParameter("submitAction");
-        Group group = configFactory.getGroup(groupName);
+        Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         String thresholdIndexString = request.getParameter("thresholdIndex");
         if (thresholdIndexString == null) {
             throw new ServletException("thresholdIndex parameter required to modify or delete a threshold");
         }
         int thresholdIndex = WebSecurityUtils.safeParseInt(thresholdIndexString);
-        Threshold threshold = group.getThreshold(thresholdIndex); // TODO: NMS-4249, maybe a try/catch and add default on exception?
+        Threshold threshold = group.getThresholds().get(thresholdIndex); // TODO: NMS-4249, maybe a try/catch and add default on exception?
 
         if (SAVE_BUTTON_TITLE.equals(submitAction)) {
             this.commonFinishEdit(request, threshold);
-            String dsName = request.getParameter("dsName");
+            final String dsName = request.getParameter("dsName");
+            final String filterOperator = request.getParameter("filterOperator");
             if (dsName == null || dsName.equals("")) {
                 throw new ServletException("ds-name cannot be null or empty string");
             }
             threshold.setDsName(dsName);
-            threshold.setFilterOperator(request.getParameter("filterOperator"));
+            threshold.setFilterOperator(filterOperator == null? null : FilterOperator.valueOf(filterOperator.toUpperCase()));
             saveChanges();
         }
         else if (CANCEL_BUTTON_TITLE.equals(submitAction)) {
@@ -636,7 +731,7 @@ public class ThresholdController extends AbstractController implements Initializ
             else {
                 List<ResourceFilter> filters = getFilterList(request, false);
                 if (filters != null) {
-                    threshold.setResourceFilter(filters);
+                    threshold.setResourceFilters(filters);
                 }
             }
         }
@@ -653,26 +748,27 @@ public class ThresholdController extends AbstractController implements Initializ
     }
 
     private ModelAndView finishExpressionEdit(HttpServletRequest request) throws ServletException {
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView;
         String groupName = request.getParameter("groupName");
         String submitAction = request.getParameter("submitAction");
-        Group group = configFactory.getGroup(groupName);
+        Group group = thresholdingDao.getWriteableConfig().getGroup(groupName);
         String expressionIndexString = request.getParameter("expressionIndex");
         if (expressionIndexString == null) {
             throw new ServletException("expressionIndex parameter required to modify or delete a threshold expression");
         }
         int expressionIndex = WebSecurityUtils.safeParseInt(expressionIndexString);
-        Expression expression = group.getExpression(expressionIndex);
+        Expression expression = group.getExpressions().get(expressionIndex);
 
         if (SAVE_BUTTON_TITLE.equals(submitAction)) {
             this.commonFinishEdit(request, expression);
-            String expDef = request.getParameter("expression");
+
+            final String expDef = request.getParameter("expression");
+            final String filterOperator = request.getParameter("filterOperator");
             if (expDef == null || expDef.equals("")) {
                 throw new ServletException("expression content cannot be null or empty string");
             }
             expression.setExpression(expDef);
-            expression.setFilterOperator(request.getParameter("filterOperator"));
+            expression.setFilterOperator(filterOperator == null? null : FilterOperator.valueOf(filterOperator.toUpperCase()));
             saveChanges();
         }
         else if (CANCEL_BUTTON_TITLE.equals(submitAction)) {
@@ -684,7 +780,7 @@ public class ThresholdController extends AbstractController implements Initializ
             else {
                 List<ResourceFilter> filters = getFilterList(request, false);
                 if (filters != null) {
-                    expression.setResourceFilter(filters);
+                    expression.setResourceFilters(filters);
                 }
             }
         }
@@ -696,7 +792,7 @@ public class ThresholdController extends AbstractController implements Initializ
 
         //and got back to the editGroup page
         modelAndView = new ModelAndView("admin/thresholds/editGroup");
-        modelAndView.addObject("group", configFactory.getGroup(groupName));
+        modelAndView.addObject("group", group);
         return modelAndView;
     }
 
@@ -704,17 +800,16 @@ public class ThresholdController extends AbstractController implements Initializ
         //Always reload to get a consistent view of the thresholds before we start editing.  
         //Otherwise we'll be dealing with questions on the mailing lists for the rest of our lives
         try {
-            ThresholdingConfigFactory.reload();
+            thresholdingDao.reload();
         } catch (Throwable e) {
             throw new ServletException("Could not reload ThresholdingConfigFactory because " + e.getMessage(), e);
         }
-        ThresholdingConfigFactory configFactory = ThresholdingConfigFactory.getInstance();
         ModelAndView modelAndView = new ModelAndView("admin/thresholds/list");
 
         Map<String, Group> groupMap = new TreeMap<String, Group>();
-        for (String aName : configFactory.getGroupNames()) {
-            groupMap.put(aName, configFactory.getGroup(aName));
-        }
+        thresholdingDao.getWriteableConfig()
+                .getGroups()
+                .forEach(g -> groupMap.put(g.getName(), g));
 
         modelAndView.addObject("groupMap", groupMap);
         return modelAndView;

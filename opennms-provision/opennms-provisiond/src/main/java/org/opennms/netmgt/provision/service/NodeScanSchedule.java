@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.service;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.joda.time.Duration;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /**
  * <p>NodeScanSchedule class.</p>
@@ -42,6 +43,7 @@ public class NodeScanSchedule {
     private int m_nodeId;
     private String m_foreignSource;
     private String m_foreignId;
+    private OnmsMonitoringLocation m_location;
     private Duration m_initialDelay;
     private Duration m_scanInterval;
     
@@ -54,10 +56,11 @@ public class NodeScanSchedule {
      * @param initialDelay a {@link org.joda.time.Duration} object.
      * @param scanInterval a {@link org.joda.time.Duration} object.
      */
-    public NodeScanSchedule(int nodeId, String foreignSource, String foreignId, Duration initialDelay, Duration scanInterval) {
+    public NodeScanSchedule(int nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location, Duration initialDelay, Duration scanInterval) {
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
+        m_location = location;
         m_initialDelay = initialDelay;
         m_scanInterval = scanInterval;
     }
@@ -89,6 +92,10 @@ public class NodeScanSchedule {
         return m_foreignSource;
     }
 
+    public OnmsMonitoringLocation getLocation() {
+        return m_location;
+    }
+
     /**
      * <p>getInitialDelay</p>
      *
@@ -118,6 +125,7 @@ public class NodeScanSchedule {
             .append("foreign source", m_foreignSource)
             .append("foreign id", m_foreignId)
             .append("node id", m_nodeId)
+            .append("location", m_location.getLocationName())
             .append("initial delay", m_initialDelay)
             .append("scan interval", m_scanInterval)
             .toString();

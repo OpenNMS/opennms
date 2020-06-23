@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -32,35 +32,28 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.netmgt.config.*,
+	import="
 		java.util.*,
 		java.text.*,
-		org.opennms.netmgt.config.groups.*,
-		org.opennms.netmgt.config.users.*,
-		org.opennms.netmgt.model.OnmsCategory
+		org.opennms.netmgt.config.users.*
 	"
 %>
 <%@page import="org.opennms.web.group.WebGroup"%>
 
 <%
   	WebGroup group = (WebGroup)session.getAttribute("group.modifyGroup.jsp");
+    if (group == null) {
+        throw new ServletException("Could not get session attribute group");
+    }
     String[] allCategories = (String[])session.getAttribute("allCategories.modifyGroup.jsp");
     String[] allUsers = (String[])session.getAttribute("allUsers.modifyGroup.jsp");
-    String[] allVisibleMaps = (String[])session.getAttribute("allVisibleMaps.modifyGroup.jsp");
 	String[] categoryListInGroup = group.getAuthorizedCategories().toArray(new String[0]);
     String[] categoryListNotInGroup = group.getUnauthorizedCategories(Arrays.asList(allCategories)).toArray(new String[0]);
     String[] selectedUsers = group.getUsers().toArray(new String[0]);
     String[] availableUsers = group.getRemainingUsers(Arrays.asList(allUsers)).toArray(new String[0]);
-
-
-	if (group == null) {
-		throw new ServletException("Could not get session attribute group");
-	}
-	
-	
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Modify Group" />
   <jsp:param name="headTitle" value="Modify" />
   <jsp:param name="headTitle" value="Groups" />
@@ -233,9 +226,7 @@
             selectAllSelected();
             selectAllSelectedCategories();
             document.modifyGroup.operation.value="save";
-            return true;
-        } else {
-            return false;
+            document.modifyGroup.submit();
         }
     }
     
@@ -296,194 +287,165 @@
             m4.options[i].selected = true;
         }
     }
-
 </script>
-<h3>Modifying Group: <%=group.getName()%></h3>
 
-<form method="post" name="modifyGroup" onsubmit="return saveGroup();">
+<form role="form" class="form" method="post" id="modifyGroup" name="modifyGroup">
   <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
   <input type="hidden" name="operation"/>
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" >
-        <tr>
-          <td>
-                Assign a default map to group selecting from selection list.
-          </td>
-        </tr>
-        <tr>
-          <td>
-          <select name="groupDefaultMap">
-          	<option selected><%=group.getDefaultMap()%></option>
-          	<%
-          	for (String mapname: allVisibleMaps) {
-          	    if (!mapname.equals(group.getDefaultMap())) { 
-          	%>
-          	<option><%=mapname%></option>
-          	<%    
-          	    }
-          	}
-          	%>
-          </select>
-          </td>
-        </tr>
-        
-        </table>
 
+    <div class="card">
+        <div class="card-header">
+            <span>Assignments</span>
+        </div>
+        <div class="card-body">
+            <p>Assign and unassign users to the group using the select lists below. Also, change the ordering of the selected users by highlighting a user in the "Currently in Group" list and click the "Move Up" and "Move Down" buttons. The ordering of the users in the group will affect the order that the users are notified if this group is used in a notification.</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-sm" id="modifyGroupUsers">
+                        <tr>
+                            <th colspan="3" align="center">
+                                <span>Assign/Unassign Users</span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <label class="col-form-label">Available Users</label>
+                                <%=createSelectList("availableUsers", availableUsers)%><br/>
+                                <div class="mt-2" align="center">
+                                    <button type="button" class="btn btn-secondary" name="availableAll" onClick="javascript:selectAllAvailable()">Select All</button>
+                                    <button type="button" class="btn btn-secondary" id="users.doAdd" onClick="javascript:addUsers()">&nbsp;&#155;&#155;&nbsp;</button>
+                                </div>
+                            </td>
+                            <td align="center">
+                                <label class="col-form-label">Currently in Group</label>
+                                <%=createSelectList("selectedUsers", selectedUsers)%><br/>
+                                <div class="mt-2" align="center">
+                                    <button type="button" class="btn btn-secondary" name="selectedAll" onClick="javascript:selectAllSelected()">Select All</button>
+                                    <button type="button" class="btn btn-secondary" id="users.doRemove" onClick="javascript:removeUsers()">&nbsp;&#139;&#139;&nbsp;</button>
+                                </div>
+                            </td>
+                            <td class="align-middle">
+                                <div>
+                                    <button type="button" class="btn btn-secondary" onClick="javascript:move(-1)" title="Move Up"><i class="fa fa-arrow-up"></i></button>
+                                    <button type="button" class="btn btn-secondary" onClick="javascript:move(1)" title="Move Down"><i class="fa fa-arrow-down"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div> <!-- column -->
+                <div class="col-md-6">
+                    <table class="table" id="modifyGroupCategories">
+                        <tr>
+                            <th colspan="3" align="center">
+                                <span>Assign/Unassign Categories</span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <label class="col-form-label">Available Categories</label>
+                                <%=createSelectList("availableCategories", categoryListNotInGroup)%>
+                                <div class="mt-2" align="center">
+                                    <button type="button" class="btn btn-secondary" name="availableAll" onClick="javascript:selectAllAvailableCategories()">Select All</button>
+                                    <button type="button" class="btn btn-secondary" id="categories.doAdd" onClick="javascript:addCategories()">&nbsp;&#155;&#155;&nbsp;</button>
+                                </div>
+                            </td>
+                            <td align="center">
+                                <label class="col-form-label">Currently in Group</label>
+                                <%=createSelectList("selectedCategories", categoryListInGroup)%>
+                                <div class="mt-2" align="center">
+                                    <button type="button" class="btn btn-secondary" id="categories.doRemove" onClick="javascript:removeCategories()">&nbsp;&#139;&#139;&nbsp;</button>
+                                    <button type="button" class="btn btn-secondary" name="selectedAll" onClick="javascript:selectAllSelectedCategories()">Select All</button>
+                                </div>
+                            </td>
+                            <td class="align-middle">
+                                <div>
+                                    <button type="button" class="btn btn-secondary" onClick="javascript:moveCat(-1)" title="Move Up"><i class="fa fa-arrow-up"></i></button>
+                                    <button type="button" class="btn btn-secondary" onClick="javascript:moveCat(1)" title="Move Down"><i class="fa fa-arrow-down"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div> <!-- column -->
+            </div> <!-- row -->
+        </div> <!-- card-body -->
+    </div> <!-- panel -->
 
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" >
-        <tr>
-          <td>
-                Assign and unassign users to the group using the select lists below. Also, change the ordering of
-                the selected users by highlighting a user in the "Currently in Group" list and click the "Move Up" and "Move Down" buttons.
-                The ordering of the users in the group will affect the order that the users are notified if this group is used in a notification.
-          </td>
-        </tr>
-
-        <tr>
-          <td align="left">
-            <table bgcolor="white" border="1" cellpadding="5" cellspacing="2">
-              <tr>
-                <td colspan="3" align="center">
-                  <b>Assign/Unassign Users</b>
-                </td>
-              </tr>
-              <tr>
-                <td align="center">
-                  Available Users <br/>
-                  <%=createSelectList("availableUsers", availableUsers)%><br/>
-                  <p align="center">
-                  <input type="button" name="availableAll" onClick="selectAllAvailable()" value="Select All"/><br/>
-                  <input type="button" onClick="addUsers()" value="&nbsp;&#155;&#155;&nbsp;"/></p>
-                </td>
-                <td align="center">
-                  Currently in Group <br/>
-                  <%=createSelectList("selectedUsers", selectedUsers)%><br/>
-                  <p align="center">
-                  <input type="button" name="selectedAll" onClick="selectAllSelected()" value="Select All"/><br/>
-                  <input type="button" onClick="removeUsers()" value="&nbsp;&#139;&#139;&nbsp;"/></p>
-                </td>
-                <td>
-                  <input type="button" value="  Move Up   " onclick="move(-1)"/> <br/>
-                  <input type="button" value="Move Down" onclick="move(1)"/>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-
-      
-	      <tr>
-	          <td align="left">
-	            <table bgcolor="white" border="1" cellpadding="5" cellspacing="2">
-	              <tr>
-	                <td colspan="3" align="center">
-	                  <b>Assign/Unassign Categories</b>
-	                </td>
-	              </tr>
-	              <tr>
-	                <td align="center">
-	                  Available Categories <br/>
-	                  <%=createSelectList("availableCategories", categoryListNotInGroup)%><br/>
-	                  <p align="center">
-	                  
-	                  <input type="button" name="availableAll" onClick="selectAllAvailableCategories()" value="Select All"/><br/>
-	                  <input type="button" onClick="addCategories()" value="&nbsp;&#155;&#155;&nbsp;"/></p>
-	                </td>
-	                <td align="center">
-	                  Currently in Group <br/>
-	                  <%=createSelectList("selectedCategories", categoryListInGroup)%><br/>
-	                  <p align="center">
-	                  <input type="button" name="selectedAll" onClick="selectAllSelectedCategories()" value="Select All"/><br/>
-	                  <input type="button" onClick="removeCategories()" value="&nbsp;&#139;&#139;&nbsp;"/></p>
-	                </td>
-	                <td>
-	                  <input type="button" value="  Move Up   " onclick="moveCat(-1)"/> <br/>
-	                  <input type="button" value="Move Down" onclick="moveCat(1)"/>
-	                </td>
-	              </tr>
-	            </table>
-	          </td>
-	        </tr>
-	      </table>
-      
-      <p><b>Duty Schedules</b></p>
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" >
-        <tr bgcolor="#999999">
-          <td>&nbsp;</td>
-          <td><b>Delete</b></td>
-          <td><b>Mo</b></td>
-          <td><b>Tu</b></td>
-          <td><b>We</b></td>
-          <td><b>Th</b></td>
-          <td><b>Fr</b></td>
-          <td><b>Sa</b></td>
-          <td><b>Su</b></td>
-          <td><b>Begin Time</b></td>
-          <td><b>End Time</b></td>
-        </tr>
-            <%
-                       int i = 0;
-                       for(String dutySchedSpec : group.getDutySchedules()) {
-                           DutySchedule tmp = new DutySchedule(dutySchedSpec);
-                           Vector curSched = tmp.getAsVector();
-                    %>
-                    <tr>
-                      <td width="1%"><%=(i+1)%></td>
-                      <td width="1%">
-                        <input type="checkbox" name="deleteDuty<%=i%>"/>
-                      </td>
-                      <% ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
-                         for (int j = 0; j < 7; j++)
-                         {
-                            Boolean curDay = (Boolean)curSched.get(j);
-                      %>
-                      <td width="5%">
-                        <input type="checkbox" name="duty<%=i+days.format(j)%>" <%= (curDay.booleanValue() ? "checked" : "")%>/>
-                      </td>
-                      <% } %>
-                      <td width="5%">
-                        <input type="text" size="4" name="duty<%=i%>Begin" value="<%=curSched.get(7)%>"/>
-                      </td>
-                      <td width="5%">
-                        <input type="text" size="4" name="duty<%=i%>End" value="<%=curSched.get(8)%>"/>
-                      </td>
-                    </tr>
-                    <% i++; } %>
+    <div class="card">
+      <div class="card-header">
+        <span>Duty Schedules</span>
+      </div>
+      <div class="card-body">
+      <table class="table table-sm table-striped">
+            <tr>
+              <th>#</th>
+              <th>Delete</th>
+              <th>Mo</th>
+              <th>Tu</th>
+              <th>We</th>
+              <th>Th</th>
+              <th>Fr</th>
+              <th>Sa</th>
+              <th>Su</th>
+              <th>Begin Time</th>
+              <th>End Time</th>
+            </tr>
+                <%
+                           int i = 0;
+                           for(String dutySchedSpec : group.getDutySchedules()) {
+                               DutySchedule tmp = new DutySchedule(dutySchedSpec);
+                               Vector<Object> curSched = tmp.getAsVector();
+                        %>
+                        <tr>
+                          <td width="1%"><%=(i+1)%></td>
+                          <td width="1%">
+                            <input type="checkbox" name="deleteDuty<%=i%>"/>
+                          </td>
+                          <% ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
+                             for (int j = 0; j < 7; j++)
+                             {
+                                Boolean curDay = (Boolean)curSched.get(j);
+                          %>
+                          <td width="5%">
+                            <input type="checkbox" name="duty<%=i+days.format(j)%>" <%= (curDay.booleanValue() ? "checked" : "")%>/>
+                          </td>
+                          <% } %>
+                          <td width="5%">
+                            <input type="text" class="form-control" size="4" name="duty<%=i%>Begin" value="<%=curSched.get(7)%>"/>
+                          </td>
+                          <td width="5%">
+                            <input type="text" class="form-control" size="4" name="duty<%=i%>End" value="<%=curSched.get(8)%>"/>
+                          </td>
+                        </tr>
+                        <% i++; } %>
       </table>
 
-  <p><input type="button" name="addSchedule" value="Add This Many Schedules" onclick="addGroupDutySchedules()"/>
-     <input type="hidden" name="dutySchedules" value="<%=group.getDutySchedules().size()%>"/>
-    <select name="numSchedules" value="3" size="1">
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5">5</option>
-      <option value="6">6</option>
-      <option value="7">7</option>
-    </select>
-  </p>
+      <div class="form-row mb-2">
+          <button type="button" name="addSchedule" class="btn btn-secondary" onclick="removeGroupDutySchedules()">Remove Checked Schedules</button>
+      </div>
 
-  <p><input type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeGroupDutySchedules()"/></p>
+      <div class="form-row">
+          <input type="hidden" name="dutySchedules" value="<%=group.getDutySchedules().size()%>"/>
+          <select name="numSchedules" class="form-control custom-select col-xs-6 col-sm-2 col-md-1 mr-2">
+            <option value="1" selected="selected">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+          </select>
+          <button id="addSchedule" class="btn btn-secondary" name="addSchedule" onclick="addGroupDutySchedules()" title="Add This Many Schedules"><i class="fa fa-plus"></i> New Schedules</button>
+      </div>
+      </div> <!-- card-body -->
+    </div> <!-- card -->
 
+  <div class="form-group">
+    <button type="button" class="btn btn-secondary" name="finish" onclick="saveGroup()">Finish</button>
+    <button type="button" class="btn btn-secondary" name="cancel" onclick="cancelGroup()">Cancel</button>
+  </div>
 
-<!-- finish and discard buttons -->
-  <table>
-    <tr>
-      <td> &nbsp; </td>
-      <td>
-        <table>
-          <tr>
-            <td>
-              <input type="submit" name="finish" value="Finish"/>
-              <input type="button" name="cancel" value="Cancel" onclick="cancelGroup()"/>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
 </form>
-  
+
 <script type="text/javascript">
   // shorthand for refering to menus
   // must run after document has been created
@@ -495,13 +457,11 @@
   var m4 = document.modifyGroup.selectedCategories;
 </script>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
-
-
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
 
 <%!
     private String createSelectList(String name, String[] categories) {
-        StringBuffer buffer = new StringBuffer("<select width=\"200\" style=\"width: 200px\" multiple=\"multiple\" name=\""+name+"\" size=\"10\">");
+        StringBuffer buffer = new StringBuffer("<select class=\"form-control custom-select\" multiple=\"multiple\" name=\""+name+"\" size=\"10\">");
         for(String category : categories){
             buffer.append("<option>" + category + "</option>");
         }
@@ -511,4 +471,3 @@
     }
     
 %>
-

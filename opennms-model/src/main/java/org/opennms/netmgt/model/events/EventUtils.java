@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,25 +28,38 @@
 
 package org.opennms.netmgt.model.events;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
-import static org.opennms.netmgt.EventConstants.INTERFACE_DELETED_EVENT_UEI;
-import static org.opennms.netmgt.EventConstants.NODE_ADDED_EVENT_UEI;
-import static org.opennms.netmgt.EventConstants.NODE_DELETED_EVENT_UEI;
-import static org.opennms.netmgt.EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI;
-import static org.opennms.netmgt.EventConstants.NODE_GAINED_SERVICE_EVENT_UEI;
-import static org.opennms.netmgt.EventConstants.NODE_UPDATED_EVENT_UEI;
-import static org.opennms.netmgt.EventConstants.PARM_IP_HOSTNAME;
-import static org.opennms.netmgt.EventConstants.PARM_NODE_LABEL;
-import static org.opennms.netmgt.EventConstants.PARM_NODE_LABEL_SOURCE;
-import static org.opennms.netmgt.EventConstants.PARM_NODE_SYSDESCRIPTION;
-import static org.opennms.netmgt.EventConstants.PARM_NODE_SYSNAME;
-import static org.opennms.netmgt.EventConstants.SERVICE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.INTERFACE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_ADDED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_GAINED_SERVICE_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_LOCATION_CHANGED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.NODE_UPDATED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_IP_HOSTNAME;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_CURRENT_LOCATION;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_LABEL;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_LABEL_SOURCE;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_PREV_LOCATION;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSDESCRIPTION;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSNAME;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_RESCAN_EXISTING;
+import static org.opennms.netmgt.events.api.EventConstants.SERVICE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
+import static org.opennms.netmgt.events.api.EventConstants.APPLICATION_DELETED_EVENT_UEI;
 
 import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Objects;
 
+import org.opennms.core.utils.InsufficientInformationException;
+import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
@@ -85,7 +98,7 @@ public abstract class EventUtils {
         
         EventBuilder bldr = new EventBuilder(NODE_ADDED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);
-        bldr.addParam(PARM_NODE_LABEL, nodeLabel);
+        bldr.addParam(PARM_NODE_LABEL, WebSecurityUtils.sanitizeString(nodeLabel));
         if (labelSource != null) {
             bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource.toString());
         }
@@ -232,6 +245,26 @@ public abstract class EventUtils {
         return bldr.getEvent();
     }
 
+    /**
+     * Constructs a applicationDeleted Event for a given application id and name
+     * @param source
+     *              the source of the event
+     * @param applicationId
+     *              the id of the deleted application
+     * @param applicationName
+     *              the name of the deleted application
+     * @return an Event that represents the applicationDeleted event for the given id and name
+     */
+    public static Event createApplicationDeletedEvent(String source, int applicationId, String applicationName) {
+        debug("createApplicationDeletedEvent for nodeid:  %d", applicationId);
+
+        final EventBuilder bldr = new EventBuilder(APPLICATION_DELETED_EVENT_UEI, source);
+        bldr.addParam(PARM_APPLICATION_ID, applicationId);
+        bldr.addParam(PARM_APPLICATION_NAME, applicationName);
+
+        return bldr.getEvent();
+    }
+
 
     /**
      * Retrieve the value associated with an event parameter and parse it to a
@@ -341,15 +374,53 @@ public abstract class EventUtils {
      * @param nodeId a {@link java.lang.Integer} object.
      * @param nodeLabel a {@link java.lang.String} object.
      * @param labelSource a {@link java.lang.String} object.
+     * @param rescanExisting a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
-    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, NodeLabelSource labelSource) {
+    public static Event createNodeUpdatedEvent(String source, Integer nodeId, String nodeLabel, NodeLabelSource labelSource, String rescanExisting) {
         debug("CreateNodeUpdatedEvent: nodedId: %d", nodeId);
         EventBuilder bldr = new EventBuilder(NODE_UPDATED_EVENT_UEI, source);
         bldr.setNodeid(nodeId);
         bldr.addParam(PARM_NODE_LABEL, nodeLabel);
         if (labelSource != null) {
             bldr.addParam(PARM_NODE_LABEL_SOURCE, labelSource.toString());
+        }
+        if (rescanExisting != null) {
+            bldr.addParam(PARM_RESCAN_EXISTING, rescanExisting);
+        }
+        return bldr.getEvent();
+    }
+
+    /**
+     * <p>createNodeLocationChangedEvent</p>
+     *
+     * @param source a {@link java.lang.String} object.
+     * @param nodeId a {@link java.lang.Integer} object.
+     * @param nodeLabel a {@link java.lang.String} object.
+     * @param prevLocation a {@link java.lang.String} object.
+     * @param currentLocation a {@link java.lang.String} object.
+     * @return a {@link org.opennms.netmgt.xml.event.Event} object.
+     */
+    public static Event createNodeLocationChangedEvent(String source, Integer nodeId, String nodeLabel, String prevLocation, String currentLocation) {
+        debug("createNodeLocationChangedEvent: nodedId: %d", nodeId);
+        EventBuilder bldr = new EventBuilder(NODE_LOCATION_CHANGED_EVENT_UEI, source);
+        bldr.setNodeid(nodeId);
+        bldr.addParam(PARM_NODE_LABEL, nodeLabel);
+        bldr.addParam(PARM_NODE_PREV_LOCATION, prevLocation);
+        bldr.addParam(PARM_NODE_CURRENT_LOCATION, currentLocation);
+        return bldr.getEvent();
+    }
+
+
+    public static Event createNodeCategoryMembershipChangedEvent(final String source, final Integer nodeId, final String nodeLabel, String[] categoriesAdded, String[] categoriesDeleted) {
+        EventBuilder bldr = new EventBuilder(NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI, source);
+        bldr.setNodeid(nodeId);
+        bldr.addParam(PARM_NODE_LABEL, nodeLabel);
+        if (categoriesAdded != null && categoriesAdded.length > 0) {
+            bldr.addParam(EventConstants.PARM_CATEGORIES_ADDED, String.join(",", categoriesAdded));
+        }
+        if (categoriesDeleted != null && categoriesDeleted.length > 0) {
+            bldr.addParam(EventConstants.PARM_CATEGORIES_DELETED, String.join(",", categoriesDeleted));
         }
         return bldr.getEvent();
     }
@@ -361,7 +432,8 @@ public abstract class EventUtils {
      * @return a {@link java.lang.String} object.
      */
     public static String toString(Event event) {
-        StringBuffer b = new StringBuffer("Event: ");
+        final StringBuilder b = new StringBuilder("Event: ");
+        b.append("\n");
         if (event.getAutoacknowledge() != null) {
             b.append(" Autoacknowledge: " + event.getAutoacknowledge() + "\n");
         }
@@ -469,19 +541,19 @@ public abstract class EventUtils {
 
     public static String toString(Collection<Parm> parms) {
         if (parms.size() == 0) {
-            return "Parms: (none)\n";
+            return "{}\n";
         }
         
-        StringBuffer b = new StringBuffer();
-        b.append("Parms:\n");
+        final StringBuilder b = new StringBuilder();
+        b.append("{\n");
         for (Parm p : parms) {
-            b.append(" ");
+            b.append("  ");
             b.append(p.getParmName());
             b.append(" = ");
             b.append(toString(p.getValue()));
             b.append("\n");
         }
-        b.append("End Parms\n");
+        b.append(" }");
         return b.toString();
     }
     
@@ -537,27 +609,218 @@ public abstract class EventUtils {
      * @return a boolean.
      */
     public static boolean eventsMatch(final Event e1, final Event e2) {
-    	if (e1 == e2) {
+        if (e1 == e2) {
             return true;
         }
         if (e1 == null || e2 == null) {
             return false;
         }
-        if (e1.getUei() != e2.getUei() && (e1.getUei() == null || e2.getUei() == null || !e1.getUei().equals(e2.getUei()))) {
-        		return false;
-        }
-    
-        if (e1.getNodeid() != e2.getNodeid()) {
+        if (!Objects.equals(e1.getUei(), e2.getUei())) {
             return false;
         }
-        if (e1.getInterface() != e2.getInterface() && (e1.getInterface() == null || e2.getInterface() == null || !e1.getInterface().equals(e2.getInterface()))) {
+        if (!Objects.equals(e1.getNodeid(), e2.getNodeid())) {
             return false;
         }
-        if (e1.getService() != e2.getService() && (e1.getService() == null || e2.getService() == null || !e1.getService().equals(e2.getService()))) {
+        if (!Objects.equals(e1.getInterface(), e2.getInterface())) {
+            return false;
+        }
+        if (!Objects.equals(e1.getService(), e2.getService())) {
             return false;
         }
     
         return true;
+    }
+
+    /**
+     * Ensures the given event has an interface
+     *
+     * @param e
+     *            the event
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     *             if an interface is not available
+     */
+    static public void checkInterface(Event e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("Event is null");
+        } else if (e.getInterface() == null) {
+            throw new InsufficientInformationException("ipaddr for event is unavailable");
+        }
+    }
+    
+    /**
+     * Is the given interface a non-IP interface
+     *
+     * @param intf
+     *            the interface
+     * @return true/false
+     */
+    static public boolean isNonIpInterface(String intf) {
+        if (intf == null || intf.length() == 0 || "0.0.0.0".equals(intf) ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Ensures that the given Event has a node id
+     *
+     * @param e
+     *            the event
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     *             if a node id is not available
+     */
+    static public void checkNodeId(Event e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("e is null");
+        } else if (!e.hasNodeid()) {
+            throw new InsufficientInformationException("nodeid for event is unavailable");
+        }
+    }
+
+    /**
+     * Ensures that the given event has a service parameter
+     *
+     * @param e
+     *            the event to check
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     *             if the event does not have a service
+     */
+    public static void checkService(Event e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("e is null");
+        } else if (e.getService() == null || e.getService().length() == 0) {
+            throw new InsufficientInformationException("service for event is unavailable");
+        }
+    }
+
+    /**
+     * Constructs a deleteInterface event for the given nodeId, ipAddress (or ifIndex) pair.
+     *
+     * @param source
+     *            the source for the event
+     * @param nodeId
+     *            the nodeId of the node that owns the interface
+     * @param ipAddr
+     *            the ipAddress of the interface being deleted
+     * @param ifIndex
+     *            the ifIndex of the interface being deleted
+     * @param txNo
+     *            the transaction number to use for processing this event
+     * @return an Event representing a deleteInterface event for the given
+     *         nodeId, ipaddr
+     */
+    public static Event createDeleteInterfaceEvent(String source, long nodeId, String ipAddr, int ifIndex, long txNo) {
+        return createInterfaceEventBuilder(EventConstants.DELETE_INTERFACE_EVENT_UEI, source, nodeId, ipAddr, ifIndex, txNo).getEvent();
+    }
+
+    private static EventBuilder createInterfaceEventBuilder(String uei, String source, long nodeId, String ipAddr, int ifIndex, long txNo) {
+        EventBuilder bldr = new EventBuilder(uei, source);
+        
+        if (ipAddr != null && ipAddr.length() != 0) {
+            bldr.setInterface(addr(ipAddr));
+        }
+        
+        bldr.setNodeid(nodeId);
+
+        if (ifIndex != -1) {
+            bldr.setIfIndex(ifIndex);
+        }
+
+        bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
+
+        return bldr;
+    }
+
+    public static Event createDeleteNodeEvent(String source, long nodeId, long txNo) {
+        return createNodeEventBuilder(EventConstants.DELETE_NODE_EVENT_UEI, source, nodeId, txNo).getEvent();
+    }
+
+    private static EventBuilder createNodeEventBuilder(String uei, String source, long nodeId, long txNo) {
+        EventBuilder bldr = new EventBuilder(uei, source);
+        
+        bldr.setNodeid(nodeId);
+        
+        if (txNo >= 0) {
+            bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
+        }
+        return bldr;
+    }
+
+    /**
+     * Construct a deleteNode event for the given nodeId.
+     *
+     * @param source
+     *            the source for the event
+     * @param nodeId
+     *            the node to be deleted.
+     * @param txNo
+     *            the transaction number associated with deleting the node
+     * @return an Event object representing a delete node event.
+     */
+    public static Event createAssetInfoChangedEvent(String source, long nodeId, long txNo) {
+        return createNodeEventBuilder(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, source, nodeId, txNo).getEvent();
+    }
+
+    private static EventBuilder createServiceEventBuilder(String uei, String source, long nodeId, String ipAddr, String service, long txNo) {
+        EventBuilder bldr = new EventBuilder(uei, source);
+
+        bldr.setNodeid(nodeId);
+        bldr.setInterface(addr(ipAddr));
+        bldr.setService(service);
+        
+        bldr.addParam(EventConstants.PARM_TRANSACTION_NO, txNo);
+
+        return bldr;
+    }
+
+    /**
+     * Constructs a deleteService event for the given nodeId, ipAddress,
+     * serviceName triple.
+     *
+     * @param source
+     *            the source for the event
+     * @param nodeId
+     *            the nodeId of the node that service resides on
+     * @param ipAddr
+     *            the ipAddress of the interface the service resides on
+     * @param service
+     *            the service that is being deleted
+     * @param txNo
+     *            the transaction number to use for processing this event
+     * @return an Event representing a deleteInterface event for the given
+     *         nodeId, ipaddr
+     */
+    public static Event createDeleteServiceEvent(String source, long nodeId, String ipAddr, String service, long txNo) {
+        
+        return createServiceEventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, source, nodeId, ipAddr, service, txNo).getEvent();
+        
+    }
+
+    /**
+     * Throw an exception if an event does have the required parameter
+     *
+     * @param e
+     *            the event the parameter must reside on
+     * @throws org.opennms.netmgt.capsd.InsufficientInformationException
+     *             if the paramter is not set on the event or if its value has
+     *             no content
+     * @param parmName a {@link java.lang.String} object.
+     */
+    public static void requireParm(Event e, String parmName) throws InsufficientInformationException {
+        for (Parm parm : e.getParmCollection()) {
+            if (parmName.equals(parm.getParmName())) {
+                if (parm.getValue() != null && parm.getValue().getContent() != null) {
+                    // we found a matching parm
+                    return;
+                } else {
+                    throw new InsufficientInformationException("parameter " + parmName + " required but only null valued parms available");
+                }
+            }
+        }
+
+        throw new InsufficientInformationException("parameter " + parmName + " required but was not available");
+
     }
 
 }

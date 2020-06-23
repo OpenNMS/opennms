@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<datacollection-group name="Novell">
+
+    <!-- Netware Resource Types -->
+    <resourceType name="netwareDisk" label="Netware Disk" resourceLabel="${nwLabel}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="nwLabel" />
+		<parameter key="replace-first" value="s/^-$/_root_fs/" />
+		<parameter key="replace-all" value="s/^-//" />
+		<parameter key="replace-all" value="s/\s//" />
+		<parameter key="replace-all" value="s/:\\/_/" />
+		<parameter key="replace-all" value="s/:/_/" />
+      </storageStrategy>
+    </resourceType>
+
+      <!-- Novell MIBs -->
+      <group name="netware-host" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.25.3.3.1.2"  instance="1" alias="cpuPercentBusy"      type="integer" />
+        <mibObj oid=".1.3.6.1.2.1.25.1.6"      instance="0" alias="numberOfNLMsLoaded"  type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.2"      instance="0" alias="memorySize"          type="integer" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4"  instance="3" alias="cacheBuffersUnits"   type="integer" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5"  instance="3" alias="cacheBuffersSize"    type="integer" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6"  instance="3" alias="cacheBuffersUsed"    type="integer" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4"  instance="6" alias="codeDataMemoryUnits" type="integer" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5"  instance="6" alias="codeDataMemorySize"  type="integer" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6"  instance="6" alias="codeDataMemoryUsed"  type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.7" instance="0" alias="currentOpenFiles"    type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.3.2" instance="0" alias="licensedConnections" type="integer" />
+      </group>
+
+      <group name="netware-disk" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.14.1.2" instance="netwareDisk" alias="nwLabel"         type="string" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.14.1.3" instance="netwareDisk" alias="nwVolSize"       type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.14.1.4" instance="netwareDisk" alias="nwFreeSpace"     type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.14.1.5" instance="netwareDisk" alias="nwFreeableSpace" type="integer" />
+      </group>
+
+      <group name="netware-fs-scalars" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.1"  instance="0" alias="nwFSReads"          type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.2"  instance="0" alias="nwFSWrites"         type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.3"  instance="0" alias="nwFSReadKB"         type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.4"  instance="0" alias="nwFSWrittenKB"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.5"  instance="0" alias="nwFSCacheChecks"    type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.6"  instance="0" alias="nwFSCacheHits"      type="counter" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.7"  instance="0" alias="nwFSOpenFiles"      type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.8"  instance="0" alias="nwFSMaxOpenFiles"   type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.9"  instance="0" alias="nwFSRecordLocks"    type="gauge" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.10" instance="0" alias="nwFSMaxRecordLocks" type="integer" />
+        <mibObj oid=".1.3.6.1.4.1.23.2.28.2.13" instance="0" alias="nwFSVolCount"       type="gauge" />
+      </group>
+
+      <systemDef name="Novell Netware">
+        <sysoidMask>.1.3.6.1.4.1.23.</sysoidMask>
+        <collect>
+          <includeGroup>netware-host</includeGroup>
+          <includeGroup>netware-disk</includeGroup>
+          <includeGroup>netware-fs-scalars</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>

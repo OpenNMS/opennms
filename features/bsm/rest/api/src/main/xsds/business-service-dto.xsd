@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:bs="http://xmlns.opennms.org/xsd/business-services" targetNamespace="http://xmlns.opennms.org/xsd/business-services" version="1.0">
+
+  <xs:element name="business-service" nillable="true" type="xs:anyType"/>
+
+  <xs:element name="child-edge" nillable="true" type="xs:anyType"/>
+
+  <xs:element name="ip-service-edge" nillable="true" type="xs:anyType"/>
+
+  <xs:element name="reduction-key-edge" nillable="true" type="xs:anyType"/>
+
+  <xs:element name="business-services" type="bs:businessServiceListDTO"/>
+
+  <xs:element name="ip-service" type="bs:ipServiceResponseDTO"/>
+
+  <xs:element name="map-function" type="bs:mapFunctionDTO"/>
+
+  <xs:element name="functions" type="bs:functionMetaListDTO"/>
+
+  <xs:element name="reduce-function" type="bs:reduceFunctionDTO"/>
+
+  <xs:element name="attribute" type="bs:jaxbMapEntry"/>
+
+  <xs:element name="attributes" type="bs:jaxbMap"/>
+
+  <xs:complexType name="businessServiceListDTO">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="business-service" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="businessServiceRequestDTO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element minOccurs="0" ref="bs:attributes"/>
+      <xs:element minOccurs="0" name="ip-service-edges">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="ip-service-edge" type="bs:ipServiceEdgeRequestDTO"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="child-edges">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="child-edge" type="bs:childEdgeRequestDTO"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="reduction-key-edges">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="reduction-key-edge" type="bs:reductionKeyEdgeRequestDTO"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="reduce-function" type="bs:reduceFunctionDTO"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ipServiceEdgeRequestDTO">
+    <xs:complexContent>
+      <xs:extension base="bs:abstractEdgeRequestDTO">
+        <xs:sequence>
+          <xs:element name="ip-service-id" type="xs:int"/>
+          <xs:element name="friendly-name" type="bs:friendlyName" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="abstractEdgeRequestDTO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="map-function" type="bs:mapFunctionDTO"/>
+      <xs:element name="weight" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="mapFunctionDTO">
+    <xs:sequence>
+      <xs:element name="type" type="xs:string"/>
+      <xs:element name="properties">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="entry">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element minOccurs="0" name="key" type="xs:string"/>
+                  <xs:element minOccurs="0" name="value" type="xs:string"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="childEdgeRequestDTO">
+    <xs:complexContent>
+      <xs:extension base="bs:abstractEdgeRequestDTO">
+        <xs:sequence>
+          <xs:element name="child-id" type="xs:long"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="reductionKeyEdgeRequestDTO">
+    <xs:complexContent>
+      <xs:extension base="bs:abstractEdgeRequestDTO">
+        <xs:sequence>
+          <xs:element name="reduction-key" type="xs:string"/>
+          <xs:element name="friendly-name" type="bs:friendlyName" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="reduceFunctionDTO">
+    <xs:sequence>
+      <xs:element name="type" type="xs:string"/>
+      <xs:element name="properties">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="entry">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element minOccurs="0" name="key" type="xs:string"/>
+                  <xs:element minOccurs="0" name="value" type="xs:string"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="businessServiceResponseDTO">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="id" type="xs:long"/>
+      <xs:element minOccurs="0" name="name" type="xs:string"/>
+      <xs:element minOccurs="0" ref="bs:attributes"/>
+      <xs:element minOccurs="0" name="ip-service-edges">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="ip-service" type="bs:ipServiceEdgeResponseDTO"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="reduction-key-edges">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="reduction-key" type="bs:reductionKeyEdgeResponseDTO"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="child-edges">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="child" type="bs:childEdgeResponseDTO"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="parent-services">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="parent-service" type="xs:long"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="reduce-function" type="bs:reduceFunctionDTO"/>
+      <xs:element minOccurs="0" name="operational-status" type="bs:status"/>
+      <xs:element minOccurs="0" name="location" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ipServiceEdgeResponseDTO">
+    <xs:complexContent>
+      <xs:extension base="bs:abstractEdgeResponseDTO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ip-service" type="bs:ipServiceResponseDTO"/>
+          <xs:element name="friendly-name" type="bs:friendlyName" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType abstract="true" name="abstractEdgeResponseDTO">
+    <xs:sequence>
+      <xs:element name="id" type="xs:long"/>
+      <xs:element minOccurs="0" name="operational-status" type="bs:status"/>
+      <xs:element minOccurs="0" name="map-function" type="bs:mapFunctionDTO"/>
+      <xs:element minOccurs="0" name="location" type="xs:string"/>
+      <xs:element minOccurs="0" name="reduction-keys">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="reduction-key" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="weight" type="xs:int"/>
+      <xs:element name="friendly-name" type="bs:friendlyName" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ipServiceResponseDTO">
+    <xs:sequence>
+      <xs:element name="id" type="xs:int"/>
+      <xs:element minOccurs="0" name="service-name" type="xs:string"/>
+      <xs:element minOccurs="0" name="node-label" type="xs:string"/>
+      <xs:element minOccurs="0" name="ip-address" type="xs:string"/>
+      <xs:element minOccurs="0" name="location" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="reductionKeyEdgeResponseDTO">
+    <xs:complexContent>
+      <xs:extension base="bs:abstractEdgeResponseDTO">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="childEdgeResponseDTO">
+    <xs:complexContent>
+      <xs:extension base="bs:abstractEdgeResponseDTO">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="child-id" type="xs:long"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="functionMetaDTO">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="parameter" type="bs:parameterMetaDTO"/>
+    </xs:sequence>
+    <xs:attribute name="type" type="bs:functionType"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="description" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="parameterMetaDTO">
+    <xs:sequence/>
+    <xs:attribute name="key" type="xs:string" use="required"/>
+    <xs:attribute name="type" type="xs:string" use="required"/>
+    <xs:attribute name="description" type="xs:string" use="required"/>
+    <xs:attribute name="required" type="xs:boolean" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="functionMetaListDTO">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="function" type="bs:functionMetaDTO"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="jaxbMap">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" ref="bs:attribute"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="jaxbMapEntry">
+    <xs:sequence>
+      <xs:element name="key" type="xs:string"/>
+      <xs:element name="value" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType abstract="true" name="xmlAdapter">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:simpleType name="status">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MINOR"/>
+      <xs:enumeration value="MAJOR"/>
+      <xs:enumeration value="CRITICAL"/>
+      <xs:enumeration value="WARNING"/>
+      <xs:enumeration value="INDETERMINATE"/>
+      <xs:enumeration value="NORMAL"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="friendlyName">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="0"/>
+      <xs:maxLength value="30"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="functionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MapFunction"/>
+      <xs:enumeration value="ReduceFunction"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/wsmanasset/adapter"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  xmlns:sa="http://xmlns.opennms.org/xsd/config/wsmanasset/adapter"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the wsman-asset-adapter-configuration.xml configuration file.</documentation>
+  </annotation>
+
+  <element name="wsman-asset-adapter-configuration">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="sa:package"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="package">
+    <complexType>
+      <sequence>
+        <choice>
+          <element maxOccurs="1" minOccurs="1" ref="sa:vendor">
+            <annotation>
+              <documentation>vendor attribute from WsManDetector</documentation>
+            </annotation>
+          </element>
+        </choice>
+        <element maxOccurs="unbounded" minOccurs="1" ref="sa:assetField"/>
+      </sequence>
+      <attribute name="name" type="string" use="required"/>
+    </complexType>
+  </element>
+  
+  <element name="vendor" type="string"/>
+
+  <element name="assetField">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="sa:wqlQueries"/>
+      </sequence>
+      <attribute name="name" type="string" use="required"/>
+      <attribute name="formatString" type="string" use="required"/>
+    </complexType>
+  </element>
+
+  <element name="wqlQueries">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="sa:wql"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="wql">
+    <annotation>
+      <documentation>a Wql object</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="resourceUri" type="string" use="required">
+        <annotation>
+          <documentation>Resource identifier</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="query" type="string" use="required">
+        <annotation>
+          <documentation>WQL query to execute against the resourceUri</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="alias" type="string" use="required">
+        <annotation>
+          <documentation>a human readable name for the object (such as
+          "ifOctetsIn"). NOTE: This value is used as the RRD file name and
+          data source name. RRD only supports data source names up to 19 chars
+          in length. If the data collector encounters an alias which
+          exceeds 19 characters it will be truncated.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+</schema>

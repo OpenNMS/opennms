@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,7 +28,9 @@
 
 package org.opennms.web.event;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -39,24 +41,31 @@ import org.opennms.web.event.filter.AcknowledgedByFilter;
 import org.opennms.web.event.filter.AfterDateFilter;
 import org.opennms.web.event.filter.AlarmIDFilter;
 import org.opennms.web.event.filter.BeforeDateFilter;
+import org.opennms.web.event.filter.EventIdFilter;
+import org.opennms.web.event.filter.EventTextFilter;
 import org.opennms.web.event.filter.ExactUEIFilter;
 import org.opennms.web.event.filter.IPAddrLikeFilter;
 import org.opennms.web.event.filter.IfIndexFilter;
 import org.opennms.web.event.filter.InterfaceFilter;
+import org.opennms.web.event.filter.LocationFilter;
 import org.opennms.web.event.filter.LogMessageMatchesAnyFilter;
-import org.opennms.web.event.filter.LogMessageSubstringFilter;
 import org.opennms.web.event.filter.NegativeAcknowledgedByFilter;
 import org.opennms.web.event.filter.NegativeExactUEIFilter;
 import org.opennms.web.event.filter.NegativeInterfaceFilter;
+import org.opennms.web.event.filter.NegativeLocationFilter;
 import org.opennms.web.event.filter.NegativeNodeFilter;
+import org.opennms.web.event.filter.NegativeNodeLocationFilter;
 import org.opennms.web.event.filter.NegativePartialUEIFilter;
 import org.opennms.web.event.filter.NegativeServiceFilter;
 import org.opennms.web.event.filter.NegativeSeverityFilter;
+import org.opennms.web.event.filter.NegativeSystemIdFilter;
 import org.opennms.web.event.filter.NodeFilter;
+import org.opennms.web.event.filter.NodeLocationFilter;
 import org.opennms.web.event.filter.NodeNameLikeFilter;
 import org.opennms.web.event.filter.PartialUEIFilter;
 import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
+import org.opennms.web.event.filter.SystemIdFilter;
 import org.opennms.web.filter.Filter;
 
 /**
@@ -123,10 +132,14 @@ public abstract class EventUtil {
             filter = new NegativeExactUEIFilter(value);
         } else if (type.equals(NegativeAcknowledgedByFilter.TYPE)) {
             filter = new NegativeAcknowledgedByFilter(value);
+        } else if (type.equals(EventIdFilter.TYPE)) {
+            filter = new EventIdFilter(WebSecurityUtils.safeParseInt(value));
+        } else if (type.equals(EventIdFilter.TYPE)) {
+            filter = new EventIdFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(IPAddrLikeFilter.TYPE)) {
             filter = new IPAddrLikeFilter(value);
-        } else if (type.equals(LogMessageSubstringFilter.TYPE)) {
-            filter = new LogMessageSubstringFilter(value);
+        } else if (type.equals(EventTextFilter.TYPE)) {
+            filter = new EventTextFilter(value);
         } else if (type.equals(LogMessageMatchesAnyFilter.TYPE)) {
             filter = new LogMessageMatchesAnyFilter(value);
         } else if (type.equals(BeforeDateFilter.TYPE)) {
@@ -135,6 +148,18 @@ public abstract class EventUtil {
             filter = new AfterDateFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(AlarmIDFilter.TYPE)) {
             filter = new AlarmIDFilter(WebSecurityUtils.safeParseInt(value));
+        } else if (type.equals(LocationFilter.TYPE)) {
+            filter = new LocationFilter(WebSecurityUtils.sanitizeString(value));
+        } else if (type.equals(SystemIdFilter.TYPE)) {
+            filter = new SystemIdFilter(WebSecurityUtils.sanitizeString(value));
+        } else if (type.equals(NegativeLocationFilter.TYPE)) {
+            filter = new NegativeLocationFilter(WebSecurityUtils.sanitizeString(value));
+        } else if (type.equals(NegativeSystemIdFilter.TYPE)) {
+            filter = new NegativeSystemIdFilter(WebSecurityUtils.sanitizeString(value));
+        } else if (type.equals(NodeLocationFilter.TYPE)) {
+            filter = new NodeLocationFilter(WebSecurityUtils.sanitizeString(value));
+        } else if (type.equals(NegativeNodeLocationFilter.TYPE)) {
+            filter = new NegativeNodeLocationFilter(WebSecurityUtils.sanitizeString(value));
         }
 
         return filter;
@@ -222,4 +247,17 @@ public abstract class EventUtil {
 
         return filter;
     }
+
+	public static List<Filter> getFilterList(String[] filterStrings, ServletContext servletContext) {
+		List<Filter> filterList = new ArrayList<>();
+        if (filterStrings != null) {
+            for (String filterString : filterStrings) {
+                Filter filter = EventUtil.getFilter(filterString, servletContext);
+                if (filter != null) {
+                    filterList.add(filter);
+                }
+            }
+        }
+		return filterList;
+	}
 }

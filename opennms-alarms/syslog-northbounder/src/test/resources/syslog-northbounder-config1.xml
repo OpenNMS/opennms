@@ -1,0 +1,44 @@
+<syslog-northbounder-config>
+
+  <enabled>true</enabled>
+  <nagles-delay>1000</nagles-delay>
+  <batch-size>100</batch-size>
+  <queue-size>300000</queue-size>
+  <date-format>yyyy-MM-dd HH:mm:ss</date-format>
+  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel} FIRST:${firstOccurrence} LAST:${lastOccurrence} ; ${logMsg}</message-format>
+  <destination>
+    <destination-name>localTest1</destination-name>
+    <host>127.0.0.1</host>
+    <port>8514</port>
+    <ip-protocol>UDP</ip-protocol>
+    <facility>LOCAL0</facility>
+    <max-message-length>1024</max-message-length>
+    <send-local-name>true</send-local-name>
+    <send-local-time>true</send-local-time>
+    <truncate-message>false</truncate-message>
+    <filter name="Filter 1 : Match Node">
+      <rule>parameters['owner'] == 'agalue' and uei matches '^.*interfaceDown$'</rule>
+      <message-format>ALARM ${alarmId} FROM NODE ${nodeLabel}@${foreignSource} FIRST:${firstOccurrence} LAST:${lastOccurrence} : ${logMsg}</message-format>
+    </filter>
+  </destination>
+
+  <destination>
+    <destination-name>localTest2</destination-name>
+    <host>127.0.0.1</host>
+    <port>8514</port>
+    <ip-protocol>UDP</ip-protocol>
+    <facility>LOCAL0</facility>
+    <max-message-length>1024</max-message-length>
+    <send-local-name>true</send-local-name>
+    <send-local-time>true</send-local-time>
+    <truncate-message>false</truncate-message>
+    <filter name="Filter 2 : Match Interface">
+      <rule>ipAddr == '10.0.1.1'</rule>
+      <message-format>ALARM ${alarmId} FROM INTERFACE ${ipAddr}: ${logMsg}</message-format>
+    </filter>
+    <filter name="Disabled Filter" enabled="false">
+      <rule>uei matches '^.*nodeDown$'</rule>
+    </filter>
+  </destination>
+
+</syslog-northbounder-config>

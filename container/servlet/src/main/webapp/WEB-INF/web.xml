@@ -15,15 +15,14 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
+<web-app version="3.0"
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+>
 
-<web-app version="2.4"
-         xmlns="http://java.sun.com/xml/ns/j2ee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
-                             http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-
-  <description>Karaf Embedded Example</description>
-  <display-name>Karaf Embedded Example</display-name>
+  <description>Karaf Embedded</description>
+  <display-name>Karaf Embedded</display-name>
 
   <!-- WARMERGE: begin listener -->
   <listener>
@@ -38,7 +37,7 @@
   <!-- WARMERGE: begin filter -->
   <filter>
     <filter-name>proxy</filter-name>
-    <filter-class>org.opennms.container.web.ProxyFilter</filter-class>
+    <filter-class>org.opennms.container.web.bridge.proxy.ProxyFilter</filter-class>
   </filter>
   <!-- WARMERGE: end filter -->
 
@@ -48,20 +47,4 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   <!-- WARMERGE: end filter-mapping -->
-
-  <!-- WARMERGE: begin servlet -->
-  <servlet>
-    <servlet-name>proxy</servlet-name>
-    <servlet-class>org.apache.felix.http.proxy.ProxyServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <!-- WARMERGE: end servlet -->
-
-  <!-- WARMERGE: begin servlet-mapping -->
-  <servlet-mapping>
-    <servlet-name>proxy</servlet-name>
-    <url-pattern>/osgi/*</url-pattern>
-  </servlet-mapping>
-  <!-- WARMERGE: end servlet-mapping -->
-
 </web-app>

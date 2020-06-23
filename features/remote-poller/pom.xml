@@ -3,20 +3,22 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Remote Poller</name>
+  <name>OpenNMS :: Features :: Remote Poller</name>
   <url>http://maven.apache.org</url>
+  <properties>
+    <migVersion>5.0</migVersion>
+  </properties>
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.4</version>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.reporting</groupId>
@@ -78,6 +80,7 @@
             <id>add-groovy-source</id>
             <phase>generate-sources</phase>
             <goals>
+            
               <goal>add-source</goal>
             </goals>
             <configuration>
@@ -110,7 +113,7 @@ groovy.compiler.output.path=target/classes
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.groovy.maven</groupId>
+        <groupId>org.codehaus.gmaven</groupId>
         <artifactId>gmaven-plugin</artifactId>
         <executions>
           <execution>
@@ -122,38 +125,37 @@ groovy.compiler.output.path=target/classes
         </executions>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <versionRange>[1.0.0,)</versionRange>
-                    <goals>
-                      <goal>copy-dependencies</goal>
-                      <goal>unpack</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore />
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>com.miglayout</groupId>
+      <artifactId>miglayout-ideutil</artifactId>
+      <version>${migVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.miglayout</groupId>
+      <artifactId>miglayout-swing</artifactId>
+      <version>${migVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-swing</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>xmlgraphics-commons</artifactId>
+      <version>2.0.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.opennms.core.build</groupId>
       <artifactId>org.opennms.core.build.keystore</artifactId>
@@ -169,6 +171,10 @@ groovy.compiler.output.path=target/classes
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.poller</groupId>
+      <artifactId>org.opennms.features.poller.remote</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -192,23 +198,7 @@ groovy.compiler.output.path=target/classes
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
-          <artifactId>spring-struts</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
           <artifactId>spring-webmvc</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.webflow</groupId>
-          <artifactId>spring-binding</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.webflow</groupId>
-          <artifactId>spring-js</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.webflow</groupId>
-          <artifactId>spring-webflow</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -250,6 +240,10 @@ groovy.compiler.output.path=target/classes
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jni6</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-best</artifactId>
+    </dependency>
     <!-- Logging implementation dependencies -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
@@ -279,11 +273,6 @@ groovy.compiler.output.path=target/classes
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.tests</groupId>
       <artifactId>org.opennms.tests.mock-elements</artifactId>
       <scope>test</scope>
@@ -299,9 +288,31 @@ groovy.compiler.output.path=target/classes
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
+      <scope>test</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.springframework-security</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+  </repositories>
+
 </project>

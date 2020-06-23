@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Language" content="en-us" />
+	<title>Min (single axis) dimensions test</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js" type="text/javascript"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/scriptaculous/1.9.0/scriptaculous.js" type="text/javascript"></script>
+  <script src="../cropper.js" type="text/javascript"></script>
+	<script type="text/javascript" charset="utf-8">
+		function onEndCrop( coords, dimensions ) {
+			$( 'x1' ).value = coords.x1;
+			$( 'y1' ).value = coords.y1;
+			$( 'x2' ).value = coords.x2;
+			$( 'y2' ).value = coords.y2;
+			$( 'width' ).value = dimensions.width;
+			$( 'height' ).value = dimensions.height;
+		}
+		
+		// example with minimum dimensions
+		Event.observe( 
+			window, 
+			'load', 
+			function() { 
+				new Cropper.Img( 
+					'testImage', 
+					{ 
+						minWidth: 200, 
+						displayOnInit: true, 
+						onEndCrop: onEndCrop 
+					} 
+				) 
+			} 
+		);
+	</script>
+	<style type="text/css">
+		label { 
+			clear: left;
+			margin-left: 50px;
+			float: left;
+			width: 5em;
+		}
+		
+		#testWrap {
+			margin: 20px 0 0 50px; /* Just while testing, to make sure we return the correct positions for the image & not the window */
+		}
+	</style>
+</head>
+<body>	
+	<h2>Minimum (single axis) dimension test</h2>
+	<p>
+		Test of applying a minimum dimension to only one axis (width in this case) to the cropper
+	</p>
+	<br />
+	<br /><br />
+	
+	<div id="testWrap">
+		<img src="castle.jpg" alt="test image" id="testImage" width="500" height="333" />
+	</div>
+	
+	
+	<p>
+		<label for="x1">x1:</label>
+		<input type="text" name="x1" id="x1" />
+	</p>
+	<p>
+		<label for="y1">y1:</label>
+		<input type="text" name="y1" id="y1" />
+	</p>
+	<p>
+		<label for="x2">x2:</label>
+		<input type="text" name="x2" id="x2" />
+	</p>
+	<p>
+		<label for="y2">y2:</label>
+		<input type="text" name="y2" id="y2" />
+	</p>
+	<p>
+		<label for="width">width:</label>
+		<input type="text" name="width" id="width" />
+	</p>
+	<p>
+		<label for="height">height</label>
+		<input type="text" name="height" id="height" />
+	</p>  
+	
+</body>
+</html>
+
+

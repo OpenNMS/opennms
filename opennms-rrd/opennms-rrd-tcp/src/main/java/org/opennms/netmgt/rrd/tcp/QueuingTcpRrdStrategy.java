@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -61,8 +60,7 @@ import org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition;
 public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,String> {
     private static final Logger LOG = LoggerFactory.getLogger(QueuingTcpRrdStrategy.class);
 
-    private final BlockingQueue<PerformanceDataReading> m_queue = new LinkedBlockingQueue<PerformanceDataReading>(50000);
-    private final ConsumerThread m_consumerThread;
+    private final BlockingQueue<PerformanceDataReading> m_queue;
     private final TcpRrdStrategy m_delegate;
     private int m_skippedReadings = 0;
 
@@ -99,7 +97,7 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
         public void run() {
             try {
                 while (true) {
-                    Collection<PerformanceDataReading> sendMe = new ArrayList<PerformanceDataReading>();
+                    Collection<PerformanceDataReading> sendMe = new ArrayList<>();
                     if (m_myQueue.drainTo(sendMe) > 0) {
                         RrdOutputSocket socket = new RrdOutputSocket(m_strategy.getHost(), m_strategy.getPort());
                         for (PerformanceDataReading reading : sendMe) {
@@ -123,10 +121,11 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
      *
      * @param delegate a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy} object.
      */
-    public QueuingTcpRrdStrategy(TcpRrdStrategy delegate) {
+    public QueuingTcpRrdStrategy(TcpRrdStrategy delegate, int queueSize) {
         m_delegate = delegate;
-        m_consumerThread = new ConsumerThread(delegate, m_queue);
-        m_consumerThread.start();
+        m_queue = new LinkedBlockingQueue<PerformanceDataReading>(queueSize);
+        ConsumerThread consumerThread = new ConsumerThread(delegate, m_queue);
+        consumerThread.start();
     }
 
     /** {@inheritDoc} */
@@ -154,12 +153,11 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
     /**
      * <p>createFile</p>
      *
-     * @param rrdDef a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition} object.
+     * @param rrdDef a {@link RrdDefinition} object.
      * @throws java.lang.Exception if any.
      */
     @Override
-	public void createFile(RrdDefinition rrdDef,
-			Map<String, String> attributeMappings) throws Exception {
+	public void createFile(RrdDefinition rrdDef) throws Exception {
 		// done nothing
     }
 

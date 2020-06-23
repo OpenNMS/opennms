@@ -18,7 +18,7 @@ BETWEEN (CURRENT_TIMESTAMP - INTERVAL '1 day')
 AND CURRENT_TIMESTAMP;</queryString>
           </statement>
           <columns>
-            <column name="eventCount" alias="eventCount" data-source-name="EventCount" type="GAUGE"/>
+            <column name="eventCount" alias="eventCount" data-source-name="EventCount" type="gauge"/>
           </columns>
         </query>
       </queries>

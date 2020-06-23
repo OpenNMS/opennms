@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,18 +28,16 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
-import com.google.gwt.dom.client.NativeEvent;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Behavior;
 import org.opennms.features.topology.app.internal.gwt.client.d3.D3Events;
 import org.opennms.features.topology.app.internal.gwt.client.d3.Func;
-
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.JsArrayNumber;
-
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGRect;
+
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArrayNumber;
+import com.google.gwt.dom.client.NativeEvent;
 
 public class GWTVertex extends JavaScriptObject {
     
@@ -56,11 +54,20 @@ public class GWTVertex extends JavaScriptObject {
     protected GWTVertex() {};
 
     public static native GWTVertex create(String id, int x, int y) /*-{
-    	return {"id":id, "x":x, "y":y, "initialX":0, "initialY":0, "selected":false,
+    	return {"id":id, "x":x, "y":y, "initialX":-1000, "initialY":-1000, "selected":false,
     	        "iconUrl":"", "svgIconId":"", "semanticZoomLevel":0, "group":null,
     	        "status":"", "statusCount":"", "iconHeight":48, "iconWidth":48, "tooltipText":"", 
-    	        "severityArray":[], "total": 0, "isGroup": true};
+    	        "severityArray":[], "total": 0, "isGroup": true, "stylename":"vertex", "isIconNormalized": false,
+                "targets": false, "edgePathOffset": 20};
 	}-*/;
+
+    public final native boolean hasTargets()/*-{
+        return this.targets;
+    }-*/;
+
+    public final native void setTargets(boolean hasTargets)/*-{
+        this.targets = hasTargets;
+    }-*/;
 
     public final native String getId()/*-{
         return this.id;
@@ -154,14 +161,6 @@ public class GWTVertex extends JavaScriptObject {
         return this.tooltipText;
     }-*/;
 
-    public final native String getIconUrl() /*-{
-        return this.iconUrl;
-    }-*/;
-
-    public final native void setIconUrl(String iconUrl) /*-{
-        this.iconUrl = iconUrl;
-    }-*/;
-
     public final native void setSVGIconId(String svgIconId) /*-{
         this.svgIconId = svgIconId;
     }-*/;
@@ -210,6 +209,14 @@ public class GWTVertex extends JavaScriptObject {
     public final native void setIsGroup(boolean group) /*-{
     	this.isGroup = group;
     }-*/;
+
+    public final native void setIconNormalized(boolean bool) /*-{
+        this.isIconNormalized = bool;
+    }-*/;
+
+    public final native boolean isIconNormalized() /*-{
+        return this.isIconNormalized;
+    }-*/;
     
     public final String[] getClassArray() {
     	return classArray;
@@ -222,18 +229,22 @@ public class GWTVertex extends JavaScriptObject {
     public final native void setTotal(int newTotal) /*-{
     	this.total = newTotal;
     }-*/;
-    
-    
 
-    static Func<String, GWTVertex> selectedFill() {
-    	return new Func<String, GWTVertex>(){
+    public final native void setStyleName(String stylename) /*-{
+        this.stylename = stylename;
+    }-*/;
 
-                    @Override
-    		public String call(GWTVertex vertex, int index) {
-    			return vertex.isSelected() ? "blue" : "black";
-    		}
-    	};
-    }
+    public final native String getStyleName() /*-{
+        return this.stylename;
+    }-*/;
+
+    public final native void setEdgePathOffset(int edgePathOffset) /*-{
+        this.edgePathOffset = edgePathOffset;
+    }-*/;
+
+    public final native int getEdgePathOffset() /*-{
+        return this.edgePathOffset;
+    }-*/;
 
     protected static Func<String, GWTVertex> selectionFilter() {
         return new Func<String, GWTVertex>(){
@@ -246,20 +257,22 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
 
-    protected static Func<String, GWTVertex> getStatusClass(final boolean isCounterIndicator){
+    protected static Func<String, GWTVertex> getStatusClass(final String additionalClasses){
         return new Func<String, GWTVertex>(){
 
             @Override
             public String call(GWTVertex vertex, int index) {
-                /*if(!isCounterIndicator){
-                    if(vertex.isSelected()){
-                        return "status selected";
-                    }
-                }*/
-                return "status " + vertex.getStatus();
+                String statusClass =  "status " + vertex.getStatus();
+                if (additionalClasses != null) {
+                    statusClass = statusClass + " " + additionalClasses;
+                }
+                return statusClass;
             }
-
         };
+    }
+
+    protected static Func<String, GWTVertex> getStatusClass(){
+        return getStatusClass(null);
     }
 
     protected static Func<String, GWTVertex> getStatusCountText(){
@@ -270,6 +283,37 @@ public class GWTVertex extends JavaScriptObject {
                 return vertex.getStatusCount();
             }
 
+        };
+    }
+
+    // Returns the identifier for the ionic icons, as we use SVG instead of <i> elements to reference font icons.
+    protected static Func<String, GWTVertex> getBadgeStatusText() {
+        return new Func<String, GWTVertex>() {
+
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                if (vertex.getStatus() != null) {
+                    switch (vertex.getStatus().toUpperCase()) {
+                        case "INDETERMINATE": return "\uf143"; // ion-help
+                        case "WARNING": return "\uf100"; // ion-alert-circled
+                        case "MINOR": return "\uf137"; // ion-flash
+                        case "MAJOR": return "\uf31a"; // ion-flame
+                        case "CRITICAL": return "\uf2a4"; // ion-nuclear
+                        case "NORMAL": return ""; // no icon
+                    }
+                }
+                return ""; // no icon
+            }
+        };
+    }
+
+    protected static Func<String, GWTVertex> showNavigateToIndicator(){
+        return new Func<String, GWTVertex>() {
+
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                return vertex.hasTargets() ? "1" : "0";
+            }
         };
     }
 
@@ -288,7 +332,8 @@ public class GWTVertex extends JavaScriptObject {
 
             @Override
             public String call(GWTVertex datum, int index) {
-                return datum.isSelected() ? "vertex selected" : "vertex";
+                return datum.getStyleName();
+                //return datum.isSelected() ? "vertex selected" : "vertex";
             }};
     }
 
@@ -339,12 +384,26 @@ public class GWTVertex extends JavaScriptObject {
                 double iconHeight = vertex.getIconHeight();
                 double iconWidth = vertex.getIconWidth();
 
-                double xPos = 0;
-                double yPos = 0;
                 int statusCountLength = vertex.getStatusCount().length();
-                xPos = (iconWidth/2) - (13 + (VERTEX_STATUS_CHAR_SIZE * statusCountLength));
-                yPos = (iconHeight/2) + 25;
+                double xPos = (iconWidth/2) - (33 + (VERTEX_STATUS_CHAR_SIZE * statusCountLength));
+                double yPos = (iconHeight/2) + 25;
                 return "translate(" + xPos + ", -" + yPos +  ")";
+            }
+        };
+    }
+
+    static Func<String, GWTVertex> statusBadgePos() {
+        return new Func<String, GWTVertex>() {
+            @Override
+            public String call(GWTVertex vertex, int index) {
+                double iconHeight = vertex.getIconHeight();
+                double iconWidth = vertex.getIconWidth();
+                // We assume a width of 15 for each icon.
+                // However, this is actually not true as it is a font and not an svg element
+                // Therefore the results may vary as the width varies
+                double xPos = (iconWidth/2)  - 15;
+                double yPos = (iconHeight/2) + 6;
+                return "translate(" + xPos + ", -" + yPos + ")";
             }
         };
     }
@@ -358,17 +417,19 @@ public class GWTVertex extends JavaScriptObject {
                 final int width = iconRect.getWidth();
                 final int height = iconRect.getHeight();
                 double primeLength = width >= height ? width : height;
-                double scaleFactor = 48 / primeLength;
+                double scaleFactor = primeLength == 0? 0.001 : (48 / primeLength);
                 double newX = (scaleFactor * width) / 2;
                 double newY = (scaleFactor * height) / 2;
                 double iconHeight = scaleFactor * height;
                 vertex.setIconHeight(iconHeight);
                 vertex.setIconWidth(scaleFactor * width);
+                if(scaleFactor != Double.POSITIVE_INFINITY){
+                    vertex.setIconNormalized(true);
+                }
                 return "translate(-" + newX +" , -" + newY +") scale(" + scaleFactor + ")";
             }
         };
     }
-
 
     static native SVGRect getHiddenIconElement(String iconId) /*-{
         var existingUseElem = $wnd.d3.select("#hiddenIconContainer #" + iconId + "-icon");
@@ -429,21 +490,12 @@ public class GWTVertex extends JavaScriptObject {
         };
     }
 
-    protected static Func<String, GWTVertex> makeStatusCounter() {
-        // TODO Auto-generated method stub
-        return new Func<String, GWTVertex>(){
-
+    protected static Func<String, GWTVertex> getVertexOpacity(){
+        return new Func<String, GWTVertex>() {
             @Override
             public String call(GWTVertex vertex, int index) {
-                if(vertex.isGroup()){
-                    return makeChart(vertex.getIconWidth() - 10.0, 0.0, 10.0, 10.0, vertex.getSeverityArray(), vertex.getClassArray(), vertex.getTotal());
-                }
-                else{
-
-                }
-                return null;
+                return vertex.isIconNormalized() ? "1" : "0";
             }
-
         };
     }
 
@@ -453,19 +505,27 @@ public class GWTVertex extends JavaScriptObject {
             @Override
             public D3 run(D3 selection) {
                 final D3 iconContainer = selection.select(".icon-container");
-                iconContainer.attr("transform", normalizeSVGIcon()).attr("opacity", 1);
+                iconContainer.attr("transform", normalizeSVGIcon()).attr("opacity", getVertexOpacity());
                 iconContainer.select(".vertex .activeIcon").attr("opacity", selectionFilter());
 
                 selection.select(".svgIconOverlay").attr("width", calculateOverlayWidth()).attr("height", calculateOverlayHeight())
                         .attr("x", calculateOverlayXPos()).attr("y", calculateOverlayYPos());
 
                 selection.select(".status").attr("width", calculateOverlayWidth()).attr("height", calculateOverlayHeight())
-                        .attr("x", calculateOverlayXPos()).attr("y", calculateOverlayYPos()).attr("class", getStatusClass(false));
+                        .attr("x", calculateOverlayXPos()).attr("y", calculateOverlayYPos()).attr("class", getStatusClass());
 
                 selection.select(".status-counter").text(getStatusCountText());
 
             	 selection.select(".node-status-counter").attr("transform", statusCounterPos()).style("opacity", showStatusCount())
-                 .select("rect").attr("class", getStatusClass(true)).attr("width", calculateStatusCounterWidth());
+                 .select("rect").attr("class", getStatusClass()).attr("width", calculateStatusCounterWidth());
+
+                selection.select(".status-badge-container")
+                        .attr("transform", statusBadgePos())
+                        .attr("class", getStatusClass("status-badge-container"))
+                        .select(".status-badge").text(getBadgeStatusText());
+
+                selection.select(".navigate-to .text")
+                        .style("opacity", showNavigateToIndicator());
 
                 return selection.attr("class", GWTVertex.getClassName()).attr("transform", GWTVertex.getTranslation()).select("text.vertex-label").text(label()).attr("y", textLabelPlacement());
             }
@@ -484,12 +544,14 @@ public class GWTVertex extends JavaScriptObject {
                 vertex.attr("opacity",1e-6).style("cursor", "pointer");
                 vertex.append("svg:rect").attr("class", "status").attr("fill", "none").attr("stroke-width", 5).attr("stroke-location", "outside").attr("stroke", "blue").attr("opacity", 0);
 
-                D3 svgIconContainer         = vertex.append("g").attr("class", "icon-container");
+                D3 svgIconContainer         = vertex.append("g").attr("class", "icon-container").attr("opacity", 0);
                 D3 svgIcon                  = svgIconContainer.append("use");
                 D3 svgIconRollover          = svgIconContainer.append("use");
                 D3 svgIconActive            = svgIconContainer.append("use");
                 D3 statusCounter            = vertex.append("g");
+                D3 statusBadge              = vertex.append("g");
                 D3 textSelection            = vertex.append("text");
+                D3 navigateTo               = vertex.append("g").attr("class", "navigate-to");
 
                 vertex.append("svg:rect").attr("class", "svgIconOverlay").attr("width", 100).attr("height", 100).attr("opacity", 0).call(new D3Behavior() {
                     @Override
@@ -518,19 +580,28 @@ public class GWTVertex extends JavaScriptObject {
                     }
                 });
 
-                svgIconContainer.attr("opacity", 0);
+
                 svgIcon.attr("xlink:href", svgIconId("")).attr("class", "upIcon");
                 svgIconRollover.attr("xlink:href", svgIconId("_rollover")).attr("class", "overIcon").attr("opacity", 0);
                 svgIconActive.attr("xlink:href", svgIconId("_active")).attr("class", "activeIcon").attr("opacity", 0);
                 
- 
+                // Status Counter
             	statusCounter.attr("class", "node-status-counter")
                     	.append("svg:rect").attr("height", 20).attr("width", 20).attr("rx", 10).attr("ry", 10);
+                statusCounter.append("text").attr("x", "6px").attr("y","14px").attr("class", "status-counter");
 
-            	statusCounter.append("text").attr("x", "6px").attr("y","14px")
-                    	.attr("class", "status-counter").text("2");
-            
+                // Status Badge
+                statusBadge.attr("class", "status-badge-container");
+                statusBadge.append("text").attr("x", "0px").attr("y", "0px")
+                        .attr("class", "status-badge");
 
+                // Navigate To indicator
+                navigateTo.append("text")
+                        .attr("class", "text")
+                        .attr("opacity", 1)
+                        .attr("x", -23)
+                        .attr("y", 23)
+                        .text("\uf21b"); // ion-record
                 textSelection.text(label())
                     .attr("class", "vertex-label")
                     .attr("x", "0px")
@@ -543,85 +614,4 @@ public class GWTVertex extends JavaScriptObject {
             }
         };
     }
-    public static final native void logDocument(Object doc)/*-{
-        $wnd.console.log(doc)
-    }-*/;
-    
-    //support for creating a node-chart
-    //segmentWidth defines how thick the donut ring will be (in pixels)
-    final static String makeChart(final double cx, final double cy, final double r, final double segmentWidth, final JsArrayNumber dataArray, final String[] classArray, final double total){
-				
-				String svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
-				
-			
-				double innerR = r - segmentWidth;
-				
-				
-				
-				double startangle = 0;
-				for (int i = 0; i < dataArray.length(); i++) {
-
-					if (dataArray.get(i) > 0) {
-
-						double endangle = startangle + (((dataArray.get(i)) / total) * Math.PI
-								* 2.0);
-
-						String path = "<path d=\"";
-
-						double x1 = cx + (r * Math.sin(startangle));
-						double y1 = cy - (r * Math.cos(startangle));
-						double X1 = cx + (innerR * Math.sin(startangle));
-						double Y1 = cy - (innerR * Math.cos(startangle));
-
-						double x2 = cx + (r * Math.sin(endangle));
-						double y2 = cy - (r * Math.cos(endangle));
-						double X2 = cx + (innerR * Math.sin(endangle));
-						double Y2 = cy - (innerR * Math.cos(endangle));
-
-						int big = 0;
-						if (endangle - startangle > Math.PI)
-							big = 1;
-
-						String d;
-						// this branch is if one data value comprises 100% of the data
-						if (dataArray.get(i) >= total) {
-
-							d = "M " + X1 + "," + Y1 + " A " + innerR + "," + innerR
-									+ " 0 " + "1" + " 0 " + X1 + ","
-									+ (Y1 + (2 * innerR)) + " A " + innerR + ","
-									+ innerR + " 0 " + big + " 0 " + X1 + "," + Y1
-									+ " M " + x1 + "," + y1 + " A " + r + "," + r
-									+ " 0 " + big + " 1 " + x1 + "," + (y1 + (2 * r))
-									+ " A " + r + "," + r + " 0 " + big + " 1 " + x1
-									+ "," + y1;
-
-						} else {
-							// path string
-							d = "M " + X1 + "," + Y1 + " A " + innerR + "," + innerR
-									+ " 0 " + big + " 1 " + X2 + "," + Y2 + " L " + x2
-									+ "," + y2 + " A " + r + "," + r + " 0 " + big
-									+ " 0 " + x1 + "," + y1 + " Z";
-						}
-						path = path.concat(d + "\"" + " class =");
-			            
-			            path = path.concat(classArray[i]);
-//			            path = path.concat(" stroke= \"black\"");
-			            path = path.concat(" stroke-width= \"0\"/>");
-			            
-			            svg = svg.concat(path);
-			            startangle = endangle;
-
-					}
-					
-					
-				}
-						
-				svg = svg.concat("</svg>");
-			    
-			    return svg;
-    		
-    }
-    
-    
-
 }

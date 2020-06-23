@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,13 +28,17 @@
 
 package org.opennms.netmgt.model.discovery;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.opennms.core.network.IPAddress;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
@@ -51,9 +55,11 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  */
-public final class IPAddrRange implements Iterable<InetAddress> {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(IPAddrRange.class);
+public final class IPAddrRange implements Iterable<InetAddress>, Serializable {
+
+    private static final long serialVersionUID = -106414771861377679L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(IPAddrRange.class);
 
     /**
      * The starting address for the object.
@@ -63,7 +69,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
     /**
      * The ending address for the object.
      */
-    private final byte[] m_end;
+    private byte[] m_end;
 
     /**
      * <P>
@@ -126,8 +132,8 @@ public final class IPAddrRange implements Iterable<InetAddress> {
             if (new ByteArrayComparator().compare(start, end) > 0)
                 throw new IllegalArgumentException("start must be less than or equal to end");
 
-            m_next = new BigInteger(1, start);
-            m_end = new BigInteger(1, end);
+            m_next = new BigInteger(1, Arrays.copyOf(start, start.length));
+            m_end = new BigInteger(1, Arrays.copyOf(end, end.length));
         }
 
         /**
@@ -155,7 +161,7 @@ public final class IPAddrRange implements Iterable<InetAddress> {
                 throw new NoSuchElementException("End of Range");
 
             InetAddress element = make(m_next);
-            m_next = m_next.add(new BigInteger("1"));
+            m_next = m_next.add(BigInteger.ONE);
             return element;
         }
 
@@ -265,6 +271,18 @@ public final class IPAddrRange implements Iterable<InetAddress> {
         }
     }
 
+    public byte[] getBegin() {
+        return m_begin;
+    }
+
+    public byte[] getEnd() {
+        return m_end;
+    }
+
+    public void incrementEnd() {
+        m_end = new IPAddress(m_end).incr().toOctets();
+    }
+
     /**
      * This method may be used to determine if the specified IP address is
      * contained within the IP address range.
@@ -330,4 +348,22 @@ public final class IPAddrRange implements Iterable<InetAddress> {
     Enumeration<InetAddress> elements() {
         return new IPAddressRangeGenerator(m_begin, m_end);
     }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("begin", InetAddressUtils.getInetAddress(m_begin))
+            .append("end", InetAddressUtils.getInetAddress(m_end))
+            .toString();
+    }
+
+    /**
+     * <P>
+     * Returns the size of this range.
+     * </P>
+     */
+    public BigInteger size() {
+        return InetAddressUtils.difference(InetAddressUtils.getInetAddress(m_end) , InetAddressUtils.getInetAddress(m_begin)).add(BigInteger.ONE);
+    }
+
 }

@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -39,9 +39,8 @@
 
 <%
 	UserManager userFactory;
-  	Map users = null;
-	HashMap usersHash = new HashMap();
-	String curUserName = null;
+  	Map<String,User> users = null;
+	HashMap<String,String> usersHash = new HashMap<String,String>();
 	
 	try
     	{
@@ -54,20 +53,18 @@
 		throw new ServletException("User:list " + e.getMessage());
 	}
 
-	Iterator i = users.keySet().iterator();
-	while (i.hasNext()) {
-		User curUser = (User)users.get(i.next());
-		usersHash.put(curUser.getUserId(), curUser.getFullName());
+	for (User curUser : users.values()) {
+		usersHash.put(curUser.getUserId(), curUser.getFullName().orElse(null));
 	}
 
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Role Configuration" />
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+	<jsp:param name="title" value="Roles" />
 	<jsp:param name="headTitle" value="Roles" />
-	<jsp:param name="breadcrumb" value="Role List" />
+	<jsp:param name="breadcrumb" value="Roles" />
 </jsp:include>
 
 <script type="text/javascript" >
@@ -91,16 +88,19 @@
 	<input type="hidden" name="role" />
 </form>
 
-<h3>Role Configuration</h3>
+<div class="card">
+  <div class="card-header">
+    <span>Roles</span>
+  </div>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+  <table class="table table-sm severity">
+         <tr>
+          <th>Name</th>
+          <th>Supervisor</th>
+          <th>Currently On Call</th>
+          <th>Membership Group</th>
+          <th>Description</th>
 
-         <tr bgcolor="#999999">
-          <td><b>Name</b></td>
-          <td><b>Supervisor</b></td>
-          <td><b>Currently On Call</b></td>
-          <td><b>Membership Group</b></td>
-          <td><b>Description</b></td>
 			<c:forEach var="role" items="${roleManager.roles}">
 				<c:set var="viewUrl" value="javascript:doView('${role.name}')" />
 				
@@ -119,4 +119,4 @@
 			</c:forEach>
 		</table>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

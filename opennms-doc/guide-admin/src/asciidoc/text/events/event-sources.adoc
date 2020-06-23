@@ -1,0 +1,12 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-events-sources-of-events]]
+=== Sources of Events
+
+Events may originate within {opennms-product-name} itself or from outside.
+
+Internally-generated events can be the result of the platform's monitoring and management functions (_e.g._ a monitored node becoming totally unavailable results in an event with the UEI `uei.opennms.org/nodes/nodeDown`) or they may act as inputs or outputs of housekeeping processes.
+
+The following subsections summarize the mechanisms by which externally-created events can arrive.

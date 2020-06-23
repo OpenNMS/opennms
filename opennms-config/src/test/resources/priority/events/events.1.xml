@@ -1,0 +1,24 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.43.29.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <priority>5</priority>
+      <uei>uei.opennms.org/vendor/3Com/traps/a3ComFddiMACNeighborChangeEvent</uei>
+      <event-label>FILE1 CONFIG</event-label>
+      <severity>Warning</severity>
+   </event>
+
+</events>

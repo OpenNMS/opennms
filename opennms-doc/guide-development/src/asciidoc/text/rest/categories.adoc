@@ -1,0 +1,42 @@
+
+==== Categories
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                              | Description
+| `/categories`                         | Get all configured categories.
+| `/categories/{category}`              | Get the category specified by the given name.
+| `/categories/{category}/nodes/{node}` | Get the category specified by the given name for the given node (similar to `/nodes/{node}/categories/{category}`)
+| `/categories/nodes/{node}`            | Get the categories for a given node (similar to `/nodes/{node}/categories`)
+| `/categories/groups/{group}`          | Get the categories for a given user group (similar to `/groups/{group}/categories`)
+|===
+
+===== POSTs (Adding Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource      | Description
+| `/categories` | Adds a new category.
+|===
+
+===== PUTs (Modifying Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                | Description
+| `/categories/{category}`                | Update the specified category
+| `/categories/{category}/nodes/{node}`   | Modify the category with the given node ID and name (similar to `/nodes/{node}/categories/{category}`)
+| `/categories/{category}/groups/{group}` | Add the given category to the given user group (similar to `/groups/{group}/categories/{category}`)
+|===
+
+===== DELETEs (Removing Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                | Description
+| `/categories/{category}`                | Delete the specified category
+| `/categories/{category}/nodes/{node}`   | Remove the given category from the given node (similar to `/nodes/{node}/categories/{category}`)
+| `/categories/{category}/groups/{group}` | Remove the given category from the given user group (similar to `/groups/{group}/categories/{category}`)
+|===

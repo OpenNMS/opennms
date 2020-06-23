@@ -1,0 +1,66 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4413.1.2.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/broadcom/traps/failoverEvent</uei>
+      <event-label>Brcm-BASPTrap-MIB defined trap event: failoverEvent</event-label>
+      <descr>&lt;p>This trap is generated to indicate that adapter Fail-Over
+event has occured&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	trapAdapterName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	trapTeamName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	trapCauseDirection&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		adapterActive(1)
+		adapterInactive(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	trapAdapterActivityCause&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
+		none(1)
+		linkChange(2)
+		adapterEnabledOrDisabled(3)
+		adapterAddedOrRemoved(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	failoverEvent trap received
+	trapAdapterName=%parm[#1]%
+	trapTeamName=%parm[#2]%
+	trapCauseDirection=%parm[#3]%
+	trapAdapterActivityCause=%parm[#4]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#3]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="adapterActive"/>
+         <decode varbindvalue="2" varbinddecodedstring="adapterInactive"/>
+      </varbindsdecode>
+      <varbindsdecode>
+         <parmid>parm[#4]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="none"/>
+         <decode varbindvalue="2" varbinddecodedstring="linkChange"/>
+         <decode varbindvalue="3" varbinddecodedstring="adapterEnabledOrDisabled"/>
+         <decode varbindvalue="4" varbinddecodedstring="adapterAddedOrRemoved"/>
+      </varbindsdecode>
+   </event>
+</events>

@@ -1,0 +1,11 @@
+#Wed Oct 30 09:57:14 EDT 2013
+JMX_java.lang\:type\=MemoryPool.name.Survivor\ Space.SurvPeakUsage.used=SurvPeakUsage.used
+JMX_java.lang\:type\=MemoryPool.name.Survivor\ Space.SurvUsg.cmmttd=SurvUsg.cmmttd
+JMX_java.lang\:type\=MemoryPool.name.Survivor\ Space.SurvUsage.init=SurvUsage.init
+JMX_java.lang\:type\=MemoryPool.name.Survivor\ Space.SurvUsage.used=SurvUsage.used
+JMX_java.lang\:type\=MemoryPool.name.Survivor\ Space.SurvPeakUsage.max=SurvPeakUsage.max
+JMX_java.lang\:type\=MemoryPool.name.Survivor\ Space.SurvUsage.max=SurvUsage.max
+JMX_java.lang\:type\=MemoryPool.name.Survivor\ Space.SurvCollUseThrshCnt=SurvCollUseThrshCnt
+JMX_java.lang\:type\=MemoryPool.name.Survivor\ Space.SurvCollUseThresh=SurvCollUseThresh
+JMX_java.lang\:type\=MemoryPool.name.Survivor\ Space.SurvPeakUsg.cmmttd=SurvPeakUsg.cmmttd
+JMX_java.lang\:type\=MemoryPool.name.Survivor\ Space.SurvPeakUsage.init=SurvPeakUsage.init

@@ -1,0 +1,51 @@
+<div class="mx-2 my-2">
+    <div class="mb-4">
+        <button class="btn btn-secondary" id="action.refresh" ng-click="refresh()"><i class="fa fa-refresh"></i></button>
+        <button class="btn btn-secondary"
+                ng-if="userInfo.isReportDesigner() || userInfo.isAdmin() && persistedReports.length > 0"
+                id="action.deleteAll"
+                mwl-confirm
+                message="Do you really want to delete all persisted reports?"
+                on-confirm="deleteAll()"
+                placement="right"
+                confirm-button-type="danger"
+                cancel-button-type="secondary"
+                confirm-text="Yes"
+                cancel-text="No"
+                title="Delete All">
+            <i class="fa fa-trash"></i>
+        </button>
+    </div>
+    <div ng-if="persistedReports.length == 0">
+        <span>No Data available</span>
+    </div>
+    <pagination model="pagination" ng-if="persistedReports.length > 0" position="bottom" on-change="refresh">
+        <table class="table table-sm table-striped mb-2">
+            <thead>
+            <tr>
+                <th ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">Action</th>
+                <th>View Report</th>
+                <th>Title</th>
+                <th>Report ID</th>
+                <th>Run Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="report in persistedReports">
+                <td ng-if="userInfo.isReportDesigner() || userInfo.isAdmin()">
+                    <button class="btn btn-sm btn-danger" ng-click="delete(report)"><i class="fa fa-trash"></i></button>
+                </td>
+                <td>
+                    <a ng-repeat="format in report.formats" href="rest/reports/download?locatorId={{report.id}}&amp;format={{format}}" class="mr-4"><i ng-class="{'fa-file-pdf-o': format === 'PDF', 'fa-file-text-o': format === 'CSV'}" class="fa"></i> {{format}}</a>
+                </td>
+                <td>{{report.title}}</td>
+                <td>{{report.reportId}}</td>
+                <td>{{report.date}}</td>
+                <td>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </pagination>
+</div>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<jmx-datacollection-config>
+  <jmx-collection name="ActiveMQ">
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <import-mbeans>jmx-datacollection-mbeans/Jvm/1.6/JvmBasic0.xml</import-mbeans>
+    <import-mbeans>jmx-datacollection-mbeans/ActiveMQ/5.6/ActiveMQBasic0.xml</import-mbeans>
+  </jmx-collection>
+</jmx-datacollection-config>

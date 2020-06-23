@@ -1,0 +1,10 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="REF_MIB2-Powerethernet">
+    <resourceType name="pethMainPseGroupIndex" label="Power Ethernet (MIB-2 powerEthernet)">
+        <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+        <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+    <group name="mib2-powerethernet" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.105.1.3.1.1.2" instance="pethMainPseGroupIndex" alias="pethMainPsePower" type="gauge"/>
+        <mibObj oid=".1.3.6.1.2.1.105.1.3.1.1.4" instance="pethMainPseGroupIndex" alias="pethMainPseConPower" type="gauge"/>
+    </group>
+</datacollection-group>

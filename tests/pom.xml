@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.tests</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Tests</name>
+  <name>OpenNMS :: Tests</name>
   <modules>
     <module>dao</module>
     <module>mock-elements</module>

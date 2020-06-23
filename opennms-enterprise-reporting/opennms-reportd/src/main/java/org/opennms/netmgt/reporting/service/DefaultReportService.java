@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -187,9 +186,9 @@ public class DefaultReportService implements ReportService,InitializingBean {
                                                                        File.separator + report.getReportTemplate() );
         
         if(report.getReportEngine().equals("jdbc")){
-            Connection connection = DataSourceFactory.getDataSource().getConnection();
+            Connection connection = DataSourceFactory.getInstance().getConnection();
             jasperPrint = JasperFillManager.fillReport(jasperReport,
-                                                       paramListToMap(report.getParameterCollection()),
+                                                       paramListToMap(report.getParameters()),
                                                        connection );
             connection.close();
         }
@@ -250,13 +249,12 @@ public class DefaultReportService implements ReportService,InitializingBean {
     }
     
     
-    private Map<String,String> paramListToMap(List<Parameter> parameters){
-        Map<String,String> parmMap = new HashMap<String, String>();
-
-        for(Parameter parm : parameters)
+    private Map<String, Object> paramListToMap(List<Parameter> parameters){
+        Map<String,Object> parmMap = new HashMap<>();
+        for(Parameter parm : parameters) {
             parmMap.put(parm.getName(), parm.getValue());
-        
-        return Collections.unmodifiableMap(parmMap);
+        }
+        return parmMap;
     }
 
 }

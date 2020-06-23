@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <relativePath>../poms/compiled/</relativePath>
+    <groupId>org.opennms.features.topology.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
+    <version>25.0.0-SNAPSHOT</version>
+  </parent>
+  <properties>
+    <bundle.symbolicName>org.opennms.features.topology.link</bundle.symbolicName>
+    <bundle.namespace>org.opennms.features.topology.link</bundle.namespace>
+  </properties>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.topology</groupId>
+  <artifactId>org.opennms.features.topology.link</artifactId>
+  <name>${bundle.symbolicName}</name>
+  <packaging>bundle</packaging>
+  <dependencies>
+    <!--
+     | uncomment to add all imported (non-local) bundles to your compilation classpath
+    <dependency>
+      <type>pom</type>
+      <groupId>${parent.groupId}</groupId>
+      <artifactId>provision</artifactId>
+      <optional>true</optional>
+    </dependency>
+    -->
+	<dependency>
+	   <groupId>junit</groupId>
+	   <artifactId>junit</artifactId>
+	   <scope>test</scope>
+	</dependency>
+  </dependencies>
+</project>

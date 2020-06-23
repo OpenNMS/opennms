@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -38,57 +38,84 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true" import="
-	org.opennms.web.notification.*,
-	org.opennms.netmgt.config.NotifdConfigFactory"
+	org.opennms.core.utils.WebSecurityUtils,
+	org.opennms.web.filter.Filter,
+	org.opennms.web.notification.AcknowledgeType,
+	org.opennms.web.notification.WebNotificationRepository,
+	org.opennms.web.notification.filter.NotificationCriteria,
+	org.opennms.web.notification.filter.UserFilter
+"
 %>
+<%@ page import="org.springframework.web.context.WebApplicationContext" %>
+<%@ page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
 
 <%!
-	protected NotificationModel model = new NotificationModel();
-	protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
+	protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#no outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
 %>
-
 <%
+    WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(application);
+    WebNotificationRepository repository = context.getBean(WebNotificationRepository.class);
+
     //optional parameter: node
     String nodeIdString = request.getParameter("node");
 
     String nodeFilter = "";
 
     if( nodeIdString != null ) {
-        nodeFilter = "&amp;filter=node%3D" + nodeIdString;
+        nodeFilter = "&amp;filter=node%3D" + WebSecurityUtils.sanitizeString(nodeIdString);
     }
-
-		// @i18n
-		String status = "Unknown";
-		try {
-				NotifdConfigFactory.init();
-				status = NotifdConfigFactory.getInstance().getPrettyStatus();
-		} catch (Throwable e) { 
-			// If factory can't be initialized, status is already 'Unknown'
-		}
 %>
 
-<h3 class="o-box"><a href="notification/index.jsp">Notification</a></h3>
-<div class="boxWrapper">
-	<ul class="plain o-box">
+<div class="card">
+	<div class="card-header">
+		<span><a href="notification/index.jsp">Notifications</a></span>
+	</div>
+	<div class="card-body">
+	<ul class="list-unstyled mb-0">
 		<% if( nodeIdString == null ) { %>
-			<li><strong>You</strong>: <%
-				int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());
-				String format = this.formatter.format( count );
+			<li>
+			<i class="fa fa-fw fa-user"></i>
+			You have 
+			<a href="notification/browse?acktype=unack&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">
+			<%
+				int count = repository.countMatchingNotifications(
+					new NotificationCriteria(
+						AcknowledgeType.UNACKNOWLEDGED, 
+						new Filter[] { 
+							new UserFilter(request.getRemoteUser())
+						}
+					)
+				);
+				String format = formatter.format( count );
 				out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
-				%>
-				(<a href="notification/browse?acktype=unack&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
-			<li><strong>All</strong>: <%
-				count = this.model.getOutstandingNoticeCount();
-				format = this.formatter.format( count );
+			%>
+			</a>
+			</li>
+			<li>
+			<i class="fa fa-fw fa-users"></i>
+			There are  
+			<a href="notification/browse?acktype=unack">
+			<%
+				count = repository.countMatchingNotifications(
+					new NotificationCriteria(
+						AcknowledgeType.UNACKNOWLEDGED,
+						new Filter[0]
+					)
+				);
+				format = formatter.format( count );
 				out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
-				%>
-				(<a href="notification/browse?acktype=unack">Check</a>)</li>
-			<li><a href="roles">On-Call Schedule</a></li>
+			%>
+			</a>
+			</li>
+			<li><i class="fa fa-fw fa-calendar"></i> <a href="roles">On-Call Schedule</a></li>
 		<% } else { %>
-			<li><strong>You: Outstanding</strong>: 
-				(<a href="notification/browse?acktype=unack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
-			<li><strong>You: Acknowledged</strong>: 
-				(<a href="notification/browse?acktype=ack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
+			<li><a href="notification/browse?acktype=unack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">
+				Your outstanding notifications for this node 
+			</a></li>
+			<li><a href="notification/browse?acktype=ack<%=nodeFilter%>&amp;filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">
+				Your acknowledged notifications for this node 
+			</a></li>
 		<% } %>
 	</ul>
+	</div>
 </div>

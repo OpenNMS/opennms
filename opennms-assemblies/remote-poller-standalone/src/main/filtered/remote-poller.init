@@ -4,7 +4,7 @@
 # Adapted to work with RedHat and friends as well.
 
 # chkconfig:   345 99 01
-# description: Starts and stops the OpenNMS remote poller
+# description: Starts and stops the ${install.package.description} remote poller
 # processname: java
 # pidfile:     /var/run/opennms-remote-poller.pid
 #
@@ -16,18 +16,18 @@
 # Should-Stop:       $local_fs
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: OpenNMS - Open Source Network Management System remote poller
+# Short-Description: ${install.package.description} Remote Poller
 # Description:       Enterprise grade open-source network management platform,
 #                    providing service polling, data collection, and event
 #                    and notification management. Remote poller service.
 ### END INIT INFO
 
 NAME="opennms-remote-poller"
-DESC="OpenNMS Remote Poller"
+DESC="${install.package.description} Remote Poller"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 PIDFILE="/var/run/$NAME.pid"
 OPENNMS_HOME="${install.dir}"
-JVM_ARGS="-Dpoller.logfile=/var/log/opennms-remote-poller.log"
+JVM_ARGS=""
 EXTRA_ARGS=""
 URI="http://localhost:8980/opennms-remoting"
 LOCATION="Default"
@@ -53,7 +53,7 @@ fi
 if [ x$JAVA_EXE = x ]; then
 	if [ x$JAVA_HOME = x ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
 		echo "ERROR: $JAVA_CONF file not found, and \$JAVA_HOME is not set to a valid JDK."
-		echo "Try running $OPENNMS_HOME/bin/runjava if OpenNMS is installed, or set JAVA_HOME in $CONFFILE."
+		echo "Try running $OPENNMS_HOME/bin/runjava if ${install.package.description} is installed, or set JAVA_HOME in $CONFFILE."
 		exit 1
 	else
 		JAVA_EXE="$JAVA_HOME/bin/java"
@@ -69,6 +69,10 @@ export JAVA_HOME PIDFILE
 
 if [ x$GUI = xtrue ]; then
 	EXTRA_ARGS="$EXTRA_ARGS --gui"
+fi
+
+if [ x$DISABLE_ICMP = xtrue ]; then
+	EXTRA_ARGS="$EXTRA_ARGS --disable-icmp"
 fi
 
 if [ x$USERNAME != x ]; then

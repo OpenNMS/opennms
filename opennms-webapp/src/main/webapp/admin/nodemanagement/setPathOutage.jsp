@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -65,17 +65,17 @@
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Configure Path Outage" />
   <jsp:param name="headTitle" value="Node Management" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="Node Management" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="Configure Path Outage" />
-  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/ipv6.js'></script>" />
-  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>" />
-  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>" />
-  <jsp:param name="script" value="<script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>" />
+</jsp:include>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="ipaddress-js" />
 </jsp:include>
 
 <style type="text/css">
@@ -87,8 +87,6 @@ LABEL
 <script type="text/javascript" >
 
   function verifyIpAddress() {
-    var prompt = new String("IP Address");
-    var errorMsg = new String("");
     var ipValue = new String(document.setCriticalPath.criticalIp.value);
 
     if (!isValidIPAddress(ipValue)) {
@@ -102,7 +100,7 @@ LABEL
   }
 
 
-  function delete()
+  function deletePathOutage()
   {
       if (confirm("Are you sure you want to proceed? This action will delete any existing critical path for this node."))
       {
@@ -121,13 +119,11 @@ LABEL
   }
 </script>
 
-<h2>Node: <%=node_db.getLabel()%></h2>
+<h3>Node: <%=node_db.getLabel()%></h3>
 
 <% if (task != null) { %>
   <h2><%=task%></h2>
 <% } %>
-
-<hr/>
 
 <p>
   Configuring a path outage consists of selecting an IP address/service pair
@@ -139,39 +135,32 @@ LABEL
   
 </p>
 
-<br/> 
-  
-<form method="post" name="setCriticalPath" action="admin/setCriticalPath" onsubmit="return verifyIpAddress();">
+<form role="form" method="post" class="form mb-2 col-md-6" name="setCriticalPath" action="admin/setCriticalPath" onsubmit="return verifyIpAddress();">
 
 <input name="node" value=<%=nodeId%> type="hidden"/>
 
-<p>
-<label for="criticalIp">Critical path IP address in xxx.xxx.xxx.xxx format:</label><br/>
-<input id="criticalIp" type="text" name="criticalIp" size="17" maxlength="15" />
-</p>
+<div class="form-group">
+<label for="criticalIp">Critical path IP address in xxx.xxx.xxx.xxx or xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx format:</label>
+<input id="criticalIp" class="form-control" type="text" name="criticalIp" size="57" maxlength="55" />
+</div>
 
-<p>
-<label for="criticalSvc">Critical path service:</label><br/>
+<div class="form-group">
+<label for="criticalSvc">Critical path service:</label>
 
-  <select id="criticalSvc" name="criticalSvc" value="ICMP" size="1">
+  <select id="criticalSvc" class="form-control custom-select" name="criticalSvc" value="ICMP">
         <option value="ICMP">ICMP</option>
   </select>
-</p>
+</div>
 
-<p>
-<input type="submit" name="task" value="Submit"/>
-&nbsp;
-<input type="button" name="task" value="Cancel" onClick="cancel()"/>
-</p>
+<div class="form-group">
+<input type="submit" class="btn btn-secondary" name="task" value="Submit"/>
+<input type="button" class="btn btn-secondary" name="task" value="Cancel" onClick="cancel()"/>
+</div>
 
-<br/>
+<h3>Delete critical path for this node</h3>
 
-<h2>Delete critical path for this node</h2>
-<br/>
-<p>
-<input type="button" name="task" value="Delete" onClick="delete()"/>
-</p>
+<input type="button" class="btn btn-secondary" name="task" value="Delete" onClick="deletePathOutage()"/>
 
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="true"/>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

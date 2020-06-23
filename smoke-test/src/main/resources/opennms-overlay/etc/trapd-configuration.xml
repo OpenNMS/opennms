@@ -1,0 +1,8 @@
+<!-- Bind to a higher port so that we don't need to be privileged -->
+<trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd"
+                     snmp-trap-address="*"
+                     snmp-trap-port="1162"
+                     new-suspect-on-trap="true">
+    <!-- Include an SNMPv3 user for testing -->
+    <snmpv3-user security-name="traptest" auth-passphrase="0p3nNMSv3" auth-protocol="MD5" privacy-passphrase="0p3nNMSv3" privacy-protocol="DES" />
+</trapd-configuration>

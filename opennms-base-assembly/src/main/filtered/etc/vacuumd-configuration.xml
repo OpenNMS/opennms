@@ -1,45 +1,5 @@
 <VacuumdConfiguration period="86400000" >
   <statement>
-    <!-- removes references in topo maps to nodes that have been marked as deleted - cascading deletes cannot work here -->
-    DELETE FROM element
-     WHERE element.elementtype = 'N'
-       AND element.elementid IN
-           (SELECT nodeid
-              FROM node
-             WHERE nodetype = 'D');
-  </statement>
-
-  <statement>
-    <!-- this deletes all entries in atInterface that have been marked as deleted -->
-    DELETE FROM atInterface WHERE atInterface.status = 'D';
-  </statement>
-
-  <statement>
-    <!-- this deletes all entries in datalinkInterface that have been marked as deleted -->
-    DELETE FROM datalinkInterface WHERE datalinkInterface.status = 'D';
-  </statement>
-
-  <statement>
-    <!-- this deletes all entries in ipRouteInterface that have been marked as deleted -->
-    DELETE FROM ipRouteInterface WHERE ipRouteInterface.status = 'D';
-  </statement>
-
-  <statement>
-    <!-- this deletes all entries in vlan that have been marked as deleted -->
-    DELETE FROM vLan WHERE vLan.status = 'D';
-  </statement>
-
-  <statement>
-    <!-- this deletes all entries in stpInterface that have been marked as deleted -->
-    DELETE FROM stpInterface WHERE stpInterface.status = 'D';
-  </statement>
-
-  <statement>
-    <!-- this deletes all entries in stpInterface that have been marked as deleted -->
-    DELETE FROM stpNode WHERE stpNode.status = 'D';
-  </statement>
-   
-  <statement>
     <!-- this deletes all the snmpInterfaces that have been marked as deleted -->
     DELETE FROM snmpInterface WHERE snmpInterface.snmpCollect = 'D';
   </statement>
@@ -69,57 +29,28 @@
       SELECT eventid FROM notifications WHERE eventid = events.eventid) 
     AND eventtime &lt; now() - interval '6 weeks';
   </statement>
+  
+  <statement>
+    <!-- this deletes values from the JSON key value store that have expired due to TTL -->
+    DELETE from kvstore_jsonb
+    WHERE expires_at &lt; now()
+  </statement>
+
+  <statement>
+    <!-- this deletes values from the BLOB key value store that have expired due to TTL -->
+    DELETE from kvstore_bytea
+    WHERE expires_at &lt; now()
+  </statement>
     
   <automations>
-    <automation name="cosmicClear" interval="30000" active="true" 
-                trigger-name="selectResolvers" 
-                action-name="clearProblems" />
-                
-    <automation name="cleanUp" interval="60000" active="true"
-                action-name="deletePastClearedAlarms" />
-                
-    <automation name="fullCleanUp" interval="300000" active="true" 
-                action-name="deleteAllPastClearedAlarms" />
-                
-    <automation name="GC" interval="300000" active="true" 
-                action-name="garbageCollect" />
-                
-    <automation name="fullGC" interval="300000" active="true" 
-                action-name="fullGarbageCollect" />
-                
-    <automation name="unclear" interval="30000"  active="true" 
-                trigger-name="selectClearedAlarms" 
-                action-name="resetSeverity" />
-                
-    <automation name="escalation" interval="30000" active="false" 
-                trigger-name="selectSuspectAlarms" 
-                action-name="escalateAlarm" 
-                action-event="eventEscalated" />
-                
     <automation name="purgeStatisticsReports" active="true"
                 interval="3600000" 
                 action-name="deletePurgeableStatisticsReports" />
-    
-    <!-- Enable these automation for automatic Trouble Ticketing -->
-    <automation name="createTickets" interval="30000" active="false" 
-                trigger-name="selectNullTicketStateAlarms" 
-                action-name="acknowledgeAlarm" 
-                action-event="createTicket" />
-    <automation name="createCriticalTicket" interval="30000" active="false" 
-                trigger-name="selectCritialOpenAlarms" 
-                action-name="acknowledgeAlarm" 
-                action-event="createTicket" />
-    <automation name="updateTickets" interval="15000" active="false"
-                trigger-name="selectNotNullTicketStateAlarms" 
-                action-name="updateAutomationTime" 
-                action-event="updateTicket" />
-    <automation name="closeClearedAlarmTickets" interval="60000" active="false" 
-                trigger-name="selectClearedAlarmWithOpenTicketState" 
-                action-name="updateAutomationTime" 
-                action-event="closeTicket" />
-    <automation name="clearAlarmsForClosedTickets" interval="60000" active="false" 
-                trigger-name="selectClosedTicketStateForProblemAlarms" 
-                action-name="clearClosedTicketAlarms" />
+
+    <automation name="clearPathOutages" interval="30000" active="true"
+                trigger-name="selectPathOutagesNodes"
+                action-name="clearPathOutages" />
+
     <automation name="cleanUpRpStatusChanges" interval="600000" active="true" 
                 action-name="cleanUpRpStatusChanges" />
     
@@ -130,152 +61,19 @@
                 action-name="maintenanceExpirationWarning"
                 action-event="maintenanceExpirationWarning" />
     -->
-    
-	<!-- Enable these automations to maintain the accesspoints table -->
-    <!--
-    <automation name="addMissingAccessPointsToTable" interval="600000" active="true" 
-                trigger-name="selectAccessPointsMissingFromTable" 
-                action-name="addAccessPointToTable" />
-				
-    <automation name="updateAccessPointsTable" interval="600000" active="true"
-                action-name="updateAccessPointsTable" />
-				
-    <automation name="cleanUpAccessPointsTable" interval="600000" active="true" 
-                action-name="cleanUpAccessPointsTable" />
-    -->
-  <!-- Automation details for Alarm Notification of events that are cleared from UI. -->
-  <automation name="clearAlarmFromUi" interval="60000" active="true"
-  		trigger-name="selectClearedAlarmFromUi"
- 		action-name="doNothingAction"
-        	action-event="createClearEvent"/>
-
- 
-
   </automations>
   
   <triggers>
-    <!-- Find Alarms that have a closed ticket state that haven't been cleared, yet -->
-    <trigger name="selectClosedTicketStateForProblemAlarms" operator="&gt;=" row-count="1" >
+    <trigger name="selectPathOutagesNodes" operator="&gt;=" row-count="1" >
       <statement>
-          SELECT a.alarmid AS _alarmid, 
-                 now() AS _ts
-            FROM alarms a
-           WHERE a.tticketstate = 3
-             AND a.severity &gt; 2
-             AND ( a.alarmType = 1 OR a.alarmType = 3 )
-      </statement>
-    </trigger>
-  
-    <!-- Find Alarms that are older than 15 minutes with no Ticket ID (Only works with PostgreSQL 8.1 or better) -->
-    <trigger name="selectNullTicketStateAlarms" operator="&gt;=" row-count="1" >
-      <statement>
-          SELECT a.alarmid AS _alarmid, 
-                 a.eventuei AS _eventuei, 
-                 'admin' AS _user, 
-                 a.tticketID AS _tticketID,
-                 now() AS _ts
-            FROM alarms a
-           WHERE a.severity &gt; 2 
-             AND ( a.alarmType = 1 OR a.alarmType = 3 )
-             AND a.alarmAckUser is NULL 
-             AND a.tticketState IS NULL
-             AND GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '15 minutes'
+        SELECT nodeId AS _nodeid,
+               now() AS _ts,
+               lastEventTime AS _eventtime_from_node_up
+          FROM alarms
+         WHERE eventuei='uei.opennms.org/nodes/nodeUp'
       </statement>
     </trigger>
 
-    <!-- Find Alarms that are in critical state with no TicketID and open ticket.  This handles issues where 
-         alarms are continuously being reduced and has escalated high enough to require a ticket when 
-         the alarm hasn't been escalated. (Only works with PostgreSQL 8.1 or better) -->
-    <trigger name="selectCritialOpenAlarms" operator="&gt;=" row-count="1" >
-      <statement>
-          SELECT a.alarmid AS _alarmid, 
-                 a.eventuei AS _eventuei, 
-                 'admin' AS _user, 
-                 a.tticketID AS _tticketID,
-                 now() AS _ts
-            FROM alarms a
-           WHERE a.severity = 7 
-             AND ( a.alarmType = 1 OR a.alarmType = 3 )
-             AND a.alarmAckUser is NULL 
-             AND a.tticketState IS NULL
-             AND lasteventtime &lt; now() - interval '5 minutes'
-      </statement>
-    </trigger>
-    
-    <!-- Find Alarms that have a TicketState (Only works with PostgreSQL 8.1 or better) -->
-    <trigger name="selectNotNullTicketStateAlarms" operator="&gt;=" row-count="1" >
-      <statement>
-          SELECT a.alarmid AS _alarmid, 
-                 a.eventuei AS _eventuei, 
-                 'admin' AS _user, 
-                 a.tticketID AS _tticketID,
-                 now() AS _ts
-            FROM alarms a
-           WHERE a.severity &gt; 2 
-             AND ( a.alarmType = 1 OR a.alarmType = 3 )
-             AND a.tticketState IS NOT NULL
-             AND GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '15 minutes'
-      </statement>
-    </trigger>
-
-    <!-- Find Alarms that have cleared and have an open ticket state (Only works with PostgreSQL 8.1 or better) -->
-    <trigger name="selectClearedAlarmWithOpenTicketState" operator="&gt;=" row-count="1" >
-      <statement>
-          SELECT a.alarmid AS _alarmid, 
-                 a.eventuei AS _eventuei, 
-                 'admin' AS _user, 
-                 a.tticketID AS _tticketID,
-                 now() AS _ts
-            FROM alarms a
-           WHERE a.severity = 2 
-             AND a.alarmType = 1 
-             AND a.tticketState = 0
-             AND GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '15 minutes'
-      </statement>
-    </trigger>    
-  
-    <trigger name="selectSuspectAlarms" operator="&gt;=" row-count="1" >
-      <statement>
-          SELECT a.alarmid AS _alarmid, 
-                 a.eventuei AS _eventuei, 
-                 a.nodeid AS _nodeid, 
-                 a.ipaddr AS _ipaddr, 
-                 a.serviceid AS _serviceid,
-                 s.servicename AS _servicename,
-                 now() AS _ts
-            FROM alarms a
- LEFT OUTER JOIN service s
-              ON s.serviceid = a.serviceid
-           WHERE ( a.alarmType = 1 OR a.alarmType = 3 )
-             AND severity &gt; 3
-             AND severity &lt; 7
-             AND alarmacktime IS NULL
-             AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '60 minutes'
-      </statement>
-    </trigger>
-  
-    <!-- This finds problems that have reoccurred since the previoius clear -->
-    <trigger name="selectClearedAlarms" operator="&gt;=" row-count="1" >
-      <statement>
-        SELECT a.alarmid AS _id, e.eventseverity AS _sev, now() AS _ts
-          FROM alarms a
-          JOIN events e 
-            ON e.eventid = a.lasteventid
-         WHERE severity = 2
-           AND alarmtype = 1
-           AND a.lasteventtime > a.lastautomationtime
-      </statement>
-    </trigger>
- 
-    <!-- Find all alarms that potentially clear problems --> 
-    <trigger name="selectResolvers" operator="&gt;=" row-count="1" >
-      <statement>
-        SELECT *, now() AS _ts 
-          FROM alarms 
-         WHERE alarmType=2
-      </statement>
-    </trigger>
-    
     <!-- Find assets that have maintenance-contract that will expire in less then 30 days -->
     <!-- 
     <trigger name="selectExpirationMaintenance" operator="&gt;=" row-count="1" >
@@ -307,152 +105,9 @@
         </statement>
     </trigger>
     -->
-
-    <!-- Trigger details for Alarm Notification of events that are cleared from UI. -->
-    <trigger name="selectClearedAlarmFromUi" operator="&gt;=" row-count="1" >
-      <statement>
-     	 SELECT a.alarmid AS _alarmid, 
-     	 		a.eventuei AS _eventuei, 
-     	 		a.nodeid AS _nodeid, 
-     	 		a.ipaddr AS _ipaddr, 
-     	 		a.reductionKey AS _reductionKey, 
-     	 		a.clearKey AS _clearKey FROM alarms a where a.alarmid in(SELECT refid from acks where now()-acktime &lt; interval'60000 milliseconds' and ackaction = 4)
-      </statement>
-    </trigger>
-
-    
-
-
-	<!-- Enable these automations to maintain the accesspoints table -->
-    <!--
-    <trigger name="selectAccessPointsMissingFromTable" operator="&gt;=" row-count="1" >
-      <statement>
-          SELECT assets.serialnumber AS _serialnumber,
-                 node.nodeid AS _nodeid,
-                 assets.pollercategory AS _package
-            FROM node
-           JOIN category_node ON node.nodeid = category_node.nodeid
-           JOIN categories ON category_node.categoryid = categories.categoryid
-           JOIN assets ON node.nodeid = assets.nodeid
-           WHERE categories.categoryname = 'AccessPoint' 
-             AND NOT EXISTS (SELECT 1 FROM accesspoints WHERE physaddr=assets.serialnumber)
-      </statement>
-    </trigger>
-    -->
-
   </triggers>
     
   <actions>
-    <action name="acknowledgeAlarm" >
-      <statement>
-        UPDATE alarms
-           SET alarmackuser = ${_user}, alarmacktime = ${_ts}, lastautomationtime = ${_ts}
-         WHERE alarmid = ${_alarmid}
-      </statement>
-    </action>
-  
-    <action name="updateAutomationTime" >
-      <statement>
-        UPDATE alarms
-           SET lastautomationtime = ${_ts}
-         WHERE alarmid = ${_alarmid}
-      </statement>
-    </action>
-  
-    <action name="escalateAlarm" >
-      <statement>
-        UPDATE alarms
-           SET alarmAckUser = null, alarmAckTime = null, severity = severity +1, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
-         WHERE alarmid = ${_alarmid}
-      </statement>
-    </action>
-  
-    <action name="resetSeverity" >
-      <statement>
-        UPDATE alarms
-           SET severity = ${_sev}, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
-         WHERE alarmid = ${_id}
-      </statement>
-    </action>
-
-    <!-- action used for postgres 7.4 compatibility -->
-    <action name="garbageCollect" >
-      <statement>
-        DELETE FROM alarms
-         WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '3 days'
-           AND alarmacktime IS NULL
-      </statement>
-    </action>
-  
-    <!-- a better action when using postgres 8.1 
-    <action name="garbageCollect" >
-      <statement>
-        DELETE FROM alarms
-         WHERE GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '3 days'
-           AND alarmacktime IS NULL
-      </statement>
-    </action>
-    -->
-  
-    <!-- action used for postgres 7.4 compatibility -->
-    <action name="fullGarbageCollect" >
-      <statement>
-        DELETE FROM alarms
-         WHERE COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '8 days'
-      </statement>
-    </action>
-  
-    <!-- a better action when using postgres 8.1 
-    <action name="fullGarbageCollect" >
-      <statement>
-        DELETE FROM alarms
-         WHERE GREATEST(lastautomationtime, lasteventtime) &lt; now() - interval '8 days'
-      </statement>
-    </action>
-    -->
-    
-    <!--  ticket state of 3 is closed -->
-    <action name="deletePastClearedAlarms" >
-      <statement>
-        DELETE FROM alarms
-         WHERE severity &lt;= 3
-           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '5 minutes'
-           AND (alarmacktime IS NULL AND (tticketState IS NULL OR tticketState = 3))
-      </statement>
-    </action>
-
-    <!-- May need to add a check for Open ticket state and wait for the state to be closed based on
-         update ticket action-event -->
-    <action name="deleteAllPastClearedAlarms" >
-      <statement>
-        DELETE from alarms
-         WHERE severity &lt;= 3
-           AND COALESCE(lastautomationtime, lasteventtime) &lt; now() - interval '24 hours'
-           AND (tticketState IS NULL OR tticketState = 3)
-      </statement>
-    </action>
-  
-    <!--  New and optimized version of clearing problems -->
-    <action name="clearProblems" >
-      <statement>
-        UPDATE alarms 
-           SET severity=2, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
-         WHERE alarmType=1 
-           AND severity &gt; 2 
-           AND lastEventTime &lt;  ${lastEventTime} 
-           AND reductionKey = ${clearKey} 
-      </statement> 
-    </action>
-    
-    <!--  clear alarms that have a trouble ticket assigned as closed and alarm has not cleared-->
-    <action name="clearClosedTicketAlarms" >
-      <statement>
-        UPDATE alarms 
-           SET severity=2, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
-         WHERE alarmid = ${_alarmid}
-      </statement> 
-    </action>
-    
     <action name="deletePurgeableStatisticsReports" >
       <statement>
         DELETE from statisticsReport
@@ -474,14 +129,24 @@
         <!-- Remove expired locations specific status changes -->
         DELETE 
           FROM location_specific_status_changes
-         WHERE (locationmonitorid, ifserviceid, id) 
-        NOT IN (SELECT locationmonitorid, ifserviceid, max(id) 
+         WHERE (systemid, ifserviceid, id) 
+        NOT IN (SELECT systemid, ifserviceid, max(id) 
                   FROM location_specific_status_changes 
-              GROUP BY locationmonitorid, ifserviceid)
+              GROUP BY systemid, ifserviceid)
            AND statustime &lt; now() - interval '24 hours'
       </statement>
     </action>
-    
+
+    <action name="clearPathOutages" >
+      <statement>
+        UPDATE alarms
+           SET severity = 2, lastautomationtime = ${_ts}
+         WHERE eventuei = 'uei.opennms.org/nodes/pathOutage'
+           AND nodeid = ${_nodeid}
+           AND lasteventtime &lt;= ${_eventtime_from_node_up}
+      </statement>
+    </action>
+
     <!-- Monitoring maintenance contracts -->
     <!--
     <action name="maintenanceExpirationWarning" >
@@ -489,81 +154,11 @@
       </statement>
     </action>
     -->
-    
-    <!-- Access Point Monitor -->
-    <!--
-    <action name="addAccessPointToTable" >
-      <statement>
-        INSERT INTO accesspoints (physaddr, nodeid, pollingpackage) 
-           VALUES (${_serialnumber}, ${_nodeid}, ${_package})
-      </statement>
-    </action>
-	
-    <action name="updateAccessPointsTable">
-        <statement>
-            UPDATE accesspoints
-                SET pollingpackage = assets.pollercategory,
-             nodeid = node.nodeid
-            FROM node
-            JOIN category_node ON node.nodeid = category_node.nodeid
-            JOIN categories ON category_node.categoryid = categories.categoryid
-            JOIN assets ON node.nodeid = assets.nodeid
-             WHERE accesspoints.physaddr=assets.serialnumber
-        </statement>
-    </action>
-	
-    <action name="cleanUpAccessPointsTable">
-      <statement>
-        DELETE FROM accesspoints
-           WHERE NOT EXISTS
-           ( SELECT 1 FROM assets WHERE assets.serialnumber = accesspoints.physaddr )
-      </statement>
-    </action>
-    -->
   </actions>
-
-  <!--  Deprecating this element... see the new <action-events> element -->    
-  <auto-events>
-    <auto-event name="escalationEvent" >
-      <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
-    </auto-event>
-  </auto-events>
 
   <!-- Note: action events that have tokens require the for-each-result attribute to be set to true -->
   <action-events>
-    <action-event name="createTicket" for-each-result="true" >
-      <assignment type="field" name="uei" value="uei.opennms.org/troubleTicket/create" />
-      <assignment type="parameter" name="alarmUei" value="${_eventuei}" />
-      <assignment type="parameter" name="user" value="${_user}" />
-      <assignment type="parameter" name="alarmId" value="${_alarmid}" />
-    </action-event>
-    
-    <action-event name="updateTicket" for-each-result="true" >
-      <assignment type="field" name="uei" value="uei.opennms.org/troubleTicket/update" />
-      <assignment type="parameter" name="alarmUei" value="${_eventuei}" />
-      <assignment type="parameter" name="user" value="${_user}" />
-      <assignment type="parameter" name="alarmId" value="${_alarmid}" />
-      <assignment type="parameter" name="troubleTicket" value="${_tticketID}" />
-    </action-event>
-
-    <action-event name="closeTicket" for-each-result="true" >
-      <assignment type="field" name="uei" value="uei.opennms.org/troubleTicket/close" />
-      <assignment type="parameter" name="alarmUei" value="${_eventuei}" />
-      <assignment type="parameter" name="user" value="${_user}" />
-      <assignment type="parameter" name="alarmId" value="${_alarmid}" />
-      <assignment type="parameter" name="troubleTicket" value="${_tticketID}" />
-    </action-event>
-    
-    <action-event name="eventEscalated" for-each-result="true" >
-      <assignment type="field" name="uei" value="uei.opennms.org/vacuumd/alarmEscalated" />
-      <assignment type="field" name="nodeid" value="${_nodeid}" />
-      <assignment type="field" name="interface" value="${_ipaddr}" />
-      <assignment type="field" name="service" value="${_servicename}" />
-      <assignment type="parameter" name="alarmId" value="${_alarmid}" />
-      <assignment type="parameter" name="alarmEventUei" value="${_eventUei}" />
-    </action-event>
-    
-    <!-- Monitoring maintenance conracts -->
+    <!-- Monitoring maintenance contracts -->
     <!--
     <action-event name="maintenanceExpirationWarning" for-each-result="true" >
       <assignment type="field" name="uei" value="uei.opennms.org/asset/maintenance/expirationWarning" />
@@ -574,14 +169,6 @@
       <assignment type="parameter" name="timeframe" value="${timeframe}" />
     </action-event>
     -->
-   <!-- Action details for Alarm Notification of events that are cleared from UI. -->
-    <action-event name="createClearEvent" for-each-result="true" >
-      <assignment type="field" name="uei" value="uei.opennms.org/vacuumd/juniper/alarmCleared" />
-      <assignment type="field" name="interface" value="${_ipaddr}" />
-      <assignment type="field" name="nodeid" value="${_nodeid}" />
-      <assignment type="parameter" name="alarmid" value="${_alarmid}" />
-      <assignment type="parameter" name="reductionKey" value="${_reductionKey}" />
-    </action-event>
   </action-events>
   
 </VacuumdConfiguration>

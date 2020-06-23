@@ -1,0 +1,23 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+=== Configuring system proxies
+
+System proxy settings may be used with certain _{opennms-product-name}_ components via the `use-system-proxy` or `useSystemProxy` parameters.
+To configure system proxy servers, set some or all of the following properties:
+
+[options="header, autowidth"]
+|===
+| Property                      | Default    | Description
+| `http.proxyHost`              | None       | Hostname or IP address of proxy server to use for plain HTTP requests
+| `http.proxyPort`              | 3128       | TCP port of proxy server to use for plain HTTP requests
+| `https.proxyHost`             | None       | Hostname or IP address of proxy server to use for HTTPS requests
+| `https.proxyPort`             | 3128       | TCP port of proxy server to use for HTTPS requests
+| `http.nonProxyHosts`          | None       | Pipe-separated list of hostnames or IP addresses which bypass HTTP proxying
+| `https.nonProxyHosts`         | None       | Pipe-separated list of hostnames or IP addresses which bypass HTTPS proxying
+|===
+
+TIP: Depending on the JVM in use, the properties `http.proxyUser`, `http.proxyPassword`, and their `https.*` equivalents _may_ enable the use of proxy servers that require authentication.
+
+WARNING: Setting these properties may have unintended effects. Use with care.

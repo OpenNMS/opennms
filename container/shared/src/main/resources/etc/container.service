@@ -1,0 +1,17 @@
+[Unit]
+Description=The OpenNMS @NAME_DISPLAY@ distributed client.
+Requires=network.target network-online.target
+After=network.target network-online.target
+
+[Service]
+User=root
+EnvironmentFile=-@SYSCONFDIR@/@NAME_LC@
+
+PIDFile=@PIDFILE@
+Type=forking
+
+ExecStart=@INITDIR@/@NAME_LC@ start
+ExecStop=@INITDIR@/@NAME_LC@ stop
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,27 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <bean id="grafanaDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.GrafanaDashletFactory" scope="singleton">
+        <property name="name" value="Grafana"/>
+        <property name="boostable" value="false"/>
+        <property name="dashboardSuitable" value="true"/>
+
+        <property name="requiredParameters">
+            <map>
+                <entry key="title" value=""/>
+                <entry key="uri" value=""/>
+                <entry key="from" value="now-24h"/>
+                <entry key="to" value="now"/>
+            </map>
+        </property>
+        <property name="requiredParameterDescriptions">
+            <map>
+                <entry key="title" value="Title of the Grafana dashboard to be displayed"/>
+                <entry key="uri" value="URI to the Grafana Dashboard to be displayed"/>
+                <entry key="from" value="Start of time range"/>
+                <entry key="to" value="End of time range"/>
+            </map>
+        </property>
+    </bean>
+
+    <service ref="grafanaDashletFactory" interface="org.opennms.features.vaadin.dashboard.model.DashletFactory"/>
+</blueprint>

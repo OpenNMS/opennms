@@ -3,12 +3,13 @@ package org.opennms.netmgt.correlation.drools
 import java.util.Date;
 
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
+import org.opennms.netmgt.correlation.drools.Cause;
 import org.opennms.netmgt.correlation.drools.Cause.Type;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
-import org.drools.spi.KnowledgeHelper;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.drools.core.spi.KnowledgeHelper;
+import org.opennms.netmgt.model.events.EventUtils;
 
 global org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine engine;
 global org.opennms.netmgt.correlation.drools.NodeService nodeService;
@@ -34,7 +35,7 @@ rule "possibleCauses"
 	then
 		Long $parentNode = nodeService.getParentNode( $cause );
 		if ( $parentNode != null ) {
-			Cause $parent = possibleCause( engine, $parentNode, $e, POLL_INTERVAL );
+			Cause $parent = createPossibleCause( engine, $parentNode, $e, POLL_INTERVAL );
 			$parent.addImpacted( $c );
 			println( "No Cause for parent. Asserting: " + $parent );
 			insert( $parent );
@@ -65,17 +66,9 @@ rule "resolveIssue"
 		retract( $up );
 end
 
-function Cause possibleCause( DroolsCorrelationEngine engine, Long nodeId, Event symptom, Long POLL_INTERVAL ) {
+function Cause createPossibleCause( DroolsCorrelationEngine engine, Long nodeId, Event symptom, Long POLL_INTERVAL ) {
 	return new Cause( Type.POSSIBLE, nodeId, symptom, engine.setTimer( POLL_INTERVAL ) );
 }
-
-//function void foundRootCause( DroolsCorrelationEngine engine, PossibleCause cause ) {
-//	EventBuilder bldr = new EventBuilder( "rootCauseEvent", "Drools" );
-//	bldr.setNodeid((int)cause.getSymptom().getNodeid());
-//	bldr.addParam("rootCause", cause.getCause().intValue());
-//	
-//	engine.sendEvent(bldr.getEvent());
-//}
 
 function void println(Object msg) {
 	System.out.println(new Date() + " : " + msg);

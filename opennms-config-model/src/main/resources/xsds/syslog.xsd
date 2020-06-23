@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/syslog"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/syslog"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+        xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+    <annotation>
+        <documentation>XML Schema for Syslog related configuration
+        </documentation>
+    </annotation>
+
+    <element name="configuration">
+        <annotation>
+            <documentation>Top-level element for the syslogd-configuration.xml
+                configuration file.
+            </documentation>
+        </annotation>
+        <complexType>
+            <attribute name="listen-address" type="string" use="optional">
+                <annotation>
+                    <documentation>The address on which Syslogd listens for SYSLOG Messages. The
+                        default is to listen on all addresses.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="syslog-port" use="required">
+                <annotation>
+                    <documentation>The port on which Syslogd listens for SYSLOG Messages. The
+                        standard port is 514.
+                    </documentation>
+                </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                    <maxInclusive value="65535"/>
+                  </restriction>
+                </simpleType>      
+            </attribute>
+            <attribute name="new-suspect-on-message" type="boolean" use="optional" default="false" >
+                <annotation>
+                    <documentation>Whether messages from devices unknown to OpenNMS should
+                        generate newSuspect events.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="forwarding-regexp" type="string" use="optional">
+                <annotation>
+                    <documentation>The regular expression used to separate message and host.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="matching-group-host" use="optional">
+                <annotation>
+                    <documentation>The matching group for the host</documentation>
+                </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                 </restriction>
+                </simpleType>
+            </attribute>
+            <attribute name="matching-group-message" use="optional">
+                <annotation>
+                    <documentation>The matching group for the message</documentation>
+                </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                  </restriction>
+                </simpleType>
+            </attribute>
+            <attribute name="parser" type="string" use="optional" default="org.opennms.netmgt.syslogd.CustomSyslogParser">
+                <annotation>
+                    <documentation>
+                      A string which defines the class to use when parsing syslog messages.
+                      The default is the "CustomSyslogParser", which honors the forwarding-regexp,
+                      matching-group-host, and matching-group-message attributes, and can parse
+                      most BSD-style Syslog messages, including Syslog-NG's default format.
+                      Other options include "org.opennms.netmgt.syslogd.SyslogNGParser" which is a
+                      slightly more strict version of the CustomSyslogParser, and
+                      "org.opennms.netmgt.syslogd.Rfc5424SyslogParser" which can handle the recent
+                      (2009) RFC for syslog messages.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="discard-uei" type="string" use="optional" default="DISCARD-MATCHING-MESSAGES">
+                <annotation>
+                    <documentation>A string which, when used as the value of a "uei"
+                                   element inside a "ueiMatch" element, results in all
+                                   matching messages to be discarded without an event
+                                   ever being created
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="threads" use="optional">
+                <annotation>
+                    <documentation>Number of threads used for consuming/dispatching messages.
+                                   Defaults to 2 x the number of available processors.
+                    </documentation>
+                </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                  </restriction>
+                </simpleType>
+            </attribute>
+           <attribute name="queue-size" use="optional" default="10000">
+                <annotation>
+                    <documentation>Maximum number of messages to keep in memory while waiting
+                                   to be dispatched.
+                    </documentation>
+                </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                  </restriction>
+                </simpleType>
+            </attribute>
+           <attribute name="batch-size" use="optional" default="1000">
+                <annotation>
+                    <documentation>Messages are aggregated in batches before being dispatched.
+                                   When the batch reaches this size, it will be dispatched.
+                    </documentation>
+                </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                  </restriction>
+                </simpleType>
+            </attribute>
+           <attribute name="batch-interval" use="optional" default="500">
+                <annotation>
+                    <documentation>Messages are aggregated in batches before being dispatched.
+                                   When the batch has been created for longer than this interval (ms)
+                                   it will be dispatched, regardless of the current size.
+                    </documentation>
+                </annotation>
+
+                <simpleType>
+                  <restriction base="int">
+                    <minInclusive value="1"/>
+                  </restriction>
+                </simpleType>
+            </attribute>
+            <attribute name="timezone" type="string" use="optional">
+                <annotation>
+                    <documentation>time zone to use for log messages that doen't express a time zone. If none is given the
+                        system's default time zone will be taken. See java.util.TimeZone.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attribute name="includeRawSyslogmessage" type="boolean" use="optional" default="false">
+                <annotation>
+                    <documentation>Whether or not to include the raw syslog message as an event parameter in the event
+                        generated by syslogd.
+                    </documentation>
+                </annotation>
+            </attribute>
+        </complexType>
+
+    </element>
+
+    <element name="ueiList">
+        <complexType>
+            <sequence>
+                <element maxOccurs="unbounded" minOccurs="0" ref="this:ueiMatch"/>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="ueiMatch">
+        <annotation>
+            <documentation>List of Strings to UEI matches</documentation>
+        </annotation>
+        <complexType>
+            <choice maxOccurs="unbounded">
+                <element minOccurs="0" maxOccurs="unbounded" name="facility">
+                    <annotation>
+                        <documentation>The name of a syslog facility. If present, the facility of
+                                       an incoming message must match one of the facilities named
+                                       by an instance of this tag within the ueiMatch.
+                        </documentation>
+                    </annotation>
+                    <simpleType>
+                        <restriction base="string">
+                            <pattern value="kern(el)?|user|mail|daemon|auth|syslog|lpr|news|uucp|cron|authpriv|ftp|ntp|audit|alert|clock|local[01234567]"/>
+                        </restriction>
+                    </simpleType>
+                </element>
+                <element minOccurs="0" maxOccurs="unbounded" name="severity">
+                    <annotation>
+                        <documentation>The name of a syslog severity. If present, the severity of
+                                       an incoming message must match one of the severities named
+                                       by an instance of this tag within the ueiMatch.
+                        </documentation>
+                    </annotation>
+                    <simpleType>
+                        <restriction base="string">
+                            <pattern value="[Ee]mergency|[Aa]lert|[Cc]ritical|[Ee]rror|[Ww]arning|[Nn]otice|[Ii]nfo(rmational)?|[Dd]ebug"/>
+                        </restriction>
+                    </simpleType>
+                </element>
+                <element minOccurs="0" maxOccurs="1" name="process-match">
+                    <annotation>
+                        <documentation>String against which to match the process name; interpreted
+                                       as a regular expression.  If no process name is present in
+                                       the incoming message, any process-match elements will be
+                                       considered non-matches.
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <attribute name="expression" type="string" use="required">
+                            <annotation>
+                                <documentation>The regular expression</documentation>
+                            </annotation>
+                        </attribute>
+                    </complexType>
+                </element>
+                <element minOccurs="0" maxOccurs="1" name="hostname-match">
+                    <annotation>
+                        <documentation>String against which to match the hostname; interpreted
+                                       as a regular expression.
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <attribute name="expression" type="string" use="required">
+                            <annotation>
+                                <documentation>The regular expression</documentation>
+                            </annotation>
+                        </attribute>
+                    </complexType>
+                </element>
+                <element minOccurs="0" maxOccurs="1" name="hostaddr-match">
+                    <annotation>
+                        <documentation>String against which to match the host IP address; interpreted
+                                       as a regular expression.
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <attribute name="expression" type="string" use="required">
+                            <annotation>
+                                <documentation>The regular expression</documentation>
+                            </annotation>
+                        </attribute>
+                    </complexType>
+                </element>
+                <element maxOccurs="1" minOccurs="1" name="match">
+                    <annotation>
+                        <documentation>String against which to match the message body; interpreted
+                                       as a substring or a regular expression according to the
+                                       value of the "type" attribute
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <attribute name="type" use="required">
+                            <annotation>
+                                <documentation>Whether to interpret this match string as a simple
+                                               substring or as a regular expression
+                                </documentation>
+                            </annotation>
+                            <simpleType>
+                                <restriction base="string">
+                                    <pattern value="(substr|regexp?)"/>
+                                </restriction>
+                            </simpleType>
+                        </attribute>
+                        <attribute name="expression" type="string" use="required">
+                            <annotation>
+                                <documentation>The match expression</documentation>
+                            </annotation>
+                        </attribute>
+                        <attribute name="default-parameter-mapping" type="boolean" use="optional" default="true">
+                          <annotation>
+                            <documentation>Whether to do the default mappings of matching-groups to
+                                     event parameters (group 1 -> group1, etc.) if this is a
+                                     regex match.
+                       </documentation>
+                          </annotation>
+                        </attribute>
+                    </complexType>
+                </element>
+
+                <element maxOccurs="1" minOccurs="1" name="uei" type="string">
+                    <annotation>
+                        <documentation>UEI</documentation>
+                    </annotation>
+                </element>
+
+                <element maxOccurs="unbounded" minOccurs="0" name="parameter-assignment">
+                  <annotation>
+                    <documentation>For regex matches, assign the value of a matching group
+                                   to a named event parameter
+                    </documentation>
+                  </annotation>
+                  <complexType>
+                    <attribute name="matching-group" use="required">
+                      <annotation>
+                        <documentation>The number of the matching group from the regex
+                                       whose value will be assigned. Group 0 always refers
+                                       to the entire string matched by the expression. If
+                                       the referenced group does not exist, the empty string
+                                       will be assigned.
+                        </documentation>
+                      </annotation>
+                      <simpleType>
+                <restriction base="int">
+                  <minInclusive value="0" />
+                </restriction>
+                      </simpleType>
+                    </attribute>
+                    <attribute name="parameter-name" type="string" use="required">
+                      <annotation>
+                        <documentation>The name of the event parameter to which the named
+                                       matching group's value will be assigned
+                        </documentation>
+                      </annotation>
+                    </attribute>
+                  </complexType>
+                </element>
+            </choice>
+        </complexType>
+    </element>
+
+    <element name="hideMessage">
+        <complexType>
+            <sequence>
+                <element maxOccurs="unbounded" minOccurs="0" ref="this:hideMatch"/>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="hideMatch">
+        <annotation>
+            <documentation>List of substrings or regexes that, when matched, signal
+                            that the message has sensitive contents and should
+                            therefore be hidden
+            </documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element maxOccurs="1" minOccurs="1" name="match">
+                    <annotation>
+                        <documentation>The match expression</documentation>
+                    </annotation>
+                    <complexType>
+                        <attribute name="type" use="required">
+                            <annotation>
+                                <documentation>Whether to interpret this match string as a simple
+                                               substring or as a regular expression
+                                </documentation>
+                            </annotation>
+                            <simpleType>
+                                <restriction base="string">
+                                    <pattern value="(substr|regex)"/>
+                                </restriction>
+                            </simpleType>
+                        </attribute>
+                        <attribute name="expression" type="string" use="required">
+                            <annotation>
+                                <documentation>The match expression</documentation>
+                            </annotation>
+                        </attribute>
+                    </complexType>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="syslogd-configuration-group">
+        <complexType>
+            <sequence>
+                <element maxOccurs="1" minOccurs="0" ref="this:ueiList"/>
+                <element maxOccurs="1" minOccurs="0" ref="this:hideMessage"/>
+            </sequence>
+        </complexType>
+    </element>
+
+    <element name="syslogd-configuration">
+        <complexType>
+            <sequence>
+                <element maxOccurs="1" minOccurs="1" ref="this:configuration"/>
+                <element maxOccurs="1" minOccurs="0" ref="this:ueiList"/>
+                <element maxOccurs="1" minOccurs="0" ref="this:hideMessage"/>
+                <element maxOccurs="unbounded" minOccurs="0" name="import-file" type="string"/>
+            </sequence>
+        </complexType>
+    </element>
+
+</schema>

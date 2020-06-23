@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "`id -u`" -ne "0" ]; then
+if [ "`id -u -n`" "!=" "root" ]; then
 	echo "You must run this utility as root!"
 	exit 1
 fi

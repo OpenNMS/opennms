@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<thresholding-config>
+
+        <group name="telemetry" rrdRepository = "${install.share.dir}/rrd/snmp/">
+                <threshold type="high" ds-name="ifIn1SecPkts"  ds-type="if" value="10" rearm="5" trigger="1" />
+        </group>
+
+</thresholding-config>

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,15 +25,23 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+
 package org.opennms.features.vaadin.dashboard.config.ui;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.validator.AbstractStringValidator;
-import com.vaadin.ui.*;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.validator.AbstractStringValidator;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.v7.ui.NativeSelect;
+import com.vaadin.ui.Panel;
+import com.vaadin.v7.ui.TextField;
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletFactory;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
@@ -59,7 +67,10 @@ public class DashletSpecEditor extends Panel {
      * The {@link NativeSelect} instance for selecting available dashlet factories.
      */
     private NativeSelect m_dashletSelect;
-
+    /**
+     * Title textfield
+     */
+    private TextField m_titleField;
     /**
      * Helper variable for disabling saving of data.
      */
@@ -110,9 +121,8 @@ public class DashletSpecEditor extends Panel {
         setWidth(100.0f, Unit.PERCENTAGE);
 
         GridLayout gridLayout = new GridLayout();
-        gridLayout.setColumns(4);
+        gridLayout.setColumns(6);
         gridLayout.setRows(1);
-
         gridLayout.setMargin(true);
 
         /**
@@ -122,6 +132,7 @@ public class DashletSpecEditor extends Panel {
         priorityField.setValue(String.valueOf(dashletSpec.getPriority()));
         priorityField.setImmediate(true);
         priorityField.setCaption("Priority");
+        priorityField.setDescription("Priority of this dashlet");
 
         priorityField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
@@ -152,6 +163,7 @@ public class DashletSpecEditor extends Panel {
         boostPriorityField.setValue(String.valueOf(dashletSpec.getBoostPriority()));
         boostPriorityField.setImmediate(true);
         boostPriorityField.setCaption("Boost-Priority");
+        boostPriorityField.setDescription("Boost priority of this dashlet");
 
         boostPriorityField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
@@ -179,9 +191,11 @@ public class DashletSpecEditor extends Panel {
          * Duration field setup, layout and adding listener and validator
          */
         final TextField durationField = new TextField();
+        durationField.setId("opsboard.duration");
         durationField.setValue(String.valueOf(dashletSpec.getDuration()));
         durationField.setImmediate(true);
         durationField.setCaption("Duration");
+        durationField.setDescription("Duration for this dashlet");
 
         durationField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
@@ -212,6 +226,7 @@ public class DashletSpecEditor extends Panel {
         boostDurationField.setValue(String.valueOf(dashletSpec.getBoostDuration()));
         boostDurationField.setImmediate(true);
         boostDurationField.setCaption("Boost-Duration");
+        boostDurationField.setDescription("Boost duration for this dashlet");
 
         boostDurationField.addValidator(new AbstractStringValidator("Only numbers allowed here") {
             @Override
@@ -245,7 +260,7 @@ public class DashletSpecEditor extends Panel {
          */
 
         m_dashletSelect = new NativeSelect();
-
+        m_dashletSelect.setId("opsboard.type");
         m_dashletSelect.setCaption("Dashlet");
 
         updateDashletSelection(dashletSelector.getDashletFactoryList());
@@ -253,7 +268,9 @@ public class DashletSpecEditor extends Panel {
         m_dashletSelect.setImmediate(true);
         m_dashletSelect.setNewItemsAllowed(false);
         m_dashletSelect.setNullSelectionItemId("Undefined");
+        m_dashletSelect.setNullSelectionAllowed(false);
         m_dashletSelect.select(dashletSpec.getDashletName());
+        m_dashletSelect.setDescription("Dashlet selection");
 
         m_dashletSelect.addValueChangeListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
@@ -265,6 +282,7 @@ public class DashletSpecEditor extends Panel {
                     m_dashletSpec.setDashletName("Undefined");
                 } else {
                     m_dashletSpec.setDashletName(valueChangeEvent.getProperty().getValue().toString());
+                    m_dashletSelect.removeItem("Undefined");
                 }
 
                 m_dashletSpec.getParameters().clear();
@@ -287,8 +305,24 @@ public class DashletSpecEditor extends Panel {
             }
         });
 
+        m_titleField = new TextField();
+        m_titleField.setId("opsboard.title");
+        m_titleField.setValue(dashletSpec.getTitle());
+        m_titleField.setImmediate(true);
+        m_titleField.setCaption("Title");
+        m_titleField.setDescription("Title for this dashlet instance");
+
+        m_titleField.addValueChangeListener(new Property.ValueChangeListener() {
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                m_dashletSpec.setTitle((String) valueChangeEvent.getProperty().getValue());
+                WallboardProvider.getInstance().save();
+                ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Title");
+            }
+        });
+
         FormLayout f1 = new FormLayout();
         f1.addComponent(m_dashletSelect);
+        f1.addComponent(m_titleField);
 
         /**
          * Adding the required input fields and buttons to several {@link FormLayout} instances for better layout.
@@ -317,11 +351,13 @@ public class DashletSpecEditor extends Panel {
         m_propertiesButton.setEnabled(m_dashletSelector.getDashletFactoryForName(m_dashletSpec.getDashletName()).getRequiredParameters().size() > 0);
 
         m_propertiesButton.setStyleName("small");
+        m_propertiesButton.setDescription("Open properties dialog for this dashlet");
 
         /**
          * ...and the remove button
          */
         Button removeButton = new Button("Remove");
+        removeButton.setDescription("Remove this dashlet entry");
 
         FormLayout f4 = new FormLayout();
         f4.addComponent(m_propertiesButton);
@@ -335,13 +371,62 @@ public class DashletSpecEditor extends Panel {
 
         removeButton.setStyleName("small");
 
+        Button upButton = new Button();
+        upButton.setStyleName("small");
+        upButton.setIcon(new ThemeResource("../runo/icons/16/arrow-up.png"));
+        upButton.setDescription("Move this a dashlet entry one position up");
+
+        Button downButton = new Button();
+        downButton.setStyleName("small");
+        downButton.setIcon(new ThemeResource("../runo/icons/16/arrow-down.png"));
+        downButton.setDescription("Move this a dashlet entry one position down");
+
+        FormLayout f5 = new FormLayout();
+        f5.addComponent(upButton);
+        f5.addComponent(downButton);
+
+        Button previewButton = new Button("Preview");
+        previewButton.setStyleName("small");
+        previewButton.setDescription("Preview this single dashlet entry");
+
+        Wallboard wallboard = new Wallboard();
+        wallboard.getDashletSpecs().add(m_dashletSpec);
+
+        previewButton.addClickListener(new PreviewClickListener(this, wallboard));
+
+        FormLayout f6 = new FormLayout();
+        f6.addComponent(previewButton);
+
+        upButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                m_wallboardEditor.swapDashletSpec(m_dashletSpec, -1);
+            }
+        });
+
+        downButton.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+                m_wallboardEditor.swapDashletSpec(m_dashletSpec, +1);
+            }
+        });
+
         /**
          * Adding the different {@link FormLayout} instances to a {@link GridLayout}
          */
+        f1.setMargin(true);
+        f2.setMargin(true);
+        f3.setMargin(true);
+        f4.setMargin(true);
+        f5.setMargin(true);
+        f6.setMargin(true);
+
         gridLayout.addComponent(f1);
         gridLayout.addComponent(f2);
         gridLayout.addComponent(f3);
         gridLayout.addComponent(f4);
+        gridLayout.addComponent(f5);
+        gridLayout.addComponent(f6);
 
         setContent(gridLayout);
     }
@@ -361,7 +446,9 @@ public class DashletSpecEditor extends Panel {
         }
 
         for (DashletFactory dashletFactory : factoryList) {
-            m_dashletSelect.addItem(dashletFactory.getName());
+            if (!"Undefined".equals(dashletFactory.getName())) {
+                m_dashletSelect.addItem(dashletFactory.getName());
+            }
         }
 
         m_dashletSelect.select(savedSelection);

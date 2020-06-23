@@ -1,0 +1,8 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
+
+    <bean id="sentinelPollOutagesDao" class="org.opennms.netmgt.config.dao.outages.impl.SentinelPollOutagesDao">
+        <argument ref="jsonStore"/>
+    </bean>
+    <service ref="sentinelPollOutagesDao" interface="org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao"/>
+</blueprint>

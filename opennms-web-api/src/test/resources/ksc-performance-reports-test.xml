@@ -1,0 +1,8 @@
+<ReportsList xmlns="http://xmlns.opennms.org/xsd/config/kscReports">
+    <Report id="0" title="testKsc-2017" show_timespan_button="false" show_graphtype_button="false" graphs_per_line="0">
+        <Graph title="ActiveMQ New Connections" resourceId="node[office:1533760804118].interfaceSnmp[opennms-jvm]" timespan="1_day" graphtype="activemq.total.connection.count"/>
+        <Graph title="ICMP" resourceId="node[office:1533760804118].responseTime[127.0.0.1]" timespan="1_day" graphtype="icmp"/>
+        <Graph title="OpenNMS Drink Machine Slot 10" resourceId="node[OpenNMS Servers:1506537090950].nodeSnmp[]" timespan="1_day" graphtype="drink.slot010"/>
+        <Graph title="OpenNMS Drink Machine Slot 11" resourceId="node[OpenNMS Servers:1506537090950].nodeSnmp[]" timespan="1_day" graphtype="drink.slot011"/>
+    </Report>
+</ReportsList>

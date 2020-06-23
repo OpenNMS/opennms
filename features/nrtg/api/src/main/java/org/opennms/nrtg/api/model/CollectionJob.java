@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -53,59 +53,59 @@ import java.util.Set;
  */
 public interface CollectionJob extends Serializable {
 
-    public Set<String> getAllMetrics();
+    Set<String> getAllMetrics();
 
-    public void setMetricValue(String metricId, String metricType, String value) throws IllegalArgumentException;
+    void setMetricValue(String metricId, String metricType, String value) throws IllegalArgumentException;
 
-    public void setMetricValue(String metricId, String value) throws IllegalArgumentException;
+    void setMetricValue(String metricId, String value) throws IllegalArgumentException;
 
-    public String getMetricValue(String metricId) throws IllegalArgumentException;
+    String getMetricValue(String metricId) throws IllegalArgumentException;
 
-    public void addMetric(String metricId, Set<String> destinationSet, String onmsLogicMetricId) throws IllegalArgumentException;
+    void addMetric(String metricId, Set<String> destinationSet, String onmsLogicMetricId) throws IllegalArgumentException;
 
-    public void setParameters(Map<String, Object> parameters);
+    void setParameters(Map<String, Object> parameters);
 
-    public Map<String, Object> getParameters();
+    Map<String, Object> getParameters();
 
-    public MeasurementSet getMeasurementSet();
+    MeasurementSet getMeasurementSet();
 
-    public void setId(String id);
+    void setId(String id);
 
-    public String getId();
+    String getId();
 
-    public void setNodeId(int nodeId);
+    void setNodeId(int nodeId);
 
-    public int getNodeId();
+    int getNodeId();
 
-    public void setSite(String site);
+    void setSite(String site);
 
-    public String getSite();
+    String getSite();
 
-    public void setCreationTimestamp(Date creationTimestamp);
+    void setCreationTimestamp(Date creationTimestamp);
 
-    public Date getCreationTimestamp();
+    Date getCreationTimestamp();
 
-    public void setFinishedTimestamp(Date finishedTimestamp);
+    void setFinishedTimestamp(Date finishedTimestamp);
 
-    public Date getFinishedTimestamp();
+    Date getFinishedTimestamp();
 
-    public void setNetInterface(String theInterface);
+    void setNetInterface(String theInterface);
 
     //ToDo tak change to InetAddress
-    public String getNetInterface();
+    String getNetInterface();
 
-    public String getService();
+    String getService();
 
     void setService(String service);
 
-    public Map<String, MeasurementSet> getMeasurementSetsByDestination();
+    Map<String, MeasurementSet> getMeasurementSetsByDestination();
 
-    public void setProtocolConfiguration(String configurationString);
+    void setProtocolConfiguration(String configurationString);
 
-    public String getProtocolConfiguration();
+    String getProtocolConfiguration();
 
-    public String getMetricType(String metricId) throws IllegalArgumentException;
+    String getMetricType(String metricId) throws IllegalArgumentException;
 
-    public String getOnmsLogicMetricId(String metricId);
+    String getOnmsLogicMetricId(String metricId);
 
 }

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -44,11 +44,10 @@ public class WebGroup {
     
     private String m_name;
     private String m_comments;
-    private String m_defaultMap = "";
 
-    private List<String> m_dutySchedules = new ArrayList<String>();
-    private List<String> m_authorizedCategories = new ArrayList<String>();
-    private List<String> m_users = new ArrayList<String>();
+    private List<String> m_dutySchedules = new ArrayList<>();
+    private List<String> m_authorizedCategories = new ArrayList<>();
+    private List<String> m_users = new ArrayList<>();
     
     /**
      * <p>Constructor for WebGroup.</p>
@@ -64,11 +63,9 @@ public class WebGroup {
      */
     public WebGroup(Group group, List<String> authorizedCategories) {
         m_name = group.getName();
-        m_comments = group.getComments();
-        if (group.getDefaultMap() != null )
-            m_defaultMap = group.getDefaultMap();
-        m_dutySchedules.addAll(group.getDutyScheduleCollection());
-        m_users.addAll(group.getUserCollection());
+        m_comments = group.getComments().orElse(null);
+        m_dutySchedules.addAll(group.getDutySchedules());
+        m_users.addAll(group.getUsers());
         m_authorizedCategories.addAll(authorizedCategories);
     }
     
@@ -188,24 +185,4 @@ public class WebGroup {
         remainingUsers.removeAll(m_users);
         return remainingUsers;
     }
-    
-    /**
-     * <p>getDefaultMap</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getDefaultMap() {
-        return m_defaultMap;
-    }
-
-    /**
-     * <p>setDefaultMap</p>
-     *
-     * @param defaultMap a {@link java.lang.String} object.
-     */
-    public void setDefaultMap(String defaultMap) {
-        m_defaultMap = defaultMap;
-    }
-
-    
 }

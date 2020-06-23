@@ -1,0 +1,25 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== NSClientCollector
+
+The _NSClientCollector_ is used to collect performance data over _HTTP_ from _NSClient++_.
+
+===== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.protocols.nsclient.collector.NSClientCollector`
+| Package             | opennms-plugin-protocol-nsclient
+| Supported on Minion | `Yes`
+|===
+
+===== Collector Parameters
+
+.Collector specific parameters for the NSClientCollector
+[options="header, autowidth"]
+|===
+| Parameter              | Description                                                                     | Required | Default value
+| `collection`           | The name of the _NSClient Collection_ to use                                    | optional | default
+|===

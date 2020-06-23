@@ -1,32 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx" 
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
+  <context:annotation-config />
   <tx:annotation-driven />
 
-  <bean id="alarmPersister" class="org.opennms.netmgt.alarmd.AlarmPersisterImpl" >
-    <property name="alarmDao" ref="alarmDao" />
-    <property name="eventDao" ref="eventDao" />
-  </bean>
+  <!-- Drools integration -->
+
+  <bean id="defaultAlarmService" class="org.opennms.netmgt.alarmd.drools.DefaultAlarmService" />
+
+  <bean id="defaultAlarmTicketerService" class="org.opennms.netmgt.alarmd.drools.DefaultAlarmTicketerService" />
+
+  <bean id="droolsAlarmContext" class="org.opennms.netmgt.alarmd.drools.DroolsAlarmContext" />
+
+  <onmsgi:service interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener" ref="droolsAlarmContext">
+    <onmsgi:service-properties>
+      <entry key="registration.export" value="true" />
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <!-- Daemon -->
+
+  <bean id="alarmPersister" class="org.opennms.netmgt.alarmd.AlarmPersisterImpl" />
+
+  <onmsgi:list id="alarmPersisterExtensions" interface="org.opennms.netmgt.alarmd.api.AlarmPersisterExtension">
+    <onmsgi:listener ref="alarmPersister" bind-method="onExtensionRegistered" unbind-method="onExtensionUnregistered" />
+  </onmsgi:list>
 
   <bean id="daemon" class="org.opennms.netmgt.alarmd.Alarmd" >
-    <property name="eventForwarder" ref="eventForwarder"/>
     <property name="persister" ref="alarmPersister" />
-    <property name="northboundInterfaces" ref="northbounderList" />
   </bean>
 
-  <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+  <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
+  <!-- Northbounders -->
+
+  <bean id="northbounderManager" class="org.opennms.netmgt.alarmd.NorthbounderManager" />
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="northbounderManager"/>
+
   <onmsgi:list id="northbounderList" interface="org.opennms.netmgt.alarmd.api.Northbounder">
-    <onmsgi:listener ref="daemon" bind-method="onNorthbounderRegistered" unbind-method="onNorthbounderUnregistered" />
+    <onmsgi:listener ref="northbounderManager" bind-method="onNorthbounderRegistered" unbind-method="onNorthbounderUnregistered" />
+  </onmsgi:list>
+
+  <!-- Lifecycle listeners -->
+
+  <bean id="alarmLifecycleListenerManager" class="org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager" />
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmEntityListener" ref="alarmLifecycleListenerManager" >
+    <onmsgi:service-properties>
+      <entry key="registration.export" value="true" />
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <onmsgi:list id="alarmLifecycleListeners" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
+    <onmsgi:listener ref="alarmLifecycleListenerManager" bind-method="onListenerRegistered" unbind-method="onListenerUnregistered" />
   </onmsgi:list>
 
 </beans>

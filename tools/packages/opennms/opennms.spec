@@ -8,8 +8,6 @@
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix becomes $OPENMS_HOME in the finished package
 %{!?instprefix:%define instprefix /opt/opennms}
-# I think this is the directory where the package will be built
-%{!?packagedir:%define packagedir opennms-%version-%{releasenumber}}
 # This is where the OPENNMS_HOME variable will be set on the remote 
 # operating system. Not sure this is needed anymore.
 %{!?profiledir:%define profiledir /etc/profile.d}
@@ -23,8 +21,15 @@
 %{!?servletdir:%define servletdir opennms}
 # Where OpenNMS binaries live
 %{!?bindir:%define bindir %instprefix/bin}
+# Where Systemd files live
+%{!?_unitdir:%define _unitdir /lib/systemd/system}
 
-%{!?jdk:%define jdk jdk >= 2000:1.6}
+# Description
+%{!?_name:%define _name "opennms"}
+%{!?_descr:%define _descr "OpenNMS"}
+%{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
+
+%{!?jdk:%define jdk java-11-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
@@ -43,39 +48,38 @@ AutoReq: no
 AutoProv: no
 
 %define with_tests	0%{nil}
-%define with_docs	1%{nil}
 
-Name:			opennms
+Name:			%{_name}
 Summary:		Enterprise-grade Network Management Platform (Easy Install)
 Release:		%releasenumber
 Version:		%version
-License:		LGPL/GPL
+License:		LGPL/AGPL
 Group:			Applications/System
 BuildArch:		noarch
 
 Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
 URL:			http://www.opennms.org/
-BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):		opennms-webui      >= %{version}-%{release}
-Requires:		opennms-webui      >= %{version}-%{release}
-Requires(pre):		opennms-core        = %{version}-%{release}
-Requires:		opennms-core        = %{version}-%{release}
-Requires(pre):		postgresql-server  >= 8.1
-Requires:		postgresql-server  >= 8.1
+Requires(pre):		%{name}-webui       = %{version}-%{release}
+Requires:		%{name}-webui       = %{version}-%{release}
+Requires(pre):		%{name}-core        = %{version}-%{release}
+Requires:		%{name}-core        = %{version}-%{release}
+Requires(pre):		postgresql-server  >= 10
+Requires:		postgresql-server  >= 10
+Requires(pre):		%{jdk}
+Requires:		%{jdk}
 
 # don't worry about buildrequires, the shell script will bomb quick  =)
-BuildRequires:		%{jdk}
+#BuildRequires:		%{jdk}
 
 Prefix: %{instprefix}
 Prefix: %{sharedir}
 Prefix: %{logdir}
 
 %description
-OpenNMS is an enterprise-grade network management platform.
+%{_descr} is an enterprise-grade network management platform.
 
-This package used to contain what is now in the "opennms-core" package.
+This package used to contain what is now in the "%{name}-core" package.
 It now exists to give a reasonable default installation of OpenNMS.
 
 When you install this package, you will likely also need to install the
@@ -88,21 +92,20 @@ webapp package.
 %package core
 Summary:	The core OpenNMS backend.
 Group:		Applications/System
-Requires(pre):	jicmp
-Requires:	jicmp
-Requires(pre):	jicmp6
-Requires:	jicmp6
-Requires(pre):	%{jdk}
-Requires:	%{jdk}
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-auto-upgrade = %{version}-%{release}
-Requires:	opennms-auto-upgrade = %{version}-%{release}
+Requires(pre):	jicmp >= 2.0.0
+Requires:	jicmp >= 2.0.0
+Requires(pre):	jicmp6 >= 2.0.0
+Requires:	jicmp6 >= 2.0.0
 Obsoletes:	opennms < 1.3.11
+Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
+Obsoletes:	%{name}-plugin-protocol-xml < %{version}
+Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
+Obsoletes:	%{name}-plugin-protocol-dhcp < %{version}
 
 %description core
-The core OpenNMS backend.  This package contains the main OpenNMS
-daemon responsible for discovery, polling, data collection, and
-notifications (ie, anything that is not part of the web UI).
+The core backend.  This package contains the main daemon responsible
+for discovery, polling, data collection, and notifications (ie,
+anything that is not part of the web UI).
 
 If you want to be able to view your data, you will need to install
 the webapp package.
@@ -115,35 +118,40 @@ The logs and data directories are relocatable.  By default, they are:
 If you wish to install them to an alternate location, use the --relocate rpm
 option, like so:
 
-  rpm -i --relocate %{logdir}=/mnt/netapp/opennms-logs opennms-core.rpm
+  rpm -i --relocate %{logdir}=/mnt/netapp/%{name}-logs %{name}-core.rpm
 
 %{extrainfo}
 %{extrainfo2}
 
 
-%if %{with_docs}
+%package source
+Summary:	Source for the %{_descr} network management platform
+Group:		Applications/System
+
+%description source
+This package contains the source tarball for %{_descr}, for AGPL compliance.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package docs
-Summary:	Documentation for the OpenNMS network management platform
+Summary:	Documentation for the %{_descr} network management platform
 Group:		Applications/System
 
 %description docs
-This package contains the API and user documentation
-for OpenNMS.
+This package contains the API and user documentation.
 
 %{extrainfo}
 %{extrainfo2}
 
-%endif
 
 %package remote-poller
-Summary:	Remote (Distributed) Poller for OpenNMS
+Summary:	Remote (Distributed) Poller for %{_descr}
 Group:		Applications/System
-Requires(pre):	%{jdk}
-Requires:	%{jdk}
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
 
 %description remote-poller
-The OpenNMS distributed monitor.  For details, see:
+The distributed monitor.  For details, see:
   http://www.opennms.org/index.php/Distributed_Monitoring
 
 %{extrainfo}
@@ -153,8 +161,7 @@ The OpenNMS distributed monitor.  For details, see:
 %package jmx-config-generator
 Summary:	Generate JMX Configuration
 Group:		Applications/System
-Requires(pre):	%{jdk}
-Requires:	%{jdk}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description jmx-config-generator
 Generates configuration files for monitoring/collecting from
@@ -165,84 +172,125 @@ the Java Management Extensions.
 
 
 %package webapp-jetty
-Summary:	Embedded web interface for OpenNMS
+Summary:	Embedded web interface
 Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
-Provides:	opennms-webui = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+Provides:	%{name}-webui = %{version}-%{release}
 Obsoletes:	opennms-webapp < 1.3.11
 
 %description webapp-jetty
-The web UI for OpenNMS.  This is the Jetty version, which runs
-embedded in the main OpenNMS core process.
+The web UI.  This is the Jetty version, which runs
+embedded in the main core process.
 
 %{extrainfo}
 %{extrainfo2}
 
 
-%package ncs
-Summary:	Network Component Services for OpenNMS
+%package webapp-remoting
+Summary:	Remote Poller webapp
 Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-webapp-jetty = %{version}-%{release}
-Requires:	opennms-webapp-jetty = %{version}-%{release}
+Requires:	%{name}-webapp-jetty = %{version}-%{release}
+Conflicts:	%{name}-webapp-jetty < 19.0.0-0
 
-%description ncs
-NCS provides a framework for doing correlation of service events across
-disparate nodes.
+%description webapp-remoting
+The JNLP application that provides the Remote Poller.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package webapp-hawtio
+Summary:	Hawtio webapp
+Group:		Applications/System
+Requires:	%{name}-core = %{version}-%{release}
+
+%description webapp-hawtio
+The Hawtio web console.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package plugins
-Summary:	All Plugins for OpenNMS
+Summary:	All Plugins
 Group:		Applications/System
-Requires(pre):	opennms-plugin-provisioning-dns
-Requires:	opennms-plugin-provisioning-dns
-Requires(pre):	opennms-plugin-provisioning-link
-Requires:	opennms-plugin-provisioning-link
-Requires(pre):	opennms-plugin-provisioning-map
-Requires:	opennms-plugin-provisioning-map
-Requires(pre):	opennms-plugin-provisioning-rancid
-Requires:	opennms-plugin-provisioning-rancid
-Requires(pre):	opennms-plugin-provisioning-snmp-asset
-Requires:	opennms-plugin-provisioning-snmp-asset
-Requires(pre):	opennms-plugin-ticketer-centric
-Requires:	opennms-plugin-ticketer-centric
-Requires(pre):	opennms-plugin-ticketer-jira
-Requires:	opennms-plugin-ticketer-jira
-Requires(pre):	opennms-plugin-ticketer-otrs
-Requires:	opennms-plugin-ticketer-otrs
-Requires(pre):	opennms-plugin-ticketer-rt
-Requires:	opennms-plugin-ticketer-rt
-Requires(pre):	opennms-plugin-protocol-cifs
-Requires:	opennms-plugin-protocol-cifs
-Requires(pre):	opennms-plugin-protocol-dhcp
-Requires:	opennms-plugin-protocol-dhcp
-Requires(pre):	opennms-plugin-protocol-nsclient
-Requires:	opennms-plugin-protocol-nsclient
-Requires(pre):	opennms-plugin-protocol-radius
-Requires:	opennms-plugin-protocol-radius
-Requires(pre):	opennms-plugin-protocol-xml
-Requires:	opennms-plugin-protocol-xml
-Requires(pre):	opennms-plugin-protocol-xmp
-Requires:	opennms-plugin-protocol-xmp
+Requires(pre):	%{name}-plugin-northbounder-jms
+Requires:	%{name}-plugin-northbounder-jms
+Requires(pre):	%{name}-plugin-provisioning-dns
+Requires:	%{name}-plugin-provisioning-dns
+Requires(pre):	%{name}-plugin-provisioning-rancid
+Requires:	%{name}-plugin-provisioning-rancid
+Requires(pre):	%{name}-plugin-provisioning-reverse-dns
+Requires:	%{name}-plugin-provisioning-reverse-dns
+Requires(pre):	%{name}-plugin-provisioning-snmp-asset
+Requires:	%{name}-plugin-provisioning-snmp-asset
+Requires(pre):	%{name}-plugin-provisioning-wsman-asset
+Requires:	%{name}-plugin-provisioning-wsman-asset
+Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory
+Requires:	%{name}-plugin-provisioning-snmp-hardware-inventory
+Requires(pre):	%{name}-plugin-ticketer-jira
+Requires:	%{name}-plugin-ticketer-jira
+Requires(pre):	%{name}-plugin-ticketer-otrs
+Requires:	%{name}-plugin-ticketer-otrs
+Requires(pre):	%{name}-plugin-ticketer-rt
+Requires:	%{name}-plugin-ticketer-rt
+Requires(pre):	%{name}-plugin-protocol-cifs
+Requires:	%{name}-plugin-protocol-cifs
+Requires(pre):	%{name}-plugin-protocol-nsclient
+Requires:	%{name}-plugin-protocol-nsclient
+Requires(pre):	%{name}-plugin-protocol-radius
+Requires:	%{name}-plugin-protocol-radius
+Requires(pre):	%{name}-plugin-protocol-xmp
+Requires:	%{name}-plugin-protocol-xmp
+Requires(pre):	%{name}-plugin-collector-vtdxml-handler
+Requires:	%{name}-plugin-collector-vtdxml-handler
 
 %description plugins
-This installs all optional plugins for OpenNMS.
+This installs all optional plugins.
 
 %{extrainfo}
 %{extrainfo2}
 
 
-%package plugin-provisioning-dns
-Summary:	DNS Provisioning Adapter for OpenNMS
+%package plugin-northbounder-jms
+Summary:	JMS Alarm Northbounder
 Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-northbounder-jms
+This northbounder allows you to send OpenNMS alarms to an 
+external JMS listener.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-provisioning-map
+Summary:	Obsolete: Map Provisioning Adapter
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-provisioning-map
+The map provisioning adapter is no longer part of OpenNMS.
+
+
+%package plugin-provisioning-link
+Summary:	Obsolete: Link Provisioning Adapter
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-provisioning-link
+The map provisioning adapter is no longer part of OpenNMS.
+
+
+%package plugin-provisioning-dns
+Summary:	DNS Provisioning Adapter
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-provisioning-dns
 The DNS provisioning adapter allows for updating dynamic DNS records based on
@@ -252,58 +300,39 @@ provisioned nodes.
 %{extrainfo2}
 
 
-%package plugin-provisioning-link
-Summary:	Link Provisioning Adapter for OpenNMS
+%package plugin-provisioning-reverse-dns
+Summary:	Reverse DNS Provisioning Adapter
 Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
-%description plugin-provisioning-link
-The link provisioning adapter creates links between provisioned nodes based on naming
-conventions defined in the link-adapter-configuration.xml file.  It also updates the
-status of the map links based on data link events.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugin-provisioning-map
-Summary:	Map Provisioning Adapter for OpenNMS
-Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
-
-%description plugin-provisioning-map
-The map provisioning adapter will automatically create maps when nodes are provisioned
-in OpenNMS.
+%description plugin-provisioning-reverse-dns
+The Reverse DNS provisioning adapter allows for updating the hostname on an
+interface based on its reverse DNS lookup.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package plugin-provisioning-rancid
-Summary:	RANCID Provisioning Adapter for OpenNMS
+Summary:	RANCID Provisioning Adapter
 Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-provisioning-rancid
 The RANCID provisioning adapter coordinates with the RANCID Web Service by updating
-RANCID's device database when OpenNMS provisions nodes.
+RANCID's device database when %{_descr} provisions nodes.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package plugin-provisioning-snmp-asset
-Summary:	SNMP Asset Provisioning Adapter for OpenNMS
+Summary:	SNMP Asset Provisioning Adapter
 Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-provisioning-snmp-asset
 The SNMP asset provisioning adapter responds to provisioning events by updating asset
@@ -313,57 +342,81 @@ fields with data fetched from SNMP GET requests.
 %{extrainfo2}
 
 
+%package plugin-provisioning-wsman-asset
+Summary:        WSMAN Asset Provisioning Adapter
+Group:          Applications/System
+Requires(pre):  %{name}-core = %{version}-%{release}
+Requires:       %{name}-core = %{version}-%{release}
+
+%description plugin-provisioning-wsman-asset
+The WSMAN asset provisioning adapter responds to provisioning events by updating asset
+fields with data fetched from WSMAN WQL queries.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-provisioning-snmp-hardware-inventory
+Summary:	SNMP Hardware Inventory Provisioning Adapter
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-provisioning-snmp-hardware-inventory
+The SNMP Hardware Inventory provisioning adapter responds to provisioning events by updating 
+hardware fields with data fetched from the ENTITY-MIB and vendor extensions of this MIB.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package plugin-ticketer-jira
-Summary:       JIRA Ticketer Plugin for OpenNMS
-Group:         Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre): opennms-core = %{version}-%{release}
-Requires:      opennms-core = %{version}-%{release}
+Summary:	JIRA Ticketer Plugin
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-ticketer-jira
 The JIRA ticketer plugin provides the ability to automatically create JIRA
-issues from OpenNMS alarms.
+issues from %{_descr} alarms.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package plugin-ticketer-otrs
-Summary:       OTRS Ticketer Plugin for OpenNMS
-Group:         Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre): opennms-core = %{version}-%{release}
-Requires:      opennms-core = %{version}-%{release}
+Summary:	OTRS Ticketer Plugin
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-ticketer-otrs
 The OTRS ticketer plugin provides the ability to automatically create OTRS
-issues from OpenNMS alarms.
+issues from %{_descr} alarms.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package plugin-ticketer-rt
-Summary:       RT Ticketer Plugin for OpenNMS
-Group:         Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre): opennms-core = %{version}-%{release}
-Requires:      opennms-core = %{version}-%{release}
+Summary:	RT Ticketer Plugin
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-ticketer-rt
 The RT ticketer plugin provides the ability to automatically create RT
-tickets from OpenNMS alarms.
+tickets from %{_descr} alarms.
 
 %{extrainfo}
 %{extrainfo2}
 
 
 %package plugin-protocol-cifs
-Summary:	CIFS Poller Plugin for OpenNMS
+Summary:	CIFS Poller Plugin
 Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-cifs
 The CIFS protocol plugin provides a poller monitor for CIFS network shares.
@@ -372,27 +425,11 @@ The CIFS protocol plugin provides a poller monitor for CIFS network shares.
 %{extrainfo2}
 
 
-%package plugin-protocol-dhcp
-Summary:	DHCP Poller and Detector Plugin for OpenNMS
-Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
-
-%description plugin-protocol-dhcp
-The DHCP protocol plugin provides a daemon, provisioning detector, capsd plugin, and
-poller monitor for DHCP.
-
-%{extrainfo}
-%{extrainfo2}
-
-
 %package plugin-protocol-nsclient
-Summary:	NSCLIENT Plugin Support for OpenNMS
+Summary:	NSCLIENT Plugin Support
 Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-nsclient
 The NSClient protocol plugin provides a capsd plugin and poller monitor for NSClient
@@ -403,11 +440,10 @@ and NSClient++.
 
 
 %package plugin-protocol-radius
-Summary:	RADIUS Plugin Support for OpenNMS
+Summary:	RADIUS Plugin Support
 Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-radius
 The RADIUS protocol plugin provides a provisioning detector, capsd plugin, poller
@@ -417,26 +453,11 @@ monitor, and Spring Security authorization mechanism for RADIUS.
 %{extrainfo2}
 
 
-%package plugin-protocol-xml
-Summary:	XML Collector for OpenNMS
-Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
-
-%description plugin-protocol-xml
-The XML protocol plugin provides a collector for XML data.
-
-%{extrainfo}
-%{extrainfo2}
-
-
 %package plugin-protocol-xmp
-Summary:	XMP Poller for OpenNMS
+Summary:	XMP Poller
 Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-protocol-xmp
 The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
@@ -446,11 +467,10 @@ The XMP protocol plugin provides a capsd plugin and poller monitor for XMP.
 
 
 %package plugin-collector-juniper-tca
-Summary:	Juniper TCA Collector for OpenNMS
+Summary:	Juniper TCA Collector
 Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	opennms-core = %{version}-%{release}
-Requires:	opennms-core = %{version}-%{release}
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-collector-juniper-tca
 The Juniper JCA collector provides a collector plugin for Collectd to collect data from TCA devices.
@@ -459,23 +479,27 @@ The Juniper JCA collector provides a collector plugin for Collectd to collect da
 %{extrainfo2}
 
 
-%package auto-upgrade
-Summary:	OpenNMS Upgrade Package
+%package plugin-collector-vtdxml-handler
+Summary:	VTD-XML Collection Handler
 Group:		Applications/System
-Requires(pretrans):	/bin/sh, /bin/mv, /bin/cp
-Requires(pre):	rpm
-Requires(post):	git >= 1.7, perl(Carp), perl(Cwd), perl(Error), perl(File::Basename), perl(File::Copy), perl(File::Find), perl(File::Path), perl(File::Slurp), perl(File::Spec), perl(File::Temp), perl(File::stat), perl(Getopt::Long), perl(Git), perl(IO::Handle), perl(Test::More)
+License:	GPL
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
 
-%description auto-upgrade
-Tools to deal with upgrading from a previous OpenNMS release.
+%description plugin-collector-vtdxml-handler
+The XML Collection Handler for Standard and 3GPP XMLs based on VTD-XML.
+VTD-XML is very fast GPL library for parsing XMLs with XPath Support.
 
 %{extrainfo}
 %{extrainfo2}
 
-
 %prep
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+$TAR -xzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 
-tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -485,11 +509,7 @@ tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BU
 ##############################################################################
 
 %build
-rm -rf $RPM_BUILD_ROOT
-
-pushd opennms-base-assembly/src/main/resources/contrib/config-tools
-perl Makefile.PL PREFIX="%{_prefix}" INSTALLDIRS="vendor"
-make
+rm -rf %{buildroot}
 
 # nothing necessary
 
@@ -506,62 +526,96 @@ make
 DONT_GPRINTIFY="yes, please do not"
 export DONT_GPRINTIFY
 
-export EXTRA_OPTIONS=""
+export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true -DskipTests=true"
+
 if [ -e "settings.xml" ]; then
-	export EXTRA_OPTIONS="-s `pwd`/settings.xml"
+	export OPTS_SETTINGS_XML="-s `pwd`/settings.xml"
+fi
+
+OPTS_UPDATE_POLICY="-DupdatePolicy=never"
+if [ "%{enable_snapshots}" = 1 ]; then
+	OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
+	OPTS_UPDATE_POLICY="-DupdatePolicy=always"
 fi
 
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
-	if [ "%{enable_snapshots}" = 1 ]; then
-		export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true -DupdatePolicy=always"
-	fi
 	TOPDIR=`pwd`
-	for dir in . opennms-tools; do
-		pushd $dir
-			"$TOPDIR"/compile.pl -N $EXTRA_OPTIONS -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" -Dopennms.home="%{instprefix}" install
-		popd
-	done
+	"$TOPDIR"/compile.pl -N \
+		$OPTS_SKIP_TESTS \
+		$OPTS_SETTINGS_XML \
+		$OPTS_ENABLE_SNAPSHOTS \
+		-Dinstall.version="%{version}-%{release}" \
+		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+		-Dopennms.home="%{instprefix}" \
+		-PskipCompile \
+		install
 else
 	echo "=== RUNNING COMPILE ==="
-	./compile.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	    -Dopennms.home="%{instprefix}" install
+	./compile.pl \
+		$OPTS_SKIP_TESTS \
+		$OPTS_SETTINGS_XML \
+		$OPTS_ENABLE_SNAPSHOTS \
+		-Daether.connector.basic.threads=1 \
+		-Daether.connector.resumeDownloads=false \
+		-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+		-Dinstall.version="%{version}-%{release}" \
+		-Dopennms.home="%{instprefix}" \
+		-Dbuild=all \
+		-Prun-expensive-tasks \
+		install
 fi
 
+cd opennms-tools
+	../compile.pl -N \
+		$OPTS_SKIP_TESTS \
+		$OPTS_SETTINGS_XML \
+		$OPTS_ENABLE_SNAPSHOTS \
+		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+		-Dinstall.version="%{version}-%{release}" \
+		-Dopennms.home="%{instprefix}" \
+		install
+cd -
+
 echo "=== BUILDING ASSEMBLIES ==="
-./assemble.pl $EXTRA_OPTIONS -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
-
-pushd opennms-tools
-	../compile.pl $EXTRA_OPTIONS -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	-Dopennms.home="%{instprefix}" install
-popd
-
-TOOLDIR="%{bindir}/config-tools"
-pushd opennms-base-assembly/src/main/resources/contrib/config-tools
-	make install PREFIX="$RPM_BUILD_ROOT%{_prefix}" INSTALLDIRS="vendor"
-	find "$RPM_BUILD_ROOT%{_prefix}" -name perllocal.pod -exec rm -rf {} \;
-	install -d -m 755 "$RPM_BUILD_ROOT$TOOLDIR"
-	mv "$RPM_BUILD_ROOT%{_bindir}"/*.pl "$RPM_BUILD_ROOT$TOOLDIR"/
-	cd "$RPM_BUILD_ROOT$TOOLDIR"
-	ln -s opennms-pretrans.pl opennms-pre.pl
-popd
+./assemble.pl \
+	$OPTS_SKIP_TESTS \
+	$OPTS_SETTINGS_XML \
+	$OPTS_ENABLE_SNAPSHOTS \
+	-Daether.connector.basic.threads=1 \
+	-Daether.connector.resumeDownloads=false \
+	-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+	-Dinstall.version="%{version}-%{release}" \
+	-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+	-Dopennms.home="%{instprefix}" \
+	-Dinstall.init.dir="/etc/init.d" \
+	-Dbuild=all \
+	-Dbuild.profile=full \
+	-Prun-expensive-tasks \
+	install
 
 echo "=== INSTALL COMPLETED ==="
 
 echo "=== UNTAR BUILD ==="
 
-mkdir -p $RPM_BUILD_ROOT%{instprefix}
+mkdir -p %{buildroot}%{instprefix}
 
-tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT%{instprefix}
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+
+# Untar the tar.gz created by opennms-full-assembly
+$TAR -xzf %{_builddir}/%{name}-%{version}-%{release}/target/%{name}-%{version}-%{release}.%{_arch}.tar.gz -C %{buildroot}%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
-### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.
+### Set this so users can refer to $OPENNMS_HOME easily.
 ### /etc/profile.d
 
-mkdir -p $RPM_BUILD_ROOT%{profiledir}
-cat > $RPM_BUILD_ROOT%{profiledir}/%{name}.sh << END
+mkdir -p %{buildroot}%{profiledir}
+cat > %{buildroot}%{profiledir}/%{name}.sh << END
 #!/bin/bash
 
 OPENNMS_HOME=%{instprefix}
@@ -573,98 +627,102 @@ export OPENNMS_HOME PATH
 
 END
 
-%if %{with_docs}
+# Move the docs into %{_docdir}
+rm -rf %{buildroot}%{_docdir}/%{name}-%{version}
+mkdir -p %{buildroot}%{_docdir}
+find %{buildroot}%{instprefix}/docs -xdev -depth -type d -print0 | xargs -n 1 -0 -r rmdir 2>/dev/null || true
+mv %{buildroot}%{instprefix}/docs %{buildroot}%{_docdir}/%{name}-%{version}
+cp README* %{buildroot}%{instprefix}/etc/
+rm -rf %{buildroot}%{instprefix}/etc/README
+rm -rf %{buildroot}%{instprefix}/etc/README.build
 
-mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{release}/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
-cp README* $RPM_BUILD_ROOT%{instprefix}/etc/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README
-rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
-%endif
+install -d -m 755 %{buildroot}%{logdir}
+mv %{buildroot}%{instprefix}/logs/.readme %{buildroot}%{logdir}/
+rm -rf %{buildroot}%{instprefix}/logs
 
-install -d -m 755 $RPM_BUILD_ROOT%{logdir}
-mv $RPM_BUILD_ROOT%{instprefix}/logs/.readme $RPM_BUILD_ROOT%{logdir}/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/logs
+install -d -m 755 %{buildroot}%{sharedir}
+mv %{buildroot}%{instprefix}/share/* %{buildroot}%{sharedir}/
+rm -rf %{buildroot}%{instprefix}/share
 
-install -d -m 755 $RPM_BUILD_ROOT%{sharedir}
-mv $RPM_BUILD_ROOT%{instprefix}/share/* $RPM_BUILD_ROOT%{sharedir}/
-rm -rf $RPM_BUILD_ROOT%{instprefix}/share
+# Copy the /etc directory into /etc/pristine
+rsync -avr --exclude=examples %{buildroot}%{instprefix}/etc/ %{buildroot}%{sharedir}/etc-pristine/
+chmod -R go-w %{buildroot}%{sharedir}/etc-pristine/
 
-rsync -avr --exclude=examples $RPM_BUILD_ROOT%{instprefix}/etc/ $RPM_BUILD_ROOT%{sharedir}/etc-pristine/
-chmod -R go-w $RPM_BUILD_ROOT%{sharedir}/etc-pristine/
+install -d -m 755 "%{buildroot}%{_initrddir}" "%{buildroot}%{_sysconfdir}/sysconfig" "%{buildroot}%{_unitdir}"
+install -m 644 %{buildroot}%{instprefix}/etc/opennms.service %{buildroot}%{_unitdir}/%{name}.service
+install -m 755 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.init      %{buildroot}%{_initrddir}/opennms-remote-poller
+install -m 640 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/opennms-remote-poller
+rm -rf %{buildroot}%{instprefix}/contrib/remote-poller
 
-install -d -m 755 $RPM_BUILD_ROOT%{_initrddir} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig
-install -m 755 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.init      $RPM_BUILD_ROOT%{_initrddir}/opennms-remote-poller
-install -m 640 $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller/remote-poller.sysconfig $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/opennms-remote-poller
-rm -rf $RPM_BUILD_ROOT%{instprefix}/contrib/remote-poller
+rm -rf %{buildroot}%{instprefix}/lib/*.tar.gz
 
-rm -rf $RPM_BUILD_ROOT%{instprefix}/lib/*.tar.gz
+# Remove all duplicate JARs from /system and symlink them to the JARs in /lib to save disk space
+for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find %{buildroot}%{instprefix}/system -name $BASENAME`; do rm -f $SYSFILE; ln -s /opt/opennms/lib/$BASENAME $SYSFILE; done; done
+# Remove all duplicate JARs from /jetty-webapps/opennms-remoting/webstart and symlink them to the JARs in /lib to save disk space
+# NOTE: We can't do this because the JARs in webstart are signed
+#for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find %{buildroot}%{instprefix}/jetty-webapps/opennms-remoting/webstart -name $BASENAME`; do rm -f $SYSFILE; ln -s %{instprefix}/lib/$BASENAME $SYSFILE; done; done
+
+cd %{buildroot}
 
 # core package files
-find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
+find %{buildroot}%{instprefix}/etc ! -type d | \
+	sed -e "s,^%{buildroot},%config(noreplace) ," | \
+	grep -v -E 'etc/.*.cfg$' | \
+	grep -v 'etc/custom.properties' | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'ncs-northbounder-configuration.xml' | \
-	grep -v 'drools-engine.d/ncs' | \
-	grep -v '3gpp' | \
-	grep -v 'dhcpd-configuration.xml' | \
-	grep -v 'endpoint-configuration.xml' | \
 	grep -v 'jira.properties' | \
-	grep -v 'link-adapter-configuration.xml' | \
+	grep -v 'jms-northbounder-configuration.xml' | \
+	grep -v 'juniper-tca' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
 	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
-	grep -v 'xml-datacollection-config.xml' | \
+	grep -v 'wsman-asset-adapter-configuration.xml' | \
+	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
+	grep -v '/users.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
-	grep -v 'juniper-tca' | \
-	grep -v -E '.jasper$' | \
 	sort > %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,," | \
-	grep -E '.jasper$' | \
+find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
+	grep -v 'etc/org.opennms' | \
+	sed -e "s,^%{buildroot},%config ," | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,," | \
+find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
+	grep 'etc/org.opennms' | \
+	sed -e "s,^%{buildroot},%config(noreplace) ," | \
+	sort >> %{_tmppath}/files.main
+find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
+	sed -e "s,^%{buildroot},," | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
-	grep -v 'ncs-northbounder-configuration.xml' | \
-	grep -v 'ncs.xml' | \
-	grep -v 'drools-engine.d/ncs' | \
-	grep -v '3gpp' | \
-	grep -v 'dhcpd-configuration.xml' | \
-	grep -v 'endpoint-configuration.xml' | \
 	grep -v 'jira.properties' | \
-	grep -v 'link-adapter-configuration.xml' | \
+	grep -v 'jms-northbounder-configuration.xml' | \
+	grep -v 'juniper-tca' | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
 	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
-	grep -v 'xml-datacollection-config.xml' | \
+	grep -v 'wsman-asset-adapter-configuration.xml' | \
+	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v 'xmp-config.xml' | \
 	grep -v 'xmp-datacollection-config.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
-	grep -v 'juniper-tca' | \
-	sort > %{_tmppath}/files.pristine.opennms-core
-find $RPM_BUILD_ROOT%{instprefix}/bin ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+	sort >> %{_tmppath}/files.main
+find %{buildroot}%{instprefix}/bin ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v '/jmx-config-generator' | \
 	grep -v '/remote-poller.sh' | \
 	grep -v '/remote-poller.jar' | \
-	grep -v 'bin/config-tools' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,," | \
+find %{buildroot}%{sharedir} ! -type d | \
+	sed -e "s,^%{buildroot},," | \
 	grep -v 'etc-pristine' | \
-	grep -v 'ncs-' | \
 	grep -v 'nsclient-config.xsd' | \
 	grep -v 'nsclient-datacollection.xsd' | \
 	grep -v 'xmp-config.xsd' | \
@@ -672,101 +730,59 @@ find $RPM_BUILD_ROOT%{sharedir} ! -type d | \
 	grep -v 'tca-datacollection-config.xml' | \
 	grep -v 'juniper-tca' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/contrib ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
-	grep -v 'xml-collector' | \
+find %{buildroot}%{instprefix}/contrib ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
-	grep -v 'ncs-' | \
-	grep -v 'provisioning-adapter' | \
-	grep -v 'org.opennms.protocols.cifs' | \
-	grep -v 'org.opennms.protocols.dhcp' | \
-	grep -v 'jdhcp' | \
-	grep -v 'jira' | \
-	grep -v 'org.opennms.protocols.nsclient' | \
-	grep -v 'org.opennms.protocols.radius' | \
-	grep -v 'gnu-crypto' | \
+find %{buildroot}%{instprefix}/lib ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v 'jradius' | \
+	grep -v 'opennms-alarm-northbounder-jms' | \
 	grep -v 'opennms-integration-otrs' | \
 	grep -v 'opennms-integration-rt' | \
-	grep -v 'org.opennms.protocols.xml' | \
-	grep -v 'org.opennms.protocols.xmp' | \
-	grep -v 'xmp' | \
-	grep -v 'org.opennms.features.juniper-tca-collector' | \
 	grep -v 'opennms_jmx_config_generator' | \
+	grep -v 'org.opennms.features.juniper-tca-collector' | \
+	grep -v 'org.opennms.protocols.cifs' | \
+	grep -v 'org.opennms.protocols.nsclient' | \
+	grep -v 'org.opennms.protocols.radius' | \
+	grep -v 'org.opennms.protocols.xmp' | \
+	grep -v 'opennms-vtdxml-collector-handler' | \
+	grep -v 'provisioning-adapter' | \
+	grep -v 'vtd-xml' | \
+	grep -v 'xmp' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+find %{buildroot}%{instprefix}/system ! -type d | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
+	grep -v 'jira-' | \
 	sort >> %{_tmppath}/files.main
-find $RPM_BUILD_ROOT%{instprefix}/system ! -type d | \
-	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+# Put the etc, lib, and system subdirectories into the package
+find %{buildroot}%{instprefix}/etc %{buildroot}%{instprefix}/lib %{buildroot}%{instprefix}/system -type d | \
+	sed -e "s,^%{buildroot},%dir ," | \
 	sort >> %{_tmppath}/files.main
 
 # jetty
-find $RPM_BUILD_ROOT%{jettydir} ! -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,," | \
+find %{buildroot}%{jettydir} ! -type d | \
+	sed -e "s,^%{buildroot},," | \
+	grep -v '/opennms-remoting' | \
+	grep -v '/hawtio' | \
+	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
-	grep -v '/WEB-INF/jsp/alarm/ncs' | \
-	grep -v '/WEB-INF/jsp/ncs/' | \
-	grep -v '/WEB-INF/lib/ncs' | \
 	sort >> %{_tmppath}/files.jetty
-find $RPM_BUILD_ROOT%{jettydir}/*/WEB-INF/*.xml | \
-	sed -e "s,^$RPM_BUILD_ROOT,%config ," | \
-	grep -v '/WEB-INF/ncs' | \
+find %{buildroot}%{jettydir}/*/WEB-INF/*.xml | \
+	sed -e "s,^%{buildroot},%config ," | \
+	grep -v '/opennms-remoting' | \
+	grep -v '/hawtio' | \
 	sort >> %{_tmppath}/files.jetty
-find $RPM_BUILD_ROOT%{jettydir} -type d | \
-	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+find %{buildroot}%{jettydir} -type d | \
+	sed -e "s,^%{buildroot},%dir ," | \
+	grep -v '/opennms-remoting' | \
+	grep -v '/hawtio' | \
 	sort >> %{_tmppath}/files.jetty
 
-# add the opennms-core ones to main
-cat %{_tmppath}/files.pristine.opennms-core >> %{_tmppath}/files.main
-
-find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine/drools-engine.d/ncs"/* \
-     "$RPM_BUILD_ROOT%{sharedir}/etc-pristine/ncs-northbounder-configuration.xml" | \
-     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-ncs
-
-find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine/link-adapter-configuration.xml" \
-     "$RPM_BUILD_ROOT%{sharedir}/etc-pristine/endpoint-configuration.xml" | \
-     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-provisioning-link
-
-find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine/mapsadapter-configuration.xml" | \
-     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-provisioning-map
-
-find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine/snmp-asset-adapter-configuration.xml" | \
-     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-provisioning-snmp-asset
-
-find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/dhcp*.xml | \
-     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-protocol-dhcp
-
-find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/jira.* | \
-     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-ticketer-jira
-
-find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/otrs.* | \
-     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-ticketer-otrs
-
-find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/rt.* | \
-     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-ticketer-rt
-
-find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/nsclient*.xml | \
-     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-protocol-nsclient
-
-find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/xml-*.xml \
-     "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/*datacollection*/3gpp* \
-     "$RPM_BUILD_ROOT%{sharedir}/etc-pristine/snmp-graph.properties.d"/3gpp* | \
-     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-protocol-xml
-
-find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/xmp*.xml | \
-     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-protocol-xmp
-
-find "$RPM_BUILD_ROOT%{sharedir}/etc-pristine"/tca*.xml \
-     "$RPM_BUILD_ROOT%{sharedir}/etc-pristine/datacollection"/juniper-tca* \
-     "$RPM_BUILD_ROOT%{sharedir}/etc-pristine/snmp-graph.properties.d"/juniper-tca* | \
-     sed -e "s,^$RPM_BUILD_ROOT,," > %{_tmppath}/files.pristine.opennms-plugin-collector-juniper-tca
+cd -
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 ##############################################################################
 # file setup
@@ -774,25 +790,23 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(664 root root 775)
-%{instprefix}/etc/examples/Juniper/mcg/3gpp.kpis.xml
-%{instprefix}/etc/examples/Juniper/mcg/MCG-xml-datacollection-config.xml
-%{instprefix}/etc/examples/Juniper/mcg/MCG-collectd-configuration.xml
 
 %files core -f %{_tmppath}/files.main
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
-%attr(755,root,root) %{logdir}
+%attr(755,root,root)	%{logdir}
+%attr(644,root,root)    %{_unitdir}/%{name}.service
+                        %config %{instprefix}/etc/custom.properties
+%attr(640,root,root)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
 			%{instprefix}/deploy
 
-%if %{with_docs}
 %files docs
 %defattr(644 root root 755)
 %{_docdir}/%{name}-%{version}
-%endif
 
 %files remote-poller
-%attr(755,root,root) %config %{_initrddir}/opennms-remote-poller
+%attr(755,root,root) %{_initrddir}/opennms-remote-poller
 %attr(755,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/opennms-remote-poller
 %attr(755,root,root) %{bindir}/remote-poller.sh
 %{instprefix}/bin/remote-poller.jar
@@ -801,87 +815,88 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{bindir}/jmx-config-generator
 %{instprefix}/lib/opennms_jmx_config_generator.jar
 
-%files ncs -f %{_tmppath}/files.pristine.opennms-ncs
+%files source
 %defattr(644 root root 755)
-%{instprefix}/lib/ncs-*.jar
-%{jettydir}/%{servletdir}/WEB-INF/lib/ncs-*
-%config(noreplace) %{instprefix}/etc/drools-engine.d/ncs/*
-%config(noreplace) %{instprefix}/etc/ncs-northbounder-configuration.xml
-%{sharedir}/xsds/ncs-*.xsd
-%config %{jettydir}/%{servletdir}/WEB-INF/ncs*.xml
-%config %{jettydir}/%{servletdir}/WEB-INF/jsp/alarm/ncs-*
-%config %{jettydir}/%{servletdir}/WEB-INF/jsp/ncs
-%dir %{sharedir}/etc-pristine/drools-engine.d/ncs
-%{sharedir}/etc-pristine/drools-engine.d/ncs/*
-%{sharedir}/etc-pristine/ncs-northbounder-configuration.xml
+%{jettydir}/opennms/source/*
 
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
-#%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
 
+%files webapp-remoting
+%defattr(644 root root 755)
+%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
+%{jettydir}/opennms-remoting
+
+%files webapp-hawtio
+%defattr(644 root root 755)
+%config %{jettydir}/hawtio/WEB-INF/*.xml
+%{jettydir}/hawtio
+
 %files plugins
+
+%files plugin-northbounder-jms
+%defattr(644 root root 755)
+%{instprefix}/lib/opennms-alarm-northbounder-jms-*.jar
+%config(noreplace) %{instprefix}/etc/jms-northbounder-configuration.xml
+%{sharedir}/etc-pristine/jms-northbounder-configuration.xml
 
 %files plugin-provisioning-dns
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-dns-provisioning-adapter*.jar
 
-%files plugin-provisioning-link -f %{_tmppath}/files.pristine.opennms-plugin-provisioning-link
+%files plugin-provisioning-reverse-dns
 %defattr(664 root root 775)
-%{instprefix}/lib/opennms-link-provisioning-adapter*.jar
-%config(noreplace) %{instprefix}/etc/link-adapter-configuration.xml
-%config(noreplace) %{instprefix}/etc/endpoint-configuration.xml
-%{sharedir}/etc-pristine/link-adapter-configuration.xml
-%{sharedir}/etc-pristine/endpoint-configuration.xml
-
-%files plugin-provisioning-map -f %{_tmppath}/files.pristine.opennms-plugin-provisioning-map
-%defattr(664 root root 775)
-%{instprefix}/lib/opennms-map-provisioning-adapter*.jar
-%{instprefix}/etc/examples/mapsadapter-configuration.xml
-%config(noreplace) %{instprefix}/etc/mapsadapter-configuration.xml
-%{sharedir}/etc-pristine/mapsadapter-configuration.xml
+%{instprefix}/lib/opennms-reverse-dns-provisioning-adapter*.jar
 
 %files plugin-provisioning-rancid
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-rancid-provisioning-adapter*.jar
 
-%files plugin-provisioning-snmp-asset -f %{_tmppath}/files.pristine.opennms-plugin-provisioning-snmp-asset
+%files plugin-provisioning-snmp-asset
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
 %config(noreplace) %{instprefix}/etc/snmp-asset-adapter-configuration.xml
 %{sharedir}/etc-pristine/snmp-asset-adapter-configuration.xml
 
+%files plugin-provisioning-wsman-asset
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-wsman-asset-provisioning-adapter*.jar
+%config(noreplace) %{instprefix}/etc/wsman-asset-adapter-configuration.xml
+%{sharedir}/etc-pristine/wsman-asset-adapter-configuration.xml
+
+%files plugin-provisioning-snmp-hardware-inventory
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-snmp-hardware-inventory-provisioning-adapter*.jar
+%config(noreplace) %{instprefix}/etc/snmp-hardware-inventory-adapter-configuration.xml
+%{sharedir}/etc-pristine/snmp-hardware-inventory-adapter-configuration.xml
+
 %files plugin-protocol-cifs
 %defattr(664 root root 775)
 %{instprefix}/lib/org.opennms.protocols.cifs*.jar
 
-%files plugin-ticketer-jira -f %{_tmppath}/files.pristine.opennms-plugin-ticketer-jira
+%files plugin-ticketer-jira
 %defattr(664 root root 775)
-%{instprefix}/lib/jira-*.jar
+%{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar
+%{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar.sha1
+%{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar
+%{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar.sha1
 %config(noreplace) %{instprefix}/etc/jira.properties
 %{sharedir}/etc-pristine/jira.properties
 
-%files plugin-ticketer-otrs -f %{_tmppath}/files.pristine.opennms-plugin-ticketer-otrs
+%files plugin-ticketer-otrs
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-integration-otrs-*.jar
 %config(noreplace) %{instprefix}/etc/otrs.properties
 %{sharedir}/etc-pristine/otrs.properties
 
-%files plugin-ticketer-rt -f %{_tmppath}/files.pristine.opennms-plugin-ticketer-rt
+%files plugin-ticketer-rt
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-integration-rt-*.jar
 %config(noreplace) %{instprefix}/etc/rt.properties
 %{sharedir}/etc-pristine/rt.properties
 
-%files plugin-protocol-dhcp -f %{_tmppath}/files.pristine.opennms-plugin-protocol-dhcp
-%defattr(664 root root 775)
-%config(noreplace) %{instprefix}/etc/dhcp*.xml
-%{instprefix}/lib/jdhcp-*.jar
-%{instprefix}/lib/org.opennms.protocols.dhcp*.jar
-%{sharedir}/etc-pristine/dhcp*.xml
-%{sharedir}/xsds/dhcp*.xsd
-
-%files plugin-protocol-nsclient -f %{_tmppath}/files.pristine.opennms-plugin-protocol-nsclient
+%files plugin-protocol-nsclient
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/nsclient*.xml
 %{instprefix}/etc/examples/nsclient*.xml
@@ -891,22 +906,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %files plugin-protocol-radius
 %defattr(664 root root 775)
-%{instprefix}/lib/gnu-crypto*.jar
-%{instprefix}/lib/jradius-*.jar
+%{instprefix}/lib/*jradius-*.jar
 %{instprefix}/lib/org.opennms.protocols.radius*.jar
 
-%files plugin-protocol-xml -f %{_tmppath}/files.pristine.opennms-plugin-protocol-xml
-%defattr(664 root root 775)
-%config(noreplace) %{instprefix}/etc/xml-*.xml
-%config(noreplace) %{instprefix}/etc/*datacollection*/3gpp*
-%config(noreplace) %{instprefix}/etc/snmp-graph.properties.d/3gpp*
-%{instprefix}/lib/org.opennms.protocols.xml-*.jar
-%attr(755,root,root) %{instprefix}/contrib/xml-collector/*.pl
-%{sharedir}/etc-pristine/xml-*.xml
-%{sharedir}/etc-pristine/*datacollection*/3gpp*
-%{sharedir}/etc-pristine/snmp-graph.properties.d/3gpp*
-
-%files plugin-protocol-xmp -f %{_tmppath}/files.pristine.opennms-plugin-protocol-xmp
+%files plugin-protocol-xmp
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/xmp*.xml
 %{instprefix}/lib/org.opennms.protocols.xmp-*.jar
@@ -914,7 +917,7 @@ rm -rf $RPM_BUILD_ROOT
 %{sharedir}/etc-pristine/xmp*.xml
 %{sharedir}/xsds/xmp*.xsd
 
-%files plugin-collector-juniper-tca -f %{_tmppath}/files.pristine.opennms-plugin-collector-juniper-tca
+%files plugin-collector-juniper-tca
 %defattr(664 root root 775)
 %config(noreplace) %{instprefix}/etc/tca*.xml
 %config(noreplace) %{instprefix}/etc/datacollection/juniper-tca*
@@ -924,96 +927,112 @@ rm -rf $RPM_BUILD_ROOT
 %{sharedir}/etc-pristine/datacollection/juniper-tca*
 %{sharedir}/etc-pristine/snmp-graph.properties.d/juniper-tca*
 
-%files auto-upgrade
-%defattr(644 root root 755)
-%attr(755,root,root) %{bindir}/config-tools/*.pl
-%{perl_vendorlib}
-%{perl_vendorarch}
-%{_mandir}/man3/OpenNMS::Config*
+%files plugin-collector-vtdxml-handler
+%defattr(664 root root 775)
+%{instprefix}/lib/opennms-vtdxml-collector-handler-*.jar
+%{instprefix}/lib/vtd-xml-*.jar
 
-%pre auto-upgrade
-rpm -q --queryformat='\%{version}-\%{release}' opennms-core 2>/dev/null | grep -v 'is not installed' | sort -u | head -n 1 > /tmp/git-setup.opennms-core
+%post -p /bin/bash docs
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+SHARE_INST="$RPM_INSTALL_PREFIX1"
+LOG_INST="$RPM_INSTALL_PREFIX2"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
+[ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
-%post auto-upgrade
-"$RPM_INSTALL_PREFIX0/bin/config-tools/git-setup.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
-
-%post docs
-printf -- "- making symlink for $RPM_INSTALL_PREFIX0/docs... "
-if [ -e "$RPM_INSTALL_PREFIX0/docs" ] && [ ! -L "$RPM_INSTALL_PREFIX0/docs" ]; then
-	echo "failed: $RPM_INSTALL_PREFIX0/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+if [ -e "$ROOT_INST" ]; then
+	printf -- "- making symlink for $ROOT_INST/docs... "
+	if [ -e "$ROOT_INST/docs" ] && [ ! -L "$ROOT_INST/docs" ]; then
+		echo "failed: $ROOT_INST/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+	else
+		install -d -m 755 "$ROOT_INST"
+		rm -rf "$ROOT_INST/docs"
+		ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/docs"
+		echo "done"
+	fi
 else
-	rm -rf "$RPM_INSTALL_PREFIX0/docs"
-	ln -sf "%{_docdir}/%{name}-%{version}" "$RPM_INSTALL_PREFIX0/docs"
-	echo "done"
+	printf -- "- skipping symlink to $ROOT_INST/docs... %{name}-core is not installed\n"
 fi
 
-%postun docs
+if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}" ]; then
+	printf -- "- making symlink for $ROOT_INST/jetty-webapps/%{servletdir}/docs... "
+	if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ] && [ ! -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+		echo "failed: $ROOT_INST/jetty-webapps/%{servletdir}/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+	else
+		rm -rf "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+		ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+		echo "done"
+	fi
+else
+	printf -- "- skipping symlink to $ROOT_INST/jetty-webapps/%{servletdir}/docs... %{name}-webapp-jetty not installed\n"
+fi
+
+%postun -p /bin/bash docs
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+SHARE_INST="$RPM_INSTALL_PREFIX1"
+LOG_INST="$RPM_INSTALL_PREFIX2"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
+[ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
+
 if [ "$1" = 0 ]; then
-	if [ -L "$RPM_INSTALL_PREFIX0/docs" ]; then
-		rm -f "$RPM_INSTALL_PREFIX0/docs"
+	if [ -e "$ROOT_INST" ] && [ -L "$ROOT_INST/docs" ]; then
+		rm -f "$ROOT_INST/docs"
 	fi
 fi
 
-%pretrans core
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
+if [ "$1" = 0 ]; then
+	if [ -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+		rm -f "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
 	fi
-	exit 0;
 fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
 
-%pre core
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
+%pre -p /bin/bash core
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+[ -z "$ROOT_INST" ] && ROOT_INST="%{instprefix}"
+if [ -e "${ROOT_INST}/etc/users.xml" ]; then
+	chmod 640 "${ROOT_INST}/etc/users.xml"
+fi
 
-# clean out old jasper files
-rpm -ql opennms-core | grep -v 'etc-pristine' | grep -v '/subreports/' | grep -E '.jasper$' | while read FILE; do
-	echo "- deleting compiled jasper file $FILE..."
-	rm -f "$FILE" || :
-done
+%post -p /bin/bash core
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+SHARE_INST="$RPM_INSTALL_PREFIX1"
+LOG_INST="$RPM_INSTALL_PREFIX2"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
+[ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
-%post core
 if [ -n "$DEBUG" ]; then
 	env | grep RPM_INSTALL_PREFIX | sort -u
 fi
 
-if [ "$RPM_INSTALL_PREFIX0/logs" != "$RPM_INSTALL_PREFIX2" ]; then
-	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/logs... "
-	if [ -e "$RPM_INSTALL_PREFIX0/logs" ] && [ ! -L "$RPM_INSTALL_PREFIX0/logs" ]; then
-		echo "failed: $RPM_INSTALL_PREFIX0/logs is a real directory or file, but it should be a symlink to $RPM_INSTALL_PREFIX2."
-		echo "Your OpenNMS install may not function properly."
+if [ "$ROOT_INST/logs" != "$LOG_INST" ]; then
+	printf -- "- making symlink for $ROOT_INST/logs... "
+	if [ -e "$ROOT_INST/logs" ] && [ ! -L "$ROOT_INST/logs" ]; then
+		echo "failed: $ROOT_INST/logs is a real directory or file, but it should be a symlink to $LOG_INST."
+		echo "Your %{_descr} install may not function properly."
 	else
-		rm -rf "$RPM_INSTALL_PREFIX0/logs"
-		ln -sf "$RPM_INSTALL_PREFIX2" "$RPM_INSTALL_PREFIX0/logs"
+		rm -rf "$ROOT_INST/logs"
+		ln -sf "$LOG_INST" "$ROOT_INST/logs"
 		echo "done"
 	fi
 fi
 
-if [ "$RPM_INSTALL_PREFIX0/share" != "$RPM_INSTALL_PREFIX1" ]; then
-	printf -- "- making symlink for $RPM_INSTALL_PREFIX0/share... "
-	if [ -e "$RPM_INSTALL_PREFIX0/share" ] && [ ! -L "$RPM_INSTALL_PREFIX0/share" ]; then
-		echo "failed: $RPM_INSTALL_PREFIX0/share is a real directory, but it should be a symlink to $RPM_INSTALL_PREFIX1."
-		echo "Your OpenNMS install may not function properly."
+if [ "$ROOT_INST/share" != "$SHARE_INST" ]; then
+	printf -- "- making symlink for $ROOT_INST/share... "
+	if [ -e "$ROOT_INST/share" ] && [ ! -L "$ROOT_INST/share" ]; then
+		echo "failed: $ROOT_INST/share is a real directory, but it should be a symlink to $SHARE_INST."
+		echo "Your %{_descr} install may not function properly."
 	else
-		rm -rf "$RPM_INSTALL_PREFIX0/share"
-		ln -sf "$RPM_INSTALL_PREFIX1" "$RPM_INSTALL_PREFIX0/share"
+		rm -rf "$ROOT_INST/share"
+		ln -sf "$SHARE_INST" "$ROOT_INST/share"
 		echo "done"
 	fi
 fi
 
 printf -- "- moving *.sql.rpmnew files (if any)... "
-if [ `ls $RPM_INSTALL_PREFIX0/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
-	for i in $RPM_INSTALL_PREFIX0/etc/*.sql.rpmnew; do
+if [ `ls $ROOT_INST/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
+	for i in $ROOT_INST/etc/*.sql.rpmnew; do
 		mv $i ${i%%%%.rpmnew}
 	done
 fi
@@ -1021,557 +1040,74 @@ echo "done"
 
 printf -- "- checking for old update files... "
 
-JAR_UPDATES=`find $RPM_INSTALL_PREFIX0/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
-CLASS_UPDATES=`find $RPM_INSTALL_PREFIX0/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
-let TOTAL_UPDATES=`expr $JAR_UPDATES + $CLASS_UPDATES`
+JAR_UPDATES=`find $ROOT_INST/lib/updates -name \*.jar     -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+CLASS_UPDATES=`find $ROOT_INST/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+TOTAL_UPDATES=`expr $JAR_UPDATES + $CLASS_UPDATES`
 if [ "$TOTAL_UPDATES" -gt 0 ]; then
 	echo "FOUND"
 	echo ""
 	echo "WARNING: $TOTAL_UPDATES old update files were found in your"
-	echo "$RPM_INSTALL_PREFIX0/lib/updates directory.  They have been deleted"
+	echo "$ROOT_INST/lib/updates directory.  They have been deleted"
 	echo "because they should now be out of date."
 	echo ""
 else
 	echo "done"
 fi
 
-rm -f $RPM_INSTALL_PREFIX0/etc/configured
+rm -f $ROOT_INST/etc/configured
 for dir in /etc /etc/rc.d; do
 	if [ -d "$dir" ]; then
-		ln -sf $RPM_INSTALL_PREFIX0/bin/opennms $dir/init.d/opennms
+		ln -sf $ROOT_INST/bin/opennms $dir/init.d/opennms
 		break
 	fi
 done
 
-for LIBNAME in jicmp jicmp6 jrrd; do
-	if [ `grep "opennms.library.${LIBNAME}" "$RPM_INSTALL_PREFIX0/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
+for LIBNAME in jicmp jicmp6 jrrd jrrd2; do
+	if [ `grep "opennms.library.${LIBNAME}" "$ROOT_INST/etc/libraries.properties" 2>/dev/null | wc -l` -eq 0 ]; then
 		LIBRARY_PATH=`rpm -ql "${LIBNAME}" 2>/dev/null | grep "/lib${LIBNAME}.so\$" | head -n 1`
 		if [ -n "$LIBRARY_PATH" ]; then
-			echo "opennms.library.${LIBNAME}=${LIBRARY_PATH}" >> "$RPM_INSTALL_PREFIX0/etc/libraries.properties"
+			echo "opennms.library.${LIBNAME}=${LIBRARY_PATH}" >> "$ROOT_INST/etc/libraries.properties"
 		fi
 	fi
 done
 
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
-
 printf -- "- cleaning up \$OPENNMS_HOME/data... "
-if [ -d "$RPM_INSTALL_PREFIX0/data" ]; then
-	rm -rf "$RPM_INSTALL_PREFIX0/data"
+if [ -d "$ROOT_INST/data" ]; then
+	find "$ROOT_INST/data/"* -maxdepth 0 -name tmp -o -name history.txt -prune -o -print0 | xargs -0 rm -rf
+	if [ -d "$ROOT_INST/data/tmp" ]; then
+		find "$ROOT_INST/data/tmp/"* -maxdepth 0 -name README -prune -o -print0 | xargs -0 rm -rf
+	fi
 fi
 echo "done"
 
+if [ ! -e "$ROOT_INST/etc/java.conf" ]; then
+	"$ROOT_INST/bin/runjava" "-s"
+fi
+
 echo ""
 echo " *** Installation complete.  You must still run the installer at"
-echo " *** \$OPENNMS_HOME/bin/install to be sure your database is up"
-echo " *** to date before you start OpenNMS.  See the install guide at"
+echo " *** \$OPENNMS_HOME/bin/install -dis to be sure your database is up"
+echo " *** to date before you start %{_descr}.  See the install guide at"
 echo " *** http://www.opennms.org/wiki/Installation:RPM and the"
 echo " *** release notes for details."
 echo ""
 
-%posttrans core
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-core" "%{version}-%{release}" 1>&2
-
-%postun core
+%postun -p /bin/bash core
+ROOT_INST="$RPM_INSTALL_PREFIX0"
+SHARE_INST="$RPM_INSTALL_PREFIX1"
+LOG_INST="$RPM_INSTALL_PREFIX2"
+[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
+[ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
 if [ "$1" = 0 ]; then
 	for dir in logs share; do
-		if [ -L "$RPM_INSTALL_PREFIX0/$dir" ]; then
-			rm -f "$RPM_INSTALL_PREFIX0/$dir"
+		if [ -L "$ROOT_INST/$dir" ]; then
+			rm -f "$ROOT_INST/$dir"
 		fi
 	done
 fi
 
-%pretrans remote-poller
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
-
-%pre remote-poller
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
-
-%post remote-poller
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "remote-poller" "%{version}-%{release}" 1>&2
-
-%posttrans remote-poller
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-remote-poller" "%{version}-%{release}" 1>&2
-
-%pretrans webapp-jetty
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
-
-%pre webapp-jetty
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
-
-%post webapp-jetty
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "webapp-jetty" "%{version}-%{release}" 1>&2
-
-%posttrans webapp-jetty
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-webapp-jetty" "%{version}-%{release}" 1>&2
-
-%pretrans ncs
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
-
-%pre ncs
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
-
-%post ncs
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "ncs" "%{version}-%{release}" 1>&2
-
-%posttrans ncs
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-ncs" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-provisioning-dns
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
-
-%pre plugin-provisioning-dns
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
-
-%post plugin-provisioning-dns
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-provisioning-dns
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-dns" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-provisioning-link
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
-
-%pre plugin-provisioning-link
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
-
-%post plugin-provisioning-link
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-provisioning-link
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-link" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-provisioning-map
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
-
-%pre plugin-provisioning-map
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
-
-%post plugin-provisioning-map
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-provisioning-map
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-map" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-provisioning-rancid
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
-
-%pre plugin-provisioning-rancid
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
-
-%post plugin-provisioning-rancid
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-provisioning-rancid
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-rancid" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-provisioning-snmp-asset
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
-
-%pre plugin-provisioning-snmp-asset
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
-
-%post plugin-provisioning-snmp-asset
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-provisioning-snmp-asset
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-provisioning-snmp-asset" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-ticketer-jira
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-jira" "%{version}-%{release}" 1>&2
-
-%pre plugin-ticketer-jira
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-jira" "%{version}-%{release}" 1>&2
-
-%post plugin-ticketer-jira
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-jira" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-ticketer-jira
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-jira" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-ticketer-otrs
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-otrs" "%{version}-%{release}" 1>&2
-
-%pre plugin-ticketer-otrs
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-otrs" "%{version}-%{release}" 1>&2
-
-%post plugin-ticketer-otrs
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-otrs" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-ticketer-otrs
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-otrs" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-ticketer-rt
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-rt" "%{version}-%{release}" 1>&2
-
-%pre plugin-ticketer-rt
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-rt" "%{version}-%{release}" 1>&2
-
-%post plugin-ticketer-rt
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-rt" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-ticketer-rt
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-ticketer-rt" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-protocol-dhcp
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
-
-%pre plugin-protocol-dhcp
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
-
-%post plugin-protocol-dhcp
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-protocol-dhcp
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-dhcp" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-protocol-nsclient
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
-
-%pre plugin-protocol-nsclient
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
-
-%post plugin-protocol-nsclient
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-protocol-nsclient
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-nsclient" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-protocol-radius
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
-
-%pre plugin-protocol-radius
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
-
-%post plugin-protocol-radius
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-protocol-radius
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-radius" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-protocol-xml
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
-
-%pre plugin-protocol-xml
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
-
-%post plugin-protocol-xml
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-protocol-xml
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xml" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-protocol-xmp
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
-
-%pre plugin-protocol-xmp
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
-
-%post plugin-protocol-xmp
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-protocol-xmp
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-protocol-xmp" "%{version}-%{release}" 1>&2
-
-%pretrans plugin-collector-juniper-tca
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-if ! [ -x "$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" ]; then
-	echo "This is the first time git-managed OpenNMS is being installed or upgraded."
-	# on a first install, if we're upgrading save etc/ for git-setup.pl
-	# this avoids anything in etc/ as being marked as .rpmnew
-	if [ -d "$RPM_INSTALL_PREFIX0/etc" ] && [ ! -d "$RPM_INSTALL_PREFIX0/.etc-pretrans" ]; then
-		echo "An existing $RPM_INSTALL_PREFIX0/etc was found.  Making sure it's prepared for gitification."
-		[ -x /bin/mv ] && /bin/mv "$RPM_INSTALL_PREFIX0/etc" "$RPM_INSTALL_PREFIX0/.etc-pretrans"
-		if [ -x /bin/cp ] && [ -x /bin/mkdir ] && [ -d "$RPM_INSTALL_PREFIX0/share/etc-pristine" ]; then
-			echo "Preparing $RPM_INSTALL_PREFIX0/etc for git-setup."
-			mkdir -p "$RPM_INSTALL_PREFIX0/etc"
-			cp -pR "$RPM_INSTALL_PREFIX0/share/etc-pristine"/* "$RPM_INSTALL_PREFIX0/etc/"
-		fi
-	fi
-	exit 0;
-fi
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pretrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
-
-%pre plugin-collector-juniper-tca
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-pre.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
-
-%post plugin-collector-juniper-tca
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-post.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
-
-%posttrans plugin-collector-juniper-tca
-RPM_INSTALL_PREFIX0=`rpm -q --queryformat '%{INSTALLPREFIX}' opennms-core`
-"$RPM_INSTALL_PREFIX0/bin/config-tools/opennms-posttrans.pl" "$RPM_INSTALL_PREFIX0" "opennms-plugin-collector-juniper-tca" "%{version}-%{release}" 1>&2
-
+%changelog
+* Thu Feb 10 2011 Benjamin Reed <ranger@opennms.org>
+- Initial RPM package: see https://github.com/OpenNMS/opennms/commits/develop/tools/packages/opennms/opennms.spec for the full commit log.

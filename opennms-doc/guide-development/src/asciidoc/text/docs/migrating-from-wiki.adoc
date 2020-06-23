@@ -1,0 +1,52 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+[[gd-docs-migrating-from-wiki]]
+=== Migrating content from project wiki
+The https://wiki.opennms.org[project wiki] contains much information that ought to be migrated to the official documentation set.
+To help with this effort, we have a wiki template which informs readers of articles that are tagged for migration to the official docs, or that have already been migrated.
+When you identify an article in the OpenNMS wiki whose information should be migrated (either in its entirety, or just individual sections), use the following process.
+
+1. If you do not already have a wiki account, https://wiki.opennms.org/wiki/Special:RequestAccount[request one] before getting started. Your request must be approved by a wiki admin. If you don't get approved within a day, send a note to the https://sourceforge.net/projects/opennms/lists/opennms-devel[opennms-devel mailing list] or on the https://chat.opennms.com/opennms/channels/opennms-development[*OpenNMS Development* chat channel].
+2. Create an issue in the https://issues.opennms.org/projects/NMS/[project issue tracker, in project *NMS*]. Note the issue number; you will use it below.
+3. After logging in to the wiki, visit the article whose content should be migrated.
+4. Click on the *Edit Source* link at the top of the article view.
+5. Add text like the following to the top of the article source editor:
+
+[source]
+----
+{{OfficialDocs | scope=article | guide=admin | issue=NMS-9926 | date=March 2018 | completed=false}}
+----
+
+** The value of the `scope` attribute must be either `article`, if the entire article should be migrated,or `section` if only specific section(s) should be migrated.
+*** When using `scope = section`, it's fine to use this template multiple times in a single article.
+** The value of the `guide` attribute must be one of `admin`, `development`, `install`, or `user`.
+*** If the information in an article should be migrated to multiple official guides, use multiple instances of the `{{OfficialDocs}}` template; try to target these by section when possible.
+** The value of the `issue` parameter must be a valid issue ID in the https://issues.opennms.org[project issue tracker], and will become a live link
+** The value of the `date` parameter should be the month and year when the tag was added, **e.g.** `March 2018`.
+** The `completed` parameter is optional; it is assumed to be false if omitted, or true if its value is either `true` or `yes`.
+
+.Wiki source editor with example `OfficialDocs` template usage
+image::docs/03_officialdocs-wiki-template-source.png[]
+
+[start=6]
+6. Enter an edit summary such as *Tagged for migration to official docs, NMS-12345* and click *Show preview*
+7. After verifying that your changes render as expected (see image), click *Save changes*.
+
+.Rendering of `OfficialDocs` wiki template on an article pending migration
+image::docs/04_officialdocs-wiki-template-rendered-pending.png[]
+
+[start=8]
+8. Migrate the information, making sure to follow the guidelines laid out earlier in this section; do not just copy and paste, and watch out for obsolete information. If you need help, contact the developers through one of the methods mentioned above.
+9. Once the migration is complete and the issue is closed, edit the wiki article again and change `completed=false` to `completed=true`.
+10. The rendering of the template will change to indicate that the migration has been completed.
+
+.Rendering of `OfficialDocs` wiki template on an article whose migration is completed
+image::docs/04_officialdocs-wiki-template-rendered-completed.png[]
+
+Adding the `{{OfficialDocs}}` template to an article will implicitly add that article to a pair of wiki categories:
+
+* *Migration to official docs pending* or *Migration to official docs completed*, according to the value of the `completed` attribute
+* *Migrate to `X` guide*, according to the value of the `guide` attribute
+

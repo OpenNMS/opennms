@@ -1,28 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ResponseTimeSummary_subreport" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<!-- Created with Jaspersoft Studio version 5.6.1.final using JasperReports Library version 5.6.1  -->
+<!-- 2015-08-24T12:03:44 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ResponseTimeSummary_Availability_subreport" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="69e17009-e2e1-4692-bdcd-77b25f4ab7fd">
 	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="164"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<template><![CDATA["${install.dir}/etc/report-templates/assets/styles/defaultStyles.jrtx"]]></template>
+	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<style name="Node_Group" mode="Opaque" backcolor="#DFDFDF" hAlign="Center" vAlign="Middle" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Detail" hAlign="Center" vAlign="Middle"/>
 	<style name="Interface_Header" hAlign="Center" vAlign="Middle" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-	<parameter name="START_TIME" class="java.util.Date" isForPrompting="false">
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="START_TIME" class="java.util.Date">
 		<defaultValueExpression><![CDATA[new java.util.Date(new java.util.Date().getTime() - (86400 * 7 * 1000))]]></defaultValueExpression>
 	</parameter>
-	<parameter name="TIME_RANGE" class="java.lang.String" isForPrompting="false">
+	<parameter name="TIME_RANGE" class="java.lang.String">
 		<defaultValueExpression><![CDATA["7 Days"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="DS_SURVEILLANCE_CATEGORY" class="java.lang.String" isForPrompting="false">
+	<parameter name="DS_SURVEILLANCE_CATEGORY" class="java.lang.String">
 		<defaultValueExpression><![CDATA["Routers"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="NODE_LABEL" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["donaldo.local"]]></defaultValueExpression>
-	</parameter>
-	<parameter name="START_TIME_STRING" class="java.lang.String" isForPrompting="false">
+	<parameter name="NODE_LABEL" class="java.lang.String"/>
+	<parameter name="START_TIME_STRING" class="java.lang.String">
 		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy-MM-d HH:mm:ss Z").format($P{START_TIME})]]></defaultValueExpression>
 	</parameter>
-	<queryString>
+	<queryString language="SQL">
 		<![CDATA[SELECT
 	node_outages.categoryname,
 	node_outages.nodelabel,
@@ -63,14 +67,15 @@ FROM
 			outage_counter
 	FROM
 		(SELECT
-			outages.nodeid,
+			events.nodeid,
 			outages.iflostservice,
 			outages.ifregainedservice
 		FROM
-			outages, service, events
+			outages, service, events, ifservices
 		WHERE
 			(iflostservice, ifregainedservice) OVERLAPS ('$P!{START_TIME_STRING}'::TIMESTAMP, '$P!{START_TIME_STRING}'::TIMESTAMP + '$P!{TIME_RANGE}'::INTERVAL) AND
-			outages.serviceid = service.serviceid AND
+			ifservices.id = outages.ifserviceid AND
+			ifservices.serviceid = service.serviceId AND
 			service.servicename = 'ICMP' AND
 			outages.svclosteventid = events.eventid AND
 			events.eventuei = 'uei.opennms.org/nodes/nodeDown')
@@ -96,11 +101,11 @@ FROM
 		WHERE
 			nodetype = 'A' AND
 			categories.categoryname like $P{DS_SURVEILLANCE_CATEGORY} AND
-			nodelabel = '$P!{NODE_LABEL}')
-		AS
-			active_nodes
+			nodelabel = '$P!{NODE_LABEL}'
+		) AS active_nodes
 	ON
-		(outages_scope.nodeid = active_nodes.nodeid))
+		(outages_scope.nodeid = active_nodes.nodeid)
+	)
 	AS
 		node_outages
 GROUP BY
@@ -138,7 +143,10 @@ ORDER BY
 		<band splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band splitType="Stretch"/>
+		<band splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
 	</detail>
 	<columnFooter>
 		<band splitType="Stretch"/>
@@ -150,7 +158,7 @@ ORDER BY
 		<band height="136" splitType="Stretch">
 			<stackedBarChart>
 				<chart>
-					<reportElement x="339" y="0" width="200" height="136"/>
+					<reportElement x="339" y="0" width="200" height="136" uuid="4348aa59-6f10-480e-98f0-fbf32f64b6d3"/>
 					<chartTitle>
 						<titleExpression><![CDATA["Total Available Time in Seconds"]]></titleExpression>
 					</chartTitle>
@@ -173,22 +181,16 @@ ORDER BY
 					<plot/>
 					<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
 					<categoryAxisFormat>
-						<axisFormat>
-							<labelFont/>
-							<tickLabelFont/>
-						</axisFormat>
+						<axisFormat/>
 					</categoryAxisFormat>
 					<valueAxisFormat>
-						<axisFormat>
-							<labelFont/>
-							<tickLabelFont/>
-						</axisFormat>
+						<axisFormat/>
 					</valueAxisFormat>
 				</barPlot>
 			</stackedBarChart>
 		</band>
 	</summary>
 	<noData>
-		<band height="50"/>
+		<band/>
 	</noData>
 </jasperReport>

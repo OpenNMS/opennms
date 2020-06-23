@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -54,11 +54,11 @@
 %>
 
 <%
-	String resourceId = request.getParameter( "resourceId" );
+    ResourceId resourceId = ResourceId.fromString(request.getParameter("resourceId"));
 
     WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
     
-    ResourceService resourceService = (ResourceService)webAppContext.getBean("resourceService", ResourceService.class);
+    ResourceService resourceService = webAppContext.getBean("resourceService", ResourceService.class);
     
     resourceService.promoteGraphAttributesForResource(resourceId);
     
@@ -142,7 +142,7 @@
     
     
     String[] ignores = new String[] { "startMonth", "startYear", "startDate", "startHour","endMonth", "endYear", "endDate", "endHour" };
-    Map additions = new HashMap();
+    Map<String,Object> additions = new HashMap<String,Object>();
     additions.put( "start", start );
     additions.put( "end", end );
     additions.put( "adhoc", "true" );
@@ -150,8 +150,9 @@
     String queryString = Util.makeQueryString( request, additions, ignores );
 %>
 
-<%@page import="org.opennms.web.svclayer.ResourceService"%>
-<jsp:include page="/includes/header.jsp" flush="false" >
+<%@page import="org.opennms.web.svclayer.api.ResourceService"%>
+<%@ page import="org.opennms.netmgt.model.ResourceId" %>
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Custom Resource Graphs" />
   <jsp:param name="headTitle" value="Custom" />
   <jsp:param name="headTitle" value="Resource Graphs" />
@@ -169,11 +170,6 @@
   <strong>From:</strong> <%=startPretty%> <br/>
   <strong>To:</strong> <%=endPretty%>
 
-  <br/>
-  <br/>
-
-  <jsp:include page="/includes/bookmark.jsp" flush="false" />
-
 </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

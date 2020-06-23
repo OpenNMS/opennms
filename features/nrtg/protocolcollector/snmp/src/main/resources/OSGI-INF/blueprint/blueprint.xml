@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xsi:schemaLocation=" http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0" xsi:schemaLocation=" http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
 
-  <reference id="snmpStrategy" interface="org.opennms.netmgt.snmp.SnmpStrategy" availability="mandatory" />
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+
+  <reference id="locationAwareSnmpClient" interface="org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient" availability="mandatory" />
 
   <bean id="snmpProtocolCollector" class="org.opennms.nrtg.protocolcollector.snmp.internal.SnmpProtocolCollector">
-    <property name="snmpStrategy" ref="snmpStrategy"/>
+    <property name="nodeDao" ref="nodeDao"/>
+    <property name="locationAwareSnmpClient" ref="locationAwareSnmpClient"/>
   </bean>
-  
+
   <service interface="org.opennms.nrtg.api.ProtocolCollector" ref="snmpProtocolCollector" />
 
 </blueprint>

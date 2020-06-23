@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="syslog-destination" type="syslogDestination"/>
+
+  <xs:element name="syslog-filter" type="syslogFilter"/>
+
+  <xs:element name="syslog-northbounder-config" type="syslogNorthbounderConfig"/>
+
+  <xs:complexType name="syslogNorthbounderConfig">
+    <xs:sequence>
+      <xs:element name="enabled" type="xs:boolean" default="false" minOccurs="0"/>
+      <xs:element name="nagles-delay" type="xs:int" default="1000" minOccurs="0"/>
+      <xs:element name="batch-size" type="xs:int" default="100" minOccurs="0"/>
+      <xs:element name="queue-size" type="xs:int" default="300000" minOccurs="0"/>
+      <xs:element name="message-format" type="xs:string" default="ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}" minOccurs="0"/>
+      <xs:element name="date-format" type="xs:string" minOccurs="0"/>
+      <xs:element name="destination" type="syslogDestination" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="uei" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="syslogDestination">
+    <xs:sequence>
+      <xs:element name="destination-name" type="xs:string"/>
+      <xs:element name="host" type="xs:string" default="localhost" minOccurs="0"/>
+      <xs:element name="port" type="xs:int" default="514" minOccurs="0"/>
+      <xs:element name="ip-protocol" type="syslogProtocol" default="udp" minOccurs="0"/>
+      <xs:element name="facility" type="syslogFacility" default="USER" minOccurs="0"/>
+      <xs:element name="char-set" type="xs:string" default="UTF-8" minOccurs="0"/>
+      <xs:element name="max-message-length" type="xs:int" default="1024" minOccurs="0"/>
+      <xs:element name="send-local-name" type="xs:boolean" default="true" minOccurs="0"/>
+      <xs:element name="send-local-time" type="xs:boolean" default="true" minOccurs="0"/>
+      <xs:element name="truncate-message" type="xs:boolean" default="false" minOccurs="0"/>
+      <xs:element name="first-occurrence-only" type="xs:boolean" default="false" minOccurs="0"/>
+      <xs:element name="filter" type="syslogFilter" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="syslogFilter">
+    <xs:sequence>
+      <xs:element name="rule" type="xs:string"/>
+      <xs:element name="message-format" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="enabled" type="xs:boolean"/>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:simpleType name="syslogProtocol">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="UDP"/>
+      <xs:enumeration value="TCP"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="syslogFacility">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="KERN"/>
+      <xs:enumeration value="USER"/>
+      <xs:enumeration value="MAIL"/>
+      <xs:enumeration value="DAEMON"/>
+      <xs:enumeration value="AUTH"/>
+      <xs:enumeration value="SYSLOG"/>
+      <xs:enumeration value="LPR"/>
+      <xs:enumeration value="NEWS"/>
+      <xs:enumeration value="UUCP"/>
+      <xs:enumeration value="CRON"/>
+      <xs:enumeration value="AUTHPRIV"/>
+      <xs:enumeration value="FTP"/>
+      <xs:enumeration value="LOCAL0"/>
+      <xs:enumeration value="LOCAL1"/>
+      <xs:enumeration value="LOCAL2"/>
+      <xs:enumeration value="LOCAL3"/>
+      <xs:enumeration value="LOCAL4"/>
+      <xs:enumeration value="LOCAL5"/>
+      <xs:enumeration value="LOCAL6"/>
+      <xs:enumeration value="LOCAL7"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -47,7 +47,7 @@ import com.google.gwt.dom.client.Element;
 
 public class MarqueeSelectHandler implements DragBehaviorHandler{
 
-    public class Interval{
+    public static class Interval{
         
         private int m_lo;
         public int getLo() {
@@ -71,7 +71,6 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
     }
 
     public static String DRAG_BEHAVIOR_KEY = "marqueeHandler";
-    private boolean m_dragging = false;
     private int m_x1;
     private int m_y1;
     private int m_offsetX;
@@ -86,85 +85,87 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
     
     @Override
     public void onDragStart(Element elem) {
-        if(!m_dragging) {
-            m_dragging = true;
-            
-            SVGElement svg = m_topologyView.getSVGElement().cast();
-            SVGMatrix rect = svg.getScreenCTM();
-            
-            m_offsetX = (int) rect.getE();
-            m_offsetY = (int) rect.getF();
-            consoleLog(rect);
-            consoleLog("m_offsetX: " + m_offsetX + " m_offsetY: " + m_offsetY);
-            m_x1 = D3.getEvent().getClientX() - m_offsetX;
-            m_y1 = D3.getEvent().getClientY() - m_offsetY;
-            
-            setMarquee(m_x1, m_y1, 0, 0);
-            D3.d3().select(m_topologyView.getMarqueeElement()).attr("display", "inline");
-        }
+        SVGElement svg = m_topologyView.getSVGElement().cast();
+        SVGMatrix rect = svg.getScreenCTM();
+
+        m_offsetX = (int) rect.getE();
+        m_offsetY = (int) rect.getF();
+        consoleDebug(rect);
+        consoleDebug("m_offsetX: " + m_offsetX + " m_offsetY: " + m_offsetY);
+        m_x1 = D3.getEvent().getClientX() - m_offsetX;
+        m_y1 = D3.getEvent().getClientY() - m_offsetY;
+
+        setMarquee(m_x1, m_y1, 0, 0);
+        D3.d3().select(m_topologyView.getMarqueeElement()).attr("display", "inline");
+
+        D3.getEvent().stopPropagation();
+        D3.getEvent().preventDefault();
     }
     
-    public final native void consoleLog(Object log)/*-{
+    public final native void consoleDebug(Object log)/*-{
         $wnd.console.log(log);
     }-*/;
 
     @Override
     public void onDrag(Element elem) {
-        if(m_dragging) {
-            int clientX = D3.getEvent().getClientX() - m_offsetX;
-            int clientY = D3.getEvent().getClientY() - m_offsetY;
-            setMarquee(
-                Math.min(m_x1, clientX), Math.min(m_y1, clientY), 
-                Math.abs(m_x1 - clientX), Math.abs(m_y1 - clientY)
-            );
-            selectVertices();
-        }
+        int clientX = D3.getEvent().getClientX() - m_offsetX;
+        int clientY = D3.getEvent().getClientY() - m_offsetY;
+        setMarquee(
+            Math.min(m_x1, clientX), Math.min(m_y1, clientY),
+            Math.abs(m_x1 - clientX), Math.abs(m_y1 - clientY)
+        );
+        selectVertices();
+
+        D3.getEvent().stopPropagation();
+        D3.getEvent().preventDefault();
     }
 
     @Override
     public void onDragEnd(Element elem) {
-        m_dragging = false;
-        D3.d3().select(m_topologyView.getMarqueeElement()).attr("display", "none");
-        
-        final List<String> vertIds = new ArrayList<String>();
+        setMarqueeVisible(false);
+
+        final List<String> vertIds = new ArrayList<>();
         m_svgTopologyMap.selectAllVertexElements().each(new Handler<GWTVertex>() {
 
             @Override
             public void call(GWTVertex vert, int index) {
-                if(vert.isSelected()) {
+                if (vert.isSelected()) {
                     vertIds.add(vert.getId());
                 }
             }
         });
         
         m_svgTopologyMap.setVertexSelection(vertIds);
+
+        D3.getEvent().stopPropagation();
+        D3.getEvent().preventDefault();
     }
     
     private void setMarquee(int x, int y, int width, int height) {
         D3.d3().select(m_topologyView.getMarqueeElement()).attr("x", x).attr("y", y).attr("width", width).attr("height", height);
     }
-    
+
+    private void setMarqueeVisible(boolean visible) {
+        D3.d3().select(m_topologyView.getMarqueeElement()).attr("display", visible ? "inline" : "none");
+    }
+
     private void selectVertices() {
-        D3 vertices = m_svgTopologyMap.selectAllVertexElements();
-        JsArray<JsArray<SVGElement>> selection = vertices.cast();
-        
+        // We use the svgIconOverlay to determine the selection and ignore the status border, the label
+        // and possible invisible elements, such as status badge, navigate to target etc, as the vertex is
+        // slightly greater than the svgIconOverlay and the user probably uses the icon itself to make the selection.
+        D3 iconOverlay = m_svgTopologyMap.selectAllVertexElements().select(".svgIconOverlay");
+
+        JsArray<JsArray<SVGElement>> selection = iconOverlay.cast();
         final JsArray<SVGElement> elemArray = selection.get(0);
-        
-        vertices.each(new Handler<GWTVertex>() {
+        iconOverlay.each(new Handler<GWTVertex>() {
 
             @Override
             public void call(GWTVertex vertex, int index) {
                 SVGElement elem = elemArray.get(index).cast();
-                
-                if(inSelection(elem)) {
-                    vertex.setSelected(true);
-                }else {
-                    vertex.setSelected(false);
-                }
-                
+                boolean selected = inSelection(elem);
+                vertex.setSelected(selected);
             }
         });
-        
     }
 
     private boolean inSelection(SVGElement elem) {

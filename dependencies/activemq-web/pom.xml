@@ -3,13 +3,13 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>activemq-web-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Dependencies ActiveMQ Web</name>
+  <name>OpenNMS :: Dependencies :: ActiveMQ Web</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.activemq</groupId>
@@ -23,7 +23,15 @@
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
+          <artifactId>spring-aop</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>spring-asm</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -31,7 +39,15 @@
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
           <artifactId>spring-expression</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -40,6 +56,10 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-webmvc</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jdom</groupId>
+          <artifactId>jdom</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.mortbay.jetty</groupId>
@@ -77,9 +97,14 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-web-dependencies</artifactId>
-      <version>${project.version}</version>
       <type>pom</type>
       <scope>compile</scope>
+    </dependency>
+    <!-- Use an OSGi-compatible jdom bundle -->
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.jdom</artifactId>
+      <version>1.1_4</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

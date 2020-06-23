@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>root-webapp</artifactId>
   <packaging>war</packaging>
-  <name>OpenNMS ROOT Web Application</name>
+  <name>OpenNMS :: Features :: ROOT Web Application</name>
   <build>
     <plugins>
       <plugin>

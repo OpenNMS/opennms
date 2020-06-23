@@ -1,0 +1,42 @@
+
+==== Step 1: Setup {opennms-product-name} to allow Minion communication
+
+Communication between a _Minion_ and _{opennms-product-name}_ uses _REST API_ and a messaging system, by default _ActiveMQ_.
+An authenticated user in _{opennms-product-name}_ is required for these communication channels.
+The security role _ROLE_MINION_ includes the minimal amount of permissions required for a _Minion_ to operate.
+
+IMPORTANT: As an example we use in this guide the user name _minion_ with password _minion_.
+           Change the credentials accordingly.
+
+.Create a user minion in the {opennms-product-name} web user interface
+. Login the web user interface with a user which has administrative permissions
+. Go in the main navigation to _"Login Name -> Configure OpenNMS -> Configure Users, Groups and On-Call Roles -> Configure Users"_
+. Add a new user with login name _minion_ and password _minion_ and click _Ok_
+. Assign the security role _ROLE_MINION_, optional fill in a comment for what location and purpose the user is used for and click _Finish_
+. The _minion_ user should now be listed in the _User List_
+
+.Configure ActiveMQ to allow communication on public network interface
+[source, shell]
+----
+vi ${OPENNMS_HOME}/etc/opennms-activemq.xml
+----
+
+.Remove comments for the transport connector listening on 0.0.0.0 and save
+[source, xml]
+----
+<transportConnector name="openwire" uri="tcp://0.0.0.0:61616?useJmx=false&amp;maximumConnections=1000&amp;wireformat.maxFrameSize=104857600"/>
+----
+
+.Restart {opennms-product-name}
+[source, shell]
+----
+systemctl restart opennms
+----
+
+.Verify if port 61616/tcp is listening on all interfaces
+[source, shell]
+----
+ss -lnpt sport = :61616
+State   Recv-Q  Send-Q  Local Address:Port  Peer  Address:Port
+LISTEN  0       128     *:61616             *:*   users:(("java",pid=1,fd=706))
+----

@@ -1,0 +1,54 @@
+NORTEL-NMI-CONFORMANCE-MIB 
+
+DEFINITIONS ::= BEGIN
+
+   IMPORTS
+       nortelNetworkManagementInterfaceMIBs 
+           FROM  NORTEL-GENERIC-MIB
+       MODULE-IDENTITY
+           FROM SNMPv2-SMI;
+
+   nortelNMIconformanceMIBs  MODULE-IDENTITY
+       LAST-UPDATED "9906240000Z"
+       ORGANIZATION "Nortel Networks"
+       CONTACT-INFO
+              "   Jingdong Liu
+
+                Postal: Nortel Networks
+                        P. O. Box 3511, Station C
+                        Ottawa, Ontario
+                        CANADA
+                        K1Y 4H7
+
+                Email:  jingdong@nortelnetworks.com"
+
+
+       DESCRIPTION
+               "This module contains the branches for the Nortel 
+                NetworkManagementInterface (NMI) conformance group. " 
+   
+       -- Revision history
+
+
+       REVISION "9906240000Z"
+       DESCRIPTION
+                " The second version of this MIB module.
+                  Module-identity OID assignment modified.
+
+                  Revisions introduced by Shobana Sundaram."
+
+
+
+       REVISION "9905310000Z"
+       DESCRIPTION
+                " The first version of this MIB module."
+
+
+
+       ::= { nortelNetworkManagementInterfaceMIBs  2 }
+
+
+
+END
+
+

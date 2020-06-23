@@ -1,0 +1,11 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <reference id="sessFactory" interface="org.opennms.features.distributed.cassandra.api.CassandraSessionFactory"/>
+    <reference id="schemaManagerFactory" interface="org.opennms.features.distributed.cassandra.api.CassandraSchemaManagerFactory"/>
+
+    <bean id="cassandraBlobStore" class="org.opennms.features.distributed.kvstore.blob.cassandra.CassandraBlobStore">
+        <argument ref="sessFactory"/>
+        <argument ref="schemaManagerFactory"/>
+    </bean>
+
+    <service ref="cassandraBlobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore"/>
+</blueprint>

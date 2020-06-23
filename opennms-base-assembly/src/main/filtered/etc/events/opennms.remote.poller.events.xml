@@ -1,0 +1,59 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <uei>uei.opennms.org/remote/nodes/nodeLostService</uei>
+      <event-label>OpenNMS-defined remote poller event: A remote poller detected a node lost service</event-label>
+      <descr>&lt;p>A %service% outage was identified on interface
+            %interface% from remote poller %parm[locationMonitorId]% from location: %parm[location]%.
+            &lt;/p></descr>
+      <logmsg dest="logndisplay">
+            %service% outage identified on interface %interface% from the remote poller %parm[locationMonitorId]%
+            in location %parm[location]% with reason code: %parm[eventReason]%.
+        </logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <uei>uei.opennms.org/remote/nodes/nodeRegainedService</uei>
+      <event-label>OpenNMS-defined remote poller event: A remote poller detected a node regained service</event-label>
+      <descr>&lt;p>The %service% service on interface %interface% was
+            previously down as viewed by remote poller
+            %parm[locationMonitorId]% and has been restored.&lt;/p>
+            &lt;p>This event is generated when a service which had
+            previously failed polling attempts is again responding to
+            polls by OpenNMS. &lt;/p></descr>
+      <logmsg dest="logndisplay">
+            %service% outage identified on interface %interface% from the remote poller %parm[locationMonitorId]%
+            in location %parm[location]% has cleared.
+        </logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/remote/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+   </event>
+   <event>
+      <uei>uei.opennms.org/remote/successfulScanReport</uei>
+      <event-label>OpenNMS-defined remote poller event: Scan report completed successfully</event-label>
+      <descr>&lt;p>A remote poller has submitted a successful scan report:&lt;/p>
+            &lt;ul>
+            &lt;p>&lt;b>Report ID:&lt;/b> &lt;a href=&quot;scanreports/index.jsp?_s=id%%3D%%3D%parm[scanReportId]%&quot;>%parm[scanReportId]%&lt;/a>&lt;/p>
+            &lt;p>&lt;b>Location:&lt;/b> %parm[scanReportLocation]%&lt;/p>
+            &lt;/ul></descr>
+      <logmsg dest="logndisplay">
+            A remote poller has submitted a scan report for a successful scan for location %parm[scanReportLocation]%.
+        </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/remote/unsuccessfulScanReport</uei>
+      <event-label>OpenNMS-defined remote poller event: Scan report did not complete successfully</event-label>
+      <descr>&lt;p>A remote poller has submitted an unsuccessful scan report:&lt;/p>
+            &lt;ul>
+            &lt;li>&lt;b>Report ID:&lt;/b> &lt;a href=&quot;scanreports/index.jsp?_s=id==%parm[scanReportId]%&quot;>%parm[scanReportId]%&lt;/a>&lt;/li>
+            &lt;li>&lt;b>Location:&lt;/b> %parm[scanReportLocation]%&lt;/li>
+            &lt;/ul>
+            %parm[scanReportFailureMessage]%</descr>
+      <logmsg dest="logndisplay">
+            A remote poller has submitted a scan report for an unsuccessful scan for location
+            %parm[scanReportLocation]%.
+        </logmsg>
+      <severity>Minor</severity>
+   </event>
+</events>

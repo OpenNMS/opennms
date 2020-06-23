@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -45,7 +45,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.springframework.core.style.ToStringCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.hibernate.annotations.Filter;
+
+import com.google.common.base.MoreObjects;
 
 /**
  * <p>OnmsCategory class.</p>
@@ -53,6 +56,8 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement(name = "category")
 @Entity
 @Table(name="categories")
+@Filter(name=FilterManager.AUTH_FILTER_NAME, condition="categoryid in (select distinct cn.categoryId from category_node cn join category_node cn2 on cn.nodeid = cn2.nodeid join category_group cg on cn2.categoryId = cg.categoryId where cg.groupId in (:userGroups))")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
 
     private static final long serialVersionUID = 4694348093332239377L;
@@ -66,7 +71,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
     /** persistent field */
     private String m_description;
 
-    private Set<String> m_authorizedGroups = new HashSet<String>();
+    private Set<String> m_authorizedGroups = new HashSet<>();
 
     //private Set<OnmsNode> m_memberNodes;
 
@@ -197,11 +202,11 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
      */
     @Override
     public String toString() {
-        return new ToStringCreator(this)
-            .append("id", getId())
-            .append("name", getName())
-            .append("description", getDescription())
-            .append("authorizedGroups", getAuthorizedGroups())
+        return MoreObjects.toStringHelper(this)
+            .add("id", getId())
+            .add("name", getName())
+            .add("description", getDescription())
+            .add("authorizedGroups", getAuthorizedGroups())
             .toString();
     }
 

@@ -1,0 +1,37 @@
+{
+  "presets": [
+    ["@babel/preset-env", {
+      "targets": {
+        "node": "current",
+        "browsers": [ "last 2 versions", "safari >= 7", "> 5%" ]
+      },
+      "modules": "umd",
+      "useBuiltIns": "usage",
+      "corejs": 3
+    }],
+    "@babel/preset-typescript"
+  ],
+  "plugins": [
+    "angularjs-annotate",
+    ["module-resolver", {
+      "root": [
+        "src/main/assets/modules",
+        "src/main/assets/js",
+        "src/main/assets/style",
+        "node_modules"
+      ]
+      }],
+    ["@babel/plugin-transform-runtime", {
+      "corejs": 3,
+      "helpers": false,
+      "regenerator": true
+      }],
+    "@babel/plugin-proposal-async-generator-functions",
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-transform-destructuring",
+    "@babel/plugin-transform-for-of",
+    "@babel/plugin-transform-modules-commonjs",
+    "@babel/plugin-transform-regenerator"
+  ]
+}

@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -105,7 +105,7 @@ public class FilterParser {
         }
 
         String readText() {
-            StringBuilder bldr = new StringBuilder();
+            final StringBuilder bldr = new StringBuilder();
             Character ch = peekChar();
             while(!isTokenStart(ch)) {
                 if (ch == '\\') {
@@ -161,7 +161,7 @@ public class FilterParser {
                 }
                 return String.valueOf(new char[] { ch, eq });
             default:
-                StringBuilder bldr = new StringBuilder();
+                final StringBuilder bldr = new StringBuilder();
                 bldr.append(ch);
                 bldr.append(readText());
                 return bldr.toString();
@@ -174,7 +174,7 @@ public class FilterParser {
                 throw new IllegalStateException("Cannot compute charTil while a peeked token exists.");
             }
             
-            StringBuilder buf = new StringBuilder();
+            final StringBuilder buf = new StringBuilder();
             boolean escaped = false;
             
             Character ch = peekChar();
@@ -249,7 +249,7 @@ public class FilterParser {
         if ("(".equals(token)) {
             filters = filterList();
         } else {
-            filters = new LinkedList<Filter>();
+            filters = new LinkedList<>();
         }
         filters.addFirst(filter);
         return filters;

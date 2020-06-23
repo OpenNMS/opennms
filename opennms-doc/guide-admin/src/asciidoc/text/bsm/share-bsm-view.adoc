@@ -1,0 +1,17 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gu-bsm-share-view]]
+=== Share View
+
+In some cases it is useful to share a specific view on a _Business Service Hierarchy_.
+For this reason the menu function _Share_ can be used and generates a link for the current view and can be copied and sent to another user.
+In figure <<gu-bsm-share-view-image, Share Business Service View>> the _Share_ menu item was used and a link is generated.
+The link can be used with _Copy & Paste_ and sent to another user to have access to exactly the same configured _Business Service View.
+
+[[gu-bsm-share-view-image]]
+.Share Business Service View
+image:bsm/08_bsm-share-view.png[]
+
+NOTE: The user receiving the link needs an account in OpenNMS to be able to see the _Business Service View_.

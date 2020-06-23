@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <relativePath>../../topology-map/poms/compiled/</relativePath>
+        <groupId>org.opennms.features.topology.build</groupId>
+        <artifactId>compiled-bundle-settings</artifactId>
+        <version>25.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.opennms.features.vaadin-components</groupId>
+    <artifactId>graph</artifactId>
+
+    <properties>
+        <bundle.symbolicName>org.opennms.features.vaadin.components.graph</bundle.symbolicName>
+        <bundle.namespace>org.opennms.features.vaadin.components.graph</bundle.namespace>
+    </properties>
+
+    <name>OpenNMS :: Features :: Vaadin :: Components :: Graph</name>
+    <packaging>bundle</packaging>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>vaadin</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.themes</groupId>
+            <artifactId>dashboard-theme</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

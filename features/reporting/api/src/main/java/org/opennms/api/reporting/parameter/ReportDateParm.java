@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -31,6 +31,7 @@ package org.opennms.api.reporting.parameter;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 import org.opennms.api.reporting.ReportMode;
 
@@ -51,80 +52,34 @@ public class ReportDateParm extends ReportParm implements Serializable {
     private Integer m_hours;
     private Integer m_minutes;
     
-    /**
-     * <p>Constructor for ReportDateParm.</p>
-     */
-    public ReportDateParm() {
-        super();
-    }
-    
-    /**
-     * <p>getUseAbsoluteDate</p>
-     *
-     * @return a {@link java.lang.Boolean} object.
-     */
     public Boolean getUseAbsoluteDate() {
         return m_useAbsoluteDate;
     }
 
-    /**
-     * <p>setUseAbsoluteDate</p>
-     *
-     * @param useAbsoluteDate a {@link java.lang.Boolean} object.
-     */
     public void setUseAbsoluteDate(Boolean useAbsoluteDate) {
         m_useAbsoluteDate = useAbsoluteDate;
     }
 
-    /**
-     * <p>getInterval</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     public String getInterval() {
         return m_interval;
     }
 
-    /**
-     * <p>setInterval</p>
-     *
-     * @param interval a {@link java.lang.String} object.
-     */
     public void setInterval(String interval) {
         m_interval = interval;
     }
 
-    /**
-     * <p>getCount</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     public Integer getCount() {
         return m_count;
     }
 
-    /**
-     * <p>setCount</p>
-     *
-     * @param count a {@link java.lang.Integer} object.
-     */
     public void setCount(Integer count) {
         m_count = count;
     }
     
-    /**
-     * <p>getDate</p>
-     *
-     * @return a {@link java.util.Date} object.
-     */
     public Date getDate() {
         return m_date;
     }
-    /**
-     * <p>setDate</p>
-     *
-     * @param date a {@link java.util.Date} object.
-     */
+
     public void setDate(Date date) {
         m_date = date;
     }
@@ -161,40 +116,25 @@ public class ReportDateParm extends ReportParm implements Serializable {
         return cal.getTime();
     }
 
-    /**
-     * <p>getHours</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     public Integer getHours() {
         return m_hours;
     }
 
-    /**
-     * <p>setHours</p>
-     *
-     * @param hour a {@link java.lang.Integer} object.
-     */
     public void setHours(Integer hour) {
         m_hours = hour;
     }
 
-    /**
-     * <p>getMinutes</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     public Integer getMinutes() {
         return m_minutes;
     }
 
-    /**
-     * <p>setMinutes</p>
-     *
-     * @param minute a {@link java.lang.Integer} object.
-     */
     public void setMinutes(Integer minute) {
         m_minutes = minute;
-    } 
+    }
+
+    @Override
+    void accept(ReportParmVisitor visitor) {
+        Objects.requireNonNull(visitor).visit(this);
+    }
 
 }

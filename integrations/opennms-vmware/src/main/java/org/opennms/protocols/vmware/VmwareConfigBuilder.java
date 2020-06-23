@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,12 +28,6 @@
 
 package org.opennms.protocols.vmware;
 
-import com.vmware.vim25.*;
-import com.vmware.vim25.mo.*;
-import com.vmware.vim25.mo.util.MorUtil;
-import org.apache.commons.cli.*;
-
-import javax.net.ssl.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -44,6 +38,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.opennms.core.utils.AnyServerX509TrustManager;
+
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.PerfCounterInfo;
+import com.vmware.vim25.PerfEntityMetric;
+import com.vmware.vim25.PerfEntityMetricBase;
+import com.vmware.vim25.PerfMetricIntSeries;
+import com.vmware.vim25.PerfMetricSeries;
+import com.vmware.vim25.PerfQuerySpec;
+import com.vmware.vim25.mo.HostSystem;
+import com.vmware.vim25.mo.InventoryNavigator;
+import com.vmware.vim25.mo.ManagedEntity;
+import com.vmware.vim25.mo.PerformanceManager;
+import com.vmware.vim25.mo.ServiceInstance;
+import com.vmware.vim25.mo.VirtualMachine;
+import com.vmware.vim25.mo.util.MorUtil;
 
 public class VmwareConfigBuilder {
 
@@ -67,14 +90,14 @@ public class VmwareConfigBuilder {
         public String getGraphDefinition(String apiVersion) {
             String resourceType = (multiInstance ? "vmware" + apiVersion + groupName : "nodeSnmp");
 
-            String def = "report.vmware" + apiVersion + "." + aliasName + ".name=" + aliasName + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".columns=" + aliasName + "\n";
+            String def = "report.vmware" + apiVersion + "." + aliasName + ".name=vmware" + apiVersion + "." + humanReadableName + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".columns=" + aliasName + "\n";
 
             if (multiInstance) {
                 def += "report.vmware" + apiVersion + "." + aliasName + ".propertiesValues=vmware" + apiVersion + groupName + "Name\n";
             }
 
-            def += "report.vmware" + apiVersion + "." + aliasName + ".type=" + resourceType + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".command=--title=\"" + aliasName + (multiInstance ? " {" + resourceType + "Name}" : "") + "\" \\\n" + "--vertical-label=\"" + aliasName + "\" \\\n" + "DEF:xxx={rrd1}:"
-                    + aliasName + ":AVERAGE \\\n" + "LINE2:xxx#0000ff:\"" + aliasName + "\" \\\n" + "GPRINT:xxx:AVERAGE:\"Avg  \\\\: %8.2lf %s\" \\\n" + "GPRINT:xxx:MIN:\"Min  \\\\: %8.2lf %s\" \\\n" + "GPRINT:xxx:MAX:\"Max  \\\\: %8.2lf %s\\\\n\" \\\n\n";
+            def += "report.vmware" + apiVersion + "." + aliasName + ".type=" + resourceType + "\n" + "report.vmware" + apiVersion + "." + aliasName + ".command=--title=\"VMWare" + apiVersion + " " + humanReadableName + (multiInstance ? " {" + resourceType + "Name}" : "") + "\" \\\n" + "--vertical-label=\"" + aliasName + "\" \\\n" + "DEF:xxx={rrd1}:"
+                    + aliasName + ":AVERAGE \\\n" + "LINE2:xxx#0000ff:\"" + aliasName + "\" \\\n" + "GPRINT:xxx:AVERAGE:\"Avg  \\\\: %8.2lf %s\" \\\n" + "GPRINT:xxx:MIN:\"Min  \\\\: %8.2lf %s\" \\\n" + "GPRINT:xxx:MAX:\"Max  \\\\: %8.2lf %s\\\\n\" \n\n";
 
             return def;
         }
@@ -111,31 +134,6 @@ public class VmwareConfigBuilder {
     private Map<String, Map<String, TreeSet<VMwareConfigMetric>>> collections = new HashMap<String, Map<String, TreeSet<VMwareConfigMetric>>>();
     private Map<Integer, PerfCounterInfo> perfCounterInfoMap = new HashMap<Integer, PerfCounterInfo>();
     private String versionInformation = "", apiVersion = "";
-
-    private static class TrustAllManager implements javax.net.ssl.TrustManager, javax.net.ssl.X509TrustManager {
-        @Override
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-            return null;
-        }
-
-        public boolean isServerTrusted(java.security.cert.X509Certificate[] certs) {
-            return true;
-        }
-
-        public boolean isClientTrusted(java.security.cert.X509Certificate[] certs) {
-            return true;
-        }
-
-        @Override
-        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) throws java.security.cert.CertificateException {
-            return;
-        }
-
-        @Override
-        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) throws java.security.cert.CertificateException {
-            return;
-        }
-    }
 
     public VmwareConfigBuilder(String hostname, String username, String password) {
         this.hostname = hostname;
@@ -184,7 +182,7 @@ public class VmwareConfigBuilder {
         }
 
         String[] nameChunks = {"unkown", "protos", "threshold", "datastore", "alloc", "utilization", "normalized", "normal", "shares", "depth", "resource", "overhead", "swap", "rate", "metric", "number", "averaged", "load", "decompression", "compression", "device", "latency",
-                "capacity", "commands", "target", "aborted", "kernel", "unreserved", "reserved", "total", "read", "write", "queue", "limited", "sample", "count", "touched"};
+                "capacity", "commands", "target", "aborted", "kernel", "unreserved", "reserved", "total", "read", "write", "queue", "limited", "sample", "count", "touched", "percentage", "seeks", "consumed", "medium", "small", "large", "active", "observed", "time"};
 
         for (String chunk : nameChunks) {
             name = condenseName(name, chunk);
@@ -288,7 +286,7 @@ public class VmwareConfigBuilder {
 
         System.out.println("Generating configuration files for '" + serviceInstance.getAboutInfo().getFullName() + "' using rrdRepository '" + rrdRepository + "'...");
 
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append("Configuration file generated for:\n\n");
         buffer.append("Full name.......: " + serviceInstance.getAboutInfo().getFullName() + "\n");
         buffer.append("API type........: " + serviceInstance.getAboutInfo().getApiType() + "\n");
@@ -299,7 +297,7 @@ public class VmwareConfigBuilder {
 
         versionInformation = buffer.toString();
 
-        String arr[] = serviceInstance.getAboutInfo().getApiVersion().split("\\.");
+        String[] arr = serviceInstance.getAboutInfo().getApiVersion().split("\\.");
 
         if (arr.length > 1) {
             apiVersion = arr[0];
@@ -346,8 +344,8 @@ public class VmwareConfigBuilder {
     }
 
     private void saveVMwareGraphProperties() {
-        StringBuffer buffer = new StringBuffer();
-        StringBuffer include = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
+        final StringBuilder include = new StringBuilder();
         HashMap<String, Boolean> generatedGraphs = new HashMap<String, Boolean>();
 
         for (String collectionName : collections.keySet()) {
@@ -358,14 +356,16 @@ public class VmwareConfigBuilder {
                     Boolean generated = (generatedGraphs.get(vmwarePerformanceMetric.getAliasName()) == null ? false : generatedGraphs.get(vmwarePerformanceMetric.getAliasName()));
 
                     if (!generated) {
+                        generatedGraphs.put(vmwarePerformanceMetric.getAliasName(), Boolean.TRUE);
                         buffer.append(vmwarePerformanceMetric.getGraphDefinition(apiVersion));
                         include.append(vmwarePerformanceMetric.getInclude(apiVersion));
                     }
                 }
             }
         }
+        final String content = include.toString();
 
-        saveFile("vmware" + apiVersion + "-graph-simple.properties", "reports=" + include.toString() + "\n\n" + buffer.toString());
+        saveFile("vmware" + apiVersion + "-graph-simple.properties", "reports=" + content.subSequence(0, content.length() - 4) + "\n\n" + buffer.toString());
     }
 
     private void saveFile(String filename, String contents) {
@@ -380,7 +380,7 @@ public class VmwareConfigBuilder {
     }
 
     private void saveVMwareDatacollectionInclude() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         buffer.append("<?xml version=\"1.0\"?>\n");
 
@@ -400,8 +400,8 @@ public class VmwareConfigBuilder {
         for (String groupName : groupNames) {
             if (!"node".equalsIgnoreCase(groupName)) {
                 buffer.append("  <resourceType name=\"vmware" + apiVersion + groupName + "\" label=\"VMware v" + apiVersion + " " + groupName + "\" resourceLabel=\"${vmware" + apiVersion + groupName + "Name}\">\n");
-                buffer.append("    <persistenceSelectorStrategy class=\"org.opennms.netmgt.collectd.PersistAllSelectorStrategy\"/>\n");
-                buffer.append("    <storageStrategy class=\"org.opennms.netmgt.dao.support.IndexStorageStrategy\"/>\n");
+                buffer.append("    <persistenceSelectorStrategy class=\"org.opennms.netmgt.collection.support.PersistAllSelectorStrategy\"/>\n");
+                buffer.append("    <storageStrategy class=\"org.opennms.netmgt.collection.support.IndexStorageStrategy\"/>\n");
                 buffer.append("  </resourceType>\n\n");
             }
         }
@@ -412,7 +412,7 @@ public class VmwareConfigBuilder {
     }
 
     private void saveVMwareDatacollectionConfig(String rrdRepository) {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append("<?xml version=\"1.0\"?>\n");
 
         buffer.append("\n<!--\n");
@@ -475,7 +475,7 @@ public class VmwareConfigBuilder {
     }
 
 
-    public static void main(String args[]) throws ParseException {
+    public static void main(String[] args) throws ParseException {
         String hostname = null;
         String username = null;
         String password = null;
@@ -506,9 +506,7 @@ public class VmwareConfigBuilder {
             rrdRepository = "/opt/opennms/share/rrd/snmp/";
         }
 
-        TrustManager[] trustAllCerts = new TrustManager[1];
-
-        trustAllCerts[0] = new TrustAllManager();
+        TrustManager[] trustAllCerts = new TrustManager[] { new AnyServerX509TrustManager() };
 
         SSLContext sc = null;
         try {

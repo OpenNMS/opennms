@@ -1,24 +1,68 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search;
+
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.logging.Logger;
+
+import org.easymock.IAnswer;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ComponentTracker;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.OpenNMSEventManager;
+import org.opennms.features.vaadin.nodemaps.internal.gwt.client.ui.controls.search.SearchStateManager.State;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.impl.SchedulerImpl;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.junit.GWTMockUtilities;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.impl.HistoryImpl;
-import com.vaadin.client.VConsole;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
     NativeEvent.class,
     EventTarget.class,
-    VConsole.class,
     History.class,
-    HistoryImpl.class,
     Scheduler.class,
     SchedulerImpl.class
 })
@@ -27,21 +71,21 @@ import org.powermock.modules.junit4.PowerMockRunner;
     "com.google.gwt.dom.client.EventTarget",
     "com.google.gwt.dom.client.InputElement",
     "com.google.gwt.user.client.History",
-    "com.google.gwt.user.client.HistoryImpl",
     "com.google.gwt.core.client.Scheduler",
     "com.google.gwt.core.client.impl.SchedulerImpl"
 })
 public class SearchStateTest {
-    /*
+    final Logger LOG = Logger.getLogger(SearchStateTest.class.getName());
+
     private ValueItem m_mockSearchInput = new TestValueItem();
     private ValueItem m_mockHistory = new TestValueItem();
     private MockSearchStateManager m_searchManager;
+    private OpenNMSEventManager m_eventManager = new OpenNMSEventManager();
+    private ComponentTracker m_componentTracker = new ComponentTracker(m_eventManager);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         GWTMockUtilities.disarm();
-        final Console console = new TestConsole();
-        Whitebox.setInternalState(VConsole.class, "impl", console);
 
         final SchedulerImpl scheduler = new TestSchedulerImpl();
         Whitebox.setInternalState(SchedulerImpl.class, "INSTANCE", scheduler);
@@ -56,7 +100,7 @@ public class SearchStateTest {
     public void setUp() throws Exception {
         m_mockSearchInput.setValue("");
         m_mockHistory.setValue("");
-        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory);
+        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory, m_eventManager, m_componentTracker);
     }
 
     @Test
@@ -259,7 +303,7 @@ public class SearchStateTest {
     @Test
     public void testInitializingWithHistory() throws Exception {
         m_mockHistory.setValue("search/ae");
-        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory);
+        m_searchManager = new MockSearchStateManager(m_mockSearchInput, m_mockHistory, m_eventManager, m_componentTracker);
         assertEquals(State.SEARCHING_FINISHED, m_searchManager.getState());
 
         typeCharacter(m_searchManager, 'a');
@@ -295,7 +339,7 @@ public class SearchStateTest {
         } else if (keyCode == KeyCodes.KEY_BACKSPACE) {
             if (value.length() > 0) {
                 m_mockSearchInput.setValue(value.substring(0, value.length() - 1));
-                VConsole.log("backspace!  old=" + value + ", new=" + m_mockSearchInput.getValue());
+                LOG.fine("backspace!  old=" + value + ", new=" + m_mockSearchInput.getValue());
             }
         } else {
             m_mockSearchInput.setValue(value + keyCode);
@@ -307,6 +351,14 @@ public class SearchStateTest {
         final NativeEvent event = PowerMock.createMock(NativeEvent.class);
         expect(event.getType()).andReturn(type).anyTimes();
         expect(event.getKeyCode()).andReturn(keyCode).anyTimes();
+        event.stopPropagation();
+        expectLastCall().andAnswer(new IAnswer<Void>() {
+            @Override
+            public Void answer() throws Throwable {
+                LOG.info("stopPropagation() called on event(" + type + ", " + keyCode + ")");
+                return null;
+            }
+        }).anyTimes();
         PowerMock.replay(event);
         return event;
     }
@@ -315,53 +367,13 @@ public class SearchStateTest {
         private String m_value = "";
 
         @Override public String getValue() { return m_value; }
-
         @Override public void setValue(final String value) { m_value = value; }
-    }
-
-    private static final class TestSchedulerImpl extends SchedulerImpl {
-        @Override public void scheduleDeferred(final ScheduledCommand cmd) {
-            cmd.execute();
-        }
-
-        @Override public void scheduleIncremental(final RepeatingCommand cmd) {
-            while (cmd.execute()) {}
-        }
-    }
-
-    private static final class TestConsole implements Console {
-        @Override public void log(final String msg) {
-            System.err.println(msg);
-        }
-
-        @Override public void log(final Throwable e) {
-            e.printStackTrace(System.err);
-        }
-
-        @Override public void error(final Throwable e) {
-            e.printStackTrace(System.err);
-        }
-
-        @Override public void error(final String msg) {
-            System.err.println(msg);
-        }
-
-        @Override public void printObject(final Object msg) {
-            System.err.println(msg);
-        }
-
-        @Override public void dirUIDL(ValueMap u, ApplicationConnection cnf) {}
-
-        @Override public void printLayoutProblems(ValueMap meta, ApplicationConnection applicationConnection, Set<ComponentConnector> zeroHeightComponents, Set<ComponentConnector> zeroWidthComponents) {}
-
-        @Override public void setQuietMode(boolean quietDebugMode) {}
-
-        @Override public void init() {}
+        @Override public String toString() { return "TestValueItem [value=" + m_value + "]"; }
     }
 
     private static class MockSearchStateManager extends SearchStateManager {
-        public MockSearchStateManager(final ValueItem searchString, final ValueItem history) {
-            super(searchString, history);
+        public MockSearchStateManager(final ValueItem searchString, final ValueItem history, final OpenNMSEventManager eventManager, final ComponentTracker componentTracker) {
+            super(searchString, history, eventManager, componentTracker);
         }
 
         private boolean m_autocompleteVisible = false;
@@ -378,7 +390,7 @@ public class SearchStateTest {
             m_autocompleteFocused = false;
         }
 
-        @Override public void focusAutocomplete() {
+        @Override public void focusAutocompleteWidget() {
             System.err.println("focusing autocomplete!");
             m_inputFocused = false;
             m_autocompleteFocused = true;
@@ -402,6 +414,10 @@ public class SearchStateTest {
         @Override public void entrySelected() {
             System.err.println("current autocomplete entry selected!");
         }
+        
+        @Override protected void sendSearchStringSetEvent(final String searchString) {
+            System.err.println("sending search string updated event: '" + searchString + "'");
+        }
 
         public boolean isInputFocused() {
             return m_inputFocused;
@@ -416,6 +432,5 @@ public class SearchStateTest {
         }
 
     }
-    */
 
 }

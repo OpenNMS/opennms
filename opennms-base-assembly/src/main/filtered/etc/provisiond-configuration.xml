@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<provisiond-configuration 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
-   
+<provisiond-configuration xmlns="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
+
   foreign-source-dir="${install.dir}/etc/foreign-sources" 
   requistion-dir="${install.dir}/etc/imports"
    
   importThreads="8" scanThreads="2" rescanThreads="10" writeThreads="8" >
   
   <!--  
-    http://quartz.sourceforge.net/javadoc/org/quartz/CronTrigger.html
+    http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger
         Field Name     Allowed Values      Allowed Special Characters
         Seconds        0-59                , - * /
         Minutes        0-59                , - * /
@@ -34,6 +32,26 @@
 
     where possible parameters are:
 
+       importIPv4Only -
+         Imports only IPv4 Interfaces
+         Default: false
+
+       importIPv6Only -
+         Imports only IPv6 Interfaces
+         Default: false
+
+       topologyNetworks -
+         Add the network information to the VMWare Topology
+         Default: true
+
+       topologyDatastores -
+         Add the datastores information to the VMWare Topology
+         Default: true
+
+       topologyPortGroups -
+         Add the port groups information (distributed virtual switches) to the VMWare Topology
+         Default: false
+
        importVMPoweredOn -
          Controls whether powered on machines should be imported.
          Default: true
@@ -49,6 +67,10 @@
        importVMAll -
          Imports all virtual machines and ignores importVMPoweredOn,
          importVMPoweredOff and importVMSuspended parameters
+         Default: false
+
+       importVMOnly -
+         Imports only virtual machines and ignores hosts.
          Default: false
 
        importHostPoweredOn -
@@ -72,14 +94,9 @@
          importHostPoweredOff and importHostSuspended parameters
          Default: false
 
-       key -
-         Use this key to lookup a user defined attributes for entities being imported, only virtual machines
-         and host systems with a matching key=value pair will be imported. Can only be in conjunction with the 'value'
-         parameter.
-
-       value -
-         This value must match the user defined attribute with the name defined by the parameter 'key' on the VMware
-         management server for an entity to be imported, can only be used in conjunction with the 'key' parameter.
+       importHostOnly -
+         Imports only host systems and ignores VMs.
+         Default: false
 
        virtualMachineServices -
          Bound this services to imported virtual machines, values should be seperated by ','.
@@ -89,9 +106,48 @@
          Bound this services to imported host systems, values should be seperated by ','.
          Default: VMware-ManagedEntity,VMware-HostSystem,VMwareCim-HostSystem
 
+       username -
+         The username to use to authenticate against the VMware vCenter server. 
+
+       password - 
+         The password to use to authenticate against the VMware vCenter server
+
+       timeout -
+         The default VMware connection timeout in milliseconds used for provisioning. The default value is 3000 ms.
+
+       cimTimeout -
+         Timeout used to test interface addresses for a reachable CIM service. Do only increase this value if you have
+         problems discovering CIM services on host systems. The default value is 3000 ms.
+
+       key -
+         Use this key to lookup a user defined attributes for entities being imported, only virtual machines
+         and host systems with a matching key=value pair will be imported. Can only be in conjunction with the 'value'
+         parameter, and can only be specified once. 
+         If you need to specify several attributes, use the _[customAttributeName] method described below.
+
+       value -
+         This value must match the user defined attribute with the name defined by the parameter 'key' on the VMware
+         management server for an entity to be imported, can only be used in conjunction with the 'key' parameter, 
+         and can only be specified once.  If you need to specify several attributes, use the _[customAttributeName] 
+         method described below.
+
+       _[customAttributeName] = [customAttributeValue]
+
+       Filtering the requisition with the key/value pair parameters as described above allows to filter only by one user
+       defined attribute. This use case is for those situations on which it is required to match more than one parameter.
+       If the content of customAttributeValue starts with '~', the rest of it will be treated as a regular expresion. In
+       this case, the real value must match the provided expression.
+
+       IMPORTANT:
+       - importVMOnly and importHostOnly can't be true simultaneously.
+       - importIPv4Only and importIPv6Only can't be true simultaneously.
+       - if topologyNetworks is false, the port group information won't be added.
+
      Examples for import-url-resource:
        vmware://vcenter.mydomain.org?importHostPoweredOff=true
        vmware://172.16.123.100/vCenterImport?key=shouldImport;value=1
+       vmware://172.16.123.100/vCenterImport?_shouldImport=1
+       vmware://172.16.123.100/vCenterImport?_shouldImport=1;username=opennms;password=secret
        vmware://[2001:db8:0:8d3:0:8a2e:70:7344]?virtualMachineServices=VM-SERVICE1,VM-SERVICE2
 
   <requisition-def import-name="the-import-name-to-use" import-url-resource="vmware://ip-address-or-hostname/foreignSource-Name?parameters">

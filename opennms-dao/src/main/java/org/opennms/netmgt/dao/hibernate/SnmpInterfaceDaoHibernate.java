@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,25 +28,28 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.Assert;
 
-public class SnmpInterfaceDaoHibernate extends
-		AbstractDaoHibernate<OnmsSnmpInterface, Integer> implements
-		SnmpInterfaceDao {
+public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInterface, Integer> implements SnmpInterfaceDao {
 
-	/**
-	 * <p>Constructor for SnmpInterfaceDaoHibernate.</p>
-	 */
-	public SnmpInterfaceDaoHibernate() {
-		super(OnmsSnmpInterface.class);
-	}
-	
+    /**
+     * <p>Constructor for SnmpInterfaceDaoHibernate.</p>
+     */
+    public SnmpInterfaceDaoHibernate() {
+        super(OnmsSnmpInterface.class);
+    }
 
-
-    /** {@inheritDoc} */
-        @Override
+    @Override
     public OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex) {
         Assert.notNull(nodeId, "nodeId may not be null");
         Assert.notNull(ifIndex, "ifIndex may not be null");
@@ -56,10 +59,7 @@ public class SnmpInterfaceDaoHibernate extends
         
     }
 
-
-
-    /** {@inheritDoc} */
-        @Override
+    @Override
     public OnmsSnmpInterface findByForeignKeyAndIfIndex(String foreignSource, String foreignId, Integer ifIndex) {
         Assert.notNull(foreignSource, "foreignSource may not be null");
         Assert.notNull(foreignId, "foreignId may not be null");
@@ -70,6 +70,28 @@ public class SnmpInterfaceDaoHibernate extends
                           ifIndex);
     }
 
-	
+    @Override
+    public OnmsSnmpInterface findByNodeIdAndDescription(Integer nodeId, String description) {
+        Assert.notNull(nodeId, "nodeId may not be null");
+        Assert.notNull(description, "description may not be null");
 
+        return findUnique("SELECT DISTINCT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (LOWER(snmpIf.ifDescr) = LOWER(?) OR LOWER(snmpIf.ifName) = LOWER(?))", 
+            nodeId, 
+            description,
+            description
+        );
+    }
+
+    @Override
+    public void markHavingFlows(final Integer nodeId, final Collection<Integer> snmpIfIndexes) {
+        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update snmpinterface set hasFlows = true where nodeid = :nodeid and snmpifindex in (:snmpIfIndexes)")
+                .setParameter("nodeid", nodeId)
+                .setParameterList("snmpIfIndexes", snmpIfIndexes)
+                .executeUpdate());
+    }
+
+    @Override
+    public List<OnmsSnmpInterface> findAllHavingFlows(final Integer nodeId) {
+        return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and iface.hasFlows = true", nodeId);
+    }
 }

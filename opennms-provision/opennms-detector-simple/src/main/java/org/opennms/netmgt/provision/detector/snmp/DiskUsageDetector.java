@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -42,17 +42,15 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
+
 /**
  * <p>DiskUsageDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class DiskUsageDetector extends SnmpDetector {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DiskUsageDetector.class);
@@ -112,7 +110,7 @@ public class DiskUsageDetector extends SnmpDetector {
     public boolean isProtocolSupported(InetAddress address) {
         try {
             SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
-            return (getValue(agentConfig, DEFAULT_OID) != null);
+            return getValue(agentConfig, DEFAULT_OID, isHex()) != null;
 
         } catch (Throwable t) {
             throw new UndeclaredThrowableException(t);
@@ -130,13 +128,11 @@ public class DiskUsageDetector extends SnmpDetector {
      * service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(final InetAddress address, final SnmpAgentConfig agentConfig) {
         int matchType = MATCH_TYPE_EXACT;
 
         try {
 
-            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
-            
             if (getPort() > 0) {
                 agentConfig.setPort(getPort());
             }
@@ -152,11 +148,13 @@ public class DiskUsageDetector extends SnmpDetector {
             if (getForceVersion() != null) {
                 String version = getForceVersion();
                 
-                if (version.equalsIgnoreCase("snmpv1")) {
+                // TODO: Deprecate the snmpv1, snmpv2, snmpv2c, snmpv3 params in favor of more-used v1, v2c, and v3
+                // @see http://issues.opennms.org/browse/NMS-7518
+                if ("v1".equalsIgnoreCase(version) || "snmpv1".equalsIgnoreCase(version)) {
                     agentConfig.setVersion(SnmpAgentConfig.VERSION1);
-                } else if (version.equalsIgnoreCase("snmpv2") || version.equalsIgnoreCase("snmpv2c")) {
+                } else if ("v2".equalsIgnoreCase(version) || "v2c".equalsIgnoreCase(version) || "snmpv2".equalsIgnoreCase(version) || "snmpv2c".equalsIgnoreCase(version)) {
                     agentConfig.setVersion(SnmpAgentConfig.VERSION2C);
-                } else if (version.equalsIgnoreCase("snmpv3")) {
+                } else if ("v3".equalsIgnoreCase(version) || "snmpv3".equalsIgnoreCase(version)) {
                     agentConfig.setVersion(SnmpAgentConfig.VERSION3);
                 }
             }
@@ -187,7 +185,7 @@ public class DiskUsageDetector extends SnmpDetector {
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : descrResults.entrySet()) { 
-                LOG.debug("capsd: SNMPwalk succeeded, addr={} oid={} instance={} value={}", InetAddressUtils.str(address), hrStorageDescrSnmpObject, e.getKey(), e.getValue());
+                LOG.debug("capsd: SNMPwalk succeeded, addr={} oid={} instance={} value={}", InetAddressUtils.str(agentConfig.getAddress()), hrStorageDescrSnmpObject, e.getKey(), e.getValue());
               
                 if (isMatch(e.getValue().toString(), getDisk(), matchType)) {
                     LOG.debug("Found disk '{}' (matching hrStorageDescr was '{}')", getDisk(), e.getValue());

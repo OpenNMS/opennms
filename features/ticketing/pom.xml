@@ -3,19 +3,24 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.ticketing</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS Ticketing</name>
+  <name>OpenNMS :: Features :: Ticketing</name>
   <modules>
     <module>api</module>
+    <module>daemon</module>
     <module>drools-integration</module>
     <module>jira-integration</module>
+    <module>jira-client</module>
+    <module>otrs-integration-common</module>
     <module>otrs-integration</module>
+    <module>otrs-integration-31</module>
     <module>rt-integration</module>
     <module>remedy-integration</module>
+    <module>tsrm-integration</module>
   </modules>
 </project>

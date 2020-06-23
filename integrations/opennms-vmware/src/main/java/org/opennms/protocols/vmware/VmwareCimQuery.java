@@ -1,18 +1,53 @@
-package org.opennms.protocols.vmware;
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 
-import com.vmware.vim25.mo.HostSystem;
-import com.vmware.vim25.mo.ManagedEntity;
-import org.apache.commons.cli.*;
-import org.sblim.wbem.cim.CIMObject;
+package org.opennms.protocols.vmware;
 
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class VmwareCimQuery {
-    public static HashMap<Integer, String> m_healthStates;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.sblim.wbem.cim.CIMObject;
+
+import com.vmware.vim25.mo.HostSystem;
+import com.vmware.vim25.mo.ManagedEntity;
+
+public abstract class VmwareCimQuery {
+    public static Map<Integer, String> m_healthStates;
 
     static {
         m_healthStates = new HashMap<Integer, String>();
@@ -85,13 +120,7 @@ public class VmwareCimQuery {
 
                 String ipAddress;
 
-                try {
-                    ipAddress = vmwareViJavaAccess.getPrimaryHostSystemIpAddress(hostSystem);
-                } catch (RemoteException remoteException) {
-                    System.out.println("Exception:");
-                    remoteException.printStackTrace();
-                    continue;
-                }
+                ipAddress = vmwareViJavaAccess.getPrimaryHostSystemIpAddress(hostSystem);
 
                 if (ipAddress != null) {
                     System.out.print(ipAddress + "\n  Querying host system " + hostSystem.getName() + " for numeric sensors... ");
@@ -100,13 +129,13 @@ public class VmwareCimQuery {
 
                     try {
                         cimObjects = vmwareViJavaAccess.queryCimObjects(hostSystem, "CIM_NumericSensor");
-                    } catch (RemoteException remoteException) {
+                    } catch (Exception e) {
                         System.out.println("Exception:");
-                        remoteException.printStackTrace();
+                        e.printStackTrace();
                         continue;
                     }
 
-                    if (cimObjects != null) {
+                    if (cimObjects != null) { // FIXME queryCimObjects returns an empty list or a filled list, but never null
                         System.out.println(cimObjects.size() + " sensor(s) found!");
                         for (CIMObject cimObject : cimObjects) {
                             String healthState = vmwareViJavaAccess.getPropertyOfCimObject(cimObject, "HealthState");
@@ -158,7 +187,7 @@ public class VmwareCimQuery {
         usage(options, cmd, null, null);
     }
 
-    public static void main(String args[]) throws ParseException {
+    public static void main(String[] args) throws ParseException {
         String hostname, username, password;
 
         final Options options = new Options();

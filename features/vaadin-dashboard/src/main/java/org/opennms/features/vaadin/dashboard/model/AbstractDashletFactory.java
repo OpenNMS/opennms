@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -25,16 +25,18 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.features.vaadin.dashboard.model;
 
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.dashboard.config.ui.PropertiesWindow;
+package org.opennms.features.vaadin.dashboard.model;
 
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.opennms.features.vaadin.dashboard.config.ui.PropertiesWindow;
+
+import com.vaadin.ui.Component;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import com.vaadin.v7.ui.Label;
 
 /**
  * This class represents an abstract factory for instantiating {@link Dashlet} objects.
@@ -59,6 +61,10 @@ public abstract class AbstractDashletFactory implements DashletFactory {
      * boostable flag
      */
     protected boolean m_boostable = true;
+    /**
+     * Are this dashlet suitable for displaying in the dashboard view.
+     */
+    protected boolean m_dashboardSuitable = false;
 
     /**
      * Constructor for instantiating a new factory.
@@ -143,7 +149,23 @@ public abstract class AbstractDashletFactory implements DashletFactory {
      * This method sets the boostable flag.
      */
     public void setBoostable(boolean boostable) {
-        m_boostable=boostable;
+        m_boostable = boostable;
+    }
+
+    /**
+     * This method sets whether this dashlet is suitable for displaying in the dashboard view.
+     */
+    public void setDashboardSuitable(boolean dashletSuitable) {
+        m_dashboardSuitable = dashletSuitable;
+    }
+
+    /**
+     * Returns whether this dashlet is suitable for displaying in the dashboard view.
+     *
+     * @return true if suitable, false otherwise
+     */
+    public boolean isSuitableForDashboard() {
+        return m_dashboardSuitable;
     }
 
     /**
@@ -197,7 +219,7 @@ public abstract class AbstractDashletFactory implements DashletFactory {
      * @return the parameter help content
      */
     private String getParameterDescriptionsHTML() {
-        StringBuilder stringBuilder = new StringBuilder();
+        final StringBuilder stringBuilder = new StringBuilder();
 
         if (m_requiredParameters.size() == 0) {
             return "";
@@ -213,7 +235,14 @@ public abstract class AbstractDashletFactory implements DashletFactory {
         for (Map.Entry<String, String> entry : m_requiredParameters.entrySet()) {
             stringBuilder.append("<tr>");
             stringBuilder.append("<td class='help-table-cell'>" + entry.getKey() + "</td>");
-            stringBuilder.append("<td class='help-table-cell'>'" + entry.getValue() + "'</td>");
+
+            String value = entry.getValue();
+
+            if (value.length() > 20) {
+                value = value.substring(0, 19) + "...";
+            }
+
+            stringBuilder.append("<td class='help-table-cell'>'" + value + "'</td>");
 
             if (getRequiredParameterDescriptions().containsKey(entry.getKey())) {
                 stringBuilder.append("<td class='help-table-cell'>" + getRequiredParameterDescriptions().get(entry.getKey()) + "</td>");

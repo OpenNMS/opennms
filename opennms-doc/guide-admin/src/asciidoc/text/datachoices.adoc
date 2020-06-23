@@ -1,0 +1,24 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+The `Data Choices` module collects and publishes anonymous usage statistics to https://stats.opennms.org.
+
+When a user with the `Admin` role logs into the system for the first time, they will be prompted as to whether or not they want to opt-in to publish these statistics.
+Statistics will only be published once an `Administrator` has opted-in.
+
+Usage statistics can later be disabled by accessing the 'Data Choices' link in the 'Admin' menu.
+
+When enabled, the following anonymous statistics will be collected and publish on system startup and every 24 hours after:
+
+* System ID (a randomly generated UUID)
+* {opennms-product-name} Release
+* {opennms-product-name} Version
+* OS Architecture
+* OS Name
+* OS Version
+. Number of Alarms in the `alarms` table
+. Number of Events in the `events` table
+. Number of IP Interfaces in the `ipinterface` table
+. Number of Nodes in the `node` table
+. Number of Nodes, grouped by System OID

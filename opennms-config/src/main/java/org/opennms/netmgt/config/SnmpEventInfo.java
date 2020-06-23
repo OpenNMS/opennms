@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -40,9 +40,9 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -79,6 +79,8 @@ public class SnmpEventInfo {
     private String m_contextName = null;
     private String m_enterpriseId = null;
     private String m_proxyHost = null;
+    private String m_location = null;
+    private Long m_ttl = null;
     
     private static int computeIntValue(String parmContent) throws IllegalArgumentException {
         int val = 0;
@@ -123,7 +125,10 @@ public class SnmpEventInfo {
                     setFirstIPAddress(parmContent);
                 } else if (parmName.equals(EventConstants.PARM_LAST_IP_ADDRESS)) {
                     setLastIPAddress(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING) || parmName.equals(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING)) {
+                } else if (parmName.equals(EventConstants.PARM_SNMP_LOCATION)) {
+                    setLocation(parmContent);
+                } else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)
+                        || parmName.equals(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING)) {
                     setReadCommunityString(parmContent);
                 } else if (parmName.equals(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING)) {
                 	setWriteCommunityString(parmContent);
@@ -163,6 +168,8 @@ public class SnmpEventInfo {
                 	setPrivProtocol(parmContent);
                 } else if (parmName.equals(EventConstants.PARM_SNMP_PROXY_HOST)) {
                 	setProxyHost(parmContent);
+                } else if (parmName.equals(EventConstants.PARM_TTL)) {
+                    setTTL(computeLongValue(parmContent));
                 }
             } catch (UnknownHostException e) {
                 LOG.error("SnmpEventInfo constructor", e);
@@ -456,10 +463,26 @@ public class SnmpEventInfo {
     	m_proxyHost = proxyHost;
     }
     
+    public String getLocation() {
+        return m_location;
+    }
+
+    public void setLocation(String location) {
+        this.m_location = location;
+    }
+
+    public Long getTTL() {
+        return m_ttl;
+    }
+
+    public void setTTL(Long ttl) {
+        m_ttl = ttl;
+    }
+
     /**
      * <p>getRange</p>
      *
-     * @return a {@link org.opennms.netmgt.config.common.Range} object.
+     * @return a {@link org.opennms.netmgt.config.snmp.Range} object.
      */
     public Range getRange() {
         if (isSpecific()) {
@@ -517,6 +540,8 @@ public class SnmpEventInfo {
 	    if (getTimeout() != 0) bldr.addParam(EventConstants.PARM_TIMEOUT, Integer.toString(getTimeout()));
 	    if (!StringUtils.isEmpty(getVersion())) bldr.addParam(EventConstants.PARM_VERSION, getVersion());
 	    if (!StringUtils.isEmpty(getWriteCommunityString())) bldr.addParam(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING, getWriteCommunityString());
+	    if (!StringUtils.isEmpty(getLocation())) bldr.addParam(EventConstants.PARM_SNMP_LOCATION, getLocation());
+        if (getTTL() != null) bldr.addParam(EventConstants.PARM_TTL, getTTL());
 	    
 	    return bldr.getEvent();
     }
@@ -537,7 +562,9 @@ public class SnmpEventInfo {
     	if (getMaxVarsPerPdu() != 0) definition.setMaxVarsPerPdu(Integer.valueOf(getMaxVarsPerPdu()));
     	if (getMaxRequestSize() != 0) definition.setMaxRequestSize(Integer.valueOf(getMaxRequestSize()));
     	if (StringUtils.isNotEmpty(getProxyHost())) definition.setProxyHost(getProxyHost());
-    	
+        if (StringUtils.isNotEmpty(getLocation())) definition.setLocation(getLocation());
+        if (getTTL() != null) definition.setTTL(getTTL());
+
         // version dependend parameters
         if (getVersion() != null && getVersion().equals("v3")) {
         	if (StringUtils.isNotEmpty(getAuthPassphrase())) definition.setAuthPassphrase(getAuthPassphrase());
@@ -572,6 +599,19 @@ public class SnmpEventInfo {
         }
         LOG.debug("createDef: created new Definition from: {}", this);
         return definition;
+    }
+
+    private static Long computeLongValue(String parmContent) throws IllegalArgumentException {
+        Long val = null;
+        if (parmContent != null) {
+            try {
+                val = Long.parseLong(parmContent);
+            } catch (NumberFormatException e) {
+                LOG.error("computeIntValue: parm value passed in the event isn't a valid number.", e);
+                throw new IllegalArgumentException(e.getLocalizedMessage());
+            }
+        }
+        return val;
     }
     
     @Override

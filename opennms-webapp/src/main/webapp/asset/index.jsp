@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -48,7 +48,7 @@
 
 <%
     Asset[] allAssets = this.model.getAllAssets();
-    ArrayList assetsList = new ArrayList();
+    ArrayList<Asset> assetsList = new ArrayList<>();
 
     for( int i=0; i < allAssets.length; i++ ) {
         if( !"".equals(allAssets[i].getAssetNumber()) ) {
@@ -63,35 +63,78 @@
     }
 %>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Assets" />
   <jsp:param name="headTitle" value="Assets" />
   <jsp:param name="location" value="asset" />
   <jsp:param name="breadcrumb" value="Assets" />
 </jsp:include>
 
-  <div class="TwoColLeft">
-    <h3>Search Asset Information</h3>
-    <div class="boxWrapper">
-      <form action="asset/nodelist.jsp" method="get">
-        <p align="right">Assets in category: 
-        <input type="hidden" name="column" value="category" />
-        <select name="searchvalue" size="1">
-          <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
-            <option><%=Asset.CATEGORIES[i]%></option> 
-          <% } %>
-        </select>
-        <input type="submit" value="Search" />
-      </form>
-      <ul class="plain">
-        <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
-      </ul>
+<div class="row">
+  <div class="col-md-6">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <span>Search Asset Information</span>
+          </div>
+          <div class="card-body">
+            <div>
+                <ul class="list-unstyled">
+                <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
+                </ul>
+            </div> <!-- row -->
+            <div>
+                <form role="form" class="form-group" action="asset/nodelist.jsp" method="get">
+                  <label for="input_searchvalue">Assets in category</label>
+                  <div class="input-group">
+                    <select class="form-control custom-select" id="input_searchvalue" name="searchvalue">
+                      <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
+                        <option><%=Asset.CATEGORIES[i]%></option>
+                      <% } %>
+                    </select>
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                    </div>
+                  </div>
+                  <input type="hidden" name="column" value="category" />
+                </form>
+            </div> <!-- row -->
+          </div> <!-- card-body -->
+        </div> <!-- panel -->
+      </div> <!-- column -->
+    </div> <!-- row -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <span>Assets with Asset Numbers</span>
+          </div>
+          <div class="card-body">
+            <ul class="list-unstyled mb-0" style="width:48%; margin-right:2%; float:left;">
+            <% for( int i=0; i < middle; i++ ) {%>
+              <%  Asset asset = (Asset)assetsList.get(i); %>
+              <li> <%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
+            <% } %>
+            </ul>
+            <ul class="list-unstyled mb-0" style="width:50%; float:left;">
+            <% for( int i=middle; i < assetCount; i++ ) {%>
+              <%  Asset asset = (Asset)assetsList.get(i); %>
+              <li><%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
+            <% } %>
+            </ul>
+          </div> <!-- card-body -->
+        </div> <!-- panel -->
+      </div>
     </div>
   </div>
 
-  <div class="TwoColRight">
-    <h3>Assets Inventory</h3>
-    <div class="boxWrapper">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <span>Assets Inventory</span>
+      </div>
+      <div class="card-body">
         <p>The OpenNMS system provides a means for you to easily track and share 
             important information about capital assets in your organization.  This 
             data, when coupled with the information about your network that the 
@@ -116,23 +159,9 @@
             asset numbers, simply click on the <b>List all nodes with asset information</b> 
             link.
         </p>
-      </div>
-  </div>
-  <hr />
-  <h3>Assets with asset numbers</h3>
-  <div class="boxWrapper">
-    <ul class="plain" style="width:48%; margin-right:2%; float:left;">
-    <% for( int i=0; i < middle; i++ ) {%>
-      <%  Asset asset = (Asset)assetsList.get(i); %>
-      <li> <%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
-    <% } %>
-    </ul>
-    <ul class="plain" style="width:50%; float:left;">
-    <% for( int i=middle; i < assetCount; i++ ) {%>
-      <%  Asset asset = (Asset)assetsList.get(i); %>
-      <li><%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
-    <% } %>
-    </ul>
-    <hr />
-  </div>
-<jsp:include page="/includes/footer.jsp" flush="false"/>
+       </div> <!-- card-body -->
+     </div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->
+
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

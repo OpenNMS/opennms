@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -37,6 +37,7 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.Fetch.FetchType;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,15 +47,17 @@ public class CriteriaBuilder {
 	
     private Class<?> m_class;
 
+    private String m_rootAlias;
+
     private OrderBuilder m_orderBuilder = new OrderBuilder();
 
-    private Set<Fetch> m_fetch = new LinkedHashSet<Fetch>();
+    private Set<Fetch> m_fetch = new LinkedHashSet<>();
 
     private AliasBuilder m_aliasBuilder = new AliasBuilder();
 
     private boolean m_distinct = false;
 
-    private Set<Restriction> m_restrictions = new LinkedHashSet<Restriction>();
+    private Set<Restriction> m_restrictions = new LinkedHashSet<>();
 
     private boolean m_negateNext = false;
 
@@ -67,11 +70,16 @@ public class CriteriaBuilder {
     private static final Restriction[] EMPTY_RESTRICTION_ARRAY = new Restriction[0];
 
     public CriteriaBuilder(final Class<?> clazz) {
+        this(clazz, null);
+    }
+
+    public CriteriaBuilder(final Class<?> clazz, final String rootAlias) {
         m_class = clazz;
+        m_rootAlias = rootAlias;
     }
 
     public Criteria toCriteria() {
-        final Criteria criteria = new Criteria(m_class);
+        final Criteria criteria = new Criteria(m_class, m_rootAlias);
         criteria.setOrders(m_orderBuilder.getOrderCollection());
         criteria.setAliases(m_aliasBuilder.getAliasCollection());
         criteria.setFetchTypes(m_fetch);
@@ -111,10 +119,14 @@ public class CriteriaBuilder {
         return alias(associationPath, alias, JoinType.LEFT_JOIN);
     }
 
+    public CriteriaBuilder alias(final Alias alias) {
+        m_aliasBuilder.alias(alias);
+        return this;
+    }
+
     public CriteriaBuilder alias(final String associationPath, final String alias) {
         return alias(associationPath, alias, JoinType.LEFT_JOIN);
     }
-
 
     public CriteriaBuilder createAlias(final String associationPath, final String alias) {
         return alias(associationPath, alias);
@@ -125,7 +137,11 @@ public class CriteriaBuilder {
     }
 
     public CriteriaBuilder alias(final String associationPath, final String alias, final JoinType type) {
-        m_aliasBuilder.alias(associationPath, alias, type);
+        return alias(associationPath, alias, type, null);
+    }
+
+    public CriteriaBuilder alias(final String associationPath, final String alias, final JoinType type, final Restriction joinCondition) {
+        m_aliasBuilder.alias(associationPath, alias, type, joinCondition);
         return this;
     }
 
@@ -180,7 +196,7 @@ public class CriteriaBuilder {
         return this;
     }
 
-    private boolean addRestriction(final Restriction restriction) {
+    protected boolean addRestriction(final Restriction restriction) {
         if (m_negateNext) {
             m_negateNext = false;
             return m_restrictions.add(Restrictions.not(restriction));
@@ -269,12 +285,18 @@ public class CriteriaBuilder {
         return this;
     }
 
-    public CriteriaBuilder sql(final Object sql) {
-        if (sql instanceof String) {
-            addRestriction(Restrictions.sql((String) sql));
-        } else {
-            LOG.warn("sql(): {} is not a string type, can't add", sql.getClass().getName());
-        }
+    public CriteriaBuilder sql(final String sql) {
+        addRestriction(Restrictions.sql((String) sql));
+        return this;
+    }
+
+    public CriteriaBuilder sql(final String sql, final Object parameter, final Type type) {
+        addRestriction(Restrictions.sql((String) sql, parameter, type));
+        return this;
+    }
+
+    public CriteriaBuilder sql(final String sql, final Object[] parameters, final Type[] types) {
+        addRestriction(Restrictions.sql((String) sql, parameters, types));
         return this;
     }
 
@@ -283,13 +305,13 @@ public class CriteriaBuilder {
         return this;
     }
 
-    public CriteriaBuilder and(final Restriction lhs, final Restriction rhs) {
-        addRestriction(Restrictions.and(lhs, rhs));
+    public CriteriaBuilder and(final Restriction... restrictions) {
+        addRestriction(Restrictions.and(restrictions));
         return this;
     }
 
-    public CriteriaBuilder or(final Restriction lhs, final Restriction rhs) {
-        final Restriction restriction = Restrictions.or(lhs, rhs);
+    public CriteriaBuilder or(final Restriction... restrictions) {
+        final Restriction restriction = Restrictions.or(restrictions);
         addRestriction(restriction);
         return this;
     }

@@ -1,154 +1,140 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Event definitions for traps from Redline Networks TX Web I/O Processor -->
-
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6213.2.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/redline/traps/vipStateUp</uei>
-	<event-label>REDLINE-TRAPv2-MIB defined trap event: vipStateUp</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that the current VIP state is up.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Redline Event: vipStateUp trap received&lt;/p&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6213.2.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/redline/traps/vipStateUp</uei>
+      <event-label>REDLINE-TRAPv2-MIB defined trap event: vipStateUp</event-label>
+      <descr>&lt;p>This trap indicates that the current VIP state is up.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Redline Event: vipStateUp trap received&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6213.2.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/redline/traps/vipStateDown</uei>
-	<event-label>REDLINE-TRAPv2-MIB defined trap event: vipStateDown</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that the current VIP state is down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Redline Event: vipStateDown trap received&lt;/p&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6213.2.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/redline/traps/vipStateDown</uei>
+      <event-label>REDLINE-TRAPv2-MIB defined trap event: vipStateDown</event-label>
+      <descr>&lt;p>This trap indicates that the current VIP state is down.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Redline Event: vipStateDown trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6213.2.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/redline/traps/targetServerStateUp</uei>
-	<event-label>REDLINE-TRAPv2-MIB defined trap event: targetServerStateUp</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that the current target server state is up.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Redline Event: targetServerStateUp trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6213.2.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/redline/traps/targetServerStateUp</uei>
+      <event-label>REDLINE-TRAPv2-MIB defined trap event: targetServerStateUp</event-label>
+      <descr>&lt;p>This trap indicates that the current target server state is up.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Redline Event: targetServerStateUp trap received&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6213.2.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/redline/traps/targetServerStateDown</uei>
-	<event-label>REDLINE-TRAPv2-MIB defined trap event: targetServerStateDown</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that the current target server state is down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Redline Event: targetServerStateDown trap received&lt;/p&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6213.2.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/redline/traps/targetServerStateDown</uei>
+      <event-label>REDLINE-TRAPv2-MIB defined trap event: targetServerStateDown</event-label>
+      <descr>&lt;p>This trap indicates that the current target server state is down.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Redline Event: targetServerStateDown trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6213.2.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/redline/traps/failoverStateActive</uei>
-	<event-label>REDLINE-TRAPv2-MIB defined trap event: failoverStateActive</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that the redline accelerator is running in Active mode.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Redline Event: failoverStateActive trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6213.2.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/redline/traps/failoverStateActive</uei>
+      <event-label>REDLINE-TRAPv2-MIB defined trap event: failoverStateActive</event-label>
+      <descr>&lt;p>This trap indicates that the redline accelerator is running in Active mode.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Redline Event: failoverStateActive trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.6213.2.5</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/redline/traps/connectionThresholdTrap</uei>
-	<event-label>REDLINE-TRAPv2-MIB defined trap event: connectionThresholdTrap</event-label>
-	<descr>
-&lt;p&gt;This trap indicates that user defined maximum connection threshold limit is reached.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Redline Event: connectionThresholdTrap trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6213.2.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/redline/traps/connectionThresholdTrap</uei>
+      <event-label>REDLINE-TRAPv2-MIB defined trap event: connectionThresholdTrap</event-label>
+      <descr>&lt;p>This trap indicates that user defined maximum connection threshold limit is reached.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Redline Event: connectionThresholdTrap trap received&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
+      <severity>Warning</severity>
+   </event>
 </events>

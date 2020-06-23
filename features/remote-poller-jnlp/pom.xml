@@ -3,20 +3,61 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>1.13.0-SNAPSHOT</version>
+    <version>25.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Remote Poller (JNLP)</name>
+  <name>OpenNMS :: Features :: Remote Poller :: JNLP</name>
   <url>http://maven.apache.org</url>
+  <properties>
+    <webstartPluginVersion>1.0-beta-7-ONMS-20140424</webstartPluginVersion>
+  </properties>
+  <profiles>
+    <profile>
+      <id>run-expensive-tasks</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>webstart-maven-plugin</artifactId>
+            <version>${webstartPluginVersion}</version>
+            <configuration>
+              <verifyjar>false</verifyjar>
+              <canUnsign>true</canUnsign>
+              <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
+              <sign>
+                <keystore>${webstart.keystore}</keystore>
+                <keypass>${webstart.keypass}</keypass>
+                <storepass>${webstart.storepass}</storepass>
+                <alias>${webstart.keyalias}</alias>
+                <dnameCn>${webstart.dnameCn}</dnameCn>
+                <verify>false</verify>
+              </sign>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <build>
     <plugins>
+       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Permissions>all-permissions</Permissions>
+              <Codebase>*</Codebase>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.4</version>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.reporting</groupId>
@@ -71,9 +112,127 @@
         </executions>
       </plugin>
       <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/jnlp.xml</descriptor>
+          </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
+          <tarLongFileMode>posix</tarLongFileMode>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>webstart-maven-plugin</artifactId>
-        <version>1.0-beta-3</version>
+        <version>${webstartPluginVersion}</version>
+        <executions>
+          <execution>
+            <id>gui-app</id>
+            <goals>
+              <goal>jnlp-download-servlet</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <jnlpFiles>
+                <jnlpFile>
+                  <inputTemplate>app.vm</inputTemplate>
+                  <outputFilename>app.jnlp</outputFilename>
+                  <jarResources>
+                    <jarResource>
+                      <groupId>org.opennms.features</groupId>
+                      <artifactId>org.opennms.features.remote-poller</artifactId>
+                      <version>${project.version}</version>
+                      <mainClass>org.opennms.poller.remote.Main</mainClass>
+                    </jarResource>
+                  </jarResources>
+                </jnlpFile>
+              </jnlpFiles>
+            </configuration>
+          </execution>
+          <execution>
+            <id>scan-report</id>
+            <goals>
+              <goal>jnlp-download-servlet</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <jnlpFiles>
+                <jnlpFile>
+                  <inputTemplate>scan-report.vm</inputTemplate>
+                  <outputFilename>scan-report.jnlp</outputFilename>
+                  <jarResources>
+                    <jarResource>
+                      <groupId>org.opennms.features</groupId>
+                      <artifactId>org.opennms.features.remote-poller</artifactId>
+                      <version>${project.version}</version>
+                      <mainClass>org.opennms.poller.remote.Main</mainClass>
+                    </jarResource>
+                  </jarResources>
+                </jnlpFile>
+              </jnlpFiles>
+            </configuration>
+          </execution>
+          <execution>
+            <id>headless-app</id>
+            <goals>
+              <goal>jnlp-download-servlet</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <jnlpFiles>
+                <jnlpFile>
+                  <inputTemplate>headless.vm</inputTemplate>
+                  <outputFilename>headless.jnlp</outputFilename>
+                  <jarResources>
+                    <jarResource>
+                      <groupId>org.opennms.features</groupId>
+                      <artifactId>org.opennms.features.remote-poller</artifactId>
+                      <version>${project.version}</version>
+                      <mainClass>org.opennms.poller.remote.Main</mainClass>
+                    </jarResource>
+                  </jarResources>
+                </jnlpFile>
+              </jnlpFiles>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <templateDirectory>src/main/jnlp</templateDirectory>
+          <excludeTransitive>false</excludeTransitive>
+          <outputJarVersions>true</outputJarVersions>
+          <verbose>true</verbose>
+          <updateManifestEntries>
+            <!--
+              Application name that is displayed on the Security Warning
+              when first starting the application
+            -->
+            <Application-Name>OpenNMS Remote Poller</Application-Name>
+
+            <!-- Allow libraries loaded from any source -->
+            <!-- <Application-Library-Allowable-Codebase>*</Application-Library-Allowable-Codebase> -->
+
+            <!-- Allow loading the application from any URL -->
+            <Codebase>*</Codebase>
+
+            <!-- Run in all-permissions mode instead of sandboxed mode -->
+            <Permissions>all-permissions</Permissions>
+
+            <!-- Don't load any unsigned classes -->
+            <!-- <Trusted-Only>true</Trusted-Only> -->
+
+            <!-- Allow loading classes from sandboxed libraries -->
+            <!-- <Trusted-Library>true</Trusted-Library> -->
+          </updateManifestEntries>
+        </configuration>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.reporting</groupId>
@@ -107,88 +266,61 @@
             <artifactId>xml-apis</artifactId>
             <version>${xmlApisVersion}</version>
           </dependency>
+          <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>keytool-api-1.7</artifactId>
+            <version>1.4</version>
+          </dependency>
         </dependencies>
-        <executions>
-          <execution>
-            <id>gui-app</id>
-            <goals>
-              <goal>jnlp-download-servlet</goal>
-            </goals>
-            <phase>compile</phase>
-            <configuration>
-              <jnlpFiles>
-                <jnlpFile>
-                  <templateFilename>app.vm</templateFilename>
-                  <outputFilename>app.jnlp</outputFilename>
-                  <jarResources>
-                    <jarResource>
-                      <groupId>org.opennms.features</groupId>
-                      <artifactId>org.opennms.features.remote-poller</artifactId>
-                      <version>${project.version}</version>
-                      <mainClass>org.opennms.poller.remote.Main</mainClass>
-                    </jarResource>
-                  </jarResources>
-                </jnlpFile>
-              </jnlpFiles>
-            </configuration>
-          </execution>
-          <execution>
-            <id>headless-app</id>
-            <goals>
-              <goal>jnlp-download-servlet</goal>
-            </goals>
-            <phase>compile</phase>
-            <configuration>
-              <jnlpFiles>
-                <jnlpFile>
-                  <templateFilename>headless.vm</templateFilename>
-                  <outputFilename>headless.jnlp</outputFilename>
-                  <jarResources>
-                    <jarResource>
-                      <groupId>org.opennms.features</groupId>
-                      <artifactId>org.opennms.features.remote-poller</artifactId>
-                      <version>${project.version}</version>
-                      <mainClass>org.opennms.poller.remote.Main</mainClass>
-                    </jarResource>
-                  </jarResources>
-                </jnlpFile>
-              </jnlpFiles>
-            </configuration>
-          </execution>
-        </executions>
-        <configuration>
-          <templateDirectory>src/main/jnlp</templateDirectory>
-          <outputJarVersions>false</outputJarVersions>
-          <verbose>false</verbose>
-          <verifyjar>true</verifyjar>
-          <sign>
-            <keystore>${webstart.keystore}</keystore>
-            <keypass>${webstart.keypass}</keypass>
-            <storepass>${webstart.storepass}</storepass>
-            <alias>${webstart.keyalias}</alias>
-            <dnameCn>${webstart.dnameCn}</dnameCn>
-            <dnameCn>${webstart.dnameCn}</dnameCn>
-          </sign>
-        </configuration>
       </plugin>
+      <!-- Export the certificate that was used to sign the JNLP app in PEM format -->
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/jnlp.xml</descriptor>
-          </descriptors>
-        </configuration>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>keytool-maven-plugin</artifactId>
+        <version>1.5</version>
         <executions>
           <execution>
-            <phase>package</phase>
+            <id>exportCertificate</id>
             <goals>
-              <goal>single</goal>
+              <goal>exportCertificate</goal>
             </goals>
+            <phase>compile</phase>
+            <configuration>
+              <keystore>${webstart.keystore}</keystore>
+              <storepass>${webstart.storepass}</storepass>
+              <alias>${webstart.keyalias}</alias>
+              <rfc>true</rfc>
+              <file>${project.build.directory}/jnlp/jnlp.pem</file>
+            </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin> 
+        <artifactId>maven-clean-plugin</artifactId> 
+        <executions> 
+          <execution> 
+            <id>cleanup-assembly</id> 
+            <phase>post-integration-test</phase> 
+            <goals> 
+              <goal>clean</goal> 
+            </goals> 
+            <configuration> 
+              <excludeDefaultDirectories>true</excludeDefaultDirectories> 
+              <filesets> 
+                <fileset> 
+                  <directory>${project.build.directory}/jnlp</directory> 
+                </fileset> 
+                <fileset> 
+                  <directory>${project.build.directory}/${project.build.finalName}</directory> 
+                </fileset> 
+              </filesets> 
+            </configuration> 
+          </execution> 
+        </executions> 
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
     <dependency>
       <groupId>org.opennms.core.build</groupId>
@@ -199,4 +331,15 @@
       <artifactId>org.opennms.features.remote-poller</artifactId>
     </dependency>
   </dependencies>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </pluginRepository>
+  </pluginRepositories>
+
 </project>

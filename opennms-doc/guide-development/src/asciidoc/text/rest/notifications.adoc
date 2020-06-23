@@ -1,0 +1,16 @@
+
+==== Notifications
+Note: the default offset is 0, the default limit is 10 results.
+To get all results, use `limit=0` as a parameter on the URL (ie, `GET /events?limit=0`).
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource               | Description
+| `/notifications`       | Get a list of notifications.
+| `/notifications/count` | Get the number of notifications. (Returns plaintext, rather than _XML_ or _JSON_.)
+| `/notifications/{id}`  | Get the notification specified by the given _ID_.
+|===
+
+To acknowledge or unacknowledge a notification, use the `acks` endpoint -- see <<rest-api-acknowledgements, Acknowledgements>>.

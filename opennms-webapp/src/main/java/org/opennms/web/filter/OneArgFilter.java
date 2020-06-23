@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -62,14 +62,14 @@ public abstract class OneArgFilter<T> extends BaseFilter<T> {
      *
      * @return a T object.
      */
-    final public T getValue() { return m_value; };
+    public final T getValue() { return m_value; };
 
     /**
      * <p>getSQLTemplate</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    abstract public String getSQLTemplate();
+    public abstract String getSQLTemplate();
     
     /**
      * <p>getBoundValue</p>
@@ -83,27 +83,27 @@ public abstract class OneArgFilter<T> extends BaseFilter<T> {
 
     /** {@inheritDoc} */
     @Override
-    final public int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
+    public final int bindParam(PreparedStatement ps, int parameterIndex) throws SQLException {
         bindValue(ps, parameterIndex, getBoundValue(m_value));
         return 1;
     }
     
     /** {@inheritDoc} */
     @Override
-    final public String getValueString() {
+    public final String getValueString() {
         return getValueAsString(m_value);
     }
     
 
     /** {@inheritDoc} */
     @Override
-    final public String getParamSql() {
+    public final String getParamSql() {
         return String.format(getSQLTemplate(), "?");
     }
 
     /** {@inheritDoc} */
     @Override
-    final public String getSql() {
+    public final String getSql() {
         return String.format(getSQLTemplate(), formatValue(m_value));
     }
     

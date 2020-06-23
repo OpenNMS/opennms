@@ -2,22 +2,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -29,14 +29,9 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true"
-	import="org.opennms.netmgt.config.*,
-		java.util.*,
-		org.opennms.netmgt.config.users.*
-	"
-%>
+<%@page language="java" contentType="text/html" session="true"%>
 
-<jsp:include page="/includes/header.jsp" flush="false">
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="New User" />
 	<jsp:param name="headTitle" value="New" />
 	<jsp:param name="headTitle" value="Users" />
@@ -72,41 +67,37 @@
   }    
   function cancelUser()
   {
-      document.newUserForm.action="admin/userGroupView/users/list.jsp";
-      document.newUserForm.submit();
+      window.location.href = "admin/userGroupView/users/list.jsp";
   }
-
 </script>
 
-<%if ("redo".equals(request.getParameter("action"))) { %>
-  <h3>The user <%=request.getParameter("userID")%> already exists.
-    Please type in a different user ID.</h3>
-<%} else { %>
-  <h3>Please enter a user ID and password below</h3>
-<%}%>
+<div class="card">
+  <div class="card-header">
+    <%if ("redo".equals(request.getParameter("action"))) { %>
+      <span>The user <%=request.getParameter("userID")%> already exists.
+        Please type in a different user ID.</span>
+    <%} else { %>
+      <span>Please enter a user ID and password below</span>
+    <%}%>
+  </div>
+  <div class="card-body">
+    <form class="form" role="form" id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
+      <div class="form-group">
+        <label for="userID" class="">User ID</label>
+        <input id="userID" type="text" name="userID" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="pass1" class="">Password</label>
+        <input id="pass1" type="password" name="pass1" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="pass2" class="">Confirm Password</label>
+        <input id="pass2" type="password" name="pass2" class="form-control">
+      </div>
+      <button type="submit" class="btn btn-secondary">OK</button>
+      <button type="button" class="btn btn-secondary" onclick="cancelUser()">Cancel</button>
+    </form>
+  </div> <!-- card-body -->
+</div> <!-- panel -->
 
-<form id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
-  <table>
-    <tr>
-      <td width="10%"><label id="userIDLabel" for="userID">User ID:</label></td>
-      <td width="100%"><input id="userID" type="text" name="userID"/></td>
-    </tr>
-
-    <tr>
-      <td width="10%"><label id="pass1Label" for="password1">Password:</label></td>
-      <td width="100%"><input id="pass1" type="password" name="pass1"/></td>
-    </tr>
-
-    <tr>
-      <td width="10%"><label id="pass2Label" for="password2">Confirm Password:</label></td>
-      <td width="100%"><input id="pass2" type="password" name="pass2"/></td>
-    </tr>
-
-    <tr>
-      <td><input id="doOK" type="submit" value="OK"/></td>
-      <td><input id="doCancel" type="button" value="Cancel" onclick="cancelUser()"/></td>
-    </tr>
-</table>
-</form>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

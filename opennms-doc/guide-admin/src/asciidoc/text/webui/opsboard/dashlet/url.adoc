@@ -1,0 +1,12 @@
+
+===== URL
+
+This _Dashlet_ shows the content of a web page or other web application, e.g. other monitoring systems by a given URL.
+
+[options="autowidth"]
+|===
+| Boost support | false
+| `password`    | Optional password if a basic authentication is required
+| `url`         | URL to the web application or web page
+| `username`    | Optional username if a basic authentication is required
+|===

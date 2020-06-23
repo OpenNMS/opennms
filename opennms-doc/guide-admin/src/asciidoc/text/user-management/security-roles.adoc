@@ -1,0 +1,61 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-role-user-management-roles]]
+=== Security Roles
+
+A _Security Roles_ is a set of permissions and can be assigned to an _User_.
+They regulate access to the Web User Interface and the _ReST API_ to exchange monitoring and inventory information.
+ifndef::opennms-prime[]
+In case of a distributed installation, the _Minion_ or _Remote Poller_ instances interact with _{opennms-product-name}_ and require specific permissions which are defined in the _Security Roles_ _ROLE_MINION_ and _ROLE_REMOTING_.
+endif::opennms-prime[]
+ifdef::opennms-prime[]
+In case of a distributed installation, the _Remote Poller_ instances interact with _{opennms-product-name}_ and require specific permissions which are defined in the _Security Role_ _ROLE_REMOTING_.
+endif::opennms-prime[]
+The following _Security Roles_ are available:
+
+.Functions and existing system roles in _{opennms-product-name}_
+[options="header, autowidth"]
+|===
+| Security Role Name  | Description
+| _anyone_            | In case the `opennms-webapp-remoting` package is installed, any user can download the _Java Webstart_ installation package for the remote poller from http://opennms.server:8980/opennms-remoting/webstart/app.jnlp.
+| _ROLE_ANONYMOUS_    | Allows _HTTP OPTIONS_ request to show allowed HTTP methods on a ReST resources and the login and logout page of the Web User Interface.
+| _ROLE_ADMIN_        | Permissions to create, read, update and delete in the Web User Interface and the _ReST API_.
+| _ROLE_ASSET_EDITOR_ | Permissions to just update the asset records from nodes.
+| _ROLE_DASHBOARD_    | Allow users to just have access to the _Dashboard_.
+| _ROLE_DELEGATE_     | Allows actions (such as acknowledging an alarm) to be performed on behalf of another user.
+| _ROLE_JMX_          | Allows retrieving JMX metrics but does not allow executing MBeans of the _{opennms-product-name}_ JVM, even if they just return simple values.
+ifndef::opennms-prime[]
+| _ROLE_MINION_       | Minimal amount of permissions required for a _Minion_ to operate.
+endif::opennms-prime[]
+| _ROLE_MOBILE_       | Allow user to use _OpenNMS COMPASS_ mobile application to acknowledge _Alarms_ and _Notifications_ via the ReST API.
+| _ROLE_PROVISION_    | Allow user to use the _Provisioning System_ and configure _SNMP_ in _{opennms-product-name}_ to access management information from devices.
+| _ROLE_READONLY_     | Limited to just read information in the Web User Interface and are no possibility to change _Alarm_ states or _Notifications_.
+| _ROLE_REMOTING_     | Permissions to allow access from a _Remote Poller_ instance to exchange monitoring information.
+| _ROLE_REST_         | Allow users interact with the whole _ReST API_ of _{opennms-product-name}_
+| _ROLE_RTC_          | Exchange information with the _{opennms-product-name}_ _Real-Time Console_ for availability calculations.
+| _ROLE_USER_         | Default permissions of a new created user to interact with the Web User Interface which allow to escalate and acknowledge _Alarms_ and _Notifications_.
+|===
+
+.How to manage _Security Roles_ for _Users_:
+
+. Login as a *User* with administrative permissions
+. Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name
+. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*
+. Modify an existing *User* by clicking the modify icon next to the *User*
+. Select the *Role* from *Available Roles* in the *Security Roles* section
+. Use *Add* and *Remove* to assign or remove the *Security Role* from the *User*
+. Click *Finish* to persist and apply the Changes
+. *Logout* and *Login* to apply the new _Security Role_ settings
+
+.How to add custom roles
+
+* Create a file called `$OPENNMS_HOME/etc/security-roles.properties`.
+* Add a property called `roles`, and for its value, a comma separated list of the custom roles, for example:
+```
+roles=operator,stage
+```
+* After following the procedure to associate the security roles with users, the new custom roles will be available as shown on the following image:
+
+image:webui/users/custom-roles.png[]

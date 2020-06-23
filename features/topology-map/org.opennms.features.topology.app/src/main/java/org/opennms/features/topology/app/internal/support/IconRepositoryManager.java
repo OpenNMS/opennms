@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,55 +28,33 @@
 
 package org.opennms.features.topology.app.internal.support;
 
-import java.util.*;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.opennms.features.topology.api.ConfigurableIconRepository;
+import org.opennms.features.topology.api.IconManager;
 import org.opennms.features.topology.api.IconRepository;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.slf4j.LoggerFactory;
 
-public class IconRepositoryManager {
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.vaadin.server.Page;
 
-    private class ConfigIconRepository implements IconRepository{
+public class IconRepositoryManager implements IconManager {
 
-        private Map<String, String> m_iconMap = new HashMap<String, String>();
-
-        @Override
-        public boolean contains(String type) {
-            return m_iconMap.containsKey(type);
-        }
-
-        @Override
-        public String getSVGIconId(String type) {
-            return m_iconMap.get(type);
-        }
-
-        @Override
-        public List<String> getSVGIconFiles() {
-            return null;
-        }
-
-        public void addIconConfig(String key, String url) {
-            if(m_iconMap.containsKey(key)) {
-                m_iconMap.remove(key);
-            }
-            m_iconMap.put(key, url);
-        }
-
-    }
-
-    private List<IconRepository> m_iconRepos = new ArrayList<IconRepository>();
-    private ConfigIconRepository m_configRepo = new ConfigIconRepository();
-
-    public IconRepositoryManager() {
-        m_iconRepos.add(m_configRepo);
-    }
-
-    public void addRepository(IconRepository iconRepo) {
-        m_iconRepos.add(iconRepo);
-    }
+    private Set<IconRepository> m_iconRepositories = Sets.newHashSet();
 
     public synchronized void onBind(IconRepository iconRepo) {
         try {
-            addRepository(iconRepo);
+            m_iconRepositories.add(iconRepo);
         } catch (Throwable e) {
             LoggerFactory.getLogger(this.getClass()).warn("Exception during onBind()", e);
         }
@@ -84,14 +62,30 @@ public class IconRepositoryManager {
 
     public synchronized void onUnbind(IconRepository iconRepo) {
         try {
-            m_iconRepos.remove(iconRepo);
+            m_iconRepositories.remove(iconRepo);
         } catch (Throwable e) {
             LoggerFactory.getLogger(this.getClass()).warn("Exception during onUnbind()", e);
         }
     }
 
-    public String lookupSVGIconIdForExactKey(String key) {
-        for(IconRepository iconRepo : m_iconRepos) {
+    public synchronized void onBind(ConfigurableIconRepository iconRepo) {
+        try {
+            m_iconRepositories.add(iconRepo);
+        } catch (Throwable e) {
+            LoggerFactory.getLogger(this.getClass()).warn("Exception during onBind()", e);
+        }
+    }
+
+    public synchronized void onUnbind(ConfigurableIconRepository iconRepo) {
+        try {
+            m_iconRepositories.remove(iconRepo);
+        } catch (Throwable e) {
+            LoggerFactory.getLogger(this.getClass()).warn("Exception during onUnbind()", e);
+        }
+    }
+
+    private synchronized String lookupSVGIconIdForExactKey(String key) {
+        for(IconRepository iconRepo : m_iconRepositories) {
             if(iconRepo.contains(key)) {
                 return iconRepo.getSVGIconId(key);
             }
@@ -99,59 +93,111 @@ public class IconRepositoryManager {
         return null;
     }
 
-    public String findSVGIconIdByKey(String key) {
+    private String createIconKey(Vertex vertex) {
+        return String.format("%s.%s", vertex.getNamespace(), vertex.getId());
+    }
 
-        if(key != null) {
+    @Override
+    public String setIconMapping(Vertex vertex, String newIconId) {
+        // We look for a IconRepository with the old icon key as mapping
+        final ConfigurableIconRepository iconRepository = findRepositoryByIconKey(vertex.getIconKey());
+        final String oldIconId = getSVGIconId(vertex.getIconKey());
+        if (iconRepository != null && !oldIconId.equals(newIconId)) {
+            String iconKey = createIconKey(vertex);
+            // now we set the new mapping: vertex-id => icon-id
+            iconRepository.addIconMapping(iconKey, newIconId);
+            iconRepository.save();
+            return iconKey;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean removeIconMapping(Vertex vertex) {
+        // We look for a IconRepository with the old icon key as mapping
+        final String iconKey = createIconKey(vertex);
+        final ConfigurableIconRepository iconRepository = findRepositoryByIconKey(iconKey);
+        if (iconRepository != null) { // we may not have a icon repository due to no custom mapping
+            iconRepository.removeIconMapping(iconKey);
+            iconRepository.save();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String getSVGIconId(Vertex vertex) {
+        // If there is a direct mapping for the vertex, use that mapping (overwrites icon key)
+        final String iconId = lookupSVGIconIdForExactKey(createIconKey(vertex));
+        if (iconId != null) {
+            return iconId;
+        }
+        // Otherwise resolve the icon key assigned by the topology provider for that vertex
+        return getSVGIconId(vertex.getIconKey());
+    }
+
+    @Override
+    public String getSVGIconId(String iconKey) {
+        if(iconKey != null) {
         	// if the exact key is configured then use it
-        	String iconUrl = lookupSVGIconIdForExactKey(key);
+        	String iconUrl = lookupSVGIconIdForExactKey(iconKey);
         	if (iconUrl != null) {
         		return iconUrl;
         	}
-
-        	//
-            int lastColon = key.lastIndexOf(':');
-            if ("default".equals(key)) {
+            if ("default".equals(iconKey)) {
             	// we got here an no default icon was registered!!
-            	return "generic";
-            } else if (lastColon == -1) {
+                LoggerFactory.getLogger(this.getClass()).warn("No icon with key 'default' found.");
+                return null;
+            }
+            int lastColon = iconKey.lastIndexOf('.');
+            if (lastColon == -1) {
             	// no colons in key so just return 'default' icon
-            	return findSVGIconIdByKey("default");
+            	return getSVGIconId("default");
             } else {
             	// remove the segment following the last colon
-            	String newPrefix = key.substring(0, lastColon);
-            	String suffix = key.substring(lastColon+1);
-            	if (!"default".equals(suffix)) {
-            		// see if there an icon registered as <prefix>:default
-            		return findSVGIconIdByKey(newPrefix + ":default");
-            	} else {
-            		// if we have tried the :default and got all the way here just try the prefix
-            		return findSVGIconIdByKey(newPrefix);
-            	}
+            	String newKey = iconKey.substring(0, lastColon);
+                return getSVGIconId(newKey);
             }
-        }else {
-            return findSVGIconIdByKey("default");
-        }
-
-    }
-
-    public void updateIconConfig(Dictionary<String,?> properties) {
-        Enumeration<String> keys = properties.keys();
-
-        while(keys.hasMoreElements()) {
-            String key = keys.nextElement();
-            String url = (String)properties.get(key);
-            m_configRepo.addIconConfig(key, url);
+        } else {
+            return getSVGIconId("default");
         }
     }
 
-    public List<String> getSVGIconDefs() {
-        List<String> svgDefList = new ArrayList<String>();
-        for(IconRepository repo : m_iconRepos) {
-            if (repo.getSVGIconFiles() != null) {
-                svgDefList.addAll(repo.getSVGIconFiles());
+    @Override
+    public List<String> getSVGIconFiles() {
+        List<String> svgUrls = Lists.newArrayList();
+        try {
+            URI location = Page.getCurrent().getLocation();
+            URL url = new URL(location.getScheme(), location.getHost(), location.getPort(), "/opennms");
+            Path path = Paths.get(System.getProperty("opennms.home", ""), "jetty-webapps", "opennms", "svg");
+            File[] files = path.toFile().listFiles((file) -> file.isFile() && file.getName().endsWith(".svg"));
+            for (File eachFile : files) {
+                svgUrls.add(String.format("%s/svg/%s", url, eachFile.getName()));
             }
-
+        } catch (MalformedURLException e) {
+            LoggerFactory.getLogger(this.getClass()).error("Error while loading SVG definitions", e);
         }
-        return svgDefList;
+        return svgUrls;
+    }
+
+    @Override
+    public synchronized ConfigurableIconRepository findRepositoryByIconKey(String iconKey) {
+        // only consider configurable Repositories
+        final List<ConfigurableIconRepository> configurableIconRepositories = m_iconRepositories.stream()
+                .filter(e -> e instanceof ConfigurableIconRepository)
+                .map(e -> (ConfigurableIconRepository) e)
+                .collect(Collectors.toList());
+        // look up the key in each repository
+        for (ConfigurableIconRepository eachRepository : configurableIconRepositories) {
+            if (eachRepository.contains(iconKey)) {
+                return eachRepository;
+            }
+        }
+        // Key not found, yet. If reducible, reduce key and try again
+        if (iconKey != null && iconKey.lastIndexOf('.') > 0) {
+            return findRepositoryByIconKey(iconKey.substring(0, iconKey.lastIndexOf('.')));
+        }
+        // No Repository with the iconKey exists
+        return null;
     }
 }

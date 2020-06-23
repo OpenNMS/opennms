@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,86 +28,71 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import java.io.InputStream;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.Authenticator;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
-import java.net.URL;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.config.ServiceConfigFactory;
-import org.opennms.netmgt.config.service.Argument;
-import org.opennms.netmgt.config.service.Invoke;
-import org.opennms.netmgt.config.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.tools.attach.AttachNotSupportedException;
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
+
 /**
- * <p>
- * The Manager is responsible for launching/starting all services in the VM
- * that it is started for. The Manager operates in two modes, normal and
- * server
- * </p>
- * <p>
- * normal mode: In the normal mode, the Manager starts all services configured
- * for its VM in the service-configuration.xml and starts listening for
- * control events on the 'control-broadcast' JMS topic for stop control
- * messages for itself
- * </p>
- * <p>
- * server mode: In the server mode, the Manager starts up and listens on the
- * 'control-broadcast' JMS topic for 'start' control messages for services in
- * its VM and a stop control message for itself. When a start for a service is
- * received, it launches only that service and sends a successful 'running' or
- * an 'error' response to the Controller
- * </p>
- * <p>
- * <strong>Note: </strong>The Manager is NOT intelligent - if it receives a
- * stop control event, it will exit - does not check to see if the services
- * its started are all stopped
- * <p>
+ * <p>This {@link Controller} class is used to interact with a Manager
+ * MBean running inside an OpenNMS JMX service. This class can invoke operations
+ * on that MBean and request status information from it. It is used to execute
+ * shell operations to control the lifecycle of the OpenNMS process from init.d
+ * or systemd scripts.
  *
+ * @author Seth
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  */
 public class Controller {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
-	
-    private static final String JMX_HTTP_ADAPTER_NAME = ":Name=HttpAdaptorMgmt";
+
+    private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
 
     /**
-     * Default invoker URL. This is used for getting status information from a
+     * The system property used to determine the JMX management agent URI for the
+     * JVM that we are attaching to. This is used for getting status information from a
      * running OpenNMS instance.
+     * 
+     * @see https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html
      */
-    public static final String DEFAULT_INVOKER_URL =
-        "http://127.0.0.1:8181/invoke?objectname=OpenNMS%3AName=Manager";
+    public static final String CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress";
 
     /**
-     * The log4j category used to log debug messsages and statements.
+     * The log4j category used to log debug messages and statements.
      */
     private static final String LOG4J_CATEGORY = "manager";
-    
+
     /**
-     * Default read timeout for HTTP requests in milliseconds.
-     * The default is zero which means wait forever.
+     * This is the name of the JVM that we try to connect to when we are invoking
+     * operations or checking status. If the name of the OpenNMS process changes then
+     * this value might change. Run jconsole to see the list of available JVM display 
+     * names on the system.
      */
-    private static final int DEFAULT_HTTP_REQUEST_READ_TIMEOUT = 0;
-    
+    private static final String OPENNMS_JVM_DISPLAY_NAME_SUBSTRING = "opennms_bootstrap.jar start";
+
+    public static final String DEFAULT_JMX_RMI_URL = "service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi";
+
     private boolean m_verbose = false;
-    private String m_invokeUrl = DEFAULT_INVOKER_URL;
-    private Authenticator m_authenticator;
-    private int m_httpRequestReadTimeout = DEFAULT_HTTP_REQUEST_READ_TIMEOUT;
-    
-    /**
-     * <p>Constructor for Controller.</p>
-     */
-    public Controller() {
-        
-    }
+
+    private String m_jmxUrl = DEFAULT_JMX_RMI_URL;
+
+    private String m_pid = null;
 
     /**
      * <p>main</p>
@@ -125,22 +110,26 @@ public class Controller {
                 System.out.println("Usage: java org.opennms.netmgt.vmmgr.Controller "
                                    + "[<options>] <command>");
                 System.out.println("Accepted options:");
+                System.out.println("        -p <pid>        PID of the OpenNMS process. Used when the process cannot be autodetected.");
                 System.out.println("        -t <timeout>    HTTP connection timeout in seconds.  Defaults to 30.");
-                System.out.println("        -u <URL>        Alternate invoker URL.");
+                System.out.println("        -u <URL>        JMX RMI URL. Used when we cannot automatically attach to the OpenNMS JVM.");
                 System.out.println("        -v              Verbose mode.");
                 System.out.println("");
-                System.out.println("Accepted commands: start, stop, status");
+                System.out.println("Accepted commands: start, stop, status, check, dumpThreads, exit");
                 System.out.println("");
-                System.out.println("The default invoker URL is: " + DEFAULT_INVOKER_URL);
+                System.out.println("The default JMX RMI URL is: " + DEFAULT_JMX_RMI_URL);
                 System.exit(0);
+            } else if (argv[i].equals("-p")) {
+                c.setPid(argv[i + 1]);
+                i++;
             } else if (argv[i].equals("-t")) {
-                c.setHttpRequestReadTimeout(Integer.parseInt(argv[i + 1]) * 1000);
+                c.setRmiHandshakeTimeout(Integer.parseInt(argv[i + 1]) * 1000);
+                i++;
+            } else if (argv[i].equals("-u")) {
+                c.setJmxRmiUrl(argv[i + 1]);
                 i++;
             } else if (argv[i].equals("-v")) {
                 c.setVerbose(true);
-            } else if (argv[i].equals("-u")) {
-                c.setInvokeUrl(argv[i + 1]);
-                i++;
             } else if (i != (argv.length - 1)) {
                 System.err.println("Invalid command-line option: \"" + argv[i] + "\".  Use \"-h\" option for help.");
                 System.exit(1);
@@ -154,8 +143,6 @@ public class Controller {
                                + " option for help");
             System.exit(1);
         }
-        
-        c.setAuthenticator(c.createAuthenticatorUsingConfigCredentials());
 
         String command = argv[argv.length - 1];
 
@@ -167,6 +154,8 @@ public class Controller {
             System.exit(c.status());
         } else if ("check".equals(command)) {
             System.exit(c.check());
+        } else if ("dumpThreads".equals(command)) {
+            System.exit(c.dumpThreads());
         } else if ("exit".equals(command)) {
             System.exit(c.exit());
         } else {
@@ -199,26 +188,15 @@ public class Controller {
      * @return a int.
      */
     public int status() {
-        Authenticator.setDefault(getAuthenticator());
 
-        StatusGetter statusGetter = new StatusGetter();
-        statusGetter.setVerbose(isVerbose());
-        
-        String url = getInvokeUrl() + "&operation=status";
-        try {
-            statusGetter.setInvokeURL(new URL(url));
-        } catch (MalformedURLException e) {
-            String message = "Error creating URL object for invoke URL: '" + url + "'";
-            System.err.println(message);
-            LOG.error(message, e);
-        }
+        StatusGetter statusGetter = new StatusGetter(this);
 
         try {
             statusGetter.queryStatus();
         } catch (Throwable t) {
-            String message =  "Error invoking status command";
-            System.err.println(message);
+            String message = "error invoking \"status\" operation: " + t.getMessage();
             LOG.error(message, t);
+            System.err.println(message);
             return 1;
         }
 
@@ -238,7 +216,7 @@ public class Controller {
             return 0; // everything should be good and running
 
         default:
-        	LOG.error("Unknown status returned from statusGetter.getStatus(): {}", statusGetter.getStatus());
+            LOG.error("Unknown status returned from statusGetter.getStatus(): {}", statusGetter.getStatus());
             return 1;
         }
     }
@@ -252,10 +230,21 @@ public class Controller {
         try {
             new DatabaseChecker().check();
         } catch (final Throwable t) {
-        	LOG.error("error invoking check command", t);
+            String message = "error invoking \"check\" operation: " + t.getMessage();
+            LOG.error(message, t);
+            System.err.println(message);
             return 1;
         }
         return 0;
+    }
+
+    /**
+     * <p>dumpThreads</p>
+     *
+     * @return a int.
+     */
+    public int dumpThreads() {
+        return invokeOperation("dumpThreads");
     }
 
     /**
@@ -266,133 +255,25 @@ public class Controller {
     public int exit() {
         return invokeOperation("doSystemExit");
     }
-    
-    int invokeOperation(String operation) {
-        Authenticator.setDefault(getAuthenticator());
 
-        String urlString = getInvokeUrl() + "&operation=" + operation;
+    public int invokeOperation(String operation) {
         try {
-            URL invoke = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) invoke.openConnection();
-            connection.setReadTimeout(getHttpRequestReadTimeout());
-            InputStream in = connection.getInputStream();
-
-            int ch;
-            while ((ch = in.read()) != -1) {
-                System.out.write((char) ch);
-            }
-            in.close();
-            System.out.println("");
-            System.out.flush();
-        } catch (final ConnectException e) {
-        	LOG.error("error when attempting to fetch URL \"{}\"", urlString, e);
-            if (isVerbose()) {
-                System.out.println(e.getMessage() + " when attempting to fetch URL \"" + urlString + "\"");
-            }
-            return 1;
+            doInvokeOperation(operation); // Ignore the returned object
         } catch (final Throwable t) {
-        	LOG.error("error invoking {} operation", operation, t);
-            System.out.println("error invoking " + operation + " operation");
+            String message = "error invoking \"" + operation + "\" operation: " + t.getMessage();
+            LOG.error(message, t);
+            System.err.println(message);
             return 1;
         }
 
         return 0;
     }
 
-    /*
-     * Create an Authenticator so that we can provide authentication, if
-     * needed, when go to connect to the URL
-     */
-    Authenticator createAuthenticatorUsingConfigCredentials() {
-        Service service = getConfiguredService(JMX_HTTP_ADAPTER_NAME);
-        if (service == null) {
-            // Didn't find the service we were looking for
-        	LOG.warn("Could not find configured service for '{}'", JMX_HTTP_ADAPTER_NAME);
-            return null;
+    public Object doInvokeOperation(String operation) throws MalformedURLException, IOException, InstanceNotFoundException, MalformedObjectNameException, MBeanException, ReflectionException, NullPointerException {
+        try (JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(getJmxUrl()))) {
+            MBeanServerConnection connection = connector.getMBeanServerConnection();
+            return connection.invoke(ObjectName.getInstance("OpenNMS:Name=Manager"), operation, new Object[0], new String[0]);
         }
-
-        org.opennms.netmgt.config.service.Attribute[] attribs = service.getAttribute();
-
-        if (attribs == null) {
-            // the AuthenticationMethod is not set, so no authentication
-            return null;
-        }
-
-        boolean usingBasic = false;
-        for (org.opennms.netmgt.config.service.Attribute attrib : attribs) {
-            if (attrib.getName().equals("AuthenticationMethod")) {
-                if (!attrib.getValue().getContent().equals("basic")) {
-                	LOG.error("AuthenticationMethod is \"{}\", but only \"basic\" is supported", attrib.getValue());
-                    return null;
-                }
-                usingBasic = true;
-                break;
-            }
-        }
-            
-        if (!usingBasic) {
-            // AuthenticationMethod is not set to basic, so no authentication
-            return null;
-        }
-
-        Invoke[] invokes = service.getInvoke();
-        if (invokes == null) {
-            // No username or password could be set
-            return null;
-        }
-        
-        String username = null;
-        String password = null;
-        for (Invoke invoke : invokes) {
-            if (invoke.getMethod().equals("addAuthorization")) {
-                Argument[] args = invoke.getArgument();
-                if (args != null && args.length == 2
-                        && args[0].getContent().equals("manager")) {
-                    username = args[0].getContent();
-                    password = args[1].getContent();
-                    break;
-                }
-            }
-        }
-            
-        if (username == null || password == null) {
-            // Didn't find a username or password
-            return null;
-        }
-            
-        final String username_f = username;
-        final String password_f = password;
-        
-        return new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username_f,
-                                                  password_f.toCharArray());
-            }
-        };
-    }
-
-    private ServiceConfigFactory getServiceConfigFactory() {
-        try {
-            ServiceConfigFactory.init();
-            return ServiceConfigFactory.getInstance();
-        } catch (Throwable t) {
-            throw new UndeclaredThrowableException(t);
-        }
-    }
-
-    private Service getConfiguredService(String serviceName) {
-        ServiceConfigFactory sfact = getServiceConfigFactory();
-
-        Service[] services = sfact.getServices();
-
-        for (Service service : services) {
-            if (service.getName().equals(serviceName)) {
-                return service;
-            }
-        }
-        
-        return null;
     }
 
     /**
@@ -414,56 +295,143 @@ public class Controller {
     }
 
     /**
-     * <p>getInvokeUrl</p>
+     * This method uses the Java Attach API to connect to a running OpenNMS JVM
+     * and fetch the dynamically assigned local JMX agent URL.
+     * 
+     * @see https://docs.oracle.com/javase/8/docs/jdk/api/attach/spec/index.html
+     * @see https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getInvokeUrl() {
-        return m_invokeUrl;
+    public String getJmxUrl() {
+        try {
+            // Check to see if the com.sun.tools.attach classes are loadable in
+            // this JVM
+            Class<?> clazz;
+            clazz = Class.forName("com.sun.tools.attach.VirtualMachine");
+            clazz = Class.forName("com.sun.tools.attach.VirtualMachineDescriptor");
+            clazz = Class.forName("com.sun.tools.attach.AttachNotSupportedException");
+        } catch (ClassNotFoundException e) {
+            LOG.info("The Attach API is not available in this JVM, falling back to JMX over RMI");
+            return m_jmxUrl;
+        }
+
+        VirtualMachine vm = null;
+
+        final StringBuilder vmNames = new StringBuilder();
+        boolean first = true;
+
+        // Use the Attach API to enumerate all of the JVMs that are running as the same
+        // user on this machine
+        VirtualMachineDescriptor foundVm = null;
+        for (VirtualMachineDescriptor vmDescr : VirtualMachine.list()) {
+            if (!first) {
+                vmNames.append(", ");
+            }
+            vmNames.append("\"" + vmDescr.displayName() + "\"");
+            first = false;
+
+            if (vmDescr.displayName().contains(OPENNMS_JVM_DISPLAY_NAME_SUBSTRING)) {
+                foundVm = vmDescr;
+            }
+        }
+
+        if (foundVm == null) {
+            LOG.debug("Could not find OpenNMS JVM (\"" + OPENNMS_JVM_DISPLAY_NAME_SUBSTRING + "\") among JVMs (" + vmNames + ")");
+        } else {
+            try {
+                vm = VirtualMachine.attach(foundVm);
+                LOG.debug("Attached to OpenNMS JVM: " + foundVm.id() + " (" + foundVm.displayName() + ")");
+            } catch (AttachNotSupportedException e) {
+                // This exception is unexpected so log a warning
+                LOG.warn("Cannot attach to OpenNMS JVM", e);
+            } catch (IOException e) {
+                // This exception is unexpected so log a warning
+                LOG.warn("IOException when attaching to OpenNMS JVM", e);
+            }
+        }
+
+        if (vm == null) {
+            if (m_pid == null) {
+                LOG.debug("No PID specified for OpenNMS JVM");
+            } else {
+                try {
+                    vm = VirtualMachine.attach(m_pid);
+                    LOG.debug("Attached to OpenNMS JVM with PID: " + m_pid);
+                } catch (AttachNotSupportedException e) {
+                    // This exception is unexpected so log a warning
+                    LOG.warn("Cannot attach to OpenNMS JVM at PID: " + m_pid, e);
+                } catch (IOException e) {
+                    // This exception will occur if the PID cannot be found
+                    // because the process has been terminated
+                    LOG.debug("IOException when attaching to OpenNMS JVM at PID: " + m_pid + ": " + e.getMessage());
+                }
+            }
+        }
+
+        if (vm == null) {
+            LOG.debug("Could not attach to JVM, falling back to JMX over RMI");
+            return m_jmxUrl;
+        } else {
+            return getJmxUriFromVirtualMachine(vm);
+        }
     }
 
     /**
-     * <p>setInvokeUrl</p>
+     * <p>setJmxRmiUrl</p>
      *
-     * @param invokerUrl a {@link java.lang.String} object.
+     * @param jmxUrl a {@link java.lang.String} object.
      */
-    public void setInvokeUrl(String invokerUrl) {
-        m_invokeUrl = invokerUrl;
+    public void setJmxRmiUrl(String jmxUrl) {
+        m_jmxUrl = jmxUrl;
+    }
+ 
+    private static String getJmxUriFromVirtualMachine(VirtualMachine vm) {
+        String connectorAddress = null;
+        try {
+            // Get the local JMX connector URI
+            connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+        } catch (IOException e) {
+            throw new IllegalStateException("IOException when fetching JMX URI from JVM with ID: " + vm.id(), e);
+        }
+
+        // If there is no local JMX connector URI, we need to launch the
+        // JMX agent via this VirtualMachine attachment.
+        if (connectorAddress == null) {
+            LOG.info("Starting local management agent in JVM with ID: " + vm.id());
+
+            try {
+                vm.startLocalManagementAgent();
+            } catch (IOException e) {
+                throw new IllegalStateException("IOException when starting local JMX management agent in JVM with ID: " + vm.id(), e);
+            }
+
+            // Agent is started, get the connector address
+            try {
+                connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+            } catch (IOException e) {
+                throw new IllegalStateException("IOException when fetching JMX URI from JVM with ID: " + vm.id(), e);
+            }
+        }
+
+        return connectorAddress;
     }
 
-    /**
-     * <p>getAuthenticator</p>
-     *
-     * @return a {@link java.net.Authenticator} object.
-     */
-    public Authenticator getAuthenticator() {
-        return m_authenticator;
+    public String getPid() {
+        return m_pid;
     }
 
-    /**
-     * <p>setAuthenticator</p>
-     *
-     * @param authenticator a {@link java.net.Authenticator} object.
-     */
-    public void setAuthenticator(Authenticator authenticator) {
-        m_authenticator = authenticator;
+    public void setPid(String pid) {
+        m_pid = pid;
     }
 
-    /**
-     * <p>getHttpRequestReadTimeout</p>
-     *
-     * @return a int.
-     */
-    public int getHttpRequestReadTimeout() {
-        return m_httpRequestReadTimeout;
+    public int getRmiHandshakeTimeout() {
+        // This default value is from:
+        // http://docs.oracle.com/javase/7/docs/technotes/guides/rmi/sunrmiproperties.html
+        return Integer.valueOf(System.getProperty("sun.rmi.transport.handshakeTimeout", "60000"));
     }
 
-    /**
-     * <p>setHttpRequestReadTimeout</p>
-     *
-     * @param httpRequestReadTimeout a int.
-     */
-    public void setHttpRequestReadTimeout(int httpRequestReadTimeout) {
-        m_httpRequestReadTimeout = httpRequestReadTimeout;
+    public void setRmiHandshakeTimeout(int httpRequestReadTimeout) {
+        System.setProperty("sun.rmi.transport.tcp.handshakeTimeout", String.valueOf(httpRequestReadTimeout));
     }
 }

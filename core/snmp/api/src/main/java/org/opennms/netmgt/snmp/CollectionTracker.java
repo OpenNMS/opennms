@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -28,14 +28,10 @@
 
 package org.opennms.netmgt.snmp;
 
+import org.opennms.netmgt.snmp.proxy.ProxiableTracker;
 
-public abstract class CollectionTracker implements Collectable {
+public abstract class CollectionTracker implements Collectable, ProxiableTracker {
     
-    public static final int NO_ERR = 0;
-    public static final int TOO_BIG_ERR = 1;
-    public static final int NO_SUCH_NAME_ERR = 2;
-    public static final int GEN_ERR = 5;
-
     private CollectionTracker m_parent;
     private boolean m_failed = false;
     private boolean m_timedOut = false;
@@ -62,8 +58,10 @@ public abstract class CollectionTracker implements Collectable {
     
     public boolean timedOut() { return m_timedOut; }
     
-    abstract public void setMaxRepetitions(int maxRepetitions);
+    public abstract void setMaxRepetitions(int maxRepetitions);
     
+    public abstract void setMaxRetries(int maxRetries);
+
     public void setFailed(boolean failed) {
         m_failed = failed;
     }
@@ -86,7 +84,7 @@ public abstract class CollectionTracker implements Collectable {
         m_finished = finished;
     }
 
-    public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder);
+    public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder) throws SnmpException;
 
     protected void reportTooBigErr(String msg) {
         if (m_parent != null) {
@@ -105,11 +103,21 @@ public abstract class CollectionTracker implements Collectable {
             m_parent.reportNoSuchNameErr(msg);
         }
     }
-    
+
+    protected void reportFatalErr(final ErrorStatusException ex) {
+        if (m_parent != null) {
+            m_parent.reportFatalErr(ex);
+        }
+    }
+
+    protected void reportNonFatalErr(final ErrorStatus status) {
+        if (m_parent != null) {
+            m_parent.reportNonFatalErr(status);
+        }
+    }
+
     @Override
     public CollectionTracker getCollectionTracker() {
         return this;
     }
-
-
 }

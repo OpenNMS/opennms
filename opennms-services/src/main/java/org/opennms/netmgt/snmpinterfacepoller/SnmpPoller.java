@@ -1,22 +1,22 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
+ * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
  *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  *      http://www.gnu.org/licenses/
  *
@@ -30,21 +30,20 @@ package org.opennms.netmgt.snmpinterfacepoller;
 
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.core.network.IPAddress;
+import org.opennms.core.network.IPAddressRange;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpInterfacePollerConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.discovery.IPAddress;
-import org.opennms.netmgt.model.discovery.IPAddressRange;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableInterface;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface;
-
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
@@ -60,9 +59,9 @@ import org.slf4j.LoggerFactory;
 @EventListener(name="snmpPoller", logPrefix="snmp-poller")
 public class SnmpPoller extends AbstractServiceDaemon {
     
-    private final static Logger LOG = LoggerFactory.getLogger(SnmpPoller.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpPoller.class);
     
-    private final static SnmpPoller m_singleton = new SnmpPoller();
+    private static final SnmpPoller m_singleton = new SnmpPoller();
 
     private boolean m_initialized = false;
 
@@ -252,15 +251,20 @@ public class SnmpPoller extends AbstractServiceDaemon {
      */
     protected void schedulePollableInterface(OnmsIpInterface iface) {
         String ipaddress = iface.getIpAddress().getHostAddress();
+        String netmask = null;
+        // netmask is nullable
+        if (iface.getNetMask() != null) {
+            netmask = iface.getNetMask().getHostAddress();
+        }
         Integer nodeid = iface.getNode().getId();
         if (ipaddress != null && !ipaddress.equals("0.0.0.0")) {
             String pkgName = getPollerConfig().getPackageName(ipaddress);
             if (pkgName != null) {
                 LOG.debug("Scheduling snmppolling for node: {} ip address: {} - Found package interface with name: {}", nodeid, ipaddress, pkgName);
-                scheduleSnmpCollection(getNetwork().create(nodeid,ipaddress,pkgName), pkgName);
+                scheduleSnmpCollection(getNetwork().create(nodeid,ipaddress,netmask,pkgName), pkgName);
             } else if (!getPollerConfig().useCriteriaFilters()) {
                 LOG.debug("No SNMP Poll Package found for node: {} ip address: {}. - Scheduling according with default interval", nodeid, ipaddress);
-                scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress, "null"), "null");
+                scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress,netmask, "null"), "null");
             }
         }
     }
@@ -271,32 +275,26 @@ public class SnmpPoller extends AbstractServiceDaemon {
         for (String pkgInterfaceName: getPollerConfig().getInterfaceOnPackage(pkgName)) {
             LOG.debug("found package interface with name: {}", pkgInterfaceName);
             if (getPollerConfig().getStatus(pkgName, pkgInterfaceName)){
-                
-                String criteria = getPollerConfig().getCriteria(pkgName, pkgInterfaceName);
-                LOG.debug("package interface: criteria: {}", criteria);
-                excludingCriteria = excludingCriteria + " and not " + criteria;
+
+                final String criteria = getPollerConfig().getCriteria(pkgName, pkgInterfaceName).orElse(null);
+                if (getPollerConfig().getCriteria(pkgName, pkgInterfaceName).isPresent()) {
+                    LOG.debug("package interface: criteria: {}", criteria);
+                    excludingCriteria = excludingCriteria + " and not " + criteria;
+                }
                 
                 long interval = getPollerConfig().getInterval(pkgName, pkgInterfaceName);
                 LOG.debug("package interface: interval: {}", interval);
 
-                boolean hasPort = getPollerConfig().hasPort(pkgName, pkgInterfaceName);
-                int port = -1;
-                if (hasPort) port = getPollerConfig().getPort(pkgName, pkgInterfaceName);
-                
-                boolean hasTimeout = getPollerConfig().hasTimeout(pkgName, pkgInterfaceName);
-                int timeout = -1;
-                if (hasTimeout) timeout = getPollerConfig().getTimeout(pkgName, pkgInterfaceName);
-                
-                boolean hasRetries = getPollerConfig().hasRetries(pkgName, pkgInterfaceName);
-                int retries = -1;
-                if (hasRetries) retries = getPollerConfig().getRetries(pkgName, pkgInterfaceName);
+                int port = getPollerConfig().getPort(pkgName, pkgInterfaceName).orElse(-1);
+                int timeout = getPollerConfig().getTimeout(pkgName, pkgInterfaceName).orElse(-1);
+                int retries = getPollerConfig().getRetries(pkgName, pkgInterfaceName).orElse(-1);
 
                 boolean hasMaxVarsPerPdu = getPollerConfig().hasMaxVarsPerPdu(pkgName, pkgInterfaceName);
                 int maxVarsPerPdu = -1;
                 if (hasMaxVarsPerPdu) maxVarsPerPdu = getPollerConfig().getMaxVarsPerPdu(pkgName, pkgInterfaceName);
 
                 PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(pkgInterfaceName, criteria, 
-                   hasPort, port, hasTimeout, timeout, hasRetries, retries, hasMaxVarsPerPdu, maxVarsPerPdu);
+                   port != -1, port, timeout != -1, timeout, retries != -1, retries, hasMaxVarsPerPdu, maxVarsPerPdu);
 
                 node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), criteria));
 
