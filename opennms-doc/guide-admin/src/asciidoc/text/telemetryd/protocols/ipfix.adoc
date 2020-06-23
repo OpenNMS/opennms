@@ -1,7 +1,7 @@
 
 ==== IPFIX
 
-The _IP Flow Information Export (IPFIX)_ protocol is a vendor neutral standard standard for transmitting Traffic Flow information.
+The _IP Flow Information Export (IPFIX)_ protocol is a vendor-neutral standard standard for transmitting traffic flow information.
 See <<ga-flow-support, Flow Support>> for details on flow support in _{opennms-product-name}_.
 
 
@@ -25,8 +25,8 @@ The IPFIX UDP Parser supports protocol detection.
 [options="header, autowidth"]
 |===
 | Parameter             | Description                                                                    | Required | Default value
-| `templateTimeout`     | Templates must be re-declared in the given duration or they will be dropped    | no       | 30 minutes
-| `maxClockSkew`        | The maximum delta in seconds between exporter and Minion timestamps.       | no       | 0
+| `templateTimeout`     | Templates must be redeclared in the given duration or they will be dropped.    | no       | 30 minutes
+| `maxClockSkew`        | The maximum delta in seconds between exporter and Minion time stamps.       | no       | 0
 | `clockSkewEventRate`  | Used to rate-limit clock skew events in seconds.                           | no       | 3600
 | `dnsLookupsEnabled`      | Used to enable or disable DNS resolution for flows.                        | no       | true
 |===
@@ -52,8 +52,8 @@ This parser does not currently have any configurable parameters.
 [[telemetryd-ipfix-adapter]]
 ===== IPFIX Adapter
 
-The IPFIX Adapter is used to handle _IPFIX_ telemetry data received and parsed by either of the <<telemetryd-ipfix-parser-udp, IPFIX UDP Parser>> or <<telemetryd-ipfix-parser-tcp, IPFIX TCP Parser>>.
-Received flows are decoded from the messages into the canonical flow format and are published to the _flow repository_
+The IPFIX Adapter handles _IPFIX_ telemetry data received and parsed by either of the <<telemetryd-ipfix-parser-udp, IPFIX UDP Parser>> or <<telemetryd-ipfix-parser-tcp, IPFIX TCP Parser>>.
+Received flows are decoded from the messages into the canonical flow format and published to the _flow repository_.
 
 ====== Facts
 
@@ -68,8 +68,8 @@ Received flows are decoded from the messages into the canonical flow format and 
 [options="header, autowidth"]
 |===
 | Parameter             | Description                                                                    | Required | Default value
-| `templateTimeout`     | Templates must be re-declared in the given duration or they will be dropped    | no       | 30 minutes
-| `maxClockSkew`        | The maximum delta in seconds between exporter and Minion timestamps.       | no       | 0
+| `templateTimeout`     | Templates must be redeclared in the given duration or they will be dropped.    | no       | 30 minutes
+| `maxClockSkew`        | The maximum delta in seconds between exporter and Minion time stamps.       | no       | 0
 | `clockSkewEventRate`  | Used to rate-limit clock skew events in seconds.                           | no       | 3600
 | `dnsLookupsEnabled`      | Used to enable or disable DNS resolution for flows.                        | no       | true
 |===
