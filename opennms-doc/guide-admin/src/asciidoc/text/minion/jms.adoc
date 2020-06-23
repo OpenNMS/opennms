@@ -98,7 +98,7 @@ To interactively test RPC communication with a remote location use the `opennms:
 
 [source]
 ----
-opennms:poll -l LOCATION IcmpMonitor 127.0.0.1
+opennms:poll -l LOCATION -c org.opennms.netmgt.poller.monitors.IcmpMonitor 127.0.0.1
 ----
 
 TIP: Replace `LOCATION` in the command above with the name of the location you want to test.

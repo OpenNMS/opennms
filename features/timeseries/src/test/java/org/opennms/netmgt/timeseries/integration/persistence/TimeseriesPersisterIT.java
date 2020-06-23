@@ -44,6 +44,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
@@ -59,7 +60,6 @@ import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.impl.TimeseriesStorageManager;
-import org.opennms.netmgt.timeseries.integration.CommonTagNames;
 import org.opennms.newts.api.Resource;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,8 +123,8 @@ public class TimeseriesPersisterIT {
         Instant end = Instant.now();
 
         ImmutableMetric metric = ImmutableMetric.builder()
-                .intrinsicTag(CommonTagNames.resourceId, resource.getId())
-                .intrinsicTag(CommonTagNames.name, "metric")
+                .intrinsicTag(IntrinsicTagNames.resourceId, resource.getId())
+                .intrinsicTag(IntrinsicTagNames.name, "metric")
                 .build();
         TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
                 .start(now)

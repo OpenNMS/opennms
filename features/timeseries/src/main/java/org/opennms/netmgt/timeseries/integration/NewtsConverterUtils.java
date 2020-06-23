@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import org.opennms.integration.api.v1.timeseries.Metric;
 import org.opennms.integration.api.v1.timeseries.Sample;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableSample;
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Counter;
@@ -72,8 +73,8 @@ public class NewtsConverterUtils {
         final Timestamp timestamp = Timestamp.fromEpochMillis(sample.getTime().toEpochMilli());;
         final Context context = new Context("not relevant");
         final Resource resource = new Resource(sample.getMetric().getFirstTagByKey("resourceId").getValue(), resourceAttributes);;
-        final String name = sample.getMetric().getFirstTagByKey(CommonTagNames.name).getValue();
-        final MetricType type = toNewts(Metric.Mtype.valueOf(sample.getMetric().getFirstTagByKey(CommonTagNames.mtype).getValue()));
+        final String name = sample.getMetric().getFirstTagByKey(IntrinsicTagNames.name).getValue();
+        final MetricType type = toNewts(Metric.Mtype.valueOf(sample.getMetric().getFirstTagByKey(IntrinsicTagNames.mtype).getValue()));
         final ValueType<?> value = toNewtsValue(sample);
         final Map<String, String> attributes = new HashMap<>();
 
@@ -96,7 +97,7 @@ public class NewtsConverterUtils {
     }
 
     private static ValueType<?> toNewtsValue(final Sample sample) {
-        final Metric.Mtype mtype = Metric.Mtype.valueOf(sample.getMetric().getFirstTagByKey(CommonTagNames.mtype).getValue());
+        final Metric.Mtype mtype = Metric.Mtype.valueOf(sample.getMetric().getFirstTagByKey(IntrinsicTagNames.mtype).getValue());
         if(Metric.Mtype.count == mtype) {
             return new Counter(sample.getValue().longValue());
         } else if(Metric.Mtype.gauge == mtype) {

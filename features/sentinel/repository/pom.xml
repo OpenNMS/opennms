@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.sentinel</groupId>
         <artifactId>sentinel-parent</artifactId>
-        <version>26.1.1-SNAPSHOT</version>
+        <version>27.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -57,6 +57,10 @@
                                 <feature>opennms-spring-extender</feature>
                                 <feature>opennms-blobstore-shell</feature>
                                 <feature>opennms-jsonstore-shell</feature>
+                                <feature>opennms-distributed-core-impl</feature>
+                                <feature>scv-api</feature>
+                                <feature>scv-shell</feature>
+                                <feature>scv-jceks-impl</feature>
 
                                 <!-- Sentinel specific features -->
                                 <feature>sentinel-core</feature>
@@ -115,6 +119,8 @@
                     <descriptors>
                         <descriptor>src/assembly/repo.xml</descriptor>
                     </descriptors>
+                    <overrideUid>0</overrideUid>
+                    <overrideGid>0</overrideGid>
                     <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
                 <executions>
@@ -522,6 +528,16 @@
         <dependency>
             <groupId>org.opennms.features.collection</groupId>
             <artifactId>org.opennms.features.collection.thresholding.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.shell</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

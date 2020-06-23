@@ -37,6 +37,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +45,6 @@ import com.google.common.collect.ImmutableMap;
 
 public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
     private final Logger logger = LoggerFactory.getLogger(AbstractVmwareMonitor.class);
-
-    protected static final String VMWARE_MANAGEMENT_SERVER_KEY = "vmwareManagementServer";
-    protected static final String VMWARE_MANAGED_ENTITY_TYPE_KEY = "vmwareManagedEntityType";
-    protected static final String VMWARE_MANAGED_OBJECT_ID_KEY = "vmwareManagedObjectId";
-    protected static final String VMWARE_MANAGEMENT_SERVER_USERNAME_KEY = "vmwareMangementServerUsername";
-    protected static final String VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY = "vmwareMangementServerPassword";
 
     /**
      * the node dao object for retrieving assets
@@ -77,8 +72,10 @@ public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
         }
 
         // retrieve the assets
-        final String vmwareManagementServer = onmsNode.getAssetRecord().getVmwareManagementServer();
-        final String vmwareManagedEntityType = onmsNode.getAssetRecord().getVmwareManagedEntityType();
+
+        final String vmwareManagementServer = VmwareImporter.getManagementServer(onmsNode);
+        final String vmwareManagedEntityType = VmwareImporter.getManagedEntityType(onmsNode);
+
         final String vmwareManagedObjectId = onmsNode.getForeignId();
 
         String vmwareMangementServerUsername = null;
@@ -97,12 +94,11 @@ public abstract class AbstractVmwareMonitor extends AbstractServiceMonitor {
         }
 
         return new ImmutableMap.Builder<String, Object>()
-                .put(VMWARE_MANAGEMENT_SERVER_KEY, vmwareManagementServer)
-                .put(VMWARE_MANAGED_ENTITY_TYPE_KEY, vmwareManagedEntityType)
-                .put(VMWARE_MANAGED_OBJECT_ID_KEY, vmwareManagedObjectId)
-                .put(VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, vmwareMangementServerUsername)
-                .put(VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, vmwareMangementServerPassword)
+                .put(VmwareImporter.METADATA_MANAGEMENT_SERVER, vmwareManagementServer)
+                .put(VmwareImporter.METADATA_MANAGED_ENTITY_TYPE, vmwareManagedEntityType)
+                .put(VmwareImporter.METADATA_MANAGED_OBJECT_ID, vmwareManagedObjectId)
+                .put(VmwareImporter.VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, vmwareMangementServerUsername)
+                .put(VmwareImporter.VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, vmwareMangementServerPassword)
                 .build();
     }
-
 }

@@ -38,6 +38,8 @@ import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.MinionIdentity;
 
+import com.codahale.metrics.MetricRegistry;
+
 /**
  * This overrides @{@link org.opennms.core.ipc.rpc.kafka.KafkaRpcServerManager.KafkaConsumerRunner#sendMessageToKafka(RpcMessageProto, String, String)}
  * to send duplicate message or skip a chunk in between.
@@ -53,7 +55,7 @@ public class RpcTestServer extends KafkaRpcServerManager {
     private KafkaServerConsumer kafkaConsumerRunner;
 
     public RpcTestServer(KafkaConfigProvider configProvider, MinionIdentity minionIdentity, TracerRegistry tracerRegistry) {
-        super(configProvider, minionIdentity, tracerRegistry);
+        super(configProvider, minionIdentity, tracerRegistry, new MetricRegistry());
         this.minionIdentity = minionIdentity;
     }
 

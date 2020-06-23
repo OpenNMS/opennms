@@ -54,7 +54,7 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
-import org.opennms.core.ipc.sink.model.SinkMessageProtos;
+import org.opennms.core.ipc.sink.model.SinkMessage;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
 import org.opennms.core.tracing.api.TracerConstants;
@@ -190,7 +190,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
         // Calculate remaining bufferSize for each chunk.
         int bufferSize = getRemainingBufferSize(sinkMessageContent.length, chunk);
         ByteString byteString = ByteString.copyFrom(sinkMessageContent, chunk * maxBufferSize, bufferSize);
-        SinkMessageProtos.SinkMessage.Builder sinkMessageBuilder = SinkMessageProtos.SinkMessage.newBuilder()
+        SinkMessage.Builder sinkMessageBuilder = SinkMessage.newBuilder()
                 .setMessageId(messageId)
                 .setCurrentChunkNumber(chunk)
                 .setTotalChunks(totalChunks)
@@ -202,12 +202,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
             tracer.activeSpan().setTag(TracerConstants.TAG_LOCATION, identity.getLocation());
             tracer.activeSpan().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
-            tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> {
-                SinkMessageProtos.TracingInfo tracingInfo = SinkMessageProtos.TracingInfo.newBuilder()
-                        .setKey(key).setValue(value).build();
-                sinkMessageBuilder.addTracingInfo(tracingInfo);
-            });
-
+            tracingInfoCarrier.getTracingInfoMap().forEach(sinkMessageBuilder::putTracingInfo);
         }
         return sinkMessageBuilder.build().toByteArray();
     }

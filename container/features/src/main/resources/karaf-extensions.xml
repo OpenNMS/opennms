@@ -4,12 +4,4 @@
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.opennms.container/extender/${project.version}</bundle>
     </feature>
-
-    <feature name="scv" description="Secure Credentials Vault" version="${project.version}">
-        <bundle dependency="true">mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
-        <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
-        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
-    </feature>
 </features>

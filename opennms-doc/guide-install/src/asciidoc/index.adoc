@@ -51,21 +51,6 @@ include::text/_general/nextsteps.adoc[]
 // Enable section numbers
 :sectnums:
 
-// Basic Setup OpenNMS - Windows
-include::text/basic-setup-opennms/windows/installing-on-windows.adoc[]
-
-// No section numbers for step-by-step guide
-:!sectnums:
-
-include::text/basic-setup-opennms/windows/step-1-postgresql.adoc[]
-include::text/basic-setup-opennms/windows/step-2-graphical-installer.adoc[]
-include::text/basic-setup-opennms/windows/step-3-configure-postgres-opennms.adoc[]
-include::text/basic-setup-opennms/windows/step-4-change-admin-password.adoc[]
-include::text/_general/nextsteps.adoc[]
-
-// Enable section numbers
-:sectnums:
-
 // Run OpenNMS in Docker
 include::text/basic-setup-opennms/docker/opennms-docker.adoc[]
 include::text/basic-setup-opennms/docker/opennms-config.adoc[]

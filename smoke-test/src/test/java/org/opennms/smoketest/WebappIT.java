@@ -83,7 +83,7 @@ public class WebappIT {
         .extract().response().body().print();
 
     // The expected payload looks like:
-    //  {"packageDescription":"OpenNMS","displayVersion":"26.1.1-SNAPSHOT","packageName":"opennms","version":"26.1.1", "ticketerConfig":{"enabled":false, "plugin": null}}
+    //  {"packageDescription":"OpenNMS","displayVersion":"27.0.0-SNAPSHOT","packageName":"opennms","version":"27.0.0", "ticketerConfig":{"enabled":false, "plugin": null}}
     final ObjectMapper mapper = new ObjectMapper();
     final JsonNode infoObject = mapper.readTree(json);
 
@@ -109,7 +109,7 @@ public class WebappIT {
     String sessionId = given().redirects().follow(false)
         .log().all()
         .get("admin/classification/index.jsp")
-        .getHeader("Set-Cookie").split("=")[1];
+        .getHeader("Set-Cookie").split("=")[1].split(";")[0];
 
     RequestSpecification noEncoding = new RequestSpecBuilder().setUrlEncodingEnabled(false).build();
     given()

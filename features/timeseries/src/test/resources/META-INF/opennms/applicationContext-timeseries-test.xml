@@ -76,11 +76,10 @@
   <bean id="timeseriesStorageImpl" class="org.opennms.netmgt.timeseries.impl.memory.InMemoryStorage" />
   <onmsgi:service interface="org.opennms.integration.api.v1.timeseries.TimeSeriesStorage" ref="timeseriesStorageImpl" />
 
-  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.timeseries.integration.dao.TimeseriesResourceStorageDao" />
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
+  <bean id="entityScopeProvider" class="org.opennms.core.rpc.utils.mate.EntityScopeProviderImpl"/>
+  <onmsgi:service interface="org.opennms.core.rpc.utils.mate.EntityScopeProvider" ref="entityScopeProvider" />
 
-  <bean id="nodeDao" class="org.opennms.netmgt.dao.mock.MockNodeDao" />
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.NodeDao" ref="nodeDao" />
+  <bean id="metaTagDataLoader" class="org.opennms.netmgt.timeseries.integration.persistence.MetaTagDataLoader" />
 
   <bean id="timeseriesPersisterFactory" class="org.opennms.netmgt.timeseries.integration.persistence.TimeseriesPersisterFactory" />
 
@@ -104,5 +103,11 @@
   <bean id="rrdStrategy" primary="true" class="org.opennms.netmgt.rrd.NullRrdStrategy" />
 
   <onmsgi:service ref="rrdStrategy" interface="org.opennms.netmgt.rrd.RrdStrategy" />
+
+  <!-- CacheConfig -->
+  <bean id="timeseriesPersisterMetaTagCache" class="org.opennms.core.cache.CacheConfig">
+    <constructor-arg index="0" value="timeseriesPersisterMetaTagCache" />
+    <property name="expireAfterRead" value="${cache.timeseriesPersisterMetaTagCache.expireAfterRead:1}" />
+  </bean>
 
 </beans>

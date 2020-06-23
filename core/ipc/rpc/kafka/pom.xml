@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.core.ipc</groupId>
         <artifactId>org.opennms.core.ipc.rpc</artifactId>
-        <version>26.1.1-SNAPSHOT</version>
+        <version>27.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core.ipc.rpc</groupId>
@@ -101,6 +101,11 @@
         <groupId>org.opennms.core.tracing</groupId>
         <artifactId>org.opennms.core.tracing.api</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-bulkhead</artifactId>
+        <version>${resilience4jVersion}</version>
       </dependency>
      <dependency>
         <groupId>org.opennms.core.test-api</groupId>

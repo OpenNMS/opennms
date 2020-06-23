@@ -6,7 +6,7 @@
 		<relativePath>../topology-map/poms/compiled/</relativePath>
 		<groupId>org.opennms.features.topology.build</groupId>
 		<artifactId>compiled-bundle-settings</artifactId>
-		<version>26.1.1-SNAPSHOT</version>
+		<version>27.0.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.opennms.features</groupId>
 	<artifactId>vaadin-node-maps</artifactId>
@@ -257,6 +257,11 @@
 			<scope>test</scope>
 		</dependency>  
 		<dependency>
+		    <groupId>commons-beanutils</groupId>
+		    <artifactId>commons-beanutils</artifactId>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
 		    <groupId>com.googlecode.gwt-test-utils</groupId>
 		    <artifactId>gwt-test-utils</artifactId>
 		    <version>0.47</version>
@@ -265,6 +270,10 @@
 				<exclusion>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-beanutils</groupId>
+					<artifactId>commons-beanutils-core</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

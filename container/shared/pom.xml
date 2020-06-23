@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>26.1.1-SNAPSHOT</version>
+        <version>27.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -90,7 +90,9 @@
 
                         <!-- OPENNMS: Add our enhancements to the container -->
                         <feature>karaf-extender</feature>
-                        <feature>scv</feature>
+                        <feature>scv-api</feature>
+                        <feature>scv-jceks-impl</feature>
+                        <feature>scv-shell</feature>
 
                         <!-- OPENNMS: Additional tools -->
                         <feature>hawtio-offline</feature>
