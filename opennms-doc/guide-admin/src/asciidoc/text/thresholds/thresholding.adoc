@@ -1,6 +1,6 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../images
+:imagesdir: ../images
 
 [[ga-threshd-introduction]]
 = Thresholding
@@ -162,6 +162,53 @@ In this case, when the five-minute CPU load average goes above 70% for two conse
 |===
 
 . Click `Save`.
+
+[[ga-threshhold-metadata]]
+==== Using Metadata in a Threshold
+
+Metadata in expression-based thresholds can streamline threshold creation. 
+The link:#ga-meta-data-dsl[Metadata DSL] (domain specific language) allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+A single expression can behave differently based on the node being tested against.
+
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata
+* Service metadata
+
+For more information on metadata and how to define it, see link:metadata[Metadata].
+
+IMPORTANT: Never attempt to use metatdata with basic thresholds. 
+Metadata works only with expression-based thresholds.
+Using metadata with a basic threshold will break the web UI, making it unusable.  
+
+This procedure uses metadata to trigger an event when the number of logged-in users exceeds 1.
+
+The expression is in the form `${context:key|context_fallback:key_fallback|...|default}`.
+
+Before using metatdata in a threshold, you need to add the metatdata context pair, in this case, a requisition key called userLimit (see link:ga-metadata-webui[Adding Metadata through the Web UI]).
+
+. Select `<User_Name>>Configure OpenNMS` from the top-right menu. 
+. Under *Performance Measurement*, choose *Configure Thresholds*.
+. Click *Edit* beside the `netsnmp` group. 
+. Click *Create New Expression-based Threshold*. 
+. Fill in the following information:
+
++
+* Type: High
+* Expression: `hrSystemNumUsers / ${requisition:userLimit|1}`
+* Datasource type: Node
+* Value: 1
+* Rearm: 1
+* Description: Too many logged-in users
+
+image:metadata/meta-expression1.png[]
+
+. Click *Save*.
+
+This expression will trigger an event when the number of logged-in users exceeds 1.
+
+image:metadata/meta-expression2.png[]
 
 [[datasource-determine]]
 ==== Determining the Datasource

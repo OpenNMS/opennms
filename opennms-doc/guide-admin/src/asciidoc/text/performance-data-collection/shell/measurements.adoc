@@ -35,7 +35,7 @@ The `opennms:delete-measurement-resources` command can be used to delete resourc
 [source]
 ----
 admin@opennms> opennms:delete-measurement-resources "node[NODES:node].responseTime[127.0.0.1]"
-Deleting measurements and meta-data associated with resource ID 'node[NODES:node].responseTime[127.0.0.1]'...
+Deleting measurements and metadata associated with resource ID 'node[NODES:node].responseTime[127.0.0.1]'...
 Done.
 ----
 
