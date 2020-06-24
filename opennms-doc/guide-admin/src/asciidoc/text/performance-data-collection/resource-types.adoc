@@ -33,7 +33,7 @@ Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacol
 </resourceType>
 ----
 
-===== Persistence Selector Strategies
+==== Persistence Selector Strategies
 .Persistence Selector Strategies
 [options="header, autowidth"]
 |===
@@ -42,13 +42,13 @@ Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacol
 | org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy | Persist indexes based on JEXL evaluation
 |===
 
-====== PersistRegexSelectorStrategy
+===== PersistRegexSelectorStrategy
 
 The PersistRegexSelectorStrategy class takes a single parameter, `match-expression`, which defines a JEXL expressions.
 On evaulation, this expression should return either true, persist index to storage, or false, discard data.
 
 
-===== Storage Strategies
+==== Storage Strategies
 .Storage Strategies
 [options="header, autowidth"]
 |===
@@ -62,11 +62,11 @@ On evaulation, this expression should return either true, persist index to stora
 | org.opennms.protocols.xml.collector.XmlStorageStrategy          | Index, but cleaned up for unix filesystems.
 |===
 
-====== IndexStorageStrategy
+===== IndexStorageStrategy
 
 The IndexStorageStrategy takes no parameters.
 
-====== JexlIndexStorageStrategy
+===== JexlIndexStorageStrategy
 
 The JexlIndexStorageStrategy takes two parameters, `index-format` which is required, and `clean-output` which is optional.
 
@@ -96,7 +96,7 @@ public class ExampleStorageStrategy extends JexlIndexStorageStrategy {
 }
 ----
 
-====== ObjectNameStorageStrategy
+===== ObjectNameStorageStrategy
 
 The ObjectNameStorageStrategy extends the JexlIndexStorageStrategy, so its requirements are the same. Extra key/values pairs are added to the JexlContext which can then be used in the `index-format` template.
 The original index string is converted to an ObjectName and can be referenced as `${ObjectName}`. The _domain_ from the ObjectName can be referenced as `${domain}`. All _key properties_
@@ -114,11 +114,11 @@ Given an MBean like `java.lang:type=MemoryPool,name=Survivor Space`, and a stora
 ----
 Then the index value would be `java_lang_MemoryPool_Survivor_Space`.
 
-====== FrameRelayStorageStrategy
+===== FrameRelayStorageStrategy
 
 The FrameRelayStorageStrategy takes no parameters.
 
-====== HostFileSystemStorageStrategy
+===== HostFileSystemStorageStrategy
 
 The HostFileSystemStorageStrategy takes no parameters.
 This class is marked as deprecated, and can be replaced with:
@@ -134,7 +134,7 @@ This class is marked as deprecated, and can be replaced with:
 </storageStrategy>
 ----
 
-====== SiblingColumnStorageStrategy
+===== SiblingColumnStorageStrategy
 
 [options="header, autowidth"]
 |===
@@ -146,7 +146,7 @@ This class is marked as deprecated, and can be replaced with:
 
 Values for `replace-first`, and `replace-all` must match the pattern _s/regex/replacement/_ or an error will be thrown.
 
-====== XmlStorageStrategy
+===== XmlStorageStrategy
 
 This XmlStorageStrategy takes no parameters.
 The index value will have all whitespace, colons, forward and back slashes, and vertical bars replaced with underscores.

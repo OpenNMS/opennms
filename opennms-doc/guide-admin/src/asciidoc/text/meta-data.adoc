@@ -12,7 +12,7 @@ The only restriction is that the tuple of context and key must be unique in the 
 The association of metadata with nodes, interfaces and services happens during link:#ga-provisioning-meta-data[provisioning].
 Users can add, query, modify, or delete metadata through the requisition editor in the link:ga-metadata-webui[web UI], or through the xref:https://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html#_meta_data[ReST endpoints].
 
-A link:#ga-meta-data-dsl[simple domain-specific language] (DSL) allows users to access the metadata associated with the elements they are working on, and use it as a variable in parameters and expressions
+A link:#ga-meta-data-dsl[simple domain-specific language] (DSL) allows users to access the metadata associated with the elements they are working on, and use it as a variable in parameters and expressions.
 There is no limitation in defining metadata: users can decide how to define it and use it in expressions. 
 
 View metadata currently assigned to nodes, interfaces and services, on the details page associated with that entity in the web UI:
