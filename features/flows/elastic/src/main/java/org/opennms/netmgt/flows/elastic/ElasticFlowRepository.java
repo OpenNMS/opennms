@@ -234,38 +234,37 @@ public class ElasticFlowRepository implements FlowRepository {
         }
 
         if (skipElasticsearchPersistence) {
-            RATE_LIMITED_LOGGER.error("Flow persistence disabled. Dropping {} flow documents.", flowDocuments.size());
-            return;
-        }
-
-        LOG.debug("Persisting {} flow documents.", flowDocuments.size());
-        final Tracer tracer = getTracer();
-        try (final Timer.Context ctx = logPersistingTimer.time();
-             Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
-            // Add location and source address tags to span.
-            scope.span().setTag(TracerConstants.TAG_LOCATION, source.getLocation());
-            scope.span().setTag(TracerConstants.TAG_SOURCE_ADDRESS, source.getSourceAddress());
-            scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
-            final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
-                final Bulk.Builder bulkBuilder = new Bulk.Builder();
-                for (FlowDocument flowDocument : documents) {
-                    final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(flowDocument.getTimestamp()));
-                    final Index.Builder indexBuilder = new Index.Builder(flowDocument)
-                            .index(index);
-                    bulkBuilder.addAction(indexBuilder.build());
+            RATE_LIMITED_LOGGER.info("Flow persistence disabled. Dropping {} flow documents.", flowDocuments.size());
+        } else {
+            LOG.debug("Persisting {} flow documents.", flowDocuments.size());
+            final Tracer tracer = getTracer();
+            try (final Timer.Context ctx = logPersistingTimer.time();
+                 Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
+                // Add location and source address tags to span.
+                scope.span().setTag(TracerConstants.TAG_LOCATION, source.getLocation());
+                scope.span().setTag(TracerConstants.TAG_SOURCE_ADDRESS, source.getSourceAddress());
+                scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
+                final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
+                    final Bulk.Builder bulkBuilder = new Bulk.Builder();
+                    for (FlowDocument flowDocument : documents) {
+                        final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(flowDocument.getTimestamp()));
+                        final Index.Builder indexBuilder = new Index.Builder(flowDocument)
+                                .index(index);
+                        bulkBuilder.addAction(indexBuilder.build());
+                    }
+                    return new BulkWrapper(bulkBuilder);
+                }, bulkRetryCount);
+                try {
+                    // the bulk request considers retries
+                    bulkRequest.execute();
+                } catch (BulkException ex) {
+                    throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedDocuments());
+                } catch (IOException ex) {
+                    LOG.error("An error occurred while executing the given request: {}", ex.getMessage(), ex);
+                    throw new FlowException(ex.getMessage(), ex);
                 }
-                return new BulkWrapper(bulkBuilder);
-            }, bulkRetryCount);
-            try {
-                // the bulk request considers retries
-                bulkRequest.execute();
-            } catch (BulkException ex) {
-                throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedDocuments());
-            } catch (IOException ex) {
-                LOG.error("An error occurred while executing the given request: {}", ex.getMessage(), ex);
-                throw new FlowException(ex.getMessage(), ex);
+                flowsPersistedMeter.mark(flowDocuments.size());
             }
-            flowsPersistedMeter.mark(flowDocuments.size());
         }
 
         // Mark nodes and interfaces as having associated flows
