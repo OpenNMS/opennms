@@ -6,7 +6,8 @@
 === Code Snippets
 
 You can include code snippets, configuration- or source code files in the documentation.
-You can enable syntax highlighting by providing the given language parameter. This will work on source code or configuration.
+You can enable syntax highlighting by providing the given language parameter. 
+This will work on source code or configuration.
 
 [[gd-docs-explicit]]
 ==== Explicitly defined in the document
