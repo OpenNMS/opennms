@@ -1403,7 +1403,7 @@
     <jinteropVersion>2.0.8</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
-    <jnaVersion>4.4.0</jnaVersion>
+    <jnaVersion>4.5.2</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jsonVersion>20171018</jsonVersion>
