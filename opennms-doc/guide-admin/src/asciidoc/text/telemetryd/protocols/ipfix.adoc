@@ -25,7 +25,7 @@ The IPFIX UDP Parser supports protocol detection.
 |===
 | Parameter             | Description                                                                    | Required | Default value
 | `templateTimeout`     | Templates must be redeclared in the given duration or they will be dropped.    | no       | 30 minutes
-| `maxClockSkew`        | The maximum delta in seconds between exporter and Minion time stamps.       | no       | 0
+| `maxClockSkew`        | The maximum delta in seconds between exporter and Minion timestamps.       | no       | 0
 | `clockSkewEventRate`  | Used to rate-limit clock skew events in seconds.                           | no       | 3600
 | `dnsLookupsEnabled`      | Used to enable or disable DNS resolution for flows.                        | no       | true
 |===
@@ -60,7 +60,7 @@ admin@minion()> config:property-set name IPFIX
 admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.TcpListener
 admin@minion()> config:property-set parameters.port 50000
 admin@minion()> config:property-set parsers.0.name IPFIX 
-admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser
+admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.ipfix.parser.IpfixParser
 admin@minion()> config:update
 ----
 
@@ -91,3 +91,10 @@ Received flows are decoded from the messages into the canonical flow format and 
 | `clockSkewEventRate`  | Used to rate-limit clock skew events in seconds.                           | no       | 3600
 | `dnsLookupsEnabled`      | Used to enable or disable DNS resolution for flows.                        | no       | true
 |===
+
+TIP: The parameter `maxClockSkew` in your parser definition enables clock skew detection for exporters. 
+It specifies the maximum delta in seconds between exporter and Minion timestamps. 
+If exceeded, an alarm will be generated for the exporting device. 
+The default value is 0, so clock skew detection is disabled. 
+Furthermore, a parameter `clockSkewEventRate` can be used to rate-limit clock skew events.
+The default is `3600` seconds, so every hour an event will be sent.

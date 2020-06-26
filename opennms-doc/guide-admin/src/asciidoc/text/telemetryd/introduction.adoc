@@ -25,22 +25,8 @@ For further processing, the extracted data is handed over to the configured queu
 For example: a _Listener_ may open a UDP socket for receiving packets and an assigned _Parser_ parses the incoming IPFIX packets.
 
 _Parsers_ and _Listeners_ must work together closely.
-Therefore, they can not be combined in any random way.
+Therefore, they cannot be combined in any random way.
 Which _Parser_ is supported by which _Listener_ is described in the documentation of each respective _Parser_.
-
-TIP: You can provide the parameter `maxClockSkew` in your parser definition to enable clock skew detection for exporters. 
-It specifies the maximum delta in seconds between exporter and Minion time stamps. 
-If violated, an alarm will be generated for the exporting device. 
-The default value is 0, so clock skew detection is disabled. 
-Furthermore, a parameter `clockSkewEventRate` can be used to rate-limit clock skew events.
-The default is `3600` seconds, so every hour an event will be sent.
-
-==== Working with Minions
-While {opennms-product-name} can operate as both a listener and a parser, Minion cannot.
-A Minion receives data (listens). 
-Listeners on Minion must use parsers on {opennms-product-name} or Sentinel to process the data. 
-
-Be aware that
 
 === _Adapters_
 _Adapters_ enrich and process the data dispatched over a queue.
@@ -54,6 +40,11 @@ _Parser_.
 Which _Parsers_ are supported by which _Adapters_ is described in the documentation of each respective _Adapter_.
 
 TIP: If you have multiple _Adapters_, the execution order is the same as defined in the `telemetryd-configuration.xml`.
+
+==== Working with Minions
+Listeners and parsers run on Minion, but adapters do not. 
+Adapters run on Sentinel, while the main {opennms-product-name} instance can run listeners, parsers, and adapters. 
+When using Minion as a listener, you must use adapters on {opennms-product-name} or Sentinel to transform the data. 
 
 === _Queues_
 _Queues_ transfer data between _Parsers_ and _Adapters_ and are represented by a channel in the messaging system.
