@@ -60,7 +60,7 @@ admin@minion()> config:property-set name IPFIX
 admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.TcpListener
 admin@minion()> config:property-set parameters.port 50000
 admin@minion()> config:property-set parsers.0.name IPFIX 
-admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.ipfix.parser.IpfixParser
+admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixParser
 admin@minion()> config:update
 ----
 
