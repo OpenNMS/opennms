@@ -97,9 +97,9 @@ public class StringPropertyAttribute implements OnmsAttribute {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StringPropertyAttribute that = (StringPropertyAttribute) o;
-        return Objects.equals(m_name, that.m_name) &&
-                Objects.equals(m_value, that.m_value) &&
-                Objects.equals(m_resource, that.m_resource);
+        return Objects.equals(this.m_name, that.m_name) &&
+                Objects.equals(this.m_value, that.m_value) &&
+                Objects.equals(this.m_resource, that.m_resource);
     }
 
     @Override

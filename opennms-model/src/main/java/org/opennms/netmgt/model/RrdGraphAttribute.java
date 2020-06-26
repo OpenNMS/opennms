@@ -142,10 +142,10 @@ public class RrdGraphAttribute implements OnmsAttribute {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RrdGraphAttribute that = (RrdGraphAttribute) o;
-        return Objects.equals(m_name, that.m_name) &&
-                Objects.equals(m_relativePath, that.m_relativePath) &&
-                Objects.equals(m_rrdFile, that.m_rrdFile) &&
-                Objects.equals(m_resource, that.m_resource);
+        return Objects.equals(this.m_name, that.m_name) &&
+                Objects.equals(this.m_relativePath, that.m_relativePath) &&
+                Objects.equals(this.m_rrdFile, that.m_rrdFile) &&
+                Objects.equals(this.m_resource, that.m_resource);
     }
 
     @Override
