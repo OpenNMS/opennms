@@ -45,7 +45,8 @@ public interface LocationSpecificStatusDao extends OnmsDao<OnmsLocationSpecificS
     Collection<OnmsLocationSpecificStatus> getAllStatusChangesAt(final Date timestamp);
     Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(final Date startDate, final Date endDate);
     Collection<OnmsLocationSpecificStatus> getStatusChangesForLocationBetween(final Date startDate, final Date endDate, final String locationName);
-    Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationBetween(final Date startDate, final Date endDate, final String applicationName);
+    Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationNameBetween(final Date startDate, final Date endDate, final String applicationName);
+    Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationIdBetween(final Date startDate, final Date endDate, final Integer applicationId);
     Collection<OnmsLocationSpecificStatus> getStatusChangesBetweenForApplications(final Date startDate, final Date endDate, final Collection<String> applicationNames);
     Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(final String locationName);
     Collection<LocationIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId);

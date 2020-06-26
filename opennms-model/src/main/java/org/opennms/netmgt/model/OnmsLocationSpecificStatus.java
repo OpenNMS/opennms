@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -46,6 +48,8 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.PollStatus;
+
+import com.google.common.base.MoreObjects;
 
 @Entity
 @Table(name="location_specific_status_changes")
@@ -169,5 +173,31 @@ public class OnmsLocationSpecificStatus {
     @Transient
     public int getStatusCode() {
         return m_pollResult.getStatusCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OnmsLocationSpecificStatus that = (OnmsLocationSpecificStatus) o;
+        return Objects.equals(m_id, that.m_id) &&
+                Objects.equals(m_location, that.m_location) &&
+                Objects.equals(m_monitoredService, that.m_monitoredService) &&
+                Objects.equals(m_pollResult, that.m_pollResult);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_id, m_location, m_monitoredService, m_pollResult);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", m_id)
+                .add("location", m_location)
+                .add("monitoredService", m_monitoredService)
+                .add("pollResult", m_pollResult)
+                .toString();
     }
 }
