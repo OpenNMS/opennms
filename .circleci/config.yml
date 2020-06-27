@@ -170,7 +170,11 @@ commands:
       - run:
           name: Login to DockerHub
           command: |
-            docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASS}
+            if [ -n "${DOCKERHUB_LOGIN}" ]; then
+              docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASS}
+            else
+              echo "WARNING: dockerhub login not found. Assuming this is a PR or other external branch build."
+            fi
   run-smoke-tests:
     description: "Run the smoke tests"
     parameters:
