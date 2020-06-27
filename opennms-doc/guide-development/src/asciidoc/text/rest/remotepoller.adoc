@@ -9,9 +9,9 @@ NOTE: This API is v2-only
 
 [options="header", cols="5,10"]
 |===
-| Resource                                           | Description
-| `remotepoller/{applicationId}`                     | Get the list of aggregated percentage availability per location for the application specified by _applicationId_.
-| `remotepoller/{applicationId}/{montoredServiceId}` | Get the list of aggregated percentage availability per location for an application service specified by _applicationId_ and _monitoredServiceId_.
+| Resource                                            | Description
+| `remotepoller/{applicationId}`                      | Get the list of aggregated percentage availability per location for the application specified by _applicationId_.
+| `remotepoller/{applicationId}/{monitoredServiceId}` | Get the list of aggregated percentage availability per location for an application service specified by _applicationId_ and _monitoredServiceId_.
 |===
 
 ===== Usage examples with curl
