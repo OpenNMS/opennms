@@ -240,7 +240,15 @@ public class ApplicationStatusRestService {
     @GET
     @Path("{applicationId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response applicationStatus(@PathParam("applicationId") final Integer applicationId, @QueryParam("start") final Long start, @QueryParam("end") final Long end) {
+    public Response applicationStatus(@PathParam("applicationId") final Integer applicationId, @QueryParam("start") Long start, @QueryParam("end") Long end) {
+        if (end == null) {
+            end = new Date().getTime();
+        }
+
+        if (start == null) {
+            start = end - 86400000;
+        }
+
         final OnmsApplication onmsApplication = applicationDao.get(applicationId);
         if (onmsApplication == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -253,7 +261,15 @@ public class ApplicationStatusRestService {
     @GET
     @Path("{applicationId}/{monitoredServiceId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response applicationServiceStatus(@PathParam("applicationId") final Integer applicationId, @PathParam("monitoredServiceId") final Integer monitoredServiceId, @QueryParam("start") final Long start, @QueryParam("end") final Long end) {
+    public Response applicationServiceStatus(@PathParam("applicationId") final Integer applicationId, @PathParam("monitoredServiceId") final Integer monitoredServiceId, @QueryParam("start") Long start, @QueryParam("end") Long end) {
+        if (end == null) {
+            end = new Date().getTime();
+        }
+
+        if (start == null) {
+            start = end - 86400000;
+        }
+
         final OnmsApplication onmsApplication = applicationDao.get(applicationId);
         if (onmsApplication == null) {
             return Response.status(Response.Status.NOT_FOUND).build();

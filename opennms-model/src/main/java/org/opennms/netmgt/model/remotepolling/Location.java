@@ -38,18 +38,16 @@ import com.google.common.base.MoreObjects;
 
 @XmlRootElement
 public class Location {
-    @XmlAttribute
     private String name;
 
-    @XmlElement(name="response-resource-id", required = false)
     private String responseResourceId;
 
-    @XmlElement(name="aggregated-status")
     private Double aggregatedStatus;
 
     public Location() {
     }
 
+    @XmlAttribute
     public String getName() {
         return name;
     }
@@ -58,6 +56,7 @@ public class Location {
         this.name = name;
     }
 
+    @XmlElement(name="response-resource-id", required = false)
     public String getResponseResourceId() {
         return responseResourceId;
     }
@@ -66,6 +65,7 @@ public class Location {
         this.responseResourceId = responseResourceId;
     }
 
+    @XmlElement(name="aggregated-status")
     public Double getAggregatedStatus() {
         return aggregatedStatus;
     }

@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
+
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -51,6 +54,7 @@ import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -197,9 +201,9 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
 
         Assert.assertEquals(app1Id, object.getInt("applicationId"));
 
-        Assert.assertEquals(10000, object.getInt("start"));
+        Assert.assertEquals(10000, object.getLong("start"));
 
-        Assert.assertEquals(20000, object.getInt("end"));
+        Assert.assertEquals(20000, object.getLong("end"));
 
         final Map<String, Integer> locationMap = new TreeMap();
         locationMap.put(object.getJSONArray("location").getJSONObject(0).getString("name"), 0);
@@ -226,7 +230,6 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
                         .getDouble("aggregated-status"), 0.00001);
     }
 
-
     private void checkApplicationService(int applicationId, int monitoredServiceId, double rduStatus, double fuldaStatus, String rduResourceId, String fuldaResourceId) throws Exception {
         final Map<String, String> params = new HashMap<>();
         params.put("start", String.valueOf(10000));
@@ -240,8 +243,8 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
 
         Assert.assertEquals(applicationId, object.getInt("applicationId"));
         Assert.assertEquals(monitoredServiceId, object.getInt("monitoredServiceId"));
-        Assert.assertEquals(10000, object.getInt("start"));
-        Assert.assertEquals(20000, object.getInt("end"));
+        Assert.assertEquals(10000, object.getLong("start"));
+        Assert.assertEquals(20000, object.getLong("end"));
 
 
         Assert.assertEquals("RDU",
@@ -278,7 +281,35 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
     @Test
     @Transactional
     public void testApplicationServiceStatus() throws Exception {
-        checkApplicationService(app1Id, app1Service1.getId(),50.0,50.0, "192.168.1.1[ICMP]@RDU", "192.168.1.1[ICMP]@Fulda");
-        checkApplicationService(app1Id, app1Service2.getId(),100.0,50.0, "192.168.1.1[SNMP]@RDU", "192.168.1.1[SNMP]@Fulda");
+        checkApplicationService(app1Id, app1Service1.getId(), 50.0, 50.0, "192.168.1.1[ICMP]@RDU", "192.168.1.1[ICMP]@Fulda");
+        checkApplicationService(app1Id, app1Service2.getId(), 100.0, 50.0, "192.168.1.1[SNMP]@RDU", "192.168.1.1[SNMP]@Fulda");
+    }
+
+    @Test
+    @Transactional
+    public void testDefaults() throws Exception {
+        long currentTimeMs = new Date().getTime();
+        long oneDayMs = 60*60*24*1000;
+        final Map<String, String> params = new HashMap<>();
+        final JSONObject object1 = new JSONObject(sendRequest(GET, "/remotepoller/" + app1Id, params, 200));
+        final JSONObject object2 = new JSONObject(sendRequest(GET, "/remotepoller/" + app1Id + "/" + app1Service1.getId(), params, 200));
+
+        Assert.assertTrue(object1.getLong("start")>=currentTimeMs-oneDayMs && object1.getLong("start")<=currentTimeMs-oneDayMs+2000);
+        Assert.assertTrue(object1.getLong("end")>=currentTimeMs && object1.getLong("end")<=currentTimeMs+2000 );
+
+        Assert.assertTrue(object2.getLong("start")>=currentTimeMs-oneDayMs && object2.getLong("start")<=currentTimeMs-oneDayMs+2000);
+        Assert.assertTrue(object2.getLong("end")>=currentTimeMs && object2.getLong("end")<=currentTimeMs+2000 );
+
+        long end = 10000000000L;
+        params.put("end", String.valueOf(end));
+
+        final JSONObject object3 = new JSONObject(sendRequest(GET, "/remotepoller/" + app1Id, params, 200));
+        final JSONObject object4 = new JSONObject(sendRequest(GET, "/remotepoller/" + app1Id + "/" + app1Service1.getId(), params, 200));
+
+        Assert.assertEquals(end-oneDayMs, object3.getLong("start"));
+        Assert.assertEquals(end, object3.getLong("end"));
+
+        Assert.assertEquals(end-oneDayMs, object4.getLong("start"));
+        Assert.assertEquals(end, object4.getLong("end"));
     }
 }

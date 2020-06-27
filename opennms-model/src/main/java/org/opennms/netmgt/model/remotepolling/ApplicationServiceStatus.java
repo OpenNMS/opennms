@@ -38,26 +38,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.MoreObjects;
 
-@XmlRootElement
+@XmlRootElement(name = "application-service-status")
 public class ApplicationServiceStatus {
-    @XmlAttribute(name="applicationId")
     private Integer applicationId;
 
-    @XmlAttribute(name="monitoredServiceId")
     private Integer monitoredServiceId;
 
-    @XmlAttribute(name="start")
     private Long start;
 
-    @XmlAttribute(name="end")
     private Long end;
 
-    @XmlElement(name = "location")
     private List<Location> locations = new ArrayList<>();
 
     public ApplicationServiceStatus() {
     }
 
+    @XmlAttribute(name="applicationId")
     public Integer getApplicationId() {
         return applicationId;
     }
@@ -66,6 +62,7 @@ public class ApplicationServiceStatus {
         this.applicationId = applicationId;
     }
 
+    @XmlAttribute(name="start")
     public Long getStart() {
         return start;
     }
@@ -74,6 +71,7 @@ public class ApplicationServiceStatus {
         this.start = start;
     }
 
+    @XmlAttribute(name="end")
     public Long getEnd() {
         return end;
     }
@@ -82,6 +80,7 @@ public class ApplicationServiceStatus {
         this.end = end;
     }
 
+    @XmlAttribute(name="monitoredServiceId")
     public Integer getMonitoredServiceId() {
         return monitoredServiceId;
     }
@@ -90,6 +89,7 @@ public class ApplicationServiceStatus {
         this.monitoredServiceId = monitoredServiceId;
     }
 
+    @XmlElement(name = "location")
     public List<Location> getLocations() {
         return locations;
     }

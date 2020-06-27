@@ -38,23 +38,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.common.base.MoreObjects;
 
-@XmlRootElement
+@XmlRootElement(name = "application-status")
 public class ApplicationStatus {
-    @XmlAttribute(name="applicationId")
     private Integer applicationId;
 
-    @XmlAttribute(name="start")
     private Long start;
 
-    @XmlAttribute(name="end")
     private Long end;
 
-    @XmlElement(name = "location")
     private List<Location> locations = new ArrayList<>();
 
     public ApplicationStatus() {
     }
 
+    @XmlAttribute(name="applicationId")
     public Integer getApplicationId() {
         return applicationId;
     }
@@ -63,6 +60,7 @@ public class ApplicationStatus {
         this.applicationId = applicationId;
     }
 
+    @XmlAttribute(name="start")
     public Long getStart() {
         return start;
     }
@@ -71,6 +69,7 @@ public class ApplicationStatus {
         this.start = start;
     }
 
+    @XmlAttribute(name="end")
     public Long getEnd() {
         return end;
     }
@@ -79,6 +78,7 @@ public class ApplicationStatus {
         this.end = end;
     }
 
+    @XmlElement(name = "location")
     public List<Location> getLocations() {
         return locations;
     }
