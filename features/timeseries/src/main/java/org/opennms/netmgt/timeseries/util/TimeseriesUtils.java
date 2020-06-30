@@ -52,7 +52,7 @@ public final class TimeseriesUtils {
 
 
     public static final int WILDCARD_INDEX_NO = 2; // => node level
-    public static final String WILDCARD_INDEX = "_idx" + WILDCARD_INDEX_NO + "*";
+    public static final String WILDCARD_INDEX = "_idx" + WILDCARD_INDEX_NO + "w";
 
     private static final ResourceIdSplitter s_splitter = new EscapableResourceIdSplitter();
 
@@ -63,7 +63,7 @@ public final class TimeseriesUtils {
      * <ul>
      * <li> _idx1: (a, 4)
      * <li> _idx2: (a:b, 4)
-     * <li> _idx2*=(a:b,*) // wildcard index to query for all resources under that resource
+     * <li> _idx2w=(a:b,*) // wildcard index to query for all resources under that resource
      * <li> _idx3: (a:b:c, 4)
      */
     public static void addIndicesToAttributes(ResourcePath path, Map<String, String> attributes) {
@@ -75,7 +75,7 @@ public final class TimeseriesUtils {
         }
         if(elements.size() >= WILDCARD_INDEX_NO) {
             final String id = s_splitter.joinElementsToId(elements.subList(0, WILDCARD_INDEX_NO));
-            attributes.put(String.format("_idx%s*", WILDCARD_INDEX_NO), String.format("(%s,*)", id));
+            attributes.put(String.format("_idx%sw", WILDCARD_INDEX_NO), String.format("(%s,*)", id));
         }
     }
 
