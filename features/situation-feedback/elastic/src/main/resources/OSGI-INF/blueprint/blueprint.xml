@@ -21,6 +21,7 @@
             <cm:property name="elasticIndexStrategy" value="monthly" />
             <cm:property name="defaultMaxTotalConnectionPerRoute" value="-1" />
             <cm:property name="maxTotalConnection" value="-1" />
+            <cm:property name="ignoreCertificates" value="false"/>
             <cm:property name="nodeDiscovery" value="false" />
             <cm:property name="nodeDiscoveryFrequency" value="0" />
             <cm:property name="proxy" value=""/>
@@ -66,6 +67,7 @@
         <property name="connTimeout" value="${connTimeout}" />
         <property name="readTimeout" value="${readTimeout}" />
         <property name="retries" value="${retries}" />
+        <property name="ignoreCertificates" value="${ignoreCertificates}"/>
     </bean>
 
     <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
