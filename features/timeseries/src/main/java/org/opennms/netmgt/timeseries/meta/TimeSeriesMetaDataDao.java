@@ -88,8 +88,8 @@ public class TimeSeriesMetaDataDao {
 
         // find all MetaData that is not present in the cache
         for(MetaData meta : metaDataCollection) {
-            Map<String, String> attributesForResource = cache.getIfPresent(meta.getResourceId());
-            if(attributesForResource != null && attributesForResource.containsKey(meta.getName())) {
+            Map<String, String> attributesForResource = cache.get(meta.getResourceId(), HashMap::new);
+            if(attributesForResource.get(meta.getName()) == null) {
                 writeToDb.add(meta);
                 attributesForResource.put(meta.getName(), meta.getValue()); // add to cache
             }
