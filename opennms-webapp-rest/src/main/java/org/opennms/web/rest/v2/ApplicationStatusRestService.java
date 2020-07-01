@@ -176,8 +176,7 @@ public class ApplicationStatusRestService {
         return uptimeMillis / totalTimeMillis;
     }
 
-
-    private ApplicationStatus getApplicationStatus(final OnmsApplication onmsApplication, final Collection<OnmsLocationSpecificStatus> statusChanges, final long start, final long end) {
+    private ApplicationStatus buildApplicationStatus(final OnmsApplication onmsApplication, final Collection<OnmsLocationSpecificStatus> statusChanges, final long start, final long end) {
         final Map<OnmsMonitoringLocation, Map<OnmsMonitoredService, List<OnmsLocationSpecificStatus>>> m = new HashMap<>();
 
         for(final OnmsLocationSpecificStatus onmsLocationSpecificStatus : statusChanges) {
@@ -209,7 +208,7 @@ public class ApplicationStatusRestService {
         return applicationStatus;
     }
 
-    private ApplicationServiceStatus getApplicationServiceStatus(final OnmsApplication onmsApplication, final Integer monitoredServiceId, final Collection<OnmsLocationSpecificStatus> statusChanges, final long start, final long end) {
+    private ApplicationServiceStatus buildApplicationServiceStatus(final OnmsApplication onmsApplication, final Integer monitoredServiceId, final Collection<OnmsLocationSpecificStatus> statusChanges, final long start, final long end) {
         final Map<OnmsMonitoringLocation, List<OnmsLocationSpecificStatus>> m = new HashMap<>();
         final OnmsMonitoredService onmsMonitoredService = monitoredServiceDao.get(monitoredServiceId);
 
@@ -255,7 +254,7 @@ public class ApplicationStatusRestService {
         }
 
         final Collection<OnmsLocationSpecificStatus> statusChanges = locationSpecificStatusDao.getStatusChangesForApplicationIdBetween(new Date(start), new Date(end), applicationId);
-        return Response.ok(getApplicationStatus(onmsApplication, statusChanges, start, end)).build();
+        return Response.ok(buildApplicationStatus(onmsApplication, statusChanges, start, end)).build();
     }
 
     @GET
@@ -276,6 +275,6 @@ public class ApplicationStatusRestService {
         }
 
         final Collection<OnmsLocationSpecificStatus> statusChanges = locationSpecificStatusDao.getStatusChangesForApplicationIdBetween(new Date(start), new Date(end), applicationId);
-        return Response.ok(getApplicationServiceStatus(onmsApplication, monitoredServiceId, statusChanges, start, end)).build();
+        return Response.ok(buildApplicationServiceStatus(onmsApplication, monitoredServiceId, statusChanges, start, end)).build();
     }
 }
