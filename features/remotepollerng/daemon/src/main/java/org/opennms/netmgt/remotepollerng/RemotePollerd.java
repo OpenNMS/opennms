@@ -323,7 +323,9 @@ public class RemotePollerd implements SpringServiceDaemon {
         }
 
         final ServiceSelector selector = pollerConfig.getServiceSelectorForPackage(pkg);
-        final Collection<OnmsMonitoredService> services = monSvcDao.findMatchingServices(selector);
+        final Collection<OnmsMonitoredService> services = monSvcDao.findMatchingServices(selector).stream()
+                .filter(s -> s.getApplications().size() > 0)
+                .collect(Collectors.toSet());
         LOG.debug("Found {} services in polling package {}", services.size(), pkg.getName());
         final List<RemotePolledService> polledServices = new ArrayList<>(services.size());
         for (final OnmsMonitoredService monSvc : services) {
