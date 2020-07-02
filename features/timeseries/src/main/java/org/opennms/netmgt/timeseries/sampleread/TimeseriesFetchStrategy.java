@@ -290,7 +290,7 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                         .metric(metric)
                         .currentSources(currentSources)
                         .lag(lag)
-                        .build().process(samplesToNewtsRowIterator(samples, currentSources));
+                        .build().process(samplesToNewtsRowIterator(samples));
             }
             allSamples.put(source, samples);
         }
