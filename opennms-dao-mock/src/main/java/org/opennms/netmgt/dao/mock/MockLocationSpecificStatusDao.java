@@ -84,7 +84,12 @@ public class MockLocationSpecificStatusDao extends AbstractMockDao<OnmsLocationS
     }
 
     @Override
-    public Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationBetween(Date startDate, Date endDate, String applicationName) {
+    public Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationNameBetween(Date startDate, Date endDate, String applicationName) {
+        return null;
+    }
+
+    @Override
+    public Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationIdBetween(Date startDate, Date endDate, Integer applicationId) {
         return null;
     }
 

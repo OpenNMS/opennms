@@ -138,7 +138,7 @@ public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyR
                 final TimeChunker timeChunker = new TimeChunker(totalTime, new Date(startMillis), new Date(endMillis));
                 // increment the time segment
                 timeChunker.getNextSegment();
-                final Collection<OnmsLocationSpecificStatus> allStatusChanges = m_locationSpecificStatusDao.getStatusChangesForApplicationBetween(new Date(startMillis), new Date(endMillis), "IPv6");
+                final Collection<OnmsLocationSpecificStatus> allStatusChanges = m_locationSpecificStatusDao.getStatusChangesForApplicationNameBetween(new Date(startMillis), new Date(endMillis), "IPv6");
                 final AvailCalculator calc = new AvailCalculator(timeChunker);
 
                 for(final OnmsLocationSpecificStatus statusChange : allStatusChanges) {

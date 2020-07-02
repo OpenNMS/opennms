@@ -154,7 +154,7 @@ public class LocationSpecificStatusDaoHibernate extends AbstractDaoHibernate<Onm
         return statuses;    }
 
     @Override
-    public Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationBetween(final Date startDate, final Date endDate, final String applicationName) {
+    public Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationNameBetween(final Date startDate, final Date endDate, final String applicationName) {
         return findObjects(OnmsLocationSpecificStatus.class,
                 "from OnmsLocationSpecificStatus as status " +
                         "left join fetch status.monitoredService as m " +
@@ -173,6 +173,28 @@ public class LocationSpecificStatusDaoHibernate extends AbstractDaoHibernate<Onm
                         "   )" +
                         ")",
                 applicationName, startDate, endDate, startDate);
+    }
+
+    @Override
+    public Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationIdBetween(final Date startDate, final Date endDate, final Integer applicationId) {
+        return findObjects(OnmsLocationSpecificStatus.class,
+                "from OnmsLocationSpecificStatus as status " +
+                        "left join fetch status.monitoredService as m " +
+                        "left join fetch m.applications as a " +
+                        "left join fetch status.location as l " +
+                        "where " +
+                        "a.id = ? " +
+                        "and " +
+                        "( status.pollResult.timestamp between ? and ?" +
+                        "  or" +
+                        "  status.id in " +
+                        "   (" +
+                        "       select max(s.id) from OnmsLocationSpecificStatus as s " +
+                        "       where s.pollResult.timestamp < ? " +
+                        "       group by s.location, s.monitoredService " +
+                        "   )" +
+                        ")",
+                applicationId, startDate, endDate, startDate);
     }
 
     @Override
