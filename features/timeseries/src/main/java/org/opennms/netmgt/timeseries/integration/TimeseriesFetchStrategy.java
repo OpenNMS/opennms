@@ -55,6 +55,7 @@ import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.integration.api.v1.timeseries.Aggregation;
 import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.Sample;
+import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.TimeSeriesFetchRequest;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
@@ -180,8 +181,8 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
             // so we perform multiple queries in parallel, and aggregate the results.
             Map<String, Future<Map<Source, List<Sample>>>> measurementsByNewtsResourceId = Maps.newHashMapWithExpectedSize(sourcesByNewtsResourceId.size());
             for (Entry<String, List<Source>> entry : sourcesByNewtsResourceId.entrySet()) {
-                measurementsByNewtsResourceId.put(entry.getKey(), threadPool.submit(
-                        getMeasurementsForResourceCallable(entry.getKey(), entry.getValue(), startTs, endTs, lag)));
+                measurementsByNewtsResourceId.put(entry.getKey(),
+                        threadPool.submit(() -> getMeasurementsForResourceCallable(entry.getKey(), entry.getValue(), startTs, endTs, lag)));
             }
 
             long[] timestamps = null;
@@ -249,56 +250,51 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
         return sourcesByResource;
     }
 
-    private Callable<Map<Source, List<Sample>>> getMeasurementsForResourceCallable(final String resourceId, final List<Source> listOfSources, final Instant start, final Instant end, final LateAggregationParams lag) {
-        return new Callable<Map<Source, List<Sample>>>() {
-            @Override
-            public Map<Source, List<Sample>> call() throws Exception {
+    private Map<Source, List<Sample>> getMeasurementsForResourceCallable(final String resourceId, final List<Source> listOfSources, final Instant start, final Instant end, final LateAggregationParams lag) throws StorageException {
 
-                Map<Source, List<Sample>> allSamples = new HashMap<>(listOfSources.size());
+        Map<Source, List<Sample>> allSamples = new HashMap<>(listOfSources.size());
 
-                // get results for all sources
-                for (Source source : listOfSources) {
-                    // Use the datasource as the metric name if set, otherwise use the name of the attribute
-                    final String metricName = source.getDataSource() != null ? source.getDataSource() : source.getAttribute();
-                    final Aggregation aggregation = toAggregation(source.getAggregation());
-                    final boolean shouldAggregateNatively = storageManager.get().supportsAggregation(aggregation);
+        // get results for all sources
+        for (Source source : listOfSources) {
+            // Use the datasource as the metric name if set, otherwise use the name of the attribute
+            final String metricName = source.getDataSource() != null ? source.getDataSource() : source.getAttribute();
+            final Aggregation aggregation = toAggregation(source.getAggregation());
+            final boolean shouldAggregateNatively = storageManager.get().supportsAggregation(aggregation);
 
-                    final ImmutableMetric metric = ImmutableMetric.builder()
-                            .intrinsicTag(IntrinsicTagNames.resourceId, resourceId)
-                            .intrinsicTag(IntrinsicTagNames.name, metricName)
-                            .build();
+            final ImmutableMetric metric = ImmutableMetric.builder()
+                    .intrinsicTag(IntrinsicTagNames.resourceId, resourceId)
+                    .intrinsicTag(IntrinsicTagNames.name, metricName)
+                    .build();
 
-                    Aggregation aggregationToUse = shouldAggregateNatively ? aggregation : Aggregation.NONE;
-                    TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
-                            .metric(metric)
-                            .start(start)
-                            .end(end)
-                            .step(Duration.ofMillis(lag.getStep()))
-                            .aggregation(aggregationToUse)
-                            .build();
+            Aggregation aggregationToUse = shouldAggregateNatively ? aggregation : Aggregation.NONE;
+            TimeSeriesFetchRequest request = ImmutableTimeSeriesFetchRequest.builder()
+                    .metric(metric)
+                    .start(start)
+                    .end(end)
+                    .step(Duration.ofMillis(lag.getStep()))
+                    .aggregation(aggregationToUse)
+                    .build();
 
-                    List<Sample> samples;
-                    try(Timer.Context context = sampleReadTsTimer.time()) {
-                        LOG.debug("Querying TimeseriesStorage for resource id {} with request: {}", resourceId, request);
-                        samples = storageManager.get().getTimeseries(request);
-                    }
-                    // aggregate if timeseries implementation didn't do it natively
-                    if (!shouldAggregateNatively) {
-                        final List<Source> currentSources = Collections.singletonList(source);
-                        samples = NewtsLikeSampleAggregator.builder()
-                                .resource(resourceId)
-                                .start(start)
-                                .end(end)
-                                .metric(metric)
-                                .currentSources(currentSources)
-                                .lag(lag)
-                                .build().process(samplesToNewtsRowIterator(samples, currentSources));
-                    }
-                    allSamples.put(source, samples);
-                }
-                return allSamples;
+            List<Sample> samples;
+            try (Timer.Context context = sampleReadTsTimer.time()) {
+                LOG.debug("Querying TimeseriesStorage for resource id {} with request: {}", resourceId, request);
+                samples = storageManager.get().getTimeseries(request);
             }
-        };
+            // aggregate if timeseries implementation didn't do it natively
+            if (!shouldAggregateNatively) {
+                final List<Source> currentSources = Collections.singletonList(source);
+                samples = NewtsLikeSampleAggregator.builder()
+                        .resource(resourceId)
+                        .start(start)
+                        .end(end)
+                        .metric(metric)
+                        .currentSources(currentSources)
+                        .lag(lag)
+                        .build().process(samplesToNewtsRowIterator(samples, currentSources));
+            }
+            allSamples.put(source, samples);
+        }
+        return allSamples;
     }
 
     private static Aggregation toAggregation(String fn) {
