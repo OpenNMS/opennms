@@ -42,6 +42,11 @@ import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jcifs.CIFSContext;
+import jcifs.NameServiceClient;
+import jcifs.context.BaseContext;
+import jcifs.context.SingletonContext;
+import jcifs.netbios.NameServiceClientImpl;
 import jcifs.netbios.NbtAddress;
 
 /**
@@ -84,6 +89,8 @@ final public class SmbMonitor extends AbstractServiceMonitor {
         // to determine if SMB is supported.
         //
         NbtAddress nbtAddr = null;
+        CIFSContext base = SingletonContext.getInstance();
+        NameServiceClient nsc = new NameServiceClientImpl(base);
         
         /*
          * This try block was updated to reflect the behavior of the plugin.
@@ -93,10 +100,10 @@ final public class SmbMonitor extends AbstractServiceMonitor {
         final boolean doNodeStatus = ParameterMap.getKeyedBoolean(parameters, DO_NODE_STATUS, DO_NODE_STATUS_DEFAULT);
 
         try {
-            nbtAddr = NbtAddress.getByName(hostAddress);
+            nbtAddr = (NbtAddress) nsc.getByName(hostAddress);
             
             if (doNodeStatus) {
-                nbtAddr.getNodeType();
+                nbtAddr.getNodeType(base);
             }
             
             if (!nbtAddr.getHostName().equals(hostAddress))

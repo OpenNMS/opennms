@@ -40,6 +40,10 @@ import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jcifs.CIFSContext;
+import jcifs.NameServiceClient;
+import jcifs.context.BaseContext;
+import jcifs.context.SingletonContext;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
@@ -153,13 +157,15 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         // Setting default PollStatus
         PollStatus serviceStatus = PollStatus.unknown();
 
+        CIFSContext base = SingletonContext.getInstance();
+
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
 
-            NtlmPasswordAuthentication ntlmPasswordAuthentication = new NtlmPasswordAuthentication(authString);
+            NtlmPasswordAuthentication ntlmPasswordAuthentication = new NtlmPasswordAuthentication(base, authString);
 
             try {
                 // Creating SmbFile object
-                SmbFile smbFile = new SmbFile(fullUrl, ntlmPasswordAuthentication);
+                SmbFile smbFile = new SmbFile(fullUrl, base.withCredentials(ntlmPasswordAuthentication));
                 // Setting the defined timeout
                 smbFile.setConnectTimeout(tracker.getConnectionTimeout());
                 // Does the file exists?
