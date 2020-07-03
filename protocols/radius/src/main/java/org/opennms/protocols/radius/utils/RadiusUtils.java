@@ -46,7 +46,7 @@ public class RadiusUtils {
 
     public final static void loadSecurityProvider() {
         // This adds support for MD4 digest used by mschapv2 - NMS-9763
-        // update 20200702:jcifs-ng uses bcprov instead of maintaining its own 
+        // update 20200702:jcifs-ng uses bcprov instead of maintaining its own
         // implementations and provides the Crypto utility for easy retrieval
         Security.addProvider(new Provider("MD4", 0.0D, "MD4 for Radius") {
             {
