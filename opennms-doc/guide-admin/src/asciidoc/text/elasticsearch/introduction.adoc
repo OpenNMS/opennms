@@ -41,7 +41,7 @@ The following properties can be set:
 | -
 
 | _ignoreCertificates_
-| Set this to ignore https/ssl/tls certificates.
+| Set this to ignore HTTPS/SSL/TLS certificates.
 | optional
 | false
 
