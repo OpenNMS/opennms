@@ -1,19 +1,36 @@
-{opennms-product-name} supports the assignment of arbitrary meta-data to nodes, interfaces and services.
 
-The meta-data is a simple triple of strings containing a context, a key and the associated value.
-There can be an arbitrary number of meta-data elements assigned to each node, each interface and each service.
-The only restriction is, that the tuple of context and key must be unique in the element to which they are associated.
+// Allow GitHub image rendering
+:imagesdir: ../images
 
-The meta-data is associated to nodes, interfaces and services during link:#ga-provisioning-meta-data[provisioning].
+{opennms-product-name} supports the assignment of arbitrary metadata to nodes, interfaces and services. 
+You can then use this metadata to dynamically configure service monitoring, performance data collection, service detection, and expression-based thresholds. 
 
-To view the meta-data currently assigned to nodes, interfaces and services, there according details page can be used.
-These pages show the meta-data as it is currently assigned in the database.
+The metadata is a simple triad of strings containing a context, a key and the associated value.
+Each node, each interface and each service can have an arbitrary number of metadata elements assigned to it.
+The only restriction is that the tuple of context and key must be unique in the element with which it is associated.
 
-The meta-data can be used to dynamically configure service monitoring, performance data collection, and service detection.
-They all use a link:#ga-meta-data-dsl[simple DSL] which allows to access the meta-data associated to the elements they are working on.
+The association of metadata with nodes, interfaces and services happens during link:#ga-provisioning-meta-data[provisioning].
+Users can add, query, modify, or delete metadata through the requisition editor in the link:ga-metadata-webui[web UI], or through the xref:https://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html#_meta_data[ReST endpoints].
 
-=== Special contexts
-In relation to nodes, assets, interfaces and services, there are special contexts available which expose details about those objects.
+A link:#ga-meta-data-dsl[simple domain-specific language] (DSL) allows users to access the metadata associated with the elements they are working on, and use it as a variable in parameters and expressions.
+There is no limitation in defining metadata: users can decide how to define it and use it in expressions. 
+
+View metadata currently assigned to nodes, interfaces and services, on the details page associated with that entity in the web UI:
+
+image:metadata/metadata-view.png[]
+
+=== Contexts
+
+A context distinguishes different kinds of metadata use. 
+{opennms-product-name} uses several default contexts: pattern (used with polling), requisition, node, interface, and service. 
+
+Three special contexts provide details about nodes, interfaces and services objects.
+Each context has keys associated with it that you can use in a metadata expression. 
+
+You can create user-defined contexts in the ReST API by prefixing the context name with `X-`. 
+Using an `X-` prefix can help to avoid future {opennms-product-name} contexts interfering with a user-defined context, since {opennms-product-name} contexts are not prefixed in this way.  
+
+==== Node context
 
 The `node` context provides details about the node currently processed.
 The following keys are available under this context:
@@ -21,92 +38,21 @@ The following keys are available under this context:
 [options="header, autowidth"]
 |===
 | Context:Key            | Description
-| `node:label`           | The label of the node
+| `node:label`           | The node's label
 | `node:foreign-source`  | The node's foreign source name
-| `node:foreign-id`      | The node's foreigne ID
+| `node:foreign-id`      | The node's foreign ID
 | `node:netbios-domain`  | The NetBIOS domain as provided by SNMP
 | `node:netbios-name`    | The NetBIOS name as provided by SNMP
 | `node:os`              | The node's operating system
 | `node:sys-name`        | The system name of the node
 | `node:sys-location`    | The system location of the node
-| `node:sys-object-id`    | The system id of the node
 | `node:sys-contact`     | The system contact specified for the node
 | `node:sys-description` | The system description of the node
 | `node:location`        | The node's monitoring location name
 | `node:area`            | The node's monitoring location area
 |===
 
-The `asset` context provides meta data about the node currently processed.
-The following keys are available under this context:
-
-[options="header, autowidth"]
-|===
-| Context:Key                       | Description
-| `asset:category`                  |
-| `asset:vendor`                    |
-| `asset:manufacturer`              |
-| `asset:vendor`                    |
-| `asset:model-number`              |
-| `asset:serial-number`             |
-| `asset:description`               |
-| `asset:circuit-id`                |
-| `asset:asset-number`              |
-| `asset:operating-system`          |
-| `asset:rack`                      |
-| `asset:slot`                      |
-| `asset:port`                      |
-| `asset:region`                    |
-| `asset:division`                  |
-| `asset:department`                |
-| `asset:building`                  |
-| `asset:floor`                     |
-| `asset:room`                      |
-| `asset:vendor-phone`              |
-| `asset:vendor-fax`                |
-| `asset:vendor-asset-number`       |
-| `asset:username`                  |
-| `asset:password`                  |
-| `asset:enable`                    |
-| `asset:connection`                |
-| `asset:autoenable`                |
-| `asset:last-modified-by`          |
-| `asset:last-modified-date`        |
-| `asset:date-installed`            |
-| `asset:lease`                     |
-| `asset:lease-expires`             |
-| `asset:support-phone`             |
-| `asset:maintcontract`             |
-| `asset:maint-contract-expiration` |
-| `asset:display-category`          |
-| `asset:notify-category`           |
-| `asset:poller-category`           |
-| `asset:threshold-category`        |
-| `asset:comment`                   |
-| `asset:cpu`                       |
-| `asset:ram`                       |
-| `asset:storagectrl`               |
-| `asset:hdd1`                      |
-| `asset:hdd2`                      |
-| `asset:hdd3`                      |
-| `asset:hdd4`                      |
-| `asset:hdd5`                      |
-| `asset:hdd6`                      |
-| `asset:numpowersupplies`          |
-| `asset:inputpower`                |
-| `asset:additionalhardware`        |
-| `asset:admin`                     |
-| `asset:snmpcommunity`             |
-| `asset:rackunitheight`            |
-| `asset:managed-object-type`       |
-| `asset:managed-object-instance`   |
-| `asset:geolocation`               |
-| `asset:vmware-managed-object-id`  |
-| `asset:vmware-managed-entity-type`|
-| `asset:vmware-management-server`  |
-| `asset:vmware-topology-info`      |
-| `asset:vmware-state`              |
-|===
-
+==== Interface context
 
 The `interface` context provides details about the interface currently processed.
 The following keys are available under this context:
@@ -115,7 +61,7 @@ The following keys are available under this context:
 |===
 | Context:Key                | Description
 | `interface:hostname`       | The hostname associated with the IP address of the interface
-| `interface:address`        | The IP address if the interface
+| `interface:address`        | The IP address of the interface
 | `interface:netmask`        | The netmask of the interface
 | `interface:if-index`       | The SNMP interface index
 | `interface:if-alias`       | The SNMP interface alias
@@ -123,8 +69,10 @@ The following keys are available under this context:
 | `interface:phy-addr`       | The physical address of the interface
 |===
 
+==== Service context
+
 The `service` context provides details about the service currently processed.
-The following keys are available under this context:
+The following key is available under this context:
 
 [options="header, autowidth"]
 |===
@@ -132,35 +80,61 @@ The following keys are available under this context:
 | `service:name`     | The full name of the service
 |===
 
-[[ga-meta-data-dsl]]
-=== The Meta-Data-DSL
-The meta-data DSL allow interpolation of meta-data into a parameter.
-The syntax allows the usage of patterns like `${context:key|context_fallback:key_fallback|...|default}` in an expression.
+[[ga-metadata-webui]]
+=== Adding Metadata through the Web UI
 
-Each expressions can contain multiple references to meta-data which will be replaced with the according value during evaluation.
-Placeholders starts with `${` and ends with `}` containing a reference to a context-key-pair optionally allowing to define multiple fallback context-key-pairs and and optional trailing default value.
-Context and key are separated by a `:`.
+You can edit the requisition context in the web UI:
+
+. Under the admin menu, select *Configure OpenNMS*.
+. Select *Manage Provisioning Requisitions*.
+. Click the edit icon beside the requisition you want to work with. 
+. Click edit beside the node you want to work with. 
+. In the *Meta-Data* area, click *Add Meta-Data*.
++
+image:metadata/metadata_add.png[]
+
+. Specify `node` or `interface` as the *scope* of where the metadata will apply. 
+. Specify the key and a value and click *Save*.
+
+[[ga-meta-data-dsl]]
+=== The Metadata DSL
+The metadata DSL allows interpolation of metadata into a parameter.
+The syntax allows the use of patterns like `${context:key|context_fallback:key_fallback|...|default}` in an expression.
+
+Each expression can contain multiple references to metadata that will be replaced with the corresponding value during evaluation.
+Placeholders start with `${` and end with `}` containing a reference to a context-key pair. 
+You may choose to define multiple fallback context-key pairs and and an optional trailing default value.
+Separate context and key by a `:`.
+Use a `|` to separate optional fallback context-key pairs and default value. 
+If the first context:key item is not available (not on a service, interface, node or any other of the special contexts) the next one after the | is used. 
+The last one, the default value, is not interpreted as a `context:key` but is used as a literal and will always succeed. 
+
+*Examples*
 
 `${requisition:username}`::
 Will resolve to the `username` as defined in the requisitioning UI or an empty value, if there is no such username defined.
 
-An placeholder can contain an optional default value which is separated by a `|`.
+A placeholder can contain an optional default value which is separated by a `|`.
 
 `${requisition:username|admin}`::
 Will resolve to the `username` as defined in the requisitioning UI or to the value `admin`, if there is no such username defined.
 
-There can be zero or more fallback context-key-pairs in an placeholder which will follow the primary context-key-pair.
-Each fallback context-key-pair is separated by a `|`.
+Use fallback context-key pairs in a placeholder after the primary context-key pair to specify other values if the primary context-key pair is not defined. 
+Separate each fallback context-key-pair by a `|`.
 
 `${requisition:username|requisition:account|admin}`::
 Will resolve to the `username` as defined in the requisitioning UI.
-If there is no such username defined the fallback `account` will be used.
-If both of them do not exist, the fallback value `admin` will be used.
+If there is no such username defined, the fallback `account` will be used.
+If neither exist, the fallback value `admin` will be used.
 
-To resolve the value associated with context-key-pair, the DSL uses scopes which will determine the resolution order.
-The last scope will be queried first and if a scope does not contain the queried context-key-tuple, the next one will be queried.
-Which scopes are available depends on the environment for which a expression is evaluated and is documented in the according places.
-Some environments also provide additional scopes which are not backed by the persisted meta-data but provide additional meta-data related to the current evaluation.
+To resolve the value associated with context-key pair, the DSL uses scopes that determine the resolution order.
+The last scope will be queried first and if a scope does not contain the queried context-key tuple, the next one will be queried.
+For example, the resolution of a query on a service entity would be service metadata->interface metatdata->node metadata.
+On an interface, it is metadata->interface metatdata->node metadata.
+On the node level, only the node is queried. 
+
+Which scopes are available depends on the environment for which an expression is evaluated and is documented in the corresponding places elsewhere in this guide.
+Some environments also provide additional scopes that are not backed by the persisted metadata but provide additional metadata related to the current evaluation.
 
 ==== Testing an expression
 To test an expression, there is a karaf shell command which interpolates a string containing a pattern to the final result:
@@ -188,9 +162,11 @@ Output: 'red'
 admin@opennms>
 ----
 
-==== Usages
-The following places allow to use the Meta-Data-DSL:
+==== Uses
+The following places allow the use the Metadata DSL:
 
 * link:#ga-provisioning-detectors-meta-data[Provisioning Detectors]
 * link:#ga-pollerd-configuration-meta-data[Service Assurance]
 * link:#ga-collectd-packages-services-meta-data[Performance Management]
+* link:#ga-metadata-ttl[TTLs with Minion]
+* link:#ga-threshhold-metadata[Expression-Based Thresholds]
