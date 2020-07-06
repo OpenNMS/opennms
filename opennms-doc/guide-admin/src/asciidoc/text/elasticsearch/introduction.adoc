@@ -40,6 +40,11 @@ The following properties can be set:
 | optional
 | -
 
+| _ignoreCertificates_
+| Set this to ignore https/ssl/tls certificates.
+| optional
+| false
+
 | _defaultMaxTotalConnectionPerRoute_
 | Sets the default max connections per route. If a negative value is given, the value is ignored.
 | optional
