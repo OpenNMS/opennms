@@ -1,3 +1,4 @@
+// Allow GitHub image rendering
 :imagesdir: ../../../images
 
 ==== BGP Monitoring Protocol
@@ -5,9 +6,8 @@
 The _BGP Monitoring Protocol (BMP)_ provides a convenient interface for obtaining route views.
 The integration in _{opennms-product-name}_ allows you to use these route views, status updates and statistics for monitoring and management.
 
-[[ga-bmp-integration-overview]]
-.BMP Integration Overview
-image:bmp/bmp_integration_overview.png[]
+.BMP integration overview
+image:bmp/bmp_integration_overview.png[BMP integration]    
 
 [[telemetryd-bmp-parser]]
 ===== BMP TCP Parser
@@ -32,6 +32,25 @@ The BMP Parser accepts BMP connections from router packets using a <<telemetryd-
 | `bulkhead.maxWaitDurationMs`  | Limits the amount of time to wait for a saturated bulkhead (in milliseconds). | no       | 5 Minutes
 |===
 
+===== Configure BMP Listener on a Minion
+
+To enable and configure a _TCP Listener_ for BMP on Minion, connect to the _Karaf Console_ and set the following properties:
+
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit --alias tcp-5000 --factory org.opennms.features.telemetry.listeners
+admin@minion()> config:property-set name BMP
+admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.TcpListener
+admin@minion()> config:property-set parameters.port 50000
+admin@minion()> config:property-set parsers.0.name BMP 
+admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser
+admin@minion()> config:update
+----
+
+NOTE: The protocol must also be enabled on _{opennms-product-name}_ for the messages to be processed.
+If you do not specify the queue name, the fallback is the name of the parser. 
 
 [[telemetryd-bmp-statistics-adapter]]
 ===== BMP Telemetry Adapter
@@ -42,7 +61,7 @@ The router must exist as a regular node in _{opennms-product-name}_.
 
 {opennms-product-name} uses the IP address exporting BMP messages to associate a router with the particular _{opennms-product-name}_ node.
 In addition, the node's metadata can specify a BGP ID, which will then be used to associate routers.
-If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, which will be used to lookup a node which has stored the queried BGP ID as a value in exactly this key.
+If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, which will be used to lookup a node that has stored the queried BGP ID as a value in exactly this key.
 
 ====== Facts
 
@@ -68,13 +87,12 @@ The BMP Peer Status Adapter creates events for peer status changes.
 It handles _BMP_ Peer Up and Down messages that the <<telemetryd-bmp-parser, BMP Parser>> receives and parses, and converts to _{opennms-product-name}_ events.
 _{opennms-product-name}_ associates the created events with the router sending the messages.
 This router must exist as regular node in _{opennms-product-name}_.
-``
 
 The events are called `uei.opennms.org/bmp/peerUp` and `uei.opennms.org/bmp/peerDown`.
 
 {opennms-product-name} uses the IP address exporting BMP messages to associate a router with the particular _{opennms-product-name}_ node.
 In addition, the node's metadata can specify a BGP ID, which will then be used to associate routers.
-If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, which will be used to lookup a node which has stored the queried BGP ID as a value in exactly this key.
+If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, which will be used to lookup a node that has stored the queried BGP ID as a value in exactly this key.
 
 ====== Facts
 
@@ -96,8 +114,8 @@ If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a 
 [[telemetryd-openbmp-integration-adapter]]
 ===== OpenBMP Integration Adapter
 
-The OpenBMP Integration Adapter integrates with an existing http://www.openbmp.org[OpenBMP] installation.
-It handles _BMP_ messages the <<telemetryd-bmp-parser, BMP Parser>> receives and parses and creates _OpenBMP_-compatible messages, which are then passed to the _OpenBMP_ Kafka cluster.
+The OpenBMP Integration Adapter integrates with an existing https://github.com/OpenBMP[OpenBMP] installation.
+It handles _BMP_ messages the <<telemetryd-bmp-parser, BMP Parser>> receives and parses, and creates _OpenBMP_-compatible messages, which are then passed to the _OpenBMP_ Kafka cluster.
 
 This setup replaces the _Collector_ component of _OpenBMP_.
 
