@@ -40,5 +40,5 @@ package org.opennms.netmgt.timeseries;
  * - Resource meta data: Stored internally in OpenNMS. It contains key value pairs attached to a Resource.
  *           This data is not passed on the the timeseries database, see {@link org.opennms.netmgt.timeseries.meta.TimeSeriesMetaDataDao}.
  * - meta data tags: additional data that can be exported to the timeseries database as meta tags in the Metric. Configured via opennms.properties,
- *           see {@link org.opennms.netmgt.timeseries.integration.persistence.MetaTagDataLoader}
+ *           see {@link org.opennms.netmgt.timeseries.samplewrite.MetaTagDataLoader}
  */
