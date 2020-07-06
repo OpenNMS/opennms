@@ -429,31 +429,33 @@ doStart(){
 	fi
 
 	CMD=("${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}")
-	if [ "$BACKGROUND" = 1 ]; then
-		# shellcheck disable=SC2129
-		{
-			echo "------------------------------------------------------------------------------"
-			date
-			echo "begin ulimit settings:"
-			ulimit -a
-			echo "end ulimit settings"
-			echo "Executing command:" "${CMD[@]}"
-		} >> "$REDIRECT"
-
-		# NMS-12226 runCmd & spawns a subshell process for the function runCmd which is not the PID of the java process.
-		# To avoid this spawn the command directly so the $! is the PID of java.
-		if [[ "$NOEXECUTE" == "0" ]]; then
-			"${CMD[@]}" >>"$REDIRECT" 2>&1 &
-		else
-			echo "Skipping execution: ${CMD[*]}"
+	if [ "$SYSTEMD" = 1 ]; then
+		if [ "$BACKGROUND" = 0 ]; then
+			echo "WARNING: -s (systemd) was passed, -f (foreground) is ignored" >&2
 		fi
-		OPENNMS_PID="$!"
-		echo "$OPENNMS_PID" > "$OPENNMS_PIDFILE"
-	else
 		echo "running ulimit -a"
 		ulimit -a
-		runCmd "${CMD[@]}"
-		exit $?
+		runCmd "${CMD[@]}" &
+		exit 0
+	else
+		if [ "$BACKGROUND" = 1 ]; then
+			# shellcheck disable=SC2129
+			{
+				echo "------------------------------------------------------------------------------"
+				date
+				echo "begin ulimit settings:"
+				ulimit -a
+				echo "end ulimit settings"
+				echo "Executing command:" "${CMD[@]}"
+			} >> "$REDIRECT"
+
+			runCmd "${CMD[@]}" >> "$REDIRECT" 2>&1 &
+		else
+			echo "running ulimit -a"
+			ulimit -a
+			runCmd "${CMD[@]}"
+			exit $?
+		fi
 	fi
 
 	if [ "$START_TIMEOUT" -eq 0 ]; then
@@ -690,6 +692,10 @@ MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
 JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
 JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
 
+# make sure a PID is written
+MANAGER_OPTIONS+=("-Dopennms.pidfile=${OPENNMS_PIDFILE}")
+CONTROLLER_OPTIONS+=("-Dopennms.pidfile=${OPENNMS_PIDFILE}")
+
 JAVA_MODULES=(
 	java.base \
 	java.compiler \
@@ -804,16 +810,20 @@ OPROFILE=0
 NOEXECUTE=0
 VERBOSE=0
 BACKGROUND=1
+SYSTEMD=0
 
 NAME="opennms"
 
-while getopts c:fntvpoQ c; do
+while getopts c:fsntvpoQ c; do
 	case $c in
 		c)
 			APP_PARMS_CONTROLLER+=("-t" "$OPTARG")
 			;;
 		f)
 			BACKGROUND=0
+			;;
+		s)
+			SYSTEMD=1
 			;;
 		n)
 			NOEXECUTE=1
@@ -875,6 +885,11 @@ if [ x"$myuser" = x"$RUNAS" ]; then
 else
 	echo "Error: you must run this script as $RUNAS, not '$myuser'" >&2
 	exit 4	# According to LSB: 4 - user had insufficient privileges
+fi
+
+if [ -e "${OPENNMS_PIDFILE}" ]; then
+	# if the file already exists, make sure it's writable in the future
+	chown "${RUNAS}" "${OPENNMS_PIDFILE}"
 fi
 
 case "$COMMAND" in
