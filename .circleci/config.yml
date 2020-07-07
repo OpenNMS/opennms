@@ -508,6 +508,7 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
+                - /^dependabot.*/
       - smoke-test-minimal:
           context: << parameters.context_name >>
           requires:
@@ -523,6 +524,7 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
+                - /^dependabot.*/
       - horizon-publish-oci:
           context: << parameters.context_name >>
           requires:
