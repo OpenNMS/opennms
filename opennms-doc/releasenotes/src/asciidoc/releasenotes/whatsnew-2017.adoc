@@ -174,6 +174,27 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.24]
+
+==== Release Meridian-2017.1.24
+
+Release 2017.1.24 is a small update to 2017.1.23 that fixes a few bugs and makes some Docker-related
+improvements.
+
+The codename for 2017.1.24 is _Kew meridian_.
+
+===== Bug
+
+* AbstractSnmpValue.allBytesDisplayable() IndexOutOfBound Exception (Issue http://issues.opennms.org/browse/NMS-7547[NMS-7547])
+* RRD-to-Newts converter only handles AVERAGE RRAs (Issue http://issues.opennms.org/browse/NMS-12722[NMS-12722])
+* dependency commons-beanutils 1.8.3 vulnerability (Issue http://issues.opennms.org/browse/NMS-12757[NMS-12757])
+
+===== Enhancement
+
+* Reduce Docker container image size (Issue http://issues.opennms.org/browse/NMS-12284[NMS-12284])
+* Bump Docker base dependencies in build-env and OCI artifacts (Issue http://issues.opennms.org/browse/NMS-12699[NMS-12699])
+* upgrade to latest Jetty security/bug fixes (Issue http://issues.opennms.org/browse/NMS-12743[NMS-12743])
+
 [releasenotes-changelog-Meridian-2017.1.23]
 
 ==== Release Meridian-2017.1.23

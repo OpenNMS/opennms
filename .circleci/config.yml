@@ -502,8 +502,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
@@ -518,8 +518,8 @@ workflows:
           filters:
             branches:
               ignore:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/

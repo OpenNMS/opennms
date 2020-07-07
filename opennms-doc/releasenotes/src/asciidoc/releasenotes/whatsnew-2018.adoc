@@ -85,13 +85,34 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.20]
+
+==== Release Meridian-2018.1.20
+
+Release 2018.1.20 is a small update to 2018.1.19 that fixes a few bugs and makes some Docker-related
+improvements.
+
+The codename for 2018.1.20 is _Avalanche_.
+
+===== Bug
+
+* AbstractSnmpValue.allBytesDisplayable() IndexOutOfBound Exception (Issue http://issues.opennms.org/browse/NMS-7547[NMS-7547])
+* RRD-to-Newts converter only handles AVERAGE RRAs (Issue http://issues.opennms.org/browse/NMS-12722[NMS-12722])
+* dependency commons-beanutils 1.8.3 vulnerability (Issue http://issues.opennms.org/browse/NMS-12757[NMS-12757])
+
+===== Enhancement
+
+* Reduce Docker container image size (Issue http://issues.opennms.org/browse/NMS-12284[NMS-12284])
+* Bump Docker base dependencies in build-env and OCI artifacts (Issue http://issues.opennms.org/browse/NMS-12699[NMS-12699])
+* upgrade to latest Jetty security/bug fixes (Issue http://issues.opennms.org/browse/NMS-12743[NMS-12743])
+
 [releasenotes-changelog-Meridian-2018.1.19]
 
 ==== Release Meridian-2018.1.19
 
 Release 2018.1.19 is a small release that fixes a couple of bugs.
 
-The codename for 2018.1.18 is _Sinkhole_.
+The codename for 2018.1.19 is _Sinkhole_.
 
 ===== Bug
 
