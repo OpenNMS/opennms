@@ -49,7 +49,7 @@ public abstract class TimeSeries {
         NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME, "Newts"),
         EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME, "Evaluate (Sizing mode, all data discarded)"),
         TCP(TCP_TIME_SERIES_STRATEGY_NAME, "TCP (protobuf)"),
-        INTEGRATION(INTEGRATION_LAYER_TIME_SERIES_STRATEGY_NAME, "Integration (the timeseries integration layer, to be used for inmemory, timescale, influxdb)");
+        INTEGRATION(INTEGRATION_LAYER_TIME_SERIES_STRATEGY_NAME, "Integration (the timeseries integration layer, to be used for TimeseriesStorage implementations)");
 
         private final String m_name;
         private final String m_descr;

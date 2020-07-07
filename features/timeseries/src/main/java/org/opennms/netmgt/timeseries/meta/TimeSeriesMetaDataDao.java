@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.timeseries.meta;
 
-import static org.opennms.netmgt.timeseries.integration.support.TimeseriesUtils.toResourceId;
+import static org.opennms.netmgt.timeseries.util.TimeseriesUtils.toResourceId;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,11 +41,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
 import javax.sql.DataSource;
 
+import org.opennms.core.cache.Cache;
+import org.opennms.core.cache.CacheConfig;
 import org.opennms.core.utils.DBUtils;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.netmgt.model.ResourcePath;
@@ -54,8 +55,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.cache.CacheLoader;
 
 /**
  * TimeSeriesMetaDataDao stores string values associated with resourceids in the database. It leverages a Guava cache.
@@ -67,19 +69,36 @@ public class TimeSeriesMetaDataDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(TimeSeriesMetaDataDao.class);
 
+    final static String SQL_WRITE = "INSERT INTO timeseries_meta(resourceid, name, value)  values (?, ?, ?) ON CONFLICT (resourceid, name) DO UPDATE SET value=?";
+    final static String SQL_READ = "SELECT name, value FROM timeseries_meta where resourceid = ?";
+
     private final DataSource dataSource;
 
     private final Cache<String, Map<String, String>> cache; // resourceId, Map<name, value>
 
+    private final Timer metadataWriteTimer;
+    private final Timer metadataReadTimer;
+
     @Autowired
     public TimeSeriesMetaDataDao(final DataSource dataSource,
-                                 @Named("timeseries.metadata.cache_size") long cacheSize,
-                                 @Named("timeseries.metadata.cache_duration") long cacheDuration) {
-        this.dataSource = dataSource;
-        this.cache = CacheBuilder.newBuilder()
-                .maximumSize(cacheSize)
-                .expireAfterWrite(cacheDuration, TimeUnit.SECONDS) // to make sure cache and db are in sync
+                                 @Named("timeseriesMetaDataCache") CacheConfig cacheConfig,
+                                 @Named("timeseriesMetricRegistry") MetricRegistry registry
+    ) {
+        this.dataSource = Objects.requireNonNull(dataSource, "dataSource cannot be null.");
+        Objects.requireNonNull(registry, "registry cannot be null.");
+
+        CacheLoader<String, Map<String, String>> loader = new CacheLoader<String, Map<String, String>>(){
+            @Override
+            public Map<String, String> load(String resourceId) throws Exception {
+                return loadFromDataBase(resourceId);
+            }
+        };
+        this.cache = new org.opennms.core.cache.CacheBuilder<String, Map<String, String>>()
+                .withConfig(cacheConfig)
+                .withCacheLoader(loader)
                 .build();
+        this.metadataWriteTimer = registry.timer("metadata.write.db");
+        this.metadataReadTimer = registry.timer("metadata.read.db");
     }
 
     public void store(final Collection<MetaData> metaDataCollection) throws SQLException, ExecutionException {
@@ -103,14 +122,13 @@ public class TimeSeriesMetaDataDao {
     public void storeUncached(final Collection<MetaData> metaDataCollection) throws SQLException {
         Objects.requireNonNull(metaDataCollection);
 
-        final String sql = "INSERT INTO timeseries_meta(resourceid, name, value)  values (?, ?, ?) ON CONFLICT (resourceid, name) DO UPDATE SET value=?";
         final DBUtils db = new DBUtils(this.getClass());
-        try {
+        try (Timer.Context context = metadataWriteTimer.time()) {
 
             Connection connection = this.dataSource.getConnection();
             db.watch(connection);
 
-            PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(SQL_WRITE);
             db.watch(ps);
 
             LOG.debug("Inserting {} attributes", metaDataCollection.size());
@@ -130,43 +148,37 @@ public class TimeSeriesMetaDataDao {
     public Map<String, String> getForResourcePath(final ResourcePath path) throws StorageException {
         Objects.requireNonNull(path);
         String resourceId = toResourceId(path);
-
-        // check cache first
-        Map<String, String> cachedEntry = this.cache.getIfPresent(resourceId);
-        if(cachedEntry != null) {
-            return cachedEntry;
-        }
-
-        // not in cache -> look in database
-        Map<String, String> metaData;
-        final DBUtils db = new DBUtils(this.getClass());
         try {
+            return this.cache.get(resourceId);
+        } catch (ExecutionException e) {
+            throw new StorageException(e);
+        }
+    }
 
-            String sql = "SELECT name, value FROM timeseries_meta where resourceid = ?";
+    private Map<String, String> loadFromDataBase(final String resourceId) throws StorageException {
+        Objects.requireNonNull(resourceId);
 
+        final DBUtils db = new DBUtils(this.getClass());
+        try (Timer.Context context = metadataReadTimer.time()) {
             final Connection connection = this.dataSource.getConnection();
             db.watch(connection);
-            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement statement = connection.prepareStatement(SQL_READ);
             db.watch(statement);
-            statement.setString(1, toResourceId(path));
+            statement.setString(1, resourceId);
             ResultSet rs = statement.executeQuery();
             db.watch(rs);
-            metaData = new HashMap<>();
+            Map<String, String> metaData = new HashMap<>();
             while (rs.next()) {
                 String name = rs.getString("name");
                 String value = rs.getString("value");
                 metaData.put(name, value);
             }
+            return metaData;
         } catch (SQLException e) {
             LOG.error("Could not retrieve meta data for resourceId={}", resourceId, e);
             throw new StorageException(e);
         } finally {
             db.cleanUp();
         }
-
-        // put in cache
-        this.cache.put(resourceId, metaData);
-
-        return metaData;
     }
 }
