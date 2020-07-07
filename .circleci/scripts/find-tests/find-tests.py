@@ -99,7 +99,7 @@ subparsers = parser.add_subparsers(help='sub-command help', dest='cmd')
 
 # create the parser for the "generate-test-lists" command
 parser_a = subparsers.add_parser('generate-test-lists', help='generate-test-lists help')
-parser_a.add_argument("--changes-only", type=bool, dest="changes_only", default=True,
+parser_a.add_argument("--changes-only", dest="changes_only", default="true", type=lambda s: s.lower() in ['true', 't', 'yes', '1'],
                     help="only consider changed files")
 parser_a.add_argument("--output-unit-test-classes", type=str, dest="unit_test_output",
                     help="target file in which to output the list of unit test classes")

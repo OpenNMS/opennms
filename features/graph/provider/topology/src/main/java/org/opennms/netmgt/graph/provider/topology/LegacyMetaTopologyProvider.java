@@ -43,21 +43,27 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.graph.api.enrichment.EnrichmentService;
 import org.opennms.netmgt.graph.api.service.GraphService;
 
 public class LegacyMetaTopologyProvider implements MetaTopologyProvider {
 
     private final GraphService graphService;
+    private final EnrichmentService enrichmentService;
     private final String containerId;
     private final Map<String, GraphProvider> providers;
 
-    public LegacyMetaTopologyProvider(final LegacyTopologyConfiguration configuration, final NodeDao nodeDao, final GraphService graphService, final String containerId) {
+    public LegacyMetaTopologyProvider(final LegacyTopologyConfiguration configuration, final NodeDao nodeDao,
+                                      final GraphService graphService,
+                                      final EnrichmentService enrichmentService,
+                                      final String containerId) {
         this.graphService = Objects.requireNonNull(graphService);
+        this.enrichmentService = Objects.requireNonNull(enrichmentService);
         this.containerId = Objects.requireNonNull(containerId);
 
         // Build TopologyProvider delegations
         this.providers = graphService.getGraphContainerInfo(containerId).getNamespaces().stream()
-                .map(namespace -> new LegacyTopologyProvider(configuration, nodeDao, graphService, containerId, namespace))
+                .map(namespace -> new LegacyTopologyProvider(configuration, nodeDao, graphService, enrichmentService, containerId, namespace))
                 .collect(Collectors.toMap(LegacyTopologyProvider::getNamespace, Function.identity()));
     }
 

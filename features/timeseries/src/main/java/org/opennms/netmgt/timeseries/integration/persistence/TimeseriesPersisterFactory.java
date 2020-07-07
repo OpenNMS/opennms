@@ -28,13 +28,18 @@
 
 package org.opennms.netmgt.timeseries.integration.persistence;
 
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
 
+import org.opennms.core.cache.Cache;
+import org.opennms.core.cache.CacheBuilder;
+import org.opennms.core.cache.CacheConfig;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.timeseries.integration.TimeseriesWriter;
 import org.opennms.newts.api.Context;
@@ -47,13 +52,20 @@ import org.opennms.newts.api.Context;
 public class TimeseriesPersisterFactory implements PersisterFactory {
 
     private final TimeseriesWriter timeseriesWriter;
-
     private final Context context;
+    private final MetaTagDataLoader metaTagDataLoader;
+    private final Cache<ResourcePath, Map<String, String>> metaCache;
 
     @Inject
-    public TimeseriesPersisterFactory(Context context, TimeseriesWriter timeseriesWriter) {
+    public TimeseriesPersisterFactory(final Context context, final TimeseriesWriter timeseriesWriter,
+                                      final MetaTagDataLoader metaTagDataLoader, final CacheConfig cacheConfig) {
         this.context = Objects.requireNonNull(context);
         this.timeseriesWriter = timeseriesWriter;
+        this.metaTagDataLoader = metaTagDataLoader;
+        this.metaCache = new CacheBuilder<>()
+                .withConfig(cacheConfig)
+                .withCacheLoader(metaTagDataLoader)
+                .build();
     }
 
     @Override
@@ -66,7 +78,7 @@ public class TimeseriesPersisterFactory implements PersisterFactory {
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
         // We ignore the forceStoreByGroup flag since we always store by group, and we ignore
         // the dontReorderAttributes flag since attribute order does not matter
-        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, context);
+        TimeseriesPersister persister =  new TimeseriesPersister(params, repository, timeseriesWriter, context, metaTagDataLoader, metaCache);
         persister.setIgnorePersist(dontPersistCounters);
         return persister;
     }

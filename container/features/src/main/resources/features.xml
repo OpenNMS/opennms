@@ -361,6 +361,10 @@
     <feature name="opennms-distributed-core-api" version="${project.version}" description="OpenNMS :: Distributed :: Core :: API">
         <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
     </feature>
+    <feature name="opennms-distributed-core-impl" description="OpenNMS :: Distributed :: Core :: Impl" version="${project.version}">
+        <feature>opennms-distributed-core-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/core-impl/${project.version}</bundle>
+    </feature>
     <feature name="opennms-model" version="${project.version}" description="OpenNMS :: Model">
         <feature version="[4.2,4.3)">spring</feature>
         <feature version="[4.2,4.3)">spring-jdbc</feature>
@@ -542,6 +546,7 @@
         <feature>opennms-kafka</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature>opennms-core-ipc-kafka-shell</feature>
+        <feature>resilience4j</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.kafka/${project.version}</bundle>
@@ -804,6 +809,11 @@
         <bundle dependency="true">wrap:mvn:org.jinterop/j-interopdeps/${jinteropVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-wmi/${project.version}</bundle>
     </feature>
+    <feature name="opennms-prometheus-collector" version="${project.version}" description="OpenNMS :: Features :: Prometheus Collector">
+        <feature>opennms-core-web</feature>
+        <feature>opennms-collection-api</feature>
+        <bundle>mvn:org.opennms.features/org.opennms.features.prometheus-collector/${project.version}</bundle>
+    </feature>
     <feature name="opennms-xml-collector" version="${project.version}" description="OpenNMS :: Protocols :: XML Collector">
         <feature>commons-io</feature>
         <feature>commons-jxpath</feature>
@@ -953,6 +963,7 @@
     <feature name="opennms-kafka-producer" version="${project.version}" description="OpenNMS :: Kafka :: Producer">
         <feature version="${guavaVersion}">guava</feature>
         <feature version="${kafkaVersion}">kafka-streams</feature>
+        <feature>rate-limited-logger</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-situation-feedback-api</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
@@ -1010,6 +1021,10 @@
         <feature>opennms-telemetry-collection</feature>
 	<bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.nxos/org.opennms.features.telemetry.protocols.nxos.adapter/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-telemetry-graphite" version="${project.version}" description="OpenNMS :: Telemetry :: Graphite">
+        <feature>opennms-telemetry-collection</feature>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.graphite/org.opennms.features.telemetry.protocols.graphite.adapter/${project.version}</bundle>
     </feature>
     <feature name="opennms-karaf-health" description="OpenNMS :: Karaf Health">
         <bundle start-level="100">mvn:org.opennms.features/org.opennms.features.karaf-health/${project.version}</bundle>
@@ -1097,12 +1112,18 @@
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
         <bundle>mvn:org.opennms.container/extender/${project.version}</bundle>
     </feature>
-    <feature name="scv" version="${project.version}" description="Secure Credentials Vault">
+    <feature name="scv-api" version="${project.version}" description="Secure Credentials Vault">
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
+    </feature>
+    <feature name="scv-shell" version="${project.version}" description="Secure Credentials Vault Shell">
+        <feature>scv-api</feature>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
+    </feature>
+    <feature name="scv-jceks-impl" version="${project.version}" description="Secure Credentials Vault JCEKS Impl">
+        <feature>scv-api</feature>
         <bundle dependency="true">mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
         <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
-        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
     </feature>
     <feature name="opennms-osgi-core-rest" version="${project.version}" description="OpenNMS :: Features :: OSGI :: Core :: Rest">
         <details>Core module which provides features to install to listen for rest related services,
@@ -1468,6 +1489,13 @@
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/4.4.6</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/4.5.3</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/4.1.3</bundle>
+    </feature>
+    <feature name="opennms-search" version="${project.version}" description="OpenNMS :: Features :: Search">
+        <details>OpenNMS :: Features :: Search</details>
+        <bundle>mvn:org.opennms.features.search/org.opennms.features.search.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.search/org.opennms.features.search.providers/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.search/org.opennms.features.search.service/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.search/org.opennms.features.search.rest/${project.version}</bundle>
     </feature>
     <feature name="ifttt-integration" version="${project.version}" description="OpenNMS :: Features :: IFTTT Integration">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>

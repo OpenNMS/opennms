@@ -16,7 +16,7 @@
       <name>GNU Affero General Public License</name>
       <url>http://www.gnu.org/licenses/agpl.html</url>
       <comments>
-        This Maven metadata is provided for informational purposes only. For specific licensing 
+        This Maven metadata is provided for informational purposes only. For specific licensing
         questions, please contact: OpenNMS(R) Licensing (license@opennms.org)
       </comments>
     </license>
@@ -160,7 +160,34 @@
     </extension>
   </extensions>
   <pluginManagement>
-    <plugins>    
+    <plugins>
+      <plugin>
+        <groupId>org.sonarsource.scanner.maven</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>${sonarVersion}</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>apache-jsp</artifactId>
+            <version>${jettyVersion}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>org.mortbay.jasper</groupId>
+                <artifactId>apache-el</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.mortbay.jasper</groupId>
+                <artifactId>apache-jsp</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+          <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>3.0.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
       <!--
       <plugin>
         <groupId>ch.elca.el4j.maven.plugins</groupId>
@@ -171,7 +198,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-install-plugin</artifactId>
-        <version>2.5.2</version>
+        <version>${maven.install.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -342,7 +369,7 @@
               <name>hibernate.list</name>
               <placement>a</placement>
               <head>Hibernate list:</head>
-            </tag>	
+            </tag>
             <tag>
               <name>hibernate.list-index</name>
               <placement>a</placement>
@@ -357,7 +384,7 @@
               <name>hibernate.many-to-one</name>
               <placement>a</placement>
               <head>Hibernate many-to-one:</head>
-            </tag>	
+            </tag>
             <tag>
               <name>hibernate.mapping</name>
               <placement>a</placement>
@@ -367,7 +394,7 @@
               <name>hibernate.one-to-many</name>
               <placement>a</placement>
               <head>Hibernate one-to-many:</head>
-            </tag>	
+            </tag>
             <tag>
               <name>hibernate.property</name>
               <placement>a</placement>
@@ -421,6 +448,11 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.0.0</version>
+        <configuration>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
+          <tarLongFileMode>posix</tarLongFileMode>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -712,7 +744,93 @@
             </pluginExecutions>
           </lifecycleMappingMetadata>
         </configuration>
-      </plugin>    
+      </plugin>
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.12.3</version>
+      </plugin>
+      <plugin>
+        <groupId>de.qaware.maven</groupId>
+        <artifactId>go-offline-maven-plugin</artifactId>
+        <version>1.2.5</version>
+        <configuration>
+          <dynamicDependencies>
+            <DynamicDependency>
+              <groupId>org.apache.maven.surefire</groupId>
+              <artifactId>surefire-junit4</artifactId>
+              <version>${maven.surefire.plugin.version}</version>
+              <repositoryType>PLUGIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>org.apache.maven.surefire</groupId>
+              <artifactId>surefire-junit4</artifactId>
+              <version>${maven.smoke.surefire.plugin.version}</version>
+              <repositoryType>PLUGIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <version>${maven.antrun.plugin.version}</version>
+              <repositoryType>PLUGIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <version>3.0.0</version>
+              <repositoryType>PLUGIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>${maven.compiler.plugin.version}</version>
+              <repositoryType>PLUGIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-failsafe-plugin</artifactId>
+              <version>${maven.smoke.surefire.plugin.version}</version>
+              <repositoryType>PLUGIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-install-plugin</artifactId>
+              <version>${maven.install.plugin.version}</version>
+              <repositoryType>PLUGIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-resources-plugin</artifactId>
+              <version>${maven.resources.plugin.version}</version>
+              <repositoryType>PLUGIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>org.opennms.maven.plugins</groupId>
+              <artifactId>structure-maven-plugin</artifactId>
+              <version>1.0</version>
+              <repositoryType>PLUGIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>com.google.code.gson</groupId>
+              <artifactId>gson</artifactId>
+              <version>2.8.0</version> <!-- minion-core -->
+              <repositoryType>MAIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>com.google.code.gson</groupId>
+              <artifactId>gson</artifactId>
+              <version>2.8.5</version> <!-- smoke-tests -->
+              <repositoryType>MAIN</repositoryType>
+            </DynamicDependency>
+            <DynamicDependency>
+              <groupId>javax.samples.jnlp</groupId>
+              <artifactId>jnlp-servlet</artifactId>
+              <version>1.6.0</version>
+              <repositoryType>MAIN</repositoryType>
+            </DynamicDependency>
+          </dynamicDependencies>
+        </configuration>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
@@ -758,6 +876,8 @@
              </descriptors>
              <classifier>source</classifier>
              <skipAssembly>${build.skip.tarball}</skipAssembly>
+             <overrideUid>0</overrideUid>
+             <overrideGid>0</overrideGid>
              <tarLongFileMode>posix</tarLongFileMode>
            </configuration>
          </execution>
@@ -782,7 +902,7 @@
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-resources-plugin</artifactId>
-       <version>3.1.0</version>
+       <version>${maven.resources.plugin.version}</version>
        <configuration>
           <encoding>UTF-8</encoding>
           <escapeString>\</escapeString>
@@ -796,7 +916,7 @@
         <inherited>false</inherited>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
+        <version>${maven.antrun.plugin.version}</version>
         <executions>
           <execution>
             <phase>validate</phase>
@@ -826,7 +946,7 @@
      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.6.2</version>
+        <version>${maven.compiler.plugin.version}</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -903,9 +1023,9 @@
             <!-- <javax.net.debug>ssl,handshake,verbose</javax.net.debug> -->
           </systemPropertyVariables>
           <!--
-            Configure failsafe to put reports in the surefire unit test directory so that 
+            Configure failsafe to put reports in the surefire unit test directory so that
             Bamboo and Sonar tally the test results properly.
- 
+
             https://jira.atlassian.com/browse/BAM-15446
           -->
           <forkCount>1</forkCount>
@@ -1084,8 +1204,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire/failsafe version added here so it could be overridden -->
-    <!-- 
-      CAUTION: Do not upgrade to 2.18.1, 2.19, or 2.19.1 because the 
+    <!--
+      CAUTION: Do not upgrade to 2.18.1, 2.19, or 2.19.1 because the
       org.opennms.core.test.karaf.KarafTestCase classes are experiencing
       the following bug in those versions (even thought it is claimed to
       have been fixed in 2.19.1):
@@ -1103,6 +1223,15 @@
     <antlr.version>2.7.7</antlr.version>
     <sass.maven.plugin.version>1.1.2-ONMS-20131018-1</sass.maven.plugin.version>
 
+    <!-- other plugin versions -->
+    <maven.smoke.surefire.plugin.version>2.22.2</maven.smoke.surefire.plugin.version> <!-- see smoke-test/pom.xml -->
+    <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version> <!-- see smoke-test/pom.xml -->
+    <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+    <maven.install.plugin.version>2.5.2</maven.install.plugin.version>
+    <maven.resources.plugin.version>3.1.0</maven.resources.plugin.version>
+
+    <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
+    <mock.logLevel>WARN</mock.logLevel>
     <mock.debug>false</mock.debug>
     <mock.rundbtests>true</mock.rundbtests>
     <mock.leaveDatabase>false</mock.leaveDatabase>
@@ -1136,21 +1265,21 @@
     <install.etc.dir>${install.dir}/etc</install.etc.dir>
     <install.logs.dir>${install.dir}/logs</install.logs.dir>
     <install.pid.file>${install.logs.dir}/opennms.pid</install.pid.file>
-    
+
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
     <install.database.user>opennms</install.database.user>
     <install.database.password>opennms</install.database.password>
     <install.database.admin.user>postgres</install.database.admin.user>
     <install.database.admin.password/>
-    <install.database.driver>org.postgresql.Driver</install.database.driver> 
+    <install.database.driver>org.postgresql.Driver</install.database.driver>
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
     <install.perl.bin>/usr/bin/perl</install.perl.bin>
 
     <runMailTests>true</runMailTests>
     <poller.logfile>/tmp/remote-poller.log</poller.logfile>
-  
+
     <!-- rpm specific -->
     <rpm.install.dir>/opt/opennms</rpm.install.dir>
     <rpm.build.executable>rpmbuild</rpm.build.executable>
@@ -1158,7 +1287,7 @@
     <rpm.sign>false</rpm.sign>
     <rpm.buildtests>false</rpm.buildtests>
     <rpm.database.user>opennms</rpm.database.user>
-    <rpm.additional.args/> 
+    <rpm.additional.args/>
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
@@ -1202,7 +1331,7 @@
     <!-- Match Newts version -->
     <cassandraVersion>3.5.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
-    <commonsBeanutilsVersion>1.8.3</commonsBeanutilsVersion>
+    <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsCodecVersion>1.10</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsConfigurationVersion>1.6</commonsConfigurationVersion>
@@ -1227,7 +1356,8 @@
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.0.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
-    <elasticsearchNettyVersion>4.1.30.Final</elasticsearchNettyVersion>
+    <elasticsearchNettyVersion>4.1.43.Final</elasticsearchNettyVersion>
+    <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
     <felixBridgeVersion>4.0.4</felixBridgeVersion>
     <felixProxyVersion>3.0.4</felixProxyVersion>
     <fopVersion>1.0</fopVersion>
@@ -1251,12 +1381,12 @@
     <httpasyncclientVersion>4.1.3</httpasyncclientVersion>
     <jacksonVersion>1.9.13</jacksonVersion>
     <jackson2Version>2.10.0</jackson2Version>
-    <jacocoVersion>0.8.4</jacocoVersion>
+    <jacocoVersion>0.8.5</jacocoVersion>
     <jasperreportsVersion>6.3.0</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <jcifsVersion>1.3.19</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
-    <jettyVersion>9.4.18.v20190429</jettyVersion>
+    <jettyVersion>9.4.29.v20200521</jettyVersion>
     <jestVersion>5.3.3</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
@@ -1291,8 +1421,8 @@
     <powermockVersion>1.6.4</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
-    <opennmsApiVersion>0.4.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>0.4.0</opennmsApiVersionOsgi>
+    <opennmsApiVersion>0.5.0</opennmsApiVersion>
+    <opennmsApiVersionOsgi>0.5.0</opennmsApiVersionOsgi>
     <osgiVersion>6.0.0</osgiVersion>
     <osgiCompendiumVersion>5.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
@@ -1304,7 +1434,7 @@
     <jeagertracingVersion>0.34.0</jeagertracingVersion>
     <quartzVersion>2.2.3</quartzVersion>
     <rancidApiVersion>1.0.4</rancidApiVersion>
-    <rateLimitedLoggerVersion>1.1.0</rateLimitedLoggerVersion>
+    <rateLimitedLoggerVersion>2.0.1</rateLimitedLoggerVersion>
     <resilience4jVersion>0.17.0</resilience4jVersion>
     <rocksdbjniVersion>5.18.3</rocksdbjniVersion>
     <scalaLibraryVersion>2.12.8</scalaLibraryVersion>
@@ -1313,9 +1443,10 @@
     <servicemixSpecsVersion>2.9.0</servicemixSpecsVersion>
     <servletApiVersion>3.1.0</servletApiVersion>
     <slf4jVersion>1.7.26</slf4jVersion>
+    <smackVersion>4.0.6</smackVersion>
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
-    <smackVersion>4.0.6</smackVersion>
+    <sonarVersion>3.7.0.1746</sonarVersion>
     <spockVersion>1.1-groovy-2.4</spockVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
@@ -1605,45 +1736,79 @@
             <version>${jacocoVersion}</version>
             <executions>
               <execution>
-                <id>default-prepare-agent</id>
+                <id>before-unit-test-execution</id>
                 <goals>
                   <goal>prepare-agent</goal>
                 </goals>
                 <configuration>
                   <append>true</append>
-                  <destFile>${project.build.directory}/jacoco-${ci.instance}.exec</destFile>
+                  <destFile>${project.build.directory}/jacoco-output/jacoco-unit.exec</destFile>
                 </configuration>
               </execution>
+              <!--
               <execution>
-                <id>pre-integration-test</id>
-                <goals>
-                  <goal>prepare-agent-integration</goal>
-                </goals>
-                <configuration>
-                  <append>true</append>
-                  <destFile>${project.build.directory}/jacoco-it-${ci.instance}.exec</destFile>
-                </configuration>
-              </execution>
-              <execution>
-                <id>report</id>
-                <phase>verify</phase>
+                <id>after-unit-test-execution</id>
+                <phase>test</phase>
                 <goals>
                   <goal>report</goal>
                 </goals>
                 <configuration>
-                  <dataFile>${project.build.directory}/jacoco-${ci.instance}.exec</dataFile>
+                  <dataFile>${project.build.directory}/jacoco-output/jacoco-unit.exec</dataFile>
                   <outputDirectory>${project.build.directory}/jacoco-surefire-${ci.instance}</outputDirectory>
                 </configuration>
               </execution>
+              -->
               <execution>
-                <id>report-integration</id>
-                <phase>verify</phase>
+                <id>before-integration-test-execution</id>
+                <phase>pre-integration-test</phase>
                 <goals>
-                  <goal>report-integration</goal>
+                  <goal>prepare-agent</goal>
                 </goals>
                 <configuration>
-                  <dataFile>${project.build.directory}/jacoco-it-${ci.instance}.exec</dataFile>
+                  <append>true</append>
+                  <destFile>${project.build.directory}/jacoco-output/jacoco-it.exec</destFile>
+                </configuration>
+              </execution>
+              <!--
+              <execution>
+                <id>after-integration-test-execution</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+                <configuration>
+                  <dataFile>${project.build.directory}/jacoco-output/jacoco-it.exec</dataFile>
                   <outputDirectory>${project.build.directory}/jacoco-failsafe-${ci.instance}</outputDirectory>
+                </configuration>
+              </execution>
+              -->
+              <execution>
+                <id>merge-unit-and-integration</id>
+                <phase>post-integration-test</phase>
+                  <goals>
+                    <goal>merge</goal>
+                  </goals>
+                  <configuration>
+                  <fileSets>
+                    <fileSet>
+                      <directory>${project.build.directory}/jacoco-output/</directory>
+                      <includes>
+                        <include>*.exec</include>
+                      </includes>
+                    </fileSet>
+                  </fileSets>
+                  <destFile>${project.build.directory}/jacoco-merged-${ci.instance}.exec</destFile>
+                </configuration>
+              </execution>
+              <execution>
+                <id>create-merged-report</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+                <configuration>
+                  <dataFile>${project.build.directory}/jacoco-merged-${ci.instance}.exec</dataFile>
+                  <outputDirectory>${project.build.directory}/jacoco-merged-report-${ci.instance}</outputDirectory>
                 </configuration>
               </execution>
             </executions>
@@ -2080,7 +2245,7 @@
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
         <version>${project.version}</version>
-      </dependency> 
+      </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.springframework-security</artifactId>
@@ -3123,17 +3288,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>commons-beanutils</groupId>
-        <artifactId>commons-beanutils-core</artifactId>
-        <version>${commonsBeanutilsVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>commons-chain</groupId>
         <artifactId>commons-chain</artifactId>
         <version>1.2</version>
@@ -3361,7 +3515,7 @@
       <dependency>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-compatibility-server</artifactId>
-	    <version>${vaadinVersion}</version>
+        <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
@@ -3370,18 +3524,18 @@
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	    <artifactId>vaadin-compatibility-client-compiled</artifactId>
-	    <version>${vaadinVersion}</version>
+        <artifactId>vaadin-compatibility-client-compiled</artifactId>
+        <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	    <artifactId>vaadin-compatibility-client</artifactId>
-	    <version>${vaadinVersion}</version>
+        <artifactId>vaadin-compatibility-client</artifactId>
+        <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	    <artifactId>vaadin-compatibility-themes</artifactId>
-	    <version>${vaadinVersion}</version>
+        <artifactId>vaadin-compatibility-themes</artifactId>
+        <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
@@ -3643,7 +3797,7 @@
         <version>1.0.1.Final</version>
       </dependency>
       <dependency>
-	      <groupId>org.hibernate</groupId>
+        <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator-annotation-processor</artifactId>
         <version>4.1.0.Final</version>
       </dependency>
@@ -3812,13 +3966,13 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
-	<version>${mockitoVersion}</version>
+        <version>${mockitoVersion}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-	<version>${mockitoVersion}</version>
+        <version>${mockitoVersion}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

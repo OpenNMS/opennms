@@ -42,7 +42,8 @@ public interface RpcClientFactory {
     String LOG_PREFIX = "ipc";
     // RPC Metrics related constants.
     String JMX_DOMAIN_RPC = "org.opennms.core.ipc.rpc";
-    String RPC_COUNT = "requestSent";
+    String RPC_REQUEST_SENT = "requestSent";
+    String RPC_REQUESTS_RECEIVED = "requestsReceived";
     String RPC_FAILED = "requestFailed";
     String RPC_DURATION = "duration";
     String RPC_REQUEST_SIZE = "requestSize";
@@ -57,7 +58,7 @@ public interface RpcClientFactory {
     }
 
     static void markRpcCount(MetricRegistry metricRegistry, String location, String moduleId) {
-        Meter rpcCount = metricRegistry.meter(MetricRegistry.name(location, moduleId, RPC_COUNT));
+        Meter rpcCount = metricRegistry.meter(MetricRegistry.name(location, moduleId, RPC_REQUEST_SENT));
         rpcCount.mark();
     }
 

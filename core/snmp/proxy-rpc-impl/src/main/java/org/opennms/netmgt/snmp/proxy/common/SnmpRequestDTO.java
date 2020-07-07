@@ -44,6 +44,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
+import io.opentracing.Span;
+
 @XmlRootElement(name="snmp-request")
 @XmlAccessorType(XmlAccessType.NONE)
 public class SnmpRequestDTO implements RpcRequest {
@@ -137,6 +139,11 @@ public class SnmpRequestDTO implements RpcRequest {
     @Override
     public Map<String, String> getTracingInfo() {
         return tracingInfo;
+    }
+
+    @Override
+    public Span getSpan() {
+        return null;
     }
 
     public void addTracingInfo(String key, String value) {

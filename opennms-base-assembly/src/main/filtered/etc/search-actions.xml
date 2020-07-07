@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<actions>
+    <!--
+        This file contains all actions the user may search for, which are hard to auto detect.
+        Please keep in mind that some actions will automatically detected (e.g. menu entries) and do not
+        need to be put in this file.
+    -->
+
+    <!-- Admin Actions -->
+    <action>
+        <label>Configure OpenNMS</label>
+        <url>admin/index.jsp</url>
+        <weight>1000</weight> <!-- Ensure this is at the top of the list ALWAYS -->
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+
+    <!-- OpenNMS System Card -->
+    <action>
+        <label>System Configuration</label>
+        <url>admin/sysconfig.jsp</url>
+        <aliases>
+            <alias>Show System Information</alias>
+        </aliases>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Configure Users</label>
+        <url>admin/userGroupView/users/list.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Configure Groups</label>
+        <url>admin/userGroupView/groups/list.htm</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Configure On-Call Roles</label>
+        <url>admin/userGroupView/roles</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+
+    <!-- Provisioning Card -->
+    <action>
+        <label>Manage Provisioning Requisitions</label>
+        <url>admin/ng-requisitions/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Import and Export Asset Information</label>
+        <url>admin/asset/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Manage Surveillance Categories</label>
+        <url>admin/categories.htm</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Configure Discovery</label>
+        <url>admin/discovery/edit-config.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Run Single Discovery Scan</label>
+        <url>admin/discovery/edit-scan.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Configure SNMP Community Names by IP Address</label>
+        <url>admin/snmpConfig?action=default</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Manually Add an Interface</label>
+        <url>admin/newInterface.jsp?action=new</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Delete Nodes</label>
+        <url>admin/deleteNodes</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Configure Geocoder Service</label>
+        <url>admin/geoservice/index.jsp#!/geocoding/config</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+
+    <!-- Event Management Card -->
+    <action>
+        <label>Manually Send an Event</label>
+        <url>admin/sendevent.htm</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Configure Notifications</label>
+        <url>admin/notification/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Customize Event Configurations</label>
+        <url>admin/manageEvents.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+
+    <!-- Flow Management Card -->
+    <action>
+        <label>Manage Flow Classification</label>
+        <url>admin/classification/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+            <role>ROLE_FLOW_MANAGER</role>
+        </roles>
+    </action>
+
+    <!-- Service Monitoring Card -->
+    <action>
+        <label>Configure Scheduled Outages</label>
+        <url>admin/sched-outages/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Manage and Unmanage Interfaces and Services</label>
+        <url>admin/getNodes</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+
+    <!-- Performance Measurement Card -->
+    <action>
+        <label>Configure SNMP Collections and Data Collection Groups</label>
+        <url>admin/manageSnmpCollections.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Configure SNMP Data Collection per Interface</label>
+        <url>admin/snmpGetNodes</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Configure Thresholds</label>
+        <url>admin/thresholds/index.htm</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+
+    <!-- Distributed Monitoring Card -->
+    <action>
+        <label>Manage Monitoring Locations</label>
+        <url>locations/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Manage Applications</label>
+        <url>admin/applications.htm</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Manage Remote Pollers</label>
+        <url>distributed/locationMonitorList.htm</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Manage Minions</label>
+        <url>minion/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+
+    <!-- Additional Tools Card -->
+    <action>
+        <label>Configure Grafana Endpoints</label>
+        <url>admin/endpoint/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+    <action>
+        <label>Instrumentation Log Reader</label>
+        <url>admin/nodemanagement/instrumentationLogReader.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+
+    <!-- Other Actions, e.g. Quick Add Node -->
+    <action>
+        <icon>fa fa-plus-circle</icon>
+        <label>Quick Add Node</label>
+        <url>admin/ng-requisitions/quick-add-node.jsp#/</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+            <role>ROLE_PROVISION</role>
+        </roles>
+    </action>
+    <action>
+        <icon>fa fa-life-ring</icon>
+        <label>Support</label>
+        <url>about/index.jsp</url>
+        <roles>
+            <role>ROLE_ADMIN</role>
+        </roles>
+    </action>
+
+    <!-- Normal User Actions -->
+    <action>
+        <label>Home</label>
+        <url>/</url>
+        <aliases>
+            <alias>Open start page</alias>
+        </aliases>
+    </action>
+    <action>
+        <icon>fa fa-sign-out</icon>
+        <label>Logout</label>
+        <url>j_spring_security_logout</url>
+    </action>
+    <action>
+        <icon>fa fa-key</icon>
+        <label>Change Password</label>
+        <url>account/selfService/newPasswordEntry</url>
+    </action>
+    <action>
+        <icon>fa fa-question-circle</icon>
+        <label>Help</label>
+        <url>help/index.jsp</url>
+    </action>
+    <action>
+        <icon>fa fa-info-circle</icon>
+        <label>About</label>
+        <url>about/index.jsp</url>
+    </action>
+    <action>
+        <label>Show Nodes with Flows</label>
+        <url>element/nodeList.htm?flows=true</url>
+    </action>
+    <action>
+        <label>Show Nodes without Flows</label>
+        <url>element/nodeList.htm?flows=false</url>
+    </action>
+</actions>

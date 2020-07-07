@@ -149,6 +149,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
         "classpath:/META-INF/opennms/applicationContext-snmp-profile-mapper.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
         "classpath:/mockForeignSourceContext.xml",
@@ -1295,6 +1296,15 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         importFromResource("classpath:/tec_dump.xml.smalltest.delete", Boolean.TRUE.toString());
         getScanExecutor().pause();
 
+        m_provisioner.scheduleRescanForExistingNodes();
+        schedulesForNode = m_provisionService.getScheduleForNodes();
+
+        assertEquals(9, schedulesForNode.size());
+        assertEquals(9, m_provisioner.getScheduleLength());
+
+        // Check that re-scheduling won't trigger duplicate scheduling for a given node.
+        getScanExecutor().resume();
+        m_provisioner.addToScheduleQueue(schedulesForNode.get(0));
         m_provisioner.scheduleRescanForExistingNodes();
         schedulesForNode = m_provisionService.getScheduleForNodes();
 

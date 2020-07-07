@@ -17,10 +17,12 @@ The _VmwareCollector_ collects peformance metrics for managed entities from _vCe
 
 ===== Collector Parameters
 
-.Collector specific parameters for the VmwareCollector
+Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+
+.Collector-specific parameters for the VmwareCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                 | Required | Default value
-| `collection`           | The name of the _VMWare Collection_ to use  | required |
+| `collection`           | The name of the _VMWare Collection_ to use.  | required |
 | `timeout`              | Connection timeout in milliseconds          | optional |
 |===

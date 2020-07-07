@@ -408,14 +408,14 @@ public class Poller extends AbstractServiceDaemon {
 
     /**
      * <p>scheduleService</p>
-     *
      * @param nodeId a int.
-     * @param nodeLabel a {@link java.lang.String} object.
-     * @param nodeLocation a {@link java.lang.String} object.
-     * @param ipAddr a {@link java.lang.String} object.
-     * @param svcName a {@link java.lang.String} object.
+     * @param nodeLabel a {@link String} object.
+     * @param nodeLocation a {@link String} object.
+     * @param ipAddr a {@link String} object.
+     * @param svcName a {@link String} object.
+     * @param pollableNode a {@link PollableNode} object
      */
-    public void scheduleService(final int nodeId, final String nodeLabel, final String nodeLocation, final String ipAddr, final String svcName) {
+    public void scheduleService(final int nodeId, final String nodeLabel, final String nodeLocation, final String ipAddr, final String svcName, PollableNode pollableNode) {
         final String normalizedAddress = InetAddressUtils.normalize(ipAddr);
         try {
             /*
@@ -427,6 +427,14 @@ public class Poller extends AbstractServiceDaemon {
                 node = getNetwork().getNode(nodeId);
                 if (node == null) {
                     node = getNetwork().createNode(nodeId, nodeLabel, nodeLocation);
+                    // In case of module reload, all existing PollableNodes gets deleted and re-created.
+                    // It is necessary to retrieve the previous state of node and reset the change of status.
+                    // Otherwise this may produce duplicate node down events, see NMS-12681
+                    if(pollableNode != null) {
+                        node.updateStatus(pollableNode.getStatus());
+                        node.setCause(pollableNode.getCause());
+                        node.resetStatusChanged();
+                    }
                 }
             }
 

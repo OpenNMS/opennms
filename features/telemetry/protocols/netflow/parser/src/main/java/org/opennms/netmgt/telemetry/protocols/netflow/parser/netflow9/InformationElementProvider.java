@@ -139,7 +139,7 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
         adder.add(Protocol.NETFLOW9, 92, UnsignedValue::parserWith32Bit, "SRC TRAFFIC INDEX", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 93, UnsignedValue::parserWith32Bit, "DST TRAFFIC INDEX", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 94, StringValue::parser, "APPLICATION DESCRIPTION", Semantics.DEFAULT);
-        adder.add(Protocol.NETFLOW9, 95, UnsignedValue::parserWith64Bit, "APPLICATION TAG", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 95, OctetArrayValue::parser, "APPLICATION TAG", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 96, StringValue::parser, "APPLICATION NAME", Semantics.DEFAULT);
         // 97 ?
         adder.add(Protocol.NETFLOW9, 98, UnsignedValue::parserWith8Bit, "postipDiffServCodePoint", Semantics.DEFAULT);

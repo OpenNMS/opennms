@@ -10,7 +10,7 @@ ifdef::opennms-prime[]
 This guide provides instructions for installing the platform on _Red Hat Enterprise Linux (RHEL)_-based operating systems.
 endif::opennms-prime[]
 ifndef::opennms-prime[]
-This guide provides instructions for installing the platform on _Red Hat Enterprise Linux (RHEL)_-based, _Debian_-based, and _Microsoft Windows_ operating systems.
+This guide provides instructions for installing the platform on _Red Hat Enterprise Linux (RHEL)_-based and _Debian_-based operating systems.
 endif::opennms-prime[]
 
 === Objectives
@@ -29,7 +29,6 @@ The following abbreviations will be used to refer to their respective entry thro
 | _RHEL_                       | Red Hat Enterprise Linux 7 or higher, CentOS 8^*^ or higher
 ifndef::opennms-prime[]
 | _Debian_                     | Debian 9 or higher, Ubuntu 16.04 LTS or higher
-| _Windows_                    | Microsoft Windows Server 2012, Windows 10
 endif::opennms-prime[]
 | _OpenJDK 11 Development Kit_ | Installed OpenJDK 11 Development Kit
 |===
@@ -56,9 +55,7 @@ We recommend you meet the following requirements:
 ifndef::opennms-prime[]
 | _Operating System_ | _RHEL_ or _Debian_ in a current version is recommended.
                        Please be aware _{opennms-product-name}_ is developed and mostly operated on Linux systems.
-                       Community support is limited when you run on _Microsoft Windows_ platform.
-                       On _Microsoft Windows_ the _R_ integration for statistical computation on time series data is not supported.
-| _Internet_         | Access to _{yum,debian}.opennms.org_ or _SourceForge_ for Microsoft Windows via _https_.
+| _Internet_         | Access to _{yum,debian}.opennms.org_ via _https_.
 endif::opennms-prime[]
 ifdef::opennms-prime[]
 | _Operating System_ | The latest version of _RHEL_ is recommended.
@@ -78,6 +75,5 @@ If the instruction refers to `${OPENNMS_HOME}`, the path is resolved to the foll
 | _RHEL_              | `/opt/opennms`
 ifndef::opennms-prime[]
 | _Debian_            | `/usr/share/opennms`
-| _Windows_           | `C:\Program Files\opennms`
 endif::opennms-prime[]
 |===

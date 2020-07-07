@@ -110,7 +110,7 @@ public class NetflowMessage implements Flow {
 
     @Override
     public Long getDeltaSwitched() {
-        return flowMessageProto.hasDeltaSwitched() ? flowMessageProto.getDeltaSwitched().getValue() : null;
+        return flowMessageProto.hasDeltaSwitched() ? new Long(flowMessageProto.getDeltaSwitched().getValue()) : getFirstSwitched();
     }
 
     @Override

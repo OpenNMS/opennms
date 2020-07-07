@@ -150,17 +150,20 @@ include::text/service-assurance/monitors/XmpMonitor.adoc[]
 [[ga-performance-mgmt]]
 == Performance Management
 include::text/performance-data-collection/introduction.adoc[]
-include::text/performance-data-collection/configuration.adoc[]
-include::text/performance-data-collection/collection-packages.adoc[]
+include::text/performance-data-collection/collectd/configuration.adoc[]
+include::text/performance-data-collection/collectd/collection-packages.adoc[]
 
 [[ga-performance-mgmt-collectors]]
+=== Configuring Collectors
+include::text/performance-data-collection/collectors/collectors.adoc[]
+
 === Collectors
-include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
+include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/http.adoc[]
 include::text/performance-data-collection/collectors/jdbc.adoc[]
-include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/nsclient.adoc[]
+include::text/performance-data-collection/collectors/prometheus.adoc[]
 include::text/performance-data-collection/collectors/tca.adoc[]
 include::text/performance-data-collection/collectors/vmware-cim.adoc[]
 include::text/performance-data-collection/collectors/vmware.adoc[]
@@ -169,12 +172,19 @@ include::text/performance-data-collection/collectors/wsman.adoc[]
 include::text/performance-data-collection/collectors/xml.adoc[]
 include::text/performance-data-collection/collectors/xmp.adoc[]
 
+[[ga-resource-types]]
+=== Resource Types
+include::text/performance-data-collection/resource-types.adoc[]
+
 [[ga-performance-mgmt-shell]]
-=== Shell Commands
+=== Administration and Troubleshooting
+include::text/performance-data-collection/collectd/collect-admin.adoc[]
 include::text/performance-data-collection/shell/introduction.adoc[]
 include::text/performance-data-collection/shell/adhoc-collection.adoc[]
 include::text/performance-data-collection/shell/measurements.adoc[]
 include::text/performance-data-collection/shell/stress-testing.adoc[]
+
+
 
 [[ga-performance-mgmt-thresholds]]
 == Thresholding
@@ -342,14 +352,11 @@ include::text/minion/aws-sqs.adoc[]
 include::text/minion/offheap.adoc[]
 include::text/minion/jdbc-driver.adoc[]
 include::text/minion/ttl.adoc[]
+include::text/minion/kafka-rpc.adoc[]
 
 [[ga-sentinel]]
 == Sentinel
 include::text/sentinel/sentinel.adoc[]
-
-== Internal Plugins
-include::text/plugins/introduction.adoc[]
-include::text/plugins/opennms-es-rest.adoc[]
 
 [[ga-special-cases-and-workarounds]]
 == Special Cases and Workarounds
@@ -382,6 +389,7 @@ include::text/telemetryd/protocols/netflow5.adoc[]
 include::text/telemetryd/protocols/netflow9.adoc[]
 include::text/telemetryd/protocols/nxos.adoc[]
 include::text/telemetryd/protocols/sflow.adoc[]
+include::text/telemetryd/protocols/graphite.adoc[]
 
 [[ga-elasticsearch-integration]]
 == Elasticsearch Integration
@@ -402,6 +410,7 @@ include::text/elasticsearch/features/alarm-history.adoc[]
 include::text/flows/introduction.adoc[]
 include::text/flows/setup.adoc[]
 include::text/flows/classification-engine.adoc[]
+include::text/flows/aggregation.adoc[]
 
 [[ga-kafka-producer]]
 == Kafka Producer
@@ -414,3 +423,8 @@ include::text/alarm-correlation/situation-feedback.adoc[]
 [[ga-meta-data]]
 == Meta-Data
 include::text/meta-data.adoc[]
+
+[[ga-admin]]
+== {opennms-product-name} Administration
+include::text/admin/introduction.adoc[]
+include::text/admin/restart.adoc[]

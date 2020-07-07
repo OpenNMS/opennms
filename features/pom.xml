@@ -58,6 +58,7 @@
     <module>collection</module>
     <module>jdbc-collector</module>
     <module>juniper-tca-collector</module>
+    <module>prometheus-collector</module>
     <module>telemetry</module>
     <module>wsman</module>
 
@@ -145,6 +146,7 @@
     <module>geolocation</module>
     <module>instrumentationLogReader</module>
     <module>name-cutter</module>
+    <module>search</module>
     <module>springframework-security</module>
     <module>status</module>
     <module>system-report</module>

@@ -17,6 +17,7 @@
         <module>repository</module>
         <module>shell</module>
         <module>status</module>
+        <module>dominion</module>
     </modules>
 
     <build>

@@ -61,11 +61,13 @@ _Service Configurations_ contain common _Service Attributes_ as well as _Collect
 image::performance-management/02_collectd-configuration-xml.png[]
 
 [[ga-collectd-packages-services-meta-data]]
-===== Meta-Data-DSL
-Each parameter value can leverage dynamic configuration by using the link:#ga-meta-data-dsl[Meta-Data-DSL].
+===== Metadata DSL
+The link:#ga-meta-data-dsl[Metadata DSL](domain specific language) allows you to use dynamic configuration in parameter values to interpolate metadata into the parameter. 
 
-During evaluation of an expression the following scopes are available:
+The syntax allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
 
-* Node meta-data
-* Interface meta-data
-* Service meta-data
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata
+* Service metadata

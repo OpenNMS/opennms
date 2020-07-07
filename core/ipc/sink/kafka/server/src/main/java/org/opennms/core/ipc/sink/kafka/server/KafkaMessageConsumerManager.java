@@ -252,9 +252,6 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         public void shutdown() {
             closed.set(true);
             consumer.wakeup();
-            if (jmxReporter != null) {
-                jmxReporter.close();
-            }
         }
     }
 
@@ -305,6 +302,16 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         jmxReporter = JmxReporter.forRegistry(getMetricRegistry()).
                 inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
         jmxReporter.start();
+    }
+
+    public void shutdown() {
+        executor.shutdown();
+        if (jmxReporter != null) {
+            jmxReporter.close();
+        }
+        if(getStartupExecutor() != null) {
+            getStartupExecutor().shutdown();
+        }
     }
 
     public Identity getIdentity() {

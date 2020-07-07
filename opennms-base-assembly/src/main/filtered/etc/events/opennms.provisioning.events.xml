@@ -10,6 +10,19 @@
       <alarm-data reduction-key="%uei%:%host%:%parm[reason]%" alarm-type="3" auto-clean="false"/>
    </event>
    <event>
+      <uei>uei.opennms.org/internal/provisiond/scheduledNodeScanStarted</uei>
+      <event-label>OpenNMS-defined Provisiond Event: scheduledNodeScanStarted</event-label>
+      <descr>A message from the Provisiond NodeScan lifecycle that a scheduled NodeScan has started:
+        &lt;p>The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has
+           started scheduled Node Scan. &lt;/p>
+      </descr>
+      <logmsg dest="logndisplay">
+        &lt;p>The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has
+        started scheduled scan.&lt;/p>
+      </logmsg>
+      <severity>Normal</severity>
+  </event>
+   <event>
       <uei>uei.opennms.org/internal/provisiond/nodeScanCompleted</uei>
       <event-label>OpenNMS-defined Provisiond Event: nodeScanCompleted</event-label>
       <descr>A message from the Provisiond NodeScan lifecycle that a NodeScan has completed:

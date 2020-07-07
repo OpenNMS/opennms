@@ -44,7 +44,7 @@ Additional configuration options are presented in the next section.
 
 The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can be used to configure and tune the _Timeseries Integration Layer_.
 
-[[ga-opennms-operation-newts-properties-general]]
+[[ga-opennms-operation-timeseries-configuration-general]]
 ====== General
 [options="header, autowidth"]
 |===
@@ -72,9 +72,36 @@ Available caching strategies include:
 
 You will likely want to change the values of `cache.max_entries` and the `ring_buffer_size` to suit your installation.
 
-Meta-data related to resources are cached in order to avoid writing redundant records.
+Metadata related to resources are cached in order to avoid writing redundant records.
 If you are collecting data from a large number of resources, you should increase the `cache.max_entries` to reflect the number of resources you are collecting from, with a suitable buffer.
 
 The samples gathered by the collectors are temporarily stored in a ring buffer before they are persisted to the _Timeseries Integration Layer_.
 The value of the `ring_buffer_size` should be increased if you expect large peaks of collectors returning at once or latency in persisting these.
 However, note that the memory used by the ring buffer is reserved, and larger values may require an increased heap size.
+
+===== Expose additional tags
+Metrics that are stored via the timeseries plugin contain the minimal set of tags for _{opennms-product-name}_ to work.
+This might not be sufficient if the data is used outside of _{opennms-product-name}_ as well.
+Therefore additional meta tags be configured via `${OPENNMS_HOME}/etc/opennms.properties`.
+
+The configuration of the tags has the following form:
+`prefix.tagKey=${query expression}`
+
+* The prefix is: `org.opennms.timeseries.tin.metatags.tag`
+* The tagKey can by an arbitrary string as long as it doesn't break the java property file https://en.wikipedia.org/wiki/.properties[syntax].
+* The query expression allows to query the value. Hereby we can make use of the link:#ga-meta-data-dsl[Meta-Data-DSL]
+
+Examples:
+`org.opennms.timeseries.tin.metatags.tag.nodelabel=${node:label}`
+`org.opennms.timeseries.tin.metatags.tag.sysObjectID=${node:sys-object-id}`
+
+Categories can be exposed with a similar mechanism.
+All categories that are configured via the property
+`org.opennms.timeseries.tin.metatags.categories`
+will be exposed as cat_CategoryName=CategoryName
+
+Example:
+`org.opennms.timeseries.tin.metatags.exposeCategories=true`
+will lead to:
+`Tag("cat_myFirstCategory", "myFirstCategory")`
+`Tag("cat_mySecondCategory", "mySecondCategory")`

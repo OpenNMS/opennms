@@ -57,7 +57,7 @@ import com.google.protobuf.UInt64Value;
 public class FlowDocumentBuilder {
 
 
-    static FlowDocument buildFlowDocument(EnrichedFlow enrichedFlow) {
+    public static FlowDocument buildFlowDocument(EnrichedFlow enrichedFlow) {
         FlowDocument.Builder builder = FlowDocument.newBuilder();
         builder.setTimestamp(enrichedFlow.getFlow().getTimestamp());
         builder.setDirection(fromDirection(enrichedFlow.getFlow().getDirection()));

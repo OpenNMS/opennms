@@ -498,8 +498,12 @@ VTD-XML is very fast GPL library for parsing XMLs with XPath Support.
 %{extrainfo2}
 
 %prep
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+$TAR -xzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 
-tar -xzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -548,10 +552,8 @@ if [ "%{skip_compile}" = 1 ]; then
 		-Dinstall.version="%{version}-%{release}" \
 		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 		-Dopennms.home="%{instprefix}" \
-		install \
 		-PskipCompile \
-		--builder smart \
-		--threads ${CCI_MAXCPU:-2}
+		install
 else
 	echo "=== RUNNING COMPILE ==="
 	./compile.pl \
@@ -565,10 +567,8 @@ else
 		-Dinstall.version="%{version}-%{release}" \
 		-Dopennms.home="%{instprefix}" \
 		-Dbuild=all \
-		install \
 		-Prun-expensive-tasks \
-		--builder smart \
-		--threads ${CCI_MAXCPU:-2}
+		install
 fi
 
 cd opennms-tools
@@ -579,9 +579,7 @@ cd opennms-tools
 		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
 		-Dinstall.version="%{version}-%{release}" \
 		-Dopennms.home="%{instprefix}" \
-		install \
-		--builder smart \
-		--threads ${CCI_MAXCPU:-2}
+		install
 cd -
 
 echo "=== BUILDING ASSEMBLIES ==="
@@ -598,10 +596,8 @@ echo "=== BUILDING ASSEMBLIES ==="
 	-Dinstall.init.dir="/etc/init.d" \
 	-Dbuild=all \
 	-Dbuild.profile=full \
-	install \
 	-Prun-expensive-tasks \
-	--builder smart \
-	--threads ${CCI_MAXCPU:-2}
+	install
 
 echo "=== INSTALL COMPLETED ==="
 
@@ -609,8 +605,13 @@ echo "=== UNTAR BUILD ==="
 
 mkdir -p %{buildroot}%{instprefix}
 
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+
 # Untar the tar.gz created by opennms-full-assembly
-tar zxf %{_builddir}/%{name}-%{version}-%{release}/target/%{name}-%{version}-%{release}.%{_arch}.tar.gz -C %{buildroot}%{instprefix}
+$TAR -xzf %{_builddir}/%{name}-%{version}-%{release}/target/%{name}-%{version}-%{release}.%{_arch}.tar.gz -C %{buildroot}%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
@@ -652,7 +653,7 @@ rsync -avr --exclude=examples %{buildroot}%{instprefix}/etc/ %{buildroot}%{share
 chmod -R go-w %{buildroot}%{sharedir}/etc-pristine/
 
 install -d -m 755 "%{buildroot}%{_initrddir}" "%{buildroot}%{_sysconfdir}/sysconfig" "%{buildroot}%{_unitdir}"
-install -m 644 %{buildroot}%{instprefix}/etc/opennms.service %{buildroot}%{_unitdir}/%{name}.service
+install -m 644 %{buildroot}%{instprefix}/etc/opennms.service %{buildroot}%{_unitdir}
 install -m 755 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.init      %{buildroot}%{_initrddir}/opennms-remote-poller
 install -m 640 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/opennms-remote-poller
 rm -rf %{buildroot}%{instprefix}/contrib/remote-poller
@@ -798,7 +799,7 @@ rm -rf %{buildroot}
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{logdir}
-%attr(644,root,root)    %{_unitdir}/%{name}.service
+%attr(644,root,root)    %{_unitdir}/opennms.service
                         %config %{instprefix}/etc/custom.properties
 %attr(640,root,root)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data

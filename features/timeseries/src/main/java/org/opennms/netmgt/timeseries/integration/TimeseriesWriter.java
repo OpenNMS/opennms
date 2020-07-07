@@ -29,6 +29,7 @@
 package org.opennms.netmgt.timeseries.integration;
 
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -42,8 +43,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.joda.time.Duration;
 import org.opennms.core.logging.Logging;
+import org.opennms.integration.api.v1.timeseries.IntrinsicTagNames;
 import org.opennms.integration.api.v1.timeseries.StorageException;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableMetric;
@@ -86,7 +87,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
 
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
 
     private WorkerPool<SampleBatchEvent> workerPool;
@@ -215,11 +216,15 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
         // Decrement our entry counter
         numEntriesOnRingBuffer.decrementAndGet();
 
-        if (event.isIndexOnly()) {
-            storeMetadata(event);
-        } else {
-            storeTimeseriesData(event);
-            storeMetadata(event);
+        try {
+            if (event.isIndexOnly()) {
+                storeMetadata(event);
+            } else {
+                storeTimeseriesData(event);
+                storeMetadata(event);
+            }
+        } catch (Throwable t) {
+            RATE_LIMITED_LOGGER.error("An error occurred while inserting samples. Some sample may be lost.", t);
         }
     }
 
@@ -245,8 +250,8 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
     private org.opennms.integration.api.v1.timeseries.Sample toApiSample(final Sample sample) {
 
         ImmutableMetric.MetricBuilder builder = ImmutableMetric.builder()
-                .intrinsicTag(CommonTagNames.resourceId, sample.getResource().getId())
-                .intrinsicTag(CommonTagNames.name, sample.getName())
+                .intrinsicTag(IntrinsicTagNames.resourceId, sample.getResource().getId())
+                .intrinsicTag(IntrinsicTagNames.name, sample.getName())
                 .metaTag(typeToTag(sample.getType()));
 
         if(sample.getResource().getAttributes().isPresent()) {
@@ -270,7 +275,7 @@ public class TimeseriesWriter implements WorkHandler<SampleBatchEvent>, Disposab
             throw new IllegalArgumentException(String.format("I can't find a matching %s for %s",
                     ImmutableMetric.Mtype.class.getSimpleName(), type.toString()));
         }
-        return new ImmutableTag(CommonTagNames.mtype, mtype.name());
+        return new ImmutableTag(IntrinsicTagNames.mtype, mtype.name());
     }
 
     private static final EventTranslatorOneArg<SampleBatchEvent, List<Sample>> TRANSLATOR =

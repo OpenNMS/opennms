@@ -376,6 +376,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testPrometheusConfigFiles() {
+        testConfigFile("prometheus-datacollection-config.xml");
+    }
+
+    @Test
     public void testProvisiondConfiguration() {
         testConfigFile("provisiond-configuration.xml");
     }
@@ -618,6 +623,11 @@ public class ConfigTesterTest {
     @Test
     public void testElasticCredentialsConfig() {
         ignoreConfigFile("elastic-credentials.xml");
+    }
+
+    @Test
+    public void testStaticSearchActionsConfig() {
+        ignoreConfigFile("search-actions.xml");
     }
 
     @Test

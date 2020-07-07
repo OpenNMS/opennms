@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://xmlns.opennms.org/xsd/config/prometheus-datacollection" targetNamespace="http://xmlns.opennms.org/xsd/config/prometheus-datacollection" elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the prometheus-datacollection-config configuration file</documentation>
+  </annotation>
+  <element name="rrd">
+    <annotation>
+      <documentation>RRD parameters</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions</documentation>
+          </annotation>
+          <simpleType>
+            <restriction base="string">
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+      <attribute name="step" type="int" use="required">
+        <annotation>
+          <documentation>Step size for the RRD</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="prometheus-datacollection-config">
+    <complexType>
+      <sequence>
+        <element ref="ns:collection" maxOccurs="unbounded"/>
+        <element ref="ns:group" maxOccurs="unbounded"/>
+      </sequence>
+      <attribute name="rrd-repository" type="string"/>
+    </complexType>
+  </element>
+  <element name="prometheus-collection-request">
+    <annotation>
+      <documentation>Used to communicate collection details to Minion.</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="ns:group" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+  </element>
+  <element name="collection">
+    <annotation>
+      <documentation>A grouping of related RRD parameters and group references</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="ns:rrd"/>
+        <element name="group-ref" type="string" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="name" type="string" use="required"/>
+    </complexType>
+  </element>
+  <element name="group">
+    <annotation>
+      <documentation>A grouping of related Prometheus attributes</documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="ns:numeric-attribute" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="ns:string-attribute" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>The name of this group, used to reference the group in collection definitions.</documentation>
+        </annotation>
+      </attribute>
+      <attribute name="resource-type" type="string" use="required">
+        <annotation>
+          <documentation>
+						Specifies the name of the resource type that pertains to the attributes
+						in this group. For scalar attributes (those occurring once per node,
+						such as available system memory) this should be "node". For
+						multi-instanced attributes, this should be the name of a custom
+						resource type declared in 'resource-types.d'.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="filter-exp" type="string" use="required">
+        <annotation>
+          <documentation>
+                        Spring expression used to filter metrics that should
+                        belong to this group. The expression should return
+                        a boolean value of true if the metrics should be included
+                        in the group and false otherwise.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="group-by-exp" type="string" use="optional">
+        <annotation>
+          <documentation>
+                        Spring expression used to group metrics by instance.
+                        The expression should return a string.
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  <element name="numeric-attribute">
+    <annotation>
+      <documentation>A numeric attribute</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="filter-exp" use="optional"/>
+      <attribute name="alias-exp" use="required"/>
+      <attribute name="type" use="optional">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="([Cc](ounter|OUNTER)|[Gg](auge|AUGE))"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+      <attribute name="compress-alias" type="boolean" default="true" />
+    </complexType>
+  </element>
+  <element name="string-attribute">
+    <annotation>
+      <documentation>A string attribute</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="alias" use="required"/>
+      <attribute name="value-exp" use="required"/>
+    </complexType>
+  </element>
+</schema>
