@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.util.Collections;
+import java.util.List;
 
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -50,12 +51,14 @@ import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDa
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -123,6 +126,9 @@ public class RemotePollerdIT implements InitializingBean {
     private OverrideableThreshdDao threshdDao;
 
     @Autowired
+    private ApplicationDao applicationDao;
+
+    @Autowired
     private OverrideableThresholdingDao thresholdingDao;
 
     @BeforeTransaction
@@ -132,6 +138,41 @@ public class RemotePollerdIT implements InitializingBean {
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_1);
         PollerConfigFactory.setInstance(new PollerConfigFactory(-1L, new FileInputStream(POLLER_CONFIG_1)));
         changePollingPackages("RDU", "foo1");
+
+        this.databasePopulator.getTransactionTemplate().execute(transactionStatus -> {
+            List<OnmsMonitoredService> listOfServices = this.databasePopulator.getMonitoredServiceDao().findAll();
+
+            final OnmsApplication app1 = new OnmsApplication();
+            app1.setName("App1");
+            this.applicationDao.save(app1);
+
+            listOfServices.get(0).addApplication(app1);
+            listOfServices.get(1).addApplication(app1);
+            listOfServices.get(2).addApplication(app1);
+            listOfServices.get(3).addApplication(app1);
+            listOfServices.get(4).addApplication(app1);
+
+            this.databasePopulator.getMonitoredServiceDao().save(listOfServices.get(0));
+            this.databasePopulator.getMonitoredServiceDao().save(listOfServices.get(1));
+            this.databasePopulator.getMonitoredServiceDao().save(listOfServices.get(2));
+            this.databasePopulator.getMonitoredServiceDao().save(listOfServices.get(3));
+            this.databasePopulator.getMonitoredServiceDao().save(listOfServices.get(4));
+
+            final OnmsApplication app2 = new OnmsApplication();
+            app2.setName("App2");
+            this.applicationDao.save(app2);
+
+            listOfServices.get(5).addApplication(app2);
+            listOfServices.get(6).addApplication(app2);
+            listOfServices.get(7).addApplication(app2);
+
+            this.databasePopulator.getMonitoredServiceDao().save(listOfServices.get(5));
+            this.databasePopulator.getMonitoredServiceDao().save(listOfServices.get(6));
+            this.databasePopulator.getMonitoredServiceDao().save(listOfServices.get(7));
+
+            return null;
+        });
+
 
         this.remotePollerd = new RemotePollerd(
                 this.sessionUtils,
@@ -225,17 +266,17 @@ public class RemotePollerdIT implements InitializingBean {
     @Transactional
     public void testDaemonReload() throws Exception {
         // initial config, package foo1 with 3 services, bound to RDU
-        Assert.assertEquals(31, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
+        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
 
         // new config, package foo1 with 2 services, package foo2 with 1 service, only foo1 bound to RDU
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_2);
         reloadRemotePollerd();
-        Assert.assertEquals(25, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
+        Assert.assertEquals(6, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
 
         // same config, package foo1 and foo2 bound to RDU
         changePollingPackages("RDU", "foo1", "foo2");
         reloadRemotePollerd();
-        Assert.assertEquals(31, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
+        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
     }
 
     @Test
@@ -255,25 +296,25 @@ public class RemotePollerdIT implements InitializingBean {
         reloadRemotePollerd();
 
         // both locations have foo1 and foo2 assigned
-        Assert.assertEquals(31, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
-        Assert.assertEquals(31, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
+        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
+        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
 
         // now remove foo1 from location Fulda and send event for location Fulda
         changePollingPackages("Fulda", "foo2");
         sendPollingPackageAssociationChanged("Fulda");
-        Assert.assertEquals(31, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
-        Assert.assertEquals(6, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
+        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
+        Assert.assertEquals(2, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
 
         // now remove foo2 from location RDU but send an event for Fulda, so nothing will change
         changePollingPackages("RDU", "foo1");
         sendPollingPackageAssociationChanged("Fulda");
-        Assert.assertEquals(31, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
-        Assert.assertEquals(6, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
+        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
+        Assert.assertEquals(2, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
 
         // now send event for RDU, changes will be applied
         sendPollingPackageAssociationChanged("RDU");
-        Assert.assertEquals(25, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
-        Assert.assertEquals(6, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
+        Assert.assertEquals(6, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
+        Assert.assertEquals(2, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
     }
 
     @Test
