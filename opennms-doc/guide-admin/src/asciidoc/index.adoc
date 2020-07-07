@@ -20,7 +20,7 @@
 include::text/about/about.adoc[]
 
 [[ga-admin-datachoices]]
-== Data Choices
+== First Login: Data Choices
 include::text/datachoices.adoc[]
 
 [[ga-role-user-management]]

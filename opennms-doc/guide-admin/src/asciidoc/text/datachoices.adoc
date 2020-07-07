@@ -13,7 +13,7 @@ Statisitcs collection and publication happen only once an admin user opts-in.
 
 When enabled, the following anonymous statistics are collected and published on system startup and every 24 hours after:
 
-* System ID (a randomly generated UUID)
+* System ID (a randomly generated universally unique identifier (UUID))
 * {opennms-product-name} Release
 * {opennms-product-name} Version
 * OS Architecture

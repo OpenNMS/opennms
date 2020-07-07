@@ -7,10 +7,11 @@ Using a task-based approach, chapters appear in a recommended order for working 
 
 . xref:datachoices.adoc[Opt in or out] of usage statistics collection  (requirement during first login).
 . xref:user-management/users.adoc[Create users] and security roles.
+. xref:provisioning/introduction.adoc[Provision] your system. 
 
 [[ga-admin-audience]]
 === Audience
-This guide is suitable for 
+This guide is suitable for administrative users and those who will use {opennms-product-name} to monitor their network.    
 
 [[ga-admin-docs-related]]
 === Related Documentation
