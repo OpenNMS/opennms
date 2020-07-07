@@ -3,31 +3,31 @@
           "pom": "/home/jesse/git/opennms/pom.xml",
           "artifactId": "opennms",
           "groupId": "org.opennms",
-          "version": "2019.1.9-SNAPSHOT",
+          "version": "2019.1.9",
           "dependencies": []
       },
       {
           "pom": "/home/jesse/git/opennms/core/pom.xml",
           "artifactId": "org.opennms.core",
           "groupId": "org.opennms",
-          "version": "2019.1.9-SNAPSHOT",
+          "version": "2019.1.9",
           "dependencies": [],
-          "parent": {"artifactId": "opennms", "groupId": "org.opennms", "version": "2019.1.9-SNAPSHOT"}
+          "parent": {"artifactId": "opennms", "groupId": "org.opennms", "version": "2019.1.9"}
       },
       {
           "pom": "/home/jesse/git/opennms/core/schema/pom.xml",
           "artifactId": "org.opennms.core.schema",
           "groupId": "org.opennms.core",
-          "version": "2019.1.9-SNAPSHOT",
+          "version": "2019.1.9",
           "dependencies": [],
-          "parent": {"artifactId": "org.opennms.core", "groupId": "org.opennms", "version": "2019.1.9-SNAPSHOT"}
+          "parent": {"artifactId": "org.opennms.core", "groupId": "org.opennms", "version": "2019.1.9"}
       },
       {
           "pom": "/home/jesse/git/opennms/opennms-services/pom.xml",
           "artifactId": "opennms-services",
           "groupId": "org.opennms",
-          "version": "2019.1.9-SNAPSHOT",
-          "dependencies": [{"artifactId": "org.opennms.core.schema", "groupId": "org.opennms.core", "version": "2019.1.9-SNAPSHOT"}],
-          "parent": {"artifactId": "opennms", "groupId": "org.opennms", "version": "2019.1.9-SNAPSHOT"}
+          "version": "2019.1.9",
+          "dependencies": [{"artifactId": "org.opennms.core.schema", "groupId": "org.opennms.core", "version": "2019.1.9"}],
+          "parent": {"artifactId": "opennms", "groupId": "org.opennms", "version": "2019.1.9"}
       }
   ]
