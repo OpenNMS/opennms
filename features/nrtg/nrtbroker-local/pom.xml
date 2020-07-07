@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>nrtg</artifactId>
-    <version>2016.1.24-SNAPSHOT</version>
+    <version>2016.1.24</version>
   </parent>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>nrtg-nrtbroker-local</artifactId>

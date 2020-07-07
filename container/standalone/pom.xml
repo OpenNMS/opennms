@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>container</artifactId>
-    <version>2016.1.24-SNAPSHOT</version>
+    <version>2016.1.24</version>
   </parent>
   <groupId>org.opennms.container</groupId>
   <artifactId>standalone</artifactId>
