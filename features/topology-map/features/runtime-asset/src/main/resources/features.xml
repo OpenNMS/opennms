@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!-- pre-written features file to included config file -->
 <features name="opennms-topology-asset" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
-  <feature name="opennms-topology-asset" version="2017.1.24-SNAPSHOT" description="OpenNMS :: Features :: Topology :: Features :: Asset">
+  <feature name="opennms-topology-asset" version="2017.1.24" description="OpenNMS :: Features :: Topology :: Features :: Asset">
     <details>Asset plugins for the OpenNMS topology web app.</details>
-    <bundle>mvn:org.opennms.features.topology.plugins.topo/asset/2017.1.24-SNAPSHOT</bundle>
+    <bundle>mvn:org.opennms.features.topology.plugins.topo/asset/2017.1.24</bundle>
     <!-- <configfile override="true" finalname="/etc/org.opennms.features.topology.plugins.topo.asset.cfg">file:/etc/org.opennms.features.topology.plugins.topo.asset.cfg</configfile> -->
     <config name="org.opennms.features.topology.plugins.topo.asset" append="false"></config>
   </feature>
