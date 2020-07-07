@@ -6,7 +6,7 @@
   <parent>
     <artifactId>org.opennms.features</artifactId>
     <groupId>org.opennms</groupId>
-    <version>2016.1.24-SNAPSHOT</version>
+    <version>2016.1.25-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.gwt-ksc-combobox</artifactId>
