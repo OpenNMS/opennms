@@ -121,7 +121,6 @@ public class SnmpProfileMapperIT {
         int timeout = 6000;
         long ttl = 7000;
         URL url = getClass().getResource("/snmp-config2.xml");
-        url.getPath().toString();
         try (InputStream configStream = url.openStream()) {
             setUpProfileMapper(configStream, url);
             CompletableFuture<Optional<SnmpAgentConfig>> future = profileMapper.getAgentConfigFromProfiles(InetAddress.getByName("192.0.1.206"),

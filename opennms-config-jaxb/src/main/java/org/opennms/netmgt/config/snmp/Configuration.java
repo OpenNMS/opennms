@@ -170,7 +170,7 @@ public class Configuration implements Serializable {
 
 
     @XmlAttribute(name = "encrypted")
-    private Boolean m_encrypted = false;
+    private Boolean m_encrypted;
 
     public Configuration() {
         super();
@@ -769,7 +769,7 @@ public class Configuration implements Serializable {
 
 
     public Boolean getEncrypted() {
-        return m_encrypted;
+        return m_encrypted != null ? m_encrypted : false;
     }
 
     public void setEncrypted(Boolean encrypted) {
@@ -801,7 +801,6 @@ public class Configuration implements Serializable {
         result = prime * result + ((m_version == null) ? 0 : m_version.hashCode());
         result = prime * result + ((m_writeCommunity == null) ? 0 : m_writeCommunity.hashCode());
         result = prime * result + ((m_ttl == null) ? 0 : m_ttl.hashCode());
-        result = prime * result + ((m_encrypted == null) ? 0 : m_encrypted.hashCode());
         return result;
     }
 

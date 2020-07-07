@@ -82,7 +82,6 @@ import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
  * {@link org.opennms.netmgt.snmp.SnmpAgentConfig SnmpAgentConfig} objects for specific
  * addresses. If an address cannot be located in the configuration then a
  * default peer instance is returned to the caller.
- * <p>
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
@@ -232,6 +231,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      *
      * @throws java.io.IOException if any.
      */
+    @Override
     public void saveCurrent() throws IOException {
         saveToFile(getFile());
     }
@@ -443,7 +443,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * with many other attributes.  Uses new classes the wrap JAXB-generated code to
      * help with merging, comparing, and optimizing definitions.  Thanks for your
      * initial work on this Gerald.
-     * <p>
      * Puts a specific IP address with associated read-community string into
      * the currently loaded snmp-config.xml.
      *

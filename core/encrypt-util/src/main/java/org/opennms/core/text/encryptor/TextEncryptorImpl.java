@@ -59,7 +59,7 @@ public class TextEncryptorImpl implements TextEncryptor {
             textEncryptor.setPassword(password);
             return textEncryptor.encrypt(text);
         } catch (Exception e) {
-            LOG.error("Exception while encrypting {} with key {}", key);
+            LOG.error("Exception while encrypting {} with key {}", text, key, e);
         }
         return text;
 
@@ -75,7 +75,7 @@ public class TextEncryptorImpl implements TextEncryptor {
                 return textEncryptor.decrypt(encrypted);
             }
         } catch (Exception e) {
-            LOG.error("Exception while decrypting {} with key {}", encrypted, key);
+            LOG.error("Exception while decrypting {} with key {}", encrypted, key, e);
         }
         return encrypted;
     }

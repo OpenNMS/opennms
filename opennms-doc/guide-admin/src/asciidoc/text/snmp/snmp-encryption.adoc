@@ -1,0 +1,16 @@
+
+=== Encrypting SNMP Credentials
+
+SNMP credentials like readCommunity/WriteCommunity, authPassPhrase/privPassPhrase can be saved on the file system in encrypted format.
+
+==== Enabling encrypting on SNMP Config
+
+[source, sh]
+----
+echo 'org.opennms.snmp.encryption.enabled=true' >> "$OPENNMS_HOME/etc/opennms.properties.d/snmp-encryption.properties"
+----
+
+SNMP config that is modified on User Interface will be encrypted directly on file system.
+Config that is updated on the file system needs to be saved with karaf command `opennms-snmp:save-config` to get encrypted.
+
+NOTE: Currently, SNMP config encryption is not supported on the snmp profiles.
