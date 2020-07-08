@@ -701,6 +701,7 @@ jobs:
           command: |
             # install fake makensis to satisfy the assemble dependency
             sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
+            export MAVEN_OPTS="-Xmx4g -Xms4g"
             # general assembly
             ./assemble.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
