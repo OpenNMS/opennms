@@ -51,9 +51,14 @@ deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted' | sudo tee /et
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt-get || true && \
             sudo apt-get update && \
-	    sudo apt-get -y install debconf-utils && \
+	    sudo apt-get -y install debconf-utils openjdk-8-jdk-headless && \
 	    echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
             sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f nsis R-base rrdtool
+
+JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
+PATH="$JAVA_HOME/bin:$PATH"
+
+export JAVA_HOME PATH
 
 echo "#### Building Assembly Dependencies"
 mvn install -P'!checkstyle' \
