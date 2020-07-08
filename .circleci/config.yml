@@ -615,7 +615,7 @@ jobs:
             sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
             export MAVEN_OPTS="-Xmx4g -Xms4g"
             # general assembly
-            ./assemble.pl -DskipTests=true -Dbuild.skip.tarball=false \
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
@@ -644,7 +644,6 @@ jobs:
             mkdir -p target/{artifacts,tarballs}
             OPENNMS_VERSION="$(opennms-container/pom2version.py pom.xml)"
             find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
-            find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/remote-poller-standalone -name "*.tar.gz" -type f -exec cp {} "./target/artifacts/remote-poller-client-${OPENNMS_VERSION}.tar.gz" \;
             pushd target/site/apidocs
               tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
