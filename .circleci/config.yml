@@ -788,6 +788,7 @@ jobs:
       - store_artifacts:
           when: always
           path: ~/project/target/artifacts
+          destination: artifacts
       - store_artifacts:
           when: always
           path: ~/project/target/tarballs
