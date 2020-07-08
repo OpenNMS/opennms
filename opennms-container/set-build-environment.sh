@@ -6,7 +6,7 @@ TOPDIR="$(echo "$TOPDIR" | sed -e 's,opennms-container/.*$,opennms-container,')"
 
 # Use version number from pom except from develop and features branches
 case "${CIRCLE_BRANCH}" in
-  master)
+  master-*)
     VERSION="$("${TOPDIR}/pom2version.py" "${TOPDIR}/../pom.xml")"
     ;;
   develop)
