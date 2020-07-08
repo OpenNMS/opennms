@@ -84,9 +84,10 @@ public class TimeseriesSearcher {
     /**
      * Gets all metrics that reside under the given path
      */
-    private List<Metric> getMetricsBelowWildcardPath(final String wildcardPath) throws StorageException {
+    private Set<Metric> getMetricsBelowWildcardPath(final String wildcardPath) throws StorageException {
         String wildcardValue = String.format("(%s,*)", wildcardPath);
-        return timeseriesStorageManager.get().getMetrics(Collections.singletonList(new ImmutableTag(WILDCARD_INDEX, wildcardValue)));
+        Tag wildCardTag = new ImmutableTag(WILDCARD_INDEX, wildcardValue);
+        return getMetricFromCacheOrLoad(wildCardTag);
     }
 
     public Map<String, String> getResourceAttributes(ResourcePath path) {
@@ -120,7 +121,7 @@ public class TimeseriesSearcher {
         // depth (defined as WILDCARD_INDEX_NO). We have a special index, the "wildcard" index for that.
         if (path.elements().length >= WILDCARD_INDEX_NO) {
             String wildcardPath = String.join(":", Arrays.asList(path.elements()).subList(0, WILDCARD_INDEX_NO));
-            List<Metric> metricsFromWildcard = getMetricsBelowWildcardPath(wildcardPath);
+            Set<Metric> metricsFromWildcard = getMetricsBelowWildcardPath(wildcardPath);
             for (Metric metric : metricsFromWildcard) {
                 metric.getMetaTags().stream()
                         .filter(tag -> tag.getKey() != null)

@@ -83,8 +83,9 @@ public class TimeseriesSearcherTest {
 
         test("a/b", abcd1, abcd2);
         test("a/b/c", abcd1e);
+        test("a/b/not-existing");
 
-        // verify wildcard cache: we expect only 1 more getMetrics() invocation for the 2 calls above
+        // verify wildcard cache: we expect only 1 more getMetrics() invocation for the 3 calls above
         verify(storage, times(2)).getMetrics(any());
     }
 
