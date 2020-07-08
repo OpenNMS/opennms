@@ -218,12 +218,16 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
             return;
         }
         final ProportionalSumAggregation bytesInAgg = aggs.getAggregation("bytes_in", ProportionalSumAggregation.class);
-        for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesInAgg.getBuckets()) {
-            builder.put(new Directional<>(otherEntity, true), dateHistogram.getTime(), dateHistogram.getValue());
+        if (bytesInAgg != null) {
+            for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesInAgg.getBuckets()) {
+                builder.put(new Directional<>(otherEntity, true), dateHistogram.getTime(), dateHistogram.getValue());
+            }
         }
         final ProportionalSumAggregation bytesOutAgg = aggs.getAggregation("bytes_out", ProportionalSumAggregation.class);
-        for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesOutAgg.getBuckets()) {
-            builder.put(new Directional<>(otherEntity, false), dateHistogram.getTime(), dateHistogram.getValue());
+        if (bytesOutAgg != null) {
+            for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesOutAgg.getBuckets()) {
+                builder.put(new Directional<>(otherEntity, false), dateHistogram.getTime(), dateHistogram.getValue());
+            }
         }
     }
 
