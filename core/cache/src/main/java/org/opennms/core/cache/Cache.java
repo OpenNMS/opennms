@@ -29,6 +29,7 @@
 package org.opennms.core.cache;
 
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
@@ -79,6 +80,18 @@ public class Cache<K, V> {
         }
         try {
             return cacheLoader.load(key);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    public V get(K key, Callable<? extends V> valueLoader) throws ExecutionException {
+        Objects.requireNonNull(key);
+        if (config.isEnabled()) {
+            return delegate.get(key, valueLoader);
+        }
+        try {
+            return valueLoader.call();
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
