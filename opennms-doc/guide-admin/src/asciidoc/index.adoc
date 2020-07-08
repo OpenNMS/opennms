@@ -20,7 +20,7 @@
 include::text/about/about.adoc[]
 
 [[ga-admin-datachoices]]
-== First Login: Data Choices
+== First Login: Admin User Set Up
 include::text/datachoices.adoc[]
 
 [[ga-role-user-management]]
@@ -183,8 +183,6 @@ include::text/performance-data-collection/shell/introduction.adoc[]
 include::text/performance-data-collection/shell/adhoc-collection.adoc[]
 include::text/performance-data-collection/shell/measurements.adoc[]
 include::text/performance-data-collection/shell/stress-testing.adoc[]
-
-
 
 [[ga-performance-mgmt-thresholds]]
 == Thresholding
