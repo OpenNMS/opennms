@@ -895,12 +895,14 @@ create table outages (
 	ifRegainedService	timestamp with time zone,
 	suppressTime    	timestamp with time zone,
 	suppressedBy		varchar(256),
-	ifServiceId		INTEGER not null,
+	ifServiceId		    INTEGER not null,
+	perspective         text,
 
 	constraint pk_outageID primary key (outageID),
 	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
 	constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE,
-	CONSTRAINT ifServices_fkey2 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE
+	CONSTRAINT ifServices_fkey2 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE,
+	constraint fk_outages_perspective foreign key(perspective) references monitoringlocations(id) on delete cascade on update cascade
 );
 
 create index outages_svclostid_idx on outages(svcLostEventID);

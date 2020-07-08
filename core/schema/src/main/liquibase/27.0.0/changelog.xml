@@ -30,4 +30,11 @@
             <column name="statustime"></column>
         </createIndex>
     </changeSet>
+
+    <changeSet runOnChange="false" author="cpape" id="27.0.0-outages-perspective">
+        <addColumn tableName="outages">
+            <column name="perspective" type="text"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="outages" baseColumnNames="perspective" constraintName="fk_outages_perspective" referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE"/>
+    </changeSet>
 </databaseChangeLog>

@@ -596,7 +596,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
         Date periodEnd = new Date(System.currentTimeMillis());
         Date periodStart = new Date(periodEnd.getTime() - (24 * 60 * 60 * 1000));
 
-        outageCriteria.addRestriction(Restrictions.any(Restrictions.isNull("ifRegainedService"), Restrictions.ge("ifLostService", periodStart), Restrictions.ge("ifRegainedService", periodStart)));
+        outageCriteria.addRestriction(Restrictions.any(Restrictions.isNull("perspective"), Restrictions.isNull("ifRegainedService"), Restrictions.ge("ifLostService", periodStart), Restrictions.ge("ifRegainedService", periodStart)));
 
         List<Order> ordersOutage = new ArrayList<>();
         ordersOutage.add(Order.asc("monitoredService"));

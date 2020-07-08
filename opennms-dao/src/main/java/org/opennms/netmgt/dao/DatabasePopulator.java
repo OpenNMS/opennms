@@ -363,7 +363,18 @@ public class DatabasePopulator {
         final OnmsOutage unresolved = new OnmsOutage(new Date(1436881548292L), event, svc);
         getOutageDao().save(unresolved);
         getOutageDao().flush();
-        
+
+        // added this to assure that the old behaviour before RemotePollerNG is still the same
+        final OnmsOutage remoteResolved = new OnmsOutage(new Date(1436881448292L), new Date(1436881448292L), event, event, svc, null, null);
+        remoteResolved.setPerspective(m_monitoringLocationDao.get("RDU"));
+        getOutageDao().save(remoteResolved);
+        getOutageDao().flush();
+
+        final OnmsOutage remoteUnresolved = new OnmsOutage(new Date(1436881448292L), event, svc);
+        remoteUnresolved.setPerspective(m_monitoringLocationDao.get("RDU"));
+        getOutageDao().save(remoteUnresolved);
+        getOutageDao().flush();
+
         final OnmsAlarm alarm = buildAlarm(event);
         getAlarmDao().save(alarm);
         getAlarmDao().flush();
