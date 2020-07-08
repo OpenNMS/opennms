@@ -739,7 +739,7 @@ jobs:
               tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
             popd
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
-            cp opennms-docs/guide-all/target/*.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-docs.tar.gz"
+            cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-docs.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
       - run:
           name: Build Minion OCI
