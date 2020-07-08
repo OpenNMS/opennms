@@ -902,14 +902,14 @@ create table outages (
 	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
 	constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE,
 	CONSTRAINT ifServices_fkey2 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE,
-	constraint fk_outages_perspective foreign key(perspective) references monitoringlocations(id) on delete cascade on update cascade
+	constraint fk_outages_perspective foreign key (perspective) references monitoringlocations(id) on delete cascade on update cascade
 );
 
 create index outages_svclostid_idx on outages(svcLostEventID);
 create index outages_svcregainedid_idx on outages(svcRegainedEventID);
 create index outages_regainedservice_idx on outages(ifRegainedService);
 create index outages_ifServiceId_idx on outages(ifServiceId);
-create unique index one_outstanding_outage_per_service_idx on outages (ifserviceid) where ifregainedservice is null;
+create unique index one_outstanding_outage_per_service_idx on outages (ifserviceid, perspective) where ifregainedservice is null;
 
 --########################################################################
 --# notification table - Contains information on acknowleged and outstanding

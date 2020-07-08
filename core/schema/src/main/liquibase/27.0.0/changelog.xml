@@ -37,4 +37,13 @@
         </addColumn>
         <addForeignKeyConstraint baseTableName="outages" baseColumnNames="perspective" constraintName="fk_outages_perspective" referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE"/>
     </changeSet>
+
+    <changeSet author="cpape" id="27.0.0-unique-outages-per-location">
+        <dropIndex tableName="outages" indexName="one_outstanding_outage_per_service_idx"/>
+        <sql>
+            CREATE UNIQUE INDEX one_outstanding_outage_per_service_and_location_idx
+            ON outages (ifserviceid, perspective) WHERE ifregainedservice IS NULL;
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
