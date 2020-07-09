@@ -481,7 +481,7 @@ public class OnmsOutage implements Serializable {
     @JsonSerialize(using=MonitoringLocationJsonSerializer.class)
     @JsonDeserialize(using=MonitoringLocationJsonDeserializer.class)
     @XmlElement(name="perspective")
-    @ManyToOne(optional=false, fetch=FetchType.LAZY)
+    @ManyToOne(optional=false, fetch=FetchType.EAGER)
     @JoinColumn(name="perspective")
     @XmlJavaTypeAdapter(MonitoringLocationIdAdapter.class)
     public OnmsMonitoringLocation getPerspective() {
