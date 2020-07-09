@@ -124,7 +124,7 @@ public class AvailabilityDatabasePopulatorIT implements InitializingBean {
 		Assert.assertEquals("node DB count", 2, m_nodeDao.countAll());
 		Assert.assertEquals("service DB count", 3, m_serviceTypeDao.countAll());
 		Assert.assertEquals("IP interface DB count", 3, m_ipInterfaceDao.countAll());
-		Assert.assertEquals("outages DB Count",6 ,m_outageDao.countMatching(new CriteriaBuilder(OnmsOutage.class).isNotNull("perspective").toCriteria()));
+		Assert.assertEquals("outages DB Count",6 ,m_outageDao.countMatching(new CriteriaBuilder(OnmsOutage.class).isNull("perspective").toCriteria()));
 
 		final OnmsIpInterface oneHundredDotOne = m_ipInterfaceDao.findByNodeIdAndIpAddress(1, "192.168.100.1");
 
