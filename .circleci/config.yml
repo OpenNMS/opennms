@@ -502,8 +502,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
@@ -518,8 +518,8 @@ workflows:
           filters:
             branches:
               ignore:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
@@ -532,8 +532,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
       - sentinel-publish-oci:
           context: << parameters.context_name >>
@@ -542,8 +542,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
@@ -554,8 +554,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
@@ -568,8 +568,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
@@ -582,8 +582,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
@@ -656,8 +656,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
 
@@ -698,20 +698,50 @@ jobs:
             sudo systemctl restart docker
       - dockerhub-login
       - run:
-          name: Assemble tarballs
-          # Install fake makensis to satisfy the assemble dependency
+          name: Assemble tarballs and related artifacts
           command: |
+            # install fake makensis to satisfy the assemble dependency
             sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
-            ./assemble.pl -Dopennms.home=/opt/opennms \
-                          -DskipTests \
-                          -DupdatePolicy=never
+            export MAVEN_OPTS="-Xmx4g -Xms4g"
+            # general assembly
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+              -DupdatePolicy=never \
+              -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+              -DmaxCpus=<< parameters.number-vcpu >> \
+              -Pbuild-bamboo \
+              -Prun-expensive-tasks \
+              -Dopennms.home=/opt/opennms \
+              install --batch-mode
+            # javadoc
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+              -DupdatePolicy=never \
+              -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+              -DmaxCpus=<< parameters.number-vcpu >> \
+              -Pbuild-bamboo \
+              -Prun-expensive-tasks \
+              -Dopennms.home=/opt/opennms \
+              javadoc:aggregate --batch-mode
       - run:
-          name: Collect tarball artifacts
+          name: Collect Artifacts
           command: |
-            mkdir target/tarballs
-            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/opennms.tar.gz \;
-            find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/minion.tar.gz \;
-            find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/sentinel.tar.gz \;
+            mkdir -p target/{artifacts,tarballs}
+            OPENNMS_VERSION="$(python opennms-container/pom2version.py pom.xml)"
+            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
+            find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
+            find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
+            find ./opennms-assemblies/remote-poller-standalone -name "*.tar.gz" -type f -exec cp {} "./target/artifacts/remote-poller-client-${OPENNMS_VERSION}.tar.gz" \;
+            pushd target/site/apidocs
+              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+            popd
+            cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
+            cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-docs.tar.gz"
+            cp target/*-source.tar.gz ./target/artifacts/
       - run:
           name: Build Minion OCI
           command: |
@@ -728,7 +758,7 @@ jobs:
             # Build for multiple architectures only in release branches and push images with manifest to a registry
             # For develop we set a floating tag "bleeding" instead the x.y.z-SNAPSHOT version number
             case "${CIRCLE_BRANCH}" in
-              "master")
+              "master-"*)
                 make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
                      DOCKER_FLAGS=--push \
                      VERSION="$(../pom2version.py ../../pom.xml)" \
@@ -757,6 +787,11 @@ jobs:
                 ;;
             esac
       - store_artifacts:
+          when: always
+          path: ~/project/target/artifacts
+          destination: artifacts
+      - store_artifacts:
+          when: always
           path: ~/project/target/tarballs
           destination: tarballs
       - store_artifacts:
@@ -765,10 +800,11 @@ jobs:
       - cache-oci:
           key: minion
           path: opennms-container/minion/images/
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/tarballs
+      # any idea why we persisted this? seems like nothing later uses it
+      #- persist_to_workspace:
+      #    root: ~/
+      #    paths:
+      #      - project/target/tarballs
 
   horizon-rpm-build:
     executor: centos-build-executor
