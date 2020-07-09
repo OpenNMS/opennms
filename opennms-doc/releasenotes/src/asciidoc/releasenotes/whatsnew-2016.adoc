@@ -141,6 +141,28 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.24]
+
+==== Release Meridian-2016.1.24
+
+Release 2016.1.24 is a small update to 2016.1.23 that fixes a few bugs and makes some Docker-related
+improvements.
+
+The codename for 2016.1.24 is _https://map-projections.net/single-view/breusing-geometric-hemi-110w[Breusing Geometric]_.
+
+===== Bug
+
+* AbstractSnmpValue.allBytesDisplayable() IndexOutOfBound Exception (Issue http://issues.opennms.org/browse/NMS-7547[NMS-7547])
+* Confd download fails silently on Docker install (Issue http://issues.opennms.org/browse/NMS-12642[NMS-12642])
+* RRD-to-Newts converter only handles AVERAGE RRAs (Issue http://issues.opennms.org/browse/NMS-12722[NMS-12722])
+* dependency commons-beanutils 1.8.3 vulnerability (Issue http://issues.opennms.org/browse/NMS-12757[NMS-12757])
+
+===== Enhancement
+
+* Reduce Docker container image size (Issue http://issues.opennms.org/browse/NMS-12284[NMS-12284])
+* Backport CircleCI pipeline to foundation-2016 (Issue http://issues.opennms.org/browse/NMS-12607[NMS-12607])
+* Bump Docker base dependencies in build-env and OCI artifacts (Issue http://issues.opennms.org/browse/NMS-12699[NMS-12699])
+
 [releasenotes-changelog-Meridian-2016.1.23]
 
 ==== Release Meridian-2016.1.23
@@ -150,7 +172,7 @@ node page.
 
 The codename for 2016.1.23 is _http://mathworld.wolfram.com/BalthasartProjection.html[Balthasart]_.
 
-===== Story
+===== Enhancement
 
 * Add a command to show configuration diffs (Issue http://issues.opennms.org/browse/NMS-12129[NMS-12129])
 * Availability boxes on node pages including sub pages differ (Issue http://issues.opennms.org/browse/NMS-12321[NMS-12321])
