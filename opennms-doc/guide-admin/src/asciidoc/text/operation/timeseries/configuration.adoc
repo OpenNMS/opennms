@@ -44,7 +44,7 @@ Additional configuration options are presented in the next section.
 
 The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can be used to configure and tune the _Time Series Integration Layer_.
 
-[[ga-opennms-operation-timeseries-configuration-general]]
+[[ga-opennms-operation-timeseries-properties-general]]
 ====== General
 [options="header, autowidth"]
 |===
