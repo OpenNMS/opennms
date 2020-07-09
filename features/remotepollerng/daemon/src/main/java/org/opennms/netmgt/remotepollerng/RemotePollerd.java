@@ -88,6 +88,7 @@ import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.xml.event.Event;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -531,6 +532,13 @@ public class RemotePollerd implements SpringServiceDaemon {
             final OnmsOutage onmsOutage = new OnmsOutage(onmsEvent.getEventCreateTime(), onmsEvent, service);
             onmsOutage.setPerspective(perspective);
             outageDao.save(onmsOutage);
+
+            final Event outageEvent = new EventBuilder(EventConstants.OUTAGE_CREATED_EVENT_UEI, "RemotePollerd")
+                    .setNodeid(onmsEvent.getNodeId())
+                    .setService(service.getServiceName())
+                    .setTime(onmsEvent.getEventCreateTime())
+                    .getEvent();
+            eventForwarder.sendNow(outageEvent);
         } else {
             LOG.warn("Received incomplete {} event: {}", EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, e);
         }
@@ -556,6 +564,13 @@ public class RemotePollerd implements SpringServiceDaemon {
                 onmsOutage.setIfRegainedService(onmsEvent.getEventCreateTime());
                 onmsOutage.setServiceRegainedEvent(onmsEvent);
                 outageDao.update(onmsOutage);
+
+                final Event outageEvent = new EventBuilder(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, "RemotePollerd")
+                        .setNodeid(onmsEvent.getNodeId())
+                        .setService(service.getServiceName())
+                        .setTime(onmsEvent.getEventCreateTime())
+                        .getEvent();
+                eventForwarder.sendNow(outageEvent);
             } else {
                 LOG.warn("Found more than one outages for {} event: {}", EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, e);
                 return;
