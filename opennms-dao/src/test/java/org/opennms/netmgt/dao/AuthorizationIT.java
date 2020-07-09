@@ -40,6 +40,7 @@ import org.hibernate.Session;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -50,6 +51,7 @@ import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -136,7 +138,13 @@ public class AuthorizationIT implements InitializingBean {
     @JUnitTemporaryDatabase
     public void testAuthorizedOutages() {
 
-        Collection<OnmsOutage> matching = m_outageDao.findAll();
+        Collection<OnmsOutage> matching = m_outageDao.findMatching(new CriteriaBuilder(OnmsOutage.class).isNull("perspective").toCriteria());
+
+        OnmsMonitoringLocation l = m_populator.getMonitoringLocationDao().get("RDU");
+        System.err.println("******* "+l);
+        for(OnmsOutage outage: matching) {
+            System.err.println("!!!!!! "+outage);
+        }
 
         assertNotNull(matching);
         assertEquals(2, matching.size());
@@ -145,7 +153,7 @@ public class AuthorizationIT implements InitializingBean {
 
         enableAuthorizationFilter("NonExistentGroup");
 
-        Collection<OnmsOutage> matching2 = m_outageDao.findAll();
+        Collection<OnmsOutage> matching2 = m_outageDao.findMatching(new CriteriaBuilder(OnmsOutage.class).isNull("perspective").toCriteria());
 
         assertNotNull(matching2);
         assertEquals(0, matching2.size());
@@ -154,7 +162,7 @@ public class AuthorizationIT implements InitializingBean {
 
         disableAuthorizationFilter();
 
-        Collection<OnmsOutage> matching3 = m_outageDao.findAll();
+        Collection<OnmsOutage> matching3 = m_outageDao.findMatching(new CriteriaBuilder(OnmsOutage.class).isNull("perspective").toCriteria());
 
         assertNotNull(matching3);
         assertEquals(2, matching3.size());
