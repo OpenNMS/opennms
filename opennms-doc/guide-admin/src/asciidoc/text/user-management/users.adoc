@@ -1,14 +1,13 @@
-
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
 Manging users involves the following tasks:
 
-* first-time login and data choices
-* admin user setup
-* creating and configuring users
-* creating and configuring groups
-* configuring on-call roles
+* xref:ga-data-choices[first-time login and data choices]
+* xref:ga-admin-user-setup[admin user setup]
+* xref:user-config.adoc[creating and configuring users]
+* xref:user-groups.adoc[creating and configuring groups]
+* xref:user-oncall.adoc[configuring on-call roles]
 
 [[ga-data-choices]]
 === First Time Login and Data Choices
@@ -26,6 +25,8 @@ image:data-choices/data-sources.png[prompt, 300]
 Click *Show me what is being sent* to see what information we collect. 
 Statisitcs collection and publication happen only if an admin user opts in.
 
+NOTE: Admin users can enable or disable usage statistics collection at any time by choosing *admin>Configure OpenNMS>Additional Tools>Data Choices* and selecting *Opt-in* or *Opt-out* in the UI.
+
 *Data Collection*
 
 When enabled, the `Data Choices` module collects the following anonymous statistics and publishes them on system startup and every 24 hours after:
@@ -42,10 +43,8 @@ When enabled, the `Data Choices` module collects the following anonymous statist
 * Number of nodes in the `node` table
 * Number of nodes, grouped by System OID
 
-NOTE: Admin users can enable or disable usage statistics collection at any time by choosing *admin>Configure OpenNMS>Additional Tools>Data Choices* and selecting *Opt-in* or *Opt-out* in the UI.
-
 [[ga-admin-user-setup]]
-=== Admin User Setup
+==== Admin User Setup
 
 After logging in for the first time, make sure to change the default admin user password to a secure one: 
 
@@ -54,39 +53,22 @@ After logging in for the first time, make sure to change the default admin user 
 . In the *User Password* area, click *Reset Password*, update your password and click *OK*.
 . Click *Finish* at the bottom of the Modify User screen to save changes. 
 
-We recommend not using the default `admin` user, but instead create specific users with the admin role. 
+We recommend not using the default `admin` user, but instead xref:user-config.adoc[creating specific users] with the admin role and/or other permissions. 
 This helps keep to track of who has done tasks such as clearing alarms or creating notifications. 
 
 WARNING: Do not delete the _admin_ and _rtc_ users.
          The _RTC_ user is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
 
 
-Admin user setup involves the following:
-
-* changing the default password
-* creating a new admin user
-
-[[ga-change-admin-password]]
-==== Change Admin Password
 
 
 
-_Users_ are entities with login accounts in the _{opennms-product-name}_ system.
-Ideally each user corresponds to a person.
-An _{opennms-product-name}_ _User_ represents an actor which may be granted permissions in the system by associating _Security Roles_.
-_{opennms-product-name}_ stores by default _User_ information and credentials in a local embedded file based storage.
-Credentials and user details, e.g. contact information, descriptions or _Security Roles_ can be managed through the _Admin Section_ in the Web User Interface.
 
-Beside local _Users_, external authentication services including link:https://wiki.opennms.org/wiki/Spring_Security_and_LDAP[LDAP / LDAPS], link:https://wiki.opennms.org/wiki/Spring_Security_and_Radius[RADIUS], and link:https://wiki.opennms.org/wiki/Single_Sign_On[SSO] can be configured.
-Configuration specifics for these services are outside the scope of this section.
-
-The following paragraphs describe how to manage the embedded _User_ and _Security Roles_ in _{opennms-product-name}_.
 
 [[ga-role-user-management-users]]
 === Users
 
-Managing _Users_ is done through the _Web User Interface_ and requires to login as a _User_ with administrative permissions.
-By default the _admin_ user is used to initially create and modify _Users_.
+
 The _User_, _Password_ and other detail descriptions are persisted in `users.xml` file.
 It is not required to restart _{opennms-product-name}_ when _User_ attributes are changed.
 
@@ -116,19 +98,7 @@ IMPORTANT: Change the default _admin_ password to a secure password.
 
 .How to create or modify user
 
-. Login as a *User* with administrative permissions
-. Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name
-. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*
-. Use *Add new user* and type in a *login name* as _User ID_ and a *Password* with confirmation or click *Modify* next to an existing _User_
-. _Optional_: Fill in detailed _User Information_ to provide more context information around the new user in the system
-. _Optional_: Assign _Security Roles_ to give or remove permissions in the system
-. _Optional_: Provide _Notification Information_ which are used in _Notification_ targets to send messages to the _User_
-. _Optional_: Set a schedule when a _User_ should receive _Notifications_
-. Click *Finish* to persist and apply the changes
 
-NOTE: By default a new _User_ has the _Security Role_ similar to _ROLE_USER_ assigned.
-     Acknowledgment and working with _Alarms_ and _Notifications_ is possible.
-     The _Configure OpenNMS_ administration menu is not available.
 
 .How to delete existing user
 

@@ -1,0 +1,5 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-user-groups]]
+=== User Groups

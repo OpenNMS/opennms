@@ -19,13 +19,10 @@
 == About This Guide
 include::text/about/about.adoc[]
 
-[[ga-admin-datachoices]]
-== First Login: Admin User Set Up
-include::text/datachoices.adoc[]
-
 [[ga-role-user-management]]
 == User Management
 include::text/user-management/users.adoc[]
+include::text/user-management/user-config.adoc[]
 include::text/user-management/security-roles.adoc[]
 include::text/user-management/pre-authentication.adoc[]
 

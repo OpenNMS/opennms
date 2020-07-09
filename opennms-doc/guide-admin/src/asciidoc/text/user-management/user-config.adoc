@@ -1,0 +1,34 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== User Creation and Configuration
+
+Only a user with admin privileges can create users and assign security roles to them. 
+We recommend creating a new admin user instead of using the default. 
+
+Ideally, each user account corresponds to a person, to help track who performs tasks in your {opennms-product-name}_ system.
+Assigning different xref:security-roles.adoc[security roles] to each user helps restrict what tasks the user can perform. 
+
+In addition to local users, you can configure external authentication services including link:https://wiki.opennms.org/wiki/Spring_Security_and_LDAP[LDAP / LDAPS], link:https://wiki.opennms.org/wiki/Spring_Security_and_Radius[RADIUS], and link:https://wiki.opennms.org/wiki/Single_Sign_On[SSO].
+Configuration specifics for these services are outside the scope of this documentation.
+
+WARNING: Do not delete the _admin_ and _rtc_ users.
+         The _RTC_ user is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
+
+[[ga-user-create]]
+==== Creating a User
+
+. Login as a user with administrative permissions
+. Choose *admin>Configure OpenNMS* from the top-right menu. 
+. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*.
+. Click *Add new user* and specify a user ID, password, password confirmation and click *OK*. 
+. _Optional_: add user information in the appropriate fields.  
+. _Optional_: assign xref:security-roles.adoc[security roles] to give or remove permissions in the system.
++
+NOTE: By default a new user has the following permissions:
+     Acknowledge and work with alarms and noficiations.
+     Cannot access the configure OpenNMS administration menu.
+
+. _Optional_: specify notification information: where to send messages to the user.
+. _Optional_: set a schedule for when a user should receive notifications.
+. Click *Finish* to save changes.

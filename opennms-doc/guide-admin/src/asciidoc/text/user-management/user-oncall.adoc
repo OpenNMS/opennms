@@ -1,0 +1,4 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Configuring On-Call Roles
