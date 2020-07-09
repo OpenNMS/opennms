@@ -536,7 +536,6 @@ workflows:
 #          filters:
 #            branches:
 #              only:
-#                - master
 #                - develop
 #                - /^master-.*/
 #                - /^release-.*/
@@ -670,7 +669,7 @@ jobs:
             sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
             export MAVEN_OPTS="-Xmx4g -Xms4g"
             # general assembly
-            ./assemble.pl -DskipTests=true -Dbuild.skip.tarball=false \
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
@@ -697,16 +696,16 @@ jobs:
           name: Collect Artifacts
           command: |
             mkdir -p target/{artifacts,tarballs}
-            OPENNMS_VERSION="$(opennms-container/pom2version.py pom.xml)"
-            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
+            OPENNMS_VERSION="$(python opennms-container/pom2version.py pom.xml)"
+            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/meridian-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/remote-poller-standalone -name "*.tar.gz" -type f -exec cp {} "./target/artifacts/remote-poller-client-${OPENNMS_VERSION}.tar.gz" \;
             pushd target/site/apidocs
-              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+              tar -czf "../../artifacts/meridian-${OPENNMS_VERSION}-javadoc.tar.gz" *
             popd
-            cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
-            cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-docs.tar.gz"
-            cp target/*-source.tar.gz ./target/artifacts/
+            cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/meridian-${OPENNMS_VERSION}-xsds.tar.gz"
+            cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/meridian-${OPENNMS_VERSION}-docs.tar.gz"
+            cp target/*-source.tar.gz "./target/artifacts/meridian-${OPENNMS_VERSION}-source.tar.gz"
       - store_artifacts:
           when: always
           path: ~/project/target/artifacts
