@@ -80,7 +80,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
      */
     @Override
     public Collection<OnmsOutage> currentOutages() {
-        return find("from OnmsOutage as o where perspective is null and o.ifRegainedService is null");
+        return find("from OnmsOutage as o where o.perspective is null and o.ifRegainedService is null");
     }
 
     @Override
