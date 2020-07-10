@@ -41,8 +41,13 @@
     <changeSet author="cpape" id="27.0.0-unique-outages-per-location">
         <dropIndex tableName="outages" indexName="one_outstanding_outage_per_service_idx"/>
         <sql>
-            CREATE UNIQUE INDEX one_outstanding_outage_per_service_and_location_idx
-            ON outages (ifserviceid, perspective) WHERE ifregainedservice IS NULL;
+            CREATE UNIQUE INDEX one_outstanding_outage_per_service_and_location_idx1
+              ON outages (ifserviceid)
+              WHERE perspective IS NULL AND ifregainedservice IS NULL;
+
+            CREATE UNIQUE INDEX one_outstanding_outage_per_service_and_location_idx2
+              ON outages (ifserviceid, perspective)
+              WHERE NOT perspective IS NULL ifregainedservice IS NULL;
         </sql>
     </changeSet>
 

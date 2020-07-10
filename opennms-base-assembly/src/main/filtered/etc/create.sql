@@ -909,7 +909,8 @@ create index outages_svclostid_idx on outages(svcLostEventID);
 create index outages_svcregainedid_idx on outages(svcRegainedEventID);
 create index outages_regainedservice_idx on outages(ifRegainedService);
 create index outages_ifServiceId_idx on outages(ifServiceId);
-create unique index one_outstanding_outage_per_service_and_location_idx on outages (ifserviceid, perspective) where ifregainedservice is null;
+create unique index one_outstanding_outage_per_service_and_location_idx1 on outages (ifserviceid) where perspective is null and ifregainedservice is null;
+create unique index one_outstanding_outage_per_service_and_location_idx2 on outages (ifserviceid, perspective) where not perspective is null and ifregainedservice is null;
 
 --########################################################################
 --# notification table - Contains information on acknowleged and outstanding
