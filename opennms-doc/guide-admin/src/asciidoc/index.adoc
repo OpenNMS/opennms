@@ -24,6 +24,8 @@ include::text/about/about.adoc[]
 include::text/user-management/users.adoc[]
 include::text/user-management/user-config.adoc[]
 include::text/user-management/security-roles.adoc[]
+include::text/user-management/user-groups.adoc[]
+include::text/user-management/user-oncall.adoc[]
 include::text/user-management/pre-authentication.adoc[]
 
 [[ga-admin-ui]]

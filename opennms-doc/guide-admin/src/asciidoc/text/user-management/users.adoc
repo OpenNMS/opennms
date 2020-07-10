@@ -5,7 +5,7 @@ Manging users involves the following tasks:
 
 * xref:ga-data-choices[first-time login and data choices]
 * xref:ga-admin-user-setup[admin user setup]
-* xref:user-config.adoc[creating and configuring users]
+* xref:user-management/user-config.adoc[creating and configuring users]
 * xref:user-groups.adoc[creating and configuring groups]
 * xref:user-oncall.adoc[configuring on-call roles]
 
@@ -22,11 +22,12 @@ The OpenNMS Group uses this information to help determine product usage and to i
 
 image:data-choices/data-sources.png[prompt, 300]
 
-Click *Show me what is being sent* to see what information we collect. 
+Click *Show me what is being sent* to see what xref:ga-data-collection[information we collect]. 
 Statisitcs collection and publication happen only if an admin user opts in.
 
 NOTE: Admin users can enable or disable usage statistics collection at any time by choosing *admin>Configure OpenNMS>Additional Tools>Data Choices* and selecting *Opt-in* or *Opt-out* in the UI.
 
+[[ga-data-collection]]
 *Data Collection*
 
 When enabled, the `Data Choices` module collects the following anonymous statistics and publishes them on system startup and every 24 hours after:
@@ -56,13 +57,8 @@ After logging in for the first time, make sure to change the default admin user 
 We recommend not using the default `admin` user, but instead xref:user-config.adoc[creating specific users] with the admin role and/or other permissions. 
 This helps keep to track of who has done tasks such as clearing alarms or creating notifications. 
 
-WARNING: Do not delete the _admin_ and _rtc_ users.
-         The _RTC_ user is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
-
-
-
-
-
+WARNING: Do not delete the default _admin_ and _rtc_ users.
+         The _rtc_ user is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
 
 
 [[ga-role-user-management-users]]
@@ -70,14 +66,7 @@ WARNING: Do not delete the _admin_ and _rtc_ users.
 
 
 The _User_, _Password_ and other detail descriptions are persisted in `users.xml` file.
-It is not required to restart _{opennms-product-name}_ when _User_ attributes are changed.
 
-In case administrative tasks should be delegated to an _User_ the _Security Role_ named _ROLE_ADMIN_ can be assigned.
-
-WARNING: Don't delete the _admin_ and _rtc_ user.
-         The _RTC_ user is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
-
-IMPORTANT: Change the default _admin_ password to a secure password.
 
 .How to set a new password for any user
 . Login as a *User* with administrative permissions
@@ -96,9 +85,6 @@ IMPORTANT: Change the default _admin_ password to a secure password.
 . Click *Submit*
 . Logout and login with your new password
 
-.How to create or modify user
-
-
 
 .How to delete existing user
 
@@ -106,4 +92,4 @@ IMPORTANT: Change the default _admin_ password to a secure password.
 . Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name
 . Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*
 . Use the trash bin icon next to the _User_ to delete
-. Confirm delete request with *OK*
+. Confirm delete request with *OK*.

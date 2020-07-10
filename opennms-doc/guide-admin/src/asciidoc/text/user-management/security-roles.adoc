@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[ga-role-user-management-roles]]
-=== Security Roles
+==== Security Roles
 
 A _Security Roles_ is a set of permissions and can be assigned to an _User_.
 They regulate access to the Web User Interface and the _ReST API_ to exchange monitoring and inventory information.
