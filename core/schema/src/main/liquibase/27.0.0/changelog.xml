@@ -47,7 +47,7 @@
 
             CREATE UNIQUE INDEX one_outstanding_outage_per_service_and_location_idx2
               ON outages (ifserviceid, perspective)
-              WHERE NOT perspective IS NULL ifregainedservice IS NULL;
+              WHERE NOT perspective IS NULL AND ifregainedservice IS NULL;
         </sql>
     </changeSet>
 
