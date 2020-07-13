@@ -2,7 +2,6 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-[[ga-threshd-introduction]]
 _{opennms-product-name}_ has the ability to monitor the performance of a managed entity's resource(s) by using various thresholding techniques.
 These techniques, or algorithms, can be applied against any performance data (telemetry) that has been collected by <<ga-performance-mgmt,collectd>> or has been pushed to <<ga-telemetryd, telemetryd>>.
 This includes, but is not limited to metrics such as: CPU Load, Bandwidth, Disk space, etc.
