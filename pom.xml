@@ -1406,7 +1406,7 @@
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.8.2</log4j2Version>
+    <log4j2Version>2.13.2</log4j2Version>
     <mapstructVersion>1.3.0.Final</mapstructVersion>
     <minaVersion>2.0.16</minaVersion>
     <mockitoVersion>1.10.19</mockitoVersion>
