@@ -5,9 +5,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
-  <bean name="textEncryptor" class="org.opennms.core.text.encryptor.TextEncryptorImpl">
-    <constructor-arg ref="jceksSecureCredentialsVault"/>
+  <bean name="jceksSecureCredentialsVault" class="org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault">
+    <constructor-arg value="${opennms.home}/etc/scv.jce"/>
+    <constructor-arg value="QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw"/>
   </bean>
-  <onmsgi:service interface="org.opennms.core.config.api.TextEncryptor" ref="textEncryptor"/>
+
+  <onmsgi:service interface="org.opennms.features.scv.api.SecureCredentialsVault" ref="jceksSecureCredentialsVault"/>
 
 </beans>

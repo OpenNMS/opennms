@@ -30,8 +30,8 @@ package org.opennms.core.config.api;
 
 public interface TextEncryptor {
 
-    String encrypt(String context, String key, String text);
+    String encrypt(String alias, String key, String text);
 
-    String decrypt(String context, String key, String encrypted);
+    String decrypt(String alias, String key, String encrypted);
 
 }

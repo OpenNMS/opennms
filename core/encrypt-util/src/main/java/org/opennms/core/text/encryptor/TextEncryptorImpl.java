@@ -28,36 +28,39 @@
 
 package org.opennms.core.text.encryptor;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.AES256TextEncryptor;
-import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.core.config.api.TextEncryptor;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 
 
 public class TextEncryptorImpl implements TextEncryptor {
 
     private static final Logger LOG = LoggerFactory.getLogger(TextEncryptorImpl.class);
-    private final JsonStore jsonStore;
-    private final Gson m_gson = new Gson();
+    private final SecureCredentialsVault secureCredentialsVault;
+    private Map<String, Credentials> passwordsByAlias = new ConcurrentHashMap<>();
 
-    public TextEncryptorImpl(JsonStore jsonStore) {
-        this.jsonStore = jsonStore;
+    public TextEncryptorImpl(SecureCredentialsVault secureCredentialsVault) {
+        this.secureCredentialsVault = secureCredentialsVault;
     }
 
     @Override
-    public String encrypt(String context, String key, String text) {
+    public String encrypt(String alias, String key, String text) {
         try {
             final AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
-            String password = getPasswordToEncrypt(context, key);
-            textEncryptor.setPassword(password);
-            return textEncryptor.encrypt(text);
+            String password = getPasswordFromCredentials(alias, key);
+            if (!Strings.isNullOrEmpty(password)) {
+                textEncryptor.setPassword(password);
+                return textEncryptor.encrypt(text);
+            }
         } catch (Exception e) {
             LOG.error("Exception while encrypting {} with key {}", text, key, e);
         }
@@ -66,10 +69,10 @@ public class TextEncryptorImpl implements TextEncryptor {
     }
 
     @Override
-    public String decrypt(String context, String key, String encrypted) {
+    public String decrypt(String alias, String key, String encrypted) {
         final AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
         try {
-            String password = getPasswordToDecrypt(context, key);
+            String password = getPasswordFromCredentials(alias, key);
             if (!Strings.isNullOrEmpty(password)) {
                 textEncryptor.setPassword(password);
                 return textEncryptor.decrypt(encrypted);
@@ -80,33 +83,26 @@ public class TextEncryptorImpl implements TextEncryptor {
         return encrypted;
     }
 
-    // For encryption, create a new password if nothing is present in json store.
-    private String getPasswordToEncrypt(String context, String key) {
-        String password = key;
-        if (Strings.isNullOrEmpty(key)) {
-            key = context;
-            Optional<String> optionalValue = jsonStore.get(key, context);
-            if (optionalValue.isPresent()) {
-                password = m_gson.fromJson(optionalValue.get(), String.class);
+    private String getPasswordFromCredentials(String alias, String key) {
+        Credentials credentials = passwordsByAlias.get(alias);
+        if (credentials == null) {
+            credentials = secureCredentialsVault.getCredentials(alias);
+            if (credentials == null) {
+                return generateAndStorePassword(alias, key);
             } else {
-                password = UUID.randomUUID().toString();
-                String jsonString = m_gson.toJson(password);
-                jsonStore.put(key, jsonString, context);
+                passwordsByAlias.put(alias, credentials);
             }
         }
-        return password;
+        return credentials.getPassword();
     }
 
-    // For decryption, try to get password if there is one.
-    private String getPasswordToDecrypt(String context, String key) {
-        String password = key;
-        if (Strings.isNullOrEmpty(key)) {
-            key = context;
-            Optional<String> passwordInJson = jsonStore.get(key, context);
-            if (passwordInJson.isPresent()) {
-                password = m_gson.fromJson(passwordInJson.get(), String.class);
-            }
-        }
+    // For encryption, create a new password in scv.
+    private String generateAndStorePassword(String alias, String key) {
+        StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+        String password = passwordEncryptor.encryptPassword(key);
+        Credentials credentials = new Credentials(key, password);
+        secureCredentialsVault.setCredentials(alias, credentials);
+        passwordsByAlias.put(alias, credentials);
         return password;
     }
 }

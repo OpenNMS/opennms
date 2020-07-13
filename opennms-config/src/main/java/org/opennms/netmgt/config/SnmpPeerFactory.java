@@ -95,8 +95,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     private static final int VERSION_UNSPECIFIED = -1;
     private static final String SNMP_ENCRYPTION_CONTEXT = "snmp-config";
-    protected static final String ENABLE_ENCRYPTION = "org.opennms.snmp.encryption.enabled";
-    private static final String ENCRYPTION_KEY = "org.opennms.snmp.encryption.key";
+    protected static final String ENCRYPTION_KEY = "org.opennms.snmp.encryption.key";
 
     private static File s_configFile;
 
@@ -125,8 +124,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     private TextEncryptor textEncryptor;
 
-    private Boolean encryptionEnabled = Boolean.getBoolean(ENABLE_ENCRYPTION);
-    private String encryptionKey = System.getProperty(ENCRYPTION_KEY);
+    private Boolean encryptionEnabled;
+    private String encryptionKey;
 
     /**
      * <p>Constructor for SnmpPeerFactory.</p>
@@ -609,7 +608,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     private void encryptSnmpConfig(SnmpConfig snmpConfig) {
-        if (!encryptionEnabled) {
+        if (!getEncryptionEnabled()) {
             return;
         }
         if (textEncryptor == null) {
@@ -625,7 +624,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     private void decryptSnmpConfig(SnmpConfig snmpConfig) {
-        if (!encryptionEnabled) {
+        if (!getEncryptionEnabled()) {
             return;
         }
 
@@ -690,6 +689,20 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     @VisibleForTesting
     protected Boolean getEncryptionEnabled() {
-        return encryptionEnabled;
+        if (encryptionEnabled != null) {
+            return encryptionEnabled;
+        } else {
+            encryptionKey = System.getProperty(ENCRYPTION_KEY);
+        }
+        if (Strings.isNullOrEmpty(encryptionKey)) {
+            return encryptionEnabled = false;
+        } else {
+            return encryptionEnabled = true;
+        }
+    }
+
+    @VisibleForTesting
+    protected void setTextEncryptor(TextEncryptor textEncryptor) {
+        this.textEncryptor = textEncryptor;
     }
 }

@@ -69,6 +69,7 @@ import com.google.common.collect.Sets;
 public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
 
     public static final Logger LOG = LoggerFactory.getLogger(JCEKSSecureCredentialsVault.class);
+    public static final String SCV_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
 
     private final KeyStore m_keystore;
     private final File m_keystoreFile;
@@ -86,11 +87,15 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
     }
 
     public JCEKSSecureCredentialsVault(String keystoreFile, String password, byte[] salt, int iterationCount, int keyLength) {
-        m_password = Objects.requireNonNull(password).toCharArray();
         m_salt = Objects.requireNonNull(salt);
         m_iterationCount = iterationCount;
         m_keyLength = keyLength;
         m_keystoreFile = new File(keystoreFile);
+        String keyFromProperties = System.getProperty(SCV_KEY_PROPERTY);
+        if (keyFromProperties != null) {
+            password = keyFromProperties;
+        }
+        m_password = password.toCharArray();
         try {
             m_keystore = KeyStore.getInstance("JCEKS");
             if (!m_keystoreFile.isFile()) {

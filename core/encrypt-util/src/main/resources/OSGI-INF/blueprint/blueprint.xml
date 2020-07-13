@@ -1,8 +1,0 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
-
-  <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore"/>
-  <bean id="textEncryptor" class="org.opennms.core.text.encryptor.TextEncryptorImpl">
-    <argument ref="jsonStore"/>
-  </bean>
-  <service ref="textEncryptor" interface="org.opennms.core.config.api.TextEncryptor"/>
-</blueprint>

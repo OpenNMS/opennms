@@ -29,78 +29,61 @@
 package org.opennms.core.text.encryptor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-import java.util.Map;
+import java.io.File;
 
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.MockDatabase;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.distributed.kvstore.api.JsonStore;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.core.config.api.TextEncryptor;
-import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-postgresJsonStore.xml",
-        "classpath:/META-INF/opennms/applicationContext-encrypt-util.xml"
-})
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(tempDbClass = MockDatabase.class)
 public class TextEncryptorTest {
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Autowired
     private TextEncryptor textEncryptor;
 
-    @Autowired
-    private JsonStore jsonStore;
-
     @Test
     public void testEncryption() {
-        // No key,value pairs exist initially
-        Map<String, String> keyValuePair = jsonStore.enumerateContext("snmp-config");
-        assertEquals(keyValuePair.size(), 0);
+        File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        TextEncryptor textEncryptor = new TextEncryptorImpl(scv);
+        // No credentials exist initially
+        String alias = "snmp-config";
+        Credentials credentials = scv.getCredentials(alias);
+        assertNull(credentials);
         // Encrypt and decrypt
         String textToEncrypt = "OpenNMS";
-        String encrypted = textEncryptor.encrypt("snmp-config", null, textToEncrypt);
-        String result = textEncryptor.decrypt("snmp-config", null, encrypted);
+        String key = "encrypt-key";
+        String encrypted = textEncryptor.encrypt(alias, key, textToEncrypt);
+        String result = textEncryptor.decrypt(alias, key, encrypted);
         assertEquals(textToEncrypt, result);
         // Should have created one key.
-        keyValuePair = jsonStore.enumerateContext("snmp-config");
-        assertEquals(keyValuePair.size(), 1);
+        credentials = scv.getCredentials(alias);
+        assertNotNull(credentials);
         // Try different text to encrypt.
         textToEncrypt = "Minion-Sentinel";
-        encrypted = textEncryptor.encrypt("snmp-config", null, textToEncrypt);
-        result = textEncryptor.decrypt("snmp-config", null, encrypted);
+        encrypted = textEncryptor.encrypt(alias, key, textToEncrypt);
+        result = textEncryptor.decrypt(alias, key, encrypted);
         assertEquals(textToEncrypt, result);
-        // Should have used the same key.
-        keyValuePair = jsonStore.enumerateContext("snmp-config");
-        assertEquals(keyValuePair.size(), 1);
-        // Specify key.
-        encrypted = textEncryptor.encrypt("snmp-config", "someKeyToEncrypt", textToEncrypt);
-        result = textEncryptor.decrypt("snmp-config", "someKeyToEncrypt", encrypted);
+        // Use different alias.
+        String alias2 = "syslog-config";
+        String key2 = "someKeyToEncrypt";
+        credentials = scv.getCredentials(alias2);
+        assertNull(credentials);
+        encrypted = textEncryptor.encrypt(alias2, key2, textToEncrypt);
+        result = textEncryptor.decrypt(alias2, key2, encrypted);
         assertEquals(textToEncrypt, result);
-        // Doesn't add any new key.
-        keyValuePair = jsonStore.enumerateContext("snmp-config");
-        assertEquals(keyValuePair.size(), 1);
-        // Use different context.
-        encrypted = textEncryptor.encrypt("syslog-config", "someKeyToEncrypt", textToEncrypt);
-        result = textEncryptor.decrypt("syslog-config", "someKeyToEncrypt", encrypted);
-        assertEquals(textToEncrypt, result);
-        // Doesn't add any new key.
-        keyValuePair = jsonStore.enumerateContext("syslog-config");
-        assertEquals(keyValuePair.size(), 0);
-        // Use previous context but with empty key
-        encrypted = textEncryptor.encrypt("syslog-config", "", textToEncrypt);
-        result = textEncryptor.decrypt("syslog-config", "", encrypted);
-        assertEquals(textToEncrypt, result);
-        // should have added new key
-        keyValuePair = jsonStore.enumerateContext("syslog-config");
-        assertEquals(keyValuePair.size(), 1);
+        credentials = scv.getCredentials(alias2);
+        assertNotNull(credentials);
     }
 }

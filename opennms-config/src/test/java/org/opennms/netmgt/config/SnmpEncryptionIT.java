@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.opennms.netmgt.config.SnmpPeerFactory.ENABLE_ENCRYPTION;
+import static org.opennms.netmgt.config.SnmpPeerFactory.ENCRYPTION_KEY;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,32 +40,27 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
 
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.MockDatabase;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.junit.rules.TemporaryFolder;
+import org.opennms.core.config.api.TextEncryptor;
+import org.opennms.core.text.encryptor.TextEncryptorImpl;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.test.context.ContextConfiguration;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-postgresJsonStore.xml",
-        "classpath:/META-INF/opennms/applicationContext-encrypt-util.xml"
-})
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(tempDbClass = MockDatabase.class)
-public class SnmpEncrypionIT {
+public class SnmpEncryptionIT {
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     static {
-        System.setProperty(ENABLE_ENCRYPTION, "true");
+        System.setProperty(ENCRYPTION_KEY, "someRandomKey");
     }
 
     private SnmpPeerFactory snmpPeerFactory;
@@ -79,6 +74,10 @@ public class SnmpEncrypionIT {
             SnmpPeerFactory.setFile(new File(url.getFile()));
             // Check if encryption is enabled
             assertTrue(snmpPeerFactory.getEncryptionEnabled());
+            File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+            SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+            TextEncryptor textEncryptor = new TextEncryptorImpl(scv);
+            snmpPeerFactory.setTextEncryptor(textEncryptor);
             // Check that it is loaded from test resource.
             assertEquals(snmpPeerFactory.getSnmpConfig().getReadCommunity(), "minion");
             assertTrue(snmpPeerFactory.getSnmpConfig().getDefinitions().isEmpty());
