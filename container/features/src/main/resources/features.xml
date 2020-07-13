@@ -958,6 +958,7 @@
     <feature name="opennms-kafka-producer" version="${project.version}" description="OpenNMS :: Kafka :: Producer">
         <feature version="${guavaVersion}">guava</feature>
         <feature version="${kafkaVersion}">kafka-streams</feature>
+        <feature>rate-limited-logger</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-situation-feedback-api</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>

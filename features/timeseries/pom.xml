@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>26.1.1-SNAPSHOT</version>
+    <version>26.1.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -49,6 +49,11 @@
       <artifactId>org.opennms.core.sysprops</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.cache</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Dependencies used -->
     <dependency>
@@ -71,9 +76,8 @@
       <version>${opennmsApiVersion}</version>
     </dependency>
     <dependency>
-      <groupId>com.googlecode.concurrent-trees</groupId>
-      <artifactId>concurrent-trees</artifactId>
-      <version>${concurrentTreesVersion}</version>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
     </dependency>
     <dependency>
       <groupId>com.lmax</groupId>

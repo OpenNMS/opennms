@@ -93,6 +93,7 @@ public class Netflow5ConverterTest {
         MatcherAssert.assertThat(flow.getOutputSnmp(), equalTo(0));
         MatcherAssert.assertThat(flow.getFirstSwitched(), equalTo(1434886852194L));
         MatcherAssert.assertThat(flow.getLastSwitched(), equalTo(1430591887476L));
+        MatcherAssert.assertThat(flow.getDeltaSwitched(), equalTo(1434886852194L));
         MatcherAssert.assertThat(flow.getPackets(), equalTo(5L));
         MatcherAssert.assertThat(flow.getDirection(), equalTo(Flow.Direction.INGRESS));
         MatcherAssert.assertThat(flow.getNextHop(), equalTo("0.0.0.0"));

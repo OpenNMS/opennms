@@ -10,7 +10,7 @@
 
 [[ga]]
 = Administrators Guide
-:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-{docyear} The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -342,10 +342,6 @@ include::text/minion/ttl.adoc[]
 [[ga-sentinel]]
 == Sentinel
 include::text/sentinel/sentinel.adoc[]
-
-== Internal Plugins
-include::text/plugins/introduction.adoc[]
-include::text/plugins/opennms-es-rest.adoc[]
 
 [[ga-special-cases-and-workarounds]]
 == Special Cases and Workarounds

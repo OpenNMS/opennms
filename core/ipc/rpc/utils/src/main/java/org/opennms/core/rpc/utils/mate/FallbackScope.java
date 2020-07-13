@@ -38,6 +38,10 @@ import com.google.common.collect.ImmutableList;
 public class FallbackScope implements Scope {
     private final List<Scope> scopes;
 
+    public FallbackScope(final List<Scope> scopes) {
+        this.scopes = ImmutableList.copyOf(scopes).reverse();
+    }
+
     public FallbackScope(final Scope... scopes) {
         this.scopes = ImmutableList.copyOf(scopes).reverse();
     }

@@ -2,6 +2,67 @@
 
 === Changelog
 
+[releasenotes-changelog-26.1.2]
+
+==== Release 26.1.2
+
+Release 26.1.2 is the fifth release in the Horizon 26 series.
+
+It contains a bunch of bug fixes and improvements, including docker container optimizations,
+Netflow changes, documentation updates, time-series enhancements, and more.
+
+The codename for 26.1.2 is _link:$$https://en.wikipedia.org/wiki/Plague_doctor$$[Plague]_.
+
+===== Bug
+
+* AbstractSnmpValue.allBytesDisplayable() IndexOutOfBound Exception (Issue http://issues.opennms.org/browse/NMS-7547[NMS-7547])
+* Unable to collect SNMP through minions on a large scale (Issue http://issues.opennms.org/browse/NMS-10389[NMS-10389])
+* Update examples/opennms.conf to be JDK11-compatible (Issue http://issues.opennms.org/browse/NMS-12468[NMS-12468])
+* RRD-to-Newts converter only handles AVERAGE RRAs (Issue http://issues.opennms.org/browse/NMS-12722[NMS-12722])
+* Parameters with dots handled incorrectly in BMP feature config (Issue http://issues.opennms.org/browse/NMS-12738[NMS-12738])
+* The ReST end-point for the Flow Exporter details is returning invalid content (Issue http://issues.opennms.org/browse/NMS-12740[NMS-12740])
+* Netflow 5 records in ES do not contain value for delta_switched (Issue http://issues.opennms.org/browse/NMS-12750[NMS-12750])
+* dependency commons-beanutils 1.8.3 vulnerability (Issue http://issues.opennms.org/browse/NMS-12757[NMS-12757])
+* Template field 'APPLICATION TAG' has illegal size (Issue http://issues.opennms.org/browse/NMS-12783[NMS-12783])
+* Kafka Producer puts all events on the same partition when using `donotpersist` (Issue http://issues.opennms.org/browse/NMS-12784[NMS-12784])
+
+===== Enhancement
+
+* Reduce Docker container image size (Issue http://issues.opennms.org/browse/NMS-12284[NMS-12284])
+* Document how to use meta-data with thresholding (Issue http://issues.opennms.org/browse/NMS-12735[NMS-12735])
+* Add documentation for TcpListener (Issue http://issues.opennms.org/browse/NMS-12736[NMS-12736])
+* upgrade to latest Jetty security/bug fixes (Issue http://issues.opennms.org/browse/NMS-12743[NMS-12743])
+* Run a comparison: implementation before changes and after (Issue http://issues.opennms.org/browse/NMS-12752[NMS-12752])
+* Optimize Performance of InfluxDb Plugin (Issue http://issues.opennms.org/browse/NMS-12759[NMS-12759])
+* Be able to ignore certificate validation on all Karaf features that push data to Elasticsearch (Issue http://issues.opennms.org/browse/NMS-12768[NMS-12768])
+* Evaluate and improve opennms-cortex-tss-plugin (Issue http://issues.opennms.org/browse/NMS-12771[NMS-12771])
+* Provide a test harness for time series plugins (Issue http://issues.opennms.org/browse/NMS-12772[NMS-12772])
+
+[releasenotes-changelog-26.1.1]
+
+==== Release 26.1.1
+
+Release 26.1.1 is the fourth release in the Horizon 26 series.
+
+It contains a number of documentation and bug fixes including improvements to Kafka event and alarm publishing.
+
+The codename for 26.1.1 is _link:$$https://en.wikipedia.org/wiki/Facial#Facial_mask$$[Hydrating]_.
+
+===== Bug
+
+* SSLCertMonitor server-name parameter results in NPE (Issue http://issues.opennms.org/browse/NMS-12332[NMS-12332])
+* Provisiond accepts multiple primary SNMP interfaces (Issue http://issues.opennms.org/browse/NMS-12605[NMS-12605])
+* Fix warnings during documentation build (Issue http://issues.opennms.org/browse/NMS-12702[NMS-12702])
+* Cleanup removed Elasticsearch REST plugin and hint to Plugin Manager (Issue http://issues.opennms.org/browse/NMS-12716[NMS-12716])
+* The Alarm History feature is not working (Issue http://issues.opennms.org/browse/NMS-12718[NMS-12718])
+* Events forwarded by Kafka Producer doesn't have any parameters set (Issue http://issues.opennms.org/browse/NMS-12723[NMS-12723])
+* Netflow ingress performance regression (Issue http://issues.opennms.org/browse/NMS-12724[NMS-12724])
+
+===== Enhancement
+
+* Bump Docker base dependencies in build-env and OCI artifacts (Issue http://issues.opennms.org/browse/NMS-12699[NMS-12699])
+* Send trouble ticket id to kafka alarm topic (Issue http://issues.opennms.org/browse/NMS-12725[NMS-12725])
+
 [releasenotes-changelog-26.1.0]
 
 ==== Release 26.1.0

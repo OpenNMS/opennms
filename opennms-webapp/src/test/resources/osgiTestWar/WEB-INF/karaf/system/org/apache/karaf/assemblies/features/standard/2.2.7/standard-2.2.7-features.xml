@@ -116,7 +116,7 @@
 
     <feature name="spring-struts" version="3.0.7.RELEASE" resolver="(obr)">
         <feature version="3.0.7.RELEASE">spring-web</feature>
-        <bundle dependency="true" start-level="30">mvn:commons-beanutils/commons-beanutils/1.8.3</bundle>
+        <bundle dependency="true" start-level="30">mvn:commons-beanutils/commons-beanutils/1.9.4</bundle>
         <bundle start-level="30">mvn:org.springframework/spring-struts/3.0.7.RELEASE</bundle>
     </feature>
 

@@ -2,7 +2,7 @@
 # Use Java base image and setup required RPMS as cacheable image.
 ##
 ARG BASE_IMAGE="opennms/openjdk"
-ARG BASE_IMAGE_VERSION="11.0.5.10-b3108"
+ARG BASE_IMAGE_VERSION="11.0.7.10-b4096"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
 
@@ -53,6 +53,11 @@ COPY ./tarball /tmp/tarball
 
 SHELL ["/bin/bash", "-c"]
 
+# we want these to break the caching so yum will re-install now that
+# we're not copying RPMs into /tmp/rpms by default
+ARG BUILD_DATE="1970-01-01T00:00:00+0000"
+ARG REVISION
+
 # Install repositories, system and OpenNMS packages and do some cleanup
 # 1. Try to install from tarball
 # 2. Try to install from local RPMS
@@ -61,16 +66,29 @@ SHELL ["/bin/bash", "-c"]
 # To avoid different behavior, between a RPM or tarball installation,
 # the directory structure is unified, the links for /opt/opennms/share
 # and /opt/opennms/logs introduced by RPM installs are removed.
-RUN if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
-        mkdir -p /opt/opennms && tar xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
+
+RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
+    if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
+        mkdir -p /opt/opennms && tar --uid=0 --gid=0 -xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
         cp -r /opt/opennms/etc /opt/opennms/share/etc-pristine; \
     elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
+        echo "installing local RPMs from filesystem" && \
         dnf -y install /tmp/rpms/*.rpm && \
         rm -rf /opt/opennms/logs \
                /opt/opennms/share && \
         mv /var/opennms /opt/opennms/share && \
         mv /var/log/opennms /opt/opennms/logs; \
+    elif [[ -e /tmp/rpms/opennms-docker.repo ]]; then \
+        echo "installing local RPMs over HTTP" && \
+        dnf -y config-manager --add-repo /tmp/rpms/*.repo && \
+        dnf -y config-manager --set-enabled opennms-repo-docker-common && \
+        dnf -y --disablerepo=opennms-repo-stable-common install ${ONMS_PACKAGES} && \
+        rm -rf /opt/opennms/logs \
+               /opt/opennms/share && \
+        mv /var/opennms /opt/opennms/share && \
+        mv /var/log/opennms /opt/opennms/logs; \
     else \
+        echo "installing remote RPMs from stable" && \
         dnf -y install ${ONMS_PACKAGES} && \
         rm -rf /opt/opennms/logs \
                /opt/opennms/share && \
@@ -114,10 +132,8 @@ COPY --chown=10001:0 ./container-fs/confd /etc/confd
 COPY --chown=10001:0 ./container-fs/entrypoint.sh /
 
 # Arguments for labels should not invalidate caches
-ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG VERSION
 ARG SOURCE
-ARG REVISION
 ARG BUILD_JOB_ID
 ARG BUILD_NUMBER
 ARG BUILD_URL

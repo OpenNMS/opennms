@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>26.1.1-SNAPSHOT</version>
+  <version>26.1.3-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skipITs>true</skipITs>
@@ -75,13 +75,18 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
+        <version>3.8.1</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.2</version>
       </plugin>
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>

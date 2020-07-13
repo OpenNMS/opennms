@@ -421,7 +421,8 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
           foreignId: function() { return foreignId; },
           foreignSource: function() { return foreignSource; },
           requisitionInterface: function() { return angular.copy(intfToEdit); },
-          ipBlackList: function() { return ipBlackList; }
+          ipBlackList: function() { return ipBlackList; },
+          primaryInterface : function() { return $scope.getPrimaryAddress();}
         }
       });
 
@@ -554,8 +555,8 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     * @returns {string} the primary IP address or 'N/A' if it doesn't exist.
     */
     $scope.getPrimaryAddress = function() {
-      var ip = $scope.node.getPrimaryIpAddress();
-      return ip ? ip : 'N/A';
+      const ip = $scope.node.getPrimaryIpAddress();
+      return ip ? ip : null;
     };
 
     // Initialization of the node's page for either adding a new node or editing an existing node

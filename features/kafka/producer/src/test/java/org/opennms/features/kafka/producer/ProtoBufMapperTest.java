@@ -31,9 +31,11 @@ package org.opennms.features.kafka.producer;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.opennms.netmgt.events.api.EventConstants.TROUBLETICKET_CREATE_UEI;
 import static org.opennms.topologies.service.api.EdgeMockUtil.PROTOCOL;
 import static org.opennms.topologies.service.api.EdgeMockUtil.createEdge;
 
@@ -51,10 +53,10 @@ import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.topologies.service.api.EdgeMockUtil;
-import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * Tests for {@link ProtobufMapper}.
@@ -103,6 +105,22 @@ public class ProtoBufMapperTest {
         testAlarm.setAlarmType(1);
 
         return testAlarm;
+    }
+
+    @Test
+    public void testAlarmWithTroubleTicket() {
+
+        OnmsAlarm testAlarm = generateTestAlarm();
+        testAlarm.setId(1);
+        testAlarm.setUei(TROUBLETICKET_CREATE_UEI);
+        testAlarm.setTTicketId("NMS-12725");
+        testAlarm.setTTicketState(TroubleTicketState.CREATE_PENDING);
+
+        OpennmsModelProtos.Alarm.Builder mappedAlarm = protobufMapper.toAlarm(testAlarm);
+        assertNotNull(mappedAlarm);
+        assertEquals(mappedAlarm.getTroubleTicketId(), testAlarm.getTTicketId());
+        assertEquals(mappedAlarm.getTroubleTicketState().getNumber(), testAlarm.getTTicketState().getValue());
+
     }
 
     @Test

@@ -34,17 +34,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
@@ -258,23 +256,18 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
      */
     private static class DefaultQueue<T> implements DispatchQueue<T> {
         private final BlockingQueue<Map.Entry<String, T>> queue;
-        private final Lock enqueueFairMutex = new ReentrantLock(true);
 
         DefaultQueue(int size) {
-            queue = new ArrayBlockingQueue<>(size);
+            queue = new LinkedBlockingQueue<>(size);
         }
 
         @Override
         public EnqueueResult enqueue(T message, String key) throws WriteFailedException {
-            enqueueFairMutex.lock();
             try {
                 queue.put(new AbstractMap.SimpleImmutableEntry<>(key, message));
-
                 return EnqueueResult.IMMEDIATE;
             } catch (InterruptedException e) {
                 throw new WriteFailedException(e);
-            } finally {
-                enqueueFairMutex.unlock();
             }
         }
 

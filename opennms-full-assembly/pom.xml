@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>26.1.1-SNAPSHOT</version>
+    <version>26.1.3-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -42,6 +42,8 @@
                 <descriptor>src/assembly/full.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
+              <overrideUid>0</overrideUid>
+              <overrideGid>0</overrideGid>
               <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
@@ -77,6 +79,8 @@
                 <descriptor>src/assembly/full.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
+              <overrideUid>0</overrideUid>
+              <overrideGid>0</overrideGid>
               <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
@@ -112,6 +116,8 @@
                 <descriptor>src/assembly/fulldir.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
+              <overrideUid>0</overrideUid>
+              <overrideGid>0</overrideGid>
               <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
@@ -417,7 +423,7 @@
                 <feature version="8.1.14.v20131031">jetty</feature>
                 <feature version="9.3.9.v20160517">jetty</feature>
                 <!--TODO: Needed?-->
-                <feature version="9.4.18.v20190429">jetty</feature>
+                <feature version="9.4.29.v20200521">jetty</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
