@@ -57,6 +57,13 @@ https://tools.ietf.org/html/rfc3584#page-42[RFC 3584] defines an optional varbin
 
 To configure {opennms-product-name} to honor `snmpTrapAddress` when present, set `use-address-from-varbind="true"` in the top-level element of `${OPENNMS_HOME}/etc/trapd-configuration.xml` and restart {opennms-product-name}.
 
+.Configuration example for using RFC 3584 helper varbinds in forwarded traps
+[source, xml]
+----
+<trapd-configuration<1> snmp-trap-port="162" new-suspect-on-trap="false" use-address-from-varbind="true"<2>/>
+----
+<1> Top-level `trapd-configuration` element
+<2> New attribute to enable use of `snmpTrapAddress` varbind, when present
 ==== Syslog Messages
 
 Syslog messages sent over the network to {opennms-product-name} can be transformed into events according to pre-configured rules.
