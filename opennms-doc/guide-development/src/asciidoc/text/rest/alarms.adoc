@@ -49,7 +49,7 @@ You will only be allowed to `ack` as a different user IF you are PUTting as an a
 
 ===== v2 API
 
-Since Horizon 20.1.0 an alarms endpoint has been available in the v2 API which uses link:https://github.com/jirutka/rsql-parser#rsql--fiql-parser[FIQL] for querying.
+Since Horizon 20.1.0, an alarms endpoint has been available in the v2 API that uses link:https://github.com/jirutka/rsql-parser#rsql--fiql-parser[FIQL] for querying.
 
 Examples:
 
@@ -58,6 +58,6 @@ Examples:
 * `/api/v2/alarms?_s=alarm.ipAddr==127.0.0.1`
 * `/api/v2/alarms?_s=node.label==localhost`
 
-NOTE: If your query string includes a FIQL reserved character like a comma (,)or a semicolon (;) you need to double percent-escape it. 
+NOTE: If your query string includes a FIQL reserved character like a comma (,) or a semicolon (;) you need to double percent-escape it. 
 
 Suppose you have a service with a comma in the name, like `COMMA,SERVICE` and you want to retrieve all the alarms for its failure. Your query would look like `/api/v2/alarms?_s=alarm.reductionKey==uei.opennms.org/nodes/nodeLostService::*:COMMA%252CSERVICE`.
