@@ -6,10 +6,12 @@ ARG BASE_IMAGE_VERSION="1.8.0.252.b09-b4094"
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as horizon-base
 
-ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl jq"
+ARG REQUIRED_RPMS="rrdtool jrrd2 jicmp jicmp6 R-core rsync perl-XML-Twig perl-libwww-perl"
 
-ARG REPO_KEY_URL="https://yum.opennms.org/OPENNMS-GPG-KEY"
-ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm"
+# or common-testing
+ARG CLOUDSMITH_REPO=opennms/common
+# or whatever will give you the RPM you want
+ARG CLOUDSMITH_QUERY=tag%3Acircleci-repo
 
 ARG CONFD_VERSION="0.16.0"
 ARG CONFD_URL="https://github.com/kelseyhightower/confd/releases/download/v${CONFD_VERSION}/confd-${CONFD_VERSION}-linux-amd64"
@@ -22,12 +24,12 @@ RUN curl --retry 5 --fail -L ${CONFD_URL} -o /usr/bin/confd && \
 
 RUN dnf -y install dnf-plugins-core && \
     dnf config-manager --set-enabled PowerTools && \
-    rpm --import "${REPO_KEY_URL}" && \
     dnf -y install epel-release && \
-    dnf -y install "${REPO_RPM}" && \
+    dnf -y install curl jq && \
+    dnf -y install "$(curl -fs "https://api.cloudsmith.io/packages/${CLOUDSMITH_REPO}/?query=${CLOUDSMITH_QUERY}" | jq -r '.[0].cdn_url')" && \
     dnf -y install ${REQUIRED_RPMS} && \
     dnf clean all && \
-    rm -rf /var/cache/yum
+    rm -rf /var/cache/{dnf,yum}
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
@@ -82,7 +84,7 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
         echo "installing local RPMs over HTTP" && \
         dnf -y config-manager --add-repo /tmp/rpms/*.repo && \
         dnf -y config-manager --set-enabled opennms-repo-docker-common && \
-        dnf -y --disablerepo=opennms-repo-stable-common install ${ONMS_PACKAGES} && \
+        dnf -y --disablerepo=opennms-stable --disablerepo=opennms-stable-noarch install ${ONMS_PACKAGES} && \
         rm -rf /opt/opennms/logs \
                /opt/opennms/share && \
         mv /var/opennms /opt/opennms/share && \
@@ -98,7 +100,7 @@ RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     if [[ -n ${ADD_YUM_PACKAGES} ]]; then dnf -y install ${ADD_YUM_PACKAGES}; fi && \
     rm -rf /tmp/rpms /tmp/tarball && \
     dnf clean all && \
-    rm -rf /var/cache/yum && \
+    rm -rf /var/cache/{dnf,yum} && \
     rm -rf /opt/opennms/share/rrd \
            /opt/opennms/share/reports \
            /opt/opennms/share/mibs && \
