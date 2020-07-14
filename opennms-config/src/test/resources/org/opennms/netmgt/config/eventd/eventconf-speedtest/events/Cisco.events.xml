@@ -4990,7 +4990,7 @@
    <mevalue>0</mevalue>
   </maskelement>
  </mask>
- <uei>uei.opennms.org/vendor/Cisco/traps/logonIntruder</uei>
+ <uei>uei.opennms.org/vendor/Cisco/traps/CISCO-FASTHUB-MIB/logonIntruder</uei>
  <event-label>CISCO-FASTHUB-MIB defined trap event: logonIntruder</event-label>
  <descr>&lt;p&gt;A user is repeatedly trying to log on to the Management
  Console using an invalid password. The number of attempts
