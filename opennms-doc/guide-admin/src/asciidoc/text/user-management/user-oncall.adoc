@@ -1,4 +1,5 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[ga-user-on-call]]
 === Configuring On-Call Roles

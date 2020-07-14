@@ -1,0 +1,33 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+User maintenance describes additional tasks and information related to users. 
+
+The _User_, _Password_ and other detail descriptions are persisted in `users.xml` file.
+
+
+.How to set a new password for any user
+. Login as a *User* with administrative permissions
+. Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name
+. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*
+. Click the *Modify* icon next to an existing _User_ and select *Reset Password*
+. Set a new *Password*, *Confirm Password* and click *OK*
+. Click *Finish* to persist and apply the changes
+
+.How users can change their own password
+
+. Login with user name and old password
+. Choose *Change Password* from the user specific main navigation which is named as your login user name
+. Select *Change Password*
+. Identify yourself with the old password and set the new password and confirm
+. Click *Submit*
+. Logout and login with your new password
+
+
+.How to delete existing user
+
+. Login as a *User* with administrative permissions
+. Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name
+. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*
+. Use the trash bin icon next to the _User_ to delete
+. Confirm delete request with *OK*.

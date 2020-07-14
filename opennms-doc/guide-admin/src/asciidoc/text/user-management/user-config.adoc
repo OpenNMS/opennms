@@ -1,13 +1,14 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[ga-user-config]]
 === User Creation and Configuration
 
 Only a user with admin privileges can create users and assign security roles to them. 
 We recommend creating a new admin user instead of using the default. 
 
 Ideally, each user account corresponds to a person, to help track who performs tasks in your {opennms-product-name} system.
-Assigning different xref:security-roles.adoc[security roles] to each user helps restrict what tasks the user can perform. 
+Assigning different xref:security-roles.adoc#[security roles] to each user helps restrict what tasks the user can perform. 
 
 In addition to local users, you can configure external authentication services including link:https://wiki.opennms.org/wiki/Spring_Security_and_LDAP[LDAP / LDAPS], link:https://wiki.opennms.org/wiki/Spring_Security_and_Radius[RADIUS], and link:https://wiki.opennms.org/wiki/Single_Sign_On[SSO].
 Configuration specifics for these services are outside the scope of this documentation.
@@ -23,74 +24,36 @@ WARNING: Do not delete the default _admin_ and _rtc_ users.
 . Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*.
 . Click *Add new user* and specify a user ID, password, password confirmation and click *OK*. 
 . _Optional_: add user information in the appropriate fields.  
-. _Optional_: assign xref:security-roles.adoc[user permissions].
+. _Optional_: assign xref:security-roles.adoc#[user permissions].
 +
 NOTE: By default a new user has the following permissions:
      Acknowledge and work with alarms and noficiations.
-     Cannot access the configure OpenNMS administration menu.
+     Cannot access the *configure OpenNMS* administration menu.
      Add the _ROLE_ADMIN_ role to create a new admin. 
 
 . _Optional_: specify notification information - where to send messages to the user.
 . _Optional_: set a schedule for when a user should receive notifications.
 . Click *Finish* to save changes.
 
-[[ga-role-user-management-roles]]
-==== Assigning User Permissions
+[[ga-user-schedule]]
+==== Create User Duty Schedule
 
-Create user permissions by assinging security roles. 
-These roles regulate access to the web UI and the ReST API to exchange monitoring and inventory information.
-ifndef::opennms-prime[]
-In a distributed installation the Minion or #TODO: update for 27. Remote Poller# instances require specific permissions (ROLE_MINION and ROLE_REMOTING) to interact with {opennms-product-name}.
-endif::opennms-prime[]
-ifdef::opennms-prime[]
-In a distributed installation, the #TODO: 27, Remote Poller# instances require specific permissions (ROLE_REMOTING) to interact with {opennms-product-name}.
-endif::opennms-prime[]
+A duty schedule specifies the days and times a user (or group)receives notifications, on a per-week basis. 
 
-Available security roles:
 
-.Functions and existing system roles in _{opennms-product-name}_
-[options="header, autowidth"]
-|===
-| Security Role Name  | Description
-| #anyone#            | If the `opennms-webapp-remoting` package is installed, any user can download the Java Webstart installation package for the remote poller from http://opennms.server:8980/opennms-remoting/webstart/app.jnlp.
-| ROLE_ANONYMOUS    | Allows HTTP OPTIONS request to show allowed HTTP methods on a ReST resource and the login and logout page of the web UI.
-| ROLE_ADMIN        | Permissions to create, read, update and delete in the web UI and the _ReST API_.
-| ROLE_ASSET_EDITOR | Permissions only to update the asset records from nodes.
-| ROLE_DASHBOARD    | Allow user access only to the dashboard. #TODO: only view or edit?##
-| ROLE_DELEGATE     | Allows actions (such as acknowledging an alarm) to be performed on behalf of another user.
-| ROLE_JMX          | Allows retrieving JMX metrics but does not allow executing MBeans of the {opennms-product-name} JVM, even if they just return simple values.
-ifndef::opennms-prime[]
-| ROLE_MINION      | Minimum required permissions for a Minion to operate.
-endif::opennms-prime[]
-| ROLE_MOBILE       | Allow user to use OpenNMS COMPASS mobile application to acknowledge alarms and notifications via the ReST API.
-| ROLE_PROVISION    | Allow user to use the provisioning system and configure SNMP in {opennms-product-name} to access management information from devices.
-| ROLE_READONLY     | Limited to reading information in the web UI; unable to change alarm states or notifications.
-| ROLE_REMOTING     | Permissions to allow access from a Remote Poller instance to exchange monitoring information.
-| ROLE_REST         | Allow users interact with the entire {opennms-product-name} ReST API.
-| ROLE_RTC          | Exchange information with the {opennms-product-name} Real-Time Console for availability calculations.
-| ROLE_USER         | Default permissions for a new user to interact with the web UI: can escalate and acknowledge alarms and notifications.
-|===
+This feature allows you to customize a schedule based on your team's hours of operation.  
+ #TODO: determine how the additional schedules work#
 
-.How to manage _Security Roles_ for _Users_:
+If a notification should be delivered to an individual user, but that user is not on duty at the time, the notification will never be delivered to that user.
+In the case of notifications targeting a user via a group, the logic differs slightly.
+If the group is on duty at the time the notification is created, then all users who are also on duty will be notified.
+If the group is on duty, but no member user is currently on duty, then the notification will be queued and sent to the next user who comes on duty.
+If the group is off duty at the time the notification is created, then the notification will never be sent.
 
-. Login as a *User* with administrative permissions
-. Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name
-. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*
-. Modify an existing *User* by clicking the modify icon next to the *User*
-. Select the *Role* from *Available Roles* in the *Security Roles* section
-. Use *Add* and *Remove* to assign or remove the *Security Role* from the *User*
-. Click *Finish* to persist and apply the Changes
-. *Logout* and *Login* to apply the new _Security Role_ settings
-
-.How to add custom roles
-
-* Create a file called `$OPENNMS_HOME/etc/security-roles.properties`.
-* Add a property called `roles`, and for its value, a comma separated list of the custom roles, for example:
-```
-roles=operator,stage
-```
-* After following the procedure to associate the security roles with users, the new custom roles will be available as shown on the following image:
-
-image:webui/users/custom-roles.png[]
-
-==== Create User Schedule
+To add a duty schedule for a user (or group), follow these steps:
+. Login as a user with administrative permissions.
+. Choose *admin>Configure OpenNMS* from the top-right menu. 
+. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users* (*Configure Groups*).
+. Choose the user (or group) you want to modify. 
+. In the *Duty Schedule* area, click *Add Schedule*. 
+. Specify the days and times during which you want the user (or group) to receive notifications. 

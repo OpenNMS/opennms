@@ -5,9 +5,11 @@ Welcome to the {opennms-product-name} _Administrators Guide_.
 This documentation provides information and procedures on setup, configuration, and use of the {opennms-product-name} platform. 
 Using a task-based approach, chapters appear in a recommended order for working with {opennms-product-name}:
 
-. xref:user-management/users.adoc#ga-data-choices[Opt in or out] of usage statistics collection  (requirement during first login).
-. xref:user-management/users.adoc[Create users] and security roles.
-. xref:provisioning/introduction.adoc[Provision] your system. 
+. link:#ga-data-choices[Opt in or out] of usage statistics collection (requirement during first login).
+. link:#ga-users-intro[Create users] and security roles.
+. link:#ga-provisioning-introduction[Provision] your system. 
+
+#TODO: Add steps as the documentation is reorganized#
 
 [[ga-admin-audience]]
 === Audience
