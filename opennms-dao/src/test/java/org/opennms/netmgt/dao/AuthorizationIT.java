@@ -137,14 +137,9 @@ public class AuthorizationIT implements InitializingBean {
     @Transactional
     @JUnitTemporaryDatabase
     public void testAuthorizedOutages() {
-
         Collection<OnmsOutage> matching = m_outageDao.findMatching(new CriteriaBuilder(OnmsOutage.class).isNull("perspective").toCriteria());
 
         OnmsMonitoringLocation l = m_populator.getMonitoringLocationDao().get("RDU");
-        System.err.println("******* "+l);
-        for(OnmsOutage outage: matching) {
-            System.err.println("!!!!!! "+outage);
-        }
 
         assertNotNull(matching);
         assertEquals(2, matching.size());
