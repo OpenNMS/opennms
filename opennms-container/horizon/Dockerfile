@@ -22,14 +22,15 @@ SHELL ["/bin/bash", "-c"]
 RUN curl --retry 5 --fail -L ${CONFD_URL} -o /usr/bin/confd && \
     chmod +x /usr/bin/confd
 
-RUN dnf -y install dnf-plugins-core && \
-    dnf config-manager --set-enabled PowerTools && \
-    dnf -y install epel-release && \
-    dnf -y install curl jq && \
-    dnf -y install "$(curl -fs "https://api.cloudsmith.io/packages/${CLOUDSMITH_REPO}/?query=${CLOUDSMITH_QUERY}" | jq -r '.[0].cdn_url')" && \
-    dnf -y install ${REQUIRED_RPMS} && \
-    dnf clean all && \
-    rm -rf /var/cache/{dnf,yum}
+RUN echo "### dnf-plugins-core" && dnf -y install dnf-plugins-core && echo "### dnf-plugins-core (done)" && \
+    echo "### dnf config-manager" && dnf config-manager --set-enabled PowerTools && echo "### dnf config-manager (done)" && \
+    echo "### epel-release" && dnf -y install epel-release && echo "### epel-release (done)" && \
+    echo "### curl jq" && dnf -y install curl jq && echo "### curl jq (done)" && \
+    echo "### cloudsmith repo" && dnf -y install "$(curl -fs "https://api.cloudsmith.io/packages/${CLOUDSMITH_REPO}/?query=${CLOUDSMITH_QUERY}" | jq -r '.[0].cdn_url')" echo "### cloudsmith repo (done)" && \
+    echo "### ${REQUIRED_RPMS}" && dnf -y install ${REQUIRED_RPMS} && echo "### ${REQUIRED_RPMS} (done)" && \
+    echo "### clean" && dnf clean all && echo "### clean (done)" && \
+    echo "### cache" && rm -rf /var/cache/{dnf,yum} && echo "### cache (done)" && \
+    echo "### done"
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
