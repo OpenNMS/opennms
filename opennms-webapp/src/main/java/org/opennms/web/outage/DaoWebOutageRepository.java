@@ -92,6 +92,7 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
         criteria.createAlias("monitoredService.ipInterface", "ipInterface");
         criteria.createAlias("monitoredService.ipInterface.node", "node");
         criteria.createAlias("monitoredService.serviceType", "serviceType");
+        criteria.add(Restrictions.isNull("perspective"));
         
         outageCriteria.visit(new OutageCriteriaVisitor<RuntimeException>(){
 
