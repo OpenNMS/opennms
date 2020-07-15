@@ -1,6 +1,6 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../images
+:imagesdir: ../../images
 
 Thresholding allows you to define limits against network performance metrics of a managed entity to trigger an event when a value goes above or below the specified limit. 
 

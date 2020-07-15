@@ -14,7 +14,7 @@ NOTE: In order to use HTTPS the Java command line tool `keytool` is used.
 [[ga-operation-standalone-https-jetty]]
 ==== Standalone HTTPS with Jetty
 
-To configure _{opennms-product-name}_ to protect web sessions with HTTPS please refer to the official _{opennms-product-name}_ Wiki article link:http://www.opennms.org/wiki/Standalone_HTTPS_with_Jetty[Standalone HTTPS with Jetty].
+To configure _{opennms-product-name}_ to protect web sessions with HTTPS, see link:https://opennms.discourse.group/t/how-to-setup-ssl-with-jetty/1084[How to setup SSL with Jetty].
 
 [[ga-operation-https-client]]
 ==== {opennms-product-name} as HTTPS client
