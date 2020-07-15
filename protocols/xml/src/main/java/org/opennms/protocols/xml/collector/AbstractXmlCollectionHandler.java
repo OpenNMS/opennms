@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -433,7 +433,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
                 }
             }
         }
-        if (formattedString.matches(".*[{].+[}].*"))
+        if (formattedString.matches(".*[{]\\w+[}].*"))
             throw new IllegalArgumentException("The " + reference + " " + formattedString + " contains unknown placeholders.");
         return formattedString;
     }
