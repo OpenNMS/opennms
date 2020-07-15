@@ -240,7 +240,7 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
         jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
         String json = sendRequest(jsonRequest, 200);
         JSONObject restObject = new JSONObject(json);
-        Assert.assertEquals(3, restObject.getJSONArray("outage").length()); // 2 outstanding
+        Assert.assertEquals(2, restObject.getJSONArray("outage").length()); // 2 outstanding
 
         // Test a range with outages
         long start = 1436846400000l;
