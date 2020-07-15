@@ -5,7 +5,6 @@ User maintenance describes additional tasks and information related to users.
 
 The _User_, _Password_ and other detail descriptions are persisted in `users.xml` file.
 
-
 .How to set a new password for any user
 . Login as a *User* with administrative permissions
 . Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name

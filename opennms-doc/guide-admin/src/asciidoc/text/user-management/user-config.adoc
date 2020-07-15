@@ -20,8 +20,8 @@ WARNING: Do not delete the default _admin_ and _rtc_ users.
 ==== Creating a User
 
 . Login as a user with administrative permissions.
-. Choose *admin>Configure OpenNMS* from the top-right menu. 
-. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*.
+. Click the gear icon in the top right. 
+. Choose *Configure OpenNMS>Configure Users, Groups and On-Call roles* and select *Configure Users*.
 . Click *Add new user* and specify a user ID, password, password confirmation and click *OK*. 
 . _Optional_: add user information in the appropriate fields.  
 . _Optional_: assign xref:security-roles.adoc#[user permissions].
@@ -40,20 +40,22 @@ NOTE: By default a new user has the following permissions:
 
 A duty schedule specifies the days and times a user (or group)receives notifications, on a per-week basis. 
 
-
 This feature allows you to customize a schedule based on your team's hours of operation.  
  #TODO: determine how the additional schedules work#
 
-If a notification should be delivered to an individual user, but that user is not on duty at the time, the notification will never be delivered to that user.
-In the case of notifications targeting a user via a group, the logic differs slightly.
-If the group is on duty at the time the notification is created, then all users who are also on duty will be notified.
-If the group is on duty, but no member user is currently on duty, then the notification will be queued and sent to the next user who comes on duty.
-If the group is off duty at the time the notification is created, then the notification will never be sent.
+If {opennms-product-name} needs to deliver a notification to an individual user, but that user is not on duty at the time, the notification will never be sent to that user.
+
+Notifications sent to users in groups are different:
+
+* on-duty group at time of notification – all users also on duty receive notification
+* on-duty group, no member users on duty – notification is queued and sent to the next user who comes on duty
+* off-duty group – notification never sent
 
 To add a duty schedule for a user (or group), follow these steps:
+
 . Login as a user with administrative permissions.
-. Choose *admin>Configure OpenNMS* from the top-right menu. 
-. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users* (*Configure Groups*).
+. Click the gear icon in the top-right. 
+. Choose *Configure OpenNMS>Configure Users, Groups and On-Call roles* and select *Configure Users* (*Configure Groups*).
 . Choose the user (or group) you want to modify. 
 . In the *Duty Schedule* area, click *Add Schedule*. 
 . Specify the days and times during which you want the user (or group) to receive notifications. 

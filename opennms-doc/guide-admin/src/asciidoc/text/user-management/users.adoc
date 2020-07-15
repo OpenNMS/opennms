@@ -21,7 +21,7 @@ The first time you log in we prompt for permission to allow the `Data Choices` m
 
 The OpenNMS Group uses this information to help determine product usage and to improve the {opennms-product-name} software. 
 
-image:data-choices/data-sources.png[prompt, 300]
+image:users/data-sources.png[prompt, 300]
 
 Click *Show me what is being sent* to see what xref:ga-data-collection[information we collect]. 
 Statisitcs collection and publication happen only if an admin user opts in.
@@ -50,7 +50,8 @@ When enabled, the `Data Choices` module collects the following anonymous statist
 
 After logging in for the first time, make sure to change the default admin user password to a secure one: 
 
-. Go to *admin>Configure OpenNMS>Configure Users, Groups and On-Call Roles>Configure Users*.
+. Click the gear icon in the top right. 
+. Choose *Configure OpenNMS>Configure Users, Groups and On-Call roles* and select *Configure Users*.
 . Click *Modify* beside the admin user.
 . In the *User Password* area, click *Reset Password*, update your password and click *OK*.
 . Click *Finish* at the bottom of the Modify User screen to save changes. 

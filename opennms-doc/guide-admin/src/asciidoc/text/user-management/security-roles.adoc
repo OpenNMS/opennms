@@ -25,8 +25,9 @@ Available security roles:
 | #anyone#            | If the `opennms-webapp-remoting` package is installed, any user can download the Java Webstart installation package for the remote poller from http://opennms.server:8980/opennms-remoting/webstart/app.jnlp.
 | ROLE_ADMIN        | Permissions to create, read, update and delete in the web UI and the _ReST API_.
 | ROLE_ASSET_EDITOR | Permissions only to update the asset records from nodes.
-| ROLE_DASHBOARD    | Allow user access only to the dashboard. #TODO: only view or edit?#
+| ROLE_DASHBOARD    | Allow user access only to the dashboard. 
 | ROLE_DELEGATE     | Allows actions (such as acknowledging an alarm) to be performed on behalf of another user.
+| ROLE_FLOW_MANAGER | 
 | ROLE_JMX          | Allows retrieving JMX metrics but does not allow executing MBeans of the {opennms-product-name} JVM, even if they just return simple values.
 ifndef::opennms-prime[]
 | ROLE_MINION      | Minimum required permissions for a Minion to operate.
@@ -42,8 +43,8 @@ endif::opennms-prime[]
 |===
 
 . Login as a user with administrative permissions.
-. Choose *admin>Configure OpenNMS* from the top-right menu.  
-. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*.
+. Click the gear icon in the top-right. 
+. Choose *Configure OpenNMS>Configure Users, Groups and On-Call roles* and select *Configure Users*.
 . Click the modify icon next to the user you want to update. 
 . Select the role from *Available Roles* in the *Security Roles* section.
 . Click *Add* to assign the security role to the user.
@@ -60,6 +61,6 @@ To create a custom role, do the following:
 ```
 roles=operator,stage
 ```
-The new custom roles will appear in the web UI: ##TODO: This just seems to create a name of a role, but not any restrictions##
+The new custom roles will appear in the web UI: #TODO: This just seems to create a name of a role, but not any restrictions#
 
-image:webui/users/custom-roles.png[]
+image:users/custom-roles.png[]
