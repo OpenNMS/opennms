@@ -18,17 +18,17 @@ This guide is suitable for administrative users and those who will use {opennms-
 [[ga-admin-docs-related]]
 === Related Documentation
 
-xref:https://docs.opennms.org/opennms/releases/latest/guide-install/guide-install.html[Installation Guide]: how to install {opennms-product-name}
+https://docs.opennms.org/opennms/releases/latest/guide-install/guide-install.html[Installation Guide]: how to install {opennms-product-name}
 
-xref:https://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html[Developers Guide]: information and procedures on developing for the {opennms-product-name} project
+https://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html[Developers Guide]: information and procedures on developing for the {opennms-product-name} project
 
-xref:https://www.youtube.com/playlist?list=PLsXgBGH3nG7iZSlssmZB3xWsAJlst2j2z[OpenNMS 101]: a series of video training tutorials that build on each other to get you up and running with {opennms-product-name}
+https://www.youtube.com/playlist?list=PLsXgBGH3nG7iZSlssmZB3xWsAJlst2j2z[OpenNMS 101]: a series of video training tutorials that build on each other to get you up and running with {opennms-product-name}
 
-xref:https://www.youtube.com/watch?v=aoiSjNvDC7E&list=PLsXgBGH3nG7h6zy2hENGRJbs0BYQaqBu4[OpenNMS 102]: a series of stand-alone video tutorials on OpenNMS features.
+https://www.youtube.com/watch?v=aoiSjNvDC7E&list=PLsXgBGH3nG7h6zy2hENGRJbs0BYQaqBu4[OpenNMS 102]: a series of stand-alone video tutorials on OpenNMS features.
 
-xref:https://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html#[OpenNMS Helm]: a guide to OpenNMS Helm, an application for creating flexible dashboards to interact with data stored by OpenNMS
+https://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html#[OpenNMS Helm]: a guide to OpenNMS Helm, an application for creating flexible dashboards to interact with data stored by OpenNMS
 
-xref:https://alec.opennms.com/alec/2.0.0-snapshot/[Architecture for Learning Enabled Correlation (ALEC)]:  guide to this framework for logically grouping related faults (alarms) into higher level objects (situations) with OpenNMS.
+https://alec.opennms.com/alec/2.0.0-snapshot/[Architecture for Learning Enabled Correlation (ALEC)]:  guide to this framework for logically grouping related faults (alarms) into higher level objects (situations) with OpenNMS.
 
 
 [[ga-admin-conventions]]
