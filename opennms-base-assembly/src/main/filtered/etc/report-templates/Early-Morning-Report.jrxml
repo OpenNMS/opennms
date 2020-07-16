@@ -70,7 +70,8 @@ FROM
 				outages.iflostservice > now()-INTERVAL '23 hours' 
 				OR 
 				outages.ifregainedservice is null
-			)
+			) AND
+			outages.perspective IS NULL
 		) AS outages_24h
 		JOIN
 			events
@@ -318,7 +319,8 @@ LIMIT '20']]>
 			WHERE
 				service.servicename not like 'StrafePing' AND
 				(outages.iflostservice > now()-INTERVAL '23 hours' OR
-				outages.ifregainedservice is null))
+				outages.ifregainedservice is null)) AND
+				outages.perspective IS NULL
 			AS outages_24h
 		JOIN
 			events
@@ -369,8 +371,9 @@ LEFT JOIN
 	FROM
 		outages
 	WHERE
-		iflostservice > now() - INTERVAL '24 hour' OR
-		ifregainedservice is null) AS outages_per_hour
+		(iflostservice > now() - INTERVAL '24 hour' OR
+		ifregainedservice is null) AS outages_per_hour) AND
+		outages.perspective IS NULL
 ON
 	(series.day_hours=outages_per_hour.iflostservice_hour)
 GROUP BY
@@ -464,7 +467,8 @@ FROM
 			WHERE
 				service.servicename not like 'StrafePing' AND
 				(outages.iflostservice > now()-INTERVAL '23 hours' OR
-				outages.ifregainedservice is null))
+				outages.ifregainedservice is null)) AND
+				outages.perspective IS NULL
 			AS outage_24h
 		JOIN
 			events
