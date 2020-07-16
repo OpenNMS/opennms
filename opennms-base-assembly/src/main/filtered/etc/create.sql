@@ -2491,7 +2491,7 @@ CREATE VIEW node_outage_status AS
           max(events.eventseverity) AS severity
          FROM events
            JOIN outages ON outages.svclosteventid = events.eventid
-        WHERE outages.ifregainedservice IS NULL
+        WHERE outages.ifregainedservice IS NULL AND outages.perspective IS NULL
         GROUP BY events.nodeid) tmp
  RIGHT JOIN node ON tmp.nodeid = node.nodeid;
 
@@ -2644,6 +2644,8 @@ CREATE VIEW node_outages AS (
         node_outage_status nos
     ON
         nc.nodeid = nos.nodeid
+    WHERE
+        outages.perspective IS NULL
 );
 
 CREATE VIEW node_ip_services AS (
