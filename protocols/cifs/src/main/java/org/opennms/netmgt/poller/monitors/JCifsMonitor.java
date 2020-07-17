@@ -166,11 +166,11 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         Configuration jcifsConfig = null;
         try {
             jcifsConfig = new PropertyConfiguration(jcifsProps);
+            baseCtx = new BaseContext(jcifsConfig);
         } catch (CIFSException cifse) {
-            logger.error("Unable to configure CIFS timeout properties due to {}.", cifse.getMessage());
-            return PollStatus.unknown("Unable to configure CIFS timeout properties due to " + cifse.getMessage());
+            logger.warn("Unable to configure CIFS timeout properties due to {}. Using defaults.", cifse.getMessage());
+            baseCtx = SingletonContext.getInstance();
         }
-        baseCtx = new BaseContext(jcifsConfig);
         CIFSContext authedCtx = baseCtx.withCredentials(new NtlmPasswordAuthenticator(domain, username, password));
 
         // Setting default PollStatus
