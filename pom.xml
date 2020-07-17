@@ -1323,7 +1323,7 @@
     <awsSqsMessagingVersion>1.0.4</awsSqsMessagingVersion>
     <awsSdkVersion>1.11.218</awsSdkVersion>
     <batikVersion>1.7</batikVersion>
-    <bcprovVersion>1.65.01</bcprovVersion>
+    <bcprovVersion>1.66</bcprovVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
