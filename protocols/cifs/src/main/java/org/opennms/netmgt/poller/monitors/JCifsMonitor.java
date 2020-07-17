@@ -159,10 +159,10 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         BaseContext baseCtx = null;
         Properties jcifsProps = new Properties();
         String connectionTimeoutAsStr = Integer.toString(tracker.getConnectionTimeout());
-        jcifsProps.setProperty("jcifs.smb.client.soTimeout", toStr);
-        jcifsProps.setProperty("jcifs.smb.client.connTimeout", toStr);
-        jcifsProps.setProperty("jcifs.smb.client.responseTimeout", toStr);
-        jcifsProps.setProperty("jcifs.smb.client.sessionTimeout", toStr);
+        jcifsProps.setProperty("jcifs.smb.client.soTimeout", connectionTimeoutAsStr);
+        jcifsProps.setProperty("jcifs.smb.client.connTimeout", connectionTimeoutAsStr);
+        jcifsProps.setProperty("jcifs.smb.client.responseTimeout", connectionTimeoutAsStr);
+        jcifsProps.setProperty("jcifs.smb.client.sessionTimeout", connectionTimeoutAsStr);
         Configuration jcifsConfig = null;
         try {
             jcifsConfig = new PropertyConfiguration(jcifsProps);
