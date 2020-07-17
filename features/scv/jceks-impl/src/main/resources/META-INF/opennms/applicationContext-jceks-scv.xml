@@ -7,7 +7,7 @@
 
   <bean name="jceksSecureCredentialsVault" class="org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault">
     <constructor-arg value="${opennms.home}/etc/scv.jce"/>
-    <constructor-arg value="QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw"/>
+    <constructor-arg value="${org.opennms.features.scv.jceks.key:QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw}"/>
   </bean>
 
   <onmsgi:service interface="org.opennms.features.scv.api.SecureCredentialsVault" ref="jceksSecureCredentialsVault"/>

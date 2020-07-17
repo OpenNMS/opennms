@@ -95,7 +95,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     private static final int VERSION_UNSPECIFIED = -1;
     private static final String SNMP_ENCRYPTION_CONTEXT = "snmp-config";
-    protected static final String ENCRYPTION_KEY = "org.opennms.snmp.encryption.key";
+    protected static final String ENCRYPTION_ENABLED = "org.opennms.snmp.encryption.enabled";
 
     private static File s_configFile;
 
@@ -124,7 +124,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     private TextEncryptor textEncryptor;
 
-    private Boolean encryptionEnabled;
+    private Boolean encryptionEnabled = Boolean.getBoolean(ENCRYPTION_ENABLED);
     private String encryptionKey;
 
     /**
@@ -608,7 +608,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     private void encryptSnmpConfig(SnmpConfig snmpConfig) {
-        if (!getEncryptionEnabled()) {
+        if (!encryptionEnabled) {
             return;
         }
         if (textEncryptor == null) {
@@ -624,7 +624,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     private void decryptSnmpConfig(SnmpConfig snmpConfig) {
-        if (!getEncryptionEnabled()) {
+        if (!encryptionEnabled) {
             return;
         }
 
@@ -645,64 +645,69 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         if(!config.getEncrypted()) {
             return;
         }
-        if (!Strings.isNullOrEmpty(config.getAuthPassphrase())) {
-            String authPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getAuthPassphrase());
-            config.setAuthPassphrase(authPassPhrase);
+        try {
+            if (!Strings.isNullOrEmpty(config.getAuthPassphrase())) {
+                String authPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getAuthPassphrase());
+                config.setAuthPassphrase(authPassPhrase);
+            }
+            if (!Strings.isNullOrEmpty(config.getPrivacyPassphrase())) {
+                String privPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getPrivacyPassphrase());
+                config.setPrivacyPassphrase(privPassPhrase);
+            }
+            if (!Strings.isNullOrEmpty(config.getReadCommunity())) {
+                String readCommunity = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getReadCommunity());
+                config.setReadCommunity(readCommunity);
+            }
+            if (!Strings.isNullOrEmpty(config.getWriteCommunity())) {
+                String writeCommunity = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getWriteCommunity());
+                config.setWriteCommunity(writeCommunity);
+            }
+            config.setEncrypted(false);
+        } catch (Exception e) {
+            LOG.error("Exception while trying to decrypt snmp config", e);
         }
-        if (!Strings.isNullOrEmpty(config.getPrivacyPassphrase())) {
-            String privPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getPrivacyPassphrase());
-            config.setPrivacyPassphrase(privPassPhrase);
-        }
-        if (!Strings.isNullOrEmpty(config.getReadCommunity())) {
-            String readCommunity = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getReadCommunity());
-            config.setReadCommunity(readCommunity);
-        }
-        if (!Strings.isNullOrEmpty(config.getWriteCommunity())) {
-            String writeCommunity = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getWriteCommunity());
-            config.setWriteCommunity(writeCommunity);
-        }
-        config.setEncrypted(false);
     }
 
     private void encryptConfig(Configuration config) {
         if (config.getEncrypted()) {
             return;
         }
-        if (!Strings.isNullOrEmpty(config.getAuthPassphrase())) {
-            String authPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getAuthPassphrase());
-            config.setAuthPassphrase(authPassPhrase);
+        try {
+            if (!Strings.isNullOrEmpty(config.getAuthPassphrase())) {
+                String authPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getAuthPassphrase());
+                config.setAuthPassphrase(authPassPhrase);
+            }
+            if (!Strings.isNullOrEmpty(config.getPrivacyPassphrase())) {
+                String privPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getPrivacyPassphrase());
+                config.setPrivacyPassphrase(privPassPhrase);
+            }
+            if (!Strings.isNullOrEmpty(config.getReadCommunity())) {
+                String readCommunity = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getReadCommunity());
+                config.setReadCommunity(readCommunity);
+            }
+            if (!Strings.isNullOrEmpty(config.getWriteCommunity())) {
+                String writeCommunity = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getWriteCommunity());
+                config.setWriteCommunity(writeCommunity);
+            }
+            config.setEncrypted(true);
+        } catch (Exception e) {
+            LOG.error("Exception while trying to encrypt snmp config", e);
         }
-        if (!Strings.isNullOrEmpty(config.getPrivacyPassphrase())) {
-            String privPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getPrivacyPassphrase());
-            config.setPrivacyPassphrase(privPassPhrase);
-        }
-        if (!Strings.isNullOrEmpty(config.getReadCommunity())) {
-            String readCommunity = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getReadCommunity());
-            config.setReadCommunity(readCommunity);
-        }
-        if (!Strings.isNullOrEmpty(config.getWriteCommunity())) {
-            String writeCommunity = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getWriteCommunity());
-            config.setWriteCommunity(writeCommunity);
-        }
-        config.setEncrypted(true);
+
     }
 
     @VisibleForTesting
-    protected Boolean getEncryptionEnabled() {
-        if (encryptionEnabled != null) {
-            return encryptionEnabled;
-        } else {
-            encryptionKey = System.getProperty(ENCRYPTION_KEY);
-        }
-        if (Strings.isNullOrEmpty(encryptionKey)) {
-            return encryptionEnabled = false;
-        } else {
-            return encryptionEnabled = true;
-        }
+    Boolean getEncryptionEnabled() {
+        return encryptionEnabled;
+    }
+
+
+    public void setEncryptionKey(String encryptionKey) {
+        this.encryptionKey = encryptionKey;
     }
 
     @VisibleForTesting
-    protected void setTextEncryptor(TextEncryptor textEncryptor) {
+    void setTextEncryptor(TextEncryptor textEncryptor) {
         this.textEncryptor = textEncryptor;
     }
 }

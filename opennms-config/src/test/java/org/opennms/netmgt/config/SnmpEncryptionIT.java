@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.opennms.netmgt.config.SnmpPeerFactory.ENCRYPTION_KEY;
+import static org.opennms.netmgt.config.SnmpPeerFactory.ENCRYPTION_ENABLED;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,7 +60,7 @@ public class SnmpEncryptionIT {
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
     static {
-        System.setProperty(ENCRYPTION_KEY, "someRandomKey");
+        System.setProperty(ENCRYPTION_ENABLED, "true");
     }
 
     private SnmpPeerFactory snmpPeerFactory;
@@ -70,7 +70,7 @@ public class SnmpEncryptionIT {
         URL url = getClass().getResource("/snmp-config.xml");
         try (InputStream configStream = url.openStream()) {
             snmpPeerFactory = new SnmpPeerFactory(new InputStreamResource(configStream));
-
+            snmpPeerFactory.setEncryptionKey("OpenNMS-SNMP-Encryption-Key");
             SnmpPeerFactory.setFile(new File(url.getFile()));
             // Check if encryption is enabled
             assertTrue(snmpPeerFactory.getEncryptionEnabled());

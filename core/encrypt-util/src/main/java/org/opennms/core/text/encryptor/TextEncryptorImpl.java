@@ -39,8 +39,6 @@ import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-
 
 public class TextEncryptorImpl implements TextEncryptor {
 
@@ -53,34 +51,22 @@ public class TextEncryptorImpl implements TextEncryptor {
     }
 
     @Override
-    public String encrypt(String alias, String key, String text) {
-        try {
-            final AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
-            String password = getPasswordFromCredentials(alias, key);
-            if (!Strings.isNullOrEmpty(password)) {
-                textEncryptor.setPassword(password);
-                return textEncryptor.encrypt(text);
-            }
-        } catch (Exception e) {
-            LOG.error("Exception while encrypting {} with key {}", text, key, e);
-        }
-        return text;
+    public String encrypt(String alias, String encryptionKey, String text) {
+
+        final AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
+        String password = getPasswordFromCredentials(alias, encryptionKey);
+        textEncryptor.setPassword(password);
+        return textEncryptor.encrypt(text);
 
     }
 
     @Override
-    public String decrypt(String alias, String key, String encrypted) {
+    public String decrypt(String alias, String encryptionKey, String encrypted) {
         final AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
-        try {
-            String password = getPasswordFromCredentials(alias, key);
-            if (!Strings.isNullOrEmpty(password)) {
-                textEncryptor.setPassword(password);
-                return textEncryptor.decrypt(encrypted);
-            }
-        } catch (Exception e) {
-            LOG.error("Exception while decrypting {} with key {}", encrypted, key, e);
-        }
-        return encrypted;
+        String password = getPasswordFromCredentials(alias, encryptionKey);
+        textEncryptor.setPassword(password);
+        return textEncryptor.decrypt(encrypted);
+
     }
 
     private String getPasswordFromCredentials(String alias, String key) {
