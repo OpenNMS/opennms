@@ -1276,7 +1276,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		OutageChecker(MockService svc, Event lostSvcEvent,
 				Event regainedSvcEvent) {
 			super(m_db,
-					"select * from outages where nodeid = ? and ipAddr = ? and serviceId = ?");
+					"select * from outages where perspective is null and nodeid = ? and ipAddr = ? and serviceId = ?");
 
 			m_svc = svc;
 			m_lostSvcEvent = lostSvcEvent;
