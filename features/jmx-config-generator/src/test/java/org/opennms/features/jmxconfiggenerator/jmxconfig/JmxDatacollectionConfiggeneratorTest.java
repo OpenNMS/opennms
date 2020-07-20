@@ -134,7 +134,6 @@ public class JmxDatacollectionConfiggeneratorTest {
         Assert.assertEquals(2, jmxConfigModel.getJmxCollectionList().get(0).getMbeans().size());
         for (Mbean eachMbean : jmxConfigModel.getJmxCollectionList().get(0).getMbeans()) {
             Assert.assertEquals(2, eachMbean.getAttribList().size());
-            Assert.assertEquals(0, eachMbean.getCompAttribList().size());
         }
     }
 
