@@ -1771,6 +1771,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
                 svc.getNodeId(), svc.getAddress(), svc.getSvcName());
 
         Criteria criteria = new CriteriaBuilder(OnmsOutage.class)
+            .isNull("perspective")
             .eq("monitoredService", monitoredSvc)
             .orderBy("ifLostService")
             .toCriteria();

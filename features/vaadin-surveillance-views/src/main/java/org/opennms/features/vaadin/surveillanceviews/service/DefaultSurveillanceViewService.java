@@ -386,6 +386,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
             public List<NodeRtc> doInTransaction(TransactionStatus transactionStatus) {
                 CriteriaBuilder outageCriteriaBuilder = new CriteriaBuilder(OnmsOutage.class);
 
+                outageCriteriaBuilder.isNull("perspective");
                 outageCriteriaBuilder.alias("monitoredService", "monitoredService", Alias.JoinType.INNER_JOIN);
                 outageCriteriaBuilder.alias("monitoredService.ipInterface", "ipInterface", Alias.JoinType.INNER_JOIN);
                 outageCriteriaBuilder.alias("monitoredService.ipInterface.node", "node", Alias.JoinType.INNER_JOIN);
