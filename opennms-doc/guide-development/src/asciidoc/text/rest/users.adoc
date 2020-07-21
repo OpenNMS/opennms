@@ -31,7 +31,7 @@ You may need to touch the `$OPENNMS_HOME/etc/users.xml` file on the filesystem f
 |===
 | Parameter                            | Description
 | `/users/{username}`                  | Update an existing user's full-name, user-comments, password, passwordSalt and duty-schedule values.
-                                         Note: You may add the query parameter `hashPassword=true` to tell OpenNMS you are passing an unencrypted password; it will hash and salt the password when it is saved.
+                                         Note: If you are setting the password, you may also add the query parameter `hashPassword=true` to tell OpenNMS you are passing an unencrypted password; it will hash and salt the password when it is saved.
 | `/users/{username}/roles/{rolename}` | Add a security role to the user. (new in OpenNMS 19)
 |===
 

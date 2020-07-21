@@ -146,6 +146,7 @@ public class UserRestService extends OnmsRestService {
             final OnmsUser user = getOnmsUser(userCriteria);
             LOG.debug("updateUser: updating user {}", user);
             boolean modified = false;
+            boolean passwordModified = false;
             boolean hashPassword = false;
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(user);
             for(final String key : params.keySet()) {
@@ -154,6 +155,9 @@ public class UserRestService extends OnmsRestService {
                     final Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
                     modified = true;
+                }
+                if (key.equals("password")) {
+                    passwordModified = true;
                 } else if (key.equals("hashPassword")) {
                     hashPassword = Boolean.valueOf(params.getFirst("hashPassword"));
                 }
@@ -161,7 +165,7 @@ public class UserRestService extends OnmsRestService {
             if (modified) {
                 LOG.debug("updateUser: user {} updated", user);
                 try {
-                    if (hashPassword) hashPassword(user);
+                    if (passwordModified && hashPassword) hashPassword(user);
                     m_userManager.save(user);
                 } catch (final Throwable t) {
                     throw getException(Status.INTERNAL_SERVER_ERROR, t);

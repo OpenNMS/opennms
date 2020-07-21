@@ -153,6 +153,7 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
         // validate change of email
         assertEquals("test@opennms.org", testUser.getEmail());
 
+        // if `hashPassword=true`, make sure the password has changed from the input
         createUser("hashme", null, 201, null, true);
         xml = sendRequest(GET, "/users/hashme", 200);
         assertTrue(xml.contains("<password>"));
@@ -160,7 +161,12 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
         assertFalse(xml.contains("<password>" + PASSWORD + "</password>"));
         assertTrue(m_userManager.comparePasswords("hashme", PASSWORD));
 
+        // same for PUT
         sendPut("/users/hashme", "password=MONKEYS&hashPassword=true", 204);
+        assertTrue(m_userManager.comparePasswords("hashme", "MONKEYS"));
+
+        // but if a password is not passed in PUT, don't *re*-hash the password
+        sendPut("/users/hashme", "email=hashme@opennms.org&hashPassword=true", 204);
         assertTrue(m_userManager.comparePasswords("hashme", "MONKEYS"));
     }
 
@@ -334,6 +340,6 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
                 "<password>" + PASSWORD + "</password>" +
                 "</user>";
         userXml = userXml.replace("{EMAIL}", email != null ?  "<email>" + email + "</email>": "");
-        sendPost("/users?hashPassword=" + hashPassword, userXml, statusCode, expectedUrlSuffix);
+        sendPost(hashPassword ? "/users?hashPassword=true" : "/users", userXml, statusCode, expectedUrlSuffix);
     }
 }
