@@ -482,7 +482,6 @@ workflows:
           requires:
             - build
       - sentinel-rpm-build:
-          context: << parameters.context_name >>
           requires:
             - build
       - integration-test:
@@ -537,7 +536,6 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
       - sentinel-publish-oci:
-          context: << parameters.context_name >>
           requires:
             - sentinel-rpm-build
           filters:
@@ -575,7 +573,6 @@ workflows:
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - sentinel-deb-build:
-          context: << parameters.context_name >>
           requires:
             - integration-test
           filters:
