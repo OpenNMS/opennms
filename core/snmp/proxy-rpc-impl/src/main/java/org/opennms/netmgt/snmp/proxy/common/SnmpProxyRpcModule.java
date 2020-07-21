@@ -176,7 +176,8 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
         final CompletableFuture<SnmpValue[]> future = SnmpUtils.getAsync(request.getAgent(), oids);
         return future.thenApply(values -> {
             final List<SnmpResult> results = new ArrayList<>(oids.length);
-            for (int i = 0; i < oids.length; i++) {
+            int len = Math.min(oids.length, values.length);
+            for (int i = 0; i < len; i++) {
                 final SnmpResult result = new SnmpResult(oids[i], null, values[i]);
                 results.add(result);
             }
