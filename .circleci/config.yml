@@ -538,7 +538,6 @@ workflows:
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
       - minion-deb-build:
-          context: << parameters.context_name >>
           requires:
             - integration-test
           filters:
