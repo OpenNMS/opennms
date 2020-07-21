@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.io.FileInputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -122,7 +123,7 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
         String json = sendRequest(jsonRequest, 200);
 
         JSONObject restObject = new JSONObject(json);
-        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/users.json")));
+        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/users.json"), Charset.defaultCharset()));
         JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 
@@ -133,6 +134,7 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
         // validate creation
         String xml = sendRequest(GET, "/users/test", 200);
         assertTrue(xml.contains("<user><user-id>test</user-id>"));
+        assertTrue(xml.contains("<password>" + PASSWORD + "</password>"));
 
         // change password and email
         setUser("doesntHavePermissions", new String[] { "ROLE_USER" });
@@ -150,6 +152,16 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
 
         // validate change of email
         assertEquals("test@opennms.org", testUser.getEmail());
+
+        createUser("hashme", null, 201, null, true);
+        xml = sendRequest(GET, "/users/hashme", 200);
+        assertTrue(xml.contains("<password>"));
+        assertTrue(xml.contains("<passwordSalt>true</passwordSalt>"));
+        assertFalse(xml.contains("<password>" + PASSWORD + "</password>"));
+        assertTrue(m_userManager.comparePasswords("hashme", PASSWORD));
+
+        sendPut("/users/hashme", "password=MONKEYS&hashPassword=true", 204);
+        assertTrue(m_userManager.comparePasswords("hashme", "MONKEYS"));
     }
 
     @Test
@@ -309,6 +321,10 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
     }
 
     protected void createUser(final String username, final String email, final int statusCode, final String expectedUrlSuffix) throws Exception {
+        createUser(username, email, statusCode, expectedUrlSuffix, false);
+    }
+
+    protected void createUser(final String username, final String email, final int statusCode, final String expectedUrlSuffix, boolean hashPassword) throws Exception {
 
         String userXml = "<user>" +
                 "<user-id>" + username + "</user-id>" +
@@ -318,6 +334,6 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
                 "<password>" + PASSWORD + "</password>" +
                 "</user>";
         userXml = userXml.replace("{EMAIL}", email != null ?  "<email>" + email + "</email>": "");
-        sendPost("/users", userXml, statusCode, expectedUrlSuffix);
+        sendPost("/users?hashPassword=" + hashPassword, userXml, statusCode, expectedUrlSuffix);
     }
 }
