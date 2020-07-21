@@ -21,10 +21,6 @@ executors:
 # branches have slashes in them, that way the merge branch gets created properly
 defaults: &defaults
   parameters:
-    context_name:
-      description: the context to use for sensitive settings like GPG keys
-      type: string
-      default: "OpenNMS Build"
     previous_branch:
       description: the previous branch, if any
       type: string
@@ -455,21 +451,17 @@ workflows:
               only:
                 - develop
     jobs:
-      - build:
-          context: << parameters.context_name >>
+      - build
       - integration-test-with-coverage:
-          context: << parameters.context_name >>
           requires:
             - build
       - code-coverage:
-          context: << parameters.context_name >>
           requires:
             - integration-test-with-coverage
   build-deploy:
     <<: *defaults
     jobs:
       - build:
-          context: << parameters.context_name >>
           filters:
             branches:
               ignore:
@@ -478,7 +470,6 @@ workflows:
           requires:
             - build
       - horizon-rpm-build:
-          context: << parameters.context_name >>
           requires:
             - build
       - minion-rpm-build:
@@ -486,11 +477,9 @@ workflows:
           requires:
             - build
       - integration-test:
-          context: << parameters.context_name >>
           requires:
             - build
       - smoke-test-full:
-          context: << parameters.context_name >>
           requires:
             - horizon-rpm-build
             - minion-rpm-build
@@ -504,7 +493,6 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
-          context: << parameters.context_name >>
           requires:
             - horizon-rpm-build
             - minion-rpm-build
@@ -518,7 +506,6 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
       - horizon-publish-oci:
-          context: << parameters.context_name >>
           requires:
             - horizon-rpm-build
           filters:
@@ -540,7 +527,6 @@ workflows:
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
-          context: << parameters.context_name >>
           requires:
             - integration-test
       - create-merge-foundation-branch:
@@ -593,7 +579,6 @@ workflows:
               only:
                 - /^foundation.*/
       - publish-cloudsmith:
-          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
