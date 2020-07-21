@@ -291,7 +291,7 @@ The PDF report displays each of the panels from the specified dashboard, with on
 
 Dashboard to PDF:
 
-image:database-reports/dashboard-pdf.png[PDF report]
+image:database-reports/Dashboard-pdf.png[PDF report]
 
 ==== Before You Begin
 
