@@ -222,7 +222,9 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         type.removeMalformedFile(file);
         try {
             List<PrefabGraph> subGraphs = loadPrefabGraphDefinitions(type,
-                                                                     props);
+                                                                     props,
+                                                                     file.getName());
+
             for (PrefabGraph graph : subGraphs) {
                 if(graph == null) {
                     //Indicates a multi-graph file that had a munted graph definition
@@ -376,7 +378,8 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             t.setIncludeDirectoryRescanInterval(interval);
 
             List<PrefabGraph> graphs = loadPrefabGraphDefinitions(t,
-                                                                  properties);
+                                                                  properties,
+                                                                  sourceResource != null ? sourceResource.getFilename() : null);
 
             for (PrefabGraph graph : graphs) {
                 //The graphs list may contain nulls; see loadPrefabGraphDefinitions for reasons
@@ -500,7 +503,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      * property, which cannot be recovered from   
      */
     private List<PrefabGraph> loadPrefabGraphDefinitions(
-            PrefabGraphTypeDao type, Properties properties) {
+            final PrefabGraphTypeDao type, final Properties properties, final String filename) {
         Assert.notNull(properties, "properties argument cannot be null");
 
         List<PrefabGraph> result = new ArrayList<>();
@@ -533,6 +536,10 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
 
         for (String name : list) {
             try {
+                if ("".equals(name)) {
+                    LOG.warn("Error in {}: Variable name must not be empty. Perhaps your properties list contains something like ', ,' or a trailing ', \\'.", filename != null ? filename : "unknown file");
+                    continue;
+                }
                 PrefabGraph graph = makePrefabGraph(name, properties,
                                                     type.getNextOrdering());
                 result.add(graph);
@@ -704,7 +711,8 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                 Properties props = new Properties();
                 props.load(resource.getInputStream());
                 List<PrefabGraph> reloadedGraphs = loadPrefabGraphDefinitions(m_type,
-                                                                              props);
+                                                                              props,
+                                                                              resource != null ? resource.getFilename() : null);
                 PrefabGraph result = null;
                 for (PrefabGraph reloadedGraph : reloadedGraphs) {
                     //The reloadedGraphs may contain nulls; see loadPrefabGraphDefinitions for reasons
