@@ -537,6 +537,7 @@ public class RemotePollerd implements SpringServiceDaemon {
                     .setNodeid(onmsEvent.getNodeId())
                     .setService(service.getServiceName())
                     .setTime(onmsEvent.getEventCreateTime())
+                    .setParam("perspective", perspective.getLocationName())
                     .getEvent();
             eventForwarder.sendNow(outageEvent);
         } else {
@@ -569,6 +570,7 @@ public class RemotePollerd implements SpringServiceDaemon {
                         .setNodeid(onmsEvent.getNodeId())
                         .setService(service.getServiceName())
                         .setTime(onmsEvent.getEventCreateTime())
+                        .setParam("perspective", perspective.getLocationName())
                         .getEvent();
                 eventForwarder.sendNow(outageEvent);
             } else {
