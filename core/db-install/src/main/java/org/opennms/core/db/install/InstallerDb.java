@@ -741,6 +741,28 @@ public class InstallerDb {
         rs = st.executeQuery(query);
         return rs.next();
     }
+
+    /**
+     * <p>getDbMajorVersion</p>
+     *
+     * @return a integer.
+     * @throws java.lang.Exception if any.
+     */
+    public int getDbMajorVersion() throws Exception {
+        final Statement st = getConnection().createStatement();
+        ResultSet rs = st.executeQuery("SHOW server_version");
+
+        rs.next();
+
+        Pattern r = Pattern.compile("\\bv?(?<major>[0-9]+)\\.(?<minor>[0-9]+)(?:\\.(?<release>[0-9]+))?(?:\\.(?<build>[0-9]+))?\\b");
+        Matcher m = r.matcher(rs.getString(1));
+
+        m.find();
+
+        int dbMajorVersion = Integer.parseInt(m.group("major"));
+
+        return dbMajorVersion;
+    }
     
     /**
      * <p>getTypesFromDB</p>
@@ -1185,11 +1207,25 @@ public class InstallerDb {
 
         final LinkedList<Constraint> constraints = new LinkedList<Constraint>();
 
-        final String query = "SELECT c.oid, c.conname, c.contype, c.conrelid, "
-            + "c.confrelid, a.relname, c.confupdtype, c.confdeltype, c.consrc from pg_class a "
-            + "right join pg_constraint c on c.confrelid = a.oid "
-            + "where c.conrelid = (select oid from pg_class where relname = '"
-                + tableName.toLowerCase() + "') order by c.oid";
+        final String query;
+
+        switch(getDbMajorVersion()) {
+            case 10:
+            case 11:
+                query = "SELECT c.oid, c.conname, c.contype, c.conrelid, "
+                        + "c.confrelid, a.relname, c.confupdtype, c.confdeltype, c.consrc from pg_class a "
+                        + "right join pg_constraint c on c.confrelid = a.oid "
+                        + "where c.conrelid = (select oid from pg_class where relname = '"
+                        + tableName.toLowerCase() + "') order by c.oid";
+                break;
+            default:
+                query = "SELECT c.oid, c.conname, c.contype, c.conrelid, "
+                        + "c.confrelid, a.relname, c.confupdtype, c.confdeltype, "
+                        + "pg_get_constraintdef(\"c\".\"oid\", false) AS \"check_expr\" from pg_class a "
+                        + "right join pg_constraint c on c.confrelid = a.oid "
+                        + "where c.conrelid = (select oid from pg_class where relname = '"
+                        + tableName.toLowerCase() + "') order by c.oid";
+        }
 
         rs = st.executeQuery(query);
 

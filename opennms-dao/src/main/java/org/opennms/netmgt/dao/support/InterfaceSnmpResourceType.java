@@ -178,8 +178,8 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         String replacedIfDescr = AlphaNumeric.parseAndReplace(snmpInterface.getIfDescr(), '_');
 
         return new String[] {
-                replacedIfName + "-",
-                replacedIfDescr + "-",
+                replacedIfName,
+                replacedIfDescr,
                 replacedIfName + "-" + snmpInterface.getPhysAddr(),
                 replacedIfDescr + "-" + snmpInterface.getPhysAddr()
         };
@@ -195,9 +195,10 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         if (dashIndex >= 0) {
             desc = intfName.substring(0, dashIndex);
             mac = intfName.substring(dashIndex + 1, intfName.length());
+            return desc + "-" + mac;
         }
 
-        return desc + "-" + mac;
+	return desc;
     }
 
     private List<OnmsResource> getNodeResources(ResourcePath parent, Set<String> intfNames, OnmsNode node) {
