@@ -47,11 +47,14 @@ import org.opennms.netmgt.snmp.ColumnTracker;
 import org.opennms.netmgt.snmp.SingleInstanceTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResponseException;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalkCallback;
 import org.opennms.netmgt.snmp.SnmpWalker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Executes SNMP requests locally using the current {@link org.opennms.netmgt.snmp.SnmpStrategy}.
@@ -59,6 +62,8 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * @author jwhite
  */
 public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, SnmpMultiResponseDTO> {
+
+    private static final transient Logger LOG = LoggerFactory.getLogger(SnmpProxyRpcModule.class);
 
     public static final SnmpProxyRpcModule INSTANCE = new SnmpProxyRpcModule();
 
@@ -176,8 +181,11 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
         final CompletableFuture<SnmpValue[]> future = SnmpUtils.getAsync(request.getAgent(), oids);
         return future.thenApply(values -> {
             final List<SnmpResult> results = new ArrayList<>(oids.length);
-            int len = Math.min(oids.length, values.length);
-            for (int i = 0; i < len; i++) {
+            if (oids.length != values.length) {
+                LOG.error("Response values size {} is not matching request oids size {}", values.length, oids.length);
+                throw new SnmpResponseException("Invalid SNMP Response, Number of Response elements are not matching number of Requested oids");
+            }
+            for (int i = 0; i < oids.length; i++) {
                 final SnmpResult result = new SnmpResult(oids[i], null, values[i]);
                 results.add(result);
             }
