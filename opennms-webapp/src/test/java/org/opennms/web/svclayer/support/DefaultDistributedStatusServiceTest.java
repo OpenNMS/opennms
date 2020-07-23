@@ -81,7 +81,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 /**
- * Ignore for now, since the remote poller with minion stuff is still in development
+ * TODO: Ignore for now, since the remote poller with minion stuff is still in development
  */
 @Ignore
 public class DefaultDistributedStatusServiceTest extends TestCase {

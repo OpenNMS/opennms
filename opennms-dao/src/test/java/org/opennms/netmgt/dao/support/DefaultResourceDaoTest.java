@@ -270,7 +270,7 @@ public class DefaultResourceDaoTest {
     }
 
     /**
-     * Rewrite of RmotePoller is still in progress, so ignore this one for now.
+     * TODO: Rewrite of RmotePoller is still in progress, so ignore this one for now.
      */
     @Ignore
     @Test
@@ -348,7 +348,7 @@ public class DefaultResourceDaoTest {
     }
 
     /**
-     * Rewrite of RmotePoller is still in progress, so ignore this one for now.
+     * TODO: Rewrite of RmotePoller is still in progress, so ignore this one for now.
      */
     @Ignore
     @Test

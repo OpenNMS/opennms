@@ -89,7 +89,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @JUnitTemporaryDatabase
 @Transactional
 /**
- * Ignore for now, since the remote poller with minion stuff is still in development
+ * TODO: Ignore for now, since the remote poller with minion stuff is still in development
  */
 @Ignore
 public class RemotePollerAvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase {
