@@ -68,6 +68,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.util.Assert;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
 /**
  * <p>DefaultNodeListService class.</p>
  *
@@ -77,6 +80,10 @@ import org.springframework.util.Assert;
 public class DefaultNodeListService implements NodeListService, InitializingBean {
     private static final Comparator<OnmsIpInterface> IP_INTERFACE_COMPARATOR = new IpInterfaceComparator();
     private static final Comparator<OnmsSnmpInterface> SNMP_INTERFACE_COMPARATOR = new SnmpInterfaceComparator();
+    private static final Set<String> ACCEPTED_SNMP_PARAM_NAMES = Sets.newLinkedHashSet(
+            Lists.newArrayList("snmpphysaddr", "snmpifindex", "snmpifdescr", "snmpiftype", "snmpifname",
+            "snmpifspeed", "snmpifadminstatus", "snmpifoperstatus", "snmpifalias", "snmpcollect",
+            "snmplastcapsdpoll", "snmppoll", "snmplastsnmppoll"));
     
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
@@ -163,7 +170,19 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     }
 
     private void addCriteriaForFlows(final OnmsCriteria criteria, final Boolean hasFlows) {
-        criteria.add(Restrictions.eq("node.hasFlows", hasFlows));
+        if (hasFlows) {
+            if (OnmsSnmpInterface.INGRESS_AND_EGRESS_REQUIRED) {
+                criteria.add(Restrictions.sqlRestriction("EXTRACT(EPOCH FROM (NOW() - last_ingress_flow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" AND EXTRACT(EPOCH FROM (NOW() - last_egress_flow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE));
+            } else {
+                criteria.add(Restrictions.sqlRestriction("EXTRACT(EPOCH FROM (NOW() - last_ingress_flow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" OR EXTRACT(EPOCH FROM (NOW() - last_egress_flow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE));
+            }
+        } else {
+            if (OnmsSnmpInterface.INGRESS_AND_EGRESS_REQUIRED) {
+                criteria.add(Restrictions.sqlRestriction("(last_ingress_flow IS NULL OR EXTRACT(EPOCH FROM (NOW() - last_ingress_flow)) > " + OnmsSnmpInterface.MAX_FLOW_AGE + ") OR (last_egress_flow IS NULL OR EXTRACT(EPOCH FROM (NOW() - last_egress_flow)) > " + OnmsSnmpInterface.MAX_FLOW_AGE + ")"));
+            } else {
+                criteria.add(Restrictions.sqlRestriction("(last_ingress_flow IS NULL OR EXTRACT(EPOCH FROM (NOW() - last_ingress_flow)) > " + OnmsSnmpInterface.MAX_FLOW_AGE + ") AND (last_egress_flow IS NULL OR EXTRACT(EPOCH FROM (NOW() - last_egress_flow)) > " + OnmsSnmpInterface.MAX_FLOW_AGE + ")"));
+            }
+        }
     }
 
     private void addCriteriaForMonitoringLocation(OnmsCriteria criteria, String monitoringLocation) {
@@ -189,8 +208,12 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         if(snmpParmMatchType.equals("contains")) {
             criteria.add(Restrictions.ilike("snmpInterface.".concat(snmpParm), snmpParmValue, MatchMode.ANYWHERE));
         } else if(snmpParmMatchType.equals("equals")) {
+            final String snmpParameterName = ("snmp" + snmpParm).toLowerCase();
+            if (!ACCEPTED_SNMP_PARAM_NAMES.contains(snmpParameterName)) {
+                throw new IllegalArgumentException("Provided parameter '" + snmpParm + "' is not supported");
+            }
             snmpParmValue = snmpParmValue.toLowerCase();
-            criteria.add(Restrictions.sqlRestriction("{alias}.nodeid in (select nodeid from snmpinterface where snmpcollect != 'D' and lower(snmp" + snmpParm + ") = '" + snmpParmValue + "')"));
+            criteria.add(Restrictions.sqlRestriction("{alias}.nodeid in (select nodeid from snmpinterface where snmpcollect != 'D' and " + snmpParameterName + " = ?)", snmpParmValue, new StringType()));
         }
     }
 

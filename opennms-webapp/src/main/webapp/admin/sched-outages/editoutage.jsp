@@ -33,10 +33,13 @@
         contentType="text/html"
         session="true"
         import="java.util.*,
+        org.opennms.core.spring.BeanUtils,
         org.opennms.netmgt.config.*,
         org.opennms.netmgt.config.collectd.Package,
         org.opennms.netmgt.config.poller.*,
         org.opennms.netmgt.config.poller.outages.*,
+        org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao,
+        org.opennms.netmgt.config.dao.outages.api.WriteablePollOutagesDao,
         org.opennms.core.db.DataSourceFactory,
         org.opennms.core.utils.DBUtils,
         org.opennms.core.utils.WebSecurityUtils,
@@ -202,8 +205,8 @@
 	final int month = today.get(Calendar.MONTH) + 1;
 	final int year = today.get(Calendar.YEAR);
 
-	PollOutagesConfigFactory.init(); //Only init - do *not* reload
-	PollOutagesConfigFactory pollFactory = PollOutagesConfigFactory.getInstance();
+	WriteablePollOutagesDao pollOutagesDao = BeanUtils.getBean("pollerConfigContext", "pollOutagesDao",
+			WriteablePollOutagesDao.class);
 	Outage theOutage;
 
 	if ("Cancel".equals(request.getParameter("cancelButton"))) {
@@ -215,15 +218,15 @@
 	if (nameParam != null) {
 		//first time in - name is passed as a param.  Find the outage, copy it, and shove it in the session
 		//Also keep a copy of the name, for later saving (replacing the original with the edited copy)
-		Outage tempOutage = pollFactory.getOutage(nameParam);
+		Outage tempOutage = pollOutagesDao.getWriteableConfig().getOutage(nameParam);
 		CharArrayWriter writer = new CharArrayWriter();
 		tempOutage.marshal(writer);
 		theOutage = (Outage) Outage.unmarshal(new CharArrayReader(writer.toCharArray()));
 		request.getSession().setAttribute("opennms.editoutage", theOutage);
 		request.getSession().setAttribute("opennms.editoutage.origname", nameParam);
 	} else if ("true".equals(request.getParameter("addNew"))) {
-		nameParam = request.getParameter("newName");
-		Outage tempOutage = pollFactory.getOutage(nameParam);
+		nameParam = WebSecurityUtils.sanitizeString(request.getParameter("newName"));
+		Outage tempOutage = pollOutagesDao.getWriteableConfig().getOutage(nameParam);
 		if (tempOutage != null) { //there is an outage with that name, forcing edit existing
 			CharArrayWriter writer = new CharArrayWriter();
 			tempOutage.marshal(writer);
@@ -284,10 +287,11 @@ Could not find an outage to edit because no outage name parameter was specified 
 		enabledOutages.add("notifications");
 	}
 
+	WriteableThreshdDao threshdDao = BeanUtils.getBean("thresholdingContext", "threshdDao", WriteableThreshdDao.class);
+	
 	// ******* Threshd outages config *********
-	ThreshdConfigFactory.init();
 	Map<org.opennms.netmgt.config.threshd.Package, List<String>> thresholdOutages = new HashMap<org.opennms.netmgt.config.threshd.Package, List<String>>();
-	for (org.opennms.netmgt.config.threshd.Package thisPackage : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
+	for (org.opennms.netmgt.config.threshd.Package thisPackage : threshdDao.getWriteableConfig().getPackages()) {
 		thresholdOutages.put(thisPackage, thisPackage.getOutageCalendars());
 		if (thisPackage.getOutageCalendars().contains(theOutage.getName())) {
 			enabledOutages.add("threshold-" + thisPackage.getName());
@@ -314,7 +318,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 		}
 	}
 
-	if (request.getParameter("deleteOutageType") != null) {
+	if (request.getParameter("deleteOutageType") != null && "true".equals(request.getParameter("deleteOutageType"))) {
 		theOutage.setType(null);
 		theOutage.clearTimes();
 	} else {
@@ -326,7 +330,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 	String isFormSubmission = request.getParameter("formSubmission");
 	if ("true".equals(isFormSubmission)) {
 
-		pollFactory.getWriteLock().lock();
+		pollOutagesDao.getWriteLock().lock();
 		
 		try {
 
@@ -383,10 +387,10 @@ Could not find an outage to edit because no outage name parameter was specified 
 				String origname = (String) request.getSession().getAttribute("opennms.editoutage.origname");
 				if (origname == null) {
 					//A new outage - just plonk it in place
-					pollFactory.addOutage(theOutage);
+					pollOutagesDao.getWriteableConfig().addOutage(theOutage);
 				} else {
 					//An edited outage - replace the old one
-					pollFactory.replaceOutage(pollFactory.getOutage(origname), theOutage);
+					pollOutagesDao.getWriteableConfig().replaceOutage(pollOutagesDao.getWriteableConfig().getOutage(origname), theOutage);
 				}
 				//Push the enabledOutages into the actual configuration of the various packages
 				//Don't do until after we've successfully put the outage into the polloutages configuration (for coherency)
@@ -443,9 +447,8 @@ Could not find an outage to edit because no outage name parameter was specified 
 				}
 	
 				//Save to disk	
-				pollFactory.saveCurrent();
+				pollOutagesDao.saveConfig();
 				NotifdConfigFactory.getInstance().saveCurrent();
-				ThreshdConfigFactory.getInstance().saveCurrent();
 				collectdConfig.saveCurrent();
 				PollerConfigFactory.getInstance().save();
 				sendOutagesChangedEvent();
@@ -593,7 +596,7 @@ Could not find an outage to edit because no outage name parameter was specified 
 			}
 
 		} finally {
-			pollFactory.getWriteLock().unlock();
+			pollOutagesDao.getWriteLock().unlock();
 		}
 
 	} //end if form submission
@@ -885,8 +888,9 @@ function updateOutageTypeDisplay(selectElement) {
 			<table class="table table-sm table-borderless">
 				<tr>
 					<td>
+						<input type="hidden" name="deleteOutageType" id="deleteOutageType" value="false"/>
 						<% if (theOutage.getType() != null) { %>
-							<input type="image" src="images/modify.gif" name="deleteOutageType" value="true" /> <%= theOutage.getType() %>
+						<input type="image" src="images/modify.gif" id="deleteOutageTypeBtn" onclick="document.getElementById('deleteOutageType').value=true; document.getElementById('editOutage').submit();" /> <%= theOutage.getType() %>
 						<% } %>
 						<span style="<%= theOutage.getType() == null? "" : "display: none" %>">
 							<select id="outageTypeSelector" name="outageType" onChange="updateOutageTypeDisplay(this);">
@@ -915,10 +919,10 @@ function updateOutageTypeDisplay(selectElement) {
 							if (thisTime.getDay().isPresent()) {
 								if (thisTime.getDay().get().contains("day")) {
 									// weekly
-									outputBuffer.append("Every&nbsp;").append(shortDayNames.get(thisTime.getDay())).append(",&nbsp;");
+									outputBuffer.append("Every&nbsp;").append(shortDayNames.get(thisTime.getDay().get())).append(",&nbsp;");
 								} else {
 									// monthly
-									outputBuffer.append("The&nbsp;").append(shortDayNames.get(thisTime.getDay())).append("&nbsp;of&nbsp;Each&nbsp;Month,&nbsp;");
+									outputBuffer.append("The&nbsp;").append(shortDayNames.get(thisTime.getDay().get())).append("&nbsp;of&nbsp;Each&nbsp;Month,&nbsp;");
 								}
 							} else {
 								if (thisTime.getBegins().contains("-")) {

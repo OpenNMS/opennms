@@ -97,7 +97,9 @@ public class RecordEnricher {
                                 hostnamesByAddress.put(addr, null);
                             }
                         }
-                        LOG.trace("Other lookups pending: {}", Sets.difference(addressesToReverseLookup, hostnamesByAddress.keySet()));
+                        if (LOG.isTraceEnabled()) {
+                            LOG.trace("Other lookups pending: {}", Sets.difference(addressesToReverseLookup, hostnamesByAddress.keySet()));
+                        }
                     });
                 }).toArray(CompletableFuture[]::new);
 

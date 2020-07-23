@@ -107,11 +107,11 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
                     Restrictions.ilike("protocol", query)).toCriteria();
         }
 
-        // Apply group priority sorting as well, if ordering is position
+        // Apply group position sorting as well, if ordering is position
         final QueryParameters.Order order = queryParameters.getOrder();
         if (order != null && order.getColumn() != null && order.getColumn().equalsIgnoreCase("position")) {
             criteriaBuilder.clearOrder();
-            criteriaBuilder.orderBy("group.priority", false);
+            criteriaBuilder.orderBy("group.position", true);
             criteriaBuilder.orderBy(order.getColumn(), queryParameters.getOrder().isAsc());
         }
 
@@ -133,7 +133,6 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     public Response saveRule(RuleDTO ruleDTO) {
         final Rule rule = convert(ruleDTO);
         rule.setId(null);
-
         final int ruleId = classificationService.saveRule(rule);
         final UriBuilder builder = UriBuilder.fromResource(ClassificationRestService.class);
         final URI uri = builder.path(ClassificationRestService.class, "getRule").build(ruleId);
@@ -141,10 +140,10 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     }
 
     @Override
-    public Response importRules(UriInfo uriInfo, InputStream inputStream) {
+    public Response importRules(int groupId, UriInfo uriInfo, InputStream inputStream) {
         boolean skipHeader = Boolean.valueOf(UriInfoUtils.getValue(uriInfo, "hasHeader", "true"));
         boolean deleteExistingRules = Boolean.valueOf(UriInfoUtils.getValue(uriInfo, "deleteExistingRules", "true"));
-        classificationService.importRules(inputStream, skipHeader, deleteExistingRules);
+        classificationService.importRules(groupId, inputStream, skipHeader, deleteExistingRules);
         return Response.noContent().build();
     }
 
@@ -177,9 +176,26 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         rule.setName(newRule.getName());
         rule.setOmnidirectional(newRule.isOmnidirectional());
         rule.setExporterFilter(newValue.getExporterFilter());
+        final Group oldGroup = rule.getGroup();
+        boolean groupChanged = !oldGroup.getId().equals(newRule.getGroup().getId());
+        if(groupChanged) {
+            final Group group = classificationService.getGroup(newRule.getGroup().getId());
+            rule.setGroup(group);
+        }
+
+        // adjust position
+        Integer newPosition = newValue.getPosition();
+        if(newPosition != null) {
+            int oldPosition = rule.getPosition();
+            int newComputedPosition = (newPosition > oldPosition) ? newPosition + 1 : newPosition;
+            rule.setPosition(newComputedPosition);
+        }
 
         // Persist
         classificationService.updateRule(rule);
+        if(groupChanged) {
+            classificationService.updateGroup(oldGroup); // reorder old group as well
+        }
         return Response.ok(convert(rule)).build();
     }
 
@@ -248,18 +264,41 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     }
 
     @Override
+    public Response saveGroup(GroupDTO groupDTO) {
+        final Group group = convert(groupDTO);
+        group.setId(null);
+        final int groupId = classificationService.saveGroup(group);
+        final UriBuilder builder = UriBuilder.fromResource(ClassificationRestService.class);
+        final URI uri = builder.path(ClassificationRestService.class, "getGroup").build(groupId);
+        return Response.created(uri).build();
+    }
+
+    @Override
     public Response deleteGroup(int groupId) {
         classificationService.deleteGroup(groupId);
         return Response.noContent().build();
     }
 
     @Override
-    public Response updateGroup(int id, GroupDTO newValue) {
+    public Response updateGroup(int id, final GroupDTO groupDTO) {
         final Group group = classificationService.getGroup(id);
-
-        // At the moment only togging the enabled state is supported
-        group.setEnabled(newValue.isEnabled());
-
+        if (groupDTO.isEnabled() != null) {
+            group.setEnabled(groupDTO.isEnabled());
+        }
+        if(!group.isReadOnly()) {
+            if (!Strings.isNullOrEmpty(groupDTO.getName())) {
+                group.setName(groupDTO.getName());
+            }
+            if (!Strings.isNullOrEmpty(groupDTO.getDescription())) {
+                group.setDescription(groupDTO.getDescription());
+            }
+            Integer newPosition = groupDTO.getPosition();
+            if(newPosition != null) {
+                int oldPosition = group.getPosition();
+                int newComputedPosition = (newPosition > oldPosition) ? newPosition + 1 : newPosition;
+                group.setPosition(newComputedPosition);
+            }
+        }
         classificationService.updateGroup(group);
         return Response.ok(convert(group)).build();
     }
@@ -272,6 +311,8 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     private static Rule convert(RuleDTO ruleDTO) {
         if (ruleDTO == null) return null;
         final Rule rule = new Rule();
+        // if no position is set for the new rule we put it at the end of the list:
+        rule.setPosition(ruleDTO.getPosition() == null ? Integer.MAX_VALUE : ruleDTO.getPosition());
         if (!Strings.isNullOrEmpty(ruleDTO.getName())) {
             rule.setName(ruleDTO.getName());
         }
@@ -292,6 +333,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         }
         rule.setOmnidirectional(ruleDTO.isOmnidirectional());
         rule.setProtocol(ruleDTO.getProtocols().stream().collect(Collectors.joining(",")));
+        rule.setGroup(convert(ruleDTO.getGroup()));
         return rule;
     }
 
@@ -318,11 +360,30 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         groupDTO.setId(group.getId());
         groupDTO.setName(group.getName());
         groupDTO.setDescription(group.getDescription());
-        groupDTO.setPriority(group.getPriority());
+        groupDTO.setPosition(group.getPosition());
         groupDTO.setEnabled(group.isEnabled());
         groupDTO.setReadOnly(group.isReadOnly());
         groupDTO.setRuleCount(group.getRules().size());
         return groupDTO;
+    }
+
+    private static Group convert(GroupDTO groupDTO) {
+        if (groupDTO == null) return null;
+        Group group = new Group();
+        // if no position is set for the new rule we put it at the end of the list:
+        group.setPosition(groupDTO.getPosition() == null ? Integer.MAX_VALUE : groupDTO.getPosition());
+        group.setId(groupDTO.getId());
+        if (!Strings.isNullOrEmpty(groupDTO.getName())) {
+            group.setName(groupDTO.getName());
+        }
+        if (!Strings.isNullOrEmpty(groupDTO.getDescription())) {
+            group.setDescription(groupDTO.getDescription());
+        }
+        if (groupDTO.isEnabled() != null) {
+            group.setEnabled(groupDTO.isEnabled());
+        }
+        group.setReadOnly(false); // user defined groups must be editable - otherwise it makes no sense to have them
+        return group;
     }
 
     private static <T, X> Response createResponse(CriteriaBuilder criteriaBuilder,

@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v1;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -47,6 +48,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsNotificationCollection;
@@ -100,6 +102,44 @@ public class NotificationRestService extends OnmsRestService {
     @Transactional
     public String getCount() {
         return Integer.toString(m_notifDao.countAll());
+    }
+
+    @GET
+    @Path("summary")
+    @Produces({MediaType.APPLICATION_JSON})
+    public NotificationSummary getInfo(@Context final SecurityContext securityContext) {
+        final String user = securityContext.getUserPrincipal().getName();
+        final NotificationSummary info = new NotificationSummary();
+        info.setUser(user);
+
+        // All notifications (ack + unack)
+        info.setTotalCount(m_notifDao.countAll());
+
+        // All unack notifications
+        info.setTotalUnacknowledgedCount(m_notifDao.countMatching(new CriteriaBuilder(OnmsNotification.class).isNull("answeredBy").toCriteria()));
+
+        // All unacknowledged notifications for current user
+        info.setUserUnacknowledgedCount(m_notifDao.countMatching(new CriteriaBuilder(OnmsNotification.class).isNull("answeredBy")
+                .alias("usersNotified", "usersNotified").eq("usersNotified.userId", user)
+                .toCriteria()));
+
+        // Determine number of notices not acknowledged and not "assigned to" current user
+        info.setTeamUnacknowledgedCount(m_notifDao.countMatching(new CriteriaBuilder(OnmsNotification.class)
+                .isNull("answeredBy")
+                .alias("usersNotified", "usersNotified", JoinType.LEFT_JOIN)
+                .or(Restrictions.ne("usersNotified.userId", user), Restrictions.isNull("usersNotified.userId"))
+                .toCriteria()));
+
+        // Load newest unacknowledged notifications for user, but only N
+        if (info.getUserUnacknowledgedCount() != 0) {
+            final List<OnmsNotification> newestNotifications = m_notifDao.findMatching(new CriteriaBuilder(OnmsNotification.class).isNull("answeredBy")
+                    .alias("usersNotified", "usersNotified").eq("usersNotified.userId", user)
+                    .orderBy("pageTime", false)
+                    .limit(10)
+                    .toCriteria());
+            info.setUserUnacknowledgedNotifications(new OnmsNotificationCollection(newestNotifications));
+        }
+        return info;
     }
 
     /**

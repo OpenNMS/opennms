@@ -81,7 +81,7 @@
       <event-label>OpenNMS-defined internal event: rtc subscribe</event-label>
       <descr>&lt;p>This event is generated to RTC by any process that
             wishes to receive POSTs of RTC data.&lt;/p></descr>
-      <logmsg dest="logonly">
+      <logmsg dest="donotpersist">
             A subscription to RTC for the %parm[viewname]% for
             %parm[url]% has been generated.
         </logmsg>
@@ -93,7 +93,7 @@
       <descr>&lt;p>This event is generated to RTC by any subscribed
             process that wishes to discontinue receipt of POSTs of RTC
             data.&lt;/p></descr>
-      <logmsg dest="logonly">
+      <logmsg dest="donotpersist">
             Unsubscribe request received from %parm[url]%.
         </logmsg>
       <severity>Warning</severity>
@@ -243,6 +243,13 @@
        <descr>Clock skew (%parm[delta]% ms) detected for flow exporter (maxClockSkew = %parm[maxClockSkew]% secs)</descr>
       <logmsg dest="logndisplay">Clock skew for exporter with interface '%interface%' in location '%parm[monitoringSystemLocation]%' detected by '%parm[monitoringSystemId]%'.</logmsg>
       <alarm-data reduction-key="%uei%:%parm[monitoringSystemLocation]%:%interface%" alarm-type="3" auto-clean="true" />
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/applicationDeleted</uei>
+      <event-label>OpenNMS-defined application event: applicationDeleted</event-label>
+      <descr>&lt;p>Application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been deleted.&lt;/p></descr>
+      <logmsg dest="logndisplay">Application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been deleted.</logmsg>
       <severity>Warning</severity>
    </event>
 </events>

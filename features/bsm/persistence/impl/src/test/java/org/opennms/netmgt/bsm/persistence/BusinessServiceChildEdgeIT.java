@@ -78,11 +78,6 @@ public class BusinessServiceChildEdgeIT {
     @Autowired
     private BusinessServiceEdgeDao m_businessServiceEdgeDao;
 
-    @BeforeClass
-    public static void setUpClass() {
-        MockLogAppender.setupLogging(true, "TRACE", new Properties());
-    }
-
     @Before
     public void setUp() {
         BeanUtils.assertAutowiring(this);

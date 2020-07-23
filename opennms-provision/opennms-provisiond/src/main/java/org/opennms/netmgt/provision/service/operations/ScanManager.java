@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.service.operations;
 
+import static org.opennms.core.utils.LocationUtils.DEFAULT_LOCATION_NAME;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.HashSet;
@@ -41,6 +43,7 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.service.HostnameResolver;
 import org.opennms.netmgt.provision.service.snmp.IfTable;
 import org.opennms.netmgt.provision.service.snmp.IfXTable;
 import org.opennms.netmgt.provision.service.snmp.IpAddrTable;
@@ -129,7 +132,7 @@ public class ScanManager {
         return !getSystemGroup().failed();
     }
 
-    void updateSnmpData(final OnmsNode node) {
+    void updateSnmpData(final OnmsNode node, final HostnameResolver hostnameResolver) {
         
         try {
 
@@ -192,20 +195,37 @@ public class ScanManager {
                 m_ifXTable.updateSnmpInterfaceData(node, ifIndex.toInt());
             }
 
-            for(final SnmpInstId ipAddr : ipAddrs) {   
-                m_ipAddrTable.updateIpInterfaceData(node, ipAddr.toString());
+            for(final SnmpInstId ipAddr : ipAddrs) {
+                InetAddress inetAddress = InetAddressUtils.addr(ipAddr.toString());
+                boolean newIpInterfaceCreated = m_ipAddrTable.updateIpInterfaceData(node, inetAddress);
+                if(newIpInterfaceCreated) {
+                    setHostNameOnIpInterface(inetAddress, node, hostnameResolver);
+                }
             }
 
             for (final InetAddress addr : ipAddresses) {
-            	m_ipAddressTable.updateIpInterfaceData(node, InetAddressUtils.str(addr));
+                boolean newIpInterfaceCreated = m_ipAddressTable.updateIpInterfaceData(node, addr);
+                if(newIpInterfaceCreated) {
+                    setHostNameOnIpInterface(addr, node, hostnameResolver);
+                }
             }
         } catch (final InterruptedException e) {
             LOG.info("thread interrupted while updating SNMP data", e);
             Thread.currentThread().interrupt();
 
         }
-        
 
+    }
+
+    private void setHostNameOnIpInterface(InetAddress inetAddress, OnmsNode node, HostnameResolver hostnameResolver) {
+
+        OnmsIpInterface ipInterface = node.getIpInterfaceByIpAddress(inetAddress);
+        String location = DEFAULT_LOCATION_NAME;
+        if(node.getLocation() != null) {
+           location = node.getLocation().getLocationName();
+        }
+        String hostName = hostnameResolver.getHostname(inetAddress, location);
+        ipInterface.setIpHostName(hostName);
     }
 
     /**

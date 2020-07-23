@@ -31,7 +31,8 @@ package org.opennms.core.rpc.api;
 /**
  * Thrown when the requested cannot be executed.
  *
- * This can occur when the the client is in the process of shutting down.
+ * This can occur when the the client is in the process of shutting down or
+ * if the broker is unable to accept the requests.
  *
  * @author jesse
  */

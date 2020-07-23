@@ -282,16 +282,9 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
 
     private void initExtensions() {
         m_extContainer = new ConfigReloadContainer.Builder<>(SyslogdConfigurationGroup.class)
-                .withMerger((source, target) -> {
-                    if (target == null) {
-                        target = new SyslogdConfigurationGroup();
-                    }
-                    if (source == null) {
-                        source = new SyslogdConfigurationGroup();
-                    }
-                    target.getUeiMatches().addAll(source.getUeiMatches());
-                    target.getHideMatches().addAll(source.getHideMatches());
-                    return target;
+                .withFolder((accumulator, next) -> {
+                    accumulator.getUeiMatches().addAll(next.getUeiMatches());
+                    accumulator.getHideMatches().addAll(next.getHideMatches());
                 })
                 .build();
     }

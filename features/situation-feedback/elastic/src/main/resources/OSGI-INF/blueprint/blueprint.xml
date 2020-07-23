@@ -21,6 +21,7 @@
             <cm:property name="elasticIndexStrategy" value="monthly" />
             <cm:property name="defaultMaxTotalConnectionPerRoute" value="-1" />
             <cm:property name="maxTotalConnection" value="-1" />
+            <cm:property name="ignoreCertificates" value="false"/>
             <cm:property name="nodeDiscovery" value="false" />
             <cm:property name="nodeDiscoveryFrequency" value="0" />
             <cm:property name="proxy" value=""/>
@@ -44,15 +45,15 @@
 
 
     <!-- Used to define credentials in a properties file and enforcing the bundle to reload when credentials change -->
-    <bean id="credentialsProvider" class="org.opennms.plugins.elasticsearch.rest.credentials.DefaultCredentialsProvider">
+    <bean id="credentialsProvider" class="org.opennms.features.jest.client.credentials.DefaultCredentialsProvider">
         <argument value="elastic-credentials.xml" />
     </bean>
 
     <!-- Proxy for the JestClientFactory -->
-    <bean id="requestExecutorFactory" class="org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor">
+    <bean id="requestExecutorFactory" class="org.opennms.features.jest.client.executors.DefaultRequestExecutor">
         <argument value="${retryCooldown}"/>
     </bean>
-    <bean id="clientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
+    <bean id="clientFactory" class="org.opennms.features.jest.client.RestClientFactory">
         <argument value="${elasticUrl}"/>
         <argument value="${globalElasticUser}"/>
         <argument value="${globalElasticPassword}"/>
@@ -66,15 +67,16 @@
         <property name="connTimeout" value="${connTimeout}" />
         <property name="readTimeout" value="${readTimeout}" />
         <property name="retries" value="${retries}" />
+        <property name="ignoreCertificates" value="${ignoreCertificates}"/>
     </bean>
 
     <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
 
-    <bean id="indexStrategy" class="org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory" factory-method="createIndexStrategy">
+    <bean id="indexStrategy" class="org.opennms.features.jest.client.index.IndexStrategyFactory" factory-method="createIndexStrategy">
         <argument value="${elasticIndexStrategy}"/>
     </bean>
 
-    <bean id="indexSettings" class="org.opennms.plugins.elasticsearch.rest.template.IndexSettings">
+    <bean id="indexSettings" class="org.opennms.features.jest.client.template.IndexSettings">
         <property name="indexPrefix" value="${indexPrefix}"/>
         <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
         <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
@@ -102,7 +104,7 @@
 
     <!-- Health Check -->
     <service interface="org.opennms.core.health.api.HealthCheck">
-        <bean class="org.opennms.plugins.elasticsearch.rest.ElasticHealthCheck" >
+        <bean class="org.opennms.features.jest.client.ElasticHealthCheck" >
             <argument ref="jestClient"/>
             <argument value="Situation Feedback"/>
         </bean>

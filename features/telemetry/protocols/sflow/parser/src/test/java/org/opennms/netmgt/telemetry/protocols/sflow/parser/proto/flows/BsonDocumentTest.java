@@ -54,23 +54,25 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers.Inet6He
 
 import com.google.common.primitives.UnsignedInteger;
 
+import io.netty.buffer.Unpooled;
+
 public class BsonDocumentTest implements SampleDatagramEnrichment {
     private static final long CURRENT_TIME_MILLIS = System.currentTimeMillis();
-    private static final IpV4 SRC_IPV4 = new IpV4(ByteBuffer.wrap(new byte[]{(byte) 192, (byte) 168, (byte) 1, (byte) 1}));
+    private static final IpV4 SRC_IPV4 = new IpV4(Unpooled.wrappedBuffer(new byte[]{(byte) 192, (byte) 168, (byte) 1, (byte) 1}));
     private static final String SRC_IPV4_STR = "192.168.1.1";
-    private static final IpV4 DST_IPV4 = new IpV4(ByteBuffer.wrap(new byte[]{(byte) 192, (byte) 168, (byte) 2, (byte) 1}));
+    private static final IpV4 DST_IPV4 = new IpV4(Unpooled.wrappedBuffer(new byte[]{(byte) 192, (byte) 168, (byte) 2, (byte) 1}));
     private static final String DST_IPV4_STR = "192.168.2.1";
 
-    private static final IpV6 SRC_IPV6 = new IpV6(ByteBuffer.wrap(new byte[]{(byte) 254, (byte) 128, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 1}));
+    private static final IpV6 SRC_IPV6 = new IpV6(Unpooled.wrappedBuffer(new byte[]{(byte) 254, (byte) 128, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 1}));
     private static final String SRC_IPV6_STR = "fe80:0:0:0:0:0:0:1";
-    private static final IpV6 DST_IPV6 = new IpV6(ByteBuffer.wrap(new byte[]{(byte) 254, (byte) 128, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 2}));
+    private static final IpV6 DST_IPV6 = new IpV6(Unpooled.wrappedBuffer(new byte[]{(byte) 254, (byte) 128, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 2}));
     private static final String DST_IPV6_STR = "fe80:0:0:0:0:0:0:2";
 
-    private static final IpV4 ROUTER_IPV4 = new IpV4(ByteBuffer.wrap(new byte[]{(byte) 192, (byte) 168, (byte) 3, (byte) 1}));
+    private static final IpV4 ROUTER_IPV4 = new IpV4(Unpooled.wrappedBuffer(new byte[]{(byte) 192, (byte) 168, (byte) 3, (byte) 1}));
     private static final String ROUTER_IPV4_STR = "192.168.3.1";
-    private static final IpV6 ROUTER_IPV6 = new IpV6(ByteBuffer.wrap(new byte[]{(byte) 254, (byte) 128, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 3}));
+    private static final IpV6 ROUTER_IPV6 = new IpV6(Unpooled.wrappedBuffer(new byte[]{(byte) 254, (byte) 128, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 3}));
     private static final String ROUTER_IPV6_STR = "fe80:0:0:0:0:0:0:3";
-    private static final IpV4 GATEWAY_IPV4 = new IpV4(ByteBuffer.wrap(new byte[]{(byte) 192, (byte) 168, (byte) 4, (byte) 1}));
+    private static final IpV4 GATEWAY_IPV4 = new IpV4(Unpooled.wrappedBuffer(new byte[]{(byte) 192, (byte) 168, (byte) 4, (byte) 1}));
 
     private static final int LENGTH = 500;
     private static final int PROTOCOL = 6;

@@ -1,0 +1,40 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0" xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+           xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+        http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <cm:property-placeholder id="applicationConfiguration" persistent-id="org.opennms.features.graph.provider.application" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="cacheInvalidateInterval" value="300" /> <!-- Seconds -->
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
+    <reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory" />
+
+    <bean id="applicationGraphProvider" class="org.opennms.netmgt.graph.provider.application.ApplicationGraphProvider">
+        <argument ref="sessionUtils" />
+        <argument ref="applicationDao" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.service.GraphProvider" ref="applicationGraphProvider">
+        <service-properties>
+            <entry key="cacheInvalidateInterval" value="${cacheInvalidateInterval}" />
+        </service-properties>
+    </service>
+
+    <bean id="applicationSearchProvider" class="org.opennms.netmgt.graph.provider.application.ApplicationSearchProvider">
+        <argument ref="applicationDao" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.search.SearchProvider" ref="applicationSearchProvider"/>
+
+    <bean id="applicationStatusEnrichment" class="org.opennms.netmgt.graph.provider.application.ApplicationStatusEnrichment">
+        <argument ref="applicationDao" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor" ref="applicationStatusEnrichment"/>
+</blueprint>

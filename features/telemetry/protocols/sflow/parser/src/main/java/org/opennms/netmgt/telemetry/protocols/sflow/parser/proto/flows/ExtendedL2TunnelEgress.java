@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_L2_tunnel_egress {
 //      sampled_ethernet header;
@@ -44,7 +44,7 @@ import com.google.common.base.MoreObjects;
 public class ExtendedL2TunnelEgress implements FlowData {
     public final SampledEthernet header;
 
-    public ExtendedL2TunnelEgress(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedL2TunnelEgress(final ByteBuf buffer) throws InvalidPacketException {
         this.header = new SampledEthernet(buffer);
     }
 

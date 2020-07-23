@@ -14,16 +14,21 @@
             <cm:property name="num-contexts" value="0" />
             <cm:property name="nameservers" value="" />
             <cm:property name="query-timeout-millis" value="5000" />
-            <!-- TTL settings - use Netty default when value is < 0 -->
+            <!-- Cache settings -->
             <cm:property name="min-ttl-seconds" value="60" />
+            <!-- Use Netty default when value is < 0 -->
             <cm:property name="max-ttl-seconds" value="-1" />
             <cm:property name="negative-ttl-seconds" value="300" />
+            <cm:property name="max-cache-size" value="10000" />
             <!-- CircuitBreaker Settings -->
             <cm:property name="breaker-enabled" value="true" />
             <cm:property name="breaker-failure-rate-threshold" value="80" />
             <cm:property name="breaker-wait-duration-in-open-state" value="15" />
             <cm:property name="breaker-ring-buffer-size-in-half-open-state" value="10" />
             <cm:property name="breaker-ring-buffer-size-in-closed-state" value="100" />
+            <!-- Bulkhead Settings -->
+            <cm:property name="bulkhead-max-concurrent-calls" value="1000" />
+            <cm:property name="bulkhead-max-wait-duration-millis" value="5100" /> <!-- query-timeout-millis + 100ms -->
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -57,12 +62,14 @@
         <property name="minTtlSeconds" value="${min-ttl-seconds}"/>
         <property name="maxTtlSeconds" value="${min-ttl-seconds}"/>
         <property name="negativeTtlSeconds" value="${negative-ttl-seconds}"/>
-
+        <property name="maxCacheSize" value="${max-cache-size}"/>
         <property name="breakerEnabled" value="${breaker-enabled}"/>
         <property name="breakerFailureRateThreshold" value="${breaker-failure-rate-threshold}"/>
         <property name="breakerWaitDurationInOpenState" value="${breaker-wait-duration-in-open-state}"/>
         <property name="breakerRingBufferSizeInHalfOpenState" value="${breaker-ring-buffer-size-in-half-open-state}"/>
         <property name="breakerRingBufferSizeInClosedState" value="${breaker-ring-buffer-size-in-closed-state}"/>
+        <property name="bulkheadMaxConcurrentCalls" value="${bulkhead-max-concurrent-calls}"/>
+        <property name="bulkheadMaxWaitDurationMillis" value="${bulkhead-max-wait-duration-millis}"/>
     </bean>
 
     <service ref="dnsResolver" interface="org.opennms.netmgt.dnsresolver.api.DnsResolver">
@@ -71,4 +78,12 @@
         </service-properties>
     </service>
 
+    <!-- We have a health check available but don't expose it currently since
+         it does not currently return a healthy status when ran on CI
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class=" org.opennms.netmgt.dnsresolver.netty.NettyDnsHealthCheck" >
+            <argument ref="dnsResolver"/>
+        </bean>
+    </service>
+    -->
 </blueprint>

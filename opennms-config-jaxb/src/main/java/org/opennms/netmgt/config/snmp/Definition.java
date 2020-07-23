@@ -74,6 +74,9 @@ public class Definition extends Configuration implements Serializable {
     @XmlAttribute(name="location")
     private String m_location;
 
+    @XmlAttribute(name="profile-label")
+    private String m_profileLabel;
+
     public Definition() {
         super();
     }
@@ -146,6 +149,14 @@ public class Definition extends Configuration implements Serializable {
         this.m_location = location;
     }
 
+    public String getProfileLabel() {
+        return m_profileLabel;
+    }
+
+    public void setProfileLabel(String profileLabel) {
+        this.m_profileLabel = profileLabel;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -154,6 +165,7 @@ public class Definition extends Configuration implements Serializable {
         result = prime * result + ((m_ranges == null) ? 0 : m_ranges.hashCode());
         result = prime * result + ((m_specifics == null) ? 0 : m_specifics.hashCode());
         result = prime * result + ((m_location == null) ? 0 : m_location.hashCode());
+        result = prime * result + ((m_profileLabel == null) ? 0 : m_profileLabel.hashCode());
         return result;
     }
 
@@ -195,6 +207,8 @@ public class Definition extends Configuration implements Serializable {
                 return false;
             }
         } else if (!m_location.equals(other.m_location)) {
+            return false;
+        } else if (!m_profileLabel.equals(other.m_profileLabel)) {
             return false;
         }
 

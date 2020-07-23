@@ -36,18 +36,18 @@ import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.features.distributed.kvstore.api.JSONStore;
+import org.opennms.features.distributed.kvstore.api.JsonStore;
 
-@Command(scope = "opennms-kv-json", name = "get", description = "Get a record from the JSON store")
+@Command(scope = "opennms", name = "kv-get-json", description = "Get a record from the JSON store")
 @Service
 public class JsonStoreGet implements Action {
     @Reference
-    private JSONStore jsonStore;
+    private JsonStore jsonStore;
 
-    @Argument(index = 0, description = "The key to look up")
+    @Argument(index = 0, description = "The key to look up", required = true)
     private String key;
 
-    @Argument(index = 1, description = "The key's context")
+    @Argument(index = 1, description = "The key's context", required = true)
     private String context;
 
     @Override

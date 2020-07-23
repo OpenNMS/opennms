@@ -101,16 +101,7 @@ public class DefaultResourceTypesDao extends AbstractMergingJaxbConfigDao<Resour
 
     private void initExtensions() {
         m_extContainer = new ConfigReloadContainer.Builder<>(ResourceTypes.class)
-                .withMerger((source, target) -> {
-                    if (target == null) {
-                        target = new ResourceTypes();
-                    }
-                    if (source == null) {
-                        source = new ResourceTypes();
-                    }
-                    target.getResourceTypes().addAll(source.getResourceTypes());
-                    return target;
-                })
+                .withFolder((accumulator, next) -> accumulator.getResourceTypes().addAll(next.getResourceTypes()))
                 .build();
     }
 }

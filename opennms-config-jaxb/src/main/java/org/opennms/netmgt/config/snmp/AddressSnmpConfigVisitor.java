@@ -58,6 +58,8 @@ import org.opennms.core.utils.LocationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implements SnmpConfigVisitor {
     private static final Logger LOG = LoggerFactory.getLogger(AddressSnmpConfigVisitor.class);
     private static final ByteArrayComparator BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
@@ -72,7 +74,12 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
     private Definition m_matchedDefinitionAtDefaultLocation;
     private Definition m_matchedDefinitionAtGivenLocation;
 
+    private boolean m_isMatchingDefault = true;
     private Definition m_generatedDefinition = null;
+    private SnmpProfile m_snmpProfile;
+    private String m_currentLabel;
+    private String m_matchingProfileLabelAtDefaultLocation;
+    private String m_matchingProfileLabelAtGivenLocation;
 
     public AddressSnmpConfigVisitor(final InetAddress addr) {
         this(addr, null);
@@ -90,18 +97,27 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
     @Override
     public void visitDefinition(final Definition definition) {
-        //LOG.debug("visitDefinition: {}", definition);
         m_currentDefinition = definition;
         m_currentLocation = LocationUtils.getEffectiveLocationName(definition.getLocation());
+        if (!Strings.isNullOrEmpty(definition.getProfileLabel())) {
+            m_currentLabel = definition.getProfileLabel();
+        }
     }
 
     private void handleMatch() {
         if (LocationUtils.isDefaultLocationName(m_currentLocation)) {
             m_matchedDefinitionAtDefaultLocation = m_currentDefinition;
+            if (!Strings.isNullOrEmpty(m_currentLabel)) {
+                m_matchingProfileLabelAtDefaultLocation = m_currentLabel;
+            }
         }
         if (m_location.equals(m_currentLocation)) {
             m_matchedDefinitionAtGivenLocation = m_currentDefinition;
+            if (!Strings.isNullOrEmpty(m_currentLabel)) {
+                m_matchingProfileLabelAtGivenLocation = m_currentLabel;
+            }
         }
+
     }
 
     private Definition getBestMatch() {
@@ -183,205 +199,223 @@ public class AddressSnmpConfigVisitor extends AbstractSnmpConfigVisitor implemen
 
     @Override
     public void visitDefinitionFinished() {
-        //LOG.debug("matched = {}", m_matchedDefinition);
         m_currentDefinition = null;
+        m_currentLabel = null;
     }
 
     @Override
     public void visitSnmpConfigFinished() {
-        final Definition ret = new Definition();
 
         final Configuration sourceConfig;
         if (getBestMatch() != null) {
             sourceConfig = getBestMatch();
+            m_isMatchingDefault = false;
         } else {
             sourceConfig = m_currentConfig;
         }
 
+        m_generatedDefinition = createDefinitionFromConfig(sourceConfig);
+    }
+
+    private Definition createDefinitionFromConfig(Configuration sourceConfig) {
+        final Definition definition = new Definition();
         if (sourceConfig.getProxyHost() != null) {
-            ret.setProxyHost(sourceConfig.getProxyHost());
+            definition.setProxyHost(sourceConfig.getProxyHost());
         } else {
-            ret.setProxyHost(m_currentConfig.getProxyHost());
+            definition.setProxyHost(m_currentConfig.getProxyHost());
         }
 
         if (sourceConfig.hasMaxVarsPerPdu()) {
-            ret.setMaxVarsPerPdu(sourceConfig.getMaxVarsPerPdu());
+            definition.setMaxVarsPerPdu(sourceConfig.getMaxVarsPerPdu());
         } else if (m_currentConfig.hasMaxVarsPerPdu()) {
-            ret.setMaxVarsPerPdu(m_currentConfig.getMaxVarsPerPdu());
+            definition.setMaxVarsPerPdu(m_currentConfig.getMaxVarsPerPdu());
         } else {
-            ret.setMaxVarsPerPdu(DEFAULT_MAX_VARS_PER_PDU);
+            definition.setMaxVarsPerPdu(DEFAULT_MAX_VARS_PER_PDU);
         }
 
         if (sourceConfig.hasMaxRepetitions()) {
-            ret.setMaxRepetitions(sourceConfig.getMaxRepetitions());
+            definition.setMaxRepetitions(sourceConfig.getMaxRepetitions());
         } else if (m_currentConfig.hasMaxRepetitions()) {
-            ret.setMaxRepetitions(m_currentConfig.getMaxRepetitions());
+            definition.setMaxRepetitions(m_currentConfig.getMaxRepetitions());
         } else {
-            ret.setMaxRepetitions(DEFAULT_MAX_REPETITIONS);
+            definition.setMaxRepetitions(DEFAULT_MAX_REPETITIONS);
         }
 
         if (sourceConfig.hasMaxRequestSize()) {
-            ret.setMaxRequestSize(sourceConfig.getMaxRequestSize());
+            definition.setMaxRequestSize(sourceConfig.getMaxRequestSize());
         } else if (m_currentConfig.hasMaxRequestSize()) {
-            ret.setMaxRequestSize(m_currentConfig.getMaxRequestSize());
+            definition.setMaxRequestSize(m_currentConfig.getMaxRequestSize());
         } else {
-            ret.setMaxRequestSize(DEFAULT_MAX_REQUEST_SIZE);
+            definition.setMaxRequestSize(DEFAULT_MAX_REQUEST_SIZE);
         }
 
         if (sourceConfig.getSecurityName() != null) {
-            ret.setSecurityName(sourceConfig.getSecurityName());
+            definition.setSecurityName(sourceConfig.getSecurityName());
         } else if (m_currentConfig.getSecurityName() != null) {
-            ret.setSecurityName(m_currentConfig.getSecurityName());
+            definition.setSecurityName(m_currentConfig.getSecurityName());
         } else {
-            ret.setSecurityName(DEFAULT_SECURITY_NAME);
+            definition.setSecurityName(DEFAULT_SECURITY_NAME);
         }
 
         if (sourceConfig.getAuthPassphrase() != null) {
-            ret.setAuthPassphrase(sourceConfig.getAuthPassphrase());
+            definition.setAuthPassphrase(sourceConfig.getAuthPassphrase());
         } else if (m_currentConfig.getAuthPassphrase() != null) {
-            ret.setAuthPassphrase(m_currentConfig.getAuthPassphrase());
+            definition.setAuthPassphrase(m_currentConfig.getAuthPassphrase());
         }
-        
+
         if (sourceConfig.getAuthProtocol() != null) {
-            ret.setAuthProtocol(sourceConfig.getAuthProtocol());
+            definition.setAuthProtocol(sourceConfig.getAuthProtocol());
         } else if (m_currentConfig.getAuthProtocol() != null) {
-            ret.setAuthProtocol(m_currentConfig.getAuthProtocol());
+            definition.setAuthProtocol(m_currentConfig.getAuthProtocol());
         } else {
-            ret.setAuthProtocol(DEFAULT_AUTH_PROTOCOL);
+            definition.setAuthProtocol(DEFAULT_AUTH_PROTOCOL);
         }
-        
+
         if (sourceConfig.getEngineId() != null) {
-            ret.setEngineId(sourceConfig.getEngineId());
+            definition.setEngineId(sourceConfig.getEngineId());
         } else if (m_currentConfig.getEngineId() != null) {
-            ret.setEngineId(m_currentConfig.getEngineId());
+            definition.setEngineId(m_currentConfig.getEngineId());
         } else {
-            ret.setEngineId(DEFAULT_ENGINE_ID);
+            definition.setEngineId(DEFAULT_ENGINE_ID);
         }
 
         if (sourceConfig.getContextEngineId() != null) {
-            ret.setContextEngineId(sourceConfig.getContextEngineId());
+            definition.setContextEngineId(sourceConfig.getContextEngineId());
         } else if (m_currentConfig.getContextEngineId() != null) {
-            ret.setContextEngineId(m_currentConfig.getContextEngineId());
+            definition.setContextEngineId(m_currentConfig.getContextEngineId());
         } else {
-            ret.setContextEngineId(DEFAULT_CONTEXT_ENGINE_ID);
+            definition.setContextEngineId(DEFAULT_CONTEXT_ENGINE_ID);
         }
 
         if (sourceConfig.getContextName() != null) {
-            ret.setContextName(sourceConfig.getContextName());
+            definition.setContextName(sourceConfig.getContextName());
         } else if (m_currentConfig.getContextName() != null) {
-            ret.setContextName(m_currentConfig.getContextName());
+            definition.setContextName(m_currentConfig.getContextName());
         } else {
-            ret.setContextName(DEFAULT_CONTEXT_NAME);
+            definition.setContextName(DEFAULT_CONTEXT_NAME);
         }
 
         if (sourceConfig.getPrivacyPassphrase() != null) {
-            ret.setPrivacyPassphrase(sourceConfig.getPrivacyPassphrase());
+            definition.setPrivacyPassphrase(sourceConfig.getPrivacyPassphrase());
         } else if (m_currentConfig.getPrivacyPassphrase() != null) {
-            ret.setPrivacyPassphrase(m_currentConfig.getPrivacyPassphrase());
+            definition.setPrivacyPassphrase(m_currentConfig.getPrivacyPassphrase());
         }
 
         if (sourceConfig.getPrivacyProtocol() != null) {
-            ret.setPrivacyProtocol(sourceConfig.getPrivacyProtocol());
+            definition.setPrivacyProtocol(sourceConfig.getPrivacyProtocol());
         } else if (m_currentConfig.getPrivacyProtocol() != null) {
-            ret.setPrivacyProtocol(m_currentConfig.getPrivacyProtocol());
+            definition.setPrivacyProtocol(m_currentConfig.getPrivacyProtocol());
         } else {
-            ret.setPrivacyProtocol(DEFAULT_PRIV_PROTOCOL);
+            definition.setPrivacyProtocol(DEFAULT_PRIV_PROTOCOL);
         }
 
         if (sourceConfig.getEnterpriseId() != null) {
-            ret.setEnterpriseId(sourceConfig.getEnterpriseId());
+            definition.setEnterpriseId(sourceConfig.getEnterpriseId());
         } else {
-            ret.setEnterpriseId(m_currentConfig.getEnterpriseId());
+            definition.setEnterpriseId(m_currentConfig.getEnterpriseId());
         }
 
         if (sourceConfig.getVersion() != null) {
-            ret.setVersion(sourceConfig.getVersion());
+            definition.setVersion(sourceConfig.getVersion());
         } else if (m_currentConfig.getVersion() != null) {
-            ret.setVersion(m_currentConfig.getVersion());
+            definition.setVersion(m_currentConfig.getVersion());
         } else {
-            ret.setVersion(versionToString(VERSION1));
+            definition.setVersion(versionToString(VERSION1));
         }
 
         if (sourceConfig.getWriteCommunity() != null) {
-            ret.setWriteCommunity(sourceConfig.getWriteCommunity());
+            definition.setWriteCommunity(sourceConfig.getWriteCommunity());
         } else if (m_currentConfig.getWriteCommunity() != null) {
-            ret.setWriteCommunity(m_currentConfig.getWriteCommunity());
+            definition.setWriteCommunity(m_currentConfig.getWriteCommunity());
         } else {
-            ret.setWriteCommunity(DEFAULT_WRITE_COMMUNITY);
+            definition.setWriteCommunity(DEFAULT_WRITE_COMMUNITY);
         }
 
         if (sourceConfig.getReadCommunity() != null) {
-            ret.setReadCommunity(sourceConfig.getReadCommunity());
+            definition.setReadCommunity(sourceConfig.getReadCommunity());
         } else if (m_currentConfig.getReadCommunity() != null) {
-            ret.setReadCommunity(m_currentConfig.getReadCommunity());
+            definition.setReadCommunity(m_currentConfig.getReadCommunity());
         } else {
-            ret.setReadCommunity(DEFAULT_READ_COMMUNITY);
+            definition.setReadCommunity(DEFAULT_READ_COMMUNITY);
         }
 
         if (sourceConfig.hasTimeout()) {
-            ret.setTimeout(sourceConfig.getTimeout());
+            definition.setTimeout(sourceConfig.getTimeout());
         } else if (m_currentConfig.hasTimeout()) {
-            ret.setTimeout(m_currentConfig.getTimeout());
+            definition.setTimeout(m_currentConfig.getTimeout());
         } else {
-            ret.setTimeout(DEFAULT_TIMEOUT);
+            definition.setTimeout(DEFAULT_TIMEOUT);
         }
 
         if (sourceConfig.hasRetry()) {
-            ret.setRetry(sourceConfig.getRetry());
+            definition.setRetry(sourceConfig.getRetry());
         } else if (m_currentConfig.hasRetry()) {
-            ret.setRetry(m_currentConfig.getRetry());
+            definition.setRetry(m_currentConfig.getRetry());
         } else {
-            ret.setRetry(DEFAULT_RETRIES);
+            definition.setRetry(DEFAULT_RETRIES);
         }
 
         if (sourceConfig.hasPort()) {
-            ret.setPort(sourceConfig.getPort());
+            definition.setPort(sourceConfig.getPort());
         } else if (m_currentConfig.hasPort()) {
-            ret.setPort(m_currentConfig.getPort());
+            definition.setPort(m_currentConfig.getPort());
         } else {
-            ret.setPort(DEFAULT_PORT);
+            definition.setPort(DEFAULT_PORT);
         }
 
-        if (ret.getAuthPassphrase() == null) {
-            ret.setAuthProtocol(null);
+        if (definition.getAuthPassphrase() == null) {
+            definition.setAuthProtocol(null);
         }
-        if (ret.getPrivacyPassphrase() == null) {
-            ret.setPrivacyProtocol(null);
+        if (definition.getPrivacyPassphrase() == null) {
+            definition.setPrivacyProtocol(null);
         }
-        
+
         if (sourceConfig.hasSecurityLevel()) {
-            //LOG.debug("setSecurityLevel: {}", sourceConfig.getSecurityLevel());
-            ret.setSecurityLevel(sourceConfig.getSecurityLevel());
+            definition.setSecurityLevel(sourceConfig.getSecurityLevel());
         } else if (m_currentConfig.hasSecurityLevel()) {
-            //LOG.debug("setSecurityLevel: {}", m_currentConfig.getSecurityLevel());
-            ret.setSecurityLevel(m_currentConfig.getSecurityLevel());
+            definition.setSecurityLevel(m_currentConfig.getSecurityLevel());
         } else {
             int securityLevel = NOAUTH_NOPRIV;
-            if (isBlank(ret.getAuthPassphrase())) {
-                //LOG.debug("authPassphrase is null, NOAUTH_NOPRIV");
+            if (isBlank(definition.getAuthPassphrase())) {
                 securityLevel = NOAUTH_NOPRIV;
-            } else if (isBlank(ret.getPrivacyPassphrase())) {
-                //LOG.debug("privacyPassphrase is null, AUTH_NOPRIV");
+            } else if (isBlank(definition.getPrivacyPassphrase())) {
                 securityLevel = AUTH_NOPRIV;
             } else {
-                //LOG.debug("auth {} privacy {} AUTH_PRIV", ret.getAuthPassphrase(), ret.getPrivacyPassphrase());
                 securityLevel = AUTH_PRIV;
             }
-            ret.setSecurityLevel(securityLevel);
+            definition.setSecurityLevel(securityLevel);
         }
 
         if(sourceConfig.hasTTL()) {
-            ret.setTTL(sourceConfig.getTTL());
+            definition.setTTL(sourceConfig.getTTL());
         } else if (m_currentConfig.hasTTL()) {
-            ret.setTTL(m_currentConfig.getTTL());
+            definition.setTTL(m_currentConfig.getTTL());
         }
 
-        //LOG.debug("generated: {}", ret);
-        m_generatedDefinition = ret;
+        // Set profile from matching definition else fall back to profile label at default location
+        if (!Strings.isNullOrEmpty(m_matchingProfileLabelAtGivenLocation)) {
+            definition.setProfileLabel(m_matchingProfileLabelAtGivenLocation);
+        } else if(!Strings.isNullOrEmpty(m_matchingProfileLabelAtDefaultLocation)) {
+            definition.setProfileLabel(m_matchingProfileLabelAtDefaultLocation);
+        }
+        return definition;
+    }
+
+    @Override
+    public void visitSnmpProfile(SnmpProfile snmpProfile) {
+        this.m_snmpProfile = snmpProfile;
+    }
+    @Override
+    public void visitSnmpProfileFinished() {
+        m_generatedDefinition = createDefinitionFromConfig(m_snmpProfile);
     }
 
     public Definition getDefinition() {
         return m_generatedDefinition;
+    }
+
+    public boolean isMatchingDefaultConfig() {
+        return m_isMatchingDefault;
     }
 
     private boolean isBlank(final String s) {

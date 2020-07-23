@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.sflow.adapter;
 
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.first;
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.get;
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -297,6 +298,11 @@ public class SFlow implements Flow {
     }
 
     @Override
+    public Long getDeltaSwitched() {
+        return this.getFirstSwitched();
+    }
+
+    @Override
     public Integer getTos() {
         return first(get(document, "flows", "0:3", "tos"),
                 get(document, "flows", "0:4", "tos"),
@@ -317,5 +323,17 @@ public class SFlow implements Flow {
                 get(document, "flows", "0:1", "ethernet", "vlan"))
                 .map(v -> (int) v.asInt64().getValue())
                 .orElse(null);
+    }
+
+    @Override
+    public String getNodeIdentifier() {
+        final String address = first(
+                getString(document, "agent_address", "ipv6", "address"),
+                getString(document, "agent_address", "ipv4", "address"))
+                .orElse("unknown");
+
+        final String subAgentId = header.getSubAgentId() == null ? "unknown" : String.valueOf(header.getSubAgentId());
+
+        return address + ":" + subAgentId;
     }
 }

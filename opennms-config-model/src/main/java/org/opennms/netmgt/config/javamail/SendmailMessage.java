@@ -56,6 +56,9 @@ public class SendmailMessage implements Serializable {
     @XmlAttribute(name="from")
     private String m_from;
 
+    @XmlAttribute(name="reply-to")
+    private String m_replyTo;
+
     @XmlAttribute(name="subject")
     private String m_subject;
 
@@ -83,6 +86,14 @@ public class SendmailMessage implements Serializable {
 
     public void setFrom(final String from) {
         m_from = ConfigUtils.normalizeString(from);
+    }
+
+    public String getReplyTo() {
+        return m_replyTo;
+    }
+
+    public void setReplyTo(final String replyTo) {
+        m_replyTo = ConfigUtils.normalizeString(replyTo);
     }
 
     public String getSubject() {

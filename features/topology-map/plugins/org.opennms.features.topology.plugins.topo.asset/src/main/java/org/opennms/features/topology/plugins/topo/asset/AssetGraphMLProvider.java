@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,8 +37,8 @@ import org.opennms.features.graphml.model.GraphMLWriter;
 import org.opennms.features.graphml.service.GraphmlRepository;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
@@ -193,7 +193,7 @@ public class AssetGraphMLProvider implements EventListener {
 	}
 
 	@Override
-	public void onEvent(Event e) {
+	public void onEvent(IEvent e) {
 		try {
 			if (CREATE_ASSET_TOPOLOGY.equals(e.getUei())) {
 				final GeneratorConfig config = GeneratorConfigBuilder.buildFrom(e);

@@ -1,3 +1,4 @@
+
 [[ga-alarm-history]]
 === Alarm History
 
@@ -8,9 +9,9 @@ When enabled, alarms are indexed in _Elasticsearch_ when they are created, delet
 Alarms are indexed in such a fashion that allows operators to answer the following questions:
 
 1. What were all the state changes of a particular alarm?
-1. What was the last known state of an alarm at a given point in time?
-1. Which alarms were present (i.e. not deleted) on the system at a given point in time?
-1. Which alarms are currently present on the system?
+2. What was the last known state of an alarm at a given point in time?
+3. Which alarms were present (i.e. not deleted) on the system at a given point in time?
+4. Which alarms are currently present on the system?
 
 A simple _REST_ API is also made available for the purposes of evaluating the results, verifying the data that is stored and providing examples on how to query the data.
 
@@ -20,7 +21,7 @@ A simple _REST_ API is also made available for the purposes of evaluating the re
 This feature requires _Elasticsearch_ v6.3.x or greater.
 
 [[ga-alarm-history-setup]]
-=== Setup
+==== Setup
 
 Alarm history indexing can be enabled as follows:
 
@@ -53,12 +54,12 @@ When alarms are initially created, we push a document to _Elasticsearch_ that in
 In order to avoid pushing a new document every time a new event is reduced on to an existing alarm, we only push a new document when (at least) one of these conditions are met:
 
 1. We have not recently pushed a document for that alarm. (See `alarmReindexDurationMs`.)
-1. The severity of the alarm has changed.
-1. The alarm has been acknowledged or un-acknowledged.
-1. Either of the associated sticky or journal memos have changed.
-1. The state of the associated ticket has changed.
-1. The alarm has been associated with, or removed from a situation.
-1. A related alarm has been added or removed from the situation.
+2. The severity of the alarm has changed.
+3. The alarm has been acknowledged or unacknowledged.
+4. Either of the associated sticky or journal memos have changed.
+5. The state of the associated ticket has changed.
+6. The alarm has been associated with, or removed, from a situation.
+7. A related alarm has been added or removed from the situation.
 
 NOTE: To change this behaviour and push a new document for *every* change, you can set `indexAllUpdates` to `true`.
 

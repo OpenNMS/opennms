@@ -8,9 +8,11 @@
 const angular = require('vendor/angular-js');
 const _ = require('underscore');
 require('lib/onms-http');
+require('apps/onms-default-apps');
 
 angular.module('onms-resources', [
   'onms.http',
+  'onms.default.apps',
   'ui.bootstrap',
   'angular-growl'
 ])
@@ -79,18 +81,23 @@ angular.module('onms-resources', [
   $scope.isCollapsed = {};
   $scope.nodeLink = undefined;
   $scope.nodeLabel = undefined;
+  $scope.nodeCriteria = undefined;
   $scope.url = 'graph/results.htm';
   $scope.reports = 'all';
   $scope.loaded = false;
+  $scope.generatedId = '';
 
   $scope.init = function(nodeCriteria, reports, endUrl) {
-    if (nodeCriteria === null || nodeCriteria === '') {
+    if (!nodeCriteria) {
       return;
     }
-    if (reports !== null && reports !== '') {
+    // Update node criteria in scope.
+    $scope.nodeCriteria = nodeCriteria;
+    
+    if (reports) {
       $scope.reports = reports;
     }
-    if (endUrl !== null && endUrl !== '') {
+    if (endUrl) {
       $scope.url = endUrl;
     }
 
@@ -100,14 +107,16 @@ angular.module('onms-resources', [
       $scope.nodeLabel = data.label;
       $scope.loaded = true;
       $scope.hasResources = data.children.resource.length > 0;
-      var reduced = _.map(data.children.resource, function(obj) {
-	var resource = {
+      var reduced = _.map(data.children.resource, function (obj) {
+        var resource = {
           id: obj.id,
           label: obj.label,
           typeLabel: obj.typeLabel,
           checked: false,
           ifIndex: parseInt(obj.externalValueAttributes.ifIndex, 10), // will return NaN if not set
-          hasFlows: typeof obj.externalValueAttributes.hasFlows === 'undefined' ? false : JSON.parse(obj.externalValueAttributes.hasFlows)
+          hasFlows: typeof obj.externalValueAttributes.hasFlows === 'undefined' ? false : JSON.parse(obj.externalValueAttributes.hasFlows),
+          hasIngressFlows: typeof obj.externalValueAttributes.hasIngressFlows === 'undefined' ? false : JSON.parse(obj.externalValueAttributes.hasIngressFlows),
+          hasEgressFlows: typeof obj.externalValueAttributes.hasEgressFlows === 'undefined' ? false : JSON.parse(obj.externalValueAttributes.hasEgressFlows)
         };
         $scope.updateFlowUrlForResource(nodeCriteria, resource);
         return resource;
@@ -131,7 +140,7 @@ angular.module('onms-resources', [
   };
 
   $scope.updateFlowUrlForResource = function(nodeCriteria, resource) {
-    if (!resource.hasFlows || isNaN(resource.ifIndex)) {
+    if ((!resource.hasIngressFlows && !resource.hasEgressFlows) || isNaN(resource.ifIndex)) {
       // No flows, or not an interface, nothing to do
       return;
     }
@@ -167,7 +176,7 @@ angular.module('onms-resources', [
       if ($scope.resources.hasOwnProperty(key)) {
         _.each($scope.filteredResources[key], function(r) {
           if (r.selected) {
-            selected.push('resourceId=' + r.id);
+            selected.push(r.id);
           }
         });
       }
@@ -176,23 +185,38 @@ angular.module('onms-resources', [
   };
 
   $scope.graphAll = function() {
-    var selected = [];
-    for (var key in $scope.filteredResources) {
-      if ($scope.filteredResources.hasOwnProperty(key)) {
-        _.each($scope.filteredResources[key], function(r) {
-          selected.push('resourceId=' + r.id);
-        });
-      }
+    // Graph All will render all graphs for specific node. Controller will fetch specific resources.
+    if ($scope.nodeCriteria) {
+      $window.location.href = getBaseHref() + $scope.url + '?nodeCriteria=' + $scope.nodeCriteria + ($scope.reports ? '&reports=' + $scope.reports : '');
+    } else {
+      growl.error('Invalid node.');
     }
-    $scope.doGraph(selected);
   };
 
-  $scope.doGraph = function(selected) {
+  $scope.doGraph = function (selected) {
+    // Save resources with an ID and form url with generatedId.
     if (selected.length > 0) {
-      $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
+      $http.post('rest/resources/generateId', selected)
+        .success(function (response) {
+          $scope.generatedId = response;
+          if ($scope.generatedId) {
+            $window.location.href = getBaseHref() + $scope.url + '?generatedId=' + $scope.generatedId + ($scope.reports ? '&reports=' + $scope.reports : '');
+          } else {
+            $scope.setResourceIds(selected);
+          }
+        }).error(function (error, status) {
+          $scope.setResourceIds(selected);
+        });
     } else {
       growl.error('Please select at least one resource.');
     }
+  };
+
+  $scope.setResourceIds = function (selected) {
+    for (var i = 0; i < selected.length; i++) {
+      selected[i] = 'resourceId=' + selected[i];
+    }
+    $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
   };
 
   $scope.$watch('searchQuery', function() {

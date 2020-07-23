@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct interface_expanded {
 //   unsigned int format;            /* interface format */
@@ -46,7 +46,7 @@ public class InterfaceExpanded {
     public final long format;
     public final long value;
 
-    public InterfaceExpanded(final ByteBuffer buffer) throws InvalidPacketException {
+    public InterfaceExpanded(final ByteBuf buffer) throws InvalidPacketException {
         this.format = BufferUtils.uint32(buffer);
         this.value = BufferUtils.uint32(buffer);
     }

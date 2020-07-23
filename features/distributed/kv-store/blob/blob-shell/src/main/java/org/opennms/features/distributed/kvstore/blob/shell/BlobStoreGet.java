@@ -38,16 +38,16 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
 
-@Command(scope = "opennms-kv-blob", name = "get", description = "Get a record from the blob store decoded as a string")
+@Command(scope = "opennms", name = "kv-get-blob", description = "Get a record from the blob store decoded as a string")
 @Service
 public class BlobStoreGet implements Action {
     @Reference
     private BlobStore blobStore;
 
-    @Argument(index = 0, description = "The key to look up")
+    @Argument(index = 0, description = "The key to look up", required = true)
     private String key;
 
-    @Argument(index = 1, description = "The key's context")
+    @Argument(index = 1, description = "The key's context", required = true)
     private String context;
 
     @Override

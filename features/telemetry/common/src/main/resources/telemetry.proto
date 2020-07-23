@@ -1,4 +1,5 @@
-option java_package = "org.opennms.netmgt.telemetry.ipc";
+syntax = "proto2";
+option java_package = "org.opennms.netmgt.telemetry.common.ipc";
 option java_outer_classname = "TelemetryProtos";
 
 message TelemetryMessage {

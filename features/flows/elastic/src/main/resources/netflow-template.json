@@ -1,6 +1,6 @@
 {
     "order": 0,
-    "template": "netflow-*",
+    "index_patterns": ["netflow-*"],
     "mappings": {
         "dynamic_templates": [
             {
@@ -837,6 +837,9 @@
                     },
                     "tcp_flags": {
                         "type": "integer"
+                    },
+                    "delta_switched": {
+                        "type": "date"
                     },
                     "tos": {
                         "type": "keyword",

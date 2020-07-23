@@ -50,6 +50,8 @@ import org.opennms.reporting.core.svclayer.ReportStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+
 /**
  * <p>DefaultReportStoreService class.</p>
  */
@@ -114,6 +116,20 @@ public class DefaultReportStoreService implements ReportStoreService {
             Order.desc("date")
         }));
         return m_reportCatalogDao.findMatching(onmsCrit);
+    }
+
+    @Override
+    public long countAll() {
+        return m_reportCatalogDao.countAll();
+    }
+
+    @Override
+    public List<ReportCatalogEntry> getPage(int offset, int limit) {
+        final Criteria criteria = new Criteria(ReportCatalogEntry.class);
+        criteria.setOrders(Lists.newArrayList(Order.desc("date")));
+        criteria.setOffset(offset);
+        criteria.setLimit(limit);
+        return m_reportCatalogDao.findMatching(criteria);
     }
     
     /**

@@ -37,9 +37,9 @@ import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 
 import io.restassured.RestAssured;
-import org.opennms.smoketest.stacks.OpenNMSStack;
 
 public class DataChoicesRestServiceIT {
 

@@ -60,6 +60,7 @@ import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -92,10 +93,12 @@ import org.springframework.transaction.PlatformTransactionManager;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
-        "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPostgresBlobStore.xml",
         "classpath:/META-INF/opennms/applicationContext-collectdTest.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-client-mock.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-collector.xml"
+        "classpath:/META-INF/opennms/applicationContext-rpc-collector.xml",
+        "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase
@@ -121,6 +124,9 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
 
     @Autowired
     private FilesystemResourceStorageDao m_resourceStorageDao;
+    
+    @Autowired
+    private ReadablePollOutagesDao m_pollOutagesDao;
 
     private TestContext m_context;
 
@@ -179,8 +185,10 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
         parameters.put("collection", "default");
         m_collector.initialize();
 
-        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", m_collector, "default");
-        m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", m_collector, "default");
+        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("HTTP", m_collector, "default",
+                m_pollOutagesDao);
+        m_httpsCollectionSpecification = CollectorTestUtils.createCollectionSpec("HTTPS", m_collector, "default",
+                m_pollOutagesDao);
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
 
         File snmpRrdDirectory = (File)m_context.getAttribute("rrdDirectory");
@@ -414,7 +422,7 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
         pkg.addService(service);
 
         CollectionSpecification collectionSpecification = new CollectionSpecification(pkg, svcName, collector, new DefaultCollectdInstrumentation(),
-                CollectorTestUtils.createLocationAwareCollectorClient());
+                CollectorTestUtils.createLocationAwareCollectorClient(), m_pollOutagesDao);
 
         CollectionSet collectionSet = collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status", CollectionStatus.SUCCEEDED, collectionSet.getStatus());

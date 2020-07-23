@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
-
-import java.nio.ByteBuffer;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public final class FlowSetHeader {
 
@@ -60,7 +60,7 @@ public final class FlowSetHeader {
     public final int setId; // uint16
     public final int length; // uint16
 
-    public FlowSetHeader(final ByteBuffer buffer) throws InvalidPacketException {
+    public FlowSetHeader(final ByteBuf buffer) throws InvalidPacketException {
         this.setId = uint16(buffer);
         if (this.setId < 256 && this.setId != TEMPLATE_SET_ID && this.setId != OPTIONS_TEMPLATE_SET_ID) {
             throw new InvalidPacketException(buffer, "Invalid set ID: %d", this.setId);

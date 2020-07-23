@@ -48,7 +48,7 @@ import org.opennms.netmgt.xml.eventconf.Event;
  *
  * @author jwhite
  */
-@Command(scope = "events", name = "show-event-config", description = "Renders the matched event definitions to XML. " +
+@Command(scope = "opennms", name = "show-event-config", description = "Renders the matched event definitions to XML. " +
         "This command makes it possible to view event definitions which are not seriliazed on disk.")
 @Service
 public class EventConfigShowCommand implements Action {

@@ -7,10 +7,10 @@ if [ "${#}" -ne 1 ]; then
     echo ""
     echo "Script to download RPM artifacts from OpenNMS Bamboo system."
     echo "The argument is a Bamboo URL from a specific build. The rpms"
-    edho "will be downloaded into an rpms subdirectory."
+    echo "will be downloaded into an rpms subdirectory."
     echo ""
     echo "Example:"
-    echo "  url: https://${BAMBOO_HOST}/browse/OPENNMS-ONMS2852"
+    echo "  url: https://${BAMBOO_HOST}/browse/OPENNMS-ONMS2852-6"
     echo ""
     echo "Usage: $0 <url>"
     exit 1
@@ -27,12 +27,10 @@ RPM_VERSION=$(curl -s "${BAMBOO_HOST}/artifact/${PLAN_KEY}/shared/build-${BUILD_
 
 RPMS_HORIZON=("opennms-core-${RPM_VERSION}.noarch.rpm"
               "opennms-webapp-jetty-${RPM_VERSION}.noarch.rpm"
+              "opennms-webapp-remoting-${RPM_VERSION}.noarch.rpm"
               "opennms-webapp-hawtio-${RPM_VERSION}.noarch.rpm")
 
-RPMS_MINION=("opennms-minion-${RPM_VERSION}.noarch.rpm"
-             "opennms-minion-container-${RPM_VERSION}.noarch.rpm"
-             "opennms-minion-features-core-${RPM_VERSION}.noarch.rpm"
-             "opennms-minion-features-default-${RPM_VERSION}.noarch.rpm")
+RPMS_MINION=("opennms-minion-${RPM_VERSION}.noarch.rpm")
 
 RPMS_SENTINEL=("opennms-sentinel-${RPM_VERSION}.noarch.rpm")
 
@@ -65,3 +63,14 @@ for RPM in ${RPMS_SENTINEL[*]}; do
     echo "RPM: ${RPM}"
     wget --no-clobber "${BAMBOO_HOST}/artifact/${PLAN_KEY}/shared/build-${BUILD_ID}/RPMs/${RPM}" -P sentinel/rpms
 done
+
+cat <<END
+
+=== ALL DONE ===
+
+Note that if you are trying to just build local versions of these images for
+running smoke tests, you don't need to use the "build_container_image.sh"
+scripts, you can just go into the individual projects and run
+"docker build -t horizon ." and so on...
+
+END

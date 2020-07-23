@@ -28,12 +28,15 @@
 
 package org.opennms.web.rest.v1;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
@@ -49,16 +52,21 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdStrategyFactory;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.svclayer.support.DefaultGraphResultsService;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.gson.Gson;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -73,6 +81,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:src/main/webapp/WEB-INF/applicationContext-cxf-common.xml",
+        "classpath:/META-INF/opennms/applicationContext-postgresJsonStore.xml",
         "classpath:/applicationContext-rest-test.xml"
 })
 @JUnitConfigurationEnvironment
@@ -91,6 +100,9 @@ public class ResourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private RrdStrategyFactory m_rrdStrategyFactory;
+
+    @Autowired
+    private JsonStore jsonStore;
 
     @Rule
     public TemporaryFolder m_tempFolder = new TemporaryFolder();
@@ -156,5 +168,27 @@ public class ResourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final String jsonString = IOUtils.toString(new FileInputStream("src/test/resources/v1/resources.json"));
         JSONObject expectedObject = new JSONObject(jsonString.replace(".jrb", m_extension));
         JSONAssert.assertEquals(expectedObject, restObject, true);
+    }
+
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void generateIdFromResources() throws Exception {
+
+        String url = "/resources/generateId";
+        String[] resources = {"node[homeNetwork:1550956829009].interfaceSnmp[opennms-jvm]",
+                "node[homeNetwork:1550956829009].interfaceSnmp[docker0-0242ddee5bdc]"};
+        String jsonString = new Gson().toJson(resources);
+        MockHttpServletResponse response = sendData(POST, MediaType.APPLICATION_JSON, url, jsonString, 200);
+        String generatedId = new Gson().fromJson(response.getContentAsString(), String.class);
+        Optional<String> resourceIds = jsonStore.get(generatedId, DefaultGraphResultsService.RESOURCE_IDS_CONTEXT);
+        assertTrue(resourceIds.isPresent());
+        String[] savedResources = new Gson().fromJson(resourceIds.get(), String[].class);
+        assertArrayEquals(resources, savedResources);
+        //Do another post with same resources, it should generate same Id.
+        response = sendData(POST, MediaType.APPLICATION_JSON, url, jsonString, 200);
+        String  regeneratedId = new Gson().fromJson(response.getContentAsString(), String.class);
+        assertEquals(generatedId, regeneratedId);
+
     }
 }

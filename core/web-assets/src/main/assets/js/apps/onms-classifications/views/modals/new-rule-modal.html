@@ -6,7 +6,24 @@
   <div class="modal-body">
     <form name="ruleForm" novalidate>
       <div class="form-group">
-        <div ng-show="error.entity" class="form-text text-muted">{{error.entity}}</div>
+        <div ng-show="error.entity" class="form-text text-danger">{{error.entity}}</div>
+      </div>
+      <div class="form-group form-row">
+        <label class="col-form-label" for="rule.group">Group</label>
+        <select class="form-control custom-select"
+                ng-options="group as group.name for group in selectableGroups track by group.id"
+                ng-model="classification.group"
+                ng-disabled="classification.id === undefined"
+                id="rule.group" ></select>
+      </div>
+      <div class="form-group form-row">
+        <label class="col-form-label" for="rule.position">Position</label>
+        <button class="btn btn-link"
+                uib-popover-html="'<div>Rules on low positions will be evaluated first:<br>position 0 -&gt; position 1 -&gt; position 2 -&gt; ...</div>'"
+                popover-trigger="'outsideClick'"><i class="fa fa-question-circle"/></button>
+        <input class="form-control" id="rule.position" name="position" placeholder="{{maxPosition}}" type="number" min="0" max="{{maxPosition}}" step="1" pattern="[0-9]*" ng-model="classification.position"
+               ng-class="{ 'is-invalid' : ruleForm.position.$invalid || error.position }" />
+        <div ng-show="ruleForm.position.$invalid" class="invalid-feedback">Position must be between 0 and {{maxPosition}}.</div>
       </div>
       <div class="form-group form-row">
         <label class="col-form-label" for="rule.name">Application Name</label>
@@ -18,7 +35,7 @@
       <div class="form-row">
         <div class="form-group col-md-8">
           <label class="col-form-label" for="rule.srcAddress">Source IP Address</label>
-          <input class="form-control" type="text" id="rule.srcAddress" name="srcAddress" placeholder="127.0.0.1" ng-model="classification.srcAddress"
+          <input class="form-control" type="text" id="rule.srcAddress" name="srcAddress" placeholder="127.0.0.1,10.0.0.0/24,10.0.0.0-10.255.255.255" ng-model="classification.srcAddress"
                  ng-class="{ 'is-invalid' : ruleForm.srcAddress.$invalid || error.srcAddress}"/>
           <div ng-show="error.srcAddress" class="invalid-feedback">{{error.srcAddress}}</div>
         </div>
@@ -32,7 +49,7 @@
       <div class="form-row">
         <div class="form-group col-md-8">
           <label class="col-form-label" for="rule.dstAddress">Destination IP Address</label>
-          <input class="form-control" type="text" id="rule.dstAddress" name="dstAddress" placeholder="127.0.0.1" ng-model="classification.dstAddress"
+          <input class="form-control" type="text" id="rule.dstAddress" name="dstAddress" placeholder="127.0.0.1,10.0.0.0/24,10.0.0.0-10.255.255.255" ng-model="classification.dstAddress"
                  ng-class="{ 'is-invalid' : ruleForm.dstAddress.$invalid || error.dstAddress}"/>
           <div ng-show="error.dstAddress" class="invalid-feedback">{{error.dstAddress}}</div>
         </div>

@@ -48,7 +48,7 @@ public interface CollectionAgentFactory {
      * optionally override the node's location.
      *
      * Overriding the node's location is strictly used for testing
-     * (i.e. via the collection:collect) command in the Karaf console
+     * (i.e. via the opennms:collect) command in the Karaf console
      * and is not used in normal operations.
      *
      * @param nodeCriteria node id or fs:fid

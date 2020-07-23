@@ -8,20 +8,30 @@ _{opennms-product-name}_ interfaces with _R_ via _stdin_ and _stdout_, and for t
 as _{opennms-product-name}_.
 Note that installing _R_ is optional, and not required by any of the core components.
 
-IMPORTANT: The _R_ integration is not currently supported on _Microsoft Windows_ systems.
-
 === Install R on RHEL
 
-.Install the EPEL repositories
+.Ensure the dnf plugin config-manager is installed
 [source, bash]
 ----
-yum install epel-release
+dnf -y install dnf-plugins-core
 ----
 
-.Install R
+.Enable the PowerTools repository for R dependencies
 [source, bash]
 ----
-yum install R
+dnf config-manager --set-enabled PowerTools
+----
+
+.Install the epel-release repository with R packages
+[source, bash]
+----
+dnf -y install epel-release
+----
+
+.Install R-core package
+[source, bash]
+----
+dnf -y install R-core
 ----
 
 === Install R on Debian

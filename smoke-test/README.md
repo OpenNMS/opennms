@@ -13,21 +13,21 @@ The tests require Docker images to run. There are two alternatives to get them, 
 
 You can pull existing images down with:
 ```
-docker pull opennms/horizon-core-web:24.0.0-rc
-docker pull opennms/minion:24.0.0-rc
-docker pull opennms/sentinel:24.0.0-rc
+docker pull opennms/horizon-core-web:27.0.0
+docker pull opennms/minion:27.0.0
+docker pull opennms/sentinel:27.0.0
 ```
 
 > Update the tag to match the system tests your running
 
 And then tag them for the tests:
 ```
-docker tag opennms/horizon-core-web:24.0.0-rc horizon
-docker tag opennms/minion:24.0.0-rc minion
-docker tag opennms/sentinel:24.0.0-rc sentinel
+docker tag opennms/horizon-core-web:27.0.0 horizon
+docker tag opennms/minion:27.0.0 minion
+docker tag opennms/sentinel:27.0.0 sentinel
 ```
 
-#### b) Pull images from build artifacts
+### B) Pull images from build artifacts
 
 ```
 export ARTIFACT_URL="https://2866-9377198-gh.circle-artifacts.com/0"
@@ -120,14 +120,14 @@ If a test is failing and we have a patched .jar we want to deploy, how can we re
 
 #### Filesystem
 
-Locate the target path of the .jar: `/opt/opennms/lib/opennms-services-25.0.0-SNAPSHOT.jar`
+Locate the target path of the .jar: `/opt/opennms/lib/opennms-services-27.0.0-SNAPSHOT.jar`
 
 Add the .jar to the overlay:
 ```
 OVERLAY_ROOT="~/git/opennms/smoke-test/src/main/resources/opennms-overlay"
 TARGET_PATH="$OVERLAY_ROOT/lib"
 mkdir -p $TARGET_PATH
-cp target/opennms-services-25.0.0-SNAPSHOT.jar $TARGET_PATH/lib
+cp target/opennms-services-27.0.0-SNAPSHOT.jar $TARGET_PATH/lib
 ```
 
 Re-run the test.
@@ -215,13 +215,15 @@ This saves the CI system from having to spawn another stack which takes time to 
 The "machine" image we use on CircleCI is currently limited to 2 vCPUs and 8GB of RAM, so we need to be careful with our memory usage for the tests to run reliably.
 
 Breakdown of the heap sizes for the various containers currently is:
-* OpenNMS: 1GB
+* Maven JVM: 1G
+* Test JVM: 1G
+* OpenNMS: 2G
 * Minion: 512M
 * Sentinel: 512M
 * Cassandra: 512M
 * Elasticsearch: 512M
-* Kafka: 1GB
+* Kafka: 256M
 * ZooKeeper: 512MB
-* Total: **4.5GB**
+* Total: **6.75G**
 
 We limit the CPU used by each container to 2 cores in order to help maintain more reliable timing between systems and test runs.

@@ -42,6 +42,7 @@ import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityListener;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
@@ -51,9 +52,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.collect.Sets;
 
@@ -71,7 +69,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
     private AlarmDao alarmDao;
 
     @Autowired
-    private TransactionTemplate template;
+    private SessionUtils sessionUtils;
 
     private void start() {
         timer = new Timer("AlarmLifecycleListenerManager");
@@ -102,24 +100,23 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
         }
 
         final AtomicLong numAlarms = new AtomicLong(-1);
-        final long systemMillisBeforeSnasphot = System.currentTimeMillis();
+        final long systemMillisBeforeSnapshot = System.currentTimeMillis();
         final AtomicLong systemMillisAfterLoad = new AtomicLong(-1);
         try {
             forEachListener(AlarmLifecycleListener::preHandleAlarmSnapshot);
-            template.execute(new TransactionCallbackWithoutResult() {
-                @Override
-                protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    final List<OnmsAlarm> allAlarms = alarmDao.findAll();
-                    numAlarms.set(allAlarms.size());
-                    // Save the timestamp after the load, so we can differentiate between how long it took
-                    // to load the alarms and how long it took to invoke the callbacks
-                    systemMillisAfterLoad.set(System.currentTimeMillis());
-                    forEachListener(l -> {
-                        LOG.debug("Calling handleAlarmSnapshot on listener: {}", l);
-                        l.handleAlarmSnapshot(allAlarms);
-                        LOG.debug("Done calling listener.");
-                    });
-                }
+            sessionUtils.withTransaction(() -> {
+               // Load all of the alarms
+               final List<OnmsAlarm> allAlarms = alarmDao.findAll();
+               numAlarms.set(allAlarms.size());
+               // Save the timestamp after the load, so we can differentiate between how long it took
+               // to load the alarms and how long it took to invoke the callbacks
+               systemMillisAfterLoad.set(System.currentTimeMillis());
+               forEachListener(l -> {
+                   LOG.debug("Calling handleAlarmSnapshot on listener: {}", l);
+                   l.handleAlarmSnapshot(allAlarms);
+                   LOG.debug("Done calling listener.");
+               });
+               return null;
             });
         } finally {
             if (LOG.isDebugEnabled()) {
@@ -127,8 +124,8 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
                 LOG.debug("Alarm snapshot for {} alarms completed. Spent {}ms loading the alarms. " +
                                 "Snapshot processing took a total of of {}ms.",
                         numAlarms.get(),
-                        systemMillisAfterLoad.get() - systemMillisBeforeSnasphot,
-                        now - systemMillisBeforeSnasphot);
+                        systemMillisAfterLoad.get() - systemMillisBeforeSnapshot,
+                        now - systemMillisBeforeSnapshot);
             }
             forEachListener(AlarmLifecycleListener::postHandleAlarmSnapshot);
         }
@@ -227,8 +224,8 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
         this.alarmDao = alarmDao;
     }
 
-    public void setTransactionTemplate(TransactionTemplate template) {
-        this.template = template;
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
     }
 
     @Override

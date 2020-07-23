@@ -14,6 +14,9 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
+[[gi-compatibility]]
+include::text/compatibility.adoc[]
+
 // Basic Setup OpenNMS
 include::text/basic-setup-opennms/setting-up-opennms.adoc[]
 
@@ -48,21 +51,11 @@ include::text/_general/nextsteps.adoc[]
 // Enable section numbers
 :sectnums:
 
-// Basic Setup OpenNMS - Windows
-include::text/basic-setup-opennms/windows/installing-on-windows.adoc[]
+// Run OpenNMS in Docker
+include::text/basic-setup-opennms/docker/opennms-docker.adoc[]
+include::text/basic-setup-opennms/docker/opennms-config.adoc[]
 
-// No section numbers for step-by-step guide
-:!sectnums:
-
-include::text/basic-setup-opennms/windows/step-1-postgresql.adoc[]
-include::text/basic-setup-opennms/windows/step-2-graphical-installer.adoc[]
-include::text/basic-setup-opennms/windows/step-3-configure-postgres-opennms.adoc[]
-include::text/basic-setup-opennms/windows/step-4-change-admin-password.adoc[]
-include::text/_general/nextsteps.adoc[]
 endif::opennms-prime[]
-
-// Enable section numbers
-:sectnums:
 
 // Basic Setup Minion
 include::text/monitor-location-minion/setting-up-minion.adoc[]
@@ -94,22 +87,37 @@ include::text/monitor-location-minion/debian/step-2-install-minion.adoc[]
 include::text/monitor-location-minion/debian/step-3-starting-minion.adoc[]
 include::text/monitor-location-minion/debian/step-4-configure-minion.adoc[]
 include::text/monitor-location-minion/debian/step-5-verify-connectivity.adoc[]
-endif::opennms-prime[]
 
 // Enable section numbers
 :sectnums:
+
+// Run Minion in Docker
+include::text/monitor-location-minion/docker/minion-docker.adoc[]
+include::text/monitor-location-minion/docker/minion-config.adoc[]
+
+endif::opennms-prime[]
 
 // Sentinel
 include::text/sentinel/setting-up-sentinel.adoc[]
 include::text/sentinel/rhel/rhel.adoc[]
 ifndef::opennms-prime[]
 include::text/sentinel/debian/debian.adoc[]
+
 endif::opennms-prime[]
 
-// Enable section numbers
-:sectnums:
-
 // Alternate ways of doing it
+include::text/minion-custom-messaging-system/introduction.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/introduction.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/steps-horizon.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/steps-minion.adoc[]
+include::text/minion-custom-messaging-system/setup-kafka/tuning-kafka.adoc[]
+
+// gRPC
+include::text/minion-grpc/grpc-introduction.adoc[]
+include::text/minion-grpc/steps-opennms.adoc[]
+include::text/minion-grpc/steps-minion.adoc[]
+
+
 include::text/install-opennms-versions.adoc[]
 include::text/minion-config-file.adoc[]
 include::text/run-in-non-root.adoc[]
@@ -125,10 +133,4 @@ ifndef::opennms-prime[]
 include::text/time-series-storage/rrdtool/debian.adoc[]
 endif::opennms-prime[]
 
-include::text/time-series-storage/newts/introduction.adoc[]
-include::text/time-series-storage/newts/rhel.adoc[]
-ifndef::opennms-prime[]
-include::text/time-series-storage/newts/debian.adoc[]
-include::text/time-series-storage/newts/windows.adoc[]
-endif::opennms-prime[]
-include::text/time-series-storage/newts/configure-opennms.adoc[]
+include::text/time-series-storage/newts.adoc[]

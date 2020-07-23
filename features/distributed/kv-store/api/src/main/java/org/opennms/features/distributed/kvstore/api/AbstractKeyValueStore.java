@@ -52,4 +52,14 @@ public abstract class AbstractKeyValueStore<T> implements KeyValueStore<T> {
 
         return putAsync(key, value, context, null);
     }
+
+    /**
+     * A default truncate implementation.
+     */
+    @Override
+    public void truncateContext(String context) {
+        Objects.requireNonNull(context);
+
+        enumerateContext(context).keySet().forEach(key -> delete(key, context));
+    }
 }

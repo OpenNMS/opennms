@@ -8,9 +8,11 @@
 const angular = require('vendor/angular-js');
 const templateUrl = require('./add-to-ksc.html');
 require('lib/onms-http');
+require('apps/onms-default-apps');
 
 angular.module('onms-ksc', [
   'onms.http',
+  'onms.default.apps',
   'ui.bootstrap',
   'angular-growl'
 ])

@@ -117,11 +117,24 @@ public class MockSnmpInterfaceDao extends AbstractMockDao<OnmsSnmpInterface, Int
     }
 
     @Override
-    public void markHavingFlows(final Integer nodeId, final Collection<Integer> snmpIfIndexes) {
+    public void markHavingIngressFlows(final Integer nodeId, final Collection<Integer> ingressSnmpIfIndexes) {
+    }
+
+    @Override
+    public void markHavingEgressFlows(final Integer nodeId, final Collection<Integer> egressSnmpIfIndexes) {
     }
 
     @Override
     public List<OnmsSnmpInterface> findAllHavingFlows(Integer nodeId) {
+        return Collections.emptyList();
+    }
+
+    public List<OnmsSnmpInterface> findAllHavingIngressFlows(final Integer nodeId) {
+        return Collections.emptyList();
+    }
+
+
+    public List<OnmsSnmpInterface> findAllHavingEgressFlows(final Integer nodeId) {
         return Collections.emptyList();
     }
 }

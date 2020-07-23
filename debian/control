@@ -2,13 +2,13 @@ Source: opennms
 Section: contrib/net
 Priority: optional
 Maintainer: Jeff Gehlbach <jeffg@opennms.org>
-Build-Depends: oracle-java8-installer | openjdk-8-jdk-headless | openjdk-8-jdk | java8-jdk, debhelper (>= 5.0.42), po-debconf (>= 1.0.5), rsync, nsis
+Build-Depends: oracle-java8-installer | adoptopenjdk-8-openj9xl | adoptopenjdk-8-openj9 | adoptopenjdk-8-hotspot | openjdk-8-jdk-headless | openjdk-8-jdk | java8-jdk, debhelper (>= 5.0.42), dh-systemd (>= 1.5), po-debconf (>= 1.0.5), rsync, nsis
 Standards-Version: 3.7.3
 
 Package: opennms
 Architecture: all
 Depends: opennms-db (=${binary:Version}), opennms-server (=${binary:Version}), opennms-webapp-jetty (=${binary:Version})
-Recommends: opennms-source (=${binary:Version}), openjdk-11-jdk-headless | openjdk-11-jdk | oracle-java8-installer | openjdk-8-jdk-headless | openjdk-8-jdk | java8-jdk
+Recommends: opennms-source (=${binary:Version}), openjdk-11-jdk-headless | openjdk-11-jdk | adoptopenjdk-11-openj9xl | adoptopenjdk-11-openj9 | adoptopenjdk-11-hotspot | oracle-java8-installer | adoptopenjdk-8-openj9xl | adoptopenjdk-8-openj9 | adoptopenjdk-8-hotspot | openjdk-8-jdk-headless | openjdk-8-jdk | java8-jdk
 Suggests: opennms-doc
 Description: Enterprise-grade Open-source Network Management Platform (Full Install)
  OpenNMS is an enterprise-grade network management system written in Java.
@@ -39,7 +39,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Source)
 
 Package: opennms-db
 Architecture: all
-Depends: postgresql-11 | postgresql-10 | postgresql-9.6 | postgresql-9.5 | postgresql-9.4 | postgresql-9.3 | postgresql-9.2 | postgresql-9.1, iplike-pgsql11 | iplike-pgsql10 | iplike-pgsql96 | iplike-pgsql95 | iplike-pgsql94 | iplike-pgsql93 | iplike-pgsql92 | iplike-pgsql91, debconf
+Depends: postgresql-12 | postgresql-11 | postgresql-10, iplike-pgsql12 | iplike-pgsql11 | iplike-pgsql10, debconf
 Description: Enterprise-grade Open-source Network Management Platform (Database)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -57,7 +57,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Database)
 Package: opennms-server
 Architecture: all
 Depends: opennms-common (=${binary:Version}), libopennms-java (=${binary:Version}), libopennmsdeps-java (=${binary:Version}), mailx
-Suggests: jrrd2, rrdtool (>= 1.4.8), postgresql-client-11 | postgresql-client-10 | postgresql-client-9.6 | postgresql-client-9.5 | postgresql-client-9.4 | postgresql-client-9.3 | postgresql-client-9.2 | postgresql-client-9.1
+Suggests: jrrd2, rrdtool (>= 1.4.8), postgresql-client-12 | postgresql-client-11 | postgresql-client-10
 Description: Enterprise-grade Open-source Network Management Platform (Daemon)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -74,7 +74,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Daemon)
 Package: opennms-remote-poller
 Architecture: all
 Conflicts: opennms-server
-Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime
+Depends: oracle-java8-installer | adoptopenjdk-8-openj9xl-jre | adoptopenjdk-8-openj9-jre | adoptopenjdk-8-hotspot-jre | openjdk-8-jre | java8-runtime
 Description: Enterprise-grade Open-source Network Management Platform (Remote Poller)
  OpenNMS is an enterprise-grade network management system written in Java.
  .
@@ -88,7 +88,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Remote Po
 
 Package: opennms-jmx-config-generator
 Architecture: all
-Depends: openjdk-11-jre-headless | openjdk-11-jre | oracle-java8-installer | openjdk-8-jre-headless | openjdk-8-jre | java8-runtime-headless | java8-runtime
+Depends: adoptopenjdk-11-openj9xl-jre | adoptopenjdk-11-openj9-jre | adoptopenjdk-11-hotspot-jre | openjdk-11-jre-headless | openjdk-11-jre | oracle-java8-installer | adoptopenjdk-8-openj9xl-jre | adoptopenjdk-8-openj9-jre | adoptopenjdk-8-hotspot-jre | openjdk-8-jre-headless | openjdk-8-jre | java8-runtime-headless | java8-runtime
 Description: Enterprise-grade Open-source Network Management Platform (JMX Config Generator)
  OpenNMS is an enterprise-grade network management system written in Java.
  .

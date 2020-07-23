@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
+
 import java.util.Optional;
 
 import org.bson.BsonWriter;
@@ -38,6 +38,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 // struct host_adapters {
 //    host_adapter adapters<>;              /* adapter(s) associated with entity */
 // };
@@ -45,7 +47,7 @@ import com.google.common.base.MoreObjects;
 public class HostAdapters implements CounterData {
     public final Array<HostAdapter> adapters;
 
-    public HostAdapters(final ByteBuffer buffer) throws InvalidPacketException {
+    public HostAdapters(final ByteBuf buffer) throws InvalidPacketException {
         this.adapters = new Array(buffer, Optional.empty(), HostAdapter::new);
     }
 

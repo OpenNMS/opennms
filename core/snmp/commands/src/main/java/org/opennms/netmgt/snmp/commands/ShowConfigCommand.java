@@ -40,7 +40,7 @@ import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
-@Command(scope = "snmp", name = "show-config", description = "Display the effective SNMP agent configuration.")
+@Command(scope = "opennms", name = "snmp-show-config", description = "Display the effective SNMP agent configuration.")
 @Service
 public class ShowConfigCommand implements Action {
 
@@ -57,7 +57,11 @@ public class ShowConfigCommand implements Action {
     public Object execute() throws Exception {
         final InetAddress agentAdress = InetAddress.getByName(m_host);
         final SnmpAgentConfig agent = snmpAgentConfigFactory.getAgentConfig(agentAdress, m_location);
+        prettyPrint(agent);
+        return null;
+    }
 
+    public static void prettyPrint(SnmpAgentConfig agent) {
         System.out.println("Address: " + InetAddrUtils.str(agent.getAddress()));
         System.out.println("ProxyForAddress: " + InetAddrUtils.str(agent.getProxyFor()));
         System.out.println("Port: " + agent.getPort());
@@ -87,7 +91,9 @@ public class ShowConfigCommand implements Action {
             System.out.println("ReadCommunity: " + agent.getReadCommunity());
             System.out.println("WriteCommunity: " + agent.getWriteCommunity());
         }
+        if (agent.getProfileLabel() != null) {
+            System.out.println("ProfileLabel : " + agent.getProfileLabel());
+        }
         System.out.println();
-        return null;
     }
 }

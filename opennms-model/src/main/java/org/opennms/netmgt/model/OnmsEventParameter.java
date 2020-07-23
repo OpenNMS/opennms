@@ -122,6 +122,10 @@ public class OnmsEventParameter implements Serializable {
     @XmlAttribute(name="type")
     private String type;
 
+    /** helper attribute to maintain the right order of event parameters when saving and retrieving to/from database. */
+    @XmlTransient
+    private int position;
+
     /**
      * Instantiates a new OpenNMS event parameter.
      */
@@ -209,6 +213,14 @@ public class OnmsEventParameter implements Serializable {
      */
     public void setType(String type) {
         this.type = type;
+    }
+
+    int getPosition() {
+        return position;
+    }
+
+    void setPosition(int position) {
+        this.position = position;
     }
 
 }

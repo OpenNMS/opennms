@@ -42,10 +42,11 @@
         java.util.*,
         java.net.*,
         java.sql.SQLException,
+        org.opennms.core.spring.BeanUtils,
         org.opennms.core.soa.ServiceRegistry,
         org.opennms.core.utils.InetAddressUtils,
         org.opennms.core.utils.WebSecurityUtils,
-        org.opennms.netmgt.config.PollOutagesConfigFactory,
+        org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao,
         org.opennms.netmgt.config.poller.outages.Outage,
         org.opennms.netmgt.model.OnmsNode,
         org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl,
@@ -242,13 +243,16 @@
 	pageContext.setAttribute("navEntries", renderedLinks);
 
     final List<String> schedOutages = new ArrayList<>();
-    PollOutagesConfigFactory f = PollOutagesConfigFactory.getInstance();
-    for (final Outage outage : f.getOutages()) {
-        if (f.isCurTimeInOutage(outage)) {
-            boolean inOutage = f.isNodeIdInOutage(nodeId, outage);
+
+    ReadablePollOutagesDao pollOutagesDao = BeanUtils.getBean("pollerConfigContext", "pollOutagesDao",
+            ReadablePollOutagesDao.class);
+    
+    for (final Outage outage : pollOutagesDao.getReadOnlyConfig().getOutages()) {
+        if (pollOutagesDao.isCurTimeInOutage(outage)) {
+            boolean inOutage = pollOutagesDao.isNodeIdInOutage(nodeId, outage);
             if (!inOutage) {
                 for (final Interface i : intfs) {
-                    if (f.isInterfaceInOutage(i.getIpAddress(), outage)) {
+                    if (pollOutagesDao.isInterfaceInOutage(i.getIpAddress(), outage)) {
                         inOutage = true;
                         break;
                     }
@@ -256,7 +260,7 @@
             }
             if (inOutage) {
                 final String name = outage.getName();
-                final String link = "<a href=\"admin/sched-outages/editoutage.jsp?name=" + name + "\">" + name + "</a>";
+                final String link = "<a href=\"admin/sched-outages/editoutage.jsp?name=" + URLEncoder.encode(name, "UTF-8") + "\">" +name + "</a>";
                 schedOutages.add(request.isUserInRole(Authentication.ROLE_ADMIN) ? link : name);
             }
         }
@@ -268,6 +272,7 @@
 
 <%@page import="org.opennms.core.resource.Vault"%>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="ngapp" value="onms-interfaces" />
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="ID ${model.id}" />

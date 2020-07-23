@@ -2,6 +2,12 @@
 <database-reports
         xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-database-reports"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <report id="Grafana-Dashboard-Report-1ppp" display-name="Grafana Dashboard Report (1ppp)" online="true"
+                report-service="jasperReportService" description="Renders a report from a pre-defined Grafana Dashboard. 1 panel per page." />
+        <report id="Grafana-Dashboard-Report-2ppp" display-name="Grafana Dashboard Report (2ppp)" online="true"
+                report-service="jasperReportService" description="Renders a report from a pre-defined Grafana Dashboard. 2 panels per page." />
+        <report id="Grafana-Dashboard-Report-4ppp" display-name="Grafana Dashboard Report (4ppp)" online="true"
+                report-service="jasperReportService" description="Renders a report from a pre-defined Grafana Dashboard. 4 panels per page." />
         <report id="defaultCalendarReport" display-name="Default calendar report"
                 report-service="availabilityReportService" description="standard opennms report in calendar format" />
         <report id="defaultClassicReport" display-name="Default classic report"

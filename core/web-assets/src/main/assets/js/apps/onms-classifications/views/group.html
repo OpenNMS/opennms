@@ -19,7 +19,7 @@
             <button id="action.refresh" class="btn btn-secondary" ng-click="refreshAll()" title="Refresh list"><i class="fa fa-refresh"></i></button>
         </div>
         <div class="btn-group ml-2" role="group" ng-show="!group.readOnly">
-            <button id="action.addRule" class="btn btn-secondary" ng-click="addRule()" title="Add new classification rule"><i class="fa fa-plus"></i></button>
+            <button id="action.addRule" class="btn btn-secondary" ng-click="addRule(group)" title="Add new classification rule"><i class="fa fa-plus"></i></button>
             <button ng-if="rules.length > 0"
                     id="action.deleteAll"
                     class="btn btn-secondary"
@@ -97,9 +97,13 @@
             </tr>
             </thead>
 
-            <tbody>
+            <tbody ng-model="rules" ui-sortable="sortableRules">
             <tr ng-repeat="rule in rules" class="d-flex">
-                <td class="col-md-1 text-nowrap">{{rule['position']}}</td>
+                <td class="col-md-1 text-nowrap">
+                    <i class="fa fa-bars text-muted"
+                       ng-show="!group.readOnly && query.orderBy === 'position' && query.order === 'asc'"
+                       style="padding-right:1em"></i>{{rule['position']}}
+                </td>
                 <td class="col-md-1 text-nowrap">{{rule['name']}}</td>
                 <td class="col-md-1 text-nowrap">
                     <span ng-repeat="protocol in rule.protocols" class="badge badge-secondary mr-2">{{protocol}}</span>
@@ -114,7 +118,7 @@
                 <td class="col-md-1 text-nowrap"><span class="fa fa-exchange" ng-if="rule['omnidirectional'] === true" aria-hidden="true"></span></td>
                 <td class="col-md-1" ng-if="group.readOnly === false">
                     <div class="pull-right">
-                        <button id="action.{{rule.position}}.edit" class="btn btn-sm btn-secondary" ng-click="editRule(rule)" title="edit rule"><i class="fa fa-edit"></i></button>
+                        <button id="action.{{rule.position}}.edit" class="btn btn-sm btn-secondary" ng-click="editRule(rule, group)" title="edit rule"><i class="fa fa-edit"></i></button>
                         <button id="action.{{rule.position}}.delete" class="btn btn-sm btn-secondary" ng-click="deleteRule(rule)" title="delete rule"><i class="fa fa-trash-o"></i></button>
                     </div>
                 </td>

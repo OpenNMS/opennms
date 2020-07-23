@@ -32,7 +32,7 @@ import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.util.BeanItem;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.SimpleConnector;
+import org.opennms.features.topology.api.topo.simple.SimpleConnector;
 
 public class TestEdge extends AbstractEdge {
 	

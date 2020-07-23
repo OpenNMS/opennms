@@ -28,17 +28,16 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public class NullValue extends Value<Void> {
     public NullValue(final String name,
@@ -62,7 +61,7 @@ public class NullValue extends Value<Void> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final Session.Resolver resolver,
-                                  final ByteBuffer buffer) {
+                                  final ByteBuf buffer) {
                 return new NullValue(name, semantics);
             }
 

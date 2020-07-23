@@ -105,7 +105,7 @@
 
     Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 
-    String warnClass = "Normal";
+    String warnClass = service.isManaged() ? "Normal" : "Indeterminate";
 
     for(int o=0;o<outages.length;o++) {
         if (outages[o].getIpAddress().equals(ipAddr) && outages[o].getServiceName().equals(service.getServiceName())) {
@@ -137,25 +137,25 @@
 </div>
 <table class="table table-sm severity">
   <tr class="CellStatus">
-    <td class="Cleared nobright" colspan="2"><%=ipAddr%></td>
-    <td class="Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
-    <td class="<%=overallStatus%> nobright"><%=overallStatusString%></td>
+    <td class="severity-Cleared nobright" colspan="2"><%=ipAddr%></td>
+    <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
+    <td class="severity-<%=overallStatus%> nobright"><%=overallStatusString%></td>
   </tr>
   <tr class="CellStatus"/>
-    <td class="Cleared nobright"></td>
+    <td class="severity-Cleared nobright"></td>
     <td class="severity-<%=warnClass%> bright"><%=service.getServiceName()%></td>
     <%
         if (service.isManaged()) {
     %>
-    <td class="Cleared nobright"><span data-src="<%=timelineUrl%>"></span></td>
+    <td class="severity-Cleared nobright"><span data-src="<%=timelineUrl%>"></span></td>
     <%
         } else {
     %>
-    <td class="Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
+    <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
     <%
         }
     %>
-    <td class="<%= styleClass %> nobright"><%= statusContent %></td>
+    <td class="severity-<%= styleClass %> nobright"><%= statusContent %></td>
   </tr>
 </table>
 </div>

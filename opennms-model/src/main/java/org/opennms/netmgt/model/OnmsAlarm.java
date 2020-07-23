@@ -827,6 +827,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
             .add("uei", getUei())
             .add("severity", getSeverity())
             .add("lastEventTime",getLastEventTime())
+            .add("counter", getCounter())
             .toString();
     }
 

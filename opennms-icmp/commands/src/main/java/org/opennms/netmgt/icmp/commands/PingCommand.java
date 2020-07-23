@@ -46,7 +46,7 @@ import org.opennms.netmgt.icmp.proxy.PingSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "ping", name = "ping", description = "Ping")
+@Command(scope = "opennms", name = "ping", description = "ICMP Ping")
 @Service
 public class PingCommand implements Action {
 
@@ -69,7 +69,7 @@ public class PingCommand implements Action {
 
     @Override
     public Object execute() throws Exception {
-        LOG.debug("ping:ping {} {}", m_location != null ? "-l " + m_location : "", m_host);
+        LOG.debug("opennms:ping {} {}", m_location != null ? "-l " + m_location : "", m_host);
         final InetAddress byName = InetAddress.getByName(m_host);
         final PingRequestBuilder.Callback callback = (newSequence, summary) -> {
             if (m_count > 1) {

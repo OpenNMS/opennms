@@ -1,0 +1,7 @@
+[template]
+src = "org.opennms.core.ipc.sink.offheap.cfg.tmpl"
+dest = "/opt/minion/etc/org.opennms.core.ipc.sink.offheap.cfg"
+keys = [
+    "/ipc/sink/offheap"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/org.opennms.core.ipc.sink.offheap.cfg"

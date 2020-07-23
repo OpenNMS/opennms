@@ -29,7 +29,6 @@
 package org.opennms.netmgt.telemetry.protocols.common.parser;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -39,6 +38,8 @@ import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.netty.buffer.ByteBuf;
 
 public class ForwardParser implements UdpParser {
     private static final Logger LOG = LoggerFactory.getLogger(ForwardParser.class);
@@ -64,13 +65,13 @@ public class ForwardParser implements UdpParser {
     }
 
     @Override
-    public CompletableFuture<?> parse(final ByteBuffer buffer,
+    public CompletableFuture<?> parse(final ByteBuf buffer,
                                       final InetSocketAddress remoteAddress,
                                       final InetSocketAddress localAddress) throws Exception {
         LOG.trace("Got packet from: {}", remoteAddress);
 
         // Build the message to dispatch
-        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer);
+        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer.nioBuffer());
 
         // Dispatch and retain a reference to the packet
         // in the case that we are sharing the underlying byte array

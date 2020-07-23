@@ -46,9 +46,12 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Spliterators;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -60,8 +63,11 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.IteratorUtils;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
+import org.opennms.netmgt.config.discovery.Definition;
+import org.opennms.netmgt.config.discovery.Detector;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
@@ -72,6 +78,8 @@ import org.opennms.netmgt.model.discovery.IPPollRange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
+
+import com.google.common.base.Strings;
 
 /**
  * This class is used to load the configuration for the OpenNMS
@@ -84,6 +92,8 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
+    private Map<String, List<String>> m_urlSpecifics = new HashMap<>();
+    private List<ExcludeRange> m_excludeRanges = new ArrayList<>();
 
     public static final String COMMENT_STR = "#";
     public static final char COMMENT_CHAR = '#';
@@ -142,6 +152,8 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             m_config = JaxbUtils.unmarshal(DiscoveryConfiguration.class, resource);
 
             try {
+                clearUrlSpecifics();
+                clearExcludeRanges();
                 getInitialSleepTime();
                 getRestartSleepTime();
                 getIntraPacketDelay();
@@ -229,11 +241,12 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *            the timeout for all entries in this URL
      * @param retries
      *            the retries for all entries in this URL
-     * @return a boolean.
+     * @return a list of IP Addresses retrieved from the URL.
      */
-    public static boolean addToSpecificsFromURL(final List<IPPollAddress> specifics, final String url, final String foreignSource, final String location, final long timeout, final int retries) {
+    public static List<String> addToSpecificsFromURL(final List<IPPollAddress> specifics, final String url, final String foreignSource, final String location, final long timeout, final int retries) {
         // open the file indicated by the URL
         InputStream is = null;
+        List<String> ipAddressList = new ArrayList<>();
         try {
             final URL fileURL = new URL(url);
             is = fileURL.openStream();
@@ -241,13 +254,13 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             if (is == null) {
                 // log something
                 LOG.warn("URL does not exist: {}", url);
-                return true;
+                return ipAddressList;
             } else {
-                return addToSpecificsFromURL(specifics, fileURL.openStream(), foreignSource, location, timeout, retries);
+                return addToSpecificsFromURL(specifics, fileURL.openStream(), foreignSource, location, timeout, retries, url);
             }
         } catch (final IOException e) {
             LOG.error("Error reading URL: {}", url);
-            return false;
+            return ipAddressList;
         } finally {
             IOUtils.closeQuietly(is);
         }
@@ -256,16 +269,17 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     /**
      * <p>addToSpecificsFromURL</p>
      *
-     * @param specifics a {@link java.util.List} object.
-     * @param is a {@link java.io.InputStream} object.
+     * @param specifics a {@link List} object.
+     * @param is a {@link InputStream} object.
      * @param timeout a long.
      * @param retries a int.
-     * @return a boolean.
+     * @param url
+     * @return a List of IP Addresses retrieved from URL.
      * @throws java.io.IOException if any.
      */
-    public static boolean addToSpecificsFromURL(final List<IPPollAddress> specifics, final InputStream is, final String foreignSource, final String location, final long timeout, final int retries) throws IOException {
+    public static List<String> addToSpecificsFromURL(final List<IPPollAddress> specifics, final InputStream is, final String foreignSource, final String location, final long timeout, final int retries, String url) throws IOException {
         boolean bRet = true;
-
+        List<String> ipAddressList = new ArrayList<>();
         try {
             final BufferedReader buffer = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 
@@ -290,7 +304,10 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 }
 
                 try {
-                    specifics.add(new IPPollAddress(foreignSource, location, InetAddressUtils.addr(specIP), timeout, retries));
+                    InetAddress specific = InetAddressUtils.addr(specIP);
+                    specifics.add(new IPPollAddress(foreignSource, location, specific, timeout, retries));
+                    String ipAddress = InetAddressUtils.toIpAddrString(specific);
+                    ipAddressList.add(ipAddress);
                 } catch (final IllegalArgumentException e) {
                     LOG.warn("Unknown host \'{}\' inside discovery include file: address ignored", specIP);
                 }
@@ -299,9 +316,8 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             }
         } catch (final UnsupportedEncodingException e) {
             LOG.error("Your JVM doesn't support UTF-8");
-            return false;
         }
-        return bRet;
+        return ipAddressList;
     }
 
     /**
@@ -322,14 +338,47 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
                 long timeout = url.getTimeout().orElse(defaultTimeout);
                 int retries = url.getRetries().orElse(defaultRetries);
-
-                addToSpecificsFromURL(specifics, url.getUrl().orElse(null), url.getForeignSource().orElse(null), url.getLocation().orElse(null), timeout, retries);
+                if(url.getUrl().isPresent()) {
+                    String urlString = url.getUrl().get();
+                    List<String> ipAddressList = addToSpecificsFromURL(specifics, urlString, url.getForeignSource().orElse(null), url.getLocation().orElse(null), timeout, retries);
+                    m_urlSpecifics.put(urlString, ipAddressList);
+                }
             }
+
+            // Add URL specifics from definitions to the specifics list.
+            getConfiguration().getDefinitions().forEach(def -> {
+
+                long timeoutFromDef = def.getTimeout().orElse(defaultTimeout);
+                int retriesFromDef = def.getRetries().orElse(defaultRetries);
+
+                for (final IncludeUrl url : def.getIncludeUrls()) {
+
+                    long timeout = url.getTimeout().orElse(timeoutFromDef);
+                    int retries = url.getRetries().orElse(retriesFromDef);
+                    if (url.getUrl().isPresent()) {
+                        String urlString = url.getUrl().get();
+                        List<String> ipAddressList = addToSpecificsFromURL(specifics,
+                                                urlString,
+                                                url.getForeignSource().orElse(def.getForeignSource()),
+                                                url.getLocation().orElse(def.getLocationName()),
+                                                timeout,
+                                                retries);
+                        m_urlSpecifics.put(urlString, ipAddressList);
+                    }
+                }
+            });
 
             return specifics;
         } finally {
             getReadLock().unlock();
         }
+    }
+
+    private void clearUrlSpecifics() {
+        m_urlSpecifics.clear();
+    }
+    private void clearExcludeRanges() {
+        m_excludeRanges.clear();
     }
 
     /**
@@ -373,6 +422,45 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                 }
             }
 
+            // Add ranges from definitions to the includes list.
+            getConfiguration().getDefinitions().forEach(def -> {
+
+                long timeoutFromDef = def.getTimeout().orElse(defaultTimeout);
+                int retriesFromDef = def.getRetries().orElse(defaultRetries);
+
+                for (final IncludeRange ir : def.getIncludeRanges()) {
+
+                    // Validate IP range; if invalid, then log and discard this range
+                    try {
+                        InetAddressUtils.toIpAddrBytes(ir.getBegin());
+                    } catch (Throwable e) {
+                        LOG.warn("Definition: Begin address of discovery range is invalid, discarding: {}", ir.getBegin());
+                        continue;
+                    }
+
+                    try {
+                        InetAddressUtils.toIpAddrBytes(ir.getEnd());
+                    } catch (Throwable e) {
+                        LOG.warn("Definition : End address of discovery range is invalid, discarding: {}", ir.getEnd());
+                        continue;
+                    }
+
+                    long timeout = ir.getTimeout().orElse(timeoutFromDef);
+                    int retries = ir.getRetries().orElse(retriesFromDef);
+
+                    try {
+                        includes.add(new IPPollRange(ir.getForeignSource().orElse(def.getForeignSource()),
+                                                    ir.getLocation().orElse(def.getLocationName()),
+                                                    ir.getBegin(),
+                                                    ir.getEnd(),
+                                                    timeout,
+                                                    retries));
+                    } catch (final UnknownHostException uhE) {
+                        LOG.warn("Definition: Failed to convert address range ({}, {})", ir.getBegin(), ir.getEnd(), uhE);
+                    }
+                }
+            });
+
             return includes;
         } finally {
             getReadLock().unlock();
@@ -392,7 +480,6 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         try {
             Long defaultTimeout = getConfiguration().getTimeout().orElse(DEFAULT_TIMEOUT);
             Integer defaultRetries = getConfiguration().getRetries().orElse(DEFAULT_RETRIES);
-
             for (final Specific s : getConfiguration().getSpecifics()) {
 
                 long timeout = s.getTimeout().orElse(defaultTimeout);
@@ -406,36 +493,97 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
                     LOG.warn("Failed to convert address {}", address, e);
                 }
             }
+
+            // Map specifics from definitions to IPPollAddress and add them to specifics list.
+            getConfiguration().getDefinitions().forEach(def -> {
+
+                long timeoutFromDef = def.getTimeout().orElse(defaultTimeout);
+                int retriesFromDef = def.getRetries().orElse(defaultRetries);
+
+                for (final Specific s : def.getSpecifics()) {
+
+                    long timeout = s.getTimeout().orElse(timeoutFromDef);
+                    int retries = s.getRetries().orElse(retriesFromDef);
+
+                    final String address = s.getAddress();
+
+                    try {
+                        specifics.add(new IPPollAddress(s.getForeignSource().orElse(def.getForeignSource()),
+                                                        s.getLocation().orElse(def.getLocationName()),
+                                                        InetAddressUtils.addr(address),
+                                                        timeout,
+                                                        retries));
+                    } catch (final IllegalArgumentException e) {
+                        LOG.warn("Definition: Specific: Failed to convert address {}", address, e);
+                    }
+                }
+
+            });
+
             return specifics;
         } finally {
             getReadLock().unlock();
         }
     }
 
+
     /**
      * <p>isExcluded</p>
      *
-     * @param address a {@link java.net.InetAddress} object.
+     * @param address a {@link InetAddress} object.
+     * @param location
      * @return a boolean.
      */
     @Override
-    public boolean isExcluded(final InetAddress address) {
-        getReadLock().lock();
-        try {
-            final List<ExcludeRange> excludeRange = getConfiguration().getExcludeRanges();
-            if (excludeRange != null) {
-                final byte[] laddr = address.getAddress();
+    public boolean isExcluded(final InetAddress address, String location) {
 
-                for (final ExcludeRange range : excludeRange) {
-                    if (InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd())) {
-                        return true;
-                    }
+        String defaultLocation = LocationUtils.DEFAULT_LOCATION_NAME;
+
+        if (!m_excludeRanges.isEmpty()) {
+
+            final byte[] laddr = address.getAddress();
+            for (final ExcludeRange range : m_excludeRanges) {
+
+                if (!isLocationMatched(range.getLocation().orElse(defaultLocation), location)) {
+                    continue;
+                }
+
+                if (InetAddressUtils.isInetAddressInRange(laddr, range.getBegin(), range.getEnd())) {
+                    return true;
                 }
             }
-            return false;
+        }
+        return false;
+    }
+
+    void initializeExcludeRanges() {
+        getReadLock().lock();
+        try {
+            m_excludeRanges.addAll(getConfiguration().getExcludeRanges());
+            // Add exclude ranges from definitions. Assign location from definition.
+            getConfiguration().getDefinitions().forEach(def -> {
+                setLocationFromDefinition(def);
+                m_excludeRanges.addAll(def.getExcludeRanges());
+            });
         } finally {
             getReadLock().unlock();
         }
+    }
+
+    private void setLocationFromDefinition(Definition definition) {
+        List<ExcludeRange> excludeRangesFromDef = definition.getExcludeRanges();
+        excludeRangesFromDef.forEach(exRange -> {
+            if (!exRange.getLocation().isPresent()) {
+                exRange.setLocation(definition.getLocation().orElse(LocationUtils.DEFAULT_LOCATION_NAME));
+            }
+        });
+    }
+
+    private boolean isLocationMatched(String locationFromRange, String location) {
+        if (Strings.isNullOrEmpty(location)) {
+            location = LocationUtils.DEFAULT_LOCATION_NAME;
+        }
+        return locationFromRange.equals(location);
     }
 
     @Override
@@ -486,6 +634,57 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         }
     }
 
+    public List<Detector> getListOfDetectors(InetAddress inetAddress, String location) {
+
+        String ipAddress = InetAddressUtils.toIpAddrString(inetAddress);
+        if (Strings.isNullOrEmpty(location)) {
+            location = LocationUtils.DEFAULT_LOCATION_NAME;
+        }
+        final String sourceLocation = location;
+        final String defaultLocation = getConfiguration().getLocation().orElse(LocationUtils.DEFAULT_LOCATION_NAME);
+
+        // Find the definition that has the IP Address and return the detectors for that definition.
+        Optional<Definition> definition = getConfiguration().getDefinitions().stream().filter(def -> {
+
+            //First match should be enough to pass filter.
+            boolean specificMatch = def.getSpecifics().stream().anyMatch(specific -> {
+                return specific.getLocation().orElse(def.getLocation().orElse(defaultLocation)).equals(sourceLocation)
+                        && specific.getAddress().equals(ipAddress);
+            });
+            if(specificMatch) {
+                // IP Address found in specifics.
+                return true;
+            }
+            // Find match in url specifics
+            boolean urlSpecficMatch = def.getIncludeUrls().stream().anyMatch(includeUrl -> {
+                boolean urlLocationMatch = includeUrl.getUrl().isPresent() &&
+                        includeUrl.getLocation().orElse(def.getLocation().orElse(defaultLocation)).equals(sourceLocation);
+                if (urlLocationMatch) {
+                    List<String> urlSpecifics = m_urlSpecifics.get(includeUrl.getUrl().get());
+                    if (urlSpecifics != null) {
+                        return urlSpecifics.contains(ipAddress);
+                    }
+                }
+                return false;
+            });
+            if (urlSpecficMatch) {
+                //IP Address found in URL specifics.
+                return true;
+            }
+            // Find match in ranges.
+            return def.getIncludeRanges().stream().anyMatch(includeRange ->
+                    includeRange.getLocation().orElse(def.getLocation().orElse(defaultLocation)).equals(sourceLocation) &&
+                            InetAddressUtils.isInetAddressInRange(ipAddress, includeRange.getBegin(), includeRange.getEnd()));
+
+        }).findFirst();
+
+        if (definition.isPresent()) {
+            return definition.get().getDetectors();
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
 
     /**
      * <p>getPacketsPerSecond</p>
@@ -524,12 +723,12 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      * @return a {@link java.util.Iterator} object.
      */
     @Override
-    public Iterator<IPPollAddress> getExcludingInterator(final Iterator<IPPollAddress> it) {
+    public Iterator<IPPollAddress> getExcludingIterator(final Iterator<IPPollAddress> it) {
         return StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(it, ORDERED | IMMUTABLE), false
             )
             // Filter out excluded addresses
-            .filter(item -> !isExcluded(item.getAddress()))
+            .filter(item -> !isExcluded(item.getAddress(), item.getLocation()))
             .iterator();
     }
 
@@ -549,12 +748,13 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             final List<IPPollAddress> specifics = getSpecifics();
             final List<IPPollRange> ranges = getRanges();
             specifics.addAll(getURLSpecifics());
+            initializeExcludeRanges();
 
             final List<Iterator<IPPollAddress>> iters = new ArrayList<Iterator<IPPollAddress>>();
             iters.add(specifics.iterator());
 
             for(final IPPollRange range : ranges) {
-                iters.add(getExcludingInterator(range.iterator()));
+                iters.add(getExcludingIterator(range.iterator()));
             }
 
             return IteratorUtils.concatIterators(iters);

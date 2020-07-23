@@ -92,12 +92,6 @@ public class IPServiceEdgeDaoIT {
 
     private IdentityEntity m_identity;
 
-    @BeforeClass
-    public static void classSetUp() {
-        final Properties props = new Properties();
-        MockLogAppender.setupLogging(true, "TRACE", props);
-    }
-
     @Before
     public void setUp() {
         BeanUtils.assertAutowiring(this);

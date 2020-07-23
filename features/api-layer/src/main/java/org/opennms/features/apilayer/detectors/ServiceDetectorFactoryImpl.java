@@ -69,6 +69,11 @@ public class ServiceDetectorFactoryImpl<T extends org.opennms.netmgt.provision.S
         DetectRequest detectRequest = serviceDetectorFactory.buildRequest(address, attributes);
         return new org.opennms.netmgt.provision.DetectRequest() {
             @Override
+            public void preDetect() {
+                // pass
+            }
+
+            @Override
             public InetAddress getAddress() {
                 return detectRequest.getAddress();
             }
@@ -77,6 +82,7 @@ public class ServiceDetectorFactoryImpl<T extends org.opennms.netmgt.provision.S
             public Map<String, String> getRuntimeAttributes() {
                 return detectRequest.getRuntimeAttributes();
             }
+
         };
     }
 }

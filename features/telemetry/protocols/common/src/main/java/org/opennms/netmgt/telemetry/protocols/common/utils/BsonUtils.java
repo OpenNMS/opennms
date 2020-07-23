@@ -32,6 +32,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.bson.BsonArray;
 import org.bson.BsonBoolean;
 import org.bson.BsonDocument;
 import org.bson.BsonDouble;
@@ -77,6 +78,14 @@ public class BsonUtils {
 
     public static Optional<Boolean> getBool(final BsonDocument doc, final String... path) {
         return get(doc, path).map(BsonValue::asBoolean).map(BsonBoolean::getValue);
+    }
+
+    public static Optional<Iterable<BsonValue>> getArray(final BsonDocument doc, final String... path) {
+        return get(doc, path).map(BsonValue::asArray).map(BsonArray::getValues);
+    }
+
+    public static Optional<BsonDocument> getDocument(final BsonDocument doc, final String... path) {
+        return get(doc, path).map(BsonValue::asDocument);
     }
 
     public static <V> Optional<V> first(final Optional<V>... values) {

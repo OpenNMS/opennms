@@ -38,8 +38,6 @@ import org.opennms.netmgt.telemetry.api.receiver.ListenerFactory;
 import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
 import org.opennms.netmgt.telemetry.listeners.TcpListener;
 import org.opennms.netmgt.telemetry.listeners.TcpParser;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 
 public class TcpListenerFactory implements ListenerFactory {
 
@@ -68,9 +66,6 @@ public class TcpListenerFactory implements ListenerFactory {
         if (parser.size() != listenerDefinition.getParsers().size()) {
             throw new IllegalArgumentException("Each parser must be of type TcpParser but was not.");
         }
-        final TcpListener listener = new TcpListener(listenerDefinition.getName(), parser.iterator().next(), telemetryRegistry.getMetricRegistry());
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(listener);
-        wrapper.setPropertyValues(listenerDefinition.getParameterMap());
-        return listener;
+        return new TcpListener(listenerDefinition.getName(), parser.iterator().next(), telemetryRegistry.getMetricRegistry());
     }
 }

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.provision;
 
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -246,18 +247,20 @@ public abstract class BasePolicy<T> {
      * <p>act</p>
      *
      * @param iface a T object.
+     * @param attributes that can be set on script.
      * @return a T object.
      */
-    public abstract T act(final T iface);
+    public abstract T act(final T iface, Map<String, Object> attributes);
 
 
     /**
      * <p>apply</p>
      *
      * @param iface a T object.
+     * @param attributes that can be set on script.
      * @return a T object.
      */
-    public T apply(final T iface) {
+    public T apply(final T iface, Map<String, Object> attributes) {
         if (iface == null) {
             return null;
         }
@@ -265,7 +268,7 @@ public abstract class BasePolicy<T> {
         if (matches(iface)) {
             // TODO add MDC log info for resource at hand
             LOG.debug("Found Match {} for {}", iface, this);
-            return act(iface);
+            return act(iface, attributes);
         }
         
         // TODO add MDC log info for resource at hand

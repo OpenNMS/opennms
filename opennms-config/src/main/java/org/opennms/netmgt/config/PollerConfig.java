@@ -398,30 +398,4 @@ public interface PollerConfig extends PathOutageConfig {
      * @return a Lock
      */
     Lock getWriteLock();
-
-    default Package findPackageForService(String ipAddr, String serviceName) {
-        Enumeration<Package> en = this.enumeratePackage();
-        Package lastPkg = null;
-
-        while (en.hasMoreElements()) {
-            Package pkg = en.nextElement();
-            if (pollableServiceInPackage(ipAddr, serviceName, pkg))
-                lastPkg = pkg;
-        }
-        return lastPkg;
-    }
-
-    default boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
-        if (pkg.getRemote()) {
-            return false;
-        }
-
-        if (!this.isServiceInPackageAndEnabled(serviceName, pkg)) return false;
-
-        boolean inPkg = this.isInterfaceInPackage(ipAddr, pkg);
-        if (inPkg) return true;
-
-        this.rebuildPackageIpListMap();
-        return this.isInterfaceInPackage(ipAddr, pkg);
-    }
 }

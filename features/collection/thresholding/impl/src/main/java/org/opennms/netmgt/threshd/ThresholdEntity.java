@@ -35,8 +35,15 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
+import org.opennms.core.rpc.utils.mate.EmptyScope;
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.core.rpc.utils.mate.FallbackScope;
+import org.opennms.core.rpc.utils.mate.Scope;
 import org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
@@ -45,6 +52,8 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.net.InetAddresses;
 
 /**
  * Wraps the XML created org.opennms.netmgt.config.threshd.Threshold class
@@ -74,12 +83,15 @@ public final class ThresholdEntity implements Cloneable {
         s_thresholdEvaluators.add(new ThresholdEvaluatorRearmingAbsoluteChange());
     }
 
+    private final EntityScopeProvider m_entityScopeProvider;
+
     /**
      * Constructor.
      */
-    public ThresholdEntity() {
+    public ThresholdEntity(EntityScopeProvider entityScopeProvider) {
         //Put in a default list for the "null" key (the default evaluators)
         m_thresholdEvaluatorStates.put(null, new LinkedList<ThresholdEvaluatorState>());
+        m_entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
     }
 
     /**
@@ -162,7 +174,7 @@ public final class ThresholdEntity implements Cloneable {
      */
     @Override
     public ThresholdEntity clone() {
-        ThresholdEntity clone = new ThresholdEntity();
+        ThresholdEntity clone = new ThresholdEntity(m_entityScopeProvider);
         for (ThresholdEvaluatorState thresholdItem : getThresholdEvaluatorStates(null)) {
             clone.addThreshold(thresholdItem.getThresholdConfig(), thresholdItem.getThresholdingSession());
         }
@@ -233,7 +245,6 @@ public final class ThresholdEntity implements Cloneable {
      */
     public List<Event> evaluateAndCreateEvents(CollectionResourceWrapper resource, Map<String, Double> values, Date date) {
         List<Event> events = new LinkedList<Event>();
-        double dsValue=0.0;
 
         String instance = null;
         if (resource != null) {
@@ -243,22 +254,82 @@ public final class ThresholdEntity implements Cloneable {
             // such as the SiblingColumnStorageStrategy
             instance = resource.getInstanceLabel();
         }
-        try {
-            if (getThresholdEvaluatorStates(instance).size() > 0) {
-                dsValue=getThresholdConfig().evaluate(values);
-            } else {
-                throw new IllegalStateException("No thresholds have been added.");
-            }
-        } catch (ThresholdExpressionException e) {
-            LOG.warn("Failed to evaluate: ", e);
-            return events; //No events to report
-        }
-        
-        LOG.debug("evaluate: value= {} against threshold: {}", dsValue, this);
 
+        if (getThresholdEvaluatorStates(instance).isEmpty()) {
+            throw new IllegalStateException("No thresholds have been added.");
+        }
+
+        // This reference contains the function that will be used by each evaluator to retrieve the status
+        AtomicReference<EvaluateFunction> evaluateFunctionRef = new AtomicReference<>(null);
+
+        // Depending on the type of threshold, we want to evaluate it differently
+        // Specifically expression based thresholds are treated special because their behavior must change depending on
+        // whether or not a given expression has been interpolated already
+        getThresholdConfig().accept(new ThresholdDefVisitor() {
+            @Override
+            public void visit(ThresholdConfigWrapper thresholdConfigWrapper) {
+                double computedValue = thresholdConfigWrapper.evaluate(values);
+                evaluateFunctionRef.set(item -> new ThresholdEvaluatorState.ValueStatus(computedValue,
+                        item.evaluate(computedValue, resource == null ? null : resource.getSequenceNumber())));
+            }
+
+            @Override
+            public void visit(ExpressionConfigWrapper expressionConfigWrapper) {
+                ExpressionThresholdValue expressionThresholdValue = new ExpressionThresholdValue() {
+                    // This covers the case where an expression has not yet been interpolated, we want to evaluate and
+                    // also retrieve the interpolated expression so we can persist it in our state going forward
+                    @Override
+                    public double get(Consumer<String> expressionConsumer) throws ThresholdExpressionException {
+                        // Default to empty scopes and then attempt to populate each of node, interface, and service
+                        // scopes below
+                        Scope[] scopes = new Scope[]{EmptyScope.EMPTY, EmptyScope.EMPTY, EmptyScope.EMPTY};
+
+                        if (resource != null) {
+                            scopes[0] = m_entityScopeProvider.getScopeForNode(resource.getNodeId());
+                            String interfaceIp = resource.getHostAddress();
+                            if (interfaceIp != null) {
+                                scopes[1] = m_entityScopeProvider.getScopeForInterface(resource.getNodeId(),
+                                        interfaceIp);
+                                scopes[2] = m_entityScopeProvider.getScopeForService(resource.getNodeId(),
+                                        InetAddresses.forString(interfaceIp), resource.getServiceName());
+                            }
+                        }
+
+                        FallbackScope fallbackScope = new FallbackScope(scopes);
+
+                        ExpressionConfigWrapper.ExpressionValue expressionValue = expressionConfigWrapper
+                                .interpolateAndEvaluate(values, fallbackScope);
+                        expressionConsumer.accept(expressionValue.expression);
+
+                        return expressionValue.value;
+                    }
+
+                    // This covers the case where an expression has already been interpolated and the evaluator is
+                    // providing us that expression that it has persisted along with its state so that we do not need to
+                    // perform interpolation again
+                    @Override
+                    public double get(String evaluatedExpression) throws ThresholdExpressionException {
+                        return expressionConfigWrapper.evaluate(evaluatedExpression, values);
+                    }
+                };
+
+                evaluateFunctionRef.set(item -> item.evaluate(expressionThresholdValue, resource == null ? null :
+                        resource.getSequenceNumber()));
+            }
+        });
+
+        EvaluateFunction evaluateFunction = evaluateFunctionRef.get();
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates(instance)) {
-            Status status = item.evaluate(dsValue);
-            Event event = item.getEventForState(status, date, dsValue, resource);
+            ThresholdEvaluatorState.ValueStatus result;
+            try {
+                result = evaluateFunction.evaluate(item);
+            } catch (ThresholdExpressionException e) {
+                LOG.warn("Error evaluating: threshold: {} and evaluator: {}", this, item, e);
+                continue;
+            }
+            Status status = result.status;
+            Event event = item.getEventForState(status, date, result.value, resource);
+            LOG.debug("evaluated: value= {} against threshold: {} and evaluator: {}", result.value, this, item);
             if (event != null) {
                 events.add(event);
             }
@@ -314,7 +385,15 @@ public final class ThresholdEntity implements Cloneable {
             //Create the new list
             result=new LinkedList<ThresholdEvaluatorState>();
             for(ThresholdEvaluatorState state: defaultList) {
-                result.add(state.getCleanClone());
+                ThresholdEvaluatorState instancedState = state.getCleanClone();
+
+                if (instance != null) {
+                    // We need to set the instance on the evaluator state so that it can update its key to avoid
+                    // collisions and this seems to be the only convenient spot to do that
+                    instancedState.setInstance(instance);
+                }
+
+                result.add(instancedState);
             }
             
             //Store the new list with the instance as the key
@@ -372,5 +451,11 @@ public final class ThresholdEntity implements Cloneable {
 
     public void setEventProxy(ThresholdingEventProxy eventProxy) {
         m_thresholdingEventProxy = eventProxy;
+    }
+
+    @FunctionalInterface
+    private interface EvaluateFunction {
+        ThresholdEvaluatorState.ValueStatus evaluate(ThresholdEvaluatorState thresholdEvaluatorState)
+                throws ThresholdExpressionException;
     }
 }

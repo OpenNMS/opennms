@@ -354,12 +354,6 @@
           </div>
         </div>
 
-      <div class="form-row form-group">
-          <label for="tuiPin" class="col-sm-2 col-form-label">Telephone PIN</label>
-          <div class="col-sm-10">
-              <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= (tuiPin == null? "" : tuiPin) %>" />
-          </div>
-      </div>
 
 	<div class="form-group">
         <h3>Security Roles</h3>
@@ -455,6 +449,13 @@
             <input class="form-control" type="text" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>'/>
           </div>
         </div>
+
+    <div class="form-row form-group">
+          <label for="tuiPin" class="col-sm-2 col-form-label">Telephone PIN</label>
+          <div class="col-sm-10">
+              <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= (tuiPin == null? "" : tuiPin) %>" />
+          </div>
+    </div>
 
     <h3>Date/Time Preferences</h3>
     <div class="form-row form-group">

@@ -60,7 +60,7 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageConsumerManager;
-import org.opennms.core.ipc.sink.model.SinkMessageProtos;
+import org.opennms.core.ipc.sink.model.SinkMessage;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
@@ -104,6 +104,10 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     private final KafkaConfigProvider configProvider;
     // Cache that stores chunks in large message.
     private Cache<String, ByteString> largeMessageCache;
+    private Cache<String, Integer> currentChunkCache;
+
+    private MetricRegistry metricRegistry;
+    private JmxReporter jmxReporter;
 
     @Autowired
     private TracerRegistry tracerRegistry;
@@ -116,10 +120,12 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         this(new OnmsKafkaConfigProvider(KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX));
     }
 
-    public KafkaMessageConsumerManager(KafkaConfigProvider configProvider, Identity identity, TracerRegistry tracerRegistry) {
+    public KafkaMessageConsumerManager(KafkaConfigProvider configProvider, Identity identity,
+                                       TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         this.configProvider = Objects.requireNonNull(configProvider);
         this.identity = identity;
         this.tracerRegistry = tracerRegistry;
+        this.metricRegistry = metricRegistry;
     }
     public KafkaMessageConsumerManager(KafkaConfigProvider configProvider) {
         this.configProvider = Objects.requireNonNull(configProvider);
@@ -132,8 +138,6 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         private final KafkaConsumer<String, byte[]> consumer;
         private final String topic;
 
-        private final MetricRegistry metricRegistry = new MetricRegistry();
-        private JmxReporter jmxReporter = null;
         private Histogram messageSize;
         private Timer dispatchTime;
 
@@ -144,11 +148,8 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             topic = topicNameFactory.getName();
 
             consumer = Utils.runWithGivenClassLoader(() -> new KafkaConsumer<>(kafkaConfig), KafkaConsumer.class.getClassLoader());
-            jmxReporter = JmxReporter.forRegistry(metricRegistry).
-                    inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
-            jmxReporter.start();
-            messageSize = metricRegistry.histogram(MetricRegistry.name(module.getId(), METRIC_MESSAGE_SIZE));
-            dispatchTime = metricRegistry.timer(MetricRegistry.name(module.getId(), METRIC_DISPATCH_TIME));
+            messageSize = getMetricRegistry().histogram(MetricRegistry.name(module.getId(), METRIC_MESSAGE_SIZE));
+            dispatchTime = getMetricRegistry().timer(MetricRegistry.name(module.getId(), METRIC_DISPATCH_TIME));
 
         }
 
@@ -162,13 +163,23 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                     for (ConsumerRecord<String, byte[]> record : records) {
                         try {
                             // Parse sink message content from protobuf.
-                            SinkMessageProtos.SinkMessage sinkMessage = SinkMessageProtos.SinkMessage.parseFrom(record.value());
+                            SinkMessage sinkMessage = SinkMessage.parseFrom(record.value());
                             byte[] messageInBytes = sinkMessage.getContent().toByteArray();
+                            String messageId = sinkMessage.getMessageId();
                             // Handle large message where there are multiple chunks of message.
                             if (sinkMessage.getTotalChunks() > 1) {
-                                String messageId = sinkMessage.getMessageId();
-                                if (largeMessageCache == null) {
-                                    LOG.error("LargeMessageCache config {}={} is invalid", MESSAGEID_CACHE_CONFIG, kafkaConfig.getProperty(MESSAGEID_CACHE_CONFIG));
+
+                                if (largeMessageCache == null || currentChunkCache == null) {
+                                    LOG.error("LargeMessageCache config {}={} is invalid", MESSAGEID_CACHE_CONFIG,
+                                            kafkaConfig.getProperty(MESSAGEID_CACHE_CONFIG));
+                                    continue;
+                                }
+                                // Avoid duplicate chunks. discard if chunk is repeated.
+                                if(currentChunkCache.getIfPresent(messageId) == null) {
+                                    currentChunkCache.put(messageId, 0);
+                                }
+                                Integer chunkNum = currentChunkCache.getIfPresent(messageId);
+                                if(chunkNum != null && chunkNum == sinkMessage.getCurrentChunkNumber()) {
                                     continue;
                                 }
                                 ByteString byteString = largeMessageCache.getIfPresent(messageId);
@@ -177,12 +188,19 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                                 } else {
                                     largeMessageCache.put(messageId, sinkMessage.getContent());
                                 }
+                                currentChunkCache.put(messageId, ++chunkNum);
                                 // continue till all chunks arrive.
-                                if (sinkMessage.getTotalChunks() > sinkMessage.getCurrentChunkNumber() + 1) {
+                                if (sinkMessage.getTotalChunks() != chunkNum) {
                                     continue;
                                 }
-                                messageInBytes = largeMessageCache.getIfPresent(messageId).toByteArray();
-                                largeMessageCache.invalidate(messageId);
+                                byteString = largeMessageCache.getIfPresent(messageId);
+                                if (byteString != null) {
+                                    messageInBytes = byteString.toByteArray();
+                                    largeMessageCache.invalidate(messageId);
+                                    currentChunkCache.invalidate(messageId);
+                                } else {
+                                    continue;
+                                }
                             }
                             // Update metrics.
                             messageSize.update(messageInBytes.length);
@@ -214,14 +232,12 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             }
         }
 
-        private Tracer.SpanBuilder buildSpanFromSinkMessage(SinkMessageProtos.SinkMessage sinkMessage) {
+        private Tracer.SpanBuilder buildSpanFromSinkMessage(SinkMessage sinkMessage) {
 
             Tracer tracer = getTracer();
             Tracer.SpanBuilder spanBuilder;
             Map<String, String> tracingInfoMap = new HashMap<>();
-            sinkMessage.getTracingInfoList().forEach(tracingInfo -> {
-                tracingInfoMap.put(tracingInfo.getKey(), tracingInfo.getValue());
-            });
+            sinkMessage.getTracingInfoMap().forEach(tracingInfoMap::put);
             SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(tracingInfoMap));
             if (context != null) {
                 // Span on consumer side will follow the span from producer (minion).
@@ -236,17 +252,13 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         public void shutdown() {
             closed.set(true);
             consumer.wakeup();
-            if (jmxReporter != null) {
-                jmxReporter.close();
-            }
         }
     }
-
 
     @Override
     protected void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (!consumerRunnersByModule.containsKey(module)) {
-            LOG.info("Starting consumers for module: {}", module);
+            LOG.info("Starting consumers for module: {}", module.getId());
 
             final int numConsumerThreads = getNumConsumerThreads(module);
             final List<KafkaConsumerRunner> consumerRunners = new ArrayList<>(numConsumerThreads);
@@ -263,7 +275,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     @Override
     protected void stopConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (consumerRunnersByModule.containsKey(module)) {
-            LOG.info("Stopping consumers for module: {}", module);
+            LOG.info("Stopping consumers for module: {}", module.getId());
             final List<KafkaConsumerRunner> consumerRunners = consumerRunnersByModule.get(module);
             for (KafkaConsumerRunner consumerRunner : consumerRunners) {
                 consumerRunner.shutdown();
@@ -283,8 +295,22 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         LOG.info("KafkaMessageConsumerManager: consuming from Kafka using: {}", kafkaConfig);
         String cacheConfig = kafkaConfig.getProperty(MESSAGEID_CACHE_CONFIG, DEFAULT_MESSAGEID_CONFIG);
         largeMessageCache =  CacheBuilder.from(cacheConfig).build();
+        currentChunkCache = CacheBuilder.from(cacheConfig).build();
         if (identity != null && tracerRegistry != null) {
             tracerRegistry.init(identity.getId());
+        }
+        jmxReporter = JmxReporter.forRegistry(getMetricRegistry()).
+                inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
+        jmxReporter.start();
+    }
+
+    public void shutdown() {
+        executor.shutdown();
+        if (jmxReporter != null) {
+            jmxReporter.close();
+        }
+        if(getStartupExecutor() != null) {
+            getStartupExecutor().shutdown();
         }
     }
 
@@ -309,5 +335,16 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
             return tracerRegistry.getTracer();
         }
         return GlobalTracer.get();
+    }
+
+    public MetricRegistry getMetricRegistry() {
+        if (metricRegistry == null) {
+            metricRegistry = new MetricRegistry();
+        }
+        return metricRegistry;
+    }
+
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
     }
 }

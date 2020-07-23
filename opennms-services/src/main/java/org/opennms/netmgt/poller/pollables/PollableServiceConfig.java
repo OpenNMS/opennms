@@ -32,23 +32,18 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
-import org.opennms.core.utils.RegexUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
@@ -58,9 +53,6 @@ import org.opennms.netmgt.scheduler.Timer;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 
 /**
  * Represents a PollableServiceConfig
@@ -72,7 +64,6 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private static final Logger LOG = LoggerFactory.getLogger(PollableServiceConfig.class);
 
     private PollerConfig m_pollerConfig;
-    private PollOutagesConfig m_pollOutagesConfig;
     private PollableService m_service;
     private Map<String,Object> m_parameters = null;
     private Package m_pkg;
@@ -86,24 +77,25 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private final LatencyStoringServiceMonitorAdaptor m_latencyStoringServiceMonitorAdaptor;
     private final InvertedStatusServiceMonitorAdaptor m_invertedStatusServiceMonitorAdaptor = new InvertedStatusServiceMonitorAdaptor();
 
+    private final ReadablePollOutagesDao m_pollOutagesDao;
+    
     /**
      * <p>Constructor for PollableServiceConfig.</p>
      *
      * @param svc a {@link org.opennms.netmgt.poller.pollables.PollableService} object.
      * @param pollerConfig a {@link org.opennms.netmgt.config.PollerConfig} object.
-     * @param pollOutagesConfig a {@link org.opennms.netmgt.config.PollOutagesConfig} object.
      * @param pkg a {@link org.opennms.netmgt.config.poller.Package} object.
      * @param timer a {@link org.opennms.netmgt.scheduler.Timer} object.
      */
-    public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer, PersisterFactory persisterFactory,
-            ThresholdingService thresholdingService, LocationAwarePollerClient locationAwarePollerClient) {
+    public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, Package pkg, Timer timer, PersisterFactory persisterFactory,
+                                 ThresholdingService thresholdingService, LocationAwarePollerClient locationAwarePollerClient, ReadablePollOutagesDao pollOutagesDao) {
         m_service = svc;
         m_pollerConfig = pollerConfig;
-        m_pollOutagesConfig = pollOutagesConfig;
         m_pkg = pkg;
         m_timer = timer;
         m_locationAwarePollerClient = Objects.requireNonNull(locationAwarePollerClient);
         m_latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory, thresholdingService);
+        m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
 
         this.findService();
     }
@@ -145,6 +137,10 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
             PollerResponse response = future.get();
             PollStatus result = response.getPollStatus();
             LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
+
+            // Track the results of the poll
+            m_service.getContext().trackPoll(m_service, result);
+
             return result;
         } catch (Throwable e) {
             return RpcExceptionUtils.handleException(e, new RpcExceptionHandler<PollStatus>() {
@@ -236,6 +232,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         }
 
         long when = m_configService.getInterval();
+        boolean ignoreUnmanaged = false;
 
         if (m_service.getStatus().isDown()) {
             final long downFor = m_timer.getCurrentTime() - m_service.getStatusChangeTime();
@@ -245,7 +242,12 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 LOG.debug("getInterval(): Checking downtime: {}", dt);
                 if (dt.getBegin() <= downFor) {
                     LOG.debug("getInterval(): begin ({}) <= {}", dt.getBegin(), downFor);
-                    if (isTrue(dt.getDelete())) {
+                    final String delete = dt.getDelete();
+                    if (Downtime.DELETE_ALWAYS.equals(delete)) {
+                        when = -1;
+                        ignoreUnmanaged = true;
+                        matched = true;
+                    } else if (Downtime.DELETE_MANAGED.equals(delete)) {
                         when = -1;
                         matched = true;
                     }
@@ -260,7 +262,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                     }
                 }
             }
-            LOG.debug("getInterval(): when={}, matched={}", when, matched);
+            LOG.debug("getInterval(): when={}, matched={}, ignoreUnmanaged={}", when, matched, ignoreUnmanaged);
             if (!matched) {
                 LOG.error("Downtime model is invalid on package {}, cannot schedule service {}", m_pkg.getName(), m_service);
                 return -1;
@@ -268,14 +270,10 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         }
 
         if (when < 0) {
-            m_service.sendDeleteEvent();
+            m_service.sendDeleteEvent(ignoreUnmanaged);
         }
 
         return when;
-    }
-
-    private boolean isTrue(final String value) {
-        return value != null && (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes"));
     }
 
     /**
@@ -288,12 +286,12 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         long nodeId=m_service.getNodeId();
         for (String outageName : m_pkg.getOutageCalendars()) {
             // Does the outage apply to the current time?
-            if (m_pollOutagesConfig.isTimeInOutage(m_timer.getCurrentTime(), outageName)) {
+            if (m_pollOutagesDao.isTimeInOutage(m_timer.getCurrentTime(), outageName)) {
                 // Does the outage apply to this interface?
 
-                if (m_pollOutagesConfig.isNodeIdInOutage(nodeId, outageName) || 
-                        (m_pollOutagesConfig.isInterfaceInOutage(m_service.getIpAddr(), outageName)) || 
-                        (m_pollOutagesConfig.isInterfaceInOutage("match-any", outageName))) {
+                if (m_pollOutagesDao.isNodeIdInOutage(nodeId, outageName) || 
+                        (m_pollOutagesDao.isInterfaceInOutage(m_service.getIpAddr(), outageName)) || 
+                        (m_pollOutagesDao.isInterfaceInOutage("match-any", outageName))) {
                     LOG.debug("scheduledOutage: configured outage '{}' applies, {} will not be polled.", outageName, m_configService);
                     return true;
                 }

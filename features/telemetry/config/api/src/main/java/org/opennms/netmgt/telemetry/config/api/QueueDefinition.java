@@ -76,4 +76,12 @@ public interface QueueDefinition {
      * @return the queue size
      */
     Optional<Integer> getQueueSize();
+
+    /**
+     * Whether or not the routing key should be used when forwarding messages to the broker.
+     *
+     * @return whether or not to use the routing key
+     */
+    Optional<Boolean> getUseRoutingKey();
+
 }

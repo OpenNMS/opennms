@@ -48,15 +48,37 @@ import org.opennms.netmgt.provision.SnmpInterfacePolicy;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.snmp.SnmpProfileMapper;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
+
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
 
 /*
  * ProvisionService
  * @author brozow
  */
 public interface ProvisionService {
+
+    String NODE_ID = "nodeId";
+
+    String LOCATION = "location";
+
+    String IP_ADDRESS = "ipAddress";
+
+    String FOREIGN_ID = "foreignId";
+
+    String FOREIGN_SOURCE = "foreignSource";
+
+    String DETECTOR_NAME = "detectorName";
+
+    String ABORT = "abort";
+
+    String ERROR = "error";
+
 
     boolean isDiscoveryEnabled();
     
@@ -124,7 +146,7 @@ public interface ProvisionService {
     OnmsNode getRequisitionedNode(String foreignSource, String foreignId);
 
     /**
-     * Delete the indicated node form the database.
+     * Delete the indicated node from the database.
      */
     @Transactional
     void deleteNode(Integer nodeId);
@@ -132,8 +154,19 @@ public interface ProvisionService {
     @Transactional
     void deleteInterface(Integer nodeId, String ipAddr);
 
+    /**
+     * Delete the indicated service from the database.
+     * 
+     * If the service is the last service on the interface, delete the interface as well.
+     * If the interface is the last interface on the node, delete the node as well.
+     * 
+     * @param nodeId the node containing the service
+     * @param addr the IP address containing the service
+     * @param service the service to delete
+     * @param ignoreUnmanaged if true, cascade delete the containing interface if only unmanaged services remain
+     */
     @Transactional
-    void deleteService(Integer nodeId, InetAddress addr, String service);
+    void deleteService(Integer nodeId, InetAddress addr, String service, boolean ignoreUnmanaged);
 
     /**
      * Insert the provided node into the database
@@ -160,7 +193,7 @@ public interface ProvisionService {
      *
      * @param name
      *            the name of the OnmsCategory to look up
-     * @return a OnmsCategor that represents the given name, if none existed
+     * @return an OnmsCategory that represents the given name, if none existed
      *         in the database a new one will have been created.
      */
     @Transactional
@@ -241,4 +274,12 @@ public interface ProvisionService {
     LocationAwareSnmpClient getLocationAwareSnmpClient();
 
     LocationAwareDnsLookupClient getLocationAwareDnsLookupClient();
+
+    SnmpProfileMapper getSnmpProfileMapper();
+
+    public void setSnmpProfileMapper(SnmpProfileMapper snmpProfileMapper);
+
+    public void setTracer(Tracer tracer);
+
+    public Span buildAndStartSpan(String name, SpanContext spanContext);
 }

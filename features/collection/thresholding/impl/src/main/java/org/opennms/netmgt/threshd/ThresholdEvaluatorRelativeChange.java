@@ -73,15 +73,30 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
     public static class ThresholdEvaluatorStateRelativeChange extends AbstractThresholdEvaluatorState<ThresholdEvaluatorStateRelativeChange.State> {
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
 
-        private static class State implements Serializable {
+        static class State extends AbstractThresholdEvaluatorState.AbstractState {
             private static final long serialVersionUID = 1L;
             private double m_multiplier;
             private double m_lastSample = 0.0;
             private double m_previousTriggeringSample;
+
+            @Override
+            public String toString() {
+                StringBuilder sb = new StringBuilder();
+                sb.append("multiplier=").append(m_multiplier);
+                sb.append("\nlastSample=").append(m_lastSample);
+                sb.append("\npreviousTriggeringSample=").append(m_previousTriggeringSample);
+                String superString = super.toString();
+
+                if (superString != null) {
+                    sb.append("\n").append(superString);
+                }
+
+                return sb.toString();
+            }
         }
 
         public ThresholdEvaluatorStateRelativeChange(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
-            super(threshold, thresholdingSession);
+            super(threshold, thresholdingSession, ThresholdEvaluatorStateRelativeChange.State.class);
             setThresholdConfig(threshold);
         }
 
@@ -206,10 +221,10 @@ public class ThresholdEvaluatorRelativeChange implements ThresholdEvaluator {
         public boolean isTriggered() {
             return false;
         }
-        
-        // FIXME This must be implemented correctly
+
         @Override
         public void clearStateBeforePersist() {
+            initializeState();
         }
 
     }

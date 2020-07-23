@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.function.Function;
 
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 
 
@@ -55,7 +56,7 @@ public class NxosTelemetryAdapterIT extends AbstractAdapterIT {
 
     @Override
     protected Function<String, Boolean> getSentinelReadyVerificationFunction() {
-        return (output) -> output.contains("Route: Sink.Server.Telemetry-NXOS started and consuming from: queuingservice://OpenNMS.Sink.Telemetry-NXOS");
+        return (output) -> output.contains("Route: Sink.Server.Telemetry-NXOS started and consuming from: queuingservice://" + SystemInfoUtils.getInstanceId() + ".Sink.Telemetry-NXOS");
     }
 
     @Override

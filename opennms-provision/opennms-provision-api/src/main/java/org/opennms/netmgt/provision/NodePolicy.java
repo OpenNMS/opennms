@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision;
 
+import java.util.Map;
+
 import org.opennms.netmgt.model.OnmsNode;
 
 /**
@@ -37,11 +39,14 @@ import org.opennms.netmgt.model.OnmsNode;
  * @version $Id: $
  */
 public interface NodePolicy extends OnmsPolicy {
+
+    String RUN_IN_TRANSACTION = "transaction";
     /**
      * <p>apply</p>
      *
-     * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
+     * @param node a {@link OnmsNode} object.
+     * @param attributes that can be set on script.
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    public OnmsNode apply(OnmsNode node);
+    public OnmsNode apply(OnmsNode node, Map<String, Object> attributes);
 }

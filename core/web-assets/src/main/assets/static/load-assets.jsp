@@ -4,8 +4,13 @@ java.util.*,
 org.opennms.web.assets.api.*,
 org.opennms.web.assets.impl.*,
 org.slf4j.*
-" %><%!
+" %>
+<%@ page import="org.owasp.encoder.Encode" %>
+<%@ page import="com.google.common.collect.Sets" %>
+<%!
 private static final Logger LOG = LoggerFactory.getLogger(AssetLocator.class);
+private static final Set<String> WHITELIST_ASSET_MEDIA = Sets.newHashSet("screen");
+private static final Set<String> WHITELIST_ASSET_ASYNC = Sets.newHashSet("true");
 %><%
 final AssetLocator locator = AssetLocatorImpl.getInstance();
 //locator.reload();
@@ -15,10 +20,10 @@ if (locator == null) {
     LOG.warn("load-assets.jsp is missing the locator");
 } else {
     final String media = request.getParameter("asset-media");
-    final String mediaString = media == null? "" : " media=\"" + media + "\"";
+    final String mediaString = WHITELIST_ASSET_MEDIA.contains(media) ? " media=\"" + media + "\"" : "";
     final String type = request.getParameter("asset-type");
     final boolean defer = Boolean.valueOf(request.getParameter("asset-defer"));
-    final String async = request.getParameter("asset-async");
+    final String async = WHITELIST_ASSET_ASYNC.contains(request.getParameter("asset-async")) ? request.getParameter("asset-async") : null;
 
     Boolean minified = null;
     final String minifiedString = request.getParameter("minified");
@@ -60,7 +65,7 @@ if (locator == null) {
                         .append(resource.getPath())
                         .append("?v=").append(lastModified)
                         .append("\"");
-                    if (mediaString != null && mediaString.trim() != "") {
+                    if (mediaString != null && !mediaString.trim().equals("")) {
                         sb.append(mediaString);
                     }
                     sb.append(">");

@@ -32,16 +32,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
@@ -50,16 +47,16 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.opennms.netmgt.events.api.EventParameterUtils;
+import org.opennms.features.jest.client.ConnectionPoolShutdownException;
+import org.opennms.features.jest.client.bulk.BulkException;
+import org.opennms.features.jest.client.bulk.BulkRequest;
+import org.opennms.features.jest.client.bulk.BulkWrapper;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +69,6 @@ import io.searchbox.core.BulkResult;
 import io.searchbox.core.BulkResult.BulkResultItem;
 import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Index;
-import io.searchbox.core.Update;
 
 public class EventToIndex implements AutoCloseable {
 
@@ -164,6 +160,9 @@ public class EventToIndex implements AutoCloseable {
 				.thenAcceptAsync(this::sendEvents, executor)
 				.exceptionally(e -> {
 					LOG.error("Unexpected exception during task completion: " + e.getMessage(), e);
+					if (e.getCause() instanceof ConnectionPoolShutdownException) {
+						ExceptionUtils.handle(getClass(), (ConnectionPoolShutdownException) e.getCause(), events);
+					}
 					return null;
 				});
 	}
@@ -316,11 +315,11 @@ public class EventToIndex implements AutoCloseable {
 		return index;
 	}
 
-	private void handleParameters(Event event, JSONObject body) {
+	void handleParameters(Event event, JSONObject body) {
 		// Decide if oids should be grouped in a single JsonArray or flattened
 		if (groupOidParameters) {
 			final List<Parm> oidParameters = event.getParmCollection().stream().filter(p -> isOID(p.getParmName())).collect(Collectors.toList());
-			final List<Parm> normalParameters = event.getParmCollection();
+			final List<Parm> normalParameters = new ArrayList<>(event.getParmCollection());
 			normalParameters.removeAll(oidParameters);
 
 			// Handle non oid paramaters as always
@@ -343,7 +342,7 @@ public class EventToIndex implements AutoCloseable {
 		}
 	}
 
-	private void handleParameters(Event event, List<Parm> parameters, JSONObject body) {
+	void handleParameters(Event event, List<Parm> parameters, JSONObject body) {
 		final JSONParser jsonParser = new JSONParser();
 		for(Parm parm : parameters) {
 			final String parmName = "p_" + parm.getParmName().replaceAll("\\.", "_");

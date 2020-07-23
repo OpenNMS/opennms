@@ -37,11 +37,15 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -144,6 +148,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
+        "classpath:/META-INF/opennms/applicationContext-snmp-profile-mapper.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
         "classpath:/mockForeignSourceContext.xml",
@@ -566,6 +572,55 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         //Verify node count
         assertEquals(0, getNodeDao().countAll());
     }
+
+    @Test(timeout=300000)
+    @JUnitSnmpAgents({
+            @JUnitSnmpAgent(host="198.51.100.201", resource="classpath:/snmpTestData3.properties"),
+            // for discovering the "SNMP" service on the second interface
+            @JUnitSnmpAgent(host="198.51.100.204", resource="classpath:/snmpTestData3.properties")
+    })
+    public void testPopulateWithoutMonitoredSNMPServiceAndNodeScan() throws Exception {
+
+
+        importFromResource("classpath:/requisition_snmp_primary_but_no_service.xml", Boolean.TRUE.toString());
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+
+        //Verify ipinterface count
+        assertEquals(1, getInterfaceDao().countAll());
+
+        runPendingScans();
+
+        //Verify distpoller count
+        assertEquals(1, getDistPollerDao().countAll());
+
+        //Verify node count
+        assertEquals(1, getNodeDao().countAll());
+
+        //Verify ipinterface count
+        assertEquals(2, getInterfaceDao().countAll());
+
+        //Verify ifservices count - discover snmp service on other if
+        assertEquals("Unexpected number of services found: " + getMonitoredServiceDao().findAll(), 2, getMonitoredServiceDao().countAll());
+
+        //Verify service count
+        assertEquals(1, getServiceTypeDao().countAll());
+
+        //Verify snmpInterface count
+        assertEquals(6, getSnmpInterfaceDao().countAll());
+
+        // Node Delete
+        importFromResource("classpath:/nonodes-snmp.xml", Boolean.TRUE.toString());
+
+        //Verify node count
+        assertEquals(0, getNodeDao().countAll());
+
+    }
+
 
     // fail if we take more than five minutes
     @Test(timeout=300000)
@@ -1246,6 +1301,15 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
         assertEquals(9, schedulesForNode.size());
         assertEquals(9, m_provisioner.getScheduleLength());
+
+        // Check that re-scheduling won't trigger duplicate scheduling for a given node.
+        getScanExecutor().resume();
+        m_provisioner.addToScheduleQueue(schedulesForNode.get(0));
+        m_provisioner.scheduleRescanForExistingNodes();
+        schedulesForNode = m_provisionService.getScheduleForNodes();
+
+        assertEquals(9, schedulesForNode.size());
+        assertEquals(9, m_provisioner.getScheduleLength());
     }
 
     @Test(timeout=300000)
@@ -1413,7 +1477,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         policy.setLabel(OLD_LABEL);
 
         // Apply the policy
-        nodeCopy = policy.apply(nodeCopy);
+        nodeCopy = policy.apply(nodeCopy, Collections.emptyMap());
         assertTrue(nodeCopy.getRequisitionedCategories().contains(TEST_CATEGORY));
 
         final NodeLabelChangedEventBuilder eb = new NodeLabelChangedEventBuilder("OnmsNode.mergeNodeAttributes");

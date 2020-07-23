@@ -29,7 +29,6 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +43,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Scope;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Template;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
+
+import io.netty.buffer.ByteBuf;
 
 public class UdpSessionManagerTest {
 
@@ -75,7 +76,7 @@ public class UdpSessionManagerTest {
             }
 
             @Override
-            public Value<?> parse(Session.Resolver resolver, ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
+            public Value<?> parse(Session.Resolver resolver, ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
                 return new StringValue(name, Optional.empty(), value);
             }
         };
@@ -89,7 +90,7 @@ public class UdpSessionManagerTest {
             }
 
             @Override
-            public Value<?> parse(Session.Resolver resolver, ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
+            public Value<?> parse(Session.Resolver resolver, ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
                 return new StringValue(name, Optional.empty(), value);
             }
         };

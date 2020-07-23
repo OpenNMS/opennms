@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.web.alarm.AcknowledgeType;
 import org.opennms.web.alarm.AlarmUtil;
 import org.opennms.web.alarm.filter.AlarmCriteria;
+import org.opennms.web.controller.RedirectRestricter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.servlet.MissingParameterException;
 import org.springframework.beans.factory.InitializingBean;
@@ -61,7 +62,11 @@ public class AcknowledgeAlarmByFilterController extends AbstractController imple
     private AlarmRepository m_webAlarmRepository;
     
     private String m_redirectView;
-    
+
+    // it seems there is no link with a redirect pointing to this controller, therefor we use an empty whitelist.
+    private RedirectRestricter redirectRestricter = RedirectRestricter.builder()
+            .build();
+
     /**
      * <p>setRedirectView</p>
      *
@@ -133,12 +138,12 @@ public class AcknowledgeAlarmByFilterController extends AbstractController imple
         }
 
         String redirectParms = request.getParameter("redirectParms");
-        String redirect = request.getParameter("redirect");
+        String redirect = redirectRestricter.getRedirectOrNull(request.getParameter("redirect"));
         String viewName;
         if (redirect != null) {
             viewName = redirect;
         } else {
-            viewName = (redirectParms == null || redirectParms=="" || redirectParms=="null" ? m_redirectView : m_redirectView + "?" + redirectParms);
+            viewName = (redirectParms == null || "".equals(redirectParms) || "null".equals(redirectParms) ? m_redirectView : m_redirectView + "?" + redirectParms);
         }
         RedirectView view = new RedirectView(viewName, true);
         return new ModelAndView(view);

@@ -38,6 +38,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.opennms.smoketest.stacks.OpenNMSStack;
@@ -83,6 +85,7 @@ public abstract class AbstractAdapterIT {
         protected String foreignId;
         protected String foreignSource;
         protected String ipAddress;
+        protected List<RequisitionMetaData> metaData;
 
         public Requisition createRequisition() {
             Objects.requireNonNull(location);
@@ -104,6 +107,7 @@ public abstract class AbstractAdapterIT {
             node.setForeignId(foreignId);
             node.setLocation(location);
             node.setInterfaces(interfaces);
+            node.setMetaData(metaData != null ? metaData : Collections.emptyList());
             requisition.insertNode(node);
 
             return requisition;
@@ -148,7 +152,7 @@ public abstract class AbstractAdapterIT {
         // However, sentinel may not know about it yet, so we manually sync the InterfaceToNodeCache in order to
         // "see" the new nodes and interfaces.
         if (requisitionToCreate != null) {
-            new KarafShell(sentinelSshAddress).runCommand("nodecache:sync");
+            new KarafShell(sentinelSshAddress).runCommand("opennms:sync-node-cache");
         }
 
         // Resource Id to verify against
@@ -184,7 +188,7 @@ public abstract class AbstractAdapterIT {
     protected abstract RequisitionCreateInfo getRequisitionToCreate();
 
     // Creates the requisition
-    private OnmsNode createRequisition(RequisitionCreateInfo createInfo, InetSocketAddress opennmsHttp, HibernateDaoFactory daoFactory) {
+    static OnmsNode createRequisition(RequisitionCreateInfo createInfo, InetSocketAddress opennmsHttp, HibernateDaoFactory daoFactory) {
         Objects.requireNonNull(createInfo);
         Objects.requireNonNull(opennmsHttp);
         Objects.requireNonNull(daoFactory);

@@ -29,7 +29,9 @@
 package org.opennms.netmgt.threshd;
 
 import java.util.Date;
+import java.util.Objects;
 
+import org.opennms.netmgt.threshd.api.ReinitializableState;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -43,7 +45,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author ranger
  * @version $Id: $
  */
-public interface ThresholdEvaluatorState {
+public interface ThresholdEvaluatorState extends ReinitializableState {
     public enum Status {
         NO_CHANGE,
         TRIGGERED,
@@ -56,8 +58,18 @@ public interface ThresholdEvaluatorState {
      * @param dsValue a double.
      * @return a {@link org.opennms.netmgt.threshd.ThresholdEvaluatorState.Status} object.
      */
-    public Status evaluate(double dsValue);
+    default Status evaluate(double dsValue) {
+        return evaluate(dsValue, null);
+    }
 
+    Status evaluate(double dsValue, Long sequenceNumber);
+
+    /**
+     * @return the value that was evaluated along with the resulting status
+     */
+    ValueStatus evaluate(ExpressionThresholdValue valueSupplier, Long sequenceNumber)
+            throws ThresholdExpressionException;
+    
     /**
      * <p>getEventForState</p>
      *
@@ -94,6 +106,40 @@ public interface ThresholdEvaluatorState {
      * @return a {@link org.opennms.netmgt.threshd.ThresholdEvaluatorState} object.
      */
     public ThresholdEvaluatorState getCleanClone();
-    
+
     ThresholdingSession getThresholdingSession();
+    
+    void setInstance(String instance);
+
+    class ValueStatus {
+        public final double value;
+        public final Status status;
+
+        public ValueStatus(double value, Status status) {
+            this.value = value;
+            this.status = Objects.requireNonNull(status);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ValueStatus that = (ValueStatus) o;
+            return Double.compare(that.value, value) == 0 &&
+                    status == that.status;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(value, status);
+        }
+
+        @Override
+        public String toString() {
+            return "ValueStatus{" +
+                    "value=" + value +
+                    ", status=" + status +
+                    '}';
+        }
+    }
 }

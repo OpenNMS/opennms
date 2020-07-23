@@ -46,8 +46,8 @@ import org.opennms.features.datachoices.internal.UsageStatisticsReporter;
  * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
  * </ul>
  */
-@Command(scope = "datachoices", name = "display-usage-report", description="Displays the usage statistics report.")
-@org.apache.karaf.shell.commands.Command(scope = "datachoices", name = "display-usage-report", description="Displays the usage statistics report.")
+@Command(scope = "opennms", name = "datachoices-display-usage-report", description="Displays the usage statistics report.")
+@org.apache.karaf.shell.commands.Command(scope = "opennms", name = "datachoices-display-usage-report", description="Displays the usage statistics report.")
 @Service
 public class DisplayUsageReportCommand extends OsgiCommandSupport implements Action {
 

@@ -30,6 +30,7 @@ package org.opennms.netmgt.flows.classification.internal.value;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class StringValue {
@@ -72,9 +73,17 @@ public class StringValue {
 
     public List<StringValue> splitBy(String separator) {
         return Arrays.stream(input.split(separator))
-                .map(segment -> segment.trim())
-                .filter(segment -> segment != null && segment.length() > 0)
-                .map(segment -> new StringValue(segment))
+                .map(String::trim)
+                .filter(segment -> segment.length() > 0)
+                .map(StringValue::new)
                 .collect(Collectors.toList());
+    }
+
+    public boolean contains(final CharSequence charSequence) {
+        Objects.requireNonNull(charSequence);
+        if (input == null) {
+            return false;
+        }
+        return input.contains(charSequence);
     }
 }

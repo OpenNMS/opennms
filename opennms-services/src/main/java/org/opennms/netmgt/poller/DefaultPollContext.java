@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,10 +45,13 @@ import org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.icmp.proxy.PingSequence;
 import org.opennms.netmgt.icmp.proxy.PingSummary;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
@@ -84,7 +87,13 @@ public class DefaultPollContext implements PollContext, EventListener {
         EventConstants.NODE_DOWN_EVENT_UEI,
         EventConstants.NODE_UP_EVENT_UEI
     };
-    
+
+    /**
+     * Poll timestamps are updated using a DB transaction in the same thread and immediately following the poll.
+     * This may cause unnecessary overhead in extreme cases, so we add the ability to disable this functionality.
+     */
+    public static final boolean DISABLE_POLL_TIMESTAMP_TRACKING = Boolean.getBoolean("org.opennms.netmgt.poller.disablePollTimestampTracking");
+
     private volatile PollerConfig m_pollerConfig;
     private volatile QueryManager m_queryManager;
     private volatile EventIpcManager m_eventManager;
@@ -233,7 +242,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.pollables.PollContext#sendEvent(org.opennms.netmgt.xml.event.Event)
+     * @see org.opennms.netmgt.poller.pollables.PollContext#sendEvent(org.opennms.netmgt.events.api.model.IEvent)
      */
     /** {@inheritDoc} */
     @Override
@@ -242,7 +251,7 @@ public class DefaultPollContext implements PollContext, EventListener {
             getEventManager().addEventListener(this, Arrays.asList(UEIS));
             m_listenerAdded = true;
         }
-        PendingPollEvent pollEvent = new PendingPollEvent(event);
+        PendingPollEvent pollEvent = new PendingPollEvent(ImmutableMapper.fromMutableEvent(event));
         m_pendingPollEvents.add(pollEvent);
 
         //log().info("Sending "+event.getUei()+" for element "+event.getNodeid()+":"+event.getInterface()+":"+event.getService(), new Exception("StackTrace"));
@@ -386,11 +395,11 @@ public class DefaultPollContext implements PollContext, EventListener {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
+     * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.events.api.model.IEvent)
      */
     /** {@inheritDoc} */
     @Override
-    public void onEvent(final Event event) {
+    public void onEvent(final IEvent event) {
         if (LOG.isDebugEnabled()) {
             // CAUTION: m_pendingPollEvents.size() is not a constant-time operation
             LOG.debug("onEvent: Received event: {} uei: {}, dbid: {}, pendingEventCount: {}", event, event.getUei(), event.getDbid(), m_pendingPollEvents.size());
@@ -398,18 +407,11 @@ public class DefaultPollContext implements PollContext, EventListener {
 
         for (final PendingPollEvent pollEvent : m_pendingPollEvents) {
             LOG.trace("onEvent: comparing event to pollEvent: {}", pollEvent);
-            // TODO: This equals comparison is more like a '==' operation because
-            // I think that both events would have to be identical instances to
-            // have the same event ID. This will probably cause problems if we
-            // cluster event processing and the event instances are ever not 
-            // identical.
-            if (event.equals(pollEvent.getEvent())) {
+            if (EventUtils.eventsMatch(event, pollEvent.getEvent())) {
                 LOG.trace("onEvent: found matching pollEvent, completing pollEvent: {}", pollEvent);
                 // Thread-safe and idempotent
                 pollEvent.complete(event);
-                // TODO: Can we break here? I think there should only be one 
-                // instance of any given event in m_pendingPollEvents
-                // break;
+                break;
             }
         }
 
@@ -434,6 +436,17 @@ public class DefaultPollContext implements PollContext, EventListener {
             // If the event was not completed and it is still pending, then don't do anything to it
         }
         LOG.debug("onEvent: Finished processing event: {} uei: {}, dbid: {}", event, event.getUei(), event.getDbid());
+    }
+
+    @Override
+    public void trackPoll(PollableService service, PollStatus result) {
+        try {
+            if (!result.isUnknown() && !DISABLE_POLL_TIMESTAMP_TRACKING) {
+                getQueryManager().updateLastGoodOrFail(service.getNodeId(), service.getAddress(), service.getSvcName(), result);
+            }
+        } catch (Exception e) {
+            LOG.warn("Error occurred while tracking poll for service: {}", service, e);
+        }
     }
 
     private static void processPending(final PendingPollEvent pollEvent) {

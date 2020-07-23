@@ -51,8 +51,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.criteria.Criteria;
-import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
@@ -72,8 +70,6 @@ import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -97,7 +93,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         // Reduce the default snapshot interval so that the tests can finish in a reasonable time
         AlarmLifecycleListenerManager.ALARM_SNAPSHOT_INTERVAL_MS_SYS_PROP+"=5000"
 })
-@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
+@JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
 public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<MockDatabase>, AlarmLifecycleListener {
 
     @Autowired
@@ -160,6 +156,10 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
 
     @After
     public void tearDown() {
+        // Unregister!
+        m_alarmLifecycleListenerManager.onListenerUnregistered(this, Collections.emptyMap());
+
+        // Destroy!
         m_alarmd.destroy();
     }
 
@@ -180,6 +180,11 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
         await().until(getNodeDownAlarmFor(1), hasSeverity(OnmsSeverity.CLEARED));
         await().until(getNodeUpAlarmFor(1), hasSeverity(OnmsSeverity.NORMAL));
 
+        // Wait to ensure that the next DOWN event does not happen on the same exact
+        // millisecond as the UP event, otherwise the UP event will win and the alarm
+        // will remain cleared
+        Thread.sleep(10);
+
         // Send another nodeDown
         sendNodeDownEvent(1);
         await().until(getNodeDownAlarmFor(1), hasSeverity(OnmsSeverity.MAJOR));
@@ -187,7 +192,7 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
     }
 
     @Test
-    public void canIssueDeleteCallbacks() {
+    public void canIssueDeleteCallbacks() throws Exception {
         // Send a nodeDown
         sendNodeDownEvent(1);
         await().until(getNodeDownAlarmFor(1), hasSeverity(OnmsSeverity.MAJOR));
@@ -196,24 +201,23 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
         sendNodeUpEvent(1);
         await().until(getNodeDownAlarmFor(1), hasSeverity(OnmsSeverity.CLEARED));
 
+        // Wait for the clear to be flushed to the database
+        int alarmId = getNodeDownAlarmFor(1).call().getId();
+        await().until(() -> m_alarmDao.get(alarmId), hasSeverity(OnmsSeverity.CLEARED));
+
         // We need to wait for the cleanUp automation which triggers when:
         //  'lastautomationtime' and 'lasteventtime' < "5 minutes ago"
         // so we cheat a little and update the timestamps ourselves instead of waiting
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus status) {
-                Criteria criteria = new Criteria(OnmsAlarm.class);
-                criteria.addRestriction(new EqRestriction("node.id", 1));
-                criteria.addRestriction(new EqRestriction("uei", EventConstants.NODE_DOWN_EVENT_UEI));
-                for (OnmsAlarm alarm : m_alarmDao.findMatching(criteria)) {
-                    LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(10);
-                    Date then = Date.from(tenMinutesAgo.toInstant(ZoneOffset.UTC));
-                    alarm.setLastAutomationTime(then);
-                    alarm.setLastEventTime(then);
-                    m_alarmDao.save(alarm);
-                }
-                m_alarmDao.flush();
-            }
+        transactionTemplate.execute(status -> {
+            OnmsAlarm alarm = m_alarmDao.get(alarmId);
+            LocalDateTime tenMinutesAgo = LocalDateTime.now().minusMinutes(10);
+            Date then = Date.from(tenMinutesAgo.toInstant(ZoneOffset.UTC));
+            alarm.setLastAutomationTime(then);
+            alarm.setLastEventTime(then);
+            alarm.setLastEvent(null);
+            m_alarmDao.save(alarm);
+            m_alarmDao.flush();
+            return null;
         });
 
         await().until(getNodeDownAlarmFor(1), nullValue());

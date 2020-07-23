@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -42,6 +42,8 @@
                 <descriptor>src/assembly/full.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
+              <overrideUid>0</overrideUid>
+              <overrideGid>0</overrideGid>
               <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
@@ -77,6 +79,8 @@
                 <descriptor>src/assembly/full.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
+              <overrideUid>0</overrideUid>
+              <overrideGid>0</overrideGid>
               <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
@@ -112,6 +116,8 @@
                 <descriptor>src/assembly/fulldir.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
+              <overrideUid>0</overrideUid>
+              <overrideGid>0</overrideGid>
               <tarLongFileMode>posix</tarLongFileMode>
               <outputDirectory>${dist.dir}</outputDirectory>
               <finalName>${dist.name}</finalName>
@@ -417,7 +423,7 @@
                 <feature version="8.1.14.v20131031">jetty</feature>
                 <feature version="9.3.9.v20160517">jetty</feature>
                 <!--TODO: Needed?-->
-                <feature version="9.4.18.v20190429">jetty</feature>
+                <feature version="9.4.29.v20200521">jetty</feature>
                 <feature>jolokia</feature>
                 <feature>kar</feature>
                 <feature>log</feature>
@@ -470,8 +476,8 @@
                 <feature>json-lib</feature>
                 <feature>lmax-disruptor</feature>
                 <feature>opennms-activemq-pool</feature>
+                <feature>opennms-activemq-shell</feature>
                 <feature>opennms-bootstrap</feature>
-                <feature>opennms-bundle-refresher</feature>
                 <feature>opennms-collection-api</feature>
                 <feature>opennms-collection-commands</feature>
                 <feature>opennms-collection-persistence-rrd</feature>
@@ -481,6 +487,7 @@
                 <feature>opennms-core-daemon</feature>
                 <feature>opennms-core-db</feature>
                 <feature>opennms-core-ipc-rpc-commands</feature>
+                <feature>opennms-core-ipc-kafka-shell</feature>
                 <feature>opennms-core</feature>
                 <feature>opennms-core-web</feature>
                 <feature>opennms-dao-api</feature>
@@ -488,6 +495,7 @@
                 <feature>opennms-events-api</feature>
                 <feature>opennms-events-commands</feature>
                 <feature>opennms-health</feature>
+                <feature>opennms-health-rest</feature>
                 <feature>opennms-icmp-api</feature>
                 <feature>opennms-icmp-jna</feature>
                 <feature>opennms-icmp-jni</feature>
@@ -497,6 +505,7 @@
                 <feature>opennms-javamail</feature>
                 <feature>opennms-kafka-producer</feature>
                 <feature>opennms-model</feature>
+                <feature>opennms-measurements-shell</feature>
                 <feature>opennms-poller-shell</feature>
                 <feature>opennms-provisioning</feature>
                 <feature>opennms-provisioning-detectors</feature>
@@ -517,7 +526,6 @@
                 <feature>postgresql</feature>
                 <feature>smack</feature>
                 <feature>spring-security32</feature>
-                <feature>spring-webflow</feature>
                 <feature>twitter4j</feature>
                 <feature>opennms-jaas-login-module</feature>
                 <feature>dashlet-alarms</feature>
@@ -537,6 +545,9 @@
                 <feature>opennms-amqp-event-forwarder</feature>
                 <feature>opennms-amqp-event-receiver</feature>
                 <feature>opennms-amqp-alarm-northbounder</feature>
+                <feature>opennms-graphml</feature>
+                <feature>opennms-graphs</feature>
+                <feature>opennms-graph-provider-persistence-test</feature>
                 <feature>opennms-topology-runtime-base</feature>
                 <feature>opennms-topology-runtime-browsers</feature>
                 <feature>opennms-topology-runtime-linkd</feature>
@@ -559,8 +570,10 @@
                 <feature>datachoices</feature>
                 <feature>eif-adapter</feature>
                 <feature>opennms-telemetry-collection</feature>
+                <feature>opennms-telemetry-bmp</feature>
                 <feature>opennms-telemetry-jti</feature>
                 <feature>opennms-telemetry-nxos</feature>
+                <feature>opennms-telemetry-graphite</feature>
                 <feature>org.opennms.features.enlinkd.service.api</feature>
                 <feature>org.opennms.features.bsm.service.api</feature>
                 <feature>org.opennms.features.bsm.shell-commands</feature>
@@ -574,12 +587,23 @@
                 <feature>opennms-alarm-history-elastic</feature>
                 <feature>org.opennms.features.topologies.service.api</feature>
                 <feature>opennms-identity</feature>
+                <feature>opennms-endpoints-grafana</feature>
+                <feature>opennms-reporting</feature>
                 <feature>opennms-send-event-command</feature>
+                <feature>opennms-search</feature>
                 <feature>opennms-dnsresolver-shell</feature>
                 <feature>opennms-dnsresolver-netty</feature>
                 <feature>opennms-blobstore-noop</feature>
+                <feature>opennms-blobstore-postgres</feature>
+                <feature>opennms-blobstore-shell</feature>
                 <feature>opennms-jsonstore-shell</feature>
-
+                <feature>opennms-threshold-states-shell</feature>
+                <feature>opennms-core-tracing-jaeger</feature>
+                <feature>opennms-karaf-health</feature>
+                <feature>opennms-core-ipc-grpc-server</feature>
+                <feature>scv-api</feature>
+                <feature>scv-jceks-impl</feature>
+                <feature>scv-shell</feature>
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
@@ -973,6 +997,94 @@
       <version>${project.version}</version>
       <type>xml</type>
       <classifier>minion</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.blob.postgres</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.blob.no-op</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.blob.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.json.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.thresholding.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.measurements</groupId>
+      <artifactId>org.opennms.features.measurements.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.common</groupId>
+      <artifactId>org.opennms.core.ipc.common.kafka-shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.tracing</groupId>
+      <artifactId>org.opennms.core.tracing.jaeger-osgi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.tracing</groupId>
+      <artifactId>org.opennms.core.tracing.jaeger-tracer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.karaf-health</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.grpc</groupId>
+      <artifactId>org.opennms.core.ipc.grpc.server</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features.flows</groupId>
+      <artifactId>org.opennms.features.flows.kafka-persistence</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- GraphML dependencies -->
+    <dependency>
+      <groupId>org.opennms.features.graphml</groupId>
+      <artifactId>org.opennms.features.graphml.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.graphml</groupId>
+      <artifactId>org.opennms.features.graphml.service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.graphml</groupId>
+      <artifactId>org.opennms.features.graphml.rest</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.shell</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- Test dependencies -->

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.jasper;
 
+import org.opennms.netmgt.jasper.grafana.GrafanaExecutorFactory;
 import org.opennms.netmgt.jasper.measurement.MeasurementExecutorFactory;
 
 import net.sf.jasperreports.engine.query.QueryExecuterFactory;
@@ -36,7 +37,7 @@ import net.sf.jasperreports.engine.query.QueryExecuterFactory;
  * These are the supported "query languages" to be used within Jasper Report (*.jrxml) files.
  */
 public enum SupportedLanguage {
-    Measurement(new MeasurementExecutorFactory());
+    Measurement(new MeasurementExecutorFactory()), Grafana(new GrafanaExecutorFactory());
 
     private final QueryExecuterFactory factory;
 

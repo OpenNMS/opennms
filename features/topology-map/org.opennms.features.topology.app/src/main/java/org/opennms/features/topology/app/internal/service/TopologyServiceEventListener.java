@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,11 +33,12 @@ import static org.opennms.netmgt.events.api.EventConstants.PARAM_TOPOLOGY_NAMESP
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.features.topology.api.TopologyCache;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.xml.event.Event;
 
 import com.google.common.collect.Lists;
 
@@ -47,12 +48,12 @@ public class TopologyServiceEventListener implements EventListener {
     private static final List<String> UEI_LIST =
             Lists.newArrayList(EventConstants.RELOAD_TOPOLOGY_UEI, EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI);
 
-    private final DefaultTopologyService topologyService;
+    private final TopologyCache topologyCache;
 
     private final EventIpcManager eventIpcManager;
 
-    public TopologyServiceEventListener(DefaultTopologyService topologyService, EventIpcManager eventIpcManager) {
-        this.topologyService = Objects.requireNonNull(topologyService);
+    public TopologyServiceEventListener(TopologyCache topologyCache, EventIpcManager eventIpcManager) {
+        this.topologyCache = Objects.requireNonNull(topologyCache);
         this.eventIpcManager = Objects.requireNonNull(eventIpcManager);
     }
 
@@ -62,22 +63,22 @@ public class TopologyServiceEventListener implements EventListener {
     }
 
     @Override
-    public void onEvent(Event e) {
+    public void onEvent(IEvent e) {
         // Reload given Topology or all
         if (e.getUei().equals(EventConstants.RELOAD_TOPOLOGY_UEI)) {
             final String topologyNamespace = EventUtils.getParm(e, PARAM_TOPOLOGY_NAMESPACE);
             if (topologyNamespace == null || "all".equalsIgnoreCase(topologyNamespace)) {
-                topologyService.invalidateAll();
+                topologyCache.invalidateAll();
             } else if (topologyNamespace != null) {
                 // At the moment the topology name should be unique
-                topologyService.invalidate(topologyNamespace);
+                topologyCache.invalidate(topologyNamespace);
             }
         }
         // BSM has been reloaded, force reload next time
         if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI)) {
             String daemonName = EventUtils.getParm(e, EventConstants.PARM_DAEMON_NAME);
             if (daemonName != null && "bsmd".equalsIgnoreCase(daemonName)) {
-                topologyService.invalidate("bsm");
+                topologyCache.invalidate("bsm");
             }
         }
     }

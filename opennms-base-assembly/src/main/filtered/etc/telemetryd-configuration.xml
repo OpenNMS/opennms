@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <telemetryd-config>
 
-    <!-- JTI Listener & adpaters -->
+    <!-- JTI Listener & adapters -->
     <listener name="JTI-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
         <parameter key="port" value="50000"/>
 
@@ -32,7 +32,7 @@
     </listener>
 
     <queue name="Netflow-5">
-        <adapter name="Netflow-5-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" enabled="false">
+        <adapter name="Netflow-5-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter" enabled="true">
         </adapter>
     </queue>
 
@@ -44,7 +44,7 @@
     </listener>
 
     <queue name="Netflow-9">
-        <adapter name="Netflow-9-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter" enabled="false">
+        <adapter name="Netflow-9-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter" enabled="true">
         </adapter>
     </queue>
 
@@ -62,7 +62,7 @@
     </listener>
 
     <queue name="IPFIX">
-        <adapter name="IPFIX-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter" enabled="false">
+        <adapter name="IPFIX-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter" enabled="true">
         </adapter>
     </queue>
 
@@ -74,10 +74,10 @@
     </listener>
 
     <queue name="SFlow">
-        <adapter name="SFlow-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter" enabled="false">
+        <adapter name="SFlow-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter" enabled="true">
         </adapter>
 
-        <adapter name="SFlow-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter" enabled="false">
+        <adapter name="SFlow-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowTelemetryAdapter" enabled="true">
             <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/sflow-host.groovy"/>
 
             <package name="SFlow-Default">
@@ -93,7 +93,7 @@
     </queue>
 
     <!-- Multi-port listener for Netflow v5, Netflow v9, IPFIX and SFlow -->
-    <listener name="Multi-UDP-9999" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
+    <listener name="Multi-UDP-9999" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
         <parameter key="port" value="9999"/>
 
         <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5" />
@@ -124,4 +124,45 @@
             </package>
         </adapter>
     </queue>
+
+    <!-- BMP listener & adapters -->
+    <listener name="BMP-TCP-5000" class-name="org.opennms.netmgt.telemetry.listeners.TcpListener" enabled="false">
+        <parameter key="port" value="5000"/>
+
+        <parser name="BMP-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser" queue="BMP" />
+    </listener>
+
+    <queue name="BMP">
+        <adapter name="BMP-Peer-Status-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPeerStatusAdapter" enabled="false">
+        </adapter>
+
+        <adapter name="BMP-Telemetry-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpTelemetryAdapter" enabled="false">
+        </adapter>
+
+        <adapter name="BMP-OpenBMP-Integration-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpIntegrationAdapter" enabled="false">
+            <parameter key="kafka.bootstrap.servers" value="localhost:9092" />
+        </adapter>
+    </queue>
+
+    <!-- Graphite listener and adapter -->
+    <listener name="Graphite-UDP-2003" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
+        <parameter key="port" value="2003"/>
+        <parser name="Graphite-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="Graphite" />
+    </listener>
+
+    <queue name="Graphite">
+        <adapter name="Graphite" class-name="org.opennms.netmgt.telemetry.protocols.graphite.adapter.GraphiteAdapter" enabled="false">
+            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/graphite-telemetry-interface.groovy"/>
+             <package name="Graphite-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+    </queue>
+
 </telemetryd-config>

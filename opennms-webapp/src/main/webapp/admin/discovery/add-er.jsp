@@ -29,7 +29,17 @@
 
 --%>
 <%@page language="java" contentType="text/html" session="true" import="
-  org.opennms.web.admin.discovery.DiscoveryServletConstants
+  java.util.Map,
+  java.util.TreeMap,
+  org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation,
+  org.opennms.netmgt.dao.api.*,
+  org.springframework.web.context.WebApplicationContext,
+  org.springframework.web.context.support.WebApplicationContextUtils,
+  org.opennms.netmgt.config.DiscoveryConfigFactory,
+  org.opennms.netmgt.config.discovery.DiscoveryConfiguration,
+  org.opennms.web.admin.discovery.DiscoveryServletConstants,
+  org.opennms.web.admin.discovery.ActionDiscoveryServlet,
+  org.opennms.web.admin.discovery.DiscoveryScanServlet
 "%>
 <% 
 	response.setDateHeader("Expires", 0);
@@ -37,6 +47,25 @@
 	if (request.getProtocol().equals("HTTP/1.1")) {
 		response.setHeader("Cache-Control", "no-cache");
 	}
+%>
+
+<%
+    WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+    HttpSession sess = request.getSession(false);
+    DiscoveryConfiguration currConfig;
+    if (DiscoveryServletConstants.EDIT_MODE_SCAN.equals(request.getParameter("mode"))) {
+    	currConfig  = (DiscoveryConfiguration) sess.getAttribute(DiscoveryScanServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION);
+    } else if (DiscoveryServletConstants.EDIT_MODE_CONFIG.equals(request.getParameter("mode"))) {
+    	currConfig  = (DiscoveryConfiguration) sess.getAttribute(ActionDiscoveryServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION);
+    } else {
+    	throw new ServletException("Cannot get discovery configuration from the session");
+    }
+
+    MonitoringLocationDao locationDao = context.getBean(MonitoringLocationDao.class);
+    Map<String,String> locations = new TreeMap<String,String>();
+    for (OnmsMonitoringLocation location : locationDao.findAll()) {
+    	locations.put(location.getLocationName(), location.getLocationName());
+    }
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -71,6 +100,7 @@ function doAddExcludeRange(){
 	
 	opener.document.getElementById("erbegin").value=document.getElementById("begin").value;
 	opener.document.getElementById("erend").value=document.getElementById("end").value;
+	opener.document.getElementById("erlocation").value=document.getElementById("location").value;
 	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=DiscoveryServletConstants.addExcludeRangeAction%>";
 	opener.document.getElementById("modifyDiscoveryConfig").submit();
 	window.close();
@@ -97,6 +127,16 @@ function doAddExcludeRange(){
             <label for="end" class="col-form-label col-sm-2">End IP Address</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="end" name="end" value=''/>
+            </div>
+          </div>
+          <div class="form-group form-row">
+            <label for="location" class="col-form-label col-sm-2">Location</label>
+            <div class="col-sm-10">
+                <select id="location" class="form-control custom-select" name="location">
+                    <% for (String key : locations.keySet()) { %>
+                    <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
+                        <% } %>
+                </select>
             </div>
           </div>
           <div class="form-group form-row">

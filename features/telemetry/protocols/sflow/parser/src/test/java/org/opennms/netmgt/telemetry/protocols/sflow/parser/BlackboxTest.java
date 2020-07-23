@@ -49,6 +49,9 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 @RunWith(Parameterized.class)
 public class BlackboxTest implements SampleDatagramEnrichment {
     private final static Path FOLDER = Paths.get("src/test/resources/flows");
@@ -89,12 +92,14 @@ public class BlackboxTest implements SampleDatagramEnrichment {
             channel.read(buffer);
             buffer.flip();
 
+            final ByteBuf buf = Unpooled.wrappedBuffer(buffer);
+
             do {
-                final SampleDatagram packet = new SampleDatagram(buffer);
+                final SampleDatagram packet = new SampleDatagram(buf);
 
                 dumpPacket(packet);
                 assertThat(packet.version.version.value, is(0x0005));
-            } while (buffer.hasRemaining());
+            } while (buf.isReadable());
         }
     }
 

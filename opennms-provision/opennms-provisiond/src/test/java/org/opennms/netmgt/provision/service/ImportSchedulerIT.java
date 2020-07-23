@@ -31,7 +31,10 @@ package org.opennms.netmgt.provision.service;
 import static org.junit.Assert.fail;
 
 import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -48,13 +51,14 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.quartz.Job;
+import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
+import org.quartz.ListenerManager;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.quartz.TriggerListener;
-import org.quartz.impl.JobDetailImpl;
-import org.quartz.impl.triggers.SimpleTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -71,6 +75,8 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
+        "classpath:/META-INF/opennms/applicationContext-snmp-profile-mapper.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
         "classpath:/mockForeignSourceContext.xml",
@@ -105,12 +111,28 @@ public class ImportSchedulerIT implements InitializingBean {
         MockLogAppender.setupLogging();
     }
 
+    @After
+    public void tearDown() {
+        try {
+            final ListenerManager listenerManager = m_importScheduler.getScheduler().getListenerManager();
+            final List<String> triggerListeners = listenerManager.getTriggerListeners().stream().map(tl -> tl.getName()).collect(Collectors.toList());
+            triggerListeners.forEach(tlName -> listenerManager.removeTriggerListener(tlName));
+        } catch (final Exception e) {
+            LOG.warn("Failed to clean up existing trigger listeners.", e);
+        }
+        try {
+            m_importScheduler.getScheduler().clear();
+        } catch (SchedulerException e) {
+            LOG.warn("Failed to clear existing scheduler.", e);
+        }
+    }
+
     @Test
     public void createJobAndVerifyImportJobFactoryIsRegistered() throws SchedulerException, InterruptedException {
         
         RequisitionDef def = m_dao.getDefs().get(0);
         
-        JobDetail detail = new JobDetailImpl("test", ImportScheduler.JOB_GROUP, ImportJob.class, false, false);
+        JobDetail detail = JobBuilder.newJob(ImportJob.class).withIdentity("test", ImportScheduler.JOB_GROUP).storeDurably(false).requestRecovery(false).build();
         detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource().orElse(null));
         detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
 
@@ -175,8 +197,8 @@ public class ImportSchedulerIT implements InitializingBean {
         
         Calendar testCal = Calendar.getInstance();
         testCal.add(Calendar.SECOND, 5);
-        
-        SimpleTriggerImpl trigger = new SimpleTriggerImpl("test", ImportScheduler.JOB_GROUP, testCal.getTime());
+
+        Trigger trigger = TriggerBuilder.newTrigger().withIdentity("test", ImportScheduler.JOB_GROUP).startAt(testCal.getTime()).build();
         m_importScheduler.getScheduler().scheduleJob(detail, trigger);
         m_importScheduler.start();
         

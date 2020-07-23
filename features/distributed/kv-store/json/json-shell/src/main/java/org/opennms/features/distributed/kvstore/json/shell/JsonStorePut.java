@@ -35,21 +35,21 @@ import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.features.distributed.kvstore.api.JSONStore;
+import org.opennms.features.distributed.kvstore.api.JsonStore;
 
-@Command(scope = "opennms-kv-json", name = "put", description = "Insert a record into the JSON store")
+@Command(scope = "opennms", name = "kv-put-json", description = "Insert a record into the JSON store")
 @Service
 public class JsonStorePut implements Action {
     @Reference
-    private JSONStore jsonStore;
+    private JsonStore jsonStore;
 
-    @Argument(index = 0, description = "The key")
+    @Argument(index = 0, description = "The key", required = true)
     private String key;
 
-    @Argument(index = 1, description = "The key's context")
+    @Argument(index = 1, description = "The key's context", required = true)
     private String context;
 
-    @Argument(index = 2, description = "The value to put")
+    @Argument(index = 2, description = "The value to put", required = true)
     private String value;
 
     @Override

@@ -32,4 +32,7 @@
 	<bean name="timeformatService" class="org.opennms.features.timeformat.impl.DefaultTimeformatService">
 	</bean>
 
+	<import resource="classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml"/>
+	<import resource="classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"/>
+
 </beans>

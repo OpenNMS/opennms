@@ -62,6 +62,7 @@ import org.opennms.netmgt.collection.api.CollectionTimedOut;
 import org.opennms.netmgt.collection.core.CollectionSpecification;
 import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
@@ -95,7 +96,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml"
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test
@@ -112,6 +114,9 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
 
     @Autowired
     private SnmpPeerFactory m_snmpPeerFactory;
+    
+    @Autowired
+    private ReadablePollOutagesDao m_pollOutagesDao;
 
     private TestContext m_context;
 
@@ -178,7 +183,8 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
         AbstractSnmpCollector collector = createSnmpCollector();
         collector.initialize();
 
-        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
+        m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default",
+                m_pollOutagesDao);
         m_collectionAgent = DefaultSnmpCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
         m_agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.getLocalHostAddress());
     }

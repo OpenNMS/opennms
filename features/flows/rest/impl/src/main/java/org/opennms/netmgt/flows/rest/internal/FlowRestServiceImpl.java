@@ -54,6 +54,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
@@ -74,7 +75,6 @@ import org.opennms.netmgt.flows.rest.model.FlowSeriesResponse;
 import org.opennms.netmgt.flows.rest.model.FlowSnmpInterface;
 import org.opennms.netmgt.flows.rest.model.FlowSummaryResponse;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -84,15 +84,15 @@ public class FlowRestServiceImpl implements FlowRestService {
     private final FlowRepository flowRepository;
     private final NodeDao nodeDao;
     private final SnmpInterfaceDao snmpInterfaceDao;
-    private final TransactionOperations transactionOperations;
+    private final SessionUtils sessionUtils;
     private String flowGraphUrl;
 
     public FlowRestServiceImpl(FlowRepository flowRepository, NodeDao nodeDao,
-                               SnmpInterfaceDao snmpInterfaceDao, TransactionOperations transactionOperations) {
+                               SnmpInterfaceDao snmpInterfaceDao, SessionUtils sessionUtils) {
         this.flowRepository = Objects.requireNonNull(flowRepository);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.snmpInterfaceDao = Objects.requireNonNull(snmpInterfaceDao);
-        this.transactionOperations = Objects.requireNonNull(transactionOperations);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class FlowRestServiceImpl implements FlowRestService {
 
     @Override
     public List<FlowNodeSummary> getFlowExporters() {
-        return transactionOperations.execute(status -> this.nodeDao.findAllHavingFlows().stream())
+        return sessionUtils.withReadOnlyTransaction(() -> this.nodeDao.findAllHavingFlows().stream())
                 .map(n -> new FlowNodeSummary(n.getId(),
                         n.getForeignId(), n.getForeignSource(), n.getLabel(),
                         n.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList())))
@@ -112,7 +112,7 @@ public class FlowRestServiceImpl implements FlowRestService {
 
     @Override
     public FlowNodeDetails getFlowExporter(Integer nodeId) {
-        final List<FlowSnmpInterface> ifaces = transactionOperations.execute(status -> this.snmpInterfaceDao.findAllHavingFlows(nodeId)).stream()
+        final List<FlowSnmpInterface> ifaces = sessionUtils.withReadOnlyTransaction(() -> this.snmpInterfaceDao.findAllHavingFlows(nodeId)).stream()
                 .map(iface -> new FlowSnmpInterface(iface.getIfIndex(),
                             iface.getIfName(),
                             iface.getIfAlias(),

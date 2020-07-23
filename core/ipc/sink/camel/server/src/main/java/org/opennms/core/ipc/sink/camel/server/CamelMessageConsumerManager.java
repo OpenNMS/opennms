@@ -46,6 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.MetricRegistry;
+
 /**
  * Automatically creates routes to consume from the JMS queues.
  *
@@ -57,6 +59,8 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
 
     private final CamelContext context;
 
+    private final MetricRegistry metricRegistry;
+
     private final Map<SinkModule<?, Message>, String> routeIdsByModule = new ConcurrentHashMap<>();
 
     @Autowired
@@ -65,22 +69,25 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
     @Autowired
     private Identity identity;
 
-    public CamelMessageConsumerManager(CamelContext context) throws Exception {
+    public CamelMessageConsumerManager(CamelContext context, MetricRegistry metricRegistry) throws Exception {
         this.context = Objects.requireNonNull(context);
+        this.metricRegistry = Objects.requireNonNull(metricRegistry);
         context.start();
     }
 
-    public CamelMessageConsumerManager(CamelContext context, Identity identity, TracerRegistry tracerRegistry) throws Exception {
+    public CamelMessageConsumerManager(CamelContext context, Identity identity,
+                                       TracerRegistry tracerRegistry, MetricRegistry metricRegistry) throws Exception {
         this.context = Objects.requireNonNull(context);
         this.identity = Objects.requireNonNull(identity);
         this.tracerRegistry = Objects.requireNonNull(tracerRegistry);
+        this.metricRegistry = Objects.requireNonNull(metricRegistry);
     }
 
     @Override
     protected synchronized void startConsumingForModule(SinkModule<?, Message> module) throws Exception {
         if (!routeIdsByModule.containsKey(module)) {
             LOG.info("Creating route for module: {}", module);
-            final DynamicIpcRouteBuilder routeBuilder = new DynamicIpcRouteBuilder(context, this, module, tracerRegistry);
+            final DynamicIpcRouteBuilder routeBuilder = new DynamicIpcRouteBuilder(context, this, module, tracerRegistry, metricRegistry);
             context.addRoutes(routeBuilder);
             routeIdsByModule.put(module, routeBuilder.getRouteId());
         }
@@ -110,16 +117,25 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
         }
     }
 
+    public void shutdown() {
+        if(getStartupExecutor() != null) {
+            getStartupExecutor().shutdown();
+        }
+    }
+
     private static final class DynamicIpcRouteBuilder extends RouteBuilder {
         private final CamelMessageConsumerManager consumerManager;
         private final SinkModule<?, Message> module;
         private final TracerRegistry tracerRegistry;
+        private final MetricRegistry metricRegistry;
 
-        private DynamicIpcRouteBuilder(CamelContext context, CamelMessageConsumerManager consumerManager, SinkModule<?, Message> module, TracerRegistry tracerRegistry) {
+        private DynamicIpcRouteBuilder(CamelContext context, CamelMessageConsumerManager consumerManager, SinkModule<?, Message> module,
+                                       TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
             super(context);
             this.consumerManager = consumerManager;
             this.module = module;
             this.tracerRegistry = tracerRegistry;
+            this.metricRegistry = metricRegistry;
         }
 
         public String getRouteId() {
@@ -135,7 +151,7 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
                     CamelSinkConstants.JMS_QUEUE_PREFIX, module.getId());
             from(String.format("queuingservice:%s?concurrentConsumers=%d", queueNameFactory.getName(), numberConsumerThrads))
                 .setExchangePattern(ExchangePattern.InOnly)
-                .process(new CamelSinkServerProcessor(consumerManager, module, tracerRegistry))
+                .process(new CamelSinkServerProcessor(consumerManager, module, tracerRegistry, metricRegistry))
                 .routeId(getRouteId());
         }
     }

@@ -30,6 +30,7 @@ package org.opennms.features.apilayer.utils;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,10 +47,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.hibernate.ObjectNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
+import org.opennms.integration.api.v1.model.Alarm;
 import org.opennms.integration.api.v1.model.DatabaseEvent;
 import org.opennms.integration.api.v1.model.Geolocation;
 import org.opennms.integration.api.v1.model.InMemoryEvent;
@@ -63,6 +66,7 @@ import org.opennms.integration.api.v1.model.TopologyEdge;
 import org.opennms.integration.api.v1.model.TopologyPort;
 import org.opennms.integration.api.v1.model.TopologySegment;
 import org.opennms.integration.api.v1.model.immutables.ImmutableEventParameter;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
@@ -301,16 +305,17 @@ public class ModelMappersTest {
         List<OnmsMetaData> metaDataList = Collections.singletonList(onmsMetaData);
         onmsNode.setMetaData(metaDataList);
 
-        OnmsIpInterface onmsIpInterface = new OnmsIpInterface();
-        onmsIpInterface.setIpAddress(InetAddress.getLocalHost());
-        onmsIpInterface.setMetaData(metaDataList);
-        onmsNode.setIpInterfaces(Collections.singleton(onmsIpInterface));
-
         OnmsSnmpInterface onmsSnmpInterface = new OnmsSnmpInterface();
         onmsSnmpInterface.setIfDescr("test.ifdescr");
         onmsSnmpInterface.setIfName("test.ifname");
         onmsSnmpInterface.setIfIndex(1);
         onmsNode.setSnmpInterfaces(Collections.singleton(onmsSnmpInterface));
+
+        OnmsIpInterface onmsIpInterface = new OnmsIpInterface();
+        onmsIpInterface.setIpAddress(InetAddress.getLocalHost());
+        onmsIpInterface.setSnmpInterface(onmsSnmpInterface);
+        onmsIpInterface.setMetaData(metaDataList);
+        onmsNode.setIpInterfaces(Collections.singleton(onmsIpInterface));
 
         Node node = ModelMappers.toNode(onmsNode);
         assertThat(node.getId(), equalTo(onmsNode.getId()));
@@ -349,6 +354,8 @@ public class ModelMappersTest {
 
         IpInterface ipInterface = node.getIpInterfaces().get(0);
         assertThat(ipInterface.getIpAddress(), equalTo(onmsNode.getIpInterfaces().iterator().next().getIpAddress()));
+        assertThat(ipInterface.getSnmpInterface().get().getIfIndex(), equalTo(onmsNode.getSnmpInterfaces().iterator().next().getIfIndex()));
+
         assertThat(ipInterface.getMetaData().get(0).getKey(),
                 equalTo(onmsNode.getIpInterfaces().iterator().next().getMetaData().get(0).getKey()));
 
@@ -380,5 +387,20 @@ public class ModelMappersTest {
         assertThat(apiAlarmFeedback.getReason(), equalTo(alarmFeedback.getReason()));
         assertThat(apiAlarmFeedback.getUser(), equalTo(alarmFeedback.getUser()));
         assertThat(apiAlarmFeedback.getTimestamp(), equalTo(alarmFeedback.getTimestamp()));
+    }
+
+    @Test
+    public void canHandleObjectNotFoundExceptionsWhenMappingAlarms() {
+        // Map a trivial alarm first
+        OnmsAlarm alarm = new OnmsAlarm();
+        Alarm apiAlarm = ModelMappers.toAlarm(alarm);
+        assertThat(apiAlarm.getReductionKey(), equalTo(alarm.getReductionKey()));
+
+        // Now let's throw an exception when calling getLastEvent()
+        alarm = mock(OnmsAlarm.class);
+        when(alarm.getLastEvent()).thenThrow(new ObjectNotFoundException(1, OnmsEvent.class.getCanonicalName()));
+        apiAlarm = ModelMappers.toAlarm(alarm);
+        // No last event should be set
+        assertThat(apiAlarm.getLastEvent(), nullValue());
     }
 }

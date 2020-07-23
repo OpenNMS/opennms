@@ -224,10 +224,12 @@ public class ConfigTester implements ApplicationContextAware {
 			for (String configFile : tester.getConfigs().keySet()) {
 				tester.testConfig(configFile, verbose, ignoreUnknown);
 			}
+			System.out.println("Test is finished, found no problems.");
 		} else {
 			for (String configFile : line.getArgs()) {
 				tester.testConfig(configFile, verbose, ignoreUnknown);
 			}
+			System.out.println("Test is finished, found no problems.");
 		}
 	}
 

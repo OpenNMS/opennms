@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -148,53 +148,6 @@
               org.springframework.web.context;version="[4.0,5)",
               org.springframework.web.filter;version="[4.0,5)",
 
-              <!-- Spring Web Flow -->
-              <!-- There are no versions here because the webflow JAR is a wrapped dep :/ -->
-              org.springframework.webflow.expression,
-              org.springframework.webflow.expression.el,
-              org.springframework.webflow.expression.spel,
-              org.springframework.webflow.scope,
-              org.springframework.webflow.security,
-              org.springframework.webflow.engine,
-              org.springframework.webflow.engine.builder,
-              org.springframework.webflow.engine.builder.model,
-              org.springframework.webflow.engine.builder.support,
-              org.springframework.webflow.engine.impl,
-              org.springframework.webflow.engine.model,
-              org.springframework.webflow.engine.model.registry,
-              org.springframework.webflow.engine.model.builder,
-              org.springframework.webflow.engine.model.builder.xml,
-              org.springframework.webflow.engine.support,
-              org.springframework.webflow.conversation,
-              org.springframework.webflow.conversation.impl,
-              org.springframework.webflow.mvc,
-              org.springframework.webflow.mvc.portlet,
-              org.springframework.webflow.mvc.builder,
-              org.springframework.webflow.mvc.view,
-              org.springframework.webflow.mvc.servlet,
-              org.springframework.webflow.persistence,
-              org.springframework.webflow.context,
-              org.springframework.webflow.context.web,
-              org.springframework.webflow.context.portlet,
-              org.springframework.webflow.context.servlet,
-              org.springframework.webflow.validation,
-              org.springframework.webflow.action,
-              org.springframework.webflow.execution,
-              org.springframework.webflow.execution.factory,
-              org.springframework.webflow.execution.repository,
-              org.springframework.webflow.execution.repository.snapshot,
-              org.springframework.webflow.execution.repository.impl,
-              org.springframework.webflow.execution.repository.support,
-              org.springframework.webflow.test,
-              org.springframework.webflow.test.execution,
-              org.springframework.webflow.config,
-              org.springframework.webflow.executor,
-              org.springframework.webflow.core,
-              org.springframework.webflow.core.collection,
-              org.springframework.webflow.upgrade,
-              org.springframework.webflow.definition,
-              org.springframework.webflow.definition.registry,
-
               <!-- Mark some packages that dependency JARs rely on as optional -->
               <!-- Optional dependencies of jdom -->
               oracle.xml*;resolution:=optional,
@@ -284,6 +237,8 @@
             <descriptor>src/assembly/meta-inf.xml</descriptor>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
           <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
@@ -627,12 +582,6 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.graphml</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.impl</artifactId>
       <scope>${onmsLibScope}</scope>
@@ -741,6 +690,18 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.config-dao.thresholding.api</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.config-dao.poll-outages.api</artifactId>
+      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -905,6 +866,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <scope>test</scope>
@@ -924,6 +891,12 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>3.1.6</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

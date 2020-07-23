@@ -171,7 +171,7 @@ public class JsmiMibParser implements MibParser, Serializable {
                     break;
             }
         }
-        if (errorHandler.isNotOk()) // There are still non-dependency related problems.
+        if (errorHandler.isNotOk() || mib == null) // There are still non-dependency related problems.
             return false;
 
         // Extracting the module from compiled MIB.

@@ -74,6 +74,7 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.xml.event.Event;
@@ -222,13 +223,14 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_poller.setNetwork(network);
 		m_poller.setQueryManager(m_queryManager);
 		m_poller.setPollerConfig(m_pollerConfig);
-		m_poller.setPollOutagesConfig(m_pollerConfig);
+		m_poller.setPollOutagesDao(m_pollerConfig);
 		m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		m_eventMgr.finishProcessingEvents();
+		m_eventMgr.reset();
 		stopDaemons();
 		sleep(200);
 		m_db.drop();
@@ -248,7 +250,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         pkg.setRemote(true);
         Poller poller = new Poller();
 		poller.setPollerConfig(new MockPollerConfig(m_network));
-        assertFalse(poller.getPollerConfig().pollableServiceInPackage(null, null, pkg));
+        assertFalse(poller.pollableServiceInPackage(null, null, pkg));
         poller = null;
     }
 
@@ -929,6 +931,38 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         
         
     }
+
+	@Test
+	public void testNodeDownEventNotReoccuringWhenReloadDaemonEventIsSent() {
+
+		startDaemons();
+
+		MockNode node = m_network.getNode(4);
+		MockService svc = m_network.getService(4, "192.168.1.6", "SNMP");
+
+		anticipateDown(node);
+
+		node.bringDown();
+
+		verifyAnticipated(5000);
+
+		resetAnticipated();
+
+		EventBuilder builder = MockEventUtil.createEventBuilder("test", "uei.opennms.org/internal/reloadDaemonConfig");
+		builder.addParam(EventConstants.PARM_DAEMON_NAME, "Pollerd");
+		Event reloadDaemonSuccessfulEvent = MockEventUtil.createEventBuilder("Pollerd", EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI).getEvent();
+        // Anticipate only reload daemon successful event, node down events should not occur again.
+		m_eventMgr.getEventAnticipator().anticipateEvent(reloadDaemonSuccessfulEvent);
+		m_eventMgr.sendEventToListeners(builder.getEvent());
+
+		verifyAnticipated(5000);
+
+		anticipateUp(svc);
+		anticipateUp(node);
+		node.bringUp();
+
+		verifyAnticipated(8000);
+	}
 
     @Test
     public void testNodeGainedServiceWhileNodeDownAndServiceDown() {

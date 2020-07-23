@@ -109,9 +109,9 @@
 </div>
 <table class="table table-sm severity">
   <tr class="CellStatus">
-    <td class="Cleared nobright" colspan="2"><%=ipAddr%></td>
-    <td class="Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
-    <td class="<%= overallStatus %> nobright"><%= overallStatusString %></td>
+    <td class="severity-Cleared nobright" colspan="2"><%=ipAddr%></td>
+    <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>
+    <td class="severity-<%= overallStatus %> nobright"><%= overallStatusString %></td>
   </tr>
 
   <% for( int i=0; i < services.length; i++ ) { %>
@@ -121,12 +121,12 @@
     <%
         if (i==0) {
     %>
-    <td class="Cleared nobright" rowspan="<%=services.length%>"></td>
+    <td class="severity-Cleared nobright" rowspan="<%=services.length%>"></td>
     <%
         }
         double svcValue = 0;
 
-        String warnClass = "Normal";
+        String warnClass = service.isManaged() ? "Normal" : "Indeterminate";
 
         for(int o=0;o<outages.length;o++) {
             if (outages[o].getIpAddress().equals(ipAddr) && outages[o].getServiceName().equals(service.getServiceName())) {
@@ -154,12 +154,12 @@
     </c:url>
     <td class="severity-<%=warnClass%> bright"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=service.getServiceName()%>"/></a></td>
     <% if( service.isManaged() ) { %>
-      <td class="Cleared nobright">
+      <td class="severity-Cleared nobright">
         <span data-src="<%=timelineUrl%>"></span>
       </td>
       <td class="severity-<%=serviceClass%> nobright"><%=CategoryUtil.formatValue(svcValue)%>%</td>
     <% } else { %>
-      <td class="Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
+      <td class="severity-Cleared nobright"><img src="#" data-imgsrc="<%=timelineEmptyUrl%>"></td>
       <td class="severity-<%=serviceClass%> nobright"><%=ElementUtil.getServiceStatusString(service)%></td>
     <% } %>
     </tr>

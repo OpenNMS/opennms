@@ -28,10 +28,12 @@
 
 package org.opennms.features.distributed.kvstore.api;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public final class SerializingBlobStore<V> {
     private final BlobStore blobStore;
@@ -43,6 +45,11 @@ public final class SerializingBlobStore<V> {
         this.blobStore = Objects.requireNonNull(blobStore);
         this.serializer = Objects.requireNonNull(serializer);
         this.deserializer = Objects.requireNonNull(deserializer);
+    }
+
+    public static <U> SerializingBlobStore<U> ofType(BlobStore blobStore, Serializer<U> serializer,
+                                                     Deserializer<U> deserializer) {
+        return new SerializingBlobStore<>(blobStore, serializer, deserializer);
     }
 
     public long put(String key, V value, String context) {
@@ -61,10 +68,6 @@ public final class SerializingBlobStore<V> {
         return blobStore.getIfStale(key, context, timestamp).map(o -> o.map(deserializer::deserialize));
     }
 
-    public OptionalLong getLastUpdated(String key, String context) {
-        return blobStore.getLastUpdated(key, context);
-    }
-
     public CompletableFuture<Long> putAsync(String key, V value, String context) {
         return blobStore.putAsync(key, serializer.serialize(value), context);
     }
@@ -81,8 +84,18 @@ public final class SerializingBlobStore<V> {
         return blobStore.getIfStaleAsync(key, context, timestamp).thenApply(o -> o.map(ov -> ov.map(deserializer::deserialize)));
     }
 
-    public CompletableFuture<OptionalLong> getLastUpdatedAsync(String key, String context) {
-        return blobStore.getLastUpdatedAsync(key, context);
+    public Map<String, V> enumerateContext(String context) {
+        return deserializeMap(blobStore.enumerateContext(context));
+    }
+
+    public CompletableFuture<Map<String, V>> enumerateContextAsync(String context) {
+        return blobStore.enumerateContextAsync(context).thenApply(this::deserializeMap);
+    }
+
+    private Map<String, V> deserializeMap(Map<String, byte[]> inputMap) {
+        return Collections.unmodifiableMap(inputMap.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> deserializer.deserialize(e.getValue()))));
     }
 
     @FunctionalInterface

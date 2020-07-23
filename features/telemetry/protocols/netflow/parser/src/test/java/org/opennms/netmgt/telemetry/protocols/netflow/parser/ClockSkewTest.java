@@ -40,6 +40,7 @@ import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
@@ -102,9 +103,9 @@ public class ClockSkewTest {
         }
     };
 
-    private ParserBase parserBase = new ParserBase(Protocol.NETFLOW5, "name", new AsyncDispatcher<TelemetryMessage>() {
+    private ParserBase parserBase = new ParserBaseExt(Protocol.NETFLOW5, "name", new AsyncDispatcher<TelemetryMessage>() {
         @Override
-        public CompletableFuture<TelemetryMessage> send(TelemetryMessage message) {
+        public CompletableFuture<DispatchStatus> send(TelemetryMessage message) {
             return null;
         }
 
@@ -114,7 +115,7 @@ public class ClockSkewTest {
         }
 
         @Override
-        public void close() {
+        public void close() throws Exception {
 
         }
     }, eventForwarder, identity, dnsResolver, new MetricRegistry());
@@ -162,5 +163,17 @@ public class ClockSkewTest {
 
         parserBase.detectClockSkew(current - 301000, InetAddress.getLoopbackAddress());
         Assert.assertEquals(2, eventCount);
+    }
+
+    private class ParserBaseExt extends ParserBase {
+
+        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, EventForwarder eventForwarder, Identity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
+            super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        }
+
+        @Override
+        protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) {
+            return new byte[0];
+        }
     }
 }

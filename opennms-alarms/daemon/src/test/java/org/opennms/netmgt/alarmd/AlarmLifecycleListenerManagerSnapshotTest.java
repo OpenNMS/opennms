@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 
 import com.google.common.collect.Maps;
@@ -115,9 +115,8 @@ public class AlarmLifecycleListenerManagerSnapshotTest {
         AlarmDao alarmDao = mock(AlarmDao.class);
         when(alarmDao.findAll()).thenReturn(Collections.emptyList());
         alm.setAlarmDao(alarmDao);
-        MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
-        mockTransactionTemplate.afterPropertiesSet();
-        alm.setTransactionTemplate(mockTransactionTemplate);
+        MockSessionUtils mockSessionUtils = new MockSessionUtils();
+        alm.setSessionUtils(mockSessionUtils);
         alm.onListenerRegistered(listener, Maps.newHashMap());
 
         // Trigger a snapshot on a another thread

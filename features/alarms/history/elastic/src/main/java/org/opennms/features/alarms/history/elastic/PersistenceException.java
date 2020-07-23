@@ -31,7 +31,7 @@ package org.opennms.features.alarms.history.elastic;
 import java.util.List;
 
 import org.opennms.features.alarms.history.elastic.dto.AlarmDocumentDTO;
-import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
+import org.opennms.features.jest.client.bulk.FailedItem;
 
 public class PersistenceException extends Exception {
 

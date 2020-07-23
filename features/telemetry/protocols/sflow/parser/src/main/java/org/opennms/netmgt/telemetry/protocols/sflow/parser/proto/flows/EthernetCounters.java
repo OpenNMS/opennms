@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct ethernet_counters {
 //    unsigned int dot3StatsAlignmentErrors;
@@ -68,7 +68,7 @@ public class EthernetCounters implements CounterData {
     public final long dot3StatsInternalMacReceiveErrors;
     public final long dot3StatsSymbolErrors;
 
-    public EthernetCounters(final ByteBuffer buffer) throws InvalidPacketException {
+    public EthernetCounters(final ByteBuf buffer) throws InvalidPacketException {
         this.dot3StatsAlignmentErrors = BufferUtils.uint32(buffer);
         this.dot3StatsFCSErrors = BufferUtils.uint32(buffer);
         this.dot3StatsSingleCollisionFrames = BufferUtils.uint32(buffer);

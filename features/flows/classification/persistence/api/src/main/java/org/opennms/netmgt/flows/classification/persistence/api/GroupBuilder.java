@@ -53,8 +53,8 @@ public class GroupBuilder {
         return this;
     }
 
-    public GroupBuilder withPriority(int priority) {
-        group.setPriority(priority);
+    public GroupBuilder withPosition(int position) {
+        group.setPosition(position);
         return this;
     }
 
@@ -78,7 +78,7 @@ public class GroupBuilder {
 
     public Group build() {
         if (Strings.isNullOrEmpty(group.getName())) {
-            throw new IllegalStateException("Cannot build rule, because required field 'name' is null or empty");
+            throw new IllegalStateException("Cannot build group, because required field 'name' is null or empty");
         }
         return group;
     }

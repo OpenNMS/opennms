@@ -42,6 +42,7 @@ public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericS
     @Autowired(required=false)
     private SnmpAgentConfigFactory m_agentConfigFactory;
 
+
     @SuppressWarnings("unchecked")
     public GenericSnmpDetectorFactory(Class<T> clazz) {
         super((Class<SnmpDetector>) clazz);
@@ -50,7 +51,7 @@ public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericS
     @SuppressWarnings("unchecked")
     @Override
     public T createDetector(Map<String, String> properties) {
-        return (T)super.createDetector(properties);
+        return (T) super.createDetector(properties);
     }
 
     @Override
@@ -67,5 +68,9 @@ public class GenericSnmpDetectorFactory<T extends SnmpDetector> extends GenericS
 
     public void setAgentConfigFactory(SnmpAgentConfigFactory agentConfigFactory) {
         m_agentConfigFactory = agentConfigFactory;
+    }
+
+    public SnmpAgentConfigFactory getAgentConfigFactory() {
+        return m_agentConfigFactory;
     }
 }

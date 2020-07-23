@@ -1,0 +1,33 @@
+[
+      {
+          "pom": "/home/jesse/git/opennms/pom.xml",
+          "artifactId": "opennms",
+          "groupId": "org.opennms",
+          "version": "25.0.0-SNAPSHOT",
+          "dependencies": []
+      },
+      {
+          "pom": "/home/jesse/git/opennms/core/pom.xml",
+          "artifactId": "org.opennms.core",
+          "groupId": "org.opennms",
+          "version": "25.0.0-SNAPSHOT",
+          "dependencies": [],
+          "parent": {"artifactId": "opennms", "groupId": "org.opennms", "version": "25.0.0-SNAPSHOT"}
+      },
+      {
+          "pom": "/home/jesse/git/opennms/core/schema/pom.xml",
+          "artifactId": "org.opennms.core.schema",
+          "groupId": "org.opennms.core",
+          "version": "25.0.0-SNAPSHOT",
+          "dependencies": [],
+          "parent": {"artifactId": "org.opennms.core", "groupId": "org.opennms", "version": "25.0.0-SNAPSHOT"}
+      },
+      {
+          "pom": "/home/jesse/git/opennms/opennms-services/pom.xml",
+          "artifactId": "opennms-services",
+          "groupId": "org.opennms",
+          "version": "25.0.0-SNAPSHOT",
+          "dependencies": [{"artifactId": "org.opennms.core.schema", "groupId": "org.opennms.core", "version": "25.0.0-SNAPSHOT"}],
+          "parent": {"artifactId": "opennms", "groupId": "org.opennms", "version": "25.0.0-SNAPSHOT"}
+      }
+  ]

@@ -63,19 +63,19 @@ public class DatabaseReportIT extends OpenNMSSeleniumIT {
     @Parameterized.Parameters
     public static Object[] data() {
         return new Object[][] {
-                {"EarlyMorningReport", "PDF", "Early morning report", 1},
-                {"ResponseTimeSummaryForNode", "PDF", "Response Time Summary for node", 1},
-                {"AvailabilityByNode", "PDF", "Availability by node", 1},
-                {"AvailabilitySummaryPast7Days", "PDF", "Availability Summary -Default configuration for past 7 Days", 1},
-                {"ResponseTimeByNode", "PDF", "Response time by node", 1},
-                {"SerialInterfaceUtilizationSummary", "PDF", "Serial Interface Utilization Summary", 1},
-                {"TotalBytesTransferredByInterface", "PDF", "Total Bytes Transferred by Interface ", 1},
-                {"AverageAndPeakTrafficRatesForNodesByInterface", "PDF", "Average and Peak Traffic rates for Nodes by Interface", 1},
-                {"InterfaceAvailabilityReport", "PDF", "Interface Availability Report", 2},
-                {"SnmpInterfaceAvailabilityReport", "PDF", "Snmp Interface Availability Report", 2},
-                {"MaintenanceContractsExpired", "PDF", "Maintenance contracts expired", 2},
-                {"MaintenanceContractsStrategy", "PDF", "Maintenance contracts strategy", 2},
-                {"EventAnalysisReport", "PDF", "Event Analysis report", 2},
+                {"local_Early-Morning-Report", "PDF", "Early morning report"},
+                {"local_Response-Time-Summary-Report", "PDF", "Response Time Summary for node"},
+                {"local_Node-Availability-Report", "PDF", "Availability by node"},
+                {"local_Availability-Summary-Report", "PDF", "Availability Summary -Default configuration for past 7 Days"},
+                {"local_Response-Time-Report", "PDF", "Response time by node"},
+                {"local_Serial-Interface-Utilization-Summary", "PDF", "Serial Interface Utilization Summary"},
+                {"local_Total-Bytes-Transferred-By-Interface", "PDF", "Total Bytes Transferred by Interface"},
+                {"local_Average-Peak-Traffic-Rates", "PDF", "Average and Peak Traffic rates for Nodes by Interface"},
+                {"local_Interface-Availability-Report", "PDF", "Interface Availability Report"},
+                {"local_Snmp-Interface-Oper-Availability", "PDF", "Snmp Interface Availability Report"},
+                {"local_AssetMangementMaintExpired", "PDF", "Maintenance contracts expired"},
+                {"local_AssetMangementMaintStrategy", "PDF", "Maintenance contracts strategy"},
+                {"local_Event-Analysis", "PDF", "Event Analysis report"},
         };
     }
 
@@ -88,35 +88,25 @@ public class DatabaseReportIT extends OpenNMSSeleniumIT {
     @Parameterized.Parameter(2)
     public String reportName;
 
-    @Parameterized.Parameter(3)
-    public int page;
-
     /**
-     * Fixed filename that PDF reports will have once downloaded.
+     * Filename that PDF reports will have once downloaded.
      */
-    private final File reportPdfFile = new File(getDownloadsFolder(), "report.pdf");
+    private File reportPdfFile;
 
     @Before
     public void before() {
         cleanDownloadsFolder();
 
-        // we do not want to wait 2 minutes, we only want to wait n seconds
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-
         LOG.info("Validating report generation '{}' ({})", reportName, reportFormat);
 
+        reportPdfFile = new File(getDownloadsFolder(), reportId + "." + reportFormat.toLowerCase());
+
+        Assert.assertNotNull(reportPdfFile);
         Assert.assertNotNull(reportId);
         Assert.assertNotNull(reportFormat);
         Assert.assertNotNull(reportName);
-        Assert.assertNotNull(page);
 
-        LOG.info("Navigation to database reports page {}.", page);
-        reportsPage();
-        findElementByLink("Database Reports").click();
-        findElementByLink("List reports").click();
-        if (page > 1) {
-            findElementByLink(Integer.toString(page)).click();
-        }
+        new DatabaseReportPageIT.DatabaseReportPage(getDriver(), getBaseUrlInternal()).open();
     }
 
     @After
@@ -132,13 +122,18 @@ public class DatabaseReportIT extends OpenNMSSeleniumIT {
         assertThat(reportPdfFile.exists(), equalTo(false));
 
         // execute report (no custom parameter setup)
-        getInstantExecutionLink(reportName).click();
-        findElementById("run").click(); // run report
-
+        new DatabaseReportPageIT.ReportTemplateTab(getDriver())
+                .open()
+                .select(reportName)
+                .format(reportFormat)
+                .createReport(); // run Report
         verify();
     }
 
     private void verify() {
+        // we do not want to wait 2 minutes, we only want to wait n seconds
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+
         // verify current page and look out for errors
         // we do not use findElementByXpath(...) on purpose, we explicitly want to use this
         // otherwise we have to wait 2 minutes each time an error already occurred
@@ -153,15 +148,5 @@ public class DatabaseReportIT extends OpenNMSSeleniumIT {
         // ensure it really has been downloaded and has a file size > 0
         Assert.assertTrue("No report was generated for report '" + reportName + "'", reportPdfFile.exists());
         Assert.assertTrue("The report is empty", reportPdfFile.length() > 0);
-
-        // rename the report so it remains available as an artifact
-        final File targetFile = new File(getDownloadsFolder(), reportId + ".pdf");
-        reportPdfFile.renameTo(targetFile);
     }
-
-    // find the run report link
-    private WebElement getInstantExecutionLink(String reportName) {
-        return findElementByXpath(String.format("//table/tbody/tr/td[text()='%s']/../td[3]/a", reportName));
-    }
-
 }

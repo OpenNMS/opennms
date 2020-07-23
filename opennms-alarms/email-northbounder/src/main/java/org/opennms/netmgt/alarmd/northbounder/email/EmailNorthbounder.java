@@ -45,6 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.google.common.base.Strings;
+
 /**
  * Forwards alarms via Email.
  * 
@@ -69,6 +71,9 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
 
     /** The Email from field. */
     private String m_emailFrom;
+
+    /** The Email replyTo field. */
+    private String m_emailReplyTo;
 
     /** The Email to field. */
     private String m_emailTo;
@@ -111,6 +116,7 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
             m_emailSubjectFormat = sendmailMessage.getSubject();
             m_emailBodyFormat = sendmailMessage.getBody();
             m_emailFrom = sendmailMessage.getFrom();
+            m_emailReplyTo = sendmailMessage.getReplyTo();
             m_emailTo = sendmailMessage.getTo();
         }
     }
@@ -200,6 +206,9 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
     protected SendmailConfig getSendmailConfig(NorthboundAlarm alarm) {
         SendmailMessage message = new SendmailMessage();
         message.setFrom(m_emailFrom);
+        if (!Strings.isNullOrEmpty(m_emailReplyTo)) {
+            message.setReplyTo(m_emailReplyTo);
+        }
         message.setTo(m_emailTo);
         message.setSubject(m_emailSubjectFormat);
         message.setBody(m_emailBodyFormat);

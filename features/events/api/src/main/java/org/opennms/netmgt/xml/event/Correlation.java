@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.netmgt.xml.event;
   //---------------------------------/
  //- Imported classes and packages -/
 //---------------------------------/
+
+import org.opennms.netmgt.events.api.model.ICorrelation;
 
 import java.io.Serializable;
 
@@ -108,6 +110,20 @@ public class Correlation implements Serializable {
         this._cueiList = new java.util.ArrayList<>();
     }
 
+    public static Correlation copyFrom(ICorrelation source) {
+        if (source == null) {
+            return null;
+        }
+
+        Correlation correlation = new Correlation();
+        correlation.setState(source.getState());
+        correlation.setPath(source.getPath());
+        correlation.getCueiCollection().addAll(source.getCueiCollection());
+        correlation.setCmin(source.getCmin());
+        correlation.setCmax(source.getCmax());
+        correlation.setCtime(source.getCtime());
+        return correlation;
+    }
 
       //-----------/
      //- Methods -/

@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_bst_egress_queue {
 //   unsigned int queue;  /* eqress queue number selected for sampled packet */
@@ -45,7 +45,7 @@ import com.google.common.base.MoreObjects;
 public class ExtendedBstEgressQueue implements FlowData {
     public final long queue;
 
-    public ExtendedBstEgressQueue(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedBstEgressQueue(final ByteBuf buffer) throws InvalidPacketException {
         this.queue = BufferUtils.uint32(buffer);
     }
 

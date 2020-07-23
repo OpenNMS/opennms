@@ -26,6 +26,7 @@ require('../services/Synchronize');
   *
   * @requires $scope Angular local scope
   * @requires $filter Angular filter
+  * @requires $cookies Angular cookies
   * @requires $window Document window
   * @requires $uibModal Angular UI modal
   * @required Configuration The configuration object
@@ -33,7 +34,7 @@ require('../services/Synchronize');
   * @requires SynchronizeService The synchronize service
   * @requires growl The growl plugin for instant notifications
   */
-  .controller('RequisitionsController', ['$scope', '$filter', '$window', '$uibModal', 'Configuration', 'DateFormatterService', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $window, $uibModal, Configuration, DateFormatterService, RequisitionsService, SynchronizeService, growl) {
+  .controller('RequisitionsController', ['$scope', '$filter', '$cookies', '$window', '$uibModal', 'Configuration', 'DateFormatterService', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $cookies, $window, $uibModal, Configuration, DateFormatterService, RequisitionsService, SynchronizeService, growl) {
 
     /**
     * @description The timing status.
@@ -443,8 +444,18 @@ require('../services/Synchronize');
     $scope.updateFilteredRequisitions = function() {
       $scope.currentPage = 1;
       $scope.totalItems = $scope.filteredRequisitions.length;
-      $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
     };
+
+   /**
+    * @description Saves the page size on a cookie
+    *
+    * @name RequisitionController:savePageSize
+    * @ngdoc method
+    * @methodOf RequisitionController
+    */
+    $scope.savePageSize = function() {
+      $cookies.put('requisitions_page_size', $scope.pageSize);
+    }
 
     /**
     * @description Initializes the local requisitions list from the server
@@ -454,6 +465,10 @@ require('../services/Synchronize');
     * @methodOf RequisitionsController
     */
     $scope.initialize = function() {
+      var value = $cookies.get('requisitions_page_size');
+      if (value) {
+        $scope.pageSize = value;
+      }
       $scope.loaded = false;
       DateFormatterService.formatter.finally(function() {
         RequisitionsService.getRequisitions().then(

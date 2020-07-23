@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.newts;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -38,7 +39,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.joda.time.Duration;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.newts.support.NewtsUtils;
 import org.opennms.newts.api.Sample;
@@ -78,7 +78,7 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
 
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
 
     @Autowired
@@ -107,7 +107,7 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
 
     @Inject
     public NewtsWriter(@Named("newts.max_batch_size") Integer maxBatchSize, @Named("newts.ring_buffer_size") Integer ringBufferSize,
-            @Named("newts.writer_threads") Integer numWriterThreads, MetricRegistry registry) {
+            @Named("newts.writer_threads") Integer numWriterThreads, @Named("newtsMetricRegistry") MetricRegistry registry) {
         Preconditions.checkArgument(maxBatchSize > 0, "maxBatchSize must be strictly positive");
         Preconditions.checkArgument(ringBufferSize > 0, "ringBufferSize must be positive");
         Preconditions.checkArgument(DoubleMath.isMathematicalInteger(Math.log(ringBufferSize) / Math.log(2)), "ringBufferSize must be a power of two");

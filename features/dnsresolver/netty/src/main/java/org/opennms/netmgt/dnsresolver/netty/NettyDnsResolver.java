@@ -48,12 +48,17 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.net.HostAndPort;
 
+import io.github.resilience4j.bulkhead.Bulkhead;
+import io.github.resilience4j.bulkhead.BulkheadConfig;
+import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.netty.resolver.dns.DefaultDnsCache;
@@ -81,6 +86,7 @@ public class NettyDnsResolver implements DnsResolver {
     public static final String CIRCUIT_BREAKER_STATE_CHANGE_EVENT_UEI = "uei.opennms.org/circuitBreaker/stateChange";
 
     private final EventForwarder eventForwarder;
+    private final MetricRegistry metrics;
     private final Timer lookupTimer;
     private final Meter lookupsSuccessful;
     private final Meter lookupsFailed;
@@ -92,6 +98,7 @@ public class NettyDnsResolver implements DnsResolver {
     private int minTtlSeconds = -1;
     private int maxTtlSeconds = -1;
     private int negativeTtlSeconds = -1;
+    private long maxCacheSize = -1;
 
     private boolean breakerEnabled = true;
     private int breakerFailureRateThreshold = 80;
@@ -99,20 +106,25 @@ public class NettyDnsResolver implements DnsResolver {
     private int breakerRingBufferSizeInHalfOpenState = 10;
     private int breakerRingBufferSizeInClosedState = 100;
 
+    private int bulkheadMaxConcurrentCalls = 1000;
+    private long bulkheadMaxWaitDurationMillis = queryTimeoutMillis + 100;
+
     private List<NettyResolverContext> contexts;
     private Iterator<NettyResolverContext> iterator;
-    private DnsCache cache;
+    private CaffeineDnsCache cache;
 
+    private Bulkhead bulkhead;
     private CircuitBreaker circuitBreaker;
 
     public NettyDnsResolver(EventForwarder eventForwarder, MetricRegistry metrics) {
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
+        this.metrics = Objects.requireNonNull(metrics);
         lookupTimer = metrics.timer("lookups");
         lookupsSuccessful = metrics.meter("lookupsSuccessful");
         lookupsFailed = metrics.meter("lookupsFailed");
         lookupsRejectedByCircuitBreaker = metrics.meter("lookupsRejectedByCircuitBreaker");
-        // It would be nice to expose cache statistics too, but Netty's cache doesn't currently
-        // make any statistics available - see https://github.com/netty/netty/issues/9412
+        metrics.register("availableConcurrentCalls", (Gauge<Integer>) () -> bulkhead.getMetrics().getAvailableConcurrentCalls());
+        metrics.register("maxAllowedConcurrentCalls", (Gauge<Integer>) () -> bulkhead.getMetrics().getMaxAllowedConcurrentCalls());
     }
 
     public void init() {
@@ -120,26 +132,32 @@ public class NettyDnsResolver implements DnsResolver {
         if (numContexts == 0) {
             numContexts = Runtime.getRuntime().availableProcessors() * 2;
         }
-        LOG.debug("Initializing Netty resolver with {} contexts and resolvers: {}", numContexts);
+        LOG.debug("Initializing Netty resolver with {} contexts and nameservers: {}", numContexts, nameservers);
 
+        // Initialize the cache with the given TTL settings - use defaults if the configured values
+        // are less than 0
+        final CaffeineDnsCache cacheWithDefaults = new CaffeineDnsCache();
+        cache = new CaffeineDnsCache(minTtlSeconds < 0 ? cacheWithDefaults.minTtl() : minTtlSeconds,
+                maxTtlSeconds < 0 ? cacheWithDefaults.maxTtl() : maxTtlSeconds,
+                negativeTtlSeconds < 0 ? cacheWithDefaults.negativeTtl() : negativeTtlSeconds,
+                maxCacheSize < 0 ? cacheWithDefaults.maxSize() : maxCacheSize);
+        cache.registerMetrics(metrics);
+
+        final BulkheadConfig bulkheadConfig = BulkheadConfig.custom()
+                .maxConcurrentCalls(bulkheadMaxConcurrentCalls)
+                .maxWaitDuration(Duration.ofMillis(bulkheadMaxWaitDurationMillis))
+                .build();
+        bulkhead = Bulkhead.of("nettyDnsResolver", bulkheadConfig);
 
         contexts = new ArrayList<>(numContexts);
-
-        // Initialize the cache with the given TTL settings - use Netty's default if the configured values
-        // are less than 0
-        final DefaultDnsCache cacheWithDefaults = new DefaultDnsCache();
-        cache = new DefaultDnsCache(minTtlSeconds < 0 ? cacheWithDefaults.minTtl() : minTtlSeconds,
-                maxTtlSeconds < 0 ? cacheWithDefaults.maxTtl() : maxTtlSeconds,
-                negativeTtlSeconds < 0 ? cacheWithDefaults.negativeTtl() : negativeTtlSeconds);
         for (int i = 0; i < numContexts; i++) {
             // Share the same cache across all of the contexts
-            NettyResolverContext context = new NettyResolverContext(this, cache, i);
+            NettyResolverContext context = new NettyResolverContext(this, cache, bulkhead, i);
             context.init();
             contexts.add(context);
         }
         iterator = new RandomIterator<>(contexts).iterator();
 
-        // Configure this statically for now, we can expose this as needed
         final CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
                 .failureRateThreshold(breakerFailureRateThreshold)
                 .waitDurationInOpenState(Duration.ofSeconds(breakerWaitDurationInOpenState))
@@ -185,6 +203,7 @@ public class NettyDnsResolver implements DnsResolver {
             }
         }
         contexts.clear();
+        cache.unregisterMetrics(metrics);
     }
 
     @Override
@@ -207,6 +226,11 @@ public class NettyDnsResolver implements DnsResolver {
                 timerContext.stop();
             });
         }).toCompletableFuture();
+    }
+
+    @VisibleForTesting
+    CaffeineDnsCache getCache() {
+        return cache;
     }
 
     public boolean getBreakerEnabled() {
@@ -247,6 +271,22 @@ public class NettyDnsResolver implements DnsResolver {
 
     public void setBreakerRingBufferSizeInClosedState(int breakerRingBufferSizeInClosedState) {
         this.breakerRingBufferSizeInClosedState = breakerRingBufferSizeInClosedState;
+    }
+
+    public int getBulkheadMaxConcurrentCalls() {
+        return bulkheadMaxConcurrentCalls;
+    }
+
+    public void setBulkheadMaxConcurrentCalls(int bulkheadMaxConcurrentCalls) {
+        this.bulkheadMaxConcurrentCalls = bulkheadMaxConcurrentCalls;
+    }
+
+    public long getBulkheadMaxWaitDurationMillis() {
+        return bulkheadMaxWaitDurationMillis;
+    }
+
+    public void setBulkheadMaxWaitDurationMillis(long bulkheadMaxWaitDurationMillis) {
+        this.bulkheadMaxWaitDurationMillis = bulkheadMaxWaitDurationMillis;
     }
 
     public int getNumContexts() {
@@ -295,6 +335,14 @@ public class NettyDnsResolver implements DnsResolver {
 
     public void setNegativeTtlSeconds(int negativeTtlSeconds) {
         this.negativeTtlSeconds = negativeTtlSeconds;
+    }
+
+    public long getMaxCacheSize() {
+        return maxCacheSize;
+    }
+
+    public void setMaxCacheSize(long maxCacheSize) {
+        this.maxCacheSize = maxCacheSize;
     }
 
     public CircuitBreaker getCircuitBreaker() {

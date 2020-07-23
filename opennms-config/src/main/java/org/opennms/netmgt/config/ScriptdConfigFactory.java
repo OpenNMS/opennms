@@ -175,4 +175,9 @@ public final class ScriptdConfigFactory {
     public synchronized List<EventScript> getEventScripts() {
         return m_config.getEventScripts();
     }
+
+
+    public synchronized Boolean getTransactional() {
+        return m_config.getTransactional();
+    }
 }

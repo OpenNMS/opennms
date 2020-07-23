@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.netmgt.xml.event;
   //---------------------------------/
  //- Imported classes and packages -/
 //---------------------------------/
+
+import org.opennms.netmgt.events.api.model.IForward;
 
 import java.io.Serializable;
 
@@ -94,6 +96,17 @@ public class Forward implements Serializable {
         setMechanism("snmpudp");
     }
 
+    public static Forward copyFrom(IForward source) {
+        if (source == null) {
+            return null;
+        }
+
+        Forward forward = new Forward();
+        forward.setContent(source.getContent());
+        forward.setMechanism(source.getMechanism());
+        forward.setState(source.getState());
+        return forward;
+    }
 
       //-----------/
      //- Methods -/

@@ -12,6 +12,9 @@
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/rest/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
 
+    <!-- Calls to health/overview are always accepted -->
+    <intercept-url pattern="/rest/health/probe" method="GET" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
+
     <!-- ack/unack/escalate/clear alarms -->
     <intercept-url pattern="/rest/alarms/**" method="PUT" access="ROLE_MOBILE,ROLE_REST,ROLE_ADMIN" />
 
@@ -34,6 +37,18 @@
     <intercept-url pattern="/rest/config/**" method="GET" access="ROLE_MINION,ROLE_REST,ROLE_ADMIN"/>
     <!-- Allow Minions to access the server info -->
     <intercept-url pattern="/rest/info" method="GET" access="ROLE_MINION,ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
+
+    <!-- Allow certain actions for the REPORT_DESIGNER role -->
+    <intercept-url pattern="/rest/reports/scheduled/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
+    <intercept-url pattern="/rest/reports/persisted/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
+    <intercept-url pattern="/rest/reports/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER,ROLE_USER"/>
+    <intercept-url pattern="/rest/reports/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
+    <intercept-url pattern="/rest/reports/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_REPORT_DESIGNER"/>
+
+    <!-- Allow certain actions for the ROLE_FLOW_MANAGER role -->
+    <intercept-url pattern="/rest/classifications/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_FLOW_MANAGER" />
+    <intercept-url pattern="/rest/classifications/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_FLOW_MANAGER" />
+    <intercept-url pattern="/rest/classifications/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_FLOW_MANAGER" />
 
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
@@ -71,6 +86,8 @@
 
     <!-- Allow users to POST to the Geolocation API, which is read-only -->
     <intercept-url pattern="/api/v2/geolocation" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+    <!-- Allow users to POST to the Graph API, which is read-only -->
+    <intercept-url pattern="/api/v2/graphs/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
 
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
@@ -121,9 +138,11 @@
     <intercept-url pattern="/svg/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/lib/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/images/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/assets/load-assets.jsp*" access="denyAll" /><!-- only used as include, shouldn't be accessible directly -->
     <intercept-url pattern="/assets/**" access="hasAnyRole('ROLE_ANONYMOUS','ROLE_USER','ROLE_DASHBOARD')" />
 
     <intercept-url pattern="/admin/ng-requisitions/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
+    <intercept-url pattern="/admin/classification/index.jsp" access="hasAnyRole('ROLE_FLOW_MANAGER','ROLE_ADMIN')" />
     <intercept-url pattern="/rest/snmpConfig/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
     <intercept-url pattern="/admin/**" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/**/mib-compiler" access="hasAnyRole('ROLE_ADMIN')" />
@@ -142,7 +161,11 @@
     
     <!-- DO NOT ALLOW ACCESS TO /osgi -->
     <intercept-url pattern="/osgi/**" access="denyAll" />
-    
+
+    <!-- Exclude jsp includes other than bootstrap, they shouldn't be accessible by themself -->
+    <intercept-url pattern="/includes/bootstrap.jsp" access="permitAll" />
+    <intercept-url pattern="/includes/*.jsp" access="denyAll" />
+
     <intercept-url pattern="/**" access="hasAnyRole('ROLE_USER')" />
     
     <!-- NrtCollection -->

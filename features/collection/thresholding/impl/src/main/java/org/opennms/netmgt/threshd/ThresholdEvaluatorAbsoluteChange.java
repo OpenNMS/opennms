@@ -68,14 +68,28 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
         private double m_change;
 
-        private static class State implements Serializable {
+        static class State extends AbstractThresholdEvaluatorState.AbstractState {
             private static final long serialVersionUID = 1L;
             private double m_lastSample = Double.NaN;
             private double m_previousTriggeringSample;
+
+            @Override
+            public String toString() {
+                StringBuilder sb = new StringBuilder();
+                sb.append("lastSample=").append(m_lastSample);
+                sb.append("\npreviousTriggeringSample=").append(m_previousTriggeringSample);
+                String superString = super.toString();
+
+                if (superString != null) {
+                    sb.append("\n").append(superString);
+                }
+
+                return sb.toString();
+            }
         }
 
         public ThresholdEvaluatorStateAbsoluteChange(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
-            super(threshold, thresholdingSession);
+            super(threshold, thresholdingSession, ThresholdEvaluatorStateAbsoluteChange.State.class);
             setThresholdConfig(threshold);
         }
 
@@ -193,9 +207,9 @@ public class ThresholdEvaluatorAbsoluteChange implements ThresholdEvaluator {
             return false;
         }
 
-        // FIXME This must be implemented correctly
         @Override
         public void clearStateBeforePersist() {
+            initializeState();
         }
     }
 

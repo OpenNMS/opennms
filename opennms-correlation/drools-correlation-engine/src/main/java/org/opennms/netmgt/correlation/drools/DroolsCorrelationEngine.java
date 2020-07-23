@@ -40,29 +40,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.drools.compiler.compiler.DroolsParserException;
 import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
+import org.drools.core.util.DroolsStreamUtils;
 import org.kie.api.KieBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.Message.Level;
 import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.definition.type.FactType;
 import org.kie.api.marshalling.KieMarshallers;
 import org.kie.api.marshalling.Marshaller;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.FactHandle;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.correlation.AbstractCorrelationEngine;
@@ -115,7 +115,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
     private Boolean m_persistState;
     private Resource m_configPath;
     private ApplicationContext m_configContext;
-    private List<Object> factObjects;
+    private Map<byte[], Class<?>> factObjects = new HashMap<>();
 
     /**
      * Holds a reference to the thread that calls {@link KieSession#fireUntilHalt()}
@@ -270,7 +270,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         }
 
         if (factObjects != null) {
-            factObjects.forEach(fact -> m_kieSession.insert(fact));
+            factObjects.forEach(this::unmarshalAndInsert);
             factObjects.clear();
         }
 
@@ -505,17 +505,56 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         shutDownKieSession(() -> {
             try {
                 // Capture the current set of facts
-                factObjects  = m_kieSession.getFactHandles().stream()
-                        .map(fact -> m_kieSession.getObject(fact))
-                        .collect(Collectors.toList());
+                m_kieSession.getFactHandles().forEach(this::marshalAndSaveFact);
             } catch (Exception e) {
                 LOG.warn("Failed to save facts", e);
             }
         });
     }
 
-    List<Object> getFactObjects() {
+    Map<byte[], Class<?>> getFactObjects() {
         return factObjects;
+    }
+
+    /**
+     * This checks if fact is declared in drl.
+     * Facts which are inserted in the session will throw exception.
+     * Currently, there is no better way to find if the fact is a declared fact or not.
+     */
+    private FactType getDeclaredFactType(String packageName, String className) {
+        try {
+            return m_kieBase.getFactType(packageName, className);
+        } catch (Exception e) {
+            // Any objects that are not declared in drl will throw exception.
+        }
+        return null;
+    }
+
+    private void marshalAndSaveFact(FactHandle factHandle) {
+        Object factObject = m_kieSession.getObject(factHandle);
+        try {
+            factObjects.put(DroolsStreamUtils.streamOut(factObject), factObject.getClass());
+        } catch (IOException e) {
+            LOG.error("Exception while marshalling fact {} with Class {}", factObject, factObject.getClass().getCanonicalName(), e);
+        }
+    }
+
+
+    private void unmarshalAndInsert(byte[] factBytes, Class<?> clazz) {
+
+        try {
+            String packageName = clazz.getPackage().getName();
+            String className = clazz.getSimpleName();
+            // Check if this is a declared fact in drl.
+            FactType factType = getDeclaredFactType(packageName, className);
+            if (factType != null) {
+                m_kieSession.insert(DroolsStreamUtils.streamIn(factBytes, factType.getFactClass().getClassLoader()));
+            } else {
+                m_kieSession.insert(DroolsStreamUtils.streamIn(factBytes, clazz.getClassLoader()));
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            LOG.error("Exception while unmarshalling fact of size {} with Class {}", factBytes.length, clazz.getCanonicalName());
+        }
     }
 
 }

@@ -23,11 +23,20 @@
 
     <reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
 
+    <bean id="camelSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="camelSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+        <service-properties>
+                <entry key="name" value="Camel Sink" />
+                <entry key="description" value="Metrics related to Sink messages between OpenNMS and Minion" />
+        </service-properties>
+    </service>
+
     <bean id="camelMessageConsumerManager" class="org.opennms.core.ipc.sink.camel.server.CamelMessageConsumerManager"
-          init-method="start" >
+          init-method="start" destroy-method="shutdown">
         <argument ref="sinkServer"/>
         <argument ref="identity"/>
         <argument ref="tracerRegistry"/>
+        <argument ref="camelSinkMetricRegistry"/>
     </bean>
 
     <service ref="camelMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />

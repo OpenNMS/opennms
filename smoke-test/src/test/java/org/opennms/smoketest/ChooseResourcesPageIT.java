@@ -29,6 +29,7 @@
 package org.opennms.smoketest;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -48,6 +49,7 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumIT {
 
     // See NMS-8886
     @Test
+    @Ignore
     public void verifyGraphAll() throws Exception {
         try {
             // INITIALIZE

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.container</artifactId>
@@ -17,7 +17,6 @@
     <module>bridge</module>
     <module>jaas-login-module</module>
     <module>extender</module>
-    <module>scv</module>
     <module>spring-extender</module>
     <module>shared</module>
   </modules>

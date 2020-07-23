@@ -336,16 +336,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
     private void initExtensions() {
         m_extContainer = new ConfigReloadContainer.Builder<>(Events.class)
-                .withMerger((source, target) -> {
-                    if (target == null) {
-                        target = new Events();
-                    }
-                    if (source == null) {
-                        source = new Events();
-                    }
-                    target.getEvents().addAll(source.getEvents());
-                    return target;
-                })
+				.withFolder((accumulator, next) -> accumulator.getEvents().addAll(next.getEvents()))
                 .build();
     }
 }

@@ -40,13 +40,13 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext context) throws Exception {
         LOG.info("Set bundle context in OffHeapServiceLoader");
-         OffHeapServiceLoader.setBundleContext(context);
+         DispatchQueueServiceLoader.setBundleContext(context);
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
         LOG.info("Clear bundle context in OffHeapServiceLoader");
-        OffHeapServiceLoader.setBundleContext(null);
+        DispatchQueueServiceLoader.setBundleContext(null);
     }
 
 }

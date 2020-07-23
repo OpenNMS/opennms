@@ -28,8 +28,10 @@
 
 package org.opennms.features.apilayer.utils;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.hibernate.ObjectNotFoundException;
 import org.mapstruct.factory.Mappers;
 import org.opennms.features.apilayer.model.mappers.AlarmFeedbackMapper;
 import org.opennms.features.apilayer.model.mappers.DatabaseEventMapper;
@@ -54,23 +56,44 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
  * Utility functions for mapping to/from API types to OpenNMS types
  */
 public class ModelMappers {
+    private static final Logger LOG = LoggerFactory.getLogger(ModelMappers.class);
 
     private static final InMemoryEventMapper inMemoryEventMapper = Mappers.getMapper(InMemoryEventMapper.class);
     private static final DatabaseEventMapper databaseEventMapper = Mappers.getMapper(DatabaseEventMapper.class);
     private static final NodeMapper nodeMapper = Mappers.getMapper(NodeMapper.class);
     private static final SnmpInterfaceMapper snmpInterfaceMapper = Mappers.getMapper(SnmpInterfaceMapper.class);
     private static final AlarmFeedbackMapper alarmFeedbackMapper = Mappers.getMapper(AlarmFeedbackMapper.class);
-    
+
+    // Cache the node objects. Use these in alarms, since they may be a high volume, and nodes are expensive to create.
+    // We can accept the fact that the node in the alarm is not always up-to-date
+    private static final String nodeCacheSpec = System.getProperty("org.opennms.features.apilayer.mapping.nodeCacheSpec",
+            "maximumSize=10000,expireAfterWrite=15m");
+    private static final LoadingCache<NodeKey, Node> nodeCache = CacheBuilder.from(nodeCacheSpec)
+            .build(new CacheLoader<NodeKey, Node>() {
+                        @Override
+                        public Node load(NodeKey nodeKey)  {
+                            return nodeMapper.map(nodeKey.node);
+                        }
+                    });
+
     public static Alarm toAlarm(OnmsAlarm alarm) {
-        return alarm == null ? null : ImmutableAlarm.newBuilder()
+        if (alarm == null) {
+            return null;
+        }
+        final ImmutableAlarm.Builder builder = ImmutableAlarm.newBuilder()
                 .setReductionKey(alarm.getReductionKey())
                 .setId(alarm.getId())
-                .setNode(toNode(alarm.getNode()))
                 .setManagedObjectInstance(alarm.getManagedObjectInstance())
                 .setManagedObjectType(alarm.getManagedObjectType())
                 .setAttributes(alarm.getDetails())
@@ -82,9 +105,31 @@ public class ModelMappers {
                 .setLogMessage(alarm.getLogMsg())
                 .setDescription(alarm.getDescription())
                 .setLastEventTime(alarm.getLastEventTime())
-                .setFirstEventTime(alarm.getFirstEventTime())
-                .setLastEvent(toEvent(alarm.getLastEvent()))
-                .build();
+                .setFirstEventTime(alarm.getFirstEventTime());
+
+        try {
+            if (alarm.getNode() != null) {
+                builder.setNode(nodeCache.get(new NodeKey(alarm.getNode())));
+            }
+        } catch (Exception e) {
+            LOG.warn("Failed to load node for alarm with id: {}", alarm.getId(), e);
+        }
+
+        try {
+            builder.setLastEvent(toEvent(alarm.getLastEvent()));
+        } catch (RuntimeException e) {
+            // We are only interested in catching org.hibernate.ObjectNotFoundExceptions, but this code runs in OSGi
+            // which has a different class for this loaded then what is being thrown
+            // Resort to comparing the name instead
+            if (ObjectNotFoundException.class.getCanonicalName().equals(e.getClass().getCanonicalName())) {
+                LOG.debug("The last event for alarm with id {} was deleted before we could perform the mapping." +
+                        " Last event will be null.", alarm.getId());
+            } else {
+                // Rethrow
+                throw e;
+            }
+        }
+        return builder.build();
     }
 
     public static InMemoryEvent toEvent(Event event) {
@@ -110,7 +155,12 @@ public class ModelMappers {
     }
 
     public static Node toNode(OnmsNode node) {
-        return node == null ? null : nodeMapper.map(node);
+        if (node == null) {
+            return null;
+        }
+        final Node apiNode = nodeMapper.map(node);
+        nodeCache.put(new NodeKey(node.getId()), apiNode);
+        return apiNode;
     }
 
     public static SnmpInterface toSnmpInterface(OnmsSnmpInterface snmpInterface) {
@@ -154,6 +204,11 @@ public class ModelMappers {
                 .withUser(feedback.getUser())
                 .build();
     }
+
+    public static OnmsSeverity fromSeverity(Severity severity) {
+        Objects.requireNonNull(severity);
+        return OnmsSeverity.get(severity.getId());
+    }
     
     public static OnmsTopologyProtocol toOnmsTopologyProtocol(TopologyProtocol protocol) {
         return OnmsTopologyProtocol.create(protocol.name());
@@ -161,5 +216,39 @@ public class ModelMappers {
     
     public static TopologyProtocol toTopologyProtocol(OnmsTopologyProtocol protocol) {
         return TopologyProtocol.valueOf(protocol.getId());
+    }
+
+    /**
+     * Key for the node cache.
+     *
+     * Use the node id for equals/hashCode checks, but store the actual
+     * node object in order to perform the actual map operations.
+     */
+    private static final class NodeKey {
+        private final OnmsNode node;
+        private final int nodeId;
+
+        public NodeKey(OnmsNode node) {
+            this.node = node;
+            this.nodeId = node.getId();
+        }
+
+        public NodeKey(int nodeId) {
+            this.node = null;
+            this.nodeId = nodeId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof NodeKey)) return false;
+            NodeKey nodeKey = (NodeKey) o;
+            return nodeId == nodeKey.nodeId;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(nodeId);
+        }
     }
 }

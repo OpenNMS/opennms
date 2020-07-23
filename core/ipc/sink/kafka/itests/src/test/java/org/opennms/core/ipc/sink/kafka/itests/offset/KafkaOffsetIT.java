@@ -47,6 +47,7 @@ import org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffset;
 import org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -89,8 +90,12 @@ public class KafkaOffsetIT {
     }
 
     @After
-    public void destroy() throws InterruptedException {
-        offsetProvider.stop();
+    public void destroy() { 
+        try {
+            offsetProvider.stop();
+        } catch (Throwable e) {
+            //Ignore
+        }
     }
 
     public static Callable<Boolean> matchGroupName(KafkaOffsetProvider offsetProvider) {
@@ -104,7 +109,7 @@ public class KafkaOffsetIT {
                 }
                 List<String> groupNames = kafkaOffsetMonitors.stream().map(offset -> offset.getConsumerGroupName())
                         .collect(Collectors.toList());
-                return groupNames.contains("OpenNMS");
+                return groupNames.contains(SystemInfoUtils.getInstanceId());
             }
         };
     }

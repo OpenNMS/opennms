@@ -2,7 +2,7 @@
 [[telemetryd-listener-tcp]]
 ==== TCP Listener
 
-The _TCP Listener_ accepts incoming TCP connections and forwards the TCP Stream to a single _Parser_.
+The _TCP Listener_ accepts incoming TCP connections and forwards the TCP stream to a single _Parser_.
 
 ===== Facts
 
@@ -14,7 +14,7 @@ The _TCP Listener_ accepts incoming TCP connections and forwards the TCP Stream 
 
 ===== Parameters
 
-.Listener specific parameters for the UdpListener
+.Listener-specific parameters for the TcpListener
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                       | Required | Default value

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,10 +44,11 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -289,17 +290,17 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
      *     ackType: <code>AckType</code. representing either an <code>OnmsAlarm</code>, <code>OnmsNotification</code>, etc.
      *     refId: The ID of the <code>OnmsAcknowledgable</code>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.ACKNOWLEDGE_EVENT_UEI)
-    public void handleAckEvent(Event event) {
+    public void handleAckEvent(IEvent event) {
         
         LOG.info("handleAckEvent: Received acknowledgment event: {}", event);
         
         OnmsAcknowledgment ack;
         
         try {
-            ack = new OnmsAcknowledgment(event);
+            ack = new OnmsAcknowledgment(Event.copyFrom(event));
             m_ackDao.processAck(ack);
         } catch (ParseException e) {
             LOG.error("handleAckEvent: unable to process acknowledgment event: {}", event, e);
@@ -309,17 +310,17 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     /**
      * <p>handleReloadConfigEvent</p>
      *
-     * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei=EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadConfigEvent(Event event) {
+    public void handleReloadConfigEvent(IEvent event) {
         String specifiedDaemon = null;
 
         LOG.info("handleReloadConfigEvent: processing reload event: {}", event);
 
-        List<Parm> parms = event.getParmCollection();
+        List<IParm> parms = event.getParmCollection();
 
-        for (Parm parm : parms) {
+        for (IParm parm : parms) {
             specifiedDaemon = parm.getValue().getContent();
 
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) 

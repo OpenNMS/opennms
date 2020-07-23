@@ -76,6 +76,7 @@
       <xs:element maxOccurs="unbounded" minOccurs="0" ref="tns:adapter"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:ID"/>
+    <xs:attribute name="use-routing-key" type="xs:boolean"/>
   </xs:complexType>
 
   <xs:complexType name="telemetrydConfiguration">

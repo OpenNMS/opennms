@@ -28,6 +28,7 @@
 
 package org.opennms.features.distributed.kvstore.api;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
@@ -40,6 +41,11 @@ import java.util.concurrent.CompletableFuture;
  * <p>
  * Asynchronous calls to this API that fail exceptionally will return their future completed exceptionally with the
  * original exception.
+ * <p>
+ * It is up to the client to handle failures (in the form of unchecked exceptions) resulting from calls to this
+ * interface. This is particularly important in the case of asynchronous calls as the backing implementation may be
+ * overwhelmed depending on the rate in which case the user must implement their own retry logic to handle the futures
+ * that have completed exceptionally (in any case where it is not safe to ignore them).
  *
  * @param <T> the type this store puts/gets
  */
@@ -86,6 +92,25 @@ public interface KeyValueStore<T> {
 
     /**
      * @param context a context used to differentiate between keys with the same name (forms a compound key)
+     * @return a map of all the records matching the given context where the map's key is the record's key and the map's
+     * value is the records value
+     */
+    Map<String, T> enumerateContext(String context);
+
+    /**
+     * @param context a context used to differentiate between keys with the same name (forms a compound key)
+     */
+    void delete(String key, String context);
+
+    /**
+     * Remove all records for a given context.
+     *
+     * @param context a context used to differentiate between keys with the same name (forms a compound key)
+     */
+    void truncateContext(String context);
+
+    /**
+     * @param context a context used to differentiate between keys with the same name (forms a compound key)
      * @return a future containing the timestamp the value was persisted with
      */
     CompletableFuture<Long> putAsync(String key, T value, String context);
@@ -123,4 +148,29 @@ public interface KeyValueStore<T> {
      * key did not exist
      */
     CompletableFuture<OptionalLong> getLastUpdatedAsync(String key, String context);
+
+    /**
+     * @return the name of the backing implementation
+     */
+    String getName();
+
+    /**
+     * @param context a context used to differentiate between keys with the same name (forms a compound key)
+     * @return a future containing a map of all the records matching the given context where the map's key is the
+     * record's key and the map's value is the records value
+     */
+    CompletableFuture<Map<String, T>> enumerateContextAsync(String context);
+
+    /**
+     * @param context a context used to differentiate between keys with the same name (forms a compound key)
+     * @return a future that is completed when the delete has finished
+     */
+    CompletableFuture<Void> deleteAsync(String key, String context);
+
+    /**
+     * Remove all records for a given context.
+     *
+     * @param context a context used to differentiate between keys with the same name (forms a compound key)
+     */
+    CompletableFuture<Void> truncateContextAsync(String context);
 }

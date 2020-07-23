@@ -4,6 +4,7 @@ require('lib/onms-http');
 const Backshift = require('vendor/backshift-js');
 const $ = require('vendor/jquery-js');
 const _ = require('vendor/underscore-js');
+require('apps/onms-default-apps');
 
 const INTEGER_REGEXP = /^-?\d+$/;
 
@@ -11,7 +12,7 @@ function getBaseHref() {
     return window.getBaseHref();
 }
 
-var app = angular.module('forecast', ['onms.http']);
+var app = angular.module('forecast', ['onms.http', 'onms.default.apps']);
 
 app.directive('integer', function() {
   return {

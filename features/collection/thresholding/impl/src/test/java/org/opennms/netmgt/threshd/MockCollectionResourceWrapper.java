@@ -83,7 +83,7 @@ public class MockCollectionResourceWrapper extends CollectionResourceWrapper {
             public ResourcePath getPath() {
                 return null;
             }
-        }, null, null);
+        }, null, null, null, null);
     }
 
 }

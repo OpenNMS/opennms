@@ -11,7 +11,7 @@ ssh -p 8301 admin@localhost
 [source]
 ----
 admin@sentinel()> feature:install sentinel-core
-admin@sentinel> health:check
+admin@sentinel> opennms:health-check
 Verifying the health of the container
 
 Verifying installed bundles      [ Success  ]
@@ -21,5 +21,5 @@ Connecting to OpenNMS ReST API   [ Success  ]
 admin@sentinel()>
 ----
 
-NOTE:   The `health:check` command is a newer and more flexibel version of the original `minion:ping` command.
+NOTE:   The `opennms:health-check` command is a newer and more flexibel version of the original `minion:ping` command.
         Therefore on _Sentinel_ there is no equivalent such as `sentinel:ping`.

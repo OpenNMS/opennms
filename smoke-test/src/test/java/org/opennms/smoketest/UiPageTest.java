@@ -28,19 +28,38 @@
 
 package org.opennms.smoketest;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import com.google.common.base.Function;
+import org.slf4j.LoggerFactory;
 
 public class UiPageTest extends OpenNMSSeleniumIT {
+
+    @Rule
+    public TestRule loggingRule = (base, description) -> {
+        LoggerFactory.getLogger(UiPageTest.this.getClass()).debug("Executing test: {}.{}()", description.getClassName(), description.getMethodName());
+        return base;
+    };
+
+    @Before
+    public void before() {
+        setImplicitWait(5, TimeUnit.SECONDS);
+    }
+
+    @After
+    public void after() {
+        setImplicitWait();
+    }
 
     protected <X> X execute(Supplier<X> supplier) {
         return execute(supplier, 1);
@@ -55,48 +74,17 @@ public class UiPageTest extends OpenNMSSeleniumIT {
         }
     }
 
-    protected class TextInput {
-        private final String id;
-
-        public TextInput(String id) {
-            this.id = Objects.requireNonNull(id);
-        }
-
-        public void setInput(String newInput) {
-            final WebElement element = execute(() -> driver.findElement(By.id(id)));
-            if (!Objects.equals(element.getText(), newInput)) {
-                element.clear();
-                if (newInput != null && !newInput.equals("")) {
-                    element.sendKeys(newInput);
-                }
-            }
-        }
+    protected void verifyElementNotPresent(final By by) {
+        new WebDriverWait(driver, 7 /* seconds */).until(
+                ExpectedConditions.not((ExpectedCondition<Boolean>) input -> execute(() -> {
+                    try {
+                        WebElement elementFound = input.findElement(by);
+                        return elementFound != null;
+                    } catch (NoSuchElementException ex) {
+                        return false;
+                    }
+                }, 5 /* seconds */))
+        );
     }
 
-    protected class Toggle {
-        private final String id;
-
-        public Toggle(String id) {
-            this.id = Objects.requireNonNull(id);
-        }
-
-        public boolean isOn() {
-            final String xpath = String.format("//toggle[@id='%s']//div[contains(@class, 'toggle') and not(contains(@class, 'toggle-group')) and not(contains(@class, 'off'))]", id);
-            final List<WebElement> elements = execute(() -> driver.findElements(By.xpath(xpath)));
-            boolean disabled = elements.isEmpty();
-            return !disabled;
-        }
-
-        public void toggle() {
-            boolean previousState = isOn();
-            execute(() -> driver.findElement(By.id(id))).click();
-            new WebDriverWait(driver, 5, 500).until((Function<WebDriver, Boolean>) webDriver -> previousState != isOn());
-        }
-
-        public void setValue(boolean value) {
-            if (value != isOn()) {
-                toggle();
-            }
-        }
-    }
 }

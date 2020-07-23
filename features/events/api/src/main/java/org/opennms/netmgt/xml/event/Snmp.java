@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.netmgt.xml.event;
   //---------------------------------/
  //- Imported classes and packages -/
 //---------------------------------/
+
+import org.opennms.netmgt.events.api.model.ISnmp;
 
 import java.io.Serializable;
 
@@ -109,6 +111,21 @@ public class Snmp implements Serializable {
         super();
     }
 
+    public static Snmp copyFrom(ISnmp source) {
+        if (source == null) {
+            return null;
+        }
+
+        Snmp snmp = new Snmp();
+        snmp.setId(source.getId());
+        snmp.setIdtext(source.getIdtext());
+        snmp.setVersion(source.getVersion());
+        snmp.setSpecific(source.hasSpecific() ? source.getSpecific() : null);
+        snmp.setGeneric(source.hasGeneric() ? source.getGeneric() : null);
+        snmp.setCommunity(source.getCommunity());
+        snmp.setTimeStamp(source.hasTimeStamp() ? source.getTimeStamp() : null);
+        return snmp;
+    }
 
       //-----------/
      //- Methods -/

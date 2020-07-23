@@ -44,8 +44,8 @@ import com.atlassian.jira.rest.client.api.domain.BasicProject;
  * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
  * </ul>
  */
-@Command(scope = "jira", name = "list-projects", description="Uses the JIRA ReST API to determine all existing projects")
-@org.apache.karaf.shell.commands.Command(scope = "jira", name = "list-projects", description="Uses the JIRA ReST API to determine all existing projects")
+@Command(scope = "opennms", name = "jira-list-projects", description="Uses the JIRA ReST API to determine all existing projects")
+@org.apache.karaf.shell.commands.Command(scope = "opennms", name = "jira-list-projects", description="Uses the JIRA ReST API to determine all existing projects")
 @Service
 public class ListProjectsCommand extends AbstractJiraCommand implements Action {
 

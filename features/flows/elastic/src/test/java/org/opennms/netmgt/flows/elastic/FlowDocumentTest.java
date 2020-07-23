@@ -83,17 +83,12 @@ public class FlowDocumentTest {
 
     @Test
     public void verifyEffectiveDocument() throws IOException {
-        final FlowDocument document = FlowDocument.from(getMockFlow());
-        document.setSrcAddr("192.168.1.2");
-        document.setDstAddr("192.168.2.2");
-        final List<FlowDocument> documents = Collections.singletonList(document);
-
         // Enrich
-        enricher.enrich(documents, getMockFlowSource());
+        final List<FlowDocument> documents = enricher.enrich(Collections.singletonList(getMockFlow()), getMockFlowSource());
 
         // Serialize
         assertThat(documents, hasSize(1));
-        final String actualJson = gson.toJson(document);
+        final String actualJson = gson.toJson(documents.get(0));
 
         // Verify
         final String expectedJson = Resources.toString(Resources.getResource("flow-document-netflow5.json"), StandardCharsets.UTF_8);

@@ -45,10 +45,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.bson.BsonBinary;
-import org.bson.BsonBinaryWriter;
-import org.bson.BsonWriter;
-import org.bson.io.BasicOutputBuffer;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
@@ -59,31 +55,17 @@ import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.BooleanValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.DateTimeValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.FloatValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.IPv4AddressValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.IPv6AddressValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.ListValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.MacAddressValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.NullValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.OctetArrayValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.SignedValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.StringValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UndeclaredValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class ParserBase implements Parser {
+public abstract class ParserBase implements Parser {
     private static final Logger LOG = LoggerFactory.getLogger(ParserBase.class);
 
     private static final int DEFAULT_NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
@@ -166,7 +148,7 @@ public class ParserBase implements Parser {
                 // corePoolSize must be > 0 since we use the RejectedExecutionHandler to block when the queue is full
                 1, threads,
                 60L, TimeUnit.SECONDS,
-                new SynchronousQueue<>(true),
+                new SynchronousQueue<>(),
                 threadFactory,
                 (r, executor) -> {
                     // We enter this block when the queue is full and the caller is attempting to submit additional tasks
@@ -235,12 +217,12 @@ public class ParserBase implements Parser {
     }
 
     protected CompletableFuture<?> transmit(final RecordProvider packet, final InetSocketAddress remoteAddress) {
-        LOG.trace("Got packet: {}", packet);
-
+        // The packets are coming in hot - performance here is critical
+        //   LOG.trace("Got packet: {}", packet);
         // Perform the record enrichment and serialization in a thread pool allowing these to be parallelized
-        final CompletableFuture<CompletableFuture[]> futureOfFutures = CompletableFuture.supplyAsync(()-> {
+        final CompletableFuture<CompletableFuture[]> futureOfFutures = CompletableFuture.supplyAsync(() -> {
             return packet.getRecords().map(record -> {
-                final CompletableFuture<TelemetryMessage> future = new CompletableFuture<>();
+                final CompletableFuture<AsyncDispatcher.DispatchStatus> future = new CompletableFuture<>();
                 final Timer.Context timerContext = recordEnrichmentTimer.time();
                 // Trigger record enrichment (performing DNS reverse lookups for example)
                 final RecordEnricher recordEnricher = new RecordEnricher(dnsResolver, getDnsLookupsEnabled());
@@ -259,13 +241,13 @@ public class ParserBase implements Parser {
                     // if we can't keep up
                     final Runnable dispatch = () -> {
                         // Let's serialize
-                        final ByteBuffer buffer = serializeRecords(this.protocol, record, enrichment);
+                        byte[] flowMessage = buildMessage(record, enrichment);
 
                         // Build the message to dispatch
-                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, buffer);
+                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, ByteBuffer.wrap(flowMessage));
 
                         // Dispatch
-                        dispatcher.send(msg).whenComplete((b,exx) -> {
+                        dispatcher.send(msg).whenComplete((b, exx) -> {
                             if (exx != null) {
                                 future.completeExceptionally(exx);
                                 return;
@@ -311,37 +293,9 @@ public class ParserBase implements Parser {
         return future;
     }
 
-    @VisibleForTesting
-    public static ByteBuffer serialize(final Protocol protocol, final Iterable<Value<?>> record) {
-        return serialize(protocol, record, new RecordEnrichment() {
-            @Override
-            public Optional<String> getHostnameFor(InetAddress srcAddress) {
-                return Optional.empty();
-            }
-        });
-    }
+    protected abstract byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment);
 
-    private static ByteBuffer serialize(final Protocol protocol, final Iterable<Value<?>> record, final RecordEnrichment enrichment) {
-        // Build BSON document from flow
-        final BasicOutputBuffer output = new BasicOutputBuffer();
-        try (final BsonBinaryWriter writer = new BsonBinaryWriter(output)) {
-            writer.writeStartDocument();
-            writer.writeInt32("@version", protocol.version);
 
-            final FlowBuilderVisitor visitor = new FlowBuilderVisitor(writer, enrichment);
-            for (final Value<?> value : record) {
-                value.visit(visitor);
-            }
-
-            writer.writeEndDocument();
-        }
-
-        return output.getByteBuffers().get(0).asNIO();
-    }
-
-    private ByteBuffer serializeRecords(final Protocol protocol, final Iterable<Value<?>> record, final RecordEnrichment enrichment) {
-        return serialize(protocol, record, enrichment);
-    }
 
     protected void detectClockSkew(final long packetTimestampMs, final InetAddress remoteAddress) {
         if (getMaxClockSkew() > 0) {
@@ -370,108 +324,4 @@ public class ParserBase implements Parser {
         }
     }
 
-    private static class FlowBuilderVisitor implements Value.Visitor {
-        // TODO: Really use ordinal for enums?
-
-        private final BsonWriter writer;
-        private final RecordEnrichment enrichment;
-
-        public FlowBuilderVisitor(final BsonWriter writer, final RecordEnrichment enrichment) {
-            this.writer = writer;
-            this.enrichment = enrichment;
-        }
-
-        @Override
-        public void accept(final NullValue value) {
-            this.writer.writeNull(value.getName());
-        }
-
-        @Override
-        public void accept(final BooleanValue value) {
-            this.writer.writeBoolean(value.getName(), value.getValue());
-        }
-
-        @Override
-        public void accept(final DateTimeValue value) {
-            this.writer.writeStartDocument(value.getName());
-            this.writer.writeInt64("epoch", value.getValue().getEpochSecond());
-            if (value.getValue().getNano() != 0) {
-                this.writer.writeInt64("nanos", value.getValue().getNano());
-            }
-            this.writer.writeEndDocument();
-        }
-
-        @Override
-        public void accept(final FloatValue value) {
-            this.writer.writeDouble(value.getName(), value.getValue());
-        }
-
-        @Override
-        public void accept(final IPv4AddressValue value) {
-            this.writer.writeStartDocument(value.getName());
-            this.writer.writeString("address", value.getValue().getHostAddress());
-            enrichment.getHostnameFor(value.getValue()).ifPresent((hostname) -> this.writer.writeString("hostname", hostname));
-            this.writer.writeEndDocument();
-        }
-
-        @Override
-        public void accept(final IPv6AddressValue value) {
-            this.writer.writeStartDocument(value.getName());
-            this.writer.writeString("address", value.getValue().getHostAddress());
-            enrichment.getHostnameFor(value.getValue()).ifPresent((hostname) -> this.writer.writeString("hostname", hostname));
-            this.writer.writeEndDocument();
-        }
-
-        @Override
-        public void accept(final MacAddressValue value) {
-            this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
-            this.writer.writeBinaryData("v", new BsonBinary(value.getValue()));
-            this.writer.writeEndDocument();
-        }
-
-        @Override
-        public void accept(final OctetArrayValue value) {
-            this.writer.writeBinaryData(value.getName(), new BsonBinary(value.getValue()));
-        }
-
-        @Override
-        public void accept(final SignedValue value) {
-            this.writer.writeInt64(value.getName(), value.getValue());
-        }
-
-        @Override
-        public void accept(final StringValue value) {
-            this.writer.writeString(value.getName(), value.getValue());
-        }
-
-        @Override
-        public void accept(final ListValue value) {
-            this.writer.writeStartDocument(value.getName());
-            this.writer.writeInt32("semantic", value.getSemantic().ordinal());
-            this.writer.writeStartArray("values");
-            for (int i = 0; i < value.getValue().size(); i++) {
-                this.writer.writeStartDocument();
-                for (int j = 0; j < value.getValue().get(i).size(); j++) {
-                    value.getValue().get(i).get(j).visit(this);
-                }
-                this.writer.writeEndDocument();
-            }
-            this.writer.writeEndArray();
-            this.writer.writeEndDocument();
-        }
-
-        @Override
-        public void accept(final UnsignedValue value) {
-            // TODO: Mark this as unsigned?
-            this.writer.writeInt64(value.getName(), value.getValue().longValue());
-        }
-
-        @Override
-        public void accept(final UndeclaredValue value) {
-            this.writer.writeBinaryData(value.getName(), new BsonBinary(value.getValue()));
-        }
-    }
 }

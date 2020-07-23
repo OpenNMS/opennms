@@ -109,7 +109,7 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 				// Create and register additional services
 				final Set<String> iconKeys = metaTopologyProvider.getGraphProviders().stream()
 						.map(GraphProvider::getNamespace)
-						.flatMap(eachNamespace -> metaTopologyProvider.getRawTopologyProvider(eachNamespace).getVertices().stream())
+						.flatMap(eachNamespace -> metaTopologyProvider.getGraphProvider(eachNamespace).getCurrentGraph().getVertices().stream())
 						.map(Vertex::getIconKey)
 						.filter(Objects::nonNull)
 						.collect(Collectors.toSet());
@@ -119,7 +119,7 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 				final ScriptEngineManager scriptEngineManager = new OSGiScriptEngineManager(m_bundleContext);
 				metaTopologyProvider.getGraphProviders().forEach(it -> {
 					// Find Topology Provider
-					final GraphMLTopologyProvider rawTopologyProvider = metaTopologyProvider.getRawTopologyProvider(it.getNamespace());
+					final GraphMLTopologyProvider rawTopologyProvider = metaTopologyProvider.getGraphProvider(it.getNamespace());
 
 					// EdgeStatusProvider
 					registerService(pid, EdgeStatusProvider.class, new GraphMLEdgeStatusProvider(rawTopologyProvider, scriptEngineManager, m_serviceAccessor));

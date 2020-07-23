@@ -108,16 +108,22 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private static final int OPENNMS_TELEMETRY_IPFIX_TCP_PORT = 4730;
     private static final int OPENNMS_TELEMETRY_JTI_PORT = 50001;
     private static final int OPENNMS_TELEMETRY_NXOS_PORT = 50002;
+    private static final int OPENNMS_DEBUG_PORT = 8001;
+    private static final int OPENNMMS_GRPC_PORT = 8990;
+    private static final int OPENNMMS_BMP_PORT = 11019;
 
     private static final Map<NetworkProtocol, Integer> networkProtocolMap = ImmutableMap.<NetworkProtocol, Integer>builder()
             .put(NetworkProtocol.SSH, OPENNMS_SSH_PORT)
             .put(NetworkProtocol.HTTP, OPENNMS_WEB_PORT)
+            .put(NetworkProtocol.JDWP, OPENNMS_DEBUG_PORT)
             .put(NetworkProtocol.SNMP, OPENNMS_SNMP_PORT)
             .put(NetworkProtocol.SYSLOG, OPENNMS_SYSLOG_PORT)
             .put(NetworkProtocol.FLOWS, OPENNMS_TELEMETRY_FLOW_PORT)
             .put(NetworkProtocol.IPFIX_TCP, OPENNMS_TELEMETRY_IPFIX_TCP_PORT)
             .put(NetworkProtocol.JTI, OPENNMS_TELEMETRY_JTI_PORT)
             .put(NetworkProtocol.NXOS, OPENNMS_TELEMETRY_NXOS_PORT)
+            .put(NetworkProtocol.GRPC, OPENNMMS_GRPC_PORT)
+            .put(NetworkProtocol.BMP, OPENNMMS_BMP_PORT)
             .build();
 
     private final StackModel model;
@@ -132,7 +138,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
         String containerCommand = "-s";
         if (TimeSeriesStrategy.NEWTS.equals(model.getTimeSeriesStrategy())) {
-            containerCommand = "-c";
+            this.withEnv("OPENNMS_TIMESERIES_STRATEGY", model.getTimeSeriesStrategy().name().toLowerCase());
         }
 
         final Integer[] exposedPorts = new ArrayList<>(networkProtocolMap.values())
@@ -141,6 +147,11 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .filter(e -> InternetProtocol.UDP.equals(e.getKey().getIpProtocol()))
                 .mapToInt(Map.Entry::getValue)
                 .toArray();
+
+        String javaOpts = "-Xms1536m -Xmx1536m -Djava.security.egd=file:/dev/./urandom ";
+        if (profile.isJvmDebuggingEnabled()) {
+            javaOpts += String.format("-agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", OPENNMS_DEBUG_PORT);
+        }
 
         withExposedPorts(exposedPorts)
                 .withCreateContainerCmdModifier(cmd -> {
@@ -158,13 +169,13 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .withEnv("OPENNMS_DBUSER", "opennms")
                 .withEnv("OPENNMS_DBPASS", "opennms")
                 // These are expected to be set when using Newts
-                // We also set the corresponding roperties explicitly in our overlay
+                // We also set the corresponding properties explicitly in our overlay
                 .withEnv("OPENNMS_CASSANDRA_HOSTNAMES", CASSANDRA_ALIAS)
                 .withEnv("OPENNMS_CASSANDRA_KEYSPACE", "newts")
                 .withEnv("OPENNMS_CASSANDRA_PORT", Integer.toString(CassandraContainer.CQL_PORT))
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
                 .withEnv("OPENNMS_CASSANDRA_USERNAME", "cassandra")
-                .withEnv("JAVA_OPTS", "-Xms1536m -Xmx1536m -Djava.security.egd=file:/dev/./urandom")
+                .withEnv("JAVA_OPTS", javaOpts)
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
@@ -242,11 +253,13 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
             writeProps(etc.resolve("org.opennms.features.kafka.producer.client.cfg"),
                     ImmutableMap.<String,String>builder()
                             .put("bootstrap.servers", KAFKA_ALIAS + ":9092")
+                            .put("compression.type", model.getKafkaCompressionStrategy().getCodec())
                             .build());
             writeProps(etc.resolve("org.opennms.features.kafka.producer.cfg"),
                     ImmutableMap.<String,String>builder()
                             // This is false by default, so we enable it here
                             .put("forward.metrics", Boolean.TRUE.toString())
+                            .put("compression.type", model.getKafkaCompressionStrategy().getCodec())
                             .build());
         }
     }
@@ -303,8 +316,13 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             props.put("org.opennms.core.ipc.sink.strategy", "kafka");
             props.put("org.opennms.core.ipc.sink.kafka.bootstrap.servers", KAFKA_ALIAS + ":9092");
+            props.put("org.opennms.core.ipc.sink.kafka.compression.type", model.getKafkaCompressionStrategy().getCodec());
             props.put("org.opennms.core.ipc.rpc.strategy", "kafka");
             props.put("org.opennms.core.ipc.rpc.kafka.bootstrap.servers", KAFKA_ALIAS + ":9092");
+            props.put("org.opennms.core.ipc.rpc.kafka.compression.type", model.getKafkaCompressionStrategy().getCodec());
+        }
+        if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+            props.put("org.opennms.core.ipc.strategy", "osgi");
         }
 
         if (TimeSeriesStrategy.RRD.equals(model.getTimeSeriesStrategy())) {
@@ -324,6 +342,9 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
     public List<String> getFeaturesOnBoot() {
         final List<String> featuresOnBoot = new ArrayList<>();
+        if(IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
+            featuresOnBoot.add("opennms-core-ipc-grpc-server");
+        }
         if (model.isElasticsearchEnabled()) {
             featuresOnBoot.add("opennms-es-rest");
             // Disabled for now as this can cause intermittent health check failures
@@ -422,10 +443,15 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
 
     private static void copyLogs(OpenNMSContainer container, String prefix) {
         // List of known log files we expect to find in the container
-        final List<String> logFiles = Arrays.asList("eventd.log",
+        final List<String> logFiles = Arrays.asList("alarmd.log",
+                "collectd.log",
+                "eventd.log",
                 "jetty-server.log",
                 "karaf.log",
                 "manager.log",
+                "poller.log",
+                "provisiond.log",
+                "trapd.log",
                 "web.log");
         DevDebugUtils.copyLogs(container,
                 // dest

@@ -27,7 +27,6 @@
          <parameter key="beans.storage" value="org.apache.cassandra.db:type=StorageService"/>
          <parameter key="tests.operational" value="storage.OperationMode == 'NORMAL'"/>
          <parameter key="tests.joined" value="storage.Joined"/>
-         <parameter key="tests.unreachables" value="empty(storage.UnreachableNodes)"/>
       </service>
       <service name="JMX-Cassandra-Newts" interval="300000" user-defined="false" status="on">
          <parameter key="port" value="7199"/>

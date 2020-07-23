@@ -76,7 +76,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
          */
         private BaseThresholdDefConfigWrapper m_thresholdConfig;
 
-        private static class State implements Serializable {
+        static class State extends AbstractThresholdEvaluatorState.AbstractState {
             private static final long serialVersionUID = 1L;
 
             /**
@@ -95,12 +95,26 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
              * the rearm value.
              */
             private boolean m_armed;
+
+            @Override
+            public String toString() {
+                StringBuilder sb = new StringBuilder();
+                sb.append("exceededCount=").append(m_exceededCount);
+                sb.append("\narmed=").append(m_armed);
+                String superString = super.toString();
+
+                if (superString != null) {
+                    sb.append("\n").append(superString);
+                }
+
+                return sb.toString();
+            }
         }
         
         private CollectionResourceWrapper m_lastCollectionResourceUsed;
 
         public ThresholdEvaluatorStateHighLow(BaseThresholdDefConfigWrapper threshold, ThresholdingSession thresholdingSession) {
-            super(threshold, thresholdingSession);
+            super(threshold, thresholdingSession, ThresholdEvaluatorStateHighLow.State.class);
             setThresholdConfig(threshold);
         }
 

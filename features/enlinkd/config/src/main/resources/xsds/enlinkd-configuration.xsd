@@ -132,6 +132,14 @@
 					</documentation>
 				</annotation>
 			</attribute>
+			<attribute name="disable-bridge-vlan-discovery" type="boolean"
+					   use="optional" default="false">
+				<annotation>
+					<documentation>
+						Set to true to skip VLAN enumeration and scanning during bridge discovery.
+					</documentation>
+				</annotation>
+			</attribute>
 		</complexType>
 	</element>
 </schema>

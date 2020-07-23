@@ -55,9 +55,9 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -518,15 +518,42 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     @Override
-    public void markHavingFlows(final Collection<Integer> ids) {
-        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update node set hasFlows = true where nodeid in (:ids)")
-                .setParameterList("ids", ids)
-                .executeUpdate());
+    public void markHavingFlows(final Collection<Integer> ingressIds, final Collection<Integer> egressIds) {
+        getHibernateTemplate().executeWithNativeSession(session -> {
+            int results = 0;
+
+            if (!ingressIds.isEmpty()) {
+                results += session.createSQLQuery("update node set last_ingress_flow = NOW() where nodeid in (:ids)")
+                        .setParameterList("ids", ingressIds)
+                        .executeUpdate();
+            }
+            if (!egressIds.isEmpty()) {
+                results += session.createSQLQuery("update node set last_egress_flow = NOW() where nodeid in (:ids)")
+                        .setParameterList("ids", egressIds)
+                        .executeUpdate();
+            }
+
+            return results;
+        });
     }
 
     @Override
     public List<OnmsNode> findAllHavingFlows() {
-        return find("from OnmsNode as n where n.hasFlows = true");
+        if (OnmsSnmpInterface.INGRESS_AND_EGRESS_REQUIRED) {
+            return find("from OnmsNode as n where (EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" AND EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE + ")");
+        } else {
+            return find("from OnmsNode as n where (EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" OR EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE + ")");
+        }
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingIngressFlows() {
+        return find("from OnmsNode as n where EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE);
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingEgressFlows() {
+        return find("from OnmsNode as n where EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE);
     }
 
     @Override
@@ -554,4 +581,24 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return null;
     }
 
+
+
+    public List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value) {
+        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createSQLQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key AND value = :value ORDER BY n.nodeid")
+                .setString("context", context)
+                .setString("key", key)
+                .setString("value", value)
+                .setResultTransformer(new ResultTransformer() {
+                    @Override
+                    public Object transformTuple(Object[] tuple, String[] aliases) {
+                        return get((Integer) tuple[0]);
+                    }
+
+                    @SuppressWarnings("rawtypes")
+                    @Override
+                    public List transformList(List collection) {
+                        return collection;
+                    }
+                }).list());
+    }
 }

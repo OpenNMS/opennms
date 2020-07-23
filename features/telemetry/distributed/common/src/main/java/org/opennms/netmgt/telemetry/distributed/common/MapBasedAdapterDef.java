@@ -51,7 +51,7 @@ public class MapBasedAdapterDef implements AdapterDefinition {
     public MapBasedAdapterDef(final PropertyTree definition) {
         this.name = definition.getRequiredString("name");
         this.className = definition.getRequiredString("class-name");
-        this.parameters = definition.getMap("parameters");
+        this.parameters = definition.getFlatMap("parameters");
     }
 
     @Override

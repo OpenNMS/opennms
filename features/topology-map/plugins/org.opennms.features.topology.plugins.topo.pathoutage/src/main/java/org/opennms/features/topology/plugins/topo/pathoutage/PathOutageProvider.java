@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
@@ -75,7 +75,6 @@ public class PathOutageProvider extends AbstractTopologyProvider {
 
 	@Override
 	public void refresh() {
-		resetContainer();
 		load();
 	}
 
@@ -87,12 +86,12 @@ public class PathOutageProvider extends AbstractTopologyProvider {
 				.withSemanticZoomLevel(0)
 				.withPreferredLayout("Hierarchy Layout")
 				.withCriteria(() -> {
-					Map<VertexRef, Status> resultMap = statusProvider.getStatusForVertices(this, Lists.newArrayList(this.getVertices()), new Criteria[0]);
-					Optional<Map.Entry<VertexRef, Status>> max = resultMap.entrySet().stream().max(Comparator.comparing(e -> OnmsSeverity.get(e.getValue().computeStatus())));
+					final Map<? extends VertexRef, ? extends Status> resultMap = statusProvider.getStatusForVertices(graph, Lists.newArrayList(graph.getVertices()), new Criteria[0]);
+					final Optional<? extends Map.Entry<? extends VertexRef, ? extends Status>> max = resultMap.entrySet().stream().max(Comparator.comparing(e -> OnmsSeverity.get(e.getValue().computeStatus())));
 					if (max.isPresent()) {
-						return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(max.get().getKey()));
-					} else if (this.getVertexTotalCount() > 0) {
-						return Lists.newArrayList(new VertexHopGraphProvider.DefaultVertexHopCriteria(this.getVertices().get(0)));
+						return Lists.newArrayList(new DefaultVertexHopCriteria(max.get().getKey()));
+					} else if (graph.getVertexTotalCount() > 0) {
+						return Lists.newArrayList(new DefaultVertexHopCriteria(graph.getVertices().get(0)));
 					} else {
 						return Lists.newArrayList();
 					}
@@ -158,12 +157,13 @@ public class PathOutageProvider extends AbstractTopologyProvider {
 		}
 
 		// Initialize vertices and edges of a base topology provider
+		graph.resetContainer();
 		for (PathOutageVertex customVertex : tempVertices) {
-			this.addVertices(customVertex);
+			graph.addVertices(customVertex);
 		}
 
 		for (AbstractEdge abstractEdge : this.sparseGraph.getEdges()) {
-			this.addEdges(abstractEdge);
+			graph.addEdges(abstractEdge);
 		}
 	}
 

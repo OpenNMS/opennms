@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto;
 
-import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,16 +37,18 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketExcept
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 public class TemplateSet extends FlowSet<TemplateRecord> {
     public final List<TemplateRecord> records;
 
     public TemplateSet(final Packet packet,
                        final FlowSetHeader header,
-                       final ByteBuffer buffer) throws InvalidPacketException {
+                       final ByteBuf buffer) throws InvalidPacketException {
         super(packet, header);
 
         final List<TemplateRecord> records = new LinkedList();
-        while (buffer.remaining() >= TemplateRecordHeader.SIZE) {
+        while (buffer.isReadable(TemplateRecordHeader.SIZE)) {
             final TemplateRecordHeader recordHeader = new TemplateRecordHeader(buffer);
             records.add(new TemplateRecord(recordHeader, buffer));
         }

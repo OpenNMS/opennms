@@ -12,7 +12,6 @@
 	<reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" availability="mandatory" />
 	<reference id="geolocationService" interface="org.opennms.features.geolocation.api.GeolocationService" availability="mandatory" />
 	<reference id="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration" availability="mandatory" />
-	<reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="optional" />
 	<reference id="timeformatService" interface="org.opennms.features.timeformat.api.TimeformatService" />
 
 	<bean id="alarmTableCellStyleGenerator" class="org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator" />
@@ -185,7 +184,6 @@
 	</bean>
 
 	<bean id="nodeMapsApplication" class="org.opennms.features.vaadin.nodemaps.internal.NodeMapsApplication" scope="prototype">
-		<property name="headerProvider" ref="onmsHeaderProvider" />
 		<property name="nodeMapComponent" ref="nodeMapComponent" />
 		<property name="alarmTable" ref="alarmTable" />
 		<property name="nodeTable" ref="nodeTable" />

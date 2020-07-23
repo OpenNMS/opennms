@@ -1,279 +1,238 @@
-[[release-24-changelog]]
+[[release-26-changelog]]
 
 === Changelog
 
-[releasenotes-changelog-24.1.2]
+[releasenotes-changelog-26.1.2]
 
-==== Release 24.1.2
+==== Release 26.1.2
 
-Release 24.1.2 is the latest stable release of OpenNMS.
-It contains bug fixes for flow processing, Debian package startup, the minion UI, and more.
+Release 26.1.2 is the fifth release in the Horizon 26 series.
 
-For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.1.2/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
+It contains a bunch of bug fixes and improvements, including docker container optimizations,
+Netflow changes, documentation updates, time-series enhancements, and more.
 
-The codename for 24.1.2 is _link:https://en.wikipedia.org/wiki/$$Watson_(computer)$$[Watson]_.
-
-===== Bug
-
-* HasFlows is not set when node was provisioned after first flow was received (Issue http://issues.opennms.org/browse/NMS-12106[NMS-12106])
-* Wrong Wording for Empty Requisition (Issue http://issues.opennms.org/browse/NMS-12156[NMS-12156])
-* Init script on Debian/Ubuntu does not start (Issue http://issues.opennms.org/browse/NMS-12161[NMS-12161])
-* Minion not showing label correctly and label cannot be edited (Issue http://issues.opennms.org/browse/NMS-12164[NMS-12164])
-
-===== Enhancement
-
-* Add a command to show configuration diffs (Issue http://issues.opennms.org/browse/NMS-12129[NMS-12129])
-
-[releasenotes-changelog-24.1.1]
-
-==== Release 24.1.1
-
-Release 24.1.1 is the latest stable release of OpenNMS.
-It contains bug fixes to WS-Man, the web UI, flows, and more as well as a few small enhancements.
-
-For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.1.1/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
-
-The codename for 24.1.1 is _link:https://en.wikipedia.org/wiki/GLaDOS[GLaDOS]_.
+The codename for 26.1.2 is _link:$$https://en.wikipedia.org/wiki/Plague_doctor$$[Plague]_.
 
 ===== Bug
 
-* WsMan Asset Adapter config contains an invalid resourceUri (Issue http://issues.opennms.org/browse/NMS-10682[NMS-10682])
-* WsMan Asset Adapter should handle WQL filters returning more than one result (Issue http://issues.opennms.org/browse/NMS-10683[NMS-10683])
-* WS-Man datacollection fail with OpenJDK11 (Issue http://issues.opennms.org/browse/NMS-10713[NMS-10713])
-* Angular requests do not handle 401 responses from the OpenNMS backend (Issue http://issues.opennms.org/browse/NMS-10719[NMS-10719])
-* sFlow: Type mismatch of VLAN value (Issue http://issues.opennms.org/browse/NMS-10775[NMS-10775])
-* Timeline missing for service names including slashes (Issue http://issues.opennms.org/browse/NMS-12097[NMS-12097])
-* CME in ProxyFilter (Karaf Web Bridge) (Issue http://issues.opennms.org/browse/NMS-12116[NMS-12116])
-* Remove hack from opennms-spring-extender to expose ServiceRegistry (Issue http://issues.opennms.org/browse/NMS-12122[NMS-12122])
-* Installing Minion on Debian with OpenJDK 11 installed tries to install Oracle JDK 8 (Issue http://issues.opennms.org/browse/NMS-12119[NMS-12119])
-* Opennms 24.1.0 on Ubuntu 19.04 won’t install because of PostgresSQL 11 (Issue http://issues.opennms.org/browse/NMS-12121[NMS-12121])
+* AbstractSnmpValue.allBytesDisplayable() IndexOutOfBound Exception (Issue http://issues.opennms.org/browse/NMS-7547[NMS-7547])
+* Unable to collect SNMP through minions on a large scale (Issue http://issues.opennms.org/browse/NMS-10389[NMS-10389])
+* Update examples/opennms.conf to be JDK11-compatible (Issue http://issues.opennms.org/browse/NMS-12468[NMS-12468])
+* RRD-to-Newts converter only handles AVERAGE RRAs (Issue http://issues.opennms.org/browse/NMS-12722[NMS-12722])
+* Parameters with dots handled incorrectly in BMP feature config (Issue http://issues.opennms.org/browse/NMS-12738[NMS-12738])
+* The ReST end-point for the Flow Exporter details is returning invalid content (Issue http://issues.opennms.org/browse/NMS-12740[NMS-12740])
+* Netflow 5 records in ES do not contain value for delta_switched (Issue http://issues.opennms.org/browse/NMS-12750[NMS-12750])
+* dependency commons-beanutils 1.8.3 vulnerability (Issue http://issues.opennms.org/browse/NMS-12757[NMS-12757])
+* Template field 'APPLICATION TAG' has illegal size (Issue http://issues.opennms.org/browse/NMS-12783[NMS-12783])
+* Kafka Producer puts all events on the same partition when using `donotpersist` (Issue http://issues.opennms.org/browse/NMS-12784[NMS-12784])
 
 ===== Enhancement
 
-* Increase logging clarity for flow processing (Issue http://issues.opennms.org/browse/NMS-10723[NMS-10723])
-* Remove circleci build number as tags from container images (Issue http://issues.opennms.org/browse/NMS-12098[NMS-12098])
-* Provide a mechanism to collect the count of objects collected by a wsman enumeration (Issue http://issues.opennms.org/browse/NMS-12115[NMS-12115])
+* Reduce Docker container image size (Issue http://issues.opennms.org/browse/NMS-12284[NMS-12284])
+* Document how to use meta-data with thresholding (Issue http://issues.opennms.org/browse/NMS-12735[NMS-12735])
+* Add documentation for TcpListener (Issue http://issues.opennms.org/browse/NMS-12736[NMS-12736])
+* upgrade to latest Jetty security/bug fixes (Issue http://issues.opennms.org/browse/NMS-12743[NMS-12743])
+* Run a comparison: implementation before changes and after (Issue http://issues.opennms.org/browse/NMS-12752[NMS-12752])
+* Optimize Performance of InfluxDb Plugin (Issue http://issues.opennms.org/browse/NMS-12759[NMS-12759])
+* Be able to ignore certificate validation on all Karaf features that push data to Elasticsearch (Issue http://issues.opennms.org/browse/NMS-12768[NMS-12768])
+* Evaluate and improve opennms-cortex-tss-plugin (Issue http://issues.opennms.org/browse/NMS-12771[NMS-12771])
+* Provide a test harness for time series plugins (Issue http://issues.opennms.org/browse/NMS-12772[NMS-12772])
 
-[releasenotes-changelog-24.1.0]
+[releasenotes-changelog-26.1.1]
 
-==== Release 24.1.0
+==== Release 26.1.1
 
-Release 24.1.0 is the latest stable release of OpenNMS.
-It contains a bunch of bug fixes and a few enhancements, including support for OpenTracing in the sink API and a rework of geocoding services.
+Release 26.1.1 is the fourth release in the Horizon 26 series.
 
-For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.1.0/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
+It contains a number of documentation and bug fixes including improvements to Kafka event and alarm publishing.
 
-The codename for 24.1.0 is _link:https://marvel-movies.fandom.com/wiki/J.A.R.V.I.S.[J.A.R.V.I.S.]_.
+The codename for 26.1.1 is _link:$$https://en.wikipedia.org/wiki/Facial#Facial_mask$$[Hydrating]_.
 
 ===== Bug
 
-* Thresholds should work without restart when putting nodes into categories (Issue http://issues.opennms.org/browse/NMS-9811[NMS-9811])
-* When editing a surveillance category from Admin flow, lists of nodes are not sorted by node label (Issue http://issues.opennms.org/browse/NMS-10654[NMS-10654])
-* health:check command times out when a health check command gets stuck (Issue http://issues.opennms.org/browse/NMS-10667[NMS-10667])
-* Vaadin bundles stuck intermittently stuck in "Waiting" state (Issue http://issues.opennms.org/browse/NMS-10668[NMS-10668])
-* Table in "Manage Minions" page fails to load (Issue http://issues.opennms.org/browse/NMS-10670[NMS-10670])
-* Default load threshold contains caluculation error (Issue http://issues.opennms.org/browse/NMS-10671[NMS-10671])
-* Can not delete node due to database table constraint (Issue http://issues.opennms.org/browse/NMS-10674[NMS-10674])
-* Missing Indication of Sync Needed for Requisitions (Issue http://issues.opennms.org/browse/NMS-10675[NMS-10675])
-* `.rpmnew`, `.rpmsave`, and `.dpkg-dist` files not erroring out properly (Issue http://issues.opennms.org/browse/NMS-10676[NMS-10676])
-* Some config files should be marked `%config` (rather than `%config(noreplace)`) in RPMs (Issue http://issues.opennms.org/browse/NMS-10677[NMS-10677])
-* Memory Leak on Drools while reloading config (Issue http://issues.opennms.org/browse/NMS-10678[NMS-10678])
-* Node detail page renders with no content when invalid node ID specified (Issue http://issues.opennms.org/browse/NMS-10679[NMS-10679])
-* Installing the opennms package installs Oracle JDK 8 instead of OpenJDK 11 on Ubuntu (Issue http://issues.opennms.org/browse/NMS-10680[NMS-10680])
-* Apparent memory leak in JMX collector, possibly restricted to "weird" JMX transports (Issue http://issues.opennms.org/browse/NMS-10684[NMS-10684])
-* Install guide for Java versions is misleading (Issue http://issues.opennms.org/browse/NMS-10688[NMS-10688])
-* Java configuration is ignored on Ubuntu/Debian (Issue http://issues.opennms.org/browse/NMS-10693[NMS-10693])
-* CVE-2018-20433: XXE Vulnerability in c3p0 < 0.9.5.3 (Issue http://issues.opennms.org/browse/NMS-10694[NMS-10694])
-* Memory leak in WS-Man (Issue http://issues.opennms.org/browse/NMS-10696[NMS-10696])
-* EditInRequisitionIT flapping (Issue http://issues.opennms.org/browse/NMS-10698[NMS-10698])
-* Jetty HTTPS selectors can become unresponsive following CancelledKeyException (Issue http://issues.opennms.org/browse/NMS-10701[NMS-10701])
-* Reflected XSS vulnerability in notification/detail.jsp and outage/detail.htm (Issue http://issues.opennms.org/browse/NMS-10707[NMS-10707])
+* SSLCertMonitor server-name parameter results in NPE (Issue http://issues.opennms.org/browse/NMS-12332[NMS-12332])
+* Provisiond accepts multiple primary SNMP interfaces (Issue http://issues.opennms.org/browse/NMS-12605[NMS-12605])
+* Fix warnings during documentation build (Issue http://issues.opennms.org/browse/NMS-12702[NMS-12702])
+* Cleanup removed Elasticsearch REST plugin and hint to Plugin Manager (Issue http://issues.opennms.org/browse/NMS-12716[NMS-12716])
+* The Alarm History feature is not working (Issue http://issues.opennms.org/browse/NMS-12718[NMS-12718])
+* Events forwarded by Kafka Producer doesn't have any parameters set (Issue http://issues.opennms.org/browse/NMS-12723[NMS-12723])
+* Netflow ingress performance regression (Issue http://issues.opennms.org/browse/NMS-12724[NMS-12724])
 
 ===== Enhancement
 
-* Enable extraction of match groups from regex matches in Event.Mask.Varbind.Vbvalue (Issue http://issues.opennms.org/browse/NMS-10626[NMS-10626])
-* Tag "root cause" alarm when providing feedback (Issue http://issues.opennms.org/browse/HZN-1492[HZN-1492])
-* Rework the GeocoderService-Implementations (Issue http://issues.opennms.org/browse/HZN-1520[HZN-1520])
-* Meta-Data Documentation Format Wrong (Issue http://issues.opennms.org/browse/HZN-1557[HZN-1557])
-* Add OpenTracing support for Sink API (Issue http://issues.opennms.org/browse/HZN-1558[HZN-1558])
+* Bump Docker base dependencies in build-env and OCI artifacts (Issue http://issues.opennms.org/browse/NMS-12699[NMS-12699])
+* Send trouble ticket id to kafka alarm topic (Issue http://issues.opennms.org/browse/NMS-12725[NMS-12725])
 
-[releasenotes-changelog-24.0.0]
+[releasenotes-changelog-26.1.0]
 
-==== Release 24.0.0
+==== Release 26.1.0
 
-Release 24.0.0 is the latest stable release of OpenNMS.
-It contains a large number of bug fixes and enhancements, most notably adding machine-learning-guided correlation of alarms, and many improvements to Netflow/IPFIX/sFlow support.
+Release 26.1.0 is the third release in the Horizon 26 series.
 
-For a high-level overview of what's changed in OpenNMS 24, see link:http://docs.opennms.org/opennms/releases/24.0.0/releasenotes/releasenotes.html#releasenotes-24[What's New in OpenNMS 24].
+It is an enhancement release with a number of bug fixes and improvements,
+including updates to telemetry, provisioning, and more.
 
-The codename for 24.0.0 is _link:https://en.wikipedia.org/wiki/HAL_9000[Hal 9000]_.
-
-===== Epic
-
-* Java 9 Support (Issue http://issues.opennms.org/browse/HZN-1078[HZN-1078])
-* Enhanced Alarm Life Cycle and Service Layer (Issue http://issues.opennms.org/browse/HZN-1317[HZN-1317])
-* Topology and model enhancements for correlation (Issue http://issues.opennms.org/browse/HZN-1320[HZN-1320])
+The codename for 26.1.0 is _link:$$https://en.wikipedia.org/wiki/Surgical_mask$$[Surgical]_.
 
 ===== Bug
 
-* ROLE_PROVISION doesn't work on the UI when the ACL feature is enabled. (Issue http://issues.opennms.org/browse/NMS-9786[NMS-9786])
-* Performance problems with the Topology Map on large networks (Issue http://issues.opennms.org/browse/NMS-10369[NMS-10369])
-* Search on KSC Reports page in WebUI does not work (Issue http://issues.opennms.org/browse/NMS-10416[NMS-10416])
-* Wrong data type for Cassandra Thread Pool performance metrics (Issue http://issues.opennms.org/browse/NMS-10420[NMS-10420])
-* broken xml code in foreign source/imports is not being detected (Issue http://issues.opennms.org/browse/NMS-10426[NMS-10426])
-* Minion Status showing wrong in Manage Minions and service minion status out put is empty (Issue http://issues.opennms.org/browse/NMS-10435[NMS-10435])
-* Use MoreObjects.ToStringHelper instead of Spring ToStringCreator (Issue http://issues.opennms.org/browse/NMS-10455[NMS-10455])
-* Alarm list pagination broken with situations (Issue http://issues.opennms.org/browse/NMS-10461[NMS-10461])
-* Wrong time in 'last' column for related alarms when viewing situation details (Issue http://issues.opennms.org/browse/NMS-10462[NMS-10462])
-* Cleared situations show up on home page (Issue http://issues.opennms.org/browse/NMS-10463[NMS-10463])
-* Track (flow) conversations by application instead of src/dst port (Issue http://issues.opennms.org/browse/NMS-10497[NMS-10497])
-* Health Check should not fail for JMS connectivity if Kafka is enabled both for RPC/Sink (Issue http://issues.opennms.org/browse/NMS-10499[NMS-10499])
-* Node page very slow to load for nodes with more than 1000 events (Issue http://issues.opennms.org/browse/NMS-10506[NMS-10506])
-* Situation Severity is not adjusted downward as related alarms clear (Issue http://issues.opennms.org/browse/NMS-10522[NMS-10522])
-* Cross-Site Scripting: Reflected (Issue http://issues.opennms.org/browse/NMS-10546[NMS-10546])
-* Cross-Frame Scripting (Issue http://issues.opennms.org/browse/NMS-10547[NMS-10547])
-* Typo in Northbound registerNorthnounders method (Issue http://issues.opennms.org/browse/NMS-10549[NMS-10549])
-* JDBC via Minion fails to find 3rd party classes (Issue http://issues.opennms.org/browse/NMS-10559[NMS-10559])
-* Not able to install sentinel-core feature on sentinel container (Issue http://issues.opennms.org/browse/NMS-10561[NMS-10561])
-* add `runjava` unit tests for detecting the correct java in a range (Issue http://issues.opennms.org/browse/NMS-10565[NMS-10565])
-* Browser crashes when browser notifications are enabled and OpenNMS gets unreachable (Issue http://issues.opennms.org/browse/NMS-10567[NMS-10567])
-* Leaking logs from HELM performance data source requests to OpenNMS standard out (Issue http://issues.opennms.org/browse/NMS-10568[NMS-10568])
-* Tables do not space columns out correctly (col-* is no longer supported) (Issue http://issues.opennms.org/browse/NMS-10569[NMS-10569])
-* Alarm details page has problem with footer (Issue http://issues.opennms.org/browse/NMS-10570[NMS-10570])
-* The categories card on the node details page has no spacing above the bottom border (Issue http://issues.opennms.org/browse/NMS-10571[NMS-10571])
-* Appears to be extra whitespace above bottom border on cards in the Admin page (Issue http://issues.opennms.org/browse/NMS-10572[NMS-10572])
-* The table on the Node list page has no cell borders (Issue http://issues.opennms.org/browse/NMS-10573[NMS-10573])
-* Severity tables do not show cell border (Issue http://issues.opennms.org/browse/NMS-10574[NMS-10574])
-* KSC Create Custom Graph Prefabricated Report selection is too small and wraps (Issue http://issues.opennms.org/browse/NMS-10575[NMS-10575])
-* Documentation has not addressed refactoring of Single-Port flow listener (Issue http://issues.opennms.org/browse/NMS-10576[NMS-10576])
-* Start with the start script throws bad substitution error (Issue http://issues.opennms.org/browse/NMS-10579[NMS-10579])
-* Stop gracefully when running in container environment (Issue http://issues.opennms.org/browse/NMS-10581[NMS-10581])
-* LazyInitializationException when using ticketing and alarm history in Elastic (Issue http://issues.opennms.org/browse/NMS-10594[NMS-10594])
-* @PreserveOnRefresh not working for embedded Vaadin UIs (Issue http://issues.opennms.org/browse/NMS-10601[NMS-10601])
-* Incorrect date formatting in send-event.py (Issue http://issues.opennms.org/browse/NMS-10602[NMS-10602])
-* Fix ack Event Supporting AckAction (Issue http://issues.opennms.org/browse/NMS-10603[NMS-10603])
-* The MIB Compiler is unable to parse certain MIBs (Issue http://issues.opennms.org/browse/NMS-10609[NMS-10609])
-* Button arrangement on alarm detail page is broken (Issue http://issues.opennms.org/browse/NMS-10612[NMS-10612])
-* Sticky and Journal Memo icons look out of place (Issue http://issues.opennms.org/browse/NMS-10613[NMS-10613])
-* Alarm Details page is not rendering related alarms and parent situations correctly (Issue http://issues.opennms.org/browse/NMS-10614[NMS-10614])
-* Notification switcher is broken (Issue http://issues.opennms.org/browse/NMS-10615[NMS-10615])
-* Init script errors when starting Sentinel on RHEL 6.6 (Issue http://issues.opennms.org/browse/NMS-10619[NMS-10619])
-* KSC resource selection is not shown/visualized (Issue http://issues.opennms.org/browse/NMS-10623[NMS-10623])
-* Errors in Minion startup script (Issue http://issues.opennms.org/browse/NMS-10625[NMS-10625])
-* Configuration directives in /etc/sysconfig/sentinel are not being applied (Issue http://issues.opennms.org/browse/NMS-10631[NMS-10631])
-* The navigation sidebar on the resource graph page is not working after the Bootstrap 4 changes (Issue http://issues.opennms.org/browse/NMS-10632[NMS-10632])
-* Allow Java 8-11 by default (Issue http://issues.opennms.org/browse/NMS-10638[NMS-10638])
-* OpenNMS Horizon installs OpenJDK 1.8.0 even OpenJDK 11 is already installed (Issue http://issues.opennms.org/browse/NMS-10639[NMS-10639])
-* DNSResolutionMonitor incorrectly sets port number (Issue http://issues.opennms.org/browse/NMS-10642[NMS-10642])
-* The evaluation layer that helps sizing Cassandra is broken (Issue http://issues.opennms.org/browse/NMS-10646[NMS-10646])
-* ArrayIndexOutOfBoundsException during error handling in SNMP MIB Compiler (Issue http://issues.opennms.org/browse/NMS-10647[NMS-10647])
-* Vaadin geographical maps broke in Chrome (Issue http://issues.opennms.org/browse/NMS-10650[NMS-10650])
-* logging methods have incorrect number of arguments. (Issue http://issues.opennms.org/browse/NMS-10651[NMS-10651])
-* When editing a surveillance category from Admin flow, lists of nodes are not sorted by node label (Issue http://issues.opennms.org/browse/NMS-10654[NMS-10654])
-* bin/runjava tries to evaluate an empty value as a candidate JVM pathname (Issue http://issues.opennms.org/browse/NMS-10663[NMS-10663])
-* Karaf shell history thrown out with bathwater on upgrade (Issue http://issues.opennms.org/browse/NMS-10664[NMS-10664])
-* "Change Icon" In Topology Map Fails (Issue http://issues.opennms.org/browse/HZN-1333[HZN-1333])
-* Situation model - prevent cyclic graphs (Issue http://issues.opennms.org/browse/HZN-1398[HZN-1398])
-* Prevent alarms from being correlated again after being removed from a situation (Issue http://issues.opennms.org/browse/HZN-1400[HZN-1400])
-* Older Alarms will Not Un-Acknowledge Situations (Issue http://issues.opennms.org/browse/HZN-1426[HZN-1426])
-* Clearing a situation should clear all the related alarms (Issue http://issues.opennms.org/browse/HZN-1439[HZN-1439])
-* Telemetry UdpListener - False Positive Log Message Condition (Issue http://issues.opennms.org/browse/HZN-1480[HZN-1480])
-* Templates are dropped if intermixed with data in wrong order (Issue http://issues.opennms.org/browse/HZN-1484[HZN-1484])
-* Minion - RPM Upgrade does not clear out .m2 local directory (Issue http://issues.opennms.org/browse/HZN-1485[HZN-1485])
-* ON DELETE CASCADE missing in Metadata database changelog (Issue http://issues.opennms.org/browse/HZN-1499[HZN-1499])
-* Webapp fails to start on Java 9 (Issue http://issues.opennms.org/browse/HZN-1500[HZN-1500])
-* Related alarms are not deleted from situations (Issue http://issues.opennms.org/browse/HZN-1503[HZN-1503])
-* Meta-data gets deleted when requisition is modified in UI (Issue http://issues.opennms.org/browse/HZN-1511[HZN-1511])
-* Random compilation failures in  opennms-base-assembly (Issue http://issues.opennms.org/browse/HZN-1533[HZN-1533])
+* Security vulnerability in io.netty:netty-handler < 4.1.45 (need upgrade) (Issue http://issues.opennms.org/browse/NMS-12541[NMS-12541])
+* NPE in KafkaFlowForwarder  (Issue http://issues.opennms.org/browse/NMS-12660[NMS-12660])
+* Add more context to Response Time resources (Kafka Producer) (Issue http://issues.opennms.org/browse/NMS-12661[NMS-12661])
+* BMP parse error for path attribute MP_UNREACH_NLRI (Issue http://issues.opennms.org/browse/NMS-12671[NMS-12671])
+* Reloading the Pollerd daemon causes multiple nodeDown messages (Issue http://issues.opennms.org/browse/NMS-12681[NMS-12681])
+* Streaming Telemetry is broken when using OpenJDK 11 and minion (Issue http://issues.opennms.org/browse/NMS-12688[NMS-12688])
 
 ===== Enhancement
 
-* Update to Vaadin to version 8.5.2 (Issue http://issues.opennms.org/browse/NMS-7797[NMS-7797])
-* "Event text contains" should search beyond eventlogmsg (Issue http://issues.opennms.org/browse/NMS-8444[NMS-8444])
-* Create Topology Service Updates in enlinkd (Issue http://issues.opennms.org/browse/NMS-9273[NMS-9273])
-* DHCP monitoring issue (Issue http://issues.opennms.org/browse/NMS-9806[NMS-9806])
-* Alarm Clear Trigger query language performance improvement (Issue http://issues.opennms.org/browse/NMS-9893[NMS-9893])
-* Extend system statistic metrics from UCD SNMP agents  (Issue http://issues.opennms.org/browse/NMS-10159[NMS-10159])
-* Improve Collectd and Pollerd's ThreadPool graphs (Issue http://issues.opennms.org/browse/NMS-10357[NMS-10357])
-* Enlinkd and Topologies under features (Issue http://issues.opennms.org/browse/NMS-10375[NMS-10375])
-* Support provisioning asset information via wsman (Issue http://issues.opennms.org/browse/NMS-10404[NMS-10404])
-* Allow Applications to be added as an edge to a Business Service (Issue http://issues.opennms.org/browse/NMS-10405[NMS-10405])
-* Add SQL views to simplify SQL based reporting (Issue http://issues.opennms.org/browse/NMS-10418[NMS-10418])
-* Handle Flapping Tests in Bamboo More Gracefully (Issue http://issues.opennms.org/browse/NMS-10424[NMS-10424])
-* Remove RemotePollerMap (Issue http://issues.opennms.org/browse/NMS-10440[NMS-10440])
-* Enhance onms-topology-generator to support isi, ospf, lldp protocols (Issue http://issues.opennms.org/browse/NMS-10444[NMS-10444])
-* Use the DaemonService to reload a daemon instead of the DaemonNameEnum (Issue http://issues.opennms.org/browse/NMS-10449[NMS-10449])
-* Meassure and improve performance of Interface loading and mapping (Issue http://issues.opennms.org/browse/NMS-10459[NMS-10459])
-* Event configuration should be able to match event parameters by key & value (Issue http://issues.opennms.org/browse/NMS-10465[NMS-10465])
-* Use a utility function instead of Integer.getInteger (Issue http://issues.opennms.org/browse/NMS-10477[NMS-10477])
-* Meassure and improve performance of Cdp/Lldp/IsIsElement loading (Issue http://issues.opennms.org/browse/NMS-10487[NMS-10487])
-* linkDown alarms are not generated for unknown ifIndex values (Issue http://issues.opennms.org/browse/NMS-10495[NMS-10495])
-* Update flow classification rules to match either the src or dst ports (Issue http://issues.opennms.org/browse/NMS-10496[NMS-10496])
-* Make sure toString methods are implemented in a consistent way (Issue http://issues.opennms.org/browse/NMS-10500[NMS-10500])
-* Create Application Icon for BSM Topology (Issue http://issues.opennms.org/browse/NMS-10502[NMS-10502])
-* DhcpMonitor does not work on Minion (Issue http://issues.opennms.org/browse/NMS-10504[NMS-10504])
-* Add karaf logging configuration for Minion/Sentinel (Issue http://issues.opennms.org/browse/NMS-10505[NMS-10505])
-* Disable session timeout by default (Issue http://issues.opennms.org/browse/NMS-10511[NMS-10511])
-* refactor/clean up `opennms` script (Issue http://issues.opennms.org/browse/NMS-10518[NMS-10518])
-* Remove unused Topology Plugin "org.opennms.features.topology.plugins.ssh" (Issue http://issues.opennms.org/browse/NMS-10527[NMS-10527])
-* Make Topology Creator as Karaf command available (Issue http://issues.opennms.org/browse/NMS-10533[NMS-10533])
-* Upgrade to Karaf 4.2.3 (Issue http://issues.opennms.org/browse/NMS-10539[NMS-10539])
-* Upgrade PostgreSQL JDBC driver to 42.x (Issue http://issues.opennms.org/browse/NMS-10543[NMS-10543])
-* Upgrade liquibase to 3.x (Issue http://issues.opennms.org/browse/NMS-10557[NMS-10557])
-* Update default Syslog parser to use the RadixTreeSyslogParser (Issue http://issues.opennms.org/browse/NMS-10566[NMS-10566])
-* Add node/interface/service details as scopes to Meta-DSL (Issue http://issues.opennms.org/browse/NMS-10598[NMS-10598])
-* Improve test coverage of SNMPv3 traps and informs (Issue http://issues.opennms.org/browse/NMS-10630[NMS-10630])
-* Allow the "step" (or interval) to be referenced from a Measurement API expression (Issue http://issues.opennms.org/browse/NMS-10633[NMS-10633])
-* IFTTT feature should also support BSM alarms (Issue http://issues.opennms.org/browse/NMS-10640[NMS-10640])
-* add `isAcknowledged` to the alarm model for the rest interface (Issue http://issues.opennms.org/browse/NMS-10653[NMS-10653])
-* remove centric troubleticket plugin (Issue http://issues.opennms.org/browse/NMS-10656[NMS-10656])
-* Support Browser Notification API (Issue http://issues.opennms.org/browse/HZN-956[HZN-956])
-* Upgrade the maven-war-plugin (Issue http://issues.opennms.org/browse/HZN-1231[HZN-1231])
-* Netflow - Support multiple protocols with a single UDP port (Issue http://issues.opennms.org/browse/HZN-1270[HZN-1270])
-* Forward enlinkd link data via Kafka (Issue http://issues.opennms.org/browse/HZN-1393[HZN-1393])
-* UI enhancements for handling Situations (Issue http://issues.opennms.org/browse/HZN-1394[HZN-1394])
-* The alarm_situations table should contain a timestamp (Issue http://issues.opennms.org/browse/HZN-1397[HZN-1397])
-* Ticketing support for situations (Issue http://issues.opennms.org/browse/HZN-1404[HZN-1404])
-* Increment Severity of Situations (Issue http://issues.opennms.org/browse/HZN-1417[HZN-1417])
-* OpenNMS Integration API (Issue http://issues.opennms.org/browse/HZN-1418[HZN-1418])
-* Add support for prioritizing the event definitions (Issue http://issues.opennms.org/browse/HZN-1419[HZN-1419])
-* Index alarms and alarm history in Elasticsearch (Issue http://issues.opennms.org/browse/HZN-1420[HZN-1420])
-* Remove NCS components and tables from source (Issue http://issues.opennms.org/browse/HZN-1422[HZN-1422])
-* Migrate bootstrap 3 to bootstrap 4 and revert custom stylings (Issue http://issues.opennms.org/browse/HZN-1423[HZN-1423])
-* Refactor alarmd scenario & test driver so that it can be used by other modules (Issue http://issues.opennms.org/browse/HZN-1429[HZN-1429])
-* Update OpennmsKafkaProducer to handle alarm feedback (Issue http://issues.opennms.org/browse/HZN-1431[HZN-1431])
-* Update OCE OpennmsDatasource to subscribe to alarm feedback topic (Issue http://issues.opennms.org/browse/HZN-1432[HZN-1432])
-* Update integration api to handle alarm feedback without Kafka (Issue http://issues.opennms.org/browse/HZN-1433[HZN-1433])
-* Remove feedback submission actions from Opennms so that OCE is the authoritative source of situation changes (Issue http://issues.opennms.org/browse/HZN-1435[HZN-1435])
-* Packaging OpenNMS plugins (Issue http://issues.opennms.org/browse/HZN-1436[HZN-1436])
-* Create tool to audit syslog message parsing (Issue http://issues.opennms.org/browse/HZN-1440[HZN-1440])
-* Send inventory to OCE without Kafka using integration API (Issue http://issues.opennms.org/browse/HZN-1441[HZN-1441])
-* Update the SnmpCollector to use the CollectionSetBuilder (Issue http://issues.opennms.org/browse/HZN-1442[HZN-1442])
-* Improve performance of DroolsAlarmContext alarm snapshot handling (Issue http://issues.opennms.org/browse/HZN-1449[HZN-1449])
-* Prevent CME in OSGI service binding (Issue http://issues.opennms.org/browse/HZN-1451[HZN-1451])
-* POC of a Graph Service which tackles all existing issues with the current Topology appraoch + allows exposing graphs via Rest (Issue http://issues.opennms.org/browse/HZN-1452[HZN-1452])
-* Update startup script to bootstrap with Java 9+ (Issue http://issues.opennms.org/browse/HZN-1455[HZN-1455])
-* Use mapstruct for mapping to protobuf objects in the kafka producer (Issue http://issues.opennms.org/browse/HZN-1459[HZN-1459])
-* Add option to syslogd to include the raw syslog message as a parameter in the generated event (Issue http://issues.opennms.org/browse/HZN-1460[HZN-1460])
-* View event configuration definitions from the Karaf shell (Issue http://issues.opennms.org/browse/HZN-1461[HZN-1461])
-* Upgrade Elasticsearch test server to use v6.5.x (Issue http://issues.opennms.org/browse/HZN-1467[HZN-1467])
-* Remove features-maven-plugin from the build (Issue http://issues.opennms.org/browse/HZN-1468[HZN-1468])
-* Leverage new topology generator to test the LinkdTopologyProvider (Issue http://issues.opennms.org/browse/HZN-1469[HZN-1469])
-* Node Meta-Data / KVP Support (Issue http://issues.opennms.org/browse/HZN-1474[HZN-1474])
-* Extend topology generator and test suite to support bridge topology (Issue http://issues.opennms.org/browse/HZN-1475[HZN-1475])
-* Upgrade CXF to 3.2.x or greater (Issue http://issues.opennms.org/browse/HZN-1478[HZN-1478])
-* Enable instant refresh in topology generator based on the recent changes in the topology code (Issue http://issues.opennms.org/browse/HZN-1479[HZN-1479])
-* Show managed object type and instance on alarm details page (Issue http://issues.opennms.org/browse/HZN-1481[HZN-1481])
-* Update the topology generator so that topology is sent to the TopologyDAO (Issue http://issues.opennms.org/browse/HZN-1482[HZN-1482])
-* Update topology code to make the topology that is sent via Kafka more convenient for consumption (Issue http://issues.opennms.org/browse/HZN-1483[HZN-1483])
-* Maximum number of services in node details page should be configurable (Issue http://issues.opennms.org/browse/HZN-1487[HZN-1487])
-* Use node category membership in Drools rules for alarms (Issue http://issues.opennms.org/browse/HZN-1489[HZN-1489])
-* User defined links (Issue http://issues.opennms.org/browse/HZN-1498[HZN-1498])
-* Enhance RadixTreeSyslogParser to ignore specific characters (Issue http://issues.opennms.org/browse/HZN-1504[HZN-1504])
-* Remove PluginManager (Issue http://issues.opennms.org/browse/HZN-1506[HZN-1506])
-* Remove unused indexNew.jsp files (Issue http://issues.opennms.org/browse/HZN-1512[HZN-1512])
-* circleci packaging strategy (Issue http://issues.opennms.org/browse/HZN-1513[HZN-1513])
-* Add OpenTracing support for Camel (JMS) RPC (Issue http://issues.opennms.org/browse/HZN-1516[HZN-1516])
-* Add ability to provide custom tags to OpenTracing by RPC Modules (Issue http://issues.opennms.org/browse/HZN-1519[HZN-1519])
-* Wrap Sink Message in Protobuf (Issue http://issues.opennms.org/browse/HZN-1529[HZN-1529])
+* Document JDBCQueryMonitor "compare_string" Action (Issue http://issues.opennms.org/browse/NMS-9581[NMS-9581])
+* Add opentracing support for Provisiond (Issue http://issues.opennms.org/browse/NMS-12374[NMS-12374])
+* SystemExecuteMonitor fails with exit code 6 (Issue http://issues.opennms.org/browse/NMS-12564[NMS-12564])
+* Add an example for SystemExecuteMonitor into the docs (Issue http://issues.opennms.org/browse/NMS-12568[NMS-12568])
+* Prometheus collector (Issue http://issues.opennms.org/browse/NMS-12577[NMS-12577])
+* Timeseries Plugin Influx 1.x  (Issue http://issues.opennms.org/browse/NMS-12633[NMS-12633])
+* Update smoketests to support various Kafka compression codecs (Issue http://issues.opennms.org/browse/NMS-12647[NMS-12647])
+* Bump ES version used in Smoke Tests (Issue http://issues.opennms.org/browse/NMS-12648[NMS-12648])
+* Provide written procedures on the proper way to restart  (Issue http://issues.opennms.org/browse/NMS-12650[NMS-12650])
+* Aggregate flow metrics w/ stream processing (Issue http://issues.opennms.org/browse/NMS-12656[NMS-12656])
+* Provisiond: Add NodeScanStarted event for scheduled scans (Issue http://issues.opennms.org/browse/NMS-12658[NMS-12658])
+* Flow aggregation - alternate indices based on duration of time range filter (Issue http://issues.opennms.org/browse/NMS-12663[NMS-12663])
+* Flow aggregation - Identify minimal set of fields required for current queries (Issue http://issues.opennms.org/browse/NMS-12664[NMS-12664])
+* Enable node enrichment for Topology providers comming from the Integration Api (Issue http://issues.opennms.org/browse/NMS-12674[NMS-12674])
+* Add tooltip support to the LegacyGraphProvider (Issue http://issues.opennms.org/browse/NMS-12694[NMS-12694])
+* add a telemetry adapter for the Graphite plaintext protocol (Issue http://issues.opennms.org/browse/NMS-12695[NMS-12695])
 
+[releasenotes-changelog-26.0.1]
+
+==== Release 26.0.1
+
+Release 26.0.1 is the second release in the Horizon 26 series.
+
+It is an off-schedule release to fix a vulnerability in ActiveMQ and the Minion.
+Thanks to Florian Hauser of Code White for catching this one.
+
+The codename for 26.0.1 is _link:$$https://en.wikipedia.org/wiki/Lucha_libre#Masks$$[Luchador]_.
+
+===== Bug
+
+* Authenticated RCE vulnerability via ActiveMQ Minion payload deserialization (Issue http://issues.opennms.org/browse/NMS-12673[NMS-12673])
+
+[releasenotes-changelog-26.0.0]
+
+==== Release 26.0.0
+
+Release 26.0.0 is the first release in the Horizon 26 series.
+
+It contains a large number of bug fixes and new features, most notably initial support for
+handling the BGP Monitoring Protocol in Telemetryd.
+It also contains a few security fixes for issues reported by Johannes Moritz.
+
+For a high-level overview of what has changed in Horizon 26, see
+link:https://docs.opennms.org/opennms/releases/26.0.0/releasenotes/releasenotes.html#releasenotes-26[What's New in OpenNMS Horizon 26].
+
+The codename for 26.0.0 is _link:$$https://en.wikipedia.org/wiki/Balaclava_(clothing)$$[Balaclava]_.
+
+===== Bug
+
+* RTC subscription events should not be persisted to DB (Issue http://issues.opennms.org/browse/NMS-9754[NMS-9754])
+* Make Events immutable (avoid CMEs and fix non-deterministic behavior) (Issue http://issues.opennms.org/browse/NMS-10720[NMS-10720])
+* Invalid poller filter rules can break service web UI page (Issue http://issues.opennms.org/browse/NMS-12400[NMS-12400])
+* Discovery and foreignSource service detection get in the way (Issue http://issues.opennms.org/browse/NMS-12411[NMS-12411])
+* SNMP Remove from definitions fails for definitions with profile label (Issue http://issues.opennms.org/browse/NMS-12413[NMS-12413])
+* persisted defaultCalendarReport database reports are broken (Issue http://issues.opennms.org/browse/NMS-12438[NMS-12438])
+* Filter related errors in karaf.log when using new search (Issue http://issues.opennms.org/browse/NMS-12502[NMS-12502])
+* Security issue disclosures, 31 Jan 2020 (Issue http://issues.opennms.org/browse/NMS-12513[NMS-12513])
+* Selecting an Icon on Topology Map breaks the map (Issue http://issues.opennms.org/browse/NMS-12532[NMS-12532])
+* BMP parser is to strict for unknown elements / types (Issue http://issues.opennms.org/browse/NMS-12552[NMS-12552])
+* "No future found for message" warnings in telemetryd log (Issue http://issues.opennms.org/browse/NMS-12565[NMS-12565])
+* The health check script for Minion and Sentinel on Docker Images stopped working (Issue http://issues.opennms.org/browse/NMS-12600[NMS-12600])
+* Open Redirect security issues (Issue http://issues.opennms.org/browse/NMS-12612[NMS-12612])
+* PR's fail circleci RPM build steps due to missing GPG setup (Issue http://issues.opennms.org/browse/NMS-12615[NMS-12615])
+* XSS security issues (Issue http://issues.opennms.org/browse/NMS-12617[NMS-12617])
+* sentinel-coordination-zookeeper doesn't start due to missing dependency (Issue http://issues.opennms.org/browse/NMS-12619[NMS-12619])
+* Description: Cannot create monitored-service with JSON via ReST (Issue http://issues.opennms.org/browse/NMS-12625[NMS-12625])
+* Minion Docker image for develop is tagged as 27.0.0-SNAPSHOT instead of bleeding (Issue http://issues.opennms.org/browse/NMS-12627[NMS-12627])
+* Push Minion OCI to DockerHub for release branches (Issue http://issues.opennms.org/browse/NMS-12630[NMS-12630])
+* Restore CAP_NET_RAW capabilities in Minion when running as non-root (Issue http://issues.opennms.org/browse/NMS-12635[NMS-12635])
+* Can't change password using the user self service (Issue http://issues.opennms.org/browse/NMS-12636[NMS-12636])
+* GraphService is throwing Error with an NPE Karaf startup (Issue http://issues.opennms.org/browse/NMS-12637[NMS-12637])
+* Telemetryd with BMP adapter throws java.util.ConcurrentModificationException (Issue http://issues.opennms.org/browse/NMS-12638[NMS-12638])
+* Confd download fails silently on Docker install (Issue http://issues.opennms.org/browse/NMS-12642[NMS-12642])
+* Error parsing MP_UNREACH_NLRI attribute (Issue http://issues.opennms.org/browse/NMS-12643[NMS-12643])
+* BMP Parser Bulkhead Config does not work (Issue http://issues.opennms.org/browse/NMS-12644[NMS-12644])
+* Error parsing label information from BGP MP_REACH_NLRI attribute (Issue http://issues.opennms.org/browse/NMS-12649[NMS-12649])
+
+===== Enhancement
+
+* Add more information into BSM alarms (Issue http://issues.opennms.org/browse/NMS-9352[NMS-9352])
+* Prefix all shell commands with "opennms" (Issue http://issues.opennms.org/browse/NMS-10413[NMS-10413])
+* Shorten log message in SNMP trap event definitions (Issue http://issues.opennms.org/browse/NMS-10564[NMS-10564])
+* Clarify Basic Installation scenario (Issue http://issues.opennms.org/browse/NMS-11812[NMS-11812])
+* Provide DefaultFocus capabilities (Issue http://issues.opennms.org/browse/NMS-11979[NMS-11979])
+* Provide a better graph service with an actual API/Model and better import/export/integration capabilities (Issue http://issues.opennms.org/browse/NMS-12086[NMS-12086])
+* Rework the current navbar (Issue http://issues.opennms.org/browse/NMS-12128[NMS-12128])
+* Event documentation is missing tokens (Issue http://issues.opennms.org/browse/NMS-12228[NMS-12228])
+* Add a "Delete" button on the Node page of the Requisition UI (Issue http://issues.opennms.org/browse/NMS-12292[NMS-12292])
+* Discovery enhancements (Issue http://issues.opennms.org/browse/NMS-12314[NMS-12314])
+* Update discoveryd to support detectors (Issue http://issues.opennms.org/browse/NMS-12315[NMS-12315])
+* Provide criteria for determining the "management IP" in provisiond (Issue http://issues.opennms.org/browse/NMS-12316[NMS-12316])
+* Process newSuspect events in a single threaded fashion (Issue http://issues.opennms.org/browse/NMS-12318[NMS-12318])
+* Provide Central Search Function (Issue http://issues.opennms.org/browse/NMS-12347[NMS-12347])
+* Create BMP listener and parser for telemetryd (Issue http://issues.opennms.org/browse/NMS-12358[NMS-12358])
+* Add gRPC support for IPC between Minion & OpenNMS (Issue http://issues.opennms.org/browse/NMS-12372[NMS-12372])
+* Allow querying a graph using vertices in focus and a szl (Issue http://issues.opennms.org/browse/NMS-12376[NMS-12376])
+* Implement Enrichment of vertices (Issue http://issues.opennms.org/browse/NMS-12382[NMS-12382])
+* Develop Timeseries Integration Layer (Issue http://issues.opennms.org/browse/NMS-12383[NMS-12383])
+* Allow persisting edges with references to at least one vertex which is not in the edge's namespace (Issue http://issues.opennms.org/browse/NMS-12388[NMS-12388])
+* Implement caching strategies for graphs (Issue http://issues.opennms.org/browse/NMS-12389[NMS-12389])
+* Add HTTP header injection in HTTP Monitors (Issue http://issues.opennms.org/browse/NMS-12393[NMS-12393])
+* Add possibility to listen for graph changes (Issue http://issues.opennms.org/browse/NMS-12408[NMS-12408])
+* Create BMP Adapter for Telemetry (Issue http://issues.opennms.org/browse/NMS-12414[NMS-12414])
+* Create BMP Adapter for Peer Up / Down Events (Issue http://issues.opennms.org/browse/NMS-12415[NMS-12415])
+* Allow CIDR notation in our IP filter implementation (Issue http://issues.opennms.org/browse/NMS-12423[NMS-12423])
+* Create BMP Adapter forwarding to OpenBMP (Issue http://issues.opennms.org/browse/NMS-12424[NMS-12424])
+* Create graph definitions for BMP statistics (Issue http://issues.opennms.org/browse/NMS-12425[NMS-12425])
+* Add BMP config example and documentation (Issue http://issues.opennms.org/browse/NMS-12426[NMS-12426])
+* Use Router Id (and maybe AS) to associate node with exporting router's data (Issue http://issues.opennms.org/browse/NMS-12436[NMS-12436])
+* Provide basic development documentation (Issue http://issues.opennms.org/browse/NMS-12441[NMS-12441])
+* Integrate the new Graph Service API with the OpenNMS Integration API (Issue http://issues.opennms.org/browse/NMS-12445[NMS-12445])
+* Remove getVertexType() on GraphInfo (Issue http://issues.opennms.org/browse/NMS-12447[NMS-12447])
+* Avoid rebuilding the graph view when enriching (Issue http://issues.opennms.org/browse/NMS-12448[NMS-12448])
+* Expose status information when fetching a graph view (Issue http://issues.opennms.org/browse/NMS-12453[NMS-12453])
+* DatacollectionFailed event definitions are located in wrong file (Issue http://issues.opennms.org/browse/NMS-12471[NMS-12471])
+* dataCollectionSucceeded does event auto-clean (Issue http://issues.opennms.org/browse/NMS-12474[NMS-12474])
+* Remove obsolete entry in log4j2.xml (Issue http://issues.opennms.org/browse/NMS-12475[NMS-12475])
+* Make Kafka RPC topics configurable to use module in topic names (Issue http://issues.opennms.org/browse/NMS-12479[NMS-12479])
+* Docker Image Improvements (Issue http://issues.opennms.org/browse/NMS-12481[NMS-12481])
+* Reduce Minion docker image size (Issue http://issues.opennms.org/browse/NMS-12482[NMS-12482])
+* Publish arm64 and armhf Docker images for Minion (Issue http://issues.opennms.org/browse/NMS-12483[NMS-12483])
+* Use jicmp (and jicmp6) by default in Minion Docker images (Issue http://issues.opennms.org/browse/NMS-12484[NMS-12484])
+* Implement GRPC Server that can route all RPC/Sink messages from OpenNMS to Minion and vice versa (Issue http://issues.opennms.org/browse/NMS-12486[NMS-12486])
+* Use protobuf instead of bson for encoding/decoding Netflow payloads (Issue http://issues.opennms.org/browse/NMS-12521[NMS-12521])
+* Enrich content of nodeAdded event (Issue http://issues.opennms.org/browse/NMS-12526[NMS-12526])
+* Migrate config-tester wiki to the docs (Issue http://issues.opennms.org/browse/NMS-12527[NMS-12527])
+* Splitting Docker documentation in Horizon, Minion and Sentinel (Issue http://issues.opennms.org/browse/NMS-12529[NMS-12529])
+* Add Jolokia features to Minion & Sentinel (Issue http://issues.opennms.org/browse/NMS-12533[NMS-12533])
+* Expose OnmsIpInterface, OnmsSnmpInterface, others as top-level resources in REST API (Issue http://issues.opennms.org/browse/NMS-12538[NMS-12538])
+* Use ProtoBuf to transport parsed BMP messages (Issue http://issues.opennms.org/browse/NMS-12547[NMS-12547])
+* Add support for per AFI/SAFI statistics (Issue http://issues.opennms.org/browse/NMS-12553[NMS-12553])
+* Add basic system test for BMP processing (Issue http://issues.opennms.org/browse/NMS-12554[NMS-12554])
+* Improve parsing of BGP extended communities attribute (Issue http://issues.opennms.org/browse/NMS-12559[NMS-12559])
+* Populate path id and labels attributes in unicast prefix messages (OpenBMP integration) (Issue http://issues.opennms.org/browse/NMS-12560[NMS-12560])
+* Async DNS resolution for Hostnames in BMP (Issue http://issues.opennms.org/browse/NMS-12569[NMS-12569])
+* Add support for Local RIB (Issue http://issues.opennms.org/browse/NMS-12570[NMS-12570])
+* Parse BGP Capabilities (Issue http://issues.opennms.org/browse/NMS-12571[NMS-12571])
+* Refine parameter handling in Adapters (Issue http://issues.opennms.org/browse/NMS-12573[NMS-12573])
+* Apply more sensible defaults to OpenBMP kafka producer (Issue http://issues.opennms.org/browse/NMS-12574[NMS-12574])
+* Confd templates for Minion configuration (Issue http://issues.opennms.org/browse/NMS-12578[NMS-12578])
+* Improve node cache in flow document enrichment (Issue http://issues.opennms.org/browse/NMS-12580[NMS-12580])
+* Improve OIA performance when mapping alarms (Issue http://issues.opennms.org/browse/NMS-12581[NMS-12581])
+* Upgrade Kafka components to 2.4.0 (Issue http://issues.opennms.org/browse/NMS-12582[NMS-12582])
+* Write enriched flows to Kafka (Issue http://issues.opennms.org/browse/NMS-12583[NMS-12583])
+* Create threshold documentation (Issue http://issues.opennms.org/browse/NMS-12588[NMS-12588])
+* Document how to generate PDFs from dashboards using OpenNMS (Issue http://issues.opennms.org/browse/NMS-12599[NMS-12599])
+* Minion should bind to 0.0.0.0 by default for SNMP traps (Issue http://issues.opennms.org/browse/NMS-12626[NMS-12626])
+* Minion confd template should disable JMS when using Kafka (Issue http://issues.opennms.org/browse/NMS-12631[NMS-12631])
+* Add required dependencies to use ZSTD inside Kafka to features.xml (Issue http://issues.opennms.org/browse/NMS-12639[NMS-12639])
+* Set RPM compression type and level inside RPM Spec Files (Issue http://issues.opennms.org/browse/NMS-12640[NMS-12640])
+* Support for more extended community types in BMP (Issue http://issues.opennms.org/browse/NMS-12641[NMS-12641])

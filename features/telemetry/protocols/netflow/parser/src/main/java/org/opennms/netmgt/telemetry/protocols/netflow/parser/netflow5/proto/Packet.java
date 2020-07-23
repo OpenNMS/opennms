@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
-import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +43,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Iterables;
 
+import io.netty.buffer.ByteBuf;
+
 public final class Packet implements Iterable<Record>, RecordProvider {
 
     public final Header header;
@@ -51,12 +52,12 @@ public final class Packet implements Iterable<Record>, RecordProvider {
     public final List<Record> records;
 
     public Packet(final Header header,
-                  final ByteBuffer buffer) throws InvalidPacketException {
+                  final ByteBuf buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
         final List<Record> records = new LinkedList();
 
-        while (buffer.remaining() >= Record.SIZE
+        while (buffer.isReadable(Record.SIZE)
                 && records.size() < this.header.count) {
             final Record record = new Record(this, slice(buffer, Record.SIZE));
             records.add(record);

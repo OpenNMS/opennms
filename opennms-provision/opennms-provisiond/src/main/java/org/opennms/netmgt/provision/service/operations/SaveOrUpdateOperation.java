@@ -110,7 +110,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
             LOG.error("Unable to resolve address of snmpPrimary interface for node {} with address '{}'", m_node.getLabel(), ipAddr);
         }
 
-        m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
+        m_currentInterface = new OnmsIpInterface(addr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
         m_currentInterface.setIsSnmpPrimary(primaryType);
 
@@ -142,7 +142,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
      */
     protected void updateSnmpData() {
         if (m_scanManager != null) {
-            m_scanManager.updateSnmpData(m_node);
+            m_scanManager.updateSnmpData(m_node, getProvisionService().getHostnameResolver());
         }
 	}
 

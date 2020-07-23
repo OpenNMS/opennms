@@ -36,6 +36,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -143,11 +144,11 @@ public class CollectionPolicyTest implements InitializingBean {
         assertNotNull(node2);
         assertEquals("node2", node2.getLabel());
         
-        node1 = policy.apply(node1);
+        node1 = policy.apply(node1, Collections.emptyMap());
         assertNotNull(node1);
         assertFalse(node1.hasCategory(TEST_CATEGORY));
         
-        node2 = policy.apply(node2);
+        node2 = policy.apply(node2, Collections.emptyMap());
         assertNotNull(node1);
         assertTrue(node2.getRequisitionedCategories().contains(TEST_CATEGORY));
     }
@@ -159,7 +160,7 @@ public class CollectionPolicyTest implements InitializingBean {
         
         for (OnmsSnmpInterface iface : interfaces) {
             System.err.println(iface);
-            o = p.apply(iface);
+            o = p.apply(iface, Collections.emptyMap());
             if (o != null) {
                 matchedInterfaces.add(o);
             }

@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
@@ -46,6 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public final class FieldSpecifier implements Field {
     private static final Logger LOG = LoggerFactory.getLogger(FieldSpecifier.class);
@@ -65,7 +66,7 @@ public final class FieldSpecifier implements Field {
 
     public final InformationElement informationElement;
 
-    public FieldSpecifier(final ByteBuffer buffer) throws InvalidPacketException {
+    public FieldSpecifier(final ByteBuf buffer) throws InvalidPacketException {
         this.fieldType = uint16(buffer);
         this.fieldLength = uint16(buffer);
 
@@ -85,7 +86,7 @@ public final class FieldSpecifier implements Field {
     }
 
     @Override
-    public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
+    public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
         return this.informationElement.parse(resolver, buffer);
     }
 

@@ -33,6 +33,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.alarmd.AlarmPersisterImpl;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -49,11 +50,14 @@ public class Scenario {
 
     private final Runnable awaitUntilRunnable;
 
+    public final long tickLengthMillis;
+
     public Scenario(ScenarioBuilder builder) {
         this.actions = new ArrayList<>(builder.actions);
         this.actions.sort(Comparator.comparing(Action::getTime));
         this.legacyAlarmBehavior = builder.legacyAlarmBehavior;
         this.awaitUntilRunnable = builder.awaitUntilRunnable;
+        this.tickLengthMillis = builder.tickLengthMillis;
     }
 
     public List<Action> getActions() {
@@ -62,6 +66,10 @@ public class Scenario {
     
     public boolean getLegacyAlarmBehavior() {
         return legacyAlarmBehavior;
+    }
+
+    public long getTickLengthMillis() {
+        return tickLengthMillis;
     }
 
     public static ScenarioBuilder builder() {
@@ -74,6 +82,16 @@ public class Scenario {
         private boolean legacyAlarmBehavior = false;
 
         private Runnable awaitUntilRunnable = () -> {};
+
+        private long tickLengthMillis = 1;
+
+        public ScenarioBuilder withTickLength(long duration, TimeUnit unit) {
+            if (duration < 1) {
+                throw new IllegalArgumentException("Duration must be strictly positive!");
+            }
+            this.tickLengthMillis = unit.toMillis(duration);
+            return this;
+        }
 
         public ScenarioBuilder withNodeDownEvent(long time, int nodeId) {
             EventBuilder builder = new EventBuilder(EventConstants.NODE_DOWN_EVENT_UEI, "test");
@@ -197,6 +215,7 @@ public class Scenario {
         public Scenario build() {
             return new Scenario(this);
         }
+
     }
 
     public ScenarioResults play() {

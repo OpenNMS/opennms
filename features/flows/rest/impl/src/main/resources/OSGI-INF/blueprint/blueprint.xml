@@ -12,7 +12,7 @@
     <reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory"/>
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
-    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory"/>
     <reference id="classificationService" interface="org.opennms.netmgt.flows.classification.ClassificationService" availability="mandatory"/>
 
   <!-- Configuration properties -->
@@ -26,7 +26,7 @@
         <argument ref="flowRepository" />
         <argument ref="nodeDao" />
         <argument ref="snmpInterfaceDao" />
-        <argument ref="transactionOperations" />
+        <argument ref="sessionUtils" />
         <property name="flowGraphUrl" value="${flowGraphUrl}" />
     </bean>
 

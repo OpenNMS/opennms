@@ -66,6 +66,7 @@ public class CollectionSetBuilder {
     private Date m_timestamp = new Date();
     private Map<Resource, List<Attribute<?>>> m_attributesByResource = new LinkedHashMap<>();
     private boolean m_disableCounterPersistence = false;
+    private Long m_sequenceNumber;
 
     public CollectionSetBuilder(CollectionAgent agent) {
         m_agent = Objects.requireNonNull(agent, "agent cannot be null");
@@ -133,9 +134,16 @@ public class CollectionSetBuilder {
         m_disableCounterPersistence = disableCounterPersistence;
         return this;
     }
+    
+    public CollectionSetBuilder withSequenceNumber(Long sequenceNumber) {
+        m_sequenceNumber = sequenceNumber;
+        return this;
+    }
 
     public CollectionSetDTO build() {
-        return new CollectionSetDTO(m_agent, m_status, m_timestamp, m_attributesByResource, m_disableCounterPersistence);
+        return new CollectionSetDTO(m_agent, m_status, m_timestamp, m_attributesByResource,
+                m_disableCounterPersistence, m_sequenceNumber);
+
     }
 
     public static AbstractCollectionResource toCollectionResource(Resource resource, CollectionAgent agent) {

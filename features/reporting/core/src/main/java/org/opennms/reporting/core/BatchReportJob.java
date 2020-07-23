@@ -37,35 +37,14 @@ import org.quartz.JobExecutionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
-/**
- * <p>BatchReportJob class.</p>
- */
 public class BatchReportJob extends QuartzJobBean {
     
     private ApplicationContext m_context;
 
-    /** {@inheritDoc} */
     @Override
-    protected void executeInternal(JobExecutionContext jobContext)
-            throws JobExecutionException {
-        
+    protected void executeInternal(JobExecutionContext jobContext) throws JobExecutionException {
         JobDataMap dataMap = jobContext.getMergedJobDataMap();
-       
-        // TODO this needs the reportServiceName in the criteria 
-        
-//        
-//        ReportServiceLocator reportServiceLocator =
-//            (ReportServiceLocator)m_context.getBean("reportServiceLocator");
-//        
-//        ReportService reportService = reportServiceLocator.getReportService((String)dataMap.get("reportServiceName"));
-//        
-//        reportService.run(criteria.getReportParms(), 
-//                          deliveryOptions, 
-//                          (String)dataMap.get("reportId"));
-        
-        ReportWrapperService reportWrapperService = 
-            (ReportWrapperService)m_context.getBean("reportWrapperService");
-        
+        ReportWrapperService reportWrapperService = (ReportWrapperService) m_context.getBean("reportWrapperService");
         reportWrapperService.run((ReportParameters) dataMap.get("criteria"),
                                  (ReportMode) dataMap.get("mode"),
                                  (DeliveryOptions) dataMap.get("deliveryOptions"),
@@ -73,15 +52,8 @@ public class BatchReportJob extends QuartzJobBean {
         
     }
     
-    /**
-     * <p>setApplicationContext</p>
-     *
-     * @param applicationContext a {@link org.springframework.context.ApplicationContext} object.
-     */
     public void setApplicationContext(ApplicationContext applicationContext) {
         m_context = applicationContext;
     }
-    
-    
 
 }

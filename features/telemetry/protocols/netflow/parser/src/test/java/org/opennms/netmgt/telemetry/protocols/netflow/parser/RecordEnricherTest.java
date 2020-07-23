@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +48,9 @@ import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Record;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class RecordEnricherTest {
 
@@ -104,7 +106,7 @@ public class RecordEnricherTest {
         bytes[2] = 0x00;
         bytes[3] = 0x01;
 
-        final ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        final ByteBuf buffer = Unpooled.wrappedBuffer(bytes);
         final Header header = new Header(buffer);
         return new Packet(header, buffer);
     }

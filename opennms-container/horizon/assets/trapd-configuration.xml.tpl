@@ -1,1 +1,0 @@
-<trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd" snmp-trap-address="*" snmp-trap-port="${OPENNMS_TRAPD_PORT}" new-suspect-on-trap="false" include-raw-message="false" threads="0" queue-size="10000" batch-size="1000" batch-interval="500"/>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,7 +31,7 @@ package org.opennms.spring.xml;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.events.api.model.IEvent;
 
 @EventListener(name="AspectJTestEventHandler")
 public class AspectJTestEventHandler {
@@ -53,7 +53,7 @@ public class AspectJTestEventHandler {
     }
 
     @EventHandler(uei=EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
-    public void handleAnEvent(Event e) throws Throwable {
+    public void handleAnEvent(IEvent e) throws Throwable {
         System.err.println("Received Event "+e.getUei());
         handlerCallCount++;
         if (thrownException != null) {

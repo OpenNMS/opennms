@@ -35,10 +35,13 @@ import java.util.Objects;
 
 import org.opennms.core.ipc.sink.aggregation.AggregatingMessageProducer;
 import org.opennms.core.ipc.sink.aggregation.ArrayListAggregationPolicy;
+import org.opennms.features.jest.client.ConnectionPoolShutdownException;
+import org.opennms.features.jest.client.template.TemplateInitializer;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
-import org.opennms.plugins.elasticsearch.rest.template.TemplateInitializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Queues events received from OpenNMS for forwarding to Elasticsearch.
@@ -47,6 +50,8 @@ import org.opennms.plugins.elasticsearch.rest.template.TemplateInitializer;
  * @author Seth
  */
 public class EventForwarderQueueImpl implements EventForwarder, AutoCloseable {
+
+	private static final Logger LOG = LoggerFactory.getLogger(EventForwarderQueueImpl.class);
 
 	private final EventToIndex eventToIndex;
 	private final TemplateInitializer elasticSearchInitializer;
@@ -117,9 +122,14 @@ public class EventForwarderQueueImpl implements EventForwarder, AutoCloseable {
 		 */
 		@Override
 		public void dispatch(List<Event> events) {
-			// Ensure we are initialized correctly.
-			if (!elasticSearchInitializer.isInitialized()) {
-				elasticSearchInitializer.initialize(); // blocks until initialized properly
+			try {
+				// Ensure we are initialized correctly.
+				if (!elasticSearchInitializer.isInitialized()) {
+					elasticSearchInitializer.initialize(); // blocks until initialized properly
+				}
+			} catch (ConnectionPoolShutdownException ex) { // Connection Pool is gone, nothing we can do
+				ExceptionUtils.handle(getClass(), ex, events);
+				return;
 			}
 			eventToIndex.forwardEvents(events);
 		}

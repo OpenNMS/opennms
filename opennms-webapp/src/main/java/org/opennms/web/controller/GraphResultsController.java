@@ -28,6 +28,14 @@
 
 package org.opennms.web.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.jexl2.ExpressionImpl;
 import org.apache.commons.jexl2.JexlEngine;
 import org.jrobin.core.RrdException;
@@ -47,14 +55,6 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-
 
 /**
  * <p>GraphResultsController class.</p>
@@ -73,20 +73,19 @@ public class GraphResultsController extends AbstractController implements Initia
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String[] requiredParameters = new String[] {
+        String[] requestedParameters = new String[] {
                 "resourceId",
-                "reports"
+                "generatedId",
+                "reports",
+                "nodeCriteria"
         };
-        
-        for (String requiredParameter : requiredParameters) {
-            if (request.getParameter(requiredParameter) == null) {
-                throw new MissingParameterException(requiredParameter,
-                                                    requiredParameters);
-            }
+        ResourceId[] resourceIds = new ResourceId[0];
+        if (request.getParameterValues("resourceId") != null) {
+            resourceIds = Arrays.stream(request.getParameterValues("resourceId")).map(ResourceId::fromString).toArray(ResourceId[]::new);
         }
-
-        ResourceId[] resourceIds = Arrays.stream(request.getParameterValues("resourceId")).map(ResourceId::fromString).toArray(ResourceId[]::new);
         String[] reports = request.getParameterValues("reports");
+        String nodeCriteria = request.getParameter("nodeCriteria");
+        String generatedId = request.getParameter("generatedId");
         
         // see if the start and end time were explicitly set as params
         String start = request.getParameter("start");
@@ -225,13 +224,13 @@ public class GraphResultsController extends AbstractController implements Initia
 
         // The 'matching' parameter is going to work only for one resource.
         String matching = request.getParameter("matching");
-        if (matching != null) {
+        if (matching != null && resourceIds.length != 0) {
             reports = getSuggestedReports(resourceIds[0], matching);
         }
 
         ModelAndView modelAndView = null;
         try {
-            GraphResults model = m_graphResultsService.findResults(resourceIds, reports, startLong, endLong, relativeTime);
+            GraphResults model = m_graphResultsService.findResults(resourceIds, reports, generatedId, nodeCriteria, startLong, endLong, relativeTime);
             modelAndView = new ModelAndView("/graph/results", "results", model);
         } catch (Exception e) {
             LOG.warn("Can't get graph results", e);

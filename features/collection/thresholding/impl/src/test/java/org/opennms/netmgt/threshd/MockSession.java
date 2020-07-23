@@ -32,6 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.opennms.features.distributed.kvstore.blob.noop.NoOpBlobStore;
+import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
 
@@ -51,6 +52,8 @@ public class MockSession {
             when(mockSession.getKey()).thenReturn(mockKey);
 
             when(mockSession.getBlobStore()).thenReturn(NoOpBlobStore.getInstance());
+            ThresholdStateMonitor mockStateMonitor = new BlobStoreAwareMonitor(mockSession.getBlobStore());
+            when(mockSession.getThresholdStateMonitor()).thenReturn(mockStateMonitor);
 
         }
 

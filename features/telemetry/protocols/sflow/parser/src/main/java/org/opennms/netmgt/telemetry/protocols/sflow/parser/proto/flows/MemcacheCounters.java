@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct memcache_counters {
 //   unsigned int cmd_set;
@@ -105,7 +105,7 @@ public class MemcacheCounters implements CounterData {
     public final UnsignedLong bytes;
     public final UnsignedLong limit_maxbytes;
 
-    public MemcacheCounters(final ByteBuffer buffer) throws InvalidPacketException {
+    public MemcacheCounters(final ByteBuf buffer) throws InvalidPacketException {
         this.cmd_set = BufferUtils.uint32(buffer);
         this.cmd_touch = BufferUtils.uint32(buffer);
         this.cmd_flush = BufferUtils.uint32(buffer);

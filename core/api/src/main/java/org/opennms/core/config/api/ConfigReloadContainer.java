@@ -34,8 +34,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
 
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.RegistrationListener;
@@ -63,7 +63,7 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
         private Date lastUpdate;
         private Long reloadCheckIntervalInMs = DEFAULT_RELOAD_CHECK_INTERVAL_MS;
         private List<ConfigurationProvider> providers = new ArrayList<>();
-        private BiFunction<V, V, V> merger;
+        private BinaryOperator<V> folder;
 
         public Builder(Class<V> clazz) {
             this.clazz = Objects.requireNonNull(clazz);
@@ -84,8 +84,20 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
             return this;
         }
 
-        public Builder<V> withMerger(BiFunction<V, V, V> merger) {
-            this.merger = merger;
+        /**
+         * Note: this method assumes the object being managed by this container is mutable and can be used for
+         * accumulation. This simplifies the usage of clients by allowing them to provide a consumer for accumulation
+         * purposes rather than a function. Should this container ever need to manage immutable objects an additional
+         * method should be provided which accepts a {@link BinaryOperator} rather than a {@link BiConsumer}.
+         *
+         * @param folder a consumer which given an accumulator and the next value, folds the next value into the
+         *               accumulator such that the accumulator now represents the merger of both objects
+         */
+        public Builder<V> withFolder(BiConsumer<V, V> folder) {
+            this.folder = (a, b) -> {
+                folder.accept(a, b);
+                return a;
+            };
             return this;
         }
 
@@ -109,7 +121,7 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
     // Config
     private final Class<V> clazz;
     private long reloadCheckIntervalInMs;
-    private BiFunction<V, V, V> merger;
+    private BinaryOperator<V> folder;
 
     // State
     private V object;
@@ -146,7 +158,7 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
         builder.providers.forEach(p -> {
             providers.add(new ConfigurationProviderState<V>(p));
         });
-        merger = builder.merger;
+        folder = builder.folder;
         REGISTRY.addListener(ConfigurationProvider.class, this, true);
     }
 
@@ -158,30 +170,16 @@ public class ConfigReloadContainer<V> implements ReloadingContainer<V>, Registra
 
     @Override
     public void reload() {
-        // Load the objects
-        List<V> loadedObjects = providers.stream()
-                .map(ConfigurationProviderState::load)
-                .collect(Collectors.toList());
-
-        if (loadedObjects.size() <= 0) {
-            // No object
+        if (providers.isEmpty()) {
             object = null;
-        } else if (loadedObjects.size() == 1) {
-            // A single object
-            object = loadedObjects.get(0);
+        } else if (providers.size() == 1) {
+            object = providers.iterator().next().load();
         } else {
-            // Many objects
-            boolean first = true;
-            V mergedObject = null;
-            for (V loadedObject : loadedObjects) {
-                if (first) {
-                    mergedObject = loadedObject;
-                    first = false;
-                    continue;
-                }
-                mergedObject = merger.apply(loadedObject, mergedObject);
-            }
-            object = mergedObject;
+            object = providers.stream()
+                    .map(ConfigurationProviderState::load)
+                    .filter(Objects::nonNull)
+                    .reduce(folder)
+                    .orElse(null);
         }
     }
 

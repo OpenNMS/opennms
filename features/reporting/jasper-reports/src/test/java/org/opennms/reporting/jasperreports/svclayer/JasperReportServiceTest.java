@@ -88,12 +88,6 @@ public class JasperReportServiceTest implements InitializingBean {
     }
 
     @Test
-    public void testValidate() {
-        HashMap<String, Object> reportParms = new HashMap<String, Object>();
-        Assert.assertTrue(m_reportService.validate(reportParms, REPORTID));
-    }
-
-    @Test
     public void testDescriptions() throws ReportException {
         ReportParameters reportParameters = m_reportService.getParameters(REPORTID);
         ReportStringParm stringParm1 = reportParameters.getStringParms().get(0);

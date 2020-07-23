@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>25.0.0-SNAPSHOT</version>
+  <version>27.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skipITs>true</skipITs>
@@ -11,12 +11,14 @@
     <updatePolicy>never</updatePolicy>
     <camelVersion>2.19.1</camelVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
-    <jackson2Version>2.9.8</jackson2Version>
+    <jackson2Version>2.10.0</jackson2Version>
     <jersey.version>2.28</jersey.version>
     <karafVersion>4.2.6</karafVersion>
     <selenium.version>3.141.59</selenium.version>
-    <testcontainers.version>1.11.3</testcontainers.version>
+    <testcontainers.version>1.12.5</testcontainers.version>
     <test.fork.count>1</test.fork.count>
+    <!-- Limit ITs to 30 minutes by default -->
+    <test.fork.timeout>1800</test.fork.timeout>
   </properties>
   <build>
     <testResources>
@@ -73,7 +75,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
+        <version>3.8.1</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -82,9 +84,14 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.2</version>
+      </plugin>
+      <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-resources-plugin</artifactId>
-         <version>2.7</version>
+         <version>3.1.0</version>
          <configuration>
            <encoding>UTF-8</encoding>
            <nonFilteredFileExtensions>
@@ -127,8 +134,12 @@
           -->
           <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
           <forkCount>${test.fork.count}</forkCount>
+          <!-- We don't reuse forks - any given test should not take longer than the given timeout -->
+          <forkedProcessTimeoutInSeconds>${test.fork.timeout}</forkedProcessTimeoutInSeconds>
           <!-- Spawn a new JVM for every test so things don't leak over from one to the next -->
           <reuseForks>false</reuseForks>
+          <!-- Configure heap and GC -->
+          <argLine>-Xms1g -Xmx1g -XX:+UseG1GC</argLine>
         </configuration>
         <executions>
           <execution>
@@ -327,6 +338,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.bmp</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.bmp.adapter</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.netflow.adapter</artifactId>
       <version>${project.version}</version>
@@ -464,6 +481,23 @@
       <groupId>org.opennms.features.flows</groupId>
       <artifactId>org.opennms.features.flows.elastic</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.jti</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.jti.adapter</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.graphite</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.graphite.adapter</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>${jackson2Version}</version>
     </dependency>
   </dependencies>
   <repositories>

@@ -2,7 +2,7 @@
 # Welcome to OpenNMS
 
 This short document give you hints how to contribute and help us to build THE network management platform developed under the open source model.
-Please read our [Welcome Community Guide](https://wiki.opennms.org/wiki/Community/Welcome_Guide) to find detailed information about how our project is governed and how we work and organize things.
+Please read our [Welcome Community Guide](https://opennms.discourse.group/t/community-welcome-guide/560) to find detailed information about how our project is governed and how we work and organize things.
 
 # Contributor Code of Conduct
 

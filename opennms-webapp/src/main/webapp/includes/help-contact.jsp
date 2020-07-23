@@ -43,12 +43,8 @@
                 <td style="border-top: none;">Use the &quot;web-based&quot; chat platform powered by Mattermost. The Discussion channel is a good starting point to reach users and developers. If you prefer IRC, you can join the "#opennms" channel on irc.freenode.net which is bridged to our Web Chat.</td>
             </tr>
             <tr>
-                <td style="border-top: none;"><a href="https://wiki.opennms.org/wiki/Mailing_lists" target="_blank" class="btn btn-secondary" role="button" style="width: 100%">Mailing Lists</a></td>
-                <td style="border-top: none;">Get into contact with OpenNMS users in our community through our topic-driven mailing lists. The opennms-discuss mailing list is a good way to ask questions about getting started with OpenNMS.</td>
-            </tr>
-            <tr>
-                <td style="border-top: none;"><a href="https://stackoverflow.com/search?q=opennms" target="_blank" class="btn btn-secondary" role="button" style="width: 100%">Questions &amp; Answers</a></td>
-                <td style="border-top: none;">Questions and Answers around using and developing OpenNMS can also be found on StackOverflow.</td>
+                <td style="border-top: none;"><a href="https://opennms.discourse.group" target="_blank" class="btn btn-secondary" role="button" style="width: 100%">Discourse</a></td>
+                <td style="border-top: none;">Community forum around using and developing OpenNMS powered by Discourse.</td>
             </tr>
         </table>
     </div>

@@ -5,16 +5,16 @@
 [[ga-collectd-packages]]
 === Collection Packages
 
-To define more complex collection configuration it is possible to group _Service_ configurations which provide performance metrics into _Collection Packages_.
-They allow to assign to _Nodes_ different _Service Configurations_ to differentiate collection of performance metrics and connection settings.
-To assign a _Collection Package_ to nodes the link:http://www.opennms.org/wiki/Filters[Rules/Filters] syntax can be used.
+To define more complex collection configuration it is possible to group _Service_ configurations that provide performance metrics into _Collection Packages_.
+This allows you to assign different _Service Configurations_ to _Nodes_ to differentiate performance metric collection and connection settings.
+To assign a _Collection Package_ to nodes, use the link:http://www.opennms.org/wiki/Filters[Rules/Filters] syntax.
 
-Multiple packages can be configured, and an interface can exist in more than one package.
-This gives great flexibility how the service levels will be determined for a given device.
+You can configure multiple packages, and an interface can exist in more than one package.
+This gives great flexibility in determining the service levels for a given device.
 The order how _Collection Packages_ are defined is important when _IP Interfaces_ match multiple _Collection Packages_ with the same _Service_ configuration.
 The last _Collection Package_ on the service will be applied.
-This can be used to define a less specific catch all filter for a default configuration.
-A more specific _Collection Package_ can be used to overwrite the default setting.
+This can be used to define a less-specific, catch-all filter for a default configuration.
+You can use a more specific _Collection Package_ to overwrite the default setting.
 
 .Collection Package Attributes
 [source, xml]
@@ -32,8 +32,8 @@ A more specific _Collection Package_ can be used to overwrite the default settin
 [[ga-collectd-packages-services]]
 ==== Service Configurations
 
-_Service Configurations_ define what _Collector_ to use and which performance metrics needs to be collected.
-_Service Configurations_ contains common _Service Attributes_ as well as _Collector_ specific parameters.
+_Service Configurations_ define what _Collector_ to use and which performance metrics to collect.
+_Service Configurations_ contain common _Service Attributes_ as well as _Collector_-specific parameters.
 
 .Service Configuration Attributes
 [source, xml]
@@ -49,7 +49,7 @@ _Service Configurations_ contains common _Service Attributes_ as well as _Collec
 <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/><7>
 ----
 <1> Service Configuration name which is mapped to a specific _Collector_ implementation.
-<2> The interval at which the service is to be collected. (in milliseconds).
+<2> The interval at which to collect the service. (in milliseconds).
 <3> Marker to say if service is user defined, used specifically for UI purposes.
 <4> Service is collected only if on.
 <5> Assign performance data collection metric groups named `default`.
@@ -61,11 +61,13 @@ _Service Configurations_ contains common _Service Attributes_ as well as _Collec
 image::performance-management/02_collectd-configuration-xml.png[]
 
 [[ga-collectd-packages-services-meta-data]]
-===== Meta-Data-DSL
-Each parameter value can leverage dynamic configuration by using the link:#ga-meta-data-dsl[Meta-Data-DSL].
+===== Metadata DSL
+The link:#ga-meta-data-dsl[Metadata DSL](domain specific language) allows you to use dynamic configuration in parameter values to interpolate metadata into the parameter. 
 
-During evaluation of an expression the following scopes are available:
+The syntax allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
 
-* Node meta-data
-* Interface meta-data
-* Service meta-data
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata
+* Service metadata

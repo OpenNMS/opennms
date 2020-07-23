@@ -29,10 +29,26 @@
 package org.opennms.netmgt.flows.classification.persistence.api;
 
 import java.util.Comparator;
+import java.util.Objects;
 
-public class RulePositionComparator implements Comparator<Rule> {
+/**
+ * Compares first the group position and the the rules position.
+ */
+public class RulePositionComparator implements Comparator<RuleDefinition> {
     @Override
-    public int compare(Rule o1, Rule o2) {
-        return Integer.compare(o1.getPosition(), o2.getPosition());
+    public int compare(RuleDefinition r1, RuleDefinition r2) {
+        Objects.requireNonNull(r1);
+        Objects.requireNonNull(r2);
+
+        // Sort by group position (lowest position first)
+        int groupPosition1 = r1.getGroupPosition();
+        int groupPosition2 = r2.getGroupPosition();
+        int result = Integer.compare(groupPosition1, groupPosition2);
+
+        // If group position is identical, sort by rule position (lowest position first)
+        if (result == 0) {
+            return Integer.compare(r1.getPosition(), r2.getPosition());
+        }
+        return result;
     }
 }

@@ -28,15 +28,17 @@
 
 package org.opennms.features.distributed.kvstore.api;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * An implementation of {@link KeyValueStore} to extend for implementations that do not otherwise have access to
@@ -55,19 +57,14 @@ public abstract class AbstractAsyncKeyValueStore<T> extends AbstractKeyValueStor
     }
 
     protected AbstractAsyncKeyValueStore() {
-        ThreadFactory threadFactory = r -> {
-            Thread t = new Thread(r, "kvstore-async-thread");
-            t.setDaemon(true);
-            return t;
-        };
         // A reasonable default executor based on available processors that degrades to synchronous processing when full
-        executor = new ThreadPoolExecutor(1,
+        this(new ThreadPoolExecutor(1,
                 Runtime.getRuntime().availableProcessors() * 10,
                 60,
                 TimeUnit.SECONDS,
                 new SynchronousQueue<>(),
-                threadFactory,
-                new ThreadPoolExecutor.CallerRunsPolicy());
+                new ThreadFactoryBuilder().setNameFormat("kvstore-async-thread-%d").build(),
+                new ThreadPoolExecutor.CallerRunsPolicy()));
     }
 
     @Override
@@ -102,5 +99,33 @@ public abstract class AbstractAsyncKeyValueStore<T> extends AbstractKeyValueStor
         Objects.requireNonNull(context);
 
         return CompletableFuture.supplyAsync(() -> getLastUpdated(key, context), executor);
+    }
+
+    @Override
+    public CompletableFuture<Map<String, T>> enumerateContextAsync(String context) {
+        Objects.requireNonNull(context);
+
+        return CompletableFuture.supplyAsync(() -> enumerateContext(context), executor);
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteAsync(String key, String context) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+
+        return CompletableFuture.supplyAsync(() -> {
+            delete(key, context);
+            return null;
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<Void> truncateContextAsync(String context) {
+        Objects.requireNonNull(context);
+
+        return CompletableFuture.supplyAsync(() -> {
+            truncateContext(context);
+            return null;
+        }, executor);
     }
 }

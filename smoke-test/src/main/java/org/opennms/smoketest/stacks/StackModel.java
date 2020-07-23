@@ -52,7 +52,8 @@ public class StackModel {
     private final IpcStrategy ipcStrategy;
     private final TimeSeriesStrategy timeSeriesStrategy;
     private final BlobStoreStrategy blobStoreStrategy;
-    private final JSONStoreStrategy jsonStoreStrategy;
+    private final JsonStoreStrategy jsonStoreStrategy;
+    private final KafkaCompressionStrategy kafkaCompressionStrategy;
 
     private StackModel(Builder builder) {
         // Profiles
@@ -69,6 +70,7 @@ public class StackModel {
         timeSeriesStrategy = builder.timeSeriesStrategy;
         blobStoreStrategy = builder.blobStoreStrategy;
         jsonStoreStrategy = builder.jsonStoreStrategy;
+        kafkaCompressionStrategy = builder.kafkaCompressionStrategy;
     }
 
     public static Builder newBuilder() {
@@ -86,7 +88,8 @@ public class StackModel {
         private TimeSeriesStrategy timeSeriesStrategy = TimeSeriesStrategy.RRD;
         
         private BlobStoreStrategy blobStoreStrategy = BlobStoreStrategy.NOOP;
-        private JSONStoreStrategy jsonStoreStrategy;
+        private JsonStoreStrategy jsonStoreStrategy;
+        private KafkaCompressionStrategy kafkaCompressionStrategy = KafkaCompressionStrategy.NONE;
 
         /**
          * Profile for the OpenNMS container.
@@ -178,6 +181,17 @@ public class StackModel {
         }
 
         /**
+         * Type of compression used with Kafka messages.
+         *
+         * @param kafkaCompressionStrategy GZIP, SNAPPY, LZ4, ZSTD, or NONE
+         * @return this builder
+         */
+        public Builder withKafkaCompressionStrategy(KafkaCompressionStrategy kafkaCompressionStrategy) {
+            this.kafkaCompressionStrategy = Objects.requireNonNull(kafkaCompressionStrategy);
+            return this;
+        }
+
+        /**
          * Enable the processing of telemetry & flows.
          *
          * This will automatically enable Elasticsearch and Newts if Sentinel is being used.
@@ -204,7 +218,7 @@ public class StackModel {
          *
          * @return this builder
          */
-        public Builder withJSONStoreStrategy(JSONStoreStrategy jsonStoreStrategy) {
+        public Builder withJsonStoreStrategy(JsonStoreStrategy jsonStoreStrategy) {
             this.jsonStoreStrategy = jsonStoreStrategy;
             return this;
         }
@@ -260,7 +274,9 @@ public class StackModel {
         return blobStoreStrategy;
     }
 
-    public JSONStoreStrategy getJsonStoreStrategy() {
+    public JsonStoreStrategy getJsonStoreStrategy() {
         return jsonStoreStrategy;
     }
+
+    public KafkaCompressionStrategy getKafkaCompressionStrategy() { return kafkaCompressionStrategy; }
 }

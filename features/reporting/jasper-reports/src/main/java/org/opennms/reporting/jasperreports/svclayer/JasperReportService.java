@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,6 +55,7 @@ import org.opennms.api.reporting.parameter.ReportFloatParm;
 import org.opennms.api.reporting.parameter.ReportIntParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
 import org.opennms.api.reporting.parameter.ReportStringParm;
+import org.opennms.api.reporting.parameter.ReportTimezoneParm;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.DBUtils;
@@ -62,6 +64,8 @@ import org.opennms.reporting.jasperreports.compiler.CustomJRJdtCompiler;
 import org.opennms.reporting.jasperreports.filter.ParameterFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -159,6 +163,9 @@ public class JasperReportService implements ReportService {
                     final List<ReportDateParm> dateParms = new ArrayList<>();
                     reportParameters.setDateParms(dateParms);
 
+                    final List<ReportTimezoneParm> timezoneParms = new ArrayList<>();
+                    reportParameters.setTimezoneParms(timezoneParms);
+
                     for (final JRParameter reportParm : reportParms) {
                         if (apply(parameterFilters, reportParm)) {
                             if (reportParm.getValueClassName().equals("java.lang.String")) {
@@ -200,6 +207,27 @@ public class JasperReportService implements ReportService {
                                 continue;
                             }
 
+                            if (reportParm.getValueClassName().equals("java.time.ZoneId")) {
+                                LOG.debug("adding a ZoneId parm name {}", reportParm.getName());
+                                final ReportTimezoneParm timezoneParm = new ReportTimezoneParm();
+                                timezoneParm.setName(reportParm.getName());
+                                if (reportParm.getDescription() != null) {
+                                    timezoneParm.setDisplayName(reportParm.getDescription());
+                                } else {
+                                    timezoneParm.setDisplayName(reportParm.getName());
+                                }
+                                if (defaultValues.containsKey(reportParm.getName()) && (defaultValues.get(reportParm.getName()) != null)) {
+                                    final Object timezoneValue = defaultValues.get(reportParm.getName());
+                                    if (timezoneValue instanceof ZoneId) {
+                                        timezoneParm.setValue((ZoneId) timezoneValue);
+                                    } else if (timezoneValue instanceof String && !Strings.isNullOrEmpty((String) timezoneValue)) {
+                                        timezoneParm.setValue((String) timezoneValue);
+                                    }
+                                }
+                                timezoneParms.add(timezoneParm);
+                                continue;
+                            }
+
                             if (reportParm.getValueClassName().equals("java.lang.Float")) {
                                 LOG.debug("adding a Float parm name {}", reportParm.getName());
                                 final ReportFloatParm floatParm = new ReportFloatParm();
@@ -236,40 +264,11 @@ public class JasperReportService implements ReportService {
                                 continue;
                             }
 
-                            if (reportParm.getValueClassName().equals("java.util.Date")) {
-                                LOG.debug("adding a java.util.Date parm name {}", reportParm.getName());
-                                final ReportDateParm dateParm = new ReportDateParm();
-                                dateParm.setUseAbsoluteDate(false);
-                                if (reportParm.getDescription() != null) {
-                                    dateParm.setDisplayName(reportParm.getDescription());
-                                } else {
-                                    dateParm.setDisplayName(reportParm.getName());
-                                }
-                                dateParm.setName(reportParm.getName());
-                                dateParm.setCount(Integer.valueOf(1));
-                                dateParm.setInterval("day");
-                                dateParm.setHours(0);
-                                dateParm.setMinutes(0);
-                                if (defaultValues.containsKey(reportParm.getName()) && (defaultValues.get(reportParm.getName()) != null)) {
-                                    dateParm.setDate((Date) defaultValues.get(reportParm.getName()));
-                                    Calendar cal = Calendar.getInstance();
-                                    cal.setTime(dateParm.getDate());
-                                    dateParm.setMinutes(cal.get(Calendar.MINUTE));
-                                    dateParm.setHours(cal.get(Calendar.HOUR_OF_DAY));
-                                } else {
-                                    final Calendar cal = Calendar.getInstance();
-                                    cal.set(Calendar.HOUR_OF_DAY, 0);
-                                    cal.set(Calendar.MINUTE, 0);
-                                    cal.set(Calendar.SECOND, 0);
-                                    cal.set(Calendar.MILLISECOND, 0);
-                                    dateParm.setDate(cal.getTime());
-                                }
-                                dateParms.add(dateParm);
-                                continue;
-                            }
-
-                            if (reportParm.getValueClassName().equals("java.sql.Date") || reportParm.getValueClassName().equals("java.sql.Timestamp")) {
-                                LOG.debug("adding a java.sql.Date or Timestamp parm name {}", reportParm.getName());
+                            if (reportParm.getValueClassName().equals("java.util.Date")
+                                || reportParm.getValueClassName().equals("java.sql.Date")
+                                || reportParm.getValueClassName().equals("java.sql.Timestamp")
+                            ) {
+                                LOG.debug("adding a {} parm name {}", reportParm.getValueClassName(), reportParm.getName());
                                 final ReportDateParm dateParm = new ReportDateParm();
                                 dateParm.setUseAbsoluteDate(false);
                                 if (reportParm.getDescription() != null) {
@@ -385,12 +384,12 @@ public class JasperReportService implements ReportService {
                             try {
                                 final Connection connection = DataSourceFactory.getInstance().getConnection();
                                 db.watch(connection);
-                                JasperFillManager.fillReportToFile(jasperReport, outputFileName, reportParms, connection);
+                                JasperFillManager.fillReportToFile(jasperReport, outputFileName, jrReportParms, connection);
                             } finally {
                                 db.cleanUp();
                             }
                         } else if (m_globalReportRepository.getEngine(reportId).equals("null")) {
-                            JasperFillManager.fillReportToFile(jasperReport, outputFileName, reportParms, new JREmptyDataSource());
+                            JasperFillManager.fillReportToFile(jasperReport, outputFileName, jrReportParms, new JREmptyDataSource());
                         } else {
                             throw new ReportException("No suitable datasource configured for report " + reportId);
                         }
@@ -556,21 +555,17 @@ public class JasperReportService implements ReportService {
                     jrReportParms.put(parmName, new java.sql.Timestamp(date.getTime()));
                     continue;
                 }
+                if (reportParm.getValueClassName().equals("java.time.ZoneId")) {
+                    final ZoneId zoneId = ZoneId.of((String) onmsReportParms.get(parmName));
+                    jrReportParms.put(parmName, zoneId);
+                    continue;
+                }
                 throw new ReportException("Unsupported report parameter type " + reportParm.getValueClassName());
             }
         }
 
         return jrReportParms;
 
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean validate(final Map<String, Object> reportParms, final String reportId) {
-        // returns true until we can take parameters
-        return true;
     }
 
     public void setGlobalReportRepository(final GlobalReportRepository globalReportRepository) {

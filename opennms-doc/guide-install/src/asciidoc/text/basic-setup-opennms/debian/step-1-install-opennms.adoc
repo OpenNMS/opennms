@@ -45,8 +45,8 @@ With the successful installed packages the _{opennms-product-name}_ is installed
    └── system
 ----
 
-TIP: We recommend disabling the {opennms-product-name} apt repository after installation to prevent upgrades while it is running.
-     _{opennms-product-name}_ requires some manual steps upon upgrade to make sure the database and configuration are consistent in the new version, and on systems with many nodes or lots of events, this can take hours.
+TIP: We recommend disabling the {opennms-product-name} repository after installation to prevent unwanted upgrades while it is running.
+     _{opennms-product-name}_ requires some manual steps upon upgrade configuration files or migrate database schemas to a new version.
      For this reason, it is recommended to exclude the {opennms-product-name} packages from update except when you are planning on performing an upgrade.
 
 [source, shell]

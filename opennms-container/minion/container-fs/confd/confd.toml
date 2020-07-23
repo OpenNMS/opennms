@@ -1,0 +1,4 @@
+confdir = "/opt/minion/confd"
+backend = "file"
+file = [ "/opt/minion/minion-config.yaml" ]
+log-level = "debug"

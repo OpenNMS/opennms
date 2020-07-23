@@ -28,16 +28,16 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.AsciiString;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_mpls_FTN {
 //    string mplsFTNDescr<>;
@@ -48,7 +48,7 @@ public class ExtendedMplsFtn implements FlowData {
     public final AsciiString mplsFTNDescr;
     public final long mplsFTNMask;
 
-    public ExtendedMplsFtn(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedMplsFtn(final ByteBuf buffer) throws InvalidPacketException {
         this.mplsFTNDescr = new AsciiString(buffer);
         this.mplsFTNMask = BufferUtils.uint32(buffer);
     }

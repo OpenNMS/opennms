@@ -48,13 +48,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
-import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.discovery.DiscoveryTaskExecutor;
 import org.opennms.web.api.Util;
 import org.slf4j.Logger;
@@ -114,9 +114,10 @@ public class DiscoveryScanServlet extends HttpServlet {
         		newSpecific.setForeignSource(foreignSource);
         	}
 
-        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
-        		newSpecific.setLocation(location);
-        	}
+            if (!LocationUtils.doesLocationsMatch(location,
+                    config.getLocation().orElse(LocationUtils.DEFAULT_LOCATION_NAME))) {
+                newSpecific.setLocation(location);
+            }
 
         	config.addSpecific(newSpecific);
         }
@@ -158,7 +159,8 @@ public class DiscoveryScanServlet extends HttpServlet {
         		newIR.setForeignSource(foreignSource);
         	}
 
-        	if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
+            if (!LocationUtils.doesLocationsMatch(location,
+                    config.getLocation().orElse(LocationUtils.DEFAULT_LOCATION_NAME))) {
         		newIR.setLocation(location);
         	}
 
@@ -199,7 +201,8 @@ public class DiscoveryScanServlet extends HttpServlet {
                 iu.setForeignSource(foreignSource);
             }
 
-            if(location!=null && !"".equals(location.trim()) && !location.equals(config.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))){
+            if (!LocationUtils.doesLocationsMatch(location,
+                    config.getLocation().orElse(LocationUtils.DEFAULT_LOCATION_NAME))) {
                 iu.setLocation(location);
             }
 
@@ -222,10 +225,16 @@ public class DiscoveryScanServlet extends HttpServlet {
         	LOG.debug("Adding Exclude Range");
         	String ipAddrBegin = request.getParameter("erbegin");
         	String ipAddrEnd = request.getParameter("erend");
+            String location = request.getParameter("erlocation");
+
         	ExcludeRange newER = new ExcludeRange();
         	newER.setBegin(ipAddrBegin);
         	newER.setEnd(ipAddrEnd);
-        	config.addExcludeRange(newER);
+            if (!LocationUtils.doesLocationsMatch(location,
+                    config.getLocation().orElse(LocationUtils.DEFAULT_LOCATION_NAME))) {
+                newER.setLocation(location);
+            }
+            config.addExcludeRange(newER);
         }
 
         //remove 'Exclude Range' from configuration

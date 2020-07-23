@@ -41,13 +41,15 @@ The requisition schema (XSD) can be found at the following location. http://xmln
 
 Auto discovery is the term used by {opennms-product-name} to characterize the automatic provisioning of nodes entities.
 Currently, {opennms-product-name} uses an ICMP ping sweep to find IP address on the network.
-For the IPs that respond and that are not currently in the DB, {opennms-product-name} generates a new suspect event.
+link:#ga-provisioning-auto-discovery-detectors][Auto-discovery-with-detectors] will allow defining specific detectors for auto discovery to succeed.
+For the IPs that succeed and that are not currently in the DB, {opennms-product-name} generates a new suspect event.
 When this event is received by Provisiond, it creates a node and it begins a node scan based on the default foreign source definition.
+
 
 ===== Directed Discovery
 
 Provisiond takes over for the Model Importer found in version 1.6 which implemented a unique, first of its kind, controlled mechanism for specifying managed entities directly into {opennms-product-name} from one or more data sources.
-These data sources often were in the form of an in-housed developed inventory or stand-alone provisioning system or even a set of element management systems.
+These data sources often were in the form of an in-house developed inventory or stand-alone provisioning system or even a set of element management systems.
 Using this mechanism, {opennms-product-name} is directed to add, update, or delete a node entity exactly as defined by the external source.
 No discovery process is used for finding more interfaces or services.
 
@@ -55,8 +57,8 @@ No discovery process is used for finding more interfaces or services.
 
 Directed discovery is enhanced with the capability to scan nodes that have been directed nodes for entities (interfaces.
 
-===== Policy Based Discovery
+===== Policy-Based Discovery
 
-The phrase, Policy based Directed Discovery, is a term that represents the latest step in {opennms-product-name} provisioning evolution and best describes the new provisioning architecture now in {opennms-product-name} for maintaining its inventory of managed entities.
+The phrase policy-based directed discovery, is a term that represents the latest step in {opennms-product-name} provisioning evolution and best describes the new provisioning architecture now in {opennms-product-name} for maintaining its inventory of managed entities.
 This term describes the control that is given over the Provisioning system to {opennms-product-name} users for managing the behavior of the NMS with respect to the new entities that are being discovered.
 Current behaviors include persistence, data collection, service monitoring, and categorization policies.

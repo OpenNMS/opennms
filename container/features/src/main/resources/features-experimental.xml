@@ -112,7 +112,6 @@
       <feature>jrobin</feature>
       <feature>json-lib</feature>
       <feature>quartz</feature>
-      <feature>spring-webflow</feature>
 
       <feature>opennms-config</feature>
       <feature>opennms-dao</feature>

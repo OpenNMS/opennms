@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.persist.policies;
 
+import java.util.Map;
+
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
@@ -51,7 +53,7 @@ public class NodeCategorySettingPolicy extends BasePolicy<OnmsNode> implements N
 
     /** {@inheritDoc} */
     @Override
-    public OnmsNode act(final OnmsNode node) {
+    public OnmsNode act(final OnmsNode node, Map<String, Object> attributes) {
         if (getCategory() == null) {
             return node;
         }

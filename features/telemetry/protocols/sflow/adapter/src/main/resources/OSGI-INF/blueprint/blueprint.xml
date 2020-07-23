@@ -17,9 +17,7 @@
 	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
 	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
 	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" availability="optional" />
-	<reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" availability="optional" >
-	    <reference-listener ref="sflowTelemetryFactory" bind-method="bind" unbind-method="unbind" />
-	</reference>
+	<reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" />
 
 	<!-- SFlow Factory and Adapter -->
 	<bean id="sflowFactory" class="org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapterFactory">
@@ -41,6 +39,7 @@
 		<property name="transactionTemplate" ref="transactionTemplate" />
 		<property name="filterDao" ref="filterDao" />
 		<property name="persisterFactory" ref="persisterFactory" />
+		<property name="thresholdingService" ref="thresholdingService" />
 	</bean>
 	<service ref="sflowTelemetryFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>

@@ -28,12 +28,16 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
 import org.opennms.core.wsman.WSManEndpoint;
@@ -46,6 +50,7 @@ import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
+import org.opennms.netmgt.provision.detector.wsman.WsmanEndpointUtils;
 import org.w3c.dom.Node;
 
 import com.google.common.collect.ListMultimap;
@@ -61,6 +66,8 @@ import com.google.common.collect.Maps;
  */
 public class WsManMonitor extends ParameterSubstitutingMonitor {
 
+    private static final String WSMAN_RETRY_KEY = "retry";
+
     public static final String RESOURCE_URI_PARAM = "resource-uri";
 
     public static final String RULE_PARAM = "rule";
@@ -70,6 +77,22 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
     private WSManClientFactory m_factory = new CXFWSManClientFactory();
 
     private WSManConfigDao m_wsManConfigDao;
+
+    @Override
+    public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {
+        final Map<String, Object> runtimeAttributes = super.getRuntimeAttributes(svc, parameters);
+
+        if (m_wsManConfigDao == null) {
+            m_wsManConfigDao = BeanUtils.getBean("daoContext", "wsManConfigDao", WSManConfigDao.class);
+        }
+
+        final WsmanAgentConfig config = m_wsManConfigDao.getAgentConfig(svc.getAddress());
+        final WSManEndpoint endpoint = WSManConfigDao.getEndpoint(config, svc.getAddress());
+
+        runtimeAttributes.put(WSMAN_RETRY_KEY, config.getRetry());
+        runtimeAttributes.putAll(WsmanEndpointUtils.toMap(endpoint));
+        return runtimeAttributes;
+    }
 
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
@@ -96,14 +119,17 @@ public class WsManMonitor extends ParameterSubstitutingMonitor {
             }
         }
 
-        // Setup the WS-Man Client
-        if (m_wsManConfigDao == null) {
-            m_wsManConfigDao = BeanUtils.getBean("daoContext", "wsManConfigDao", WSManConfigDao.class);
+        final WSManEndpoint endpoint;
+        try {
+            final Map<String, String> filteredMap = parameters.entrySet().stream()
+                    .filter(e -> e.getValue() != null)
+                    .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().toString()));
+            endpoint = WsmanEndpointUtils.fromMap(filteredMap);
+        } catch (MalformedURLException e) {
+            return PollStatus.down(e.getMessage());
         }
-        final WsmanAgentConfig config = m_wsManConfigDao.getAgentConfig(svc.getAddress());
-        final WSManEndpoint endpoint = WSManConfigDao.getEndpoint(config, svc.getAddress());
         final WSManClient client = m_factory.getClient(endpoint);
-        final RetryNTimesLoop retryLoop = new RetryNTimesLoop(config.getRetry() != null ? config.getRetry() : 0);
+        final RetryNTimesLoop retryLoop = new RetryNTimesLoop(ParameterMap.getKeyedInteger(parameters, WSMAN_RETRY_KEY, 0));
 
         // Issue a GET
         Node node = null;

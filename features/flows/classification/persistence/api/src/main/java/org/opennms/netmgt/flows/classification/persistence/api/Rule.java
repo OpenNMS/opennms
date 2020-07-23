@@ -51,7 +51,7 @@ import com.google.common.base.MoreObjects;
 public class Rule implements RuleDefinition {
 
     public static final int MIN_PORT_VALUE = 0;
-    public static final int MAX_PORT_VALUE = 65536;
+    public static final int MAX_PORT_VALUE = 65535;
 
     @Id
     @SequenceGenerator(name="ruleSequence", sequenceName="ruleNxtId")
@@ -106,8 +106,8 @@ public class Rule implements RuleDefinition {
 
     /**
      * The position of the rule within it's group.
-     * Global order must consider group.priority as well.
-     * See {@link RulePriorityComparator}.
+     * Global order must consider group.position as well.
+     * See {@link RulePositionComparator}.
      */
     @Column(name="position", nullable = false)
     private int position;
@@ -221,8 +221,8 @@ public class Rule implements RuleDefinition {
     }
 
     @Override
-    public int getGroupPriority() {
-        return group == null ? 0 : group.getPriority();
+    public int getGroupPosition() {
+        return group == null ? 0 : group.getPosition();
     }
 
     public void setGroup(Group group) {

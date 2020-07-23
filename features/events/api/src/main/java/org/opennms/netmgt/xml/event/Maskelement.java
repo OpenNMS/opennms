@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.netmgt.xml.event;
   //---------------------------------/
  //- Imported classes and packages -/
 //---------------------------------/
+
+import org.opennms.netmgt.events.api.model.IMaskElement;
 
 import java.io.Serializable;
 
@@ -83,6 +85,16 @@ public class Maskelement implements Serializable {
         this._mevalueList = new java.util.ArrayList<>();
     }
 
+    public static Maskelement copyFrom(IMaskElement copy) {
+        if (copy == null) {
+            return null;
+        }
+
+        Maskelement maskelement = new Maskelement();
+        maskelement.setMename(copy.getMename());
+        maskelement.getMevalueCollection().addAll(copy.getMevalueCollection());
+        return maskelement;
+    }
 
       //-----------/
      //- Methods -/

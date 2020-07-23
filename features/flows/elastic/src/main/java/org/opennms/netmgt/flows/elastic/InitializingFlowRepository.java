@@ -28,12 +28,17 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.opennms.features.jest.client.ConnectionPoolShutdownException;
+import org.opennms.features.jest.client.template.DefaultTemplateInitializer;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
@@ -42,8 +47,8 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
+import org.opennms.netmgt.flows.api.UnrecoverableFlowException;
 import org.opennms.netmgt.flows.filter.api.Filter;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.osgi.framework.BundleContext;
 
 import com.google.common.collect.Table;
@@ -56,26 +61,33 @@ import io.searchbox.client.JestClient;
  */
 public class InitializingFlowRepository implements FlowRepository {
 
-    private final ElasticFlowRepositoryInitializer initializer;
+    private final List<DefaultTemplateInitializer> initializers;
     private final FlowRepository delegate;
+    private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    public InitializingFlowRepository(final BundleContext bundleContext, final FlowRepository delegate, final JestClient client, final IndexSettings indexSettings) {
-        this(delegate, new ElasticFlowRepositoryInitializer(bundleContext, client, indexSettings));
+    public InitializingFlowRepository(final BundleContext bundleContext, final FlowRepository delegate, final JestClient client,
+                                      final IndexSettings rawIndexSettings,
+                                      final IndexSettings aggIndexSettings) {
+        this(delegate, new RawIndexInitializer(bundleContext, client, rawIndexSettings), new AggregateIndexInitializer(bundleContext, client, aggIndexSettings));
     }
 
     protected InitializingFlowRepository(final FlowRepository delegate, final JestClient client) {
-        this(delegate, new ElasticFlowRepositoryInitializer(client));
+        this(delegate, new RawIndexInitializer(client), new AggregateIndexInitializer(client));
     }
 
-    private InitializingFlowRepository(final FlowRepository delegate, final ElasticFlowRepositoryInitializer initializer) {
+    private InitializingFlowRepository(final FlowRepository delegate, final DefaultTemplateInitializer... initializers) {
         this.delegate = Objects.requireNonNull(delegate);
-        this.initializer = Objects.requireNonNull(initializer);
+        this.initializers = Arrays.asList(initializers);
     }
 
     @Override
     public void persist(Collection<Flow> flows, FlowSource source) throws FlowException {
-        ensureInitialized();
-        delegate.persist(flows, source);
+        try {
+            ensureInitialized();
+            delegate.persist(flows, source);
+        } catch (ConnectionPoolShutdownException ex) {
+            throw new UnrecoverableFlowException(ex.getMessage(), ex);
+        }
     }
 
     @Override
@@ -171,9 +183,15 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     private void ensureInitialized() {
-        if (!initializer.isInitialized()) {
-            initializer.initialize();
+        if (initialized.get()) {
+            return;
         }
+        for (DefaultTemplateInitializer initializer : initializers) {
+            if (!initializer.isInitialized()) {
+                initializer.initialize();
+            }
+        }
+        initialized.set(true);
     }
 
 }

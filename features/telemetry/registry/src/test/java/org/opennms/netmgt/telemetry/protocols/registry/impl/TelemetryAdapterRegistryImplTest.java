@@ -56,8 +56,6 @@ public class TelemetryAdapterRegistryImplTest {
 
     // Dummy Adapter implementation
     private static class DummyAdapter implements Adapter {
-        @Override
-        public void setConfig(AdapterDefinition adapterConfig) {}
         @Override public void handleMessageLog(TelemetryMessageLog messageLog) { }
         @Override public void destroy() { }
     }

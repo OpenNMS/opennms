@@ -28,12 +28,11 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonBinary;
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
@@ -43,6 +42,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers.Inet4He
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers.Inet6Header;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct sampled_header {
 //    header_protocol protocol;       /* Format of sampled header */
@@ -95,7 +96,7 @@ public class SampledHeader implements FlowData {
 
     public final byte[] rawHeader;
 
-    public SampledHeader(final ByteBuffer buffer) throws InvalidPacketException {
+    public SampledHeader(final ByteBuf buffer) throws InvalidPacketException {
         this.protocol = HeaderProtocol.from(buffer);
         this.frame_length = BufferUtils.uint32(buffer);
         this.stripped = BufferUtils.uint32(buffer);

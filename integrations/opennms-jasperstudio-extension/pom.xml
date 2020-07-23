@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-integrations</artifactId>
-        <version>25.0.0-SNAPSHOT</version>
+        <version>27.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>opennms-jasperstudio-extension</artifactId>
     <name>OpenNMS Integration for Jaspersoft Studio</name>
@@ -20,6 +20,9 @@
                     <descriptors>
                         <descriptor>src/assembly/assembly.xml</descriptor>
                     </descriptors>
+                    <overrideUid>0</overrideUid>
+                    <overrideGid>0</overrideGid>
+                    <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
                 <executions>
                     <execution>
@@ -33,33 +36,52 @@
         </plugins>
     </build>
     <!--
-    We excluded a bunch of dependencies because we do not need it while running within OpenNMS.
-    However when running in Jaspersoft Studio we need additional dependencies.
-    We here set them to be included in the generated "-jar-with-dependencies.jar"-file.
+      Transitive dependencies are excluded by default in the fat .jar. Which means that
+      for dependencies to be available in the generated -jar-with-dependencies.jar" file
+      they must be explicitely listed here.
+
+      This .jar is expected to contain all the dependencies required for JasperStudio to
+      exercise the Jasper extensions include the Measurement API and Grafana Renderer integrations.
     -->
     <dependencies>
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>jasper-extensions</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.opennms.dependencies</groupId>
-                    <artifactId>jasper-dependencies</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.opennms</groupId>
-                    <artifactId>opennms-util</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.opennms</groupId>
-                    <artifactId>analytics-filters</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.soa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.sysprops</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.endpoints.grafana</groupId>
+            <artifactId>org.opennms.features.endpoints.grafana.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.endpoints.grafana</groupId>
+            <artifactId>org.opennms.features.endpoints.grafana.client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gsonVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttpVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okio</groupId>
+            <artifactId>okio</artifactId>
+            <version>${okioVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>

@@ -47,7 +47,7 @@ public enum Status {
     // Timeout: Health check timed out.
     Timeout,
 
-    // Failure: One or more errors occured while running the healthCheck.perform() method
+    // Failure: One or more errors occurred while running the healthCheck.perform() method
     Failure
     ;
 }

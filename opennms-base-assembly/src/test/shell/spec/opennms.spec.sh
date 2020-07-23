@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# shellcheck disable=SC1091
-. ../init.sh
+# shellcheck disable=SC1090,SC1091
+. "$SHUNITDIR/init.sh"
 
 oneTimeSetUp() {
 	MYUSER="$(id -u -n)"
@@ -13,20 +13,26 @@ oneTimeSetUp() {
 }
 
 setUp() {
-	cp "$PROJECTDIR/src/main/resources/bin/_lib.sh" "$INSTPREFIX/bin/"
-	for FILE in opennms runjava find-java.sh; do
-		sed -e "s,\${install.dir},${INSTPREFIX},g" \
-			-e "s,\${install.pid.file},${INSTPREFIX}/run/opennms.pid,g" \
-			-e "s,\${install.package.description},OpenNMS Shell Test,g" \
-			-e "s,\${install.postgresql.service},postgresql,g" \
-			-e "s,\${install.logs.dir},${INSTPREFIX}/log,g" \
-			-e "s,\${install.init.dir},${INSTPREFIX}/etc/init.d,g" \
-			-e "s,^RUNAS=.*,RUNAS=$MYUSER,g" \
-			-e "s,^OPENNMS_UNIT_TEST=.*,OPENNMS_UNIT_TEST=1,g" \
-			"$PROJECTDIR/src/main/filtered/bin/$FILE" > "$INSTPREFIX/bin/$FILE"
-		chmod 755 "$INSTPREFIX/bin/$FILE"
-		export OPENNMS_UNIT_TEST_STATUS=0
+	cp "$PROJECTDIR/target/classes/bin/_lib.sh" "$INSTPREFIX/bin/"
+	for DIR in "$PROJECTDIR/target/classes/bin" "$PROJECTDIR/src/main/filtered/bin" "$PROJECTDIR/target/cli/bin"; do
+		for FILE in opennms runjava find-java.sh; do
+			if [ -e "$DIR/$FILE" ]; then
+				sed -e "s,\${install.dir},${INSTPREFIX},g" \
+					-e "s,\${install.pid.file},${INSTPREFIX}/run/opennms.pid,g" \
+					-e "s,\${install.package.description},OpenNMS Shell Test,g" \
+					-e "s,\${install.postgresql.service},postgresql,g" \
+					-e "s,\${install.logs.dir},${INSTPREFIX}/log,g" \
+					-e "s,\${install.init.dir},${INSTPREFIX}/etc/init.d,g" \
+					-e "s,^RUNAS=.*,RUNAS=$MYUSER,g" \
+					-e "s,^OPENNMS_UNIT_TEST=.*,OPENNMS_UNIT_TEST=1,g" \
+					"$DIR/$FILE" > "$INSTPREFIX/bin/$FILE"
+				chmod 755 "$INSTPREFIX/bin/$FILE"
+			fi
+		done
 	done
+
+	export OPENNMS_HOME="$INSTPREFIX"
+	export OPENNMS_UNIT_TEST_STATUS=0
 
 	"$INSTPREFIX/bin/runjava" "-q" "-s"
 	assertEquals 'runjava should have succeeded' 0 "$?"
@@ -190,4 +196,5 @@ testDpkgDistFailure() {
 	assertEquals '"opennms start" should have failed' 1 "$?"
 }
 
-. ../shunit2
+# shellcheck disable=SC1090,SC1091
+. "$SHUNITDIR/shunit2"

@@ -28,27 +28,28 @@
 
 package org.opennms.features.topology.plugins.topo.graphml.status;
 
-import org.opennms.features.topology.api.info.MeasurementsWrapper;
-import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.EdgeProvider;
-import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.EdgeStatusProvider;
-import org.opennms.features.topology.api.topo.SimpleConnector;
-import org.opennms.features.topology.api.topo.Status;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLEdge;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
-import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
-import org.opennms.features.topology.plugins.topo.graphml.internal.Scripting;
-import org.opennms.netmgt.model.OnmsNode;
-
-import javax.script.ScriptEngineManager;
-import javax.script.SimpleBindings;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.script.ScriptEngineManager;
+import javax.script.SimpleBindings;
+
+import org.opennms.features.topology.api.info.MeasurementsWrapper;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
+import org.opennms.features.topology.api.topo.simple.SimpleConnector;
+import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.api.topo.BackendGraph;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLEdge;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
+import org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLServiceAccessor;
+import org.opennms.features.topology.plugins.topo.graphml.internal.Scripting;
+import org.opennms.netmgt.model.OnmsNode;
 
 public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
 
@@ -80,7 +81,7 @@ public class GraphMLEdgeStatusProvider implements EdgeStatusProvider {
     }
 
     @Override
-    public Map<? extends EdgeRef, ? extends Status> getStatusForEdges(EdgeProvider edgeProvider, Collection<EdgeRef> edges, Criteria[] criteria) {
+    public Map<? extends EdgeRef, ? extends Status> getStatusForEdges(BackendGraph graph, Collection<EdgeRef> edges, Criteria[] criteria) {
         return serviceAccessor.getTransactionOperations().execute(
                 t -> this.scripting.compute(edges.stream()
                                                  .filter(edge -> edge instanceof GraphMLEdge)

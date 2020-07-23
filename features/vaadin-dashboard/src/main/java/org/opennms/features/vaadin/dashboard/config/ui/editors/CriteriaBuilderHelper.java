@@ -34,8 +34,12 @@ import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
-import java.text.DateFormat;
-import java.text.ParseException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -128,15 +132,44 @@ public class CriteriaBuilderHelper {
         });
 
         setCriteriaParser(Date.class, new CriteriaParser<Date>() {
+            final DateTimeFormatter parserFormatter = new DateTimeFormatterBuilder()
+                    .append(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                    .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+                    .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+                    .toFormatter();
+
+            final String DELTA_PATTERN = "^[+-]\\d+$";
+
+            private ZonedDateTime parseZonedDateTinme(final String string) {
+                if ("0".equals(string)) {
+                    return ZonedDateTime.now();
+                } else {
+                    if (string.matches(DELTA_PATTERN)) {
+                        final long delta = Long.parseLong(string.substring(1));
+                        if (string.charAt(0) == '+') {
+                            return ZonedDateTime.now().plus(delta, ChronoUnit.SECONDS);
+                        } else {
+                            return ZonedDateTime.now().minus(delta, ChronoUnit.SECONDS);
+                        }
+                    } else {
+                        try {
+                            return ZonedDateTime.parse(string, parserFormatter);
+                        } catch (DateTimeParseException ex) {
+                            return null;
+                        }
+                    }
+                }
+            }
+
             @Override
             public Date parse(String string) {
-                Date date = null;
-                try {
-                    date = DateFormat.getDateInstance().parse(string);
-                } catch (ParseException e) {
+                final ZonedDateTime zonedDateTime = parseZonedDateTinme(string);
+
+                if (zonedDateTime == null) {
                     return null;
+                } else {
+                    return Date.from(zonedDateTime.toInstant());
                 }
-                return date;
             }
 
             @Override

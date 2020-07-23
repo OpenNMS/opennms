@@ -46,17 +46,18 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThreshdConfigManager;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.dao.outages.api.ReadablePollOutagesDao;
+import org.opennms.netmgt.config.dao.thresholding.api.ReadableThreshdDao;
+import org.opennms.netmgt.config.dao.thresholding.api.ReadableThresholdingDao;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.threshd.FilterOperator;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
+import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
@@ -66,8 +67,6 @@ import org.opennms.netmgt.threshd.api.ThresholdingSet;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.annotations.VisibleForTesting;
 
 /**
  * <p>Abstract ThresholdingSet class.</p>
@@ -98,9 +97,16 @@ public class ThresholdingSetImpl implements ThresholdingSet {
     protected final List<String> m_scheduledOutages = new ArrayList<>();
     
     private final ThresholdingSession m_thresholdingSession;
+    private final ReadableThreshdDao m_threshdDao;
+    private final ReadableThresholdingDao m_thresholdingDao;
+    private final ReadablePollOutagesDao m_pollOutagesDao;
+    private final IfLabel m_ifLabelDao;
+    private final EntityScopeProvider m_entityScopeProvider;
 
     public ThresholdingSetImpl(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao,
-            ThresholdingEventProxy eventProxy, ThresholdingSession thresholdingSession)
+                               ThresholdingEventProxy eventProxy, ThresholdingSession thresholdingSession, ReadableThreshdDao threshdDao,
+                               ReadableThresholdingDao thresholdingDao, ReadablePollOutagesDao pollOutagesDao,
+                               IfLabel ifLabelDao, EntityScopeProvider entityScopeProvider)
             throws ThresholdInitializationException {
         m_nodeId = nodeId;
         m_hostAddress = (hostAddress == null ? null : hostAddress.intern());
@@ -110,6 +116,12 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         m_resourceStorageDao = resourceStorageDao;
         m_eventProxy = eventProxy;
         m_thresholdingSession = Objects.requireNonNull(thresholdingSession);
+        m_threshdDao = Objects.requireNonNull(threshdDao);
+        m_thresholdingDao = Objects.requireNonNull(thresholdingDao);
+        m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+        m_ifLabelDao = Objects.requireNonNull(ifLabelDao);
+        m_entityScopeProvider = Objects.requireNonNull(entityScopeProvider);
+        
         initThresholdsDao();
         initialize();
         if (!m_initialized) {
@@ -143,27 +155,17 @@ public class ThresholdingSetImpl implements ThresholdingSet {
 
     @Override
     public void reinitialize() {
-        reinitialize(false);
-    }
-
-    @VisibleForTesting
-    void reinitialize(final boolean reloadThresholdConfig) {
         m_initialized = false;
 
-        final ThresholdingConfigFactory tcf = ThresholdingConfigFactory.getInstance();
         final boolean hasThresholds = m_hasThresholds;
         final List<ThresholdGroup> thresholdGroups = new ArrayList<>(m_thresholdGroups);
         final List<String> scheduledOutages = new ArrayList<>(m_scheduledOutages);
         try {
-            if (reloadThresholdConfig) {
-                ThresholdingConfigFactory.reload();
-            }
             initThresholdsDao();
             mergeThresholdGroups(m_nodeId, m_hostAddress, m_serviceName);
             updateScheduledOutages();
         } catch (final Exception e) {
             LOG.error("Failed to reinitialize thresholding set.  Reverting to previous configuration.", e);
-            ThresholdingConfigFactory.setInstance(tcf);
             m_hasThresholds = hasThresholds;
             if (!thresholdGroups.equals(m_thresholdGroups)) {
                 m_thresholdGroups.clear();
@@ -263,13 +265,12 @@ public class ThresholdingSetImpl implements ThresholdingSet {
     }
 
     public final boolean isNodeInOutage() {
-        PollOutagesConfigFactory outageFactory = PollOutagesConfigFactory.getInstance();
         boolean outageFound = false;
         synchronized(m_scheduledOutages) {
             for (String outageName : m_scheduledOutages) {
-                if (outageFactory.isCurTimeInOutage(outageName)) {
+                if (m_pollOutagesDao.isCurTimeInOutage(outageName)) {
                     LOG.debug("isNodeInOutage[node={}]: current time is on outage using '{}'; checking the node with IP {}", m_nodeId, outageName, m_hostAddress);
-                    if (outageFactory.isNodeIdInOutage(m_nodeId, outageName) || outageFactory.isInterfaceInOutage(m_hostAddress, outageName)) {
+                    if (m_pollOutagesDao.isNodeIdInOutage(m_nodeId, outageName) || m_pollOutagesDao.isInterfaceInOutage(m_hostAddress, outageName)) {
                         LOG.debug("isNodeInOutage[node={}]: configured outage '{}' applies, interface {} will be ignored for threshold processing", m_nodeId, outageName, m_hostAddress);
                         outageFound = true;
                         break;
@@ -396,9 +397,10 @@ public class ThresholdingSetImpl implements ThresholdingSet {
             LOG.debug("initThresholdsDao: Initializing Factories and DAOs");
             final DefaultThresholdsDao defaultThresholdsDao = new DefaultThresholdsDao();
             try {
-                ThresholdingConfigFactory.init();
-                defaultThresholdsDao.setThresholdingConfigFactory(ThresholdingConfigFactory.getInstance());
+                m_thresholdingDao.reload();
+                defaultThresholdsDao.setThresholdingDao(m_thresholdingDao);
                 defaultThresholdsDao.setEventProxy(m_eventProxy);
+                defaultThresholdsDao.setEntityScopeProvider(m_entityScopeProvider);
                 defaultThresholdsDao.afterPropertiesSet();
             } catch (final Throwable t) {
                 final ThresholdInitializationException tie = new ThresholdInitializationException("Could not initialize DefaultThresholdsDao.", t);
@@ -406,7 +408,7 @@ public class ThresholdingSetImpl implements ThresholdingSet {
                 throw tie;
             }
             try {
-                ThreshdConfigFactory.init();
+                m_threshdDao.reload();
             } catch (final Throwable t) {
                 final ThresholdInitializationException tie = new ThresholdInitializationException("Could not initialize ThreshdConfigFactory.", t);
                 LOG.error("initThresholdsDao: " + tie.getLocalizedMessage(), t);
@@ -424,42 +426,36 @@ public class ThresholdingSetImpl implements ThresholdingSet {
      * - Compare interface/service pair against each Threshd package.
      * - For each match, create new ThresholdableService object and schedule it for collection
      */
-    private static final List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) throws ThresholdInitializationException {
+    private final List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) {
         List<String> groupNameList = new LinkedList<>();
 
-        ThreshdConfigManager configManager = null;
+        for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdDao.getReadOnlyConfig().getPackages()) {
 
-        try { 
-            configManager = ThreshdConfigFactory.getInstance();
-        } catch (final IllegalStateException e) {
-            throw new ThresholdInitializationException(e);
-        }
+            // Make certain the the current service is in the package and enabled!
+            if (!ReadableThreshdDao.serviceInPackageAndEnabled(serviceName, pkg)) {
+                LOG.debug("getThresholdGroupNames: address/service: {}/{} not scheduled, service is not enabled or " +
+                        "does not exist in package: {}", hostAddress, serviceName, pkg.getName());
+                continue;
+            }
 
-        if (configManager != null) {
-            for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackages()) {
+            // Is the interface in the package?
+            LOG.debug("getThresholdGroupNames: checking ipaddress {} for inclusion in pkg {}", hostAddress,
+                    pkg.getName());
+            if (!m_threshdDao.interfaceInPackage(hostAddress, pkg)) {
+                LOG.debug("getThresholdGroupNames: address/service: {}/{} not scheduled, interface does not belong to" +
+                        " package: {}", hostAddress, serviceName, pkg.getName());
+                continue;
+            }
 
-                // Make certain the the current service is in the package and enabled!
-                if (!configManager.serviceInPackageAndEnabled(serviceName, pkg)) {
-                    LOG.debug("getThresholdGroupNames: address/service: {}/{} not scheduled, service is not enabled or does not exist in package: {}", hostAddress, serviceName, pkg.getName());
-                    continue;
-                }
-
-                // Is the interface in the package?
-                LOG.debug("getThresholdGroupNames: checking ipaddress {} for inclusion in pkg {}", hostAddress, pkg.getName());
-                if (!configManager.interfaceInPackage(hostAddress, pkg)) {
-                    LOG.debug("getThresholdGroupNames: address/service: {}/{} not scheduled, interface does not belong to package: {}", hostAddress, serviceName, pkg.getName());
-                    continue;
-                }
-
-                // Getting thresholding-group for selected service and adding to groupNameList
-                for (org.opennms.netmgt.config.threshd.Service svc : pkg.getServices()) {
-                    if (svc.getName().equals(serviceName)) {
-                        for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameters()) {
-                            if (parameter.getKey().equals("thresholding-group")) {
-                                String groupName = parameter.getValue();
-                                groupNameList.add(groupName);
-                                LOG.debug("getThresholdGroupNames:  address/service: {}/{}. Adding Group {}", hostAddress, serviceName, groupName);
-                            }
+            // Getting thresholding-group for selected service and adding to groupNameList
+            for (org.opennms.netmgt.config.threshd.Service svc : pkg.getServices()) {
+                if (svc.getName().equals(serviceName)) {
+                    for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameters()) {
+                        if (parameter.getKey().equals("thresholding-group")) {
+                            String groupName = parameter.getValue();
+                            groupNameList.add(groupName);
+                            LOG.debug("getThresholdGroupNames:  address/service: {}/{}. Adding Group {}", hostAddress
+                                    , serviceName, groupName);
                         }
                     }
                 }
@@ -468,22 +464,15 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         return groupNameList;
     }
 
-    protected void updateScheduledOutages() throws ThresholdInitializationException {
+    protected void updateScheduledOutages() {
         synchronized (m_scheduledOutages) {
             m_scheduledOutages.clear();
-            ThreshdConfigManager configManager = null;
-            try {
-                configManager = ThreshdConfigFactory.getInstance();
-            } catch (final IllegalStateException e) {
-                final ThresholdInitializationException tie = new ThresholdInitializationException("Failed to get threshd configuration factory while attempting to update scheduled outages.", e);
-                LOG.error(tie.getLocalizedMessage(), e);
-                throw tie;
-            }
-            for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackages()) {
+
+            for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdDao.getReadOnlyConfig().getPackages()) {
                 for (String outageCal : pkg.getOutageCalendars()) {
                     LOG.info("updateScheduledOutages[node={}]: checking scheduled outage '{}'", m_nodeId, outageCal);
                     try {
-                        Outage outage = PollOutagesConfigFactory.getInstance().getOutage(outageCal);
+                        Outage outage = m_pollOutagesDao.getReadOnlyConfig().getOutage(outageCal);
                         if (outage == null) {
                             LOG.info("updateScheduledOutages[node={}]: scheduled outage '{}' is not defined.", m_nodeId, outageCal);
                         } else {
@@ -544,14 +533,15 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         return hasThresholds(resource.getResourceTypeName(), attribute.getName());
     }
 
-    public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap, Date collectionTimestamp) {
+    public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap,
+                                       Date collectionTimestamp, Long sequenceNumber) {
         if (!isCollectionEnabled(resource)) {
             LOG.debug("applyThresholds: Ignoring resource {} because data collection is disabled for this resource.", resource);
             return new LinkedList<>();
         }
-        CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(collectionTimestamp, m_nodeId, m_hostAddress, m_serviceName, m_repository, resource,
-                                                                                  attributesMap,
-                                                                                  m_resourceStorageDao);
+        CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(collectionTimestamp, m_nodeId,
+                m_hostAddress, m_serviceName, m_repository, resource, attributesMap, m_resourceStorageDao,
+                m_ifLabelDao, sequenceNumber);
         resourceWrapper.setCounterReset(m_counterReset);
         return Collections.unmodifiableList(applyThresholds(resourceWrapper, attributesMap));
     }

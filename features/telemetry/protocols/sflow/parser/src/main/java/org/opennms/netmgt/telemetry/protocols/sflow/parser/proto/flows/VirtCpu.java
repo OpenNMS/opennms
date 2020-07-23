@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct virt_cpu {
 //    unsigned int state;         /* virtDomainState */
@@ -48,7 +48,7 @@ public class VirtCpu implements CounterData {
     public final long cpuTime;
     public final long nrVirtCpu;
 
-    public VirtCpu(final ByteBuffer buffer) throws InvalidPacketException {
+    public VirtCpu(final ByteBuf buffer) throws InvalidPacketException {
         this.state = BufferUtils.uint32(buffer);
         this.cpuTime = BufferUtils.uint32(buffer);
         this.nrVirtCpu = BufferUtils.uint32(buffer);

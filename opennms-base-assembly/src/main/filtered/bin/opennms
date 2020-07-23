@@ -68,7 +68,7 @@ STATUS_WAIT=5
 STOP_TIMEOUT=10
 
 # Value of the -Xmx<size>m option passed to Java.
-JAVA_HEAP_SIZE=1024
+JAVA_HEAP_SIZE=2048
 
 # Additional options passed to Java when starting OpenNMS.
 # ADDITIONAL_MANAGER_OPTIONS=()
@@ -431,15 +431,24 @@ doStart(){
 	CMD=("${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}")
 	if [ "$BACKGROUND" = 1 ]; then
 		# shellcheck disable=SC2129
-		echo "------------------------------------------------------------------------------" >> "$REDIRECT"
-		date >> "$REDIRECT"
-		echo "begin ulimit settings:" >> "$REDIRECT"
-		ulimit -a >> "$REDIRECT"
-		echo "end ulimit settings" >> "$REDIRECT"
-		echo "Executing command:" "${CMD[@]}" >> "$REDIRECT"
-		runCmd "${CMD[@]}" >>"$REDIRECT" 2>&1 &
-		OPENNMS_PID=$!
-		echo $OPENNMS_PID > "$OPENNMS_PIDFILE"
+		{
+			echo "------------------------------------------------------------------------------"
+			date
+			echo "begin ulimit settings:"
+			ulimit -a
+			echo "end ulimit settings"
+			echo "Executing command:" "${CMD[@]}"
+		} >> "$REDIRECT"
+
+		# NMS-12226 runCmd & spawns a subshell process for the function runCmd which is not the PID of the java process.
+		# To avoid this spawn the command directly so the $! is the PID of java.
+		if [[ "$NOEXECUTE" == "0" ]]; then
+			"${CMD[@]}" >>"$REDIRECT" 2>&1 &
+		else
+			echo "Skipping execution: ${CMD[*]}"
+		fi
+		OPENNMS_PID="$!"
+		echo "$OPENNMS_PID" > "$OPENNMS_PIDFILE"
 	else
 		echo "running ulimit -a"
 		ulimit -a
@@ -719,6 +728,8 @@ else
 	ADD_MODULES="--add-modules=${JAVA_MODULES[*]}"
 	IFS="$OIFS"
 	JAVA_CMD=("${JAVA_CMD[@]}" "$ADD_MODULES")
+	# see NMS-12261 -- use backwards-compatible locale provider by default
+	JAVA_CMD+=("-Djava.locale.providers=CLDR,COMPAT")
 fi
 
 if [ -n "$USE_INCGC" ] && [ "$USE_INCGC" = true ] ; then
@@ -956,7 +967,8 @@ case "$COMMAND" in
 			rc_status -v
 		else
 			doStatus "$@"
-			case $? in
+			__ret="$?"
+			case "$__ret" in
 				0)
 					echo "${NAME} is running"
 					;;
@@ -970,9 +982,10 @@ case "$COMMAND" in
 					;;
 
 				*)
-					echo "Unknown return code from doStatus: $ret" >&2
+					echo "Unknown return code from doStatus: $__ret" >&2
 			esac
 		fi
+                exit "$__ret"
 		;;
 
 	configtest)

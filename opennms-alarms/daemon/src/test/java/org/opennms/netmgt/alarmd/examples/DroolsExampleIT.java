@@ -63,7 +63,7 @@ public abstract class DroolsExampleIT {
     public abstract String getRulesFile();
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, InterruptedException {
         // Copy default set of rules to a new folder
         File rulesFolder = temporaryFolder.newFolder("rules");
         FileUtils.copyDirectory(DroolsAlarmContext.getDefaultRulesFolder(), rulesFolder);
@@ -100,6 +100,7 @@ public abstract class DroolsExampleIT {
         dac.setAcknowledgmentDao(acknowledgmentDao);
 
         dac.start();
+        dac.waitForInitialSeedToBeSubmitted();
     }
 
     @After

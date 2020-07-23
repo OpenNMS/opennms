@@ -42,7 +42,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -194,7 +194,7 @@ public class PathOutageStatusProviderIT {
 		criteria = this.pathOutageProvider.getDefaults().getCriteria();
 		assertNotNull(criteria);
 		Assert.assertEquals(1, criteria.size());
-		VertexHopGraphProvider.DefaultVertexHopCriteria criterion = (VertexHopGraphProvider.DefaultVertexHopCriteria) criteria.get(0);
+		DefaultVertexHopCriteria criterion = (DefaultVertexHopCriteria) criteria.get(0);
 		Assert.assertEquals("1", criterion.getId());
 
 		// Adding a MAJOR path outage to the same node.
@@ -213,7 +213,7 @@ public class PathOutageStatusProviderIT {
 		criteria = this.pathOutageProvider.getDefaults().getCriteria();
 		assertNotNull(criteria);
 		Assert.assertEquals(1, criteria.size());
-		criterion = (VertexHopGraphProvider.DefaultVertexHopCriteria) criteria.get(0);
+		criterion = (DefaultVertexHopCriteria) criteria.get(0);
 		Assert.assertEquals("1", criterion.getId());
 
 		// Adding several more path outages of different types
@@ -239,7 +239,7 @@ public class PathOutageStatusProviderIT {
 		criteria = this.pathOutageProvider.getDefaults().getCriteria();
 		assertNotNull(criteria);
 		Assert.assertEquals(1, criteria.size());
-		criterion = (VertexHopGraphProvider.DefaultVertexHopCriteria) criteria.get(0);
+		criterion = (DefaultVertexHopCriteria) criteria.get(0);
 		Assert.assertTrue(criterion.getId().equalsIgnoreCase("1") || criterion.getId().equalsIgnoreCase("4"));
 	}
 
@@ -249,8 +249,8 @@ public class PathOutageStatusProviderIT {
 	 * @return Map with {@link Status} information for all vertices
 	 */
 	private Map<VertexRef, Status> calculateStatuses() {
-		Map<VertexRef, Status> retvals = this.pathOutageStatusProvider.getStatusForVertices(pathOutageProvider,
-				Lists.newArrayList(pathOutageProvider.getVertices()), null);
+		Map<VertexRef, Status> retvals = this.pathOutageStatusProvider.getStatusForVertices(pathOutageProvider.getCurrentGraph(),
+				Lists.newArrayList(pathOutageProvider.getCurrentGraph().getVertices()), null);
 		return retvals;
 	}
 

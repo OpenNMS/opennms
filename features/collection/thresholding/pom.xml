@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.collection</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.collection</groupId>
@@ -13,5 +13,7 @@
   <modules>
     <module>api</module>
     <module>impl</module>
+    <module>itests</module>
+    <module>thresholding-shell</module>
   </modules>
 </project>

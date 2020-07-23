@@ -29,6 +29,7 @@
 package org.opennms.netmgt.telemetry.itests;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static junit.framework.TestCase.fail;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
@@ -45,8 +46,13 @@ import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,9 +64,11 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.distributed.kvstore.api.AbstractAsyncKeyValueStore;
+import org.opennms.features.distributed.kvstore.blob.noop.NoOpBlobStore;
 import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
+import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -109,7 +117,9 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml",
         "classpath:/META-INF/opennms/applicationContext-collectionAgentFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-jtiAdapterFactory.xml",
-        "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml"
+        "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
@@ -148,6 +158,15 @@ public class ThresholdingIT {
 
     private int port = 50001;
 
+    @Autowired
+    private OverrideableThreshdDao threshdDao;
+    
+    @Autowired
+    private OverrideableThresholdingDao thresholdingDao;
+    
+    @Autowired
+    private NoOpBlobStore noOpBlobStore;
+    
     @Before
     public void setUp() throws IOException {
         rrdBaseDir = tempFolder.newFolder("rrd");
@@ -180,7 +199,7 @@ public class ThresholdingIT {
 
         // Load custom threshd configuration
         initThreshdFactories("/threshd-configuration.xml", "/thresholds.xml");
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        threshdDao.rebuildPackageIpListMap();
         mockEventIpcManager.addEventListener((EventListener) thresholdingService, ThresholdingServiceImpl.UEI_LIST);
 
         // Compute the path to the RRD file
@@ -192,7 +211,7 @@ public class ThresholdingIT {
         EventAnticipator eventAnticipator = mockEventIpcManager.getEventAnticipator();
 
         // Send an initial message
-        sendTelemetryMessage("192.0.2.1", "ge_0_0_3", ifInOctets, ifOutOctets, 0);
+        sendTelemetryMessage("192.0.2.1", "ge_0_0_3", ifInOctets, ifOutOctets, 0, 0);
 
         // Wait for the RRD file to be created
         await().atMost(60, TimeUnit.SECONDS).until(ifIn1SecPktsRrdFile::exists, equalTo(true));
@@ -207,7 +226,7 @@ public class ThresholdingIT {
         // Send another message
         ifInOctets += 10000000;
         ifOutOctets += 10000000;
-        sendTelemetryMessage("192.0.2.1", "ge_0_0_3", ifInOctets, ifOutOctets, 5);
+        sendTelemetryMessage("192.0.2.1", "ge_0_0_3", ifInOctets, ifOutOctets, 5, 1);
 
         // Wait for the RRD file to be updated
         await().atMost(60, TimeUnit.SECONDS).until(ifIn1SecPktsRrdFile::lastModified, greaterThan(lastModified));
@@ -227,7 +246,7 @@ public class ThresholdingIT {
         // Send another message - this time with ifIn1SecPkts > threshold
         ifInOctets += 10000000;
         ifOutOctets += 10000000;
-        sendTelemetryMessage("192.0.2.1", "ge_0_0_3", ifInOctets, ifOutOctets, 20);
+        sendTelemetryMessage("192.0.2.1", "ge_0_0_3", ifInOctets, ifOutOctets, 20, 2);
 
         // Wait until our threshold was triggered - the anticipator will remove the event from the list once received
         await().atMost(60, TimeUnit.SECONDS).until(eventAnticipator::getAnticipatedEvents, hasSize(0));
@@ -236,9 +255,95 @@ public class ThresholdingIT {
         assertEquals(0, eventAnticipator.getUnanticipatedEvents().size());
     }
 
-    private void sendTelemetryMessage(String ipAddress, String ifName, long ifInOctets, long ifOutOctets, long ifIn1SecPkts) throws IOException {
+    @Test
+    public void canFetchAppropriatelyBasedOnSequenceNumber() throws Exception {
+        AtomicInteger fetchCounter = new AtomicInteger(0);
+        // Hook into the blob store so we can see when fetches happen
+        noOpBlobStore.addListener(new AbstractAsyncKeyValueStore<byte[]>() {
+            @Override
+            public long put(String key, byte[] value, String context, Integer ttlInSeconds) {
+                return 0;
+            }
+
+            @Override
+            public Optional<byte[]> get(String key, String context) {
+                fetchCounter.incrementAndGet();
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<Optional<byte[]>> getIfStale(String key, String context, long timestamp) {
+                fetchCounter.incrementAndGet();
+                return Optional.empty();
+            }
+
+            @Override
+            public OptionalLong getLastUpdated(String key, String context) {
+                fetchCounter.incrementAndGet();
+                return null;
+            }
+
+            @Override
+            public String getName() {
+                return "test";
+            }
+
+            @Override
+            public Map<String, byte[]> enumerateContext(String context) {
+                return Collections.emptyMap();
+            }
+
+            @Override
+            public void delete(String key, String context) {
+            }
+        });
+
+        // Need to act as in distributed mode to test the fetch behavior
+        ((ThresholdingServiceImpl) thresholdingService).setDistributed(true);
+        
+        // Use our custom configuration
+        updateDaoWithConfig(getConfig(port));
+
+        // Start the daemon
+        telemetryd.start();
+
+        // Load custom threshd configuration
+        initThreshdFactories("/threshd-configuration.xml", "/thresholds.xml");
+        threshdDao.rebuildPackageIpListMap();
+
+        // Send an initial message with seq 0
+        sendTelemetryMessage("192.0.2.1", "ge_0_0_3", 1, 1, 0, 0);
+
+        // We should have fetched since this is the first message
+        await().atMost(5, TimeUnit.SECONDS).until(() -> fetchCounter.get() == 1);
+
+        // Wait one second before sending the next message (RRDs require at least a one second step)
+        Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+
+        // Send a message with seq 1
+        sendTelemetryMessage("192.0.2.1", "ge_0_0_3", 1, 1, 5, 1);
+
+        // We shouldn't have fetched since we dealt with the last sequence num so lets wait a bit to make sure no fetch
+        // happens
+        try {
+            await().atMost(5, TimeUnit.SECONDS).until(() -> fetchCounter.get() != 1);
+            fail("Fetched when we shouldn't have");
+        } catch (Exception ignore) {
+        }
+
+        // Wait one second before sending the next message (RRDs require at least a one second step)
+        Thread.sleep(TimeUnit.SECONDS.toMillis(1));
+
+        // Send message with seq 3
+        sendTelemetryMessage("192.0.2.1", "ge_0_0_3", 1, 1, 20, 3);
+
+        // We should have fetched again since the sequence number changed by more than one
+        await().atMost(5, TimeUnit.SECONDS).until(() -> fetchCounter.get() == 2);
+    }
+
+    private void sendTelemetryMessage(String ipAddress, String ifName, long ifInOctets, long ifOutOctets, long ifIn1SecPkts, int sequenceNum) throws IOException {
         // Send a JTI payload via a UDP socket
-        final TelemetryTop.TelemetryStream jtiMsg = buildJtiMessage(ipAddress, ifName, ifInOctets, ifOutOctets, ifIn1SecPkts);
+        final TelemetryTop.TelemetryStream jtiMsg = buildJtiMessage(ipAddress, ifName, ifInOctets, ifOutOctets, ifIn1SecPkts, sequenceNum);
         final byte[] jtiMsgBytes = jtiMsg.toByteArray();
         InetAddress address = InetAddressUtils.getLocalHostAddress();
         DatagramPacket packet = new DatagramPacket(jtiMsgBytes, jtiMsgBytes.length, address, port);
@@ -247,7 +352,7 @@ public class ThresholdingIT {
         }
     }
 
-    private static TelemetryTop.TelemetryStream buildJtiMessage(String ipAddress, String ifName, long ifInOctets, long ifOutOctets, long ifIn1SecPkts) {
+    private static TelemetryTop.TelemetryStream buildJtiMessage(String ipAddress, String ifName, long ifInOctets, long ifOutOctets, long ifIn1SecPkts, int sequenceNum) {
         final Port.GPort port = Port.GPort.newBuilder()
                 .addInterfaceStats(Port.InterfaceInfos.newBuilder()
                         .setIfName(ifName)
@@ -290,6 +395,7 @@ public class ThresholdingIT {
                 .setSequenceNumber(sequence_no++)
                 .setTimestamp(new Date().getTime())
                 .setEnterprise(sensors)
+                .setSequenceNumber(sequenceNum)
                 .build();
 
         return jtiMsg;
@@ -354,9 +460,9 @@ public class ThresholdingIT {
         return telemetrydConfig;
     }
 
-    private void initThreshdFactories(String threshd, String thresholds) throws Exception {
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
+    private void initThreshdFactories(String threshd, String thresholds) {
+        thresholdingDao.overrideConfig(getClass().getResourceAsStream(thresholds));
+        threshdDao.overrideConfig(getClass().getResourceAsStream(threshd));
     }
 
 }

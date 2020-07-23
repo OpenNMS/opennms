@@ -34,7 +34,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider;
 
-@Command(scope = "asset-topology", name = "regenerateall", description="Uses Best Effort to regenerate all asset topologies.")
+@Command(scope = "opennms", name = "asset-topo-regenerate-all", description="Uses Best Effort to regenerate all asset topologies.")
 @Service
 public class RegenerateAllAssetTopologiesCommand implements Action {
 

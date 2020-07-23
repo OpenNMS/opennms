@@ -30,6 +30,7 @@ package org.opennms.netmgt.provision.requisition.command;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.http.client.utils.URIBuilder;
@@ -46,7 +47,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 
 import com.google.common.base.Strings;
 
-@Command(scope = "provision", name = "import-requisition", description = "Import the requisition from given url")
+@Command(scope = "opennms", name = "import-requisition", description = "Import the requisition from given url")
 @Service
 public class ImportRequisition implements Action {
 
@@ -59,43 +60,35 @@ public class ImportRequisition implements Action {
     @Option(name = "-r", aliases = "--rescan", description = "Specify rescanExisting value, valid values : 'yes', 'no', 'dbonly'")
     private String rescanExisting;
 
-    @Argument(index = 0, name = "type", description = "Type", required = true, multiValued = false)
+    @Argument(index = 0, name = "type", description = "Type", required = true)
     @Completion(ProviderTypeNameCompleter.class)
     private String type;
 
     @Argument(index = 1, name = "parameters", description = "Provide parameters in key=value form", multiValued = true)
-    private List<String> parameters;
-
-
+    private List<String> parameters = new LinkedList<>();
 
     @Override
     public Object execute() throws Exception {
-
         return sendImportRequisitionEvent(eventForwarder, type, parameters, rescanExisting);
     }
 
     public static Object sendImportRequisitionEvent(EventForwarder eventForwarder, String type, List<String> parameters, String rescanExisting) throws URISyntaxException {
         EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, EVENT_SOURCE);
-
-        if((!Strings.isNullOrEmpty(type)) && !parameters.isEmpty()) {
-            URIBuilder builder = new URIBuilder().setScheme(URI_SCHEME).setHost(type);
-            parse(parameters, builder);
-            String url = builder.build().toString();
-            eventBuilder.addParam(EventConstants.PARM_URL, url);
-            if (!Strings.isNullOrEmpty(rescanExisting)) {
-                List<String> validValues = Arrays.asList("yes", "dbonly", "no");
-                if(validValues.contains(rescanExisting)) {
-                    eventBuilder.addParam(EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
-                } else {
-                    System.out.printf("Not a valid rescanExisting value, valid values are : %s \n", validValues);
-                    return null;
-                }
+        URIBuilder builder = new URIBuilder().setScheme(URI_SCHEME).setHost(type);
+        parse(parameters, builder);
+        String url = builder.build().toString();
+        eventBuilder.addParam(EventConstants.PARM_URL, url);
+        if (!Strings.isNullOrEmpty(rescanExisting)) {
+            List<String> validValues = Arrays.asList("yes", "dbonly", "no");
+            if(validValues.contains(rescanExisting)) {
+                eventBuilder.addParam(EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
+            } else {
+                System.out.printf("Not a valid rescanExisting value, valid values are: %s\n", validValues);
+                return null;
             }
-            eventForwarder.sendNow(eventBuilder.getEvent());
-            System.out.printf("Requisition import triggered asynchronously for URL : %s\n", url);
-        } else {
-            System.out.printf("No valid requisition parameters specified\n");
         }
+        eventForwarder.sendNow(eventBuilder.getEvent());
+        System.out.printf("Requisition import triggered asynchronously for URL:\n\t%s\n", url);
         return null;
     }
 
@@ -113,8 +106,5 @@ public class ImportRequisition implements Action {
             }
         }
     }
-
-
-
 
 }

@@ -25,6 +25,7 @@ RUNAS="@RUNAS@"
 STOP_RETRIES=10
 STOP_WAIT=5
 PING_REQUIRED=FALSE
+PIDFILE="@PIDFILE@"
 
 export NAME DESC PATH
 
@@ -129,12 +130,12 @@ get_root_pid() {
 }
 
 is_running() {
-  PID=$(get_root_pid)
-  if [ "$PID" -ne "0" ] && ps p "$PID" > /dev/null; then
-    return 0
-  else
-    return 1
-  fi
+	PID=$(get_root_pid)
+	if [ "$PID" -ne "0" ] && ps p "$PID" > /dev/null; then
+		return 0
+	else
+		return 1
+	fi
 }
 
 stop_process() {
@@ -178,48 +179,64 @@ case "$COMMAND" in
 		esac
 
 		if [ ! -d "$CONTAINER_HOME/data/tmp" ]; then
-			install -d -m 755 "$CONTAINER_HOME/data/tmp"
-			chown -R "$RUNAS:$RUNAS" "$CONTAINER_HOME/data"
+			install -d -m 755 -o "$RUNAS" -g "$RUNAS" "$CONTAINER_HOME/data/tmp"
 		fi
+		chown -R "$RUNAS:$RUNAS" "$CONTAINER_HOME/data/"
 		run_as "$CONTAINER_HOME"/bin/start
-		exit $?
+		sleep 5
+		RET="$?"
+
+		__piddir="$(dirname "$PIDFILE")"
+		if [ ! -d "$__piddir" ]; then
+			install -d -m 755 -o "$RUNAS" -g "$RUNAS" "$__piddir"
+		fi
+
+		# wait 30 seconds for it to write an instance pid
+		# shellcheck disable=SC2034
+		for COUNT in $(seq 1 6); do
+			if is_running; then
+				get_root_pid > "$PIDFILE"
+				chown "$RUNAS:$RUNAS" "$PIDFILE"
+				chmod 640 "$PIDFILE"
+				exit "$RET"
+			fi
+			sleep 5
+		done
+
+		exit 1
 		;;
 
 	stop)
 		if is_running; then
 			printf "Stopping %s: " "$DESC"
 			STOP_ATTEMPTS=0
+			stop_process
 			while [ "$STOP_ATTEMPTS" -lt "$STOP_RETRIES" ]; do
-				stop_process
+				sleep $STOP_WAIT
 				if is_running; then
 					STOP_ATTEMPTS="$((STOP_ATTEMPTS + 1))"
-					sleep $STOP_WAIT
+					kill_process # SIGTERM, "nice" kill
 				else
 					echo "OK"
+					rm -f "$PIDFILE"
 					exit 0
 				fi
 			done
 			echo "FAILED"
 
-			printf "Killing %s: " "$DESC"
-			kill_process
-			if is_running; then
-				echo "FAILED"
-			else
-				echo "OK"
-				exit 0
-			fi
-
 			printf "Force-killing %s: " "$DESC"
 			kill_process -9
+			sleep $STOP_WAIT
 			if is_running; then
 				echo "FAILED"
 				exit 1
 			fi
 			echo "OK"
+			rm -f "$PIDFILE"
 			exit 0
 		else
 			echo "$DESC is not running."
+			rm -f "$PIDFILE"
 			exit 0 # LSB specifies calling "stop" on a stopped service is still a success
 		fi
 		;;

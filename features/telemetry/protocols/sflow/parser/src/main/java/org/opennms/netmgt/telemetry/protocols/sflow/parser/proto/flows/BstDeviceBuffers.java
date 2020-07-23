@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct bst_device_buffers {
 //   int uc_pc;  /* unicast buffers percentage utilization */
@@ -46,7 +46,7 @@ public class BstDeviceBuffers implements CounterData {
     public final Integer uc_pc;
     public final Integer mc_pc;
 
-    public BstDeviceBuffers(final ByteBuffer buffer) throws InvalidPacketException {
+    public BstDeviceBuffers(final ByteBuf buffer) throws InvalidPacketException {
         this.uc_pc = BufferUtils.sint32(buffer);
         this.mc_pc = BufferUtils.sint32(buffer);
     }

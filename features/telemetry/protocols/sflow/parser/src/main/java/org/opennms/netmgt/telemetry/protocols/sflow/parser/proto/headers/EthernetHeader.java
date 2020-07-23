@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.headers;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
+
+import io.netty.buffer.ByteBuf;
 
 public class EthernetHeader {
 
@@ -44,7 +44,7 @@ public class EthernetHeader {
 
     public final byte[] rawHeader;
 
-    public EthernetHeader(final ByteBuffer buffer) throws InvalidPacketException {
+    public EthernetHeader(final ByteBuf buffer) throws InvalidPacketException {
         BufferUtils.skip(buffer, 6); // dstMAC
         BufferUtils.skip(buffer, 6); // srcMAC
 
@@ -73,7 +73,7 @@ public class EthernetHeader {
             default:
                 this.inet4Header = null;
                 this.inet6Header = null;
-                this.rawHeader = BufferUtils.bytes(buffer, buffer.remaining());
+                this.rawHeader = BufferUtils.bytes(buffer, buffer.readableBytes());
         }
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -55,6 +55,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.UserNotificationDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
@@ -285,7 +286,7 @@ public class AckdIT implements InitializingBean {
         final String user = "ackd-test-user";
         bldr.addParam("ackUser", user);
 
-        m_daemon.handleAckEvent(bldr.getEvent());
+        m_daemon.handleAckEvent(ImmutableMapper.fromMutableEvent(bldr.getEvent()));
         
         OnmsNotification notif = m_notificationDao.get(vo.m_notifId);
         Assert.assertEquals(notif.getAckUser(), user);
@@ -312,7 +313,7 @@ public class AckdIT implements InitializingBean {
         final String user = "ackd-test-user";
         bldr.addParam("ackUser", user);
 
-        m_daemon.handleAckEvent(bldr.getEvent());
+        m_daemon.handleAckEvent(ImmutableMapper.fromMutableEvent(bldr.getEvent()));
         
         OnmsNotification notif = m_notificationDao.get(vo.m_notifId);
         Assert.assertEquals(notif.getAckUser(), user);
@@ -341,7 +342,7 @@ public class AckdIT implements InitializingBean {
         final String user = "ackd-test-user";
         bldr.addParam("ackUser", user);
 
-        m_daemon.handleAckEvent(bldr.getEvent());
+        m_daemon.handleAckEvent(ImmutableMapper.fromMutableEvent(bldr.getEvent()));
         
         OnmsNotification notif = m_notificationDao.get(vo.m_notifId);
         Assert.assertEquals(notif.getAckUser(), null);
@@ -371,7 +372,7 @@ public class AckdIT implements InitializingBean {
         final String user = "ackd-test-user";
         bldr.addParam("ackUser", user);
 
-        m_daemon.handleAckEvent(bldr.getEvent());
+        m_daemon.handleAckEvent(ImmutableMapper.fromMutableEvent(bldr.getEvent()));
         
         OnmsNotification notif = m_notificationDao.get(vo.m_notifId);
         Assert.assertEquals(notif.getAckUser(), user);

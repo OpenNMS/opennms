@@ -36,9 +36,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.ByteBuffer;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -141,8 +139,8 @@ public class RadixTreeSyslogParser extends SyslogParser {
 					retval.setMessage(newMessage == null ? null : newMessage);
 				}
 			}
-			setYearIfNeeded(retval);
 			setTimezoneIfNeeded(retval);
+			setYearIfNeeded(retval);
 		}
 
 		return retval;
@@ -157,19 +155,7 @@ public class RadixTreeSyslogParser extends SyslogParser {
 	            message.getSecond() != null ||
 	            message.getMillisecond() != null;
 	    if (hasTimeinformation && message.getYear() == null) {
-	        final Calendar cal = Calendar.getInstance();
-	        final LocalDateTime now = LocalDateTime.now();
-	        cal.set(
-	                now.getYear(),
-	                message.getMonth() == null? 0 : message.getMonth() - 1,
-	                message.getDayOfMonth() == null? 1 : message.getDayOfMonth(),
-	                message.getHourOfDay() == null? 0 : message.getHourOfDay(),
-	                message.getMinute() == null? 0 : message.getMinute(),
-	                message.getSecond() == null? 0 : message.getSecond()
-	        );
-	        cal.set(Calendar.MILLISECOND, message.getMillisecond() == null? 0 : message.getMillisecond());
-	        SyslogTimeStamp.adjustYear(cal, now);
-	        message.setYear(cal.get(Calendar.YEAR));
+	    	SyslogYearCompleter.complete(message);
 	    }
 	}
 

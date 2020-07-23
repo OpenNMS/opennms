@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -16,7 +16,9 @@
     <NAME_LC>sentinel</NAME_LC>
     <INSTPREFIX>/opt/sentinel</INSTPREFIX>
     <RUNAS>sentinel</RUNAS>
+    <INITDIR>/etc/init.d</INITDIR>
     <SYSCONFDIR>/opt/sentinel/etc</SYSCONFDIR>
+    <PIDFILE>/opt/sentinel/data/log/sentinel.pid</PIDFILE>
   </properties>
   <build>
     <resources>
@@ -137,6 +139,8 @@
           <descriptors>
             <descriptor>src/assembly/sentinel.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
           <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>

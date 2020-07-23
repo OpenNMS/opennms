@@ -49,7 +49,7 @@ import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "snmp", name = "walk", description = "Walk the agent on the specified host and print the results.")
+@Command(scope = "opennms", name = "snmp-walk", description = "Walk the agent on the specified host and print the results.")
 @Service
 public class WalkCommand implements Action {
 

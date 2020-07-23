@@ -103,7 +103,7 @@ The following list contains some features which may be installed manually:
 
 | sentinel-core
 | true
-| Base feature, installing all required bundles such as `health:check` and service requirements for other bundles, e.g. `sentinel-persistence`.
+| Base feature, installing all required bundles such as `opennms:health-check` and service requirements for other bundles, e.g. `sentinel-persistence`.
 
 | sentinel-jms
 | false
@@ -128,6 +128,10 @@ The following list contains some features which may be installed manually:
 | sentinel-telemetry-jti
 | false
 | Allows using the `JtiGpbAdapter`
+
+| sentinel-telemetry-bmp
+| false
+| Allows using the `BmpTelemetryAdapter`
 
 |====
 
@@ -159,7 +163,7 @@ featuresBoot = \
       instance/4.2.2, \
       package/4.2.2, \
       log/4.2.2, \
-      scv/25.0.0-SNAPSHOT, \
+      scv/27.0.0-SNAPSHOT, \
       ssh/4.2.2, \
       framework/4.2.2, \
       system/4.2.2, \
@@ -191,11 +195,11 @@ featuresBoot = \
 
 ==== Health Check / Troubleshooting
 
-The `health:check` command allows to verify the health of the _Sentinel_ container.
+The `opennms:health-check` command allows to verify the health of the _Sentinel_ container.
 It performs various health checks depending on the installed features to calculate the overall container health.
-For more information please try `health:check --help`.
+For more information please try `opennms:health-check --help`.
 
-NOTE: In order to run the `health:check` command, the feature `sentinel-core` must be installed.
+NOTE: In order to run the `opennms:health-check` command, the feature `sentinel-core` must be installed.
 
 NOTE: This is also available in _Minion_ Containers and will replace the now deprecated command `minion:ping`.
 
@@ -238,10 +242,10 @@ admin@sentinel> feature:install sentinel-flows
 
 NOTE:   Only processing of `Netflow5` flows has been tested.
 
-To check everything is working as expected, run the `health:check` command, e.g.:
+To check everything is working as expected, run the `opennms:health-check` command, e.g.:
 
 ----
-admin@sentinel> health:check
+admin@sentinel> opennms:health-check
 Verifying the health of the container
 
 Verifying installed bundles                    [ Success  ]
@@ -383,6 +387,13 @@ Simply copy it to `${SENTINEL_HOME}/deploy/`.
             group.id = OpenNMS
             bootstrap.servers = localhost:9092
         </config>
+        <!--
+            Configure as Kafka Producer for sending Events from Sentinel.
+            All properties desribed at https://kafka.apache.org/0100/documentation.html#producerconfigs are supported.
+        -->
+        <config name="org.opennms.core.ipc.sink.kafka">
+            bootstrap.servers = localhost:9092
+        </config>
         <!-- Install Kafka related features -->
         <feature>sentinel-kafka</feature>
         <!-- Install flow related features -->
@@ -462,7 +473,7 @@ $ ssh -p 8301 admin@localhost
 ----
 admin@sentinel> config:edit --alias nxos --factory org.opennms.features.telemetry.adapters
 admin@sentinel> config:property-set name NXOS
-admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter
+admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.protocols.nxos.adapter.NxosGpbAdapter
 admin@sentinel> config:property-set parameters.script /opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy
 admin@sentinel> config:update
 ----
@@ -492,7 +503,7 @@ $ ssh -p 8301 admin@localhost
 ----
 admin@sentinel> config:edit --alias jti --factory org.opennms.features.telemetry.adapters
 admin@sentinel> config:property-set name JTI
-admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter
+admin@sentinel> config:property-set class-name org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter
 admin@sentinel> config:property-set parameters.script /opt/sentinel/etc/junos-telemetry-interface.groovy
 admin@sentinel> config:update
 ----

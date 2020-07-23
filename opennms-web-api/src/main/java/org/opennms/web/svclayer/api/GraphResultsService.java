@@ -43,8 +43,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface GraphResultsService {
     public GraphResults findResults(ResourceId[] resources,
-            String[] reports,
-            long start, long end, String relativeTime);
+                                    String[] reports,
+                                    String generatedId, String nodeCriteria, long start, long end, String relativeTime);
 
     public PrefabGraph[] getAllPrefabGraphs(ResourceId resourceId);
 }

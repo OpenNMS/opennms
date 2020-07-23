@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct ieee80211_counters {
 //    unsigned int dot11TransmittedFragmentCount;
@@ -82,7 +82,7 @@ public class Ieee80211Counters implements CounterData {
     public final long dot11QoSCFPollsUnusableCount;
     public final long dot11QoSCFPollsLostCount;
 
-    public Ieee80211Counters(final ByteBuffer buffer) throws InvalidPacketException {
+    public Ieee80211Counters(final ByteBuf buffer) throws InvalidPacketException {
         this.dot11TransmittedFragmentCount = BufferUtils.uint32(buffer);
         this.dot11MulticastTransmittedFrameCount = BufferUtils.uint32(buffer);
         this.dot11FailedCount = BufferUtils.uint32(buffer);

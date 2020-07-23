@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -13,6 +13,9 @@
 
     <!-- Enlinkd -->
     <module>enlinkd</module>
+
+    <!-- Graphs -->
+    <module>graph</module>
 
     <!-- Topologies -->
     <module>topologies</module>
@@ -55,6 +58,7 @@
     <module>collection</module>
     <module>jdbc-collector</module>
     <module>juniper-tca-collector</module>
+    <module>prometheus-collector</module>
     <module>telemetry</module>
     <module>wsman</module>
 
@@ -71,9 +75,6 @@
     <!-- OpenNMS Ticketing API and implementations -->
     <module>ticketing</module>
     <module>request-tracker</module>
-
-    <!-- OpenNMS Resource CLI tool -->
-    <module>resource-cli</module>
 
     <!-- OpenNMS REST -->
     <module>rest</module>
@@ -113,6 +114,9 @@
     <module>newts</module>
     <module>newts-repository-converter</module>
 
+    <!-- timeseries -->
+    <module>timeseries</module>
+
     <!-- OpenNMS Notifications -->
     <module>notifications</module>
 
@@ -137,10 +141,12 @@
 
     <!-- Other projects -->
     <module>distributed</module>
+    <module>endpoints</module>
     <module>geocoder</module>
     <module>geolocation</module>
     <module>instrumentationLogReader</module>
     <module>name-cutter</module>
+    <module>search</module>
     <module>springframework-security</module>
     <module>status</module>
     <module>system-report</module>
@@ -174,5 +180,6 @@
 
     <module>jest</module>
     <module>dnsresolver</module>
+    <module>karaf-health</module>
   </modules>
 </project>

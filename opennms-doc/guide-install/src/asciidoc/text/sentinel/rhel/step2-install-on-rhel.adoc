@@ -5,14 +5,14 @@ Connect with _SSH_ to your remote _RHEL_ system where the _Sentinel_ should be i
 .Install the Yum repository
 [source, shell]
 ----
-yum install -y https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
+dnf install -y https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
 rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
 .Install the Sentinel package
 [source, bash]
 ----
-yum -y install opennms-sentinel
+dnf -y install opennms-sentinel
 ----
 
 With the successful installed packages the _Sentinel_ is installed in the following directory structure:

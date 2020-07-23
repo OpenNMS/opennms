@@ -36,8 +36,8 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin;
 
-@Command(scope = "jira", name = "show-config", description="Shows the current configuration for the Jira Ticketer Plugin")
-@org.apache.karaf.shell.commands.Command(scope = "jira", name = "show-config", description="Shows the current configuration for the Jira Ticketer Plugin")
+@Command(scope = "opennms", name = "jira-show-config", description="Shows the current configuration for the Jira Ticketer Plugin")
+@org.apache.karaf.shell.commands.Command(scope = "opennms", name = "jira-show-config", description="Shows the current configuration for the Jira Ticketer Plugin")
 @Service
 public class ShowConfigCommand extends OsgiCommandSupport implements Action {
 

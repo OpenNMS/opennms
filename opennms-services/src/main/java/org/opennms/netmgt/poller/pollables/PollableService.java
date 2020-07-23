@@ -40,6 +40,7 @@ import org.opennms.netmgt.scheduler.PostponeNecessary;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -403,7 +404,7 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
                 try {
                     withTreeLock(r, timeout);
                 } catch (LockUnavailable e) {
-                    LOG.info("Postponing poll for {}", this, e);
+                    LOG.info("Postponing poll for {}. Another service is currently holding the lock.", this);
                     throw new PostponeNecessary("LockUnavailable postpone poll");
                 }
                 status = r.getPollStatus();
@@ -445,11 +446,15 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
         m_schedule.schedule();
     }
 
-    /**
-     * <p>sendDeleteEvent</p>
-     */
-    public void sendDeleteEvent() {
-        getContext().sendEvent(getContext().createEvent(EventConstants.DELETE_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), new Date(), getStatus().getReason()));
+    public void sendDeleteEvent(final boolean ignoreUnmanaged) {
+        final Event event = getContext().createEvent(EventConstants.DELETE_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), new Date(), getStatus().getReason());
+        if (ignoreUnmanaged) {
+            final Parm parm = new Parm();
+            parm.setParmName(EventConstants.PARM_IGNORE_UNMANAGED);
+            parm.setValue(null);
+            event.addParm(new Parm(EventConstants.PARM_IGNORE_UNMANAGED, "true"));
+        }
+        getContext().sendEvent(event);
     }
 
     /**

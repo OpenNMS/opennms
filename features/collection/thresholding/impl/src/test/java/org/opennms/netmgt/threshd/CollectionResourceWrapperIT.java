@@ -42,10 +42,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.rpc.mock.MockRpcClientFactory;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.collectd.GenericIndexResource;
 import org.opennms.netmgt.collectd.GenericIndexResourceType;
 import org.opennms.netmgt.collectd.IfInfo;
@@ -69,6 +72,7 @@ import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.mock.MockNetwork;
@@ -82,16 +86,30 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmp.proxy.common.LocationAwareSnmpClientRpcImpl;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  *
  */
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+})
+@JUnitConfigurationEnvironment
+@JUnitTemporaryDatabase
 public class CollectionResourceWrapperIT {
     private boolean m_ignoreWarnings = false;
 
     private LocationAwareSnmpClient m_locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
 
+    @Autowired
+    private IfLabel m_ifLabelDao;
+    
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -131,7 +149,7 @@ public class CollectionResourceWrapperIT {
     @Test(expected=IllegalArgumentException.class)
     public void testBadConstructorCall() throws Throwable {
         try {
-            new CollectionResourceWrapper(null, 1, "127.0.0.1", "HTTP", null, null, null, null);
+            new CollectionResourceWrapper(null, 1, "127.0.0.1", "HTTP", null, null, null, null, null, null);
         } catch (Throwable e) {
             //e.printStackTrace();
             throw e;
@@ -141,7 +159,7 @@ public class CollectionResourceWrapperIT {
     @Test(expected=IllegalArgumentException.class)
     public void testBadderConstructorCall() throws Throwable {
         try {
-            new CollectionResourceWrapper(null, -1, null, null, null, null, null, null);
+            new CollectionResourceWrapper(null, -1, null, null, null, null, null, null, null, null);
         } catch (Throwable e) {
             e.printStackTrace();
             throw e;
@@ -552,7 +570,8 @@ public class CollectionResourceWrapperIT {
     
     // Wrapper interval value for counter rates calculation should be expressed in seconds.
     private CollectionResourceWrapper createWrapper(SnmpCollectionResource resource, Map<String, CollectionAttribute> attributes, Date timestamp) {
-        CollectionResourceWrapper wrapper = new CollectionResourceWrapper(timestamp, 1, "127.0.0.1", "SNMP", getRepository(), resource, attributes, getResourceStorageDao());
+        CollectionResourceWrapper wrapper = new CollectionResourceWrapper(timestamp, 1, "127.0.0.1", "SNMP",
+                getRepository(), resource, attributes, getResourceStorageDao(), m_ifLabelDao, null);
         return wrapper;
     }
     

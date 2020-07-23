@@ -135,7 +135,10 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
         if (m_config.getUseIsisDiscovery() != null) return m_config.getUseIsisDiscovery();
         return true;
     }
-    
+
+    public boolean disableBridgeVlanDiscovery() {
+        return Boolean.TRUE.equals(m_config.getDisableBridgeVlanDiscovery());
+    }
 
     public long getInitialSleepTime() {
         return m_config.getInitialSleepTime();

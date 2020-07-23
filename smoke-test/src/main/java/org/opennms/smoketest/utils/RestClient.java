@@ -29,14 +29,13 @@
 package org.opennms.smoketest.utils;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -46,20 +45,11 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.glassfish.jersey.client.ClientProperties;
-import org.json.XML;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -72,15 +62,10 @@ import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.smoketest.containers.OpenNMSContainer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opennms.smoketest.containers.OpenNMSContainer;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 public class RestClient {
 
@@ -296,10 +281,7 @@ public class RestClient {
         }
         final WebTarget target = getTarget().path("events");
         final Response response = getBuilder(target).post(Entity.entity(event, MediaType.APPLICATION_XML));
-        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
-            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
-                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
-        }
+        bailOnFailure(response);
     }
 
     public List<OnmsEvent> getEvents() {
@@ -372,4 +354,34 @@ public class RestClient {
         return target.request().header("Authorization", authorizationHeader);
     }
 
+    public void sendGraphML(String graphName, InputStream graphMLStream) {
+        Objects.requireNonNull(graphName);
+        Objects.requireNonNull(graphMLStream);
+
+        final WebTarget target = getTarget().path("graphml").path(graphName);
+        final Response response = getBuilder(target).accept(MediaType.APPLICATION_XML).post(Entity.entity(graphMLStream, MediaType.APPLICATION_XML));
+        bailOnFailure(response);
+    }
+
+    public Response getGraphML(String graphName) {
+        Objects.requireNonNull(graphName);
+
+        final WebTarget target = getTarget().path("graphml").path(graphName);
+        final Response response = getBuilder(target).accept(MediaType.APPLICATION_XML).get();
+        return response;
+    }
+
+    public void deleteGraphML(String graphName) {
+        Objects.requireNonNull(graphName);
+        final WebTarget target = getTarget().path("graphml").path(graphName);
+        final Response response = getBuilder(target).delete();
+        bailOnFailure(response);
+    }
+
+    private void bailOnFailure(Response response) {
+        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
+            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
+                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
+        }
+    }
 }

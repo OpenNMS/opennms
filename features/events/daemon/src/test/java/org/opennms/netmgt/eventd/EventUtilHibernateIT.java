@@ -261,6 +261,7 @@ public class EventUtilHibernateIT {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testPrimaryInterface() {
         final String testString = "This string has a primary interface set to %primaryinterface% and the interface set to %interface%.";
         final Event event = new EventBuilder("testUei", "testSource").setNodeid(1).setInterface(InetAddressUtils.addr("10.10.10.10")).getEvent();

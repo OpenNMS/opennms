@@ -215,6 +215,12 @@
                     (retries, timeouts...)</documentation>
               </annotation>
             </element>
+            <element maxOccurs="1" minOccurs="0" ref="this:profiles">
+              <annotation>
+                <documentation>Set of SNMP profiles that consist of SNMP parmeters
+                  (retries, timeouts...) and a filter expression</documentation>
+              </annotation>
+            </element>
           </sequence>
           
         </extension>
@@ -262,8 +268,57 @@
             </annotation>
           </attribute>
 
+          <attribute name="profile-label" use="optional">
+            <annotation>
+              <documentation>Profile label</documentation>
+            </annotation>
+          </attribute>
+
         </extension>
       </complexContent>
+    </complexType>
+  </element>
+
+  <element name="profile">
+    <annotation>
+      <documentation>Provides one set of SNMP parameters and a filter expression
+        that used to match a given IP address/Hostname.</documentation>
+    </annotation>
+
+    <complexType>
+      <complexContent>
+        <extension base="this:configuration">
+          <sequence>
+            <element type="string" name="label">
+              <annotation>
+                <documentation>A unique label to identify Snmp profile</documentation>
+              </annotation>
+            </element>
+            <element maxOccurs="1" minOccurs="0" type="string" name="filter">
+              <annotation>
+                <documentation>expression that can be used to filter SNMP profiles
+                  for a given IP address/Hostname.</documentation>
+              </annotation>
+            </element>
+          </sequence>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="profiles">
+    <annotation>
+      <documentation>Provides a set of snmp profiles.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:profile">
+          <annotation>
+            <documentation>snmp profile</documentation>
+          </annotation>
+        </element>
+      </sequence>
     </complexType>
   </element>
 

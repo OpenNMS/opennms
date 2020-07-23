@@ -63,6 +63,9 @@ public class QueueConfig implements QueueDefinition {
     @XmlAttribute(name="queue-size")
     private Integer queueSize;
 
+    @XmlAttribute(name="use-routing-key")
+    private Boolean useRoutingKey;
+
     @XmlElement(name="adapter")
     private List<AdapterConfig> adapters = new ArrayList<>();
 
@@ -111,6 +114,15 @@ public class QueueConfig implements QueueDefinition {
         this.queueSize = queueSize;
     }
 
+    @Override
+    public Optional<Boolean> getUseRoutingKey() {
+        return Optional.ofNullable(useRoutingKey);
+    }
+
+    public void setUseRoutingKey(Boolean useRoutingKey) {
+        this.useRoutingKey = useRoutingKey;
+    }
+
     public List<AdapterConfig> getAdapters() {
         return this.adapters;
     }
@@ -129,6 +141,7 @@ public class QueueConfig implements QueueDefinition {
                 Objects.equals(this.batchSize, that.batchSize) &&
                 Objects.equals(this.batchIntervalMs, that.batchIntervalMs) &&
                 Objects.equals(this.queueSize, that.queueSize) &&
+                Objects.equals(this.useRoutingKey, that.useRoutingKey) &&
                 Objects.equals(this.adapters, that.adapters);
     }
 
@@ -140,6 +153,7 @@ public class QueueConfig implements QueueDefinition {
                 this.batchSize,
                 this.batchIntervalMs,
                 this.queueSize,
+                this.useRoutingKey,
                 this.adapters);
     }
 
@@ -151,6 +165,7 @@ public class QueueConfig implements QueueDefinition {
                 .add("batch-size", this.batchSize)
                 .add("batch-interval-ms", this.batchIntervalMs)
                 .add("queue-size", this.queueSize)
+                .add("use-routing-key", this.useRoutingKey)
                 .addValue(this.adapters)
                 .toString();
     }

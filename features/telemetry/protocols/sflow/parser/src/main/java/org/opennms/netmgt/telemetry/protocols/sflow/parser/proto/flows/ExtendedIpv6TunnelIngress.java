@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_ipv6_tunnel_ingress {
 //     sampled_ipv6 header;
@@ -44,7 +44,7 @@ import com.google.common.base.MoreObjects;
 public class ExtendedIpv6TunnelIngress implements FlowData {
     public final SampledIpv6 header;
 
-    public ExtendedIpv6TunnelIngress(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedIpv6TunnelIngress(final ByteBuf buffer) throws InvalidPacketException {
         this.header = new SampledIpv6(buffer);
     }
 

@@ -108,7 +108,7 @@ public class StatusGetter {
          * We want our output to look like this:
          *     OpenNMS.Eventd         : running
          */
-        String spaces = "               ";
+        String spaces = "                    ";
         int running = 0;
         int services = 0;
         for (Entry<String, String> entry : results.entrySet()) {
@@ -121,7 +121,7 @@ public class StatusGetter {
             }
             if (m_controller.isVerbose()) {
                 System.out.println("OpenNMS." + daemon
-                        + spaces.substring(daemon.length()) + ": " + status);
+                        + spaces.substring(Math.min(daemon.length(),spaces.length()-1)) + ": " + status);
             }
         }
 

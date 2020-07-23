@@ -36,6 +36,7 @@
   "netflow.src_mask_len": 0,
   "netflow.src_port": 0,
   "netflow.tcp_flags": 0,
+  "netflow.delta_switched": 0,
   "netflow.tos": 0,
   "netflow.version": "Netflow v5",
   "node_dst": {

@@ -77,6 +77,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 
 /**
  * <p>Abstract PollerConfigManager class.</p>
@@ -122,9 +123,14 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <p>setUpInternalData</p>
      */
     protected void setUpInternalData() {
-        createUrlIpMap();
-        createPackageIpListMap();
-        initializeServiceMonitors();
+        getReadLock().lock();
+        try {
+            createUrlIpMap();
+            createPackageIpListMap();
+            initializeServiceMonitors();
+        } finally {
+            getReadLock().unlock();
+        }
     }
 
     /**
@@ -463,6 +469,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                     
                 } catch (final Throwable t) {
                     LOG.error("createPackageIpMap: failed to map package: {} to an IP List with filter \"{}\"", pkg.getName(), pkg.getFilter().getContent(), t);
+                    throw Throwables.propagate(t);
                 }
                 
             }
@@ -978,6 +985,7 @@ abstract public class PollerConfigManager implements PollerConfig {
             getReadLock().unlock();
         }
     }
+
 
     private void initializeServiceMonitors() {
         // Load up an instance of each monitor from the config

@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.OptionalLong;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -79,14 +80,18 @@ public class CollectionSetDTO implements CollectionSet {
     @XmlAttribute(name="disable-counter-persistence")
     private Boolean disableCounterPersistence;
 
+    @XmlAttribute(name = "sequence-number")
+    private Long sequenceNumber;
+
     public CollectionSetDTO() { }
 
     public CollectionSetDTO(CollectionAgent agent, CollectionStatus status,
             Date timestamp, Map<Resource, List<Attribute<?>>> attributesByResource,
-            boolean disableCounterPersistence) {
+            boolean disableCounterPersistence, Long sequenceNumber) {
         this.agent = new CollectionAgentDTO(agent);
         this.status = status;
         this.timestamp = timestamp;
+        this.sequenceNumber = sequenceNumber;
         collectionResources = new ArrayList<>();
         for (Entry<Resource, List<Attribute<?>>> entry : attributesByResource.entrySet()) {
             collectionResources.add(new CollectionResourceDTO(entry.getKey(), entry.getValue()));
@@ -104,7 +109,7 @@ public class CollectionSetDTO implements CollectionSet {
 
     @Override
     public int hashCode() {
-        return Objects.hash(agent, collectionResources, status, timestamp, disableCounterPersistence);
+        return Objects.hash(agent, collectionResources, status, timestamp, disableCounterPersistence, sequenceNumber);
     }
 
     @Override
@@ -121,7 +126,8 @@ public class CollectionSetDTO implements CollectionSet {
                && Objects.equals(this.collectionResources, other.collectionResources)
                && Objects.equals(this.status, other.status)
                && Objects.equals(this.timestamp, other.timestamp)
-               && Objects.equals(this.disableCounterPersistence, other.disableCounterPersistence);
+               && Objects.equals(this.disableCounterPersistence, other.disableCounterPersistence)
+               && Objects.equals(this.sequenceNumber, other.sequenceNumber);
     }
 
     @Override
@@ -175,7 +181,7 @@ public class CollectionSetDTO implements CollectionSet {
                 collectionResource.addAttribute(new AbstractCollectionAttribute(attributeType, collectionResource) {
                     @Override
                     public String getMetricIdentifier() {
-                        return attribute.getName();
+                        return attribute.getIdentifier() != null ? attribute.getIdentifier() : attribute.getName();
                     }
 
                     @Override
@@ -213,5 +219,10 @@ public class CollectionSetDTO implements CollectionSet {
         }
 
         visitor.completeCollectionSet(this);
+    }
+
+    @Override
+    public OptionalLong getSequenceNumber() {
+        return sequenceNumber == null ? OptionalLong.empty() : OptionalLong.of(sequenceNumber);
     }
 }

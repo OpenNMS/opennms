@@ -35,7 +35,7 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.SearchQuery;
-import org.opennms.features.topology.api.topo.SimpleSearchProvider;
+import org.opennms.features.topology.api.topo.simple.SimpleSearchProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;

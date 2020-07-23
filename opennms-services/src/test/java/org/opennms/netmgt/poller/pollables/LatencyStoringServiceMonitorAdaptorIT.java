@@ -53,12 +53,13 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.dao.outages.api.OverrideablePollOutagesDao;
+import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
+import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
+import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -87,7 +88,10 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
-        "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml"
+        "classpath:/META-INF/opennms/applicationContext-testPostgresBlobStore.xml",
+        "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-utils.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class)
@@ -109,6 +113,15 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
 
     @Autowired
     private ThresholdingService m_thresholdingService;
+    
+    @Autowired
+    private OverrideableThreshdDao m_threshdDao;
+    
+    @Autowired
+    private OverrideableThresholdingDao m_thresholdingDao;
+    
+    @Autowired
+    private OverrideablePollOutagesDao m_pollOutagesDao;
 
     @Override
     public void setTemporaryDatabase(MockDatabase database) {
@@ -140,9 +153,9 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         MockLogAppender.setupLogging();
 
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
-        PollOutagesConfigFactory.init();
-        ThresholdingConfigFactory.reload();
-        ThreshdConfigFactory.reload();
+        m_pollOutagesDao.overrideConfig(getClass().getResourceAsStream("/etc/poll-outages.xml"));
+        m_threshdDao.overrideConfig(getClass().getResourceAsStream("/etc/threshd-configuration.xml"));
+        m_thresholdingDao.overrideConfig(getClass().getResourceAsStream("/etc/thresholds.xml"));
         System.setProperty("opennms.home", previousOpennmsHome);
 
         MockNetwork network = new MockNetwork();
@@ -200,16 +213,15 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
         FileWriter writer = new FileWriter(file);
         writer.write(sb.toString());
         writer.close();
-
-        PollOutagesConfigFactory oldFactory = PollOutagesConfigFactory.getInstance();
-        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
-        PollOutagesConfigFactory.getInstance().afterPropertiesSet();
+        
+        Outages oldConfig = m_pollOutagesDao.getReadOnlyConfig();
+        m_pollOutagesDao.overrideConfig(new FileSystemResource(file).getInputStream());
 
         executeThresholdTest(new Double[] { 100.0 });
         m_eventIpcManager.getEventAnticipator().verifyAnticipated();
 
-        // Reset the state of the PollOutagesConfigFactory for any subsequent tests
-        PollOutagesConfigFactory.setInstance(oldFactory);
+        // Reset the state for any subsequent tests
+        m_pollOutagesDao.overrideConfig(oldConfig);
         file.delete();
     }
 
@@ -253,7 +265,7 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
                                                                                               m_thresholdingService);
         // Make sure that the ThresholdingSet initializes with test settings
         String previousOpennmsHome = System.setProperty("opennms.home", "src/test/resources");
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        m_threshdDao.rebuildPackageIpListMap();
 
         for (int i=0; i<rtValues.length; i++) {
             adaptor.handlePollResult(svc, parameters, service.poll(svc, parameters));

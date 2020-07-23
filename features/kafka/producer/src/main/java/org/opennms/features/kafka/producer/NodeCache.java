@@ -45,7 +45,7 @@ public class NodeCache {
 
     private final SessionUtils sessionUtils;
 
-    private final Map<Long, Long> lastUpdatedByNodeId = Maps.newHashMap();
+    private final Map<Long, Long> lastUpdatedByNodeId = Maps.newConcurrentMap();
 
     private long timeoutInMs = TimeUnit.MINUTES.toMillis(5);
 
@@ -54,7 +54,19 @@ public class NodeCache {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
     }
 
-    public synchronized void triggerIfNeeded(long nodeId, Consumer<OnmsNode> consumer) {
+    /**
+     * Calls the given consumer with a OnmsNode object corresponding to the given nodeId
+     * if no call has been made for this node within the configured timeout.
+     *
+     * The given node object may be null if no node exists with the given node id.
+     * The callback will be done within the context of a read-only transaction.
+     * If multiple threads use this function with the same node id, it is possible
+     * that multiple callbacks occur before the timeout.
+     *
+     * @param nodeId db id of the node to query
+     * @param consumer callback to issue with the node, if the timeout has not expired since the last callback
+     */
+    public void triggerIfNeeded(long nodeId, Consumer<OnmsNode> consumer) {
         final long now = System.currentTimeMillis();
         final Long lastUpdated = lastUpdatedByNodeId.get(nodeId);
         if (lastUpdated != null && now - lastUpdated <= timeoutInMs) {

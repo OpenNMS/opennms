@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Before;
@@ -91,7 +92,7 @@ public class NodeCategoryPolicyTest implements InitializingBean {
 
         for (final OnmsNode node : m_nodes) {
             System.err.println(node);
-            o = p.apply(node);
+            o = p.apply(node, new HashMap<>());
             if (o != null && o.getRequisitionedCategories().contains(p.getCategory())) {
                 matchedNodes.add(o);
             }

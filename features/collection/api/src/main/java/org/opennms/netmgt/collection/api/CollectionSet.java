@@ -30,6 +30,7 @@ package org.opennms.netmgt.collection.api;
 
 import java.util.Date;
 import java.util.List;
+import java.util.OptionalLong;
 
 
 /**
@@ -54,4 +55,12 @@ public interface CollectionSet extends CollectionVisitable {
      * @return
     */
     Date getCollectionTimestamp();
+
+    /**
+     * @return an optional containing the sequence number of the source this collection set was built from if
+     * applicable, otherwise an empty optional
+     */
+    default OptionalLong getSequenceNumber() {
+        return OptionalLong.empty();
+    }
 }

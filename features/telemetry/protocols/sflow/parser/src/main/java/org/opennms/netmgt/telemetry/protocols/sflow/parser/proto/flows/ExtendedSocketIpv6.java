@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_socket_ipv6 {
 //    unsigned int protocol;     /* IP Protocol type
@@ -65,7 +65,7 @@ public class ExtendedSocketIpv6 implements FlowData {
                 .toString();
     }
 
-    public ExtendedSocketIpv6(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedSocketIpv6(final ByteBuf buffer) throws InvalidPacketException {
         this.protocol = BufferUtils.uint32(buffer);
         this.local_ip = new IpV6(buffer);
         this.remote_ip = new IpV6(buffer);

@@ -40,6 +40,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.MetricRegistry;
+
 import io.opentracing.Tracer;
 
 /**
@@ -54,6 +56,8 @@ public class KafkaLocalMessageDispatcherFactory extends AbstractMessageDispatche
 
     @Autowired
     private TracerRegistry tracerRegistry;
+
+    private MetricRegistry metrics;
 
     public <S extends Message, T extends Message> void dispatch(final SinkModule<S, T> module, final Void metadata, final T message) {
         messageConsumerManager.dispatch(module, message);
@@ -78,6 +82,14 @@ public class KafkaLocalMessageDispatcherFactory extends AbstractMessageDispatche
         return getTracerRegistry().getTracer();
     }
 
+    @Override
+    public MetricRegistry getMetrics() {
+        if(metrics == null) {
+            metrics = new MetricRegistry();
+        }
+        return metrics;
+    }
+
     public void setTracerRegistry(TracerRegistry tracerRegistry) {
         this.tracerRegistry = tracerRegistry;
     }
@@ -90,5 +102,9 @@ public class KafkaLocalMessageDispatcherFactory extends AbstractMessageDispatche
     @Override
     public void destroy() {
         onDestroy();
+    }
+
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
     }
 }

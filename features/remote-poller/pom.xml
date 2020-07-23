@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -199,18 +199,6 @@ groovy.compiler.output.path=target/classes
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-webmvc</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.webflow</groupId>
-          <artifactId>spring-binding</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.webflow</groupId>
-          <artifactId>spring-js</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.webflow</groupId>
-          <artifactId>spring-webflow</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

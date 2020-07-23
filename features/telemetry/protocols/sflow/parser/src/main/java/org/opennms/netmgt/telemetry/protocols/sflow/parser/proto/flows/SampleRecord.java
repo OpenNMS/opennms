@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Map;
 
 import org.bson.BsonWriter;
@@ -38,6 +37,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
 import com.google.common.collect.ImmutableMap;
+
+import io.netty.buffer.ByteBuf;
 
 // struct sample_record {
 //    data_format sample_type;       /* Specifies the type of sample data */
@@ -53,7 +54,7 @@ public class SampleRecord extends Record<SampleData> {
             .put(DataFormat.from(4), CountersSampleExpanded::new)
             .build();
 
-    public SampleRecord(final ByteBuffer buffer) throws InvalidPacketException {
+    public SampleRecord(final ByteBuf buffer) throws InvalidPacketException {
         super(buffer, sampleDataFormats);
     }
 

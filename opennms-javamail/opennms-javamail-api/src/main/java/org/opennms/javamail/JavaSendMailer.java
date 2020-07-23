@@ -53,6 +53,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
+import com.google.common.base.Strings;
+
 /**
  * Use this class for sending e-mails.
  * <p>Crude extension of JavaMailer</p>
@@ -136,6 +138,9 @@ public class JavaSendMailer extends JavaMailer2 {
                 final String charset = m_config.getSendmailProtocol() != null? m_config.getSendmailProtocol().getCharSet() : Charset.defaultCharset().name();
                 final MimeMessageHelper helper = new MimeMessageHelper(mimeMsg, false, charset);
                 helper.setFrom(configMsg.getFrom());
+                if (!Strings.isNullOrEmpty(configMsg.getReplyTo())) {
+                    helper.setReplyTo(configMsg.getReplyTo());
+                }
                 helper.setTo(configMsg.getTo());
                 helper.setSubject(configMsg.getSubject());
             } catch (final MessagingException e) {
@@ -251,6 +256,12 @@ public class JavaSendMailer extends JavaMailer2 {
                 if (m_config.getSendmailMessage() != null) {
                     final SendmailMessage sendmailMessage = m_config.getSendmailMessage();
                     sendmailMessage.setFrom(PropertiesUtils.getProperty(props, "org.opennms.core.utils.fromAddress", sendmailMessage.getFrom()));
+
+                    final String replyTo = PropertiesUtils.getProperty(props, "org.opennms.core.utils.replyToAddress", sendmailMessage.getReplyTo());
+
+                    if (!Strings.isNullOrEmpty(replyTo)) {
+                        sendmailMessage.setReplyTo(replyTo);
+                    }
                 }
                 m_config.setUseJmta(PropertiesUtils.getProperty(props, "org.opennms.core.utils.useJMTA", m_config.isUseJmta()));
                 m_config.setUseAuthentication(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticate", m_config.isUseAuthentication()));

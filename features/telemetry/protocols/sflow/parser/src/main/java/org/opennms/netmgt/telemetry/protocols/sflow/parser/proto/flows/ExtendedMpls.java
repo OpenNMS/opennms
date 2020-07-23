@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_mpls { 
 //    next_hop nexthop;           /* Address of the next hop */ 
@@ -57,7 +57,7 @@ public class ExtendedMpls implements FlowData {
                 .toString();
     }
 
-    public ExtendedMpls(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedMpls(final ByteBuf buffer) throws InvalidPacketException {
         this.nexthop = new NextHop(buffer);
         this.in_stack = new LabelStack(buffer);
         this.out_stack = new LabelStack(buffer);

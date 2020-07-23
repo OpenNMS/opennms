@@ -121,7 +121,7 @@ public abstract class VmwareRequisitionTool {
             pw.println("An error occurred: " + error + "\n");
         }
         final StringBuilder sb = new StringBuilder();
-        sb.append("Usage: VmwareRequisitionTool vmware://username:password@host[/foreign-source]?keyA=valueA;keyB=valueB;...\n");
+        sb.append("Usage: VmwareRequisitionTool vmware://host[/foreign-source]?username=foo;password=bar;keyA=valueA;keyB=valueB;...\n");
         sb.append(" Note: in case the credentials are not specified, they should exist on vmware.config.xml\n");
 
         formatter.printHelp(sb.toString(), options);

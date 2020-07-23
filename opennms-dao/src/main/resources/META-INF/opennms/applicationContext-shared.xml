@@ -41,6 +41,8 @@
                 <value>org.opennms.netmgt.topology</value>
                 <value>org.opennms.netmgt.flows</value>
                 <value>org.opennms.netmgt.enlinkd</value>
+                <value>org.opennms.netmgt.endpoints</value>
+                <value>org.opennms.netmgt.graph</value>
             </list>
         </property>
         <!--  property name="schemaUpdate" value="true">

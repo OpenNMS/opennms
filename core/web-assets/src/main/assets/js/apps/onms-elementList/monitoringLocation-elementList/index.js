@@ -68,15 +68,19 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'monitor
 
 	// Reload all resources via REST
 	$scope.$parent.refresh = function() {
+		var queryArgs = {
+			limit: $scope.$parent.query.limit,
+			offset: $scope.$parent.query.offset,
+			orderBy: $scope.$parent.query.orderBy,
+			order: $scope.$parent.query.order
+		};
+		// FIQL search
+		if ($scope.$parent.query.searchParam) {
+			queryArgs['_s'] = $scope.$parent.query.searchParam;
+		}
 		// Fetch all of the items
 		monitoringLocationFactory.query(
-			{
-				_s: $scope.$parent.query.searchParam, // FIQL search
-				limit: $scope.$parent.query.limit,
-				offset: $scope.$parent.query.offset,
-				orderBy: $scope.$parent.query.orderBy,
-				order: $scope.$parent.query.order
-			}, 
+			queryArgs,
 			function(value, headers) {
 				$scope.$parent.items = value;
 

@@ -151,11 +151,6 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | assetRecord.vendorAssetNumber | String | Vendor Asset Number
 | assetRecord.vendorFax | String | Vendor Fax
 | assetRecord.vendorPhone | String | Vendor Phone
-| assetRecord.vmwareManagedEntityType | String | VMware Managed Entity Type
-| assetRecord.vmwareManagedObjectId | String | VMware Managed Object ID
-| assetRecord.vmwareManagementServer | String | VMware Management Server
-| assetRecord.vmwareState | String | VMware State
-| assetRecord.vmwareTopologyInfo | String | VMware Topology Information
 |===
 
 [[categoryProperties]]

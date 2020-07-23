@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.bsm.info;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.VertexInfoPanelItemProvider;
@@ -68,19 +69,15 @@ public class SimulationModeReductionKeyInfoPanelItemProvider extends VertexInfoP
         }
 
         dropdown.addValueChangeListener(event -> {
-            // The set of criteria may have changed since we last queried it above
-            // do we issue try finding it again, instead of using the same existing object
-            SetStatusToCriteria currentSetStatusTo = findCriteria(container, vertex);
-            Status selectedStatus = (Status) dropdown.getValue();
-            if (currentSetStatusTo != null) {
-                currentSetStatusTo.setStatus(selectedStatus);
-            } else {
-                currentSetStatusTo = new SetStatusToCriteria(vertex.getReductionKey(), selectedStatus);
-                container.addCriteria(currentSetStatusTo);
+            final SetStatusToCriteria currentSetStatusTo = findCriteria(container, vertex);
+            final Status selectedStatus = (Status) dropdown.getValue();
+            final SetStatusToCriteria newSetStatusTo = new SetStatusToCriteria(vertex.getReductionKey(), selectedStatus);
+            if (currentSetStatusTo == null || !Objects.equals(selectedStatus, currentSetStatusTo.getStatus())) {
+                if (currentSetStatusTo != null) {
+                    container.removeCriteria(currentSetStatusTo);
+                }
+                container.addCriteria(newSetStatusTo);
             }
-
-            // Remove the current selection before redrawing the layout in order
-            // to avoid centering on the current vertex
             container.getSelectionManager().setSelectedVertexRefs(Collections.emptyList());
             container.getSelectionManager().setSelectedEdgeRefs(Collections.emptyList());
             container.redoLayout();

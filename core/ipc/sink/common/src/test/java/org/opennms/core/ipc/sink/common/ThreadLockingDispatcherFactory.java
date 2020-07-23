@@ -35,6 +35,8 @@ import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
 import org.osgi.framework.BundleContext;
 
+import com.codahale.metrics.MetricRegistry;
+
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 
@@ -73,6 +75,11 @@ public class ThreadLockingDispatcherFactory<U extends Message> extends AbstractM
     @Override
     public Tracer getTracer() {
         return GlobalTracer.get();
+    }
+
+    @Override
+    public MetricRegistry getMetrics() {
+        return new MetricRegistry();
     }
 
     @SuppressWarnings("unchecked")

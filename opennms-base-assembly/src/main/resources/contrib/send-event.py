@@ -36,9 +36,9 @@ class Event:
         # Source
         ET.SubElement(root, "source").text = self.source
 
-        # Time, expected format: "Friday, 22 March 2019 13:38:57 o'clock UTC"
+        # Time, expected format: ISO-8601 ("2019-10-08T10:00:00-00:00")
         time = self.time if self.time is not None else datetime.datetime.utcnow()
-        ET.SubElement(root, "time").text = time.strftime("%A, %-d %B %Y %H:%M:%S o'clock UTC")
+        ET.SubElement(root, "time").text = time.strftime("%Y-%m-%dT%H:%M:%S-00:00")
 
         # Host
         ET.SubElement(root, "host").text = self.host

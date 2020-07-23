@@ -28,18 +28,25 @@
 
 package org.opennms.web.rest.v1;
 
-import java.util.List;
+import static org.opennms.web.svclayer.support.DefaultGraphResultsService.RESOURCE_IDS_CONTEXT;
 
+import java.util.List;
+import java.util.UUID;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.opennms.features.distributed.kvstore.api.JsonStore;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
@@ -47,11 +54,14 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.opennms.netmgt.model.resource.ResourceDTOCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 
 /**
  * Read-only API for retrieving resources.
@@ -62,11 +72,18 @@ import com.google.common.collect.Lists;
 @Path("resources")
 public class ResourceRestService extends OnmsRestService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceRestService.class);
+
     @Autowired
     private NodeDao m_nodeDao;
 
     @Autowired
     private ResourceDao m_resourceDao;
+
+    @Autowired
+    private JsonStore m_jsonStore;
+
+    private final Gson m_gson = new Gson();
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
@@ -123,4 +140,21 @@ public class ResourceRestService extends OnmsRestService {
 
         return ResourceDTO.fromResource(resource, depth);
     }
+
+
+    @POST
+    @Path("generateId")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response saveResourcesWithId(String[] resources) {
+
+        String resourcesInJson = m_gson.toJson(resources);
+        // The generated key will be same for a given input.
+        String key = UUID.nameUUIDFromBytes(resourcesInJson.getBytes()).toString();
+        m_jsonStore.put(key, resourcesInJson, RESOURCE_IDS_CONTEXT);
+        String jsonKey = m_gson.toJson(key);
+        return Response.ok(jsonKey).build();
+
+    }
+
 }

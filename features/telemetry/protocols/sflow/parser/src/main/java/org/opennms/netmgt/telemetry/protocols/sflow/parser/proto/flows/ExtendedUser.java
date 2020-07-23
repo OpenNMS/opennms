@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonBinary;
@@ -39,6 +38,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_user {
 //    charset src_charset;        /* Character set for src_user */
@@ -63,7 +64,7 @@ public class ExtendedUser implements FlowData {
                 .toString();
     }
 
-    public ExtendedUser(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedUser(final ByteBuf buffer) throws InvalidPacketException {
         this.src_charset = new Charset(buffer);
         this.src_user = new Opaque(buffer, Optional.empty(), Opaque::parseBytes);
         this.dst_charset = new Charset(buffer);

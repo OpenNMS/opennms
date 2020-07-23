@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct mib2_ip_group {
 //   unsigned int ipForwarding;
@@ -80,7 +80,7 @@ public class Mib2IpGroup implements CounterData {
     public final long ipFragFails;
     public final long ipFragCreates;
 
-    public Mib2IpGroup(final ByteBuffer buffer) throws InvalidPacketException {
+    public Mib2IpGroup(final ByteBuf buffer) throws InvalidPacketException {
         this.ipForwarding = BufferUtils.uint32(buffer);
         this.ipDefaultTTL = BufferUtils.uint32(buffer);
         this.ipInReceives = BufferUtils.uint32(buffer);

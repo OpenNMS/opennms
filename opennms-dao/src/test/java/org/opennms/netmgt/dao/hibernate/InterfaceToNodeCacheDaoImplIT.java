@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -238,5 +239,37 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
         m_cache.removeNodeId(defaultLocation.getLocationName(), theAddress, nodeId1);
 
         Assert.assertEquals(nodeId2, (int) m_cache.getFirstNodeId(defaultLocation.getLocationName(), theAddress).get());
+    }
+
+    @Test
+    @Transactional
+    public void testNodeDeletion() throws Exception {
+
+        final OnmsMonitoringLocation defaultLocation = m_monitoringLocationDao.getDefaultLocation();
+        Assert.assertNotNull(m_cache);
+
+        final OnmsNode node = new OnmsNode(defaultLocation,"node1");
+        InetAddress ipAddr1  = InetAddress.getByName("192.168.0.2");
+        String nodeLocation = defaultLocation.getLocationName();
+        addInterface(node, ipAddr1, nodeLocation);
+        InetAddress ipAddr2  = InetAddress.getByName("192.168.0.7");
+        addInterface(node, ipAddr2, nodeLocation);
+        InetAddress ipAddr3  = InetAddress.getByName("192.168.0.8");
+        addInterface(node, ipAddr3, nodeLocation);
+        final int nodeId = m_databasePopulator.getNodeDao().save(node);
+        m_cache.setNodeId(nodeLocation, ipAddr1, nodeId);
+        m_cache.setNodeId(nodeLocation, ipAddr2, nodeId);
+        m_cache.setNodeId(nodeLocation, ipAddr3, nodeId);
+
+        Assert.assertEquals(nodeId, (int) m_cache.getFirstNodeId(defaultLocation.getLocationName(), ipAddr2).get());
+        Assert.assertThat(m_cache.size(), Matchers.greaterThan(0));
+        m_cache.removeInterfacesForNode(nodeId);
+        Assert.assertEquals(0, m_cache.size());
+    }
+
+    private void addInterface(OnmsNode node, InetAddress inetAddress, String location) {
+        final OnmsIpInterface iface = new OnmsIpInterface();
+        iface.setIpAddress(inetAddress);
+        node.addIpInterface(iface);
     }
 }

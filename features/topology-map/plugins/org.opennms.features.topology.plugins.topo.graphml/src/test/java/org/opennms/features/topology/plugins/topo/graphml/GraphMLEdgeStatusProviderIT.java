@@ -108,22 +108,22 @@ public class GraphMLEdgeStatusProviderIT {
         serviceAccessor.setMeasurementsService(request -> new QueryResponse());
 
         final GraphMLGraph graph = GraphMLReader.read(getClass().getResourceAsStream("/test-graph2.xml")).getGraphs().get(0);
-        final GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(null, graph, serviceAccessor);
-        final GraphMLEdgeStatusProvider provider = new GraphMLEdgeStatusProvider(
+        final GraphMLTopologyProvider topologyProvider = new GraphMLTopologyProvider(graph, serviceAccessor);
+        final GraphMLEdgeStatusProvider statusProvider = new GraphMLEdgeStatusProvider(
                 topologyProvider,
                 new ScriptEngineManager(),
                 serviceAccessor,
                 Paths.get("src","test", "opennms-home", "etc", "graphml-edge-status"));
 
-        assertThat(provider.contributesTo("acme:regions"), is(true));
-        assertThat(provider.getNamespace(), is("acme:regions"));
+        assertThat(statusProvider.contributesTo("acme:regions"), is(true));
+        assertThat(statusProvider.getNamespace(), is("acme:regions"));
 
         // Calculating the status executes some tests defined int the according scripts as a side effect
-        final EdgeRef edgeRef = topologyProvider.getEdge("acme:regions", "center_north");
-        final Map<? extends EdgeRef, ? extends Status> status = provider.getStatusForEdges(topologyProvider, ImmutableList.of(edgeRef), new Criteria[0]);
+        final EdgeRef edgeRef = topologyProvider.getCurrentGraph().getEdge("acme:regions", "center_north");
+        final Map<? extends EdgeRef, ? extends Status> status = statusProvider.getStatusForEdges(topologyProvider.getCurrentGraph(), ImmutableList.of(edgeRef), new Criteria[0]);
 
         // Checking nodeID creation for vertices with only foreignSource/foreignID set
-        final VertexRef vertexRef = topologyProvider.getVertex("acme:regions", "west");
+        final VertexRef vertexRef = topologyProvider.getCurrentGraph().getVertex("acme:regions", "west");
         assertThat(vertexRef, is(notNullValue()));
         assertThat(vertexRef, is(instanceOf(GraphMLVertex.class)));
         assertThat(((GraphMLVertex) vertexRef).getNodeID(), is(4));

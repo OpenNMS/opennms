@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -47,6 +47,9 @@ import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSDESCRIPT
 import static org.opennms.netmgt.events.api.EventConstants.PARM_NODE_SYSNAME;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_RESCAN_EXISTING;
 import static org.opennms.netmgt.events.api.EventConstants.SERVICE_DELETED_EVENT_UEI;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
+import static org.opennms.netmgt.events.api.EventConstants.APPLICATION_DELETED_EVENT_UEI;
 
 import java.net.InetAddress;
 import java.util.Collection;
@@ -57,6 +60,9 @@ import java.util.Objects;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
+import org.opennms.netmgt.events.api.model.IValue;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
@@ -238,6 +244,26 @@ public abstract class EventUtils {
         bldr.setNodeid(nodeId);
         bldr.setInterface(addr);
         bldr.setService(service);
+
+        return bldr.getEvent();
+    }
+
+    /**
+     * Constructs a applicationDeleted Event for a given application id and name
+     * @param source
+     *              the source of the event
+     * @param applicationId
+     *              the id of the deleted application
+     * @param applicationName
+     *              the name of the deleted application
+     * @return an Event that represents the applicationDeleted event for the given id and name
+     */
+    public static Event createApplicationDeletedEvent(String source, int applicationId, String applicationName) {
+        debug("createApplicationDeletedEvent for nodeid:  %d", applicationId);
+
+        final EventBuilder bldr = new EventBuilder(APPLICATION_DELETED_EVENT_UEI, source);
+        bldr.addParam(PARM_APPLICATION_ID, applicationId);
+        bldr.addParam(PARM_APPLICATION_NAME, applicationName);
 
         return bldr.getEvent();
     }
@@ -609,6 +635,36 @@ public abstract class EventUtils {
     }
 
     /**
+     * <p>eventsMatch</p>
+     *
+     * @param e1 a {@link org.opennms.netmgt.events.api.model.IEvent} object.
+     * @param e2 a {@link org.opennms.netmgt.events.api.model.IEvent} object.
+     * @return a boolean.
+     */
+    public static boolean eventsMatch(final IEvent e1, final IEvent e2) {
+        if (e1 == e2) {
+            return true;
+        }
+        if (e1 == null || e2 == null) {
+            return false;
+        }
+        if (!Objects.equals(e1.getUei(), e2.getUei())) {
+            return false;
+        }
+        if (!Objects.equals(e1.getNodeid(), e2.getNodeid())) {
+            return false;
+        }
+        if (!Objects.equals(e1.getInterface(), e2.getInterface())) {
+            return false;
+        }
+        if (!Objects.equals(e1.getService(), e2.getService())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Ensures the given event has an interface
      *
      * @param e
@@ -800,4 +856,81 @@ public abstract class EventUtils {
 
     }
 
+    public static String getParm(IEvent e, String parmName) {
+        return getParm(e, parmName, null);
+    }
+
+    public static String getParm(IEvent e, String parmName, String defaultValue) {
+        if (e.getParmCollection().isEmpty()) {
+            return defaultValue;
+        }
+
+        IParm parm = e.getParmCollection()
+                .stream()
+                .filter(p -> Objects.equals(p.getParmName(), parmName))
+                .findFirst()
+                .orElse(null);
+
+        if (parm != null && parm.getValue() != null) {
+            return parm.getValue().getContent();
+        }
+
+        return defaultValue;
+    }
+
+    public static void requireParm(IEvent e, String parmName) throws InsufficientInformationException {
+        IParm parm = e.getParmCollection()
+                .stream()
+                .filter(p -> Objects.equals(p.getParmName(), parmName))
+                .findFirst()
+                .orElse(null);
+
+        if (parm != null) {
+            IValue value = parm.getValue();
+            if (value != null && value.getContent() != null) {
+                return;
+            }
+            throw new InsufficientInformationException("parameter " + parmName +
+                    " required but only null valued parms available");
+        }
+
+        throw new InsufficientInformationException("parameter " + parmName + " required but was not available");
+    }
+
+    public static void checkInterface(IEvent e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("Event is null");
+        } else if (e.getInterface() == null) {
+            throw new InsufficientInformationException("ipaddr for event is unavailable");
+        }
+    }
+
+    public static void checkNodeId(IEvent e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("e is null");
+        } else if (!e.hasNodeid()) {
+            throw new InsufficientInformationException("nodeid for event is unavailable");
+        }
+    }
+
+    public static void checkService(IEvent e) throws InsufficientInformationException {
+        if (e == null) {
+            throw new NullPointerException("e is null");
+        } else if (e.getService() == null || e.getService().isEmpty()) {
+            throw new InsufficientInformationException("service for event is unavailable");
+        }
+    }
+
+    public static int getIntParm(IEvent e, String parmName, int defaultValue) {
+        String intVal = getParm(e, parmName);
+
+        if (intVal == null)
+            return defaultValue;
+
+        try {
+            return Integer.parseInt(intVal);
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
+    }
 }

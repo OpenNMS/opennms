@@ -30,13 +30,18 @@ package org.opennms.netmgt.flows.api;
 
 import java.util.Objects;
 
+import org.opennms.core.rpc.utils.mate.ContextKey;
+
 public class FlowSource {
     private final String location;
     private final String sourceAddress;
+    private ContextKey contextKey;
 
-    public FlowSource(String location, String sourceAddress) {
+    public FlowSource(final String location, final String sourceAddress, final ContextKey contextKey) {
         this.location = Objects.requireNonNull(location);
         this.sourceAddress = Objects.requireNonNull(sourceAddress);
+        this.contextKey = contextKey;
+
     }
 
     public String getLocation() {
@@ -45,5 +50,9 @@ public class FlowSource {
 
     public String getSourceAddress() {
         return sourceAddress;
+    }
+
+    public ContextKey getContextKey() {
+        return contextKey;
     }
 }

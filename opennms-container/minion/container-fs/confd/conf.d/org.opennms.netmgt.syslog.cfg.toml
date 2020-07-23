@@ -1,0 +1,7 @@
+[template]
+src = "org.opennms.netmgt.syslog.cfg.tmpl"
+dest = "/opt/minion/etc/org.opennms.netmgt.syslog.cfg"
+keys = [
+    "/netmgt/syslog"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/org.opennms.netmgt.syslog.cfg"

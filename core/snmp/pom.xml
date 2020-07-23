@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -21,5 +21,6 @@
 
     <module>proxy-rpc-impl</module>
     <module>proxy-rpc-tests</module>
+    <module>profile-mapper</module>
   </modules>
 </project>

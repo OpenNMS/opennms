@@ -41,7 +41,7 @@ import org.opennms.features.distributed.coordination.api.RoleChangeHandler;
 /**
  * A command to exercise HA redundancy leader election functionality.
  */
-@Command(scope = "coordination", name = "join-election-domain", description = "Joins the specified election domain")
+@Command(scope = "opennms", name = "join-election-domain", description = "Joins the specified election domain")
 @Service
 public class JoinElectionDomain implements Action, RoleChangeHandler {
     @Argument(index = 0, name = "domain", description = "The domain to join", required = true, multiValued = false)

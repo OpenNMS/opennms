@@ -33,3 +33,5 @@ It is possible to combine multiple _Criteria_ to display just a subset of inform
 | `Not`       | database attribute | _String_  | -        | _unknown_ difference between `Ne`
 | `OrderBy`   | database attribute | -         | -        | Order the result set by a given attribute
 |===
+
+TIP: For date values, absolute value can be specified in ISO format, e.g. _2019-06-20T20:45:15.123-05:00_. Relative times can be specified by _+seconds_ and _-seconds_.

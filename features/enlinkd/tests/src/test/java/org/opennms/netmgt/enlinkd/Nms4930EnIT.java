@@ -357,8 +357,22 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
             @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE)
     })
     public void testNms4930Bft() throws Exception {
+        testNms4930Bft(false);
+    }
+
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=DLINK1_IP, port=161, resource=DLINK1_SNMP_RESOURCE)
+    })
+    public void testNms4930BftWithDisabledBridgeVlanDiscovery() throws Exception {
+        testNms4930Bft(true);
+    }
+
+    private void testNms4930Bft(final boolean disableBridgeVlanDiscovery) throws Exception {
         final OnmsNode dlink1 = m_nodeDao.findByForeignId("linkd", DLINK1_NAME);
         m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
+        m_linkdConfig.getConfiguration().setDisableBridgeVlanDiscovery(disableBridgeVlanDiscovery);
         m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
         m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
         m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
@@ -374,25 +388,25 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
 
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
-        
+
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
 
         Set<BridgeForwardingTableEntry> links  = m_linkd.getBridgeTopologyService().useBridgeTopologyUpdateBFT(dlink1.getId());
-        
+
         assertEquals(59,links.size());
         for (BridgeForwardingTableEntry link: links) {
-            System.err.println(link.printTopology()); 
+            System.err.println(link.printTopology());
             if (BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF ==  link.getBridgeDot1qTpFdbStatus()) {
                 continue;
             }
             assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED,link.getBridgeDot1qTpFdbStatus());
-            BridgeMacLink maclink = 
+            BridgeMacLink maclink =
                     BridgeForwardingTableEntry.create(
-                                      BridgePort.getFromBridgeForwardingTableEntry(link),
-                                      link.getMacAddress(),
-                                      BridgeMacLinkType.BRIDGE_LINK);
+                            BridgePort.getFromBridgeForwardingTableEntry(link),
+                            link.getMacAddress(),
+                            BridgeMacLinkType.BRIDGE_LINK);
             maclink.setBridgeMacLinkLastPollTime(maclink.getBridgeMacLinkCreateTime());
             m_bridgeMacLinkDao.save(maclink);
         }
@@ -400,14 +414,12 @@ String[] forwardersdlink2on10bbport= {"001195256302","f07d68a13d67","001517028e0
         assertEquals(58,m_bridgeMacLinkDao.countAll());
 
         for (BridgeMacLink maclink: m_bridgeMacLinkDao.findAll()) {
-                assertNotNull(maclink.getBridgePortIfIndex());
-                assertNotNull(maclink.getBridgePort());
-                assertNotNull(maclink.getNode());
-                assertNotNull(maclink.getMacAddress());
-                System.err.println(maclink.toString());
+            assertNotNull(maclink.getBridgePortIfIndex());
+            assertNotNull(maclink.getBridgePort());
+            assertNotNull(maclink.getNode());
+            assertNotNull(maclink.getMacAddress());
+            System.err.println(maclink.toString());
         }
-
-        
     }
 
     @Test

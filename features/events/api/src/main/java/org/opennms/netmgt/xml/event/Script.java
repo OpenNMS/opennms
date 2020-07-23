@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.netmgt.xml.event;
   //---------------------------------/
  //- Imported classes and packages -/
 //---------------------------------/
+
+import org.opennms.netmgt.events.api.model.IScript;
 
 import java.io.Serializable;
 
@@ -82,6 +84,16 @@ public class Script implements Serializable {
         setContent("");
     }
 
+    public static Script copyFrom(IScript source) {
+        if (source == null) {
+            return null;
+        }
+
+        Script script = new Script();
+        script.setContent(source.getContent());
+        script.setLanguage(source.getLanguage());
+        return script;
+    }
 
       //-----------/
      //- Methods -/

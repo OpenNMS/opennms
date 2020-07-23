@@ -28,10 +28,19 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui.editors;
 
-import java.util.Collection;
+import static org.hamcrest.Matchers.hasItem;
 
-import org.junit.Test;
+import java.sql.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.TreeSet;
+
 import org.junit.Assert;
+import org.junit.Test;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.BetweenRestriction;
 import org.opennms.core.criteria.restrictions.EqRestriction;
@@ -83,5 +92,51 @@ public class CriteriaBuilderTest {
         testRestriction("In(node.label,node1|node2).OrderBy(lastEventTime).Limit(10)", new InRestriction("node.label", new String[]{"node2", "node1"}));
         // encoded string
         testRestriction("In(node.label,no%28de|no%29de).OrderBy(lastEventTime).Limit(10)", new InRestriction("node.label", new String[]{"no)de", "no(de"}));
+    }
+
+    public void testDateRestriction(final String criteria, final ZonedDateTime zonedDateTime, final boolean strict) {
+        final Set<String> validRestrictions = new TreeSet<>();
+        validRestrictions.add(new LtRestriction("lastEventTime", Date.from(zonedDateTime.toInstant())).toString());
+
+        // add a second restriction one second after the original one...
+        if (!strict) {
+            validRestrictions.add(new LtRestriction("lastEventTime", Date.from(zonedDateTime.plus(1, ChronoUnit.SECONDS).toInstant())).toString());
+        }
+
+        final CriteriaBuilder criteriaBuilder = new CriteriaBuilder(OnmsAlarm.class);
+        final CriteriaBuilderHelper criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class, OnmsEvent.class);
+        criteriaBuilderHelper.parseConfiguration(criteriaBuilder, criteria);
+        final Collection<Restriction> restrictions = criteriaBuilder.toCriteria().getRestrictions();
+        Assert.assertThat(validRestrictions, hasItem(restrictions.iterator().next().toString()));
+    }
+
+    @Test
+    public void testDateHandling() {
+        final ZonedDateTime currentTime = ZonedDateTime.now();
+        final ZonedDateTime currentTimeMinusFive = currentTime.minus(5, ChronoUnit.MINUTES);
+        final ZonedDateTime currentTimeMinusTen = currentTime.minus(10, ChronoUnit.MINUTES);
+        final ZonedDateTime currentTimePlusFive = currentTime.plus(5, ChronoUnit.MINUTES);
+        final ZonedDateTime currentTimePlusTen = currentTime.plus(10, ChronoUnit.MINUTES);
+
+        // check relative values
+        testDateRestriction("Lt(lastEventTime,-300)", currentTimeMinusFive, false);
+        testDateRestriction("Lt(lastEventTime,-600)", currentTimeMinusTen, false);
+        testDateRestriction("Lt(lastEventTime,%2B300)", currentTimePlusFive, false);
+        testDateRestriction("Lt(lastEventTime,%2B600)", currentTimePlusTen, false);
+        testDateRestriction("Lt(lastEventTime,%2B0)", currentTime, false);
+        testDateRestriction("Lt(lastEventTime,-0)", currentTime, false);
+        testDateRestriction("Lt(lastEventTime,0)", currentTime, false);
+
+        // check absolute value (UTC)
+        final ZonedDateTime customDate1 = ZonedDateTime.of(2019,6,20,20,45,15,0, ZoneId.of("UTC"));
+        testDateRestriction("Lt(lastEventTime,2019-06-20T20:45:15.123Z)", customDate1, true);
+
+        // check absolute value (EST -05:00)
+        final ZonedDateTime customDate2 = ZonedDateTime.of(2019,6,20,20,45,15,0, TimeZone.getTimeZone("EST").toZoneId());
+        testDateRestriction("Lt(lastEventTime,2019-06-20T20:45:15.123-05:00)", customDate2, true);
+
+        // check absolute value (JST +09:00)
+        final ZonedDateTime customDate3 = ZonedDateTime.of(2019,6,20,20,45,15,0, TimeZone.getTimeZone("JST").toZoneId());
+        testDateRestriction("Lt(lastEventTime,2019-06-20T20:45:15.123%2B09:00)", customDate3, true);
     }
 }

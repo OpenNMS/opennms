@@ -33,7 +33,7 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -63,7 +63,7 @@ public class LinkdSearchProvider implements SearchProvider {
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
         LOG.debug("SearchProvider->query: called with search query: '{}'", searchQuery);
 
-        List<Vertex> vertices =  m_delegate.getVertices();
+        List<Vertex> vertices =  m_delegate.getCurrentGraph().getVertices();
         List<SearchResult> searchResults = Lists.newArrayList();
 
         for(Vertex vertex : vertices){
@@ -170,8 +170,7 @@ public class LinkdSearchProvider implements SearchProvider {
 
     @Override
     public boolean contributesTo(String namespace) {
-        return m_delegate.contributesTo(namespace);
+        return m_delegate.getNamespace().equalsIgnoreCase(namespace);
     }
-
 
 }

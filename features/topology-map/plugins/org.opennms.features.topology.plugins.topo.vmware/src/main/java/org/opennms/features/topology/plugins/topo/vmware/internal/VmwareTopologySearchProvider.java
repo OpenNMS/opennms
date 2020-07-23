@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.SearchQuery;
-import org.opennms.features.topology.api.topo.SimpleSearchProvider;
+import org.opennms.features.topology.api.topo.simple.SimpleSearchProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
@@ -53,7 +53,7 @@ public class VmwareTopologySearchProvider extends SimpleSearchProvider {
 
     @Override
     public List<? extends VertexRef> queryVertices(SearchQuery searchQuery, GraphContainer container) {
-        final List<Vertex> vertices = vmwareTopologyProvider.getVertices();
+        final List<Vertex> vertices = vmwareTopologyProvider.getCurrentGraph().getVertices();
         return vertices.stream().filter(v -> searchQuery.matches(v.getLabel())).collect(Collectors.toList());
     }
 }

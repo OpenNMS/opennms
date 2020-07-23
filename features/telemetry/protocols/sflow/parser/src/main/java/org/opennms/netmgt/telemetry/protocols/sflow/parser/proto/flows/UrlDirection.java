@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // enum url_direction {
 //    src    = 1,                 /* Source address is server */
@@ -52,7 +52,7 @@ public enum UrlDirection {
         this.value = value;
     }
 
-    public static UrlDirection from(final ByteBuffer buffer) throws InvalidPacketException {
+    public static UrlDirection from(final ByteBuf buffer) throws InvalidPacketException {
         final int value = (int) BufferUtils.uint32(buffer);
         switch (value) {
             case 1:

@@ -38,6 +38,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <c:import url="/includes/bootstrap.jsp">
+    <c:param name="ngapp" value="onms-ksc" />
     <c:param name="title" value="Resource Graph Results" />
     <c:param name="headTitle" value="Results" />
     <c:param name="headTitle" value="Resource Graphs" />
@@ -66,9 +67,17 @@
     </c:if>
     <div id="customTimeForm" class="mb-3" name="customTimeForm" ${showCustom}>
         <form role="form" class="form top-buffer" id="range_form" action="${requestScope.relativeRequestPath}" method="get">
-            <c:forEach var="resultSet" items="${results.graphResultSets}">
-                <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
-            </c:forEach>
+            <c:if test="${empty results.generatedId && empty results.nodeCriteria}">
+                <c:forEach var="resultSet" items="${results.graphResultSets}">
+                    <input type="hidden" name="resourceId" value="${resultSet.resource.id}"/>
+                </c:forEach>
+            </c:if>
+            <c:if test="${not empty results.generatedId}">
+                <input type="hidden" name="generatedId" value="${results.generatedId}"/>
+            </c:if>
+            <c:if test="${not empty results.nodeCriteria}">
+                <input type="hidden" name="nodeCriteria" value="${results.nodeCriteria}"/>
+            </c:if>
             <c:forEach var="report" items="${results.reports}">
                 <input type="hidden" name="reports" value="${report}"/>
             </c:forEach>
@@ -163,7 +172,7 @@
 <c:set var="showFootnote1" value="false"/>
 
 
-<div class="row" ng-app="onms-ksc" ng-controller="AddToKscCtrl">
+<div class="row" ng-controller="AddToKscCtrl">
 
     <div class="col-md-10" ng-controller="graphSearchBoxCtrl" id="search-graphs">
         <form class="form-inline pull-right mb-4">
@@ -328,9 +337,17 @@
 </div> <!-- graph-results -->
 
 <c:url var="relativeTimeReloadUrl" value="${requestScope.relativeRequestPath}">
-    <c:forEach var="resultSet" items="${results.graphResultSets}">
-        <c:param name="resourceId" value="${resultSet.resource.id}"/>
-    </c:forEach>
+    <c:if test="${empty results.generatedId && empty results.nodeCriteria}">
+        <c:forEach var="resultSet" items="${results.graphResultSets}">
+            <c:param name="resourceId" value="${resultSet.resource.id}"/>
+        </c:forEach>
+   </c:if>
+   <c:if test="${not empty results.generatedId}">
+        <c:param name="generatedId" value="${results.generatedId}"/>
+   </c:if>
+   <c:if test="${not empty results.nodeCriteria}">
+        <c:param name="nodeCriteria" value="${results.nodeCriteria}"/>
+   </c:if>
     <c:forEach var="report" items="${results.reports}">
         <c:param name="reports" value="${report}"/>
     </c:forEach>

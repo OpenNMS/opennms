@@ -33,6 +33,7 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -98,7 +99,7 @@ public class InterfacePolicyTest implements InitializingBean {
         
         for (final OnmsIpInterface iface : m_interfaces) {
             System.err.println(iface);
-            o = p.apply(iface);
+            o = p.apply(iface, Collections.emptyMap());
             if (o != null) {
                 matchedInterfaces.add(o);
             }

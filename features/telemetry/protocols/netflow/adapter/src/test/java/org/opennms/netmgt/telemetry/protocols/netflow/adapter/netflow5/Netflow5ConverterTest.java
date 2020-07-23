@@ -29,36 +29,40 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.protocols.netflow.adapter.Utils.buildAndSerialize;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.bson.BsonDocument;
-import org.bson.RawBsonDocument;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowConverter;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ParserBase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
+
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class Netflow5ConverterTest {
 
-    private Netflow5Converter nf5Converter = new Netflow5Converter();
+    private NetflowConverter nf5Converter = new NetflowConverter();
 
     @Test
     public void canParseNetflow5Flows() {
@@ -89,6 +93,7 @@ public class Netflow5ConverterTest {
         MatcherAssert.assertThat(flow.getOutputSnmp(), equalTo(0));
         MatcherAssert.assertThat(flow.getFirstSwitched(), equalTo(1434886852194L));
         MatcherAssert.assertThat(flow.getLastSwitched(), equalTo(1430591887476L));
+        MatcherAssert.assertThat(flow.getDeltaSwitched(), equalTo(1434886852194L));
         MatcherAssert.assertThat(flow.getPackets(), equalTo(5L));
         MatcherAssert.assertThat(flow.getDirection(), equalTo(Flow.Direction.INGRESS));
         MatcherAssert.assertThat(flow.getNextHop(), equalTo("0.0.0.0"));
@@ -112,15 +117,21 @@ public class Netflow5ConverterTest {
     private List<Flow> getFlowsForPayloadsInSession(List<byte[]> payloads) {
         final List<Flow> flows = new ArrayList<>();
         for (byte[] payload : payloads) {
-            final ByteBuffer buffer = ByteBuffer.wrap(payload);
+            final ByteBuf buffer = Unpooled.wrappedBuffer(payload);
             final Header header;
             try {
                 header = new Header(slice(buffer, Header.SIZE));
                 final Packet packet = new Packet(header, buffer);
                 packet.getRecords().forEach(rec -> {
-                    final ByteBuffer bf = ParserBase.serialize(Protocol.NETFLOW9, rec);
-                    final BsonDocument doc = new RawBsonDocument(bf.array());
-                    flows.addAll(nf5Converter.convert(doc));
+
+                    byte[] message = buildAndSerialize(Protocol.NETFLOW5, rec);
+                    try {
+                        FlowMessage flowMessage = FlowMessage.parseFrom(message);
+                        flows.addAll(nf5Converter.convert(flowMessage));
+                    } catch (InvalidProtocolBufferException e) {
+                        throw new RuntimeException(e);
+                    }
+
                 });
             } catch (InvalidPacketException e) {
                 throw new RuntimeException(e);

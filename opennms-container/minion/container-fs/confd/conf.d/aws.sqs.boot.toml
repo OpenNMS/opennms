@@ -1,0 +1,7 @@
+[template]
+src = "aws-sqs.boot.tmpl"
+dest = "/opt/minion/etc/featuresBoot.d/aws-sqs.boot"
+keys = [
+    "/aws"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/featuresBoot.d/aws-sqs.boot"

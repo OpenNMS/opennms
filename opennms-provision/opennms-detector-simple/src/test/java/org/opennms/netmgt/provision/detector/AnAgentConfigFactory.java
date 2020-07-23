@@ -29,9 +29,12 @@
 package org.opennms.netmgt.provision.detector;
 
 import java.net.InetAddress;
+import java.util.List;
 
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
+import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
@@ -48,6 +51,31 @@ public class AnAgentConfigFactory implements SnmpAgentConfigFactory {
         final SnmpAgentConfig agentConfig = new SnmpAgentConfig(address);
         agentConfig.setVersion(SnmpAgentConfig.DEFAULT_VERSION);
         return agentConfig;
+    }
+
+    @Override
+    public SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address) {
+        return null;
+    }
+
+    @Override
+    public void saveDefinition(Definition definition) {
+
+    }
+
+    @Override
+    public boolean removeFromDefinition(InetAddress ipAddress, String location, String module) {
+       return true;
+    }
+
+    @Override
+    public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module) {
+
+    }
+
+    @Override
+    public List<SnmpProfile> getProfiles() {
+        return null;
     }
 
 }

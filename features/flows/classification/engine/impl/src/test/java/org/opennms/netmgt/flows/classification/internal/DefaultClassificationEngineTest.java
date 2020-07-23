@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import org.junit.Test;
@@ -42,6 +43,7 @@ import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ClassificationRequestBuilder;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.persistence.api.ProtocolType;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 
@@ -53,11 +55,11 @@ public class DefaultClassificationEngineTest {
     public void verifyRuleEngineBasic() {
         DefaultClassificationEngine engine = new DefaultClassificationEngine(() ->
             Lists.newArrayList(
-                    new RuleBuilder().withName("rule1").withSrcPort(80).build(),
-                    new RuleBuilder().withName("rule2").withDstPort(443).build(),
-                    new RuleBuilder().withName("rule3").withSrcPort(8888).withDstPort(9999).build(),
-                    new RuleBuilder().withName("rule4").withSrcPort(8888).withDstPort(80).build(),
-                    new RuleBuilder().withName("rule5").build()
+                    new RuleBuilder().withName("rule1").withPosition(1).withSrcPort(80).build(),
+                    new RuleBuilder().withName("rule2").withPosition(2).withDstPort(443).build(),
+                    new RuleBuilder().withName("rule3").withPosition(3).withSrcPort(8888).withDstPort(9999).build(),
+                    new RuleBuilder().withName("rule4").withPosition(4).withSrcPort(8888).withDstPort(80).build(),
+                    new RuleBuilder().withName("rule5").withPosition(5).build()
             ), FilterService.NOOP);
 
         assertEquals("rule2", engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(443).build()));
@@ -96,13 +98,13 @@ public class DefaultClassificationEngineTest {
     public void verifyRuleEngineExtended() {
         // Define Rule set
         DefaultClassificationEngine engine = new DefaultClassificationEngine(() -> Lists.newArrayList(
-                new Rule("SSH", "22"),
-                new Rule("HTTP", "80"),
-                new Rule("HTTP_CUSTOM", "192.168.0.1", "80"),
-                new Rule("DUMMY", "192.168.1.*", "8000-9000,80,8080"),
-                new Rule("RANGE-TEST", "7000-8000"),
-                new Rule("OpenNMS", "8980"),
-                new RuleBuilder().withName("OpenNMS Monitor").withDstPort("1077").withSrcPort("5347").withSrcAddress("10.0.0.5").build()
+                new RuleBuilder().withName("SSH").withDstPort("22").withPosition(1).build(),
+                new RuleBuilder().withName("HTTP_CUSTOM").withDstAddress("192.168.0.1").withDstPort("80").withPosition(2).build(),
+                new RuleBuilder().withName("HTTP").withDstPort("80").withPosition(3).build(),
+                new RuleBuilder().withName("DUMMY").withDstAddress("192.168.1.0-192.168.1.255,10.10.5.3,192.168.0.0/24").withDstPort("8000-9000,80,8080").withPosition(4).build(),
+                new RuleBuilder().withName("RANGE-TEST").withDstPort("7000-8000").withPosition(5).build(),
+                new RuleBuilder().withName("OpenNMS").withDstPort("8980").withPosition(6).build(),
+                new RuleBuilder().withName("OpenNMS Monitor").withDstPort("1077").withSrcPort("5347").withSrcAddress("10.0.0.5").withPosition(7).build()
             ), FilterService.NOOP
         );
 
@@ -136,6 +138,13 @@ public class DefaultClassificationEngineTest {
                         .withDstPort(80)
                         .withDstAddress("192.168.0.2")
                         .withProtocol(ProtocolType.TCP).build()));
+        assertEquals("DUMMY", engine.classify(new ClassificationRequestBuilder()
+                .withLocation("Default")
+                .withSrcAddress("127.0.0.1")
+                .withDstAddress("10.10.5.3")
+                .withSrcPort(5213)
+                .withDstPort(8080)
+                .withProtocol(ProtocolType.TCP).build()));
 
         // Verify IP Range
         final IPAddressRange ipAddresses = new IPAddressRange("192.168.1.0", "192.168.1.255");
@@ -146,6 +155,12 @@ public class DefaultClassificationEngineTest {
             // Populate src address and port. Result must be the same
             classificationRequest.setSrcAddress("10.0.0.1");
             classificationRequest.setSrcPort(5123);
+            assertEquals("DUMMY", engine.classify(classificationRequest));
+        }
+
+        // Verify CIDR expression
+        for (IPAddress ipAddress : new IPAddressRange("192.168.0.0", "192.168.0.255")) {
+            final ClassificationRequest classificationRequest = new ClassificationRequest("Default", 0, null, 8080, ipAddress.toString(), ProtocolType.TCP);
             assertEquals("DUMMY", engine.classify(classificationRequest));
         }
 
@@ -189,6 +204,18 @@ public class DefaultClassificationEngineTest {
         for (int i=Rule.MIN_PORT_VALUE; i<Rule.MAX_PORT_VALUE; i++) {
             classificationEngine.classify(new ClassificationRequest("Default", 0, null, i, "127.0.0.1", ProtocolType.TCP));
         }
+    }
+
+    // See NMS-12429
+    @Test
+    public void verifyDoesNotRunOutOfMemory() {
+        final List<Rule> rules = Lists.newArrayList();
+        for (int i=0; i<100; i++) {
+            final Rule rule = new RuleBuilder().withName("rule1").withPosition(i+1).withProtocol("UDP").withDstAddress("192.168.0." + i).build();
+            rules.add(rule);
+        }
+        final DefaultClassificationEngine engine = new DefaultClassificationEngine(() -> rules, FilterService.NOOP);
+        engine.classify(new ClassificationRequest("localhost", 1234, "127.0.0.1", 80, "192.168.0.1", Protocols.getProtocol("UDP")));
     }
 
     @Test(timeout=5000)

@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct hw_tables {
 //   unsigned int host_entries;
@@ -114,7 +114,7 @@ public class HwTables implements CounterData {
     public final long acl_egress_slices;
     public final long acl_egress_slices_max;
 
-    public HwTables(final ByteBuffer buffer) throws InvalidPacketException {
+    public HwTables(final ByteBuf buffer) throws InvalidPacketException {
         this.host_entries = BufferUtils.uint32(buffer);
         this.host_entries_max = BufferUtils.uint32(buffer);
         this.ipv4_entries = BufferUtils.uint32(buffer);

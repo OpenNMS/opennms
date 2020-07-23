@@ -25,6 +25,9 @@
       <button type="button" class="btn btn-primary" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty" ng-disabled="nodeForm.$invalid" ng-disabled="timingStatus.isRunning">
         <span class="fa fa-save"></span> Save
       </button>
+      <button type="button" class="btn btn-secondary" uib-tooltip="Delete the current Node" ng-click="deleteNode(node)">
+        <span class="fa fa-trash"></span> Delete
+      </button>
       <button type="button" class="btn btn-secondary" id="go-back" ng-click="goBack()">
         <i class="fa fa-reply" aria-hidden="true"></i> Return
       </button>
@@ -67,6 +70,19 @@
       </div>
     </div>
   </div> <!-- row -->
+
+
+  <!-- Meta-Data Panel -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <span>Meta-Data</span>
+        </div>
+        <div class="card-body" ng-include="nodeMetaDataView"/>
+      </div>
+    </div>
+  </div>
 
   <div class="row">
     <!-- Assets Tab -->

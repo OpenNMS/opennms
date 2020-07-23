@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,11 +35,14 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.core.concurrent.PausibleScheduledThreadPoolExecutor;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 public abstract class ProvisioningITCase {
+    @Autowired
+    private Provisioner m_provisioner;
+
     @Autowired
     @Qualifier("scanExecutor")
     private PausibleScheduledThreadPoolExecutor m_scanExecutor;
@@ -76,7 +79,7 @@ public abstract class ProvisioningITCase {
     }
 
     protected void waitForEverything() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(4);
+        final CountDownLatch latch = new CountDownLatch(5);
         final Runnable runnable = new Runnable() {
             @Override public void run() {
                 latch.countDown();
@@ -86,11 +89,12 @@ public abstract class ProvisioningITCase {
         m_scanExecutor.execute(runnable);
         m_importExecutor.execute(runnable);
         m_writeExecutor.execute(runnable);
+        m_provisioner.getNewSuspectExecutor().execute(runnable);
         latch.await(5, TimeUnit.MINUTES);
     }
 
     protected void waitForImport() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(3);
+        final CountDownLatch latch = new CountDownLatch(4);
         final Runnable runnable = new Runnable() {
             @Override public void run() {
                 latch.countDown();
@@ -99,13 +103,14 @@ public abstract class ProvisioningITCase {
         m_scanExecutor.execute(runnable);
         m_importExecutor.execute(runnable);
         m_writeExecutor.execute(runnable);
+        m_provisioner.getNewSuspectExecutor().execute(runnable);
         latch.await(5, TimeUnit.MINUTES);
     }
 
     protected CountDownLatch anticipateEvents(final int numberToMatch, final String... ueis) {
         final CountDownLatch eventReceived = new CountDownLatch(numberToMatch);
         m_eventSubscriber.addEventListener(new EventListener() {
-            @Override public void onEvent(final Event e) {
+            @Override public void onEvent(final IEvent e) {
                 eventReceived.countDown();
             }
 

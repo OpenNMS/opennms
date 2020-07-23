@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features.distributed.kv-store</artifactId>
         <groupId>org.opennms.features.distributed</groupId>
-        <version>25.0.0-SNAPSHOT</version>
+        <version>27.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.opennms.features.distributed.kv-store.api</artifactId>
@@ -27,4 +27,10 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+    </dependencies>
 </project>

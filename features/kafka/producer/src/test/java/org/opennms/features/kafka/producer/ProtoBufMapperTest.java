@@ -29,9 +29,13 @@
 package org.opennms.features.kafka.producer;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.opennms.netmgt.events.api.EventConstants.TROUBLETICKET_CREATE_UEI;
 import static org.opennms.topologies.service.api.EdgeMockUtil.PROTOCOL;
 import static org.opennms.topologies.service.api.EdgeMockUtil.createEdge;
 
@@ -39,6 +43,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import org.hibernate.ObjectNotFoundException;
 import org.junit.Test;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.config.api.EventConfDao;
@@ -46,11 +51,12 @@ import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyProtocol;
 import org.opennms.topologies.service.api.EdgeMockUtil;
-import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * Tests for {@link ProtobufMapper}.
@@ -64,7 +70,7 @@ public class ProtoBufMapperTest {
      * Tests that the mapper can handle related alarms.
      */
     @Test
-    public void testRelatedalarms() {
+    public void testRelatedAlarms() {
         OnmsAlarm parentAlarm = generateTestAlarm();
         parentAlarm.setId(0);
         parentAlarm.setUei("parent");
@@ -99,6 +105,30 @@ public class ProtoBufMapperTest {
         testAlarm.setAlarmType(1);
 
         return testAlarm;
+    }
+
+    @Test
+    public void testAlarmWithTroubleTicket() {
+
+        OnmsAlarm testAlarm = generateTestAlarm();
+        testAlarm.setId(1);
+        testAlarm.setUei(TROUBLETICKET_CREATE_UEI);
+        testAlarm.setTTicketId("NMS-12725");
+        testAlarm.setTTicketState(TroubleTicketState.CREATE_PENDING);
+
+        OpennmsModelProtos.Alarm.Builder mappedAlarm = protobufMapper.toAlarm(testAlarm);
+        assertNotNull(mappedAlarm);
+        assertEquals(mappedAlarm.getTroubleTicketId(), testAlarm.getTTicketId());
+        assertEquals(mappedAlarm.getTroubleTicketState().getNumber(), testAlarm.getTTicketState().getValue());
+
+    }
+
+    @Test
+    public void canCatchObjectNotFoundExceptionsWhenMappingEvents() {
+        OnmsEvent e = mock(OnmsEvent.class);
+        when(e.getId()).thenThrow(new ObjectNotFoundException("oops", OnmsEvent.class.getCanonicalName()));
+        // Expect a null value back when mapping
+        assertThat(protobufMapper.toEvent(e), nullValue());
     }
 
     @Test
@@ -184,4 +214,5 @@ public class ProtoBufMapperTest {
         assertThat(mappedEdge.getTargetSegment().getRef().getId(), equalTo(EdgeMockUtil.TARGET_ID));
         assertThat(mappedEdge.getTargetSegment().getRef().getProtocol().name(), equalTo(EdgeMockUtil.PROTOCOL));
     }
+
 }

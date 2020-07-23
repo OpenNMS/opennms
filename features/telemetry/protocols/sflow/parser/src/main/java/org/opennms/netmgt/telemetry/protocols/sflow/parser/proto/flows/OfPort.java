@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 // struct of_port {
 //   unsigned hyper datapath_id;
@@ -47,7 +47,7 @@ public class OfPort implements CounterData {
     public final UnsignedLong datapath_id;
     public final long port_no;
 
-    public OfPort(final ByteBuffer buffer) throws InvalidPacketException {
+    public OfPort(final ByteBuf buffer) throws InvalidPacketException {
         this.datapath_id = BufferUtils.uint64(buffer);
         this.port_no = BufferUtils.uint32(buffer);
     }

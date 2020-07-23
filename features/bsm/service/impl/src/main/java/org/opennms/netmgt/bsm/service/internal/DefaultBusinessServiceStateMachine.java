@@ -290,7 +290,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         }
 
         for (BusinessServiceStateChangeHandler handler : m_handlers) {
-            handler.handleBusinessServiceStateChanged(businessService, vertex.getStatus(), previousStatus);
+            handler.handleBusinessServiceStateChanged(graph, businessService, vertex.getStatus(), previousStatus);
         }
     }
 

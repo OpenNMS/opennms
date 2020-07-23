@@ -75,6 +75,7 @@ public final class NodeDiscoveryBridge extends NodeCollector {
 
     private final BridgeTopologyService m_bridgeTopologyService;
     private final int m_maxSize;
+    private final boolean m_disableBridgeVlanDiscovery;
     /**
      * Constructs a new SNMP collector for Bridge Node Discovery. The
      * collection does not occur until the <code>run</code> method is invoked.
@@ -88,10 +89,12 @@ public final class NodeDiscoveryBridge extends NodeCollector {
             final BridgeTopologyService bridgeTopologyService,
             final int maxSize,
             final LocationAwareSnmpClient locationAwareSnmpClient,
-            final long interval,final long initial, final Node node) {
+            final long interval,final long initial, final Node node,
+            final boolean disableBridgeVlanDiscovery) {
         super(locationAwareSnmpClient, interval, initial,node);
         m_bridgeTopologyService = bridgeTopologyService;
         m_maxSize = maxSize;
+        m_disableBridgeVlanDiscovery = disableBridgeVlanDiscovery;
     }
 
     public void collect() {
@@ -99,7 +102,7 @@ public final class NodeDiscoveryBridge extends NodeCollector {
 
         SnmpAgentConfig peer = getSnmpAgentConfig();
         String community = peer.getReadCommunity();
-        Map<Integer, String> vlanmap = getVtpVlanMap(peer);
+        Map<Integer, String> vlanmap = (m_disableBridgeVlanDiscovery) ? new HashMap<>() : getVtpVlanMap(peer);
         Map<Integer,SnmpAgentConfig> vlanSnmpAgentConfigMap = new HashMap<Integer, SnmpAgentConfig>();
         for (Integer vlanId: vlanmap.keySet()) {
             LOG.debug("run: node [{}], support cisco vtp: setting peer community for vlan: {}, vlanname: {}",

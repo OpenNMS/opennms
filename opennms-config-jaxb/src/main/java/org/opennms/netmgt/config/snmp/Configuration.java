@@ -349,7 +349,7 @@ public class Configuration implements Serializable {
      * @return the value of field 'Port'.
      */
     public final Integer getPort() {
-        return m_port == null? 0 : m_port;
+        return m_port == null? 161 : m_port;
     }
 
     /**

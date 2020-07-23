@@ -47,6 +47,10 @@ public class TimeRangeFilter implements Filter {
         return end;
     }
 
+    public long getDurationMs() {
+        return end - start;
+    }
+
     @Override
     public <T> T visit(FilterVisitor<T> visitor) {
         return visitor.visit(this);

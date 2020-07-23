@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.doc</groupId>
         <artifactId>parent</artifactId>
-        <version>25.0.0-SNAPSHOT</version>
+        <version>27.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>guide-admin</artifactId>
     <packaging>pom</packaging>
@@ -18,6 +18,8 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <skipAssembly>false</skipAssembly>
+                    <overrideUid>0</overrideUid>
+                    <overrideGid>0</overrideGid>
                     <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
             </plugin>

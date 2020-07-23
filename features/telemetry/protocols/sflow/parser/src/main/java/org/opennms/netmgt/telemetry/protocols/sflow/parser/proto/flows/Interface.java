@@ -28,21 +28,21 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // typedef unsigned int interface;
 
 public class Interface {
     public final long iface;
 
-    public Interface(final ByteBuffer buffer) throws InvalidPacketException {
+    public Interface(final ByteBuf buffer) throws InvalidPacketException {
         this.iface = BufferUtils.uint32(buffer);
     }
 

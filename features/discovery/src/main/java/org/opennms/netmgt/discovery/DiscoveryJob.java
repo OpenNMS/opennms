@@ -35,6 +35,7 @@ import java.util.Objects;
 
 import org.opennms.core.utils.IteratorUtils;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
 
@@ -46,23 +47,25 @@ public class DiscoveryJob {
     private final String m_foreignSource;
     private final String m_location;
     private final double m_packetsPerSecond;
+    private DiscoveryConfiguration m_config;
 
     /**
      * Construct a {@link DiscoveryJob}. All ranges must have the 
      * same foreignSource and location for the message to be routed correctly.
-     * 
-     * @param ranges
+     *  @param ranges
      * @param foreignSource
      * @param location
      * @param packetsPerSecond
+     * @param config
      */
-    public DiscoveryJob(List<IPPollRange> ranges, String foreignSource, String location, double packetsPerSecond) {
+    public DiscoveryJob(List<IPPollRange> ranges, String foreignSource, String location, double packetsPerSecond, DiscoveryConfiguration config) {
         m_ranges = Preconditions.checkNotNull(ranges, "ranges argument");
         // NMS-8767: Allow null foreignSources so that Provisiond will create non-provisioned nodes
         //m_foreignSource = Preconditions.checkNotNull(foreignSource, "foreignSource argument");
         m_foreignSource = foreignSource;
         m_location = Preconditions.checkNotNull(location, "location argument");
         m_packetsPerSecond = packetsPerSecond > 0.0 ? packetsPerSecond : DiscoveryConfigFactory.DEFAULT_PACKETS_PER_SECOND;
+        m_config = config;
 
         // Verify that all ranges in this job have the same foreign source
         Preconditions.checkState(m_ranges.stream().allMatch(range -> range.getForeignSource() == null || m_foreignSource.equals(range.getForeignSource())));
@@ -92,6 +95,10 @@ public class DiscoveryJob {
 
     public double getPacketsPerSecond() {
         return m_packetsPerSecond;
+    }
+
+    public DiscoveryConfiguration getConfig() {
+        return m_config;
     }
 
     @Override

@@ -108,6 +108,12 @@ public interface Flow {
     Integer getEngineType();
 
     /**
+     * Unix timestamp in ms at which the previous exported packet
+     * associated with this flow was switched.
+     */
+    Long getDeltaSwitched();
+
+    /**
      * Unix timestamp in ms at which the first packet
      * associated with this flow was switched.
      */
@@ -218,4 +224,15 @@ public interface Flow {
      * VLAN ID.
      */
     Integer getVlan();
+
+    /**
+     * Method to get node lookup identifier.
+     *
+     * This field can be used as an alternate means to identify the
+     * exporter node when the source address of the packets are altered
+     * due to address translation.
+     *
+     * * @return the identifier
+     */
+    String getNodeIdentifier();
 }

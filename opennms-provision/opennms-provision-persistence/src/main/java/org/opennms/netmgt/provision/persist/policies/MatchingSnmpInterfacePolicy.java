@@ -29,6 +29,8 @@
 package org.opennms.netmgt.provision.persist.policies;
 
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -86,7 +88,7 @@ public class MatchingSnmpInterfacePolicy extends BasePolicy<OnmsSnmpInterface> i
     
     /** {@inheritDoc} */
     @Override
-    public OnmsSnmpInterface act(OnmsSnmpInterface iface) {
+    public OnmsSnmpInterface act(OnmsSnmpInterface iface, Map<String, Object> attributes) {
         switch (m_action) {
         case DO_NOT_PERSIST: 
             LOG.debug("NOT Persisting {} according to policy", iface);

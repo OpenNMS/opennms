@@ -36,17 +36,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.drools.core.ClockType;
-import org.drools.core.time.SessionPseudoClock;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
@@ -59,9 +58,17 @@ import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.conf.ClockTypeOption;
+import org.kie.api.time.SessionClock;
+import org.kie.api.time.SessionPseudoClock;
 import org.kie.internal.io.ResourceFactory;
+import org.opennms.core.sysprops.SystemProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 
 /**
  * This class focuses on providing a Drools context which loads a set of rules
@@ -74,11 +81,20 @@ import org.slf4j.LoggerFactory;
 public class ManagedDroolsContext {
     private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
 
+    private static final String JMX_DOMAIN_PREFIX = "org.opennms.features.drools.";
+
+    /**
+     * Frequency at which the liveness check is scheduled
+     */
+    private static final long LIVENESS_CHECK_INTERVAL_MS = SystemProperties.getLong(
+            "org.opennms.netmgt.alarmd.drools.liveness_check_interval_ms", TimeUnit.SECONDS.toMillis(30));
+
+    private final MetricRegistry metrics;
     private final File rulesFolder;
     private final String kbaseName;
     private final String kSessionName;
 
-    private boolean started = false;
+    private final AtomicBoolean started = new AtomicBoolean(false);
 
     private boolean usePseudoClock = false;
 
@@ -90,25 +106,31 @@ public class ManagedDroolsContext {
 
     private KieSession kieSession;
 
-    private Timer timer;
+    private Thread thread;
 
     private SessionPseudoClock clock;
 
-    /**
-     * Ensure that this lock is fair so that ordering is respected.
-     */
-    private final ReentrantLock lock = new ReentrantLock(true);
+    protected AtomicLong fireThreadId = new AtomicLong(-1);
 
     private Consumer<KieSession> onNewKiewSessionCallback;
+
+    private JmxReporter metricsReporter;
+    private java.util.Timer livenessTimer;
+    private Timer livenessTimerMetric;
 
     public ManagedDroolsContext(File rulesFolder, String kbaseName, String kSessionSuffixName) {
         this.rulesFolder = Objects.requireNonNull(rulesFolder);
         this.kbaseName = Objects.requireNonNull(kbaseName);
         this.kSessionName = String.format("%s-%s", kbaseName, Objects.requireNonNull(kSessionSuffixName));
+        this.metrics = new MetricRegistry();
+
+        // Register metrics
+        metrics.register("facts", (Gauge<Long>) () -> kieSession != null ? kieSession.getFactCount() : -1);
+        livenessTimerMetric = metrics.timer("liveness");
     }
 
     public synchronized void start() {
-        if (started) {
+        if (started.get()) {
             LOG.warn("The context for session {} is already started. Ignoring start request.", kSessionName);
             return;
         }
@@ -117,6 +139,15 @@ public class ManagedDroolsContext {
         final ReleaseId kieModuleReleaseId = buildKieModule();
         // Fire it up
         startWithModuleAndFacts(kieModuleReleaseId, Collections.emptyList());
+
+        metricsReporter = JmxReporter.forRegistry(metrics)
+                .inDomain(JMX_DOMAIN_PREFIX + kbaseName)
+                .build();
+        try {
+            metricsReporter.start();
+        } catch (IllegalArgumentException e) {
+            LOG.warn("Failed to start metrics reporter. JMX metrics may not be available or accurate for kbase: {}", kbaseName);
+        }
     }
 
     public void onStart() {
@@ -127,12 +158,11 @@ public class ManagedDroolsContext {
         final KieServices ks = KieServices.Factory.get();
         kieContainer = ks.newKieContainer(releaseId);
         kieSession = kieContainer.newKieSession(kSessionName);
-
         if (usePseudoClock) {
-            this.clock = kieSession.getSessionClock();
-        } else {
-            this.clock = null;
+            clock = kieSession.getSessionClock();
         }
+        // Add the clock to the session
+        kieSession.insert(kieSession.getSessionClock());
 
         // Optionally restore any facts
         factObjects.forEach(factObject -> kieSession.insert(factObject));
@@ -145,32 +175,63 @@ public class ManagedDroolsContext {
         releaseIdForContainerUsedByKieSession = releaseId;
 
         // We're started!
-        started = true;
+        started.set(true);
+
+        // Schedule the liveness check
+        livenessTimer = new java.util.Timer();
+        livenessTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    if (kieSession != null) {
+                        final Timer.Context ctx = livenessTimerMetric.time();
+                        final CountDownLatch latch = new CountDownLatch(1);
+                        kieSession.submit(kieSession -> {
+                            latch.countDown();
+                            ctx.close();
+                        });
+                        latch.await();
+                    }
+                } catch (Exception e) {
+                    LOG.error("Exception occurred while performing liveness check.", e);
+                }
+            }
+        }, LIVENESS_CHECK_INTERVAL_MS, LIVENESS_CHECK_INTERVAL_MS);
 
         // Allow the base classes to seed the context before we start ticking
         onStart();
 
         if (!useManualTick) {
-            timer = new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    lock.lock();
+            thread = new Thread(() -> {
+                fireThreadId.set(Thread.currentThread().getId());
+                while (started.get()) {
                     try {
-                        LOG.debug("Firing rules.");
-                        kieSession.fireAllRules();
+                        LOG.debug("Firing until halt.");
+                        kieSession.fireUntilHalt();
                     } catch (Exception e) {
-                        LOG.error("Error occurred while firing rules.", e);
-                    } finally {
-                        lock.unlock();
+                        // If we're supposed to be stopped, ignore the exception
+                        if (started.get()) {
+                            LOG.error("Error occurred while firing rules. Waiting 30 seconds before starting to fire again.", e);
+                            try {
+                                Thread.sleep(TimeUnit.SECONDS.toMillis(30));
+                            } catch (InterruptedException ex) {
+                                LOG.warn("Interrupted while waiting to start firing rules again. Exiting thread.");
+                                return;
+                            }
+                        } else {
+                            LOG.warn("Encountered exception while firing rules, but the engine is stopped. Exiting thread.", e);
+                            return;
+                        }
                     }
                 }
-            }, TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(1));
+            });
+            thread.setName("DroolsSession-" + kSessionName);
+            thread.start();
         }
     }
 
     public synchronized void reload() {
-        if (!started) {
+        if (!started.get()) {
             LOG.warn("The context for session {} is not yet started. Treating reload as a start request", kSessionName);
             start();
             return;
@@ -181,20 +242,34 @@ public class ManagedDroolsContext {
         final ReleaseId releaseId = buildKieModule();
 
         // The rules we're successfully built and deployed
-        // Let's lock the current engine, grab the facts, and stop it
-        final List<Object> factObjects;
-        lock.lock();
-        try {
-            // Capture the current set of facts
-            factObjects  = kieSession.getFactHandles().stream()
-                    .map(fact -> kieSession.getObject(fact))
-                    .collect(Collectors.toList());
 
-            // Stop the engine
-            stop();
-        } finally {
-            lock.unlock();
+        // Let's halt the current engine
+        started.set(false);
+        if (!useManualTick) {
+            kieSession.halt();
+            try {
+                thread.join(TimeUnit.MINUTES.toMillis(2));
+            } catch (InterruptedException e) {
+                LOG.warn("Interrupted while waiting for session to halt. Aborting reload request.");
+                return;
+            }
+
+            // The thread should be stopped, but we don't know for sure
+            // Let's me a best effort to stop it before we proceed and start another one
+            if (thread.isAlive()) {
+                LOG.warn("Thread is still alive! Interrupting.");
+                thread.interrupt();
+            }
         }
+
+        // Grab the facts
+        final List<Object> factObjects = kieSession.getFactHandles().stream()
+                .map(kieSession::getObject)
+                .filter(o -> !(o instanceof SessionClock)) // Exclude the fact for our SessionClock
+                .collect(Collectors.toList());
+
+        // Dispose the session
+        kieSession.dispose();
 
         // Remove the previous module
         if (releaseIdForContainerUsedByKieSession != null) {
@@ -272,21 +347,17 @@ public class ManagedDroolsContext {
     }
 
     public void tick() {
-        lock.lock();
-        try {
-            kieSession.fireAllRules();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    ReentrantLock getLock() {
-        return lock;
+        kieSession.fireAllRules();
     }
 
     public synchronized void stop() {
-        if (timer != null) {
-            timer.cancel();
+        started.set(false);
+        if (metricsReporter != null) {
+            metricsReporter.close();
+        }
+        if (livenessTimer != null) {
+            livenessTimer.cancel();
+            livenessTimer = null;
         }
         if (kieSession != null) {
             kieSession.halt();
@@ -296,15 +367,36 @@ public class ManagedDroolsContext {
             kieContainer.dispose();
             kieContainer = null;
         }
-        started = false;
+        if (thread != null) {
+            thread.interrupt();
+            // Wait until the thread is stopped
+            try {
+                final long waitMillis = TimeUnit.MINUTES.toMillis(2);
+                thread.join(waitMillis);
+                if (thread.isAlive()) {
+                    LOG.error("Thread is still alive after waiting for {}ms.", waitMillis);
+                }
+            } catch (InterruptedException e) {
+                LOG.info("Interrupted while waiting for thread to exit.");
+            }
+            thread = null;
+        }
+    }
+
+    public MetricRegistry getMetrics() {
+        return metrics;
     }
 
     public boolean isStarted() {
-        return started;
+        return started.get();
     }
 
     public SessionPseudoClock getClock() {
         return clock;
+    }
+
+    public boolean isUsePseudoClock() {
+        return usePseudoClock;
     }
 
     public void setUsePseudoClock(boolean usePseudoClock) {

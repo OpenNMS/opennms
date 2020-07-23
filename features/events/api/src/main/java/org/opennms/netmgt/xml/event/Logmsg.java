@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,6 +31,8 @@ package org.opennms.netmgt.xml.event;
   //---------------------------------/
  //- Imported classes and packages -/
 //---------------------------------/
+
+import org.opennms.netmgt.events.api.model.ILogMsg;
 
 import java.io.Serializable;
 
@@ -99,6 +101,17 @@ public class Logmsg implements Serializable {
         setDest("logndisplay");
     }
 
+    public static Logmsg copyFrom(ILogMsg source) {
+        if (source == null) {
+            return null;
+        }
+
+        Logmsg logmsg = new Logmsg();
+        logmsg.setContent(source.getContent());
+        logmsg.setDest(source.getDest());
+        logmsg.setNotify(source.hasNotify() ? source.getNotify() : null);
+        return logmsg;
+    }
 
       //-----------/
      //- Methods -/

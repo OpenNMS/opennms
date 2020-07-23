@@ -53,7 +53,8 @@ public class EnlinkdConfigurationTest extends XmlTestNoCastor<EnlinkdConfigurati
                 "                     use-bridge-discovery=\"true\"\n" + 
                 "                     use-lldp-discovery=\"true\"\n" + 
                 "                     use-ospf-discovery=\"true\"\n" + 
-                "                     use-isis-discovery=\"true\"\n" + 
+                "                     use-isis-discovery=\"true\"\n" +
+                "                     disable-bridge-vlan-discovery=\"false\"\n" +
                 "                     />"
             }
         });
@@ -69,6 +70,7 @@ public class EnlinkdConfigurationTest extends XmlTestNoCastor<EnlinkdConfigurati
         config.setUseLldpDiscovery(true);
         config.setUseOspfDiscovery(true);
         config.setUseIsisDiscovery(true);
+        config.setDisableBridgeVlanDiscovery(false);
         return config;
     }
 }

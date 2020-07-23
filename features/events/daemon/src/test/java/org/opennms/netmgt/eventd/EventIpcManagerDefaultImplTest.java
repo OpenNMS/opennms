@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,6 +52,8 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.ThreadAwareEventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -211,7 +213,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         
         m_mocks.verifyAll();
         
-        assertTrue("could not remove broadcasted event--did it make it?", m_listener.getEvents().remove(event));
+        assertTrue("could not remove broadcasted event--did it make it?",
+                m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(event)));
     }
 
     public void testAddEventListenerTwoArgumentListNullListener() throws Exception {
@@ -252,7 +255,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         
         m_mocks.verifyAll();
         
-        assertTrue("could not remove broadcasted event--did it make it?", m_listener.getEvents().remove(e));
+        assertTrue("could not remove broadcasted event--did it make it?",
+                m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(e)));
     }
     
     public void testAddEventListenerTwoArgumentStringWithUeiPartAndBroadcast() throws Exception {
@@ -268,7 +272,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         
         m_mocks.verifyAll();
         
-        assertTrue("could not remove broadcasted event--did it make it?", m_listener.getEvents().remove(e));
+        assertTrue("could not remove broadcasted event--did it make it?",
+                m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(e)));
     }
     
     public void testAddEventListenerTwoArgumentStringWithUeiPartMultipleTrimAndBroadcast() throws Exception {
@@ -283,7 +288,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         
         m_mocks.verifyAll();
         
-        assertTrue("could not remove broadcasted event--did it make it?", m_listener.getEvents().remove(e));
+        assertTrue("could not remove broadcasted event--did it make it?",
+                m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(e)));
     }
     
     public void testAddEventListenerTwoArgumentStringWithUeiPartTooLittleAndBroadcast() throws Exception {
@@ -325,7 +331,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         
         m_mocks.verifyAll();
         
-        assertTrue("could not remove broadcasted event--did it make it?", m_listener.getEvents().remove(e));
+        assertTrue("could not remove broadcasted event--did it make it?",
+                m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(e)));
     }
     
     public void testAddEventListenerTwoArgumentStringNullListener() throws Exception {
@@ -432,7 +439,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         
         m_mocks.verifyAll();
         
-        assertTrue("could not remove broadcasted event--did it make it?", m_listener.getEvents().remove(e));
+        assertTrue("could not remove broadcasted event--did it make it?",
+                m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(e)));
     }
     
     public void testAddEventListenerWithUeiAndBroadcastThenAddEventListener() throws Exception {
@@ -448,7 +456,8 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         
         m_mocks.verifyAll();
         
-        assertTrue("could not remove broadcasted event--did it make it?", m_listener.getEvents().remove(e));
+        assertTrue("could not remove broadcasted event--did it make it?",
+                m_listener.getEvents().remove(ImmutableMapper.fromMutableEvent(e)));
     }
     
 
@@ -592,7 +601,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
             }
 
             @Override
-            public void onEvent(Event event) {
+            public void onEvent(IEvent event) {
                 LOG.info("Hello, here is event: " + event.getUei());
                 try {
                     Thread.sleep(SLOW_EVENT_OPERATION_DELAY);
@@ -653,7 +662,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
             }
 
             @Override
-            public void onEvent(Event event) {
+            public void onEvent(IEvent event) {
                 if ("uei.opennms.org/foo".equals(event.getUei())) {
                     EventBuilder bldr = new EventBuilder("uei.opennms.org/bar", "testRecursiveEvents");
                     Event e = bldr.getEvent();
@@ -676,7 +685,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
             }
 
             @Override
-            public void onEvent(Event event) {
+            public void onEvent(IEvent event) {
                 if ("uei.opennms.org/foo".equals(event.getUei())) {
                     EventBuilder bldr = new EventBuilder("uei.opennms.org/ulf", "testRecursiveEvents");
                     Event e = bldr.getEvent();
@@ -711,7 +720,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
 
     public class MockEventListener implements EventListener {
-        private List<Event> m_events = new ArrayList<>();
+        private List<IEvent> m_events = new ArrayList<>();
         
         @Override
         public String getName() {
@@ -719,11 +728,11 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         }
 
         @Override
-        public void onEvent(Event e) {
+        public void onEvent(IEvent e) {
             m_events.add(e);
         }
         
-        public List<Event> getEvents() {
+        public List<IEvent> getEvents() {
             return m_events;
         }
     }
@@ -737,7 +746,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
             }
 
             @Override
-            public void onEvent(Event event) {
+            public void onEvent(IEvent event) {
                 try {
                     Thread.sleep(TimeUnit.SECONDS.toMillis(2));
                 } catch (InterruptedException e) {
@@ -780,7 +789,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         }
 
         @Override
-        public void onEvent(Event e) {
+        public void onEvent(IEvent e) {
             locker.park();
         }
 

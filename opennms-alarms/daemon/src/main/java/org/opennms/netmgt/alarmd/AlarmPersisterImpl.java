@@ -183,13 +183,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
             m_alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
-            LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
+            LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getId());
             reduceEvent(persistedEvent, alarm, event);
 
             // Trigger extensions, allowing them to mangle the alarm
             try {
-                final OnmsAlarm alarmCreated = alarm;
-                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmCreated, event, persistedEvent));
+                final OnmsAlarm alarmUpdated = alarm;
+                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmUpdated, event, persistedEvent));
             } catch (Exception ex) {
                 LOG.error("An error occurred while invoking the extension callbacks.", ex);
             }

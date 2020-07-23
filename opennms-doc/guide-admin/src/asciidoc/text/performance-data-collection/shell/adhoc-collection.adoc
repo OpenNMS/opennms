@@ -3,9 +3,9 @@
 :imagesdir: ../../images
 
 [[ga-performance-mgmt-adhoc-collection]]
-==== Ad-hoc collection
+===== Ad hoc collection
 
-The `collection:collect` _Karaf Shell_ command can be used to trigger and perform a collection on any of the available collectors.
+The `opennms:collect` _Karaf Shell_ command can be used to trigger and perform a collection on any of the available collectors.
 
 The results of the collection (also referred to as the "collection set") will be displayed in the console after a successful collection.
 The resulting collection set will not be persisted, nor will any thresholding be applied.
@@ -14,21 +14,21 @@ List all of the available collectors:
 
 [source]
 ----
-collection:list-collectors
+opennms:list-collectors
 ----
 
 Invoke the `SnmpCollector` against interface `127.0.0.1` on `NODES:n1`.
 
 [source]
 ----
-collection:collect -n NODES:n1 org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
+opennms:collect -n NODES:n1 org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
 ----
 
 Invoke the `SnmpCollector` against interface `127.0.0.1` on `NODES:n1` via the `MINION` location.
 
 [source]
 ----
-collection:collect -l MINION -n NODES:n1 org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
+opennms:collect -l MINION -n NODES:n1 org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
 ----
 
 TIP: Setting the location on the command line will override the node's location.
@@ -40,7 +40,7 @@ Invoke the `JdbcCollector` against `127.0.0.1` while specifying some of the coll
 
 [source]
 ----
-collection:collect org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=PostgreSQL driver=org.postgresql.Driver url=jdbc:postgresql://OPENNMS_JDBC_HOSTNAME/postgres user=postgres
+opennms:collect org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=PostgreSQL driver=org.postgresql.Driver url=jdbc:postgresql://OPENNMS_JDBC_HOSTNAME/postgres user=postgres
 ----
 
 TIP: Some collectors, such as the `JdbcCollector`, can be invoked without specifying a node.
@@ -49,7 +49,7 @@ Persist a collection :
 
 [source]
 ----
-collection:collect -l MINION -n NODES=n1 -p org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
+opennms:collect -l MINION -n NODES=n1 -p org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
 ----
 
 NOTE: `-p/--persist` option will persist collection set there by introducing an extra datapoint other than data collected during already configured collection interval.
@@ -58,10 +58,10 @@ A complete list of options is available using:
 
 [source]
 ----
-collection:collect --help
+opennms:collect --help
 ----
 
-==== Interpreting the output
+===== Interpreting the output
 
 After a successful collection, the collection set will be displayed in the following format:
 

@@ -28,17 +28,15 @@
 
 package org.opennms.features.topology.app.internal.support;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractCollapsibleVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.GroupRef;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.SearchCriteria;
 import org.opennms.features.topology.api.topo.SearchResult;
@@ -72,27 +70,12 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
 		return m_ipQuery;
 	}
 
-	public static class IPVertex extends AbstractVertex implements GroupRef {
-		private Set<VertexRef> m_children = new HashSet<>();
+	public static class IPVertex extends AbstractCollapsibleVertex {
 
-        public IPVertex(String namespace, String id, String label) {
-			super(namespace, id, label);
+        public IPVertex(String id) {
+			super(NAMESPACE, NAMESPACE + ":" + id, id);
 			setIconKey("group");
 		}
-
-		@Override
-		public boolean isGroup() {
-			return true;
-		}
-
-        @Override
-        public Set<VertexRef> getChildren() {
-            return m_children;
-        }
-
-        public void setChildren(Set<VertexRef> children) {
-            m_children = children;
-        }
     }
 
 	public IpLikeHopCriteria(SearchResult searchResult, IpInterfaceProvider ipInterfaceProvider) {
@@ -100,7 +83,7 @@ public class IpLikeHopCriteria extends VertexHopCriteria implements SearchCriter
     	m_collapsed = searchResult.isCollapsed();
         m_ipQuery = searchResult.getQuery();
         this.ipInterfaceProvider = Objects.requireNonNull(ipInterfaceProvider);
-        m_collapsedVertex = new IPVertex(NAMESPACE, NAMESPACE+":"+m_ipQuery, m_ipQuery);
+        m_collapsedVertex = new IPVertex(m_ipQuery);
         m_collapsedVertex.setChildren(getVertices());
         setId(searchResult.getId());
     }

@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_nat {
 //      address src_address;            /* Source address */
@@ -46,7 +46,7 @@ public class ExtendedNat implements FlowData {
     public final Address src_address;
     public final Address dst_address;
 
-    public ExtendedNat(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedNat(final ByteBuf buffer) throws InvalidPacketException {
         this.src_address = new Address(buffer);
         this.dst_address = new Address(buffer);
     }

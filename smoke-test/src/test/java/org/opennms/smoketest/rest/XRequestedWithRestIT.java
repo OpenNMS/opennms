@@ -36,9 +36,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 
 import io.restassured.RestAssured;
-import org.opennms.smoketest.stacks.OpenNMSStack;
 
 // Ensures if "X-Requeste-With" is set to "XMLHttpRequest" no "WWW-Authenticate" header is sent with the response
 public class XRequestedWithRestIT {

@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct sampled_ethernet {
 //      unsigned int length;   /* The length of the MAC packet received on the
@@ -53,7 +53,7 @@ public class SampledEthernet implements FlowData {
     public final Mac dst_mac;
     public final long type;
 
-    public SampledEthernet(final ByteBuffer buffer) throws InvalidPacketException {
+    public SampledEthernet(final ByteBuf buffer) throws InvalidPacketException {
         this.length = BufferUtils.uint32(buffer);
         this.src_mac = new Mac(buffer);
         this.dst_mac = new Mac(buffer);

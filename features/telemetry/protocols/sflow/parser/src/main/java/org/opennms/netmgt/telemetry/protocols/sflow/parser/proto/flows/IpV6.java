@@ -30,22 +30,23 @@ package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
 import java.net.Inet6Address;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Throwables;
 
+import io.netty.buffer.ByteBuf;
+
 // typedef opaque ip_v6[16];
 
 public class IpV6 {
     public final Inet6Address ip_v6;
 
-    public IpV6(final ByteBuffer buffer) {
+    public IpV6(final ByteBuf buffer) {
         try {
             this.ip_v6 = (Inet6Address) Inet6Address.getByAddress(BufferUtils.bytes(buffer, 16));
         } catch (final UnknownHostException e) {

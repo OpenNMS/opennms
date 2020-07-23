@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonBinary;
@@ -39,6 +38,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.AsciiString;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct host_descr {
 //    string hostname<64>;       /* hostname, empty if unknown */
@@ -55,7 +56,7 @@ public class HostDescr implements CounterData {
     public final OsName os_name;
     public final AsciiString os_release;
 
-    public HostDescr(final ByteBuffer buffer) throws InvalidPacketException {
+    public HostDescr(final ByteBuf buffer) throws InvalidPacketException {
         this.hostname = new AsciiString(buffer);
         this.uuid = new Opaque(buffer, Optional.of(16), Opaque::parseBytes);
         this.machine_type = MachineType.from(buffer);

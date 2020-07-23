@@ -32,6 +32,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.opennms.core.test.elastic.ElasticSearchRule;
+import org.opennms.features.jest.client.RestClientFactory;
 
 import io.searchbox.client.JestClient;
 

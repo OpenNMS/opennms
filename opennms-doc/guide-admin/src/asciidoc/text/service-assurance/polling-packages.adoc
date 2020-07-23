@@ -162,13 +162,13 @@ The _RegEx_ pattern allows to specify named capture groups.
 There can be multiple capture groups inside of a pattern, but each must have a unique name.
 Please note, that the _RegEx_ must be escaped or be wrapped in a CDATA-Tag inside the configuration XML to make it a valid property.
 
-If a poller is matched using its pattern, the parts of the service name which matches the capture groups of the pattern are available as parameters to the link:#ga-pollerd-configuration-meta-data[Meta-Data-DSL] using the context `pattern` and the capture group name as key.
+If a poller is matched using its pattern, the parts of the service name which matches the capture groups of the pattern are available as parameters to the link:#ga-pollerd-configuration-meta-data[Metadata DSL] using the context `pattern` and the capture group name as key.
 
 Examples:
 
 `<pattern><![CDATA[^HTTP-(?<vhost>.*)$]]></pattern>`::
 Matches all services which names starts with `HTTP-` followed by a host name.
-If the services is called `HTTP-www.example.com`, the Meta-DSL expression `${pattern:vhost}` will resolved to `www.example.com`.
+If the services is called `HTTP-www.example.com`, the Metadata DSL expression `${pattern:vhost}` will resolved to `www.example.com`.
 
 `<pattern><![CDATA[^HTTP-(?<vhost>.*?):(?<port>[0-9]+)$]]></pattern>"`::
 Matches all services which names starts with `HTTP-` followed by a hostname and a port.
@@ -190,28 +190,41 @@ ssh -p 8101 admin@localhost
 Once in the shell, you can print show the commands help as follows:
 [source]
 ----
-opennms> poller:test --help
+opennms> opennms:poll --help
 DESCRIPTION
-        poller:test
+        opennms:poll
 
-        Execute a poller test from the command line using current settings from poller-configuration.xml
+	Used to invoke a monitor against a host at a specified location
 
 SYNTAX
-        poller:test [options]
+        opennms:poll [options] host [attributes]
+
+ARGUMENTS
+        host
+                Hostname or IP Address of the system to poll
+                (required)
+        attributes
+                Monitor specific attributes in key=value form
 
 OPTIONS
-        -s, --service
-                Service name
-        -p, --param
-                Service parameter ~ key=value
-        -i, --ipaddress
-                IP Address to test
-        -P, --package
-                Poller Package
-        -c, --class
-                Monitor Class
         --help
                 Display this help message
+        -l, --location
+                Location
+                (defaults to Default)
+        -s, --system-id
+                System ID
+        -t, --ttl
+                Time to live
+        -P, --package
+                Poller Package
+        -S, --service
+                Service name
+        -n, --node-id
+                Node Id for Service
+        -c, --class
+                Monitor Class
+
 ----
 
 The following example runs the _ICMP_ monitor on a specific _IP Interface_.
@@ -219,7 +232,7 @@ The following example runs the _ICMP_ monitor on a specific _IP Interface_.
 .Run ICMP monitor configuration defined in specific Polling Package
 [source]
 ----
-opennms> poller:test -i 10.23.42.1 -s ICMP -P example1
+opennms> opennms:poll -S ICMP -P example1 10.23.42.1
 ----
 
 The output is verbose which allows debugging of _Monitor_ configurations.
@@ -228,22 +241,25 @@ Important output lines are shown as the following:
 .Important output testing a service on the CLI
 [source]
 ----
-Checking service ICMP on IP 10.23.42.1 <1>
-Package: example1 <2>
+Package: example1 <1>
+Service: ICMP <2>
 Monitor: org.opennms.netmgt.poller.monitors.IcmpMonitor <3>
-Parameter ds-name : icmp <4>
-Parameter rrd-base-name : icmp <4>
-Parameter rrd-repository : /var/lib/opennms/rrd/response <4>
-Parameter retry : 2 <5>
-Parameter timeout : 3000 <5>
+Parameter ds-name: icmp <4>
+Parameter retry: 2 <5>
+Parameter rrd-base-name: icmp <4>
+Parameter rrd-repository: /opt/opennms/share/rrd/response <4>
+Parameter timeout: 3000 <5>
 
-Available ? true (status Up[1])
+Service is Up on 192.168.31.100 using org.opennms.netmgt.poller.monitors.IcmpMonitor: <6>
+	response-time: 407,0000 <7>
 ----
-<1> _Service_ and _IP Interface_ to run the test
+<1> _Service_ and _Package_ of this test
 <2> Applied _Service_ configuration from _Polling Package_ for this test
 <3> _Service Monitor_ used for this test
 <4> RRD configuration for response time measurement
 <5> Retry and timeout settings for this test
+<6> Polling result for the service polled against the _IP address_
+<7> _Response time_
 
 ==== Test filters on Karaf Shell
 
@@ -258,12 +274,12 @@ Once in the shell, print command help as follows
 
 [source]
 ----
-opennms> filters:filter --help
+opennms> opennms:filter --help
 DESCRIPTION
-        filters:filter
+        opennms:filter
 	Enumerates nodes/interfaces that match a give filter
 SYNTAX
-        filters:filter filterRule
+        opennms:filter filterRule
 ARGUMENTS
         filterRule
                 A filter Rule
@@ -271,7 +287,7 @@ ARGUMENTS
 For ex: Run a filter rule that match a location
 [source]
 ----
-filters:filter  "location='MINION'"
+opennms:filter  "location='MINION'"
 ----
 Output is displayed as follows
 [source]
@@ -284,7 +300,7 @@ Another ex:  Run a filter that match a node location and for a given IP Address 
 Refer to https://wiki.opennms.org/wiki/IPLIKE[IPLIKE] for more info on using IPLIKE syntax.
 [source]
 ----
-filters:filter "location='Default' & (IPADDR IPLIKE 172.*.*.*)"
+opennms:filter "location='Default' & (IPADDR IPLIKE 172.*.*.*)"
 ----
 Output is displayed as follows
 [source]

@@ -36,7 +36,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 
-@Command(scope = "scv", name = "get", description="Retrieves the username and attributes for the given alias.")
+@Command(scope = "opennms", name = "scv-get", description="Retrieves the username and attributes for the given alias.")
 @Service
 public class ScvGetCommand implements Action {
 

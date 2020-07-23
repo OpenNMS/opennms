@@ -28,17 +28,18 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonBinary;
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct lag_port_stats {
 //   mac dot3adAggPortActorSystemID;
@@ -75,7 +76,7 @@ public class LagPortStats {
     public final long dot3adAggPortStatsMarkerPDUsTx;
     public final long dot3adAggPortStatsMarkerResponsePDUsTx;
 
-    public LagPortStats(final ByteBuffer buffer) throws InvalidPacketException {
+    public LagPortStats(final ByteBuf buffer) throws InvalidPacketException {
         this.dot3adAggPortActorSystemID = new Mac(buffer);
         this.dot3adAggPortPartnerOperSystemID = new Mac(buffer);
         this.dot3adAggPortAttachedAggID = BufferUtils.uint32(buffer);

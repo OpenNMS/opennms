@@ -10,13 +10,15 @@
 %{!?sentinelinstprefix:%define sentinelinstprefix /opt/sentinel}
 # The path where the repositories will live 
 %{!?sentinelrepoprefix:%define sentinelrepoprefix /opt/sentinel/repositories}
+# Where Systemd files live
+%{!?_unitdir:%define _unitdir /lib/systemd/system}
 
 # Description
 %{!?_name:%define _name opennms}
 %{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?_java:%define _java jre-11}
+%{!?_java:%define _java java-1.8.0-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo %{nil}}
 %{!?extrainfo2:%define extrainfo2 %{nil}}
@@ -30,6 +32,10 @@
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
+%define _source_filedigest_algorithm 0
+%define _binary_filedigest_algorithm 0
+%define _source_payload w0.bzdio
+%define _binary_payload w0.bzdio
 %global _binaries_in_noarch_packages_terminate_build 0
 AutoReq: no
 AutoProv: no
@@ -51,15 +57,9 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 BuildRequires:	%{_java}
 BuildRequires:	libxslt
 
-#Requires:       jicmp >= 2.0.0
-#Requires(pre):  jicmp >= 2.0.0
-#Requires:       jicmp6 >= 2.0.0
-#Requires(pre):  jicmp6 >= 2.0.0
 Requires:       openssh
 Requires(post): util-linux
 Requires:       util-linux
-#Requires(pre):  %{_java}
-#Requires:       %{_java}
 Requires(pre):  /usr/bin/getent
 Requires(pre):  /usr/sbin/groupadd
 Requires(pre):  /usr/sbin/useradd
@@ -82,8 +82,12 @@ http://www.opennms.org/wiki/Sentinel
 
 
 %prep
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
 
-tar zxf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+$TAR -xzf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -105,9 +109,14 @@ fi
 
 tools/packages/sentinel/create-sentinel-assembly.sh $EXTRA_ARGS
 
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+
 # Extract the sentinel assembly
 mkdir -p %{buildroot}%{sentinelinstprefix}
-tar zxf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz -C %{buildroot}%{sentinelinstprefix} --strip-components=1
+$TAR -xzf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz -C %{buildroot}%{sentinelinstprefix} --strip-components=1
 
 # Remove extraneous directories that start with "d"
 rm -rf %{buildroot}%{sentinelinstprefix}/{data,debian,demos}
@@ -117,6 +126,9 @@ mkdir -p "%{buildroot}%{_initrddir}"
 sed -e "s,^SYSCONFDIR[ \t]*=.*$,SYSCONFDIR=%{_sysconfdir}/sysconfig,g" -e "s,^SENTINEL_HOME[ \t]*=.*$,SENTINEL_HOME=%{sentinelinstprefix},g" "%{buildroot}%{sentinelinstprefix}/etc/sentinel.init" > "%{buildroot}%{_initrddir}"/sentinel
 chmod 755 "%{buildroot}%{_initrddir}"/sentinel
 rm -f '%{buildroot}%{sentinelinstprefix}/etc/sentinel.init'
+
+mkdir -p "%{buildroot}%{_unitdir}"
+install -c -m 644 "%{buildroot}%{sentinelinstprefix}/etc/sentinel.service" "%{buildroot}%{_unitdir}/sentinel.service"
 
 # move sentinel.conf to the sysconfig dir
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
@@ -161,6 +173,7 @@ rm -rf %{buildroot}
 %files -f %{_tmppath}/files.sentinel
 %defattr(664 sentinel sentinel 775)
 %attr(755,sentinel,sentinel) %{_initrddir}/sentinel
+%attr(644,sentinel,sentinel) %{_unitdir}/sentinel.service
 %attr(644,sentinel,sentinel) %config(noreplace) %{_sysconfdir}/sysconfig/sentinel
 %attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/featuresBoot.d/.readme
 
@@ -205,12 +218,4 @@ ROOT_INST="${RPM_INSTALL_PREFIX0}"
 
 if [ "$1" = 0 ] && [ -x "%{_initrddir}/sentinel" ]; then
 	%{_initrddir}/sentinel stop || :
-fi
-
-%postun -p /bin/bash
-ROOT_INST="${RPM_INSTALL_PREFIX0}"
-[ -z "${ROOT_INST}" ] && ROOT_INST="%{sentinelinstprefix}"
-
-if [ "$1" = 0 ] && [ -n "${ROOT_INST}" ] && [ -d "${ROOT_INST}" ]; then
-	rm -rf "${ROOT_INST}" || echo "WARNING: failed to delete ${ROOT_INST}. You may have to clean it up yourself."
 fi

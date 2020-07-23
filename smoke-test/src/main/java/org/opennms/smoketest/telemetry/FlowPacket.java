@@ -28,7 +28,6 @@
 
 package org.opennms.smoketest.telemetry;
 
-import java.net.InetSocketAddress;
 import java.util.Objects;
 
 import org.opennms.netmgt.flows.elastic.NetflowVersion;
@@ -38,21 +37,16 @@ public class FlowPacket extends Packet {
     private final NetflowVersion netflowVersion;
     private final int flowCount;
 
-    public FlowPacket(NetflowVersion netflowVersion, String resource, int flowCount, InetSocketAddress destinationAddress) {
-        super(resource, destinationAddress);
+    public FlowPacket(final NetflowVersion netflowVersion,
+                      final Payload payload,
+                      final int flowCount) {
+        super(payload);
+
         this.netflowVersion = Objects.requireNonNull(netflowVersion);
         this.flowCount = flowCount;
         if (flowCount < 1) {
             throw new IllegalArgumentException("Flow count must be strictly positive.");
         }
-    }
-
-    public FlowPacket(NetflowVersion netflowVersion, String resource, int flowCount) {
-        this(netflowVersion, resource, flowCount, null);
-    }
-
-    public FlowPacket withDestinationAddress(InetSocketAddress destinationAddress) {
-        return new FlowPacket(netflowVersion, getResource(), flowCount, destinationAddress);
     }
 
     public int getFlowCount() {
@@ -62,6 +56,4 @@ public class FlowPacket extends Packet {
     public NetflowVersion getNetflowVersion() {
         return netflowVersion;
     }
-
-
 }

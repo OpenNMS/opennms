@@ -138,6 +138,9 @@ public class DiscoveryConfiguration implements Serializable {
     @XmlElement(name = "include-url")
     private List<IncludeUrl> m_includeUrls = new ArrayList<>();
 
+    @XmlElement(name = "definition")
+    private List<Definition> m_definitions = new ArrayList<>();
+
     public DiscoveryConfiguration() {
     }
 
@@ -302,6 +305,18 @@ public class DiscoveryConfiguration implements Serializable {
      */
     public void clearIncludeUrls() {
         m_includeUrls.clear();
+    }
+
+    public List<Definition> getDefinitions() {
+        return m_definitions;
+    }
+
+    public void setDefinitions(List<Definition> definitions) {
+        m_definitions = definitions;
+    }
+
+    public void addDefinition(Definition definition) {
+        m_definitions.add(definition);
     }
 
     @Override

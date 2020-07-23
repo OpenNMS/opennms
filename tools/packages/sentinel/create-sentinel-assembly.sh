@@ -69,6 +69,7 @@ PROJECTS=""
 if [ $SKIP_COMPILE -eq 1 ]; then
 	echo "=== Compiling Assemblies ==="
 	PROJECTS="${ASSEMBLY_PROJECTS}"
+	OPTS_PROFILES="${OPTS_PROFILES} -PskipCompile"
 else
 	echo "=== Compiling Projects + Assemblies ==="
 	PROJECTS="${COMPILE_PROJECTS},${ASSEMBLY_PROJECTS}"

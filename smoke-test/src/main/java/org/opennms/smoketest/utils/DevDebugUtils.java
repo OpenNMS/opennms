@@ -28,34 +28,27 @@
 
 package org.opennms.smoketest.utils;
 
-import com.google.common.base.Strings;
-import com.google.common.util.concurrent.SimpleTimeLimiter;
-import com.google.common.util.concurrent.TimeLimiter;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import org.opennms.smoketest.containers.OpenNMSContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.SelinuxContext;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import com.google.common.base.Strings;
+import com.google.common.util.concurrent.SimpleTimeLimiter;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.common.util.concurrent.TimeLimiter;
 
 /**
  * Utility functions for developing and debugging our containers.
@@ -68,6 +61,10 @@ public class DevDebugUtils {
 
     public static final String M2_DEV_SYS_PROP = "org.opennms.dev.m2";
     public static final String CONTAINER_HOST_M2_SYS_PROP = "org.opennms.dev.container.host";
+
+    private static final TimeLimiter LIMITER = SimpleTimeLimiter.create(Executors.newCachedThreadPool(new ThreadFactoryBuilder()
+            .setNameFormat("dev-debug-utils-pool-%d")
+            .build()));
 
     public static String convertToContainerAccessibleUrl(String url, String defaultAlias, int defaultPort) {
         final URI uri;
@@ -108,11 +105,14 @@ public class DevDebugUtils {
 
     public static void triggerThreadDump(Container container) {
         try {
-            LOG.info("kill -3 -1");
-            container.execInContainer("kill", "-3", "1");
-            LOG.info("Sleeping for 5 seconds to give the JVM a chance to respond...");
-            Thread.sleep(TimeUnit.SECONDS.toMillis(5));
-            LOG.info("Thread dump should be ready.");
+            LIMITER.callWithTimeout(() -> {
+                LOG.info("kill -3 -1");
+                container.execInContainer("kill", "-3", "1");
+                LOG.info("Sleeping for 5 seconds to give the JVM a chance to respond...");
+                Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+                LOG.info("Thread dump should be ready.");
+                return null;
+            }, 1, TimeUnit.MINUTES);
         } catch (Exception e) {
             LOG.warn("Sending SIGQUIT to JVM in container failed. Thread dump may not be available.", e);
         }
@@ -125,27 +125,26 @@ public class DevDebugUtils {
             throw new RuntimeException("Failed to create " + targetLogFolder, e);
         }
 
-        // Copying files from the containers seems to block some times
-        // We limit their execution times so we don't block for too long when this happen
-        final ExecutorService executor = Executors.newCachedThreadPool();
-        final TimeLimiter limiter = SimpleTimeLimiter.create(executor);
-
         final Path containerLogOutputFile = targetLogFolder.resolve("container_stdout_stderr");
         try {
-            limiter.runWithTimeout(() -> {
+            LIMITER.runWithTimeout(() -> {
                 try {
                     Files.write(containerLogOutputFile, container.getLogs().getBytes(StandardCharsets.UTF_8));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }, 1, TimeUnit.MINUTES);
+        } catch (TimeoutException e) {
+            LOG.warn("Timeout when copying stdout/stderr from container to file {}.", containerLogOutputFile);
+            // Don't attempt to copy any further files
+            return;
         } catch (Exception e) {
             LOG.info("Failed to copy stdout/stderr from container to file {}: {}", containerLogOutputFile, e.getMessage());
         }
 
         for (String logFile : logFiles) {
             try {
-                limiter.runWithTimeout(() -> {
+                LIMITER.runWithTimeout(() -> {
                     try {
                         container.copyFileFromContainer(sourceLogFolder.resolve(logFile).toString(),
                                 targetLogFolder.resolve(logFile).toString());
@@ -153,12 +152,14 @@ public class DevDebugUtils {
                         throw new RuntimeException(e);
                     }
                 }, 1, TimeUnit.MINUTES);
+            } catch (TimeoutException e) {
+                LOG.warn("Timeout when copying log file {} from container: {}", logFile, e.getMessage());
+                // Don't attempt to copy any further files
+                return;
             } catch (Exception e) {
                 LOG.info("Failed to copy log file {} from container: {}", logFile, e.getMessage());
             }
         }
-
-        executor.shutdownNow();
     }
 
 }

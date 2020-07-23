@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
-
-import java.nio.ByteBuffer;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public final class Header {
 
@@ -63,7 +63,7 @@ public final class Header {
     public final long sequenceNumber; // uint32
     public final long observationDomainId; // uint32
 
-    public Header(final ByteBuffer buffer) throws InvalidPacketException {
+    public Header(final ByteBuf buffer) throws InvalidPacketException {
         this.versionNumber = uint16(buffer);
         if (this.versionNumber != VERSION) {
             throw new InvalidPacketException(buffer, "Invalid version number: 0x%04X", this.versionNumber);
@@ -77,6 +77,10 @@ public final class Header {
         this.exportTime = uint32(buffer);
         this.sequenceNumber = uint32(buffer);
         this.observationDomainId = uint32(buffer);
+    }
+
+    public int payloadLength() {
+        return this.length - Header.SIZE;
     }
 
     @Override

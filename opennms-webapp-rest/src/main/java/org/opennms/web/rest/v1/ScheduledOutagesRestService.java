@@ -45,10 +45,10 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.collectd.Package;
+import org.opennms.netmgt.config.dao.outages.api.WriteablePollOutagesDao;
+import org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -96,9 +96,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
 
     private enum ConfigAction { ADD, REMOVE, REMOVE_FROM_ALL };
-    
-    @Autowired
-    protected PollOutagesConfigFactory m_pollOutagesConfigFactory;
 
     @Autowired
     protected CollectdConfigFactory m_collectdConfigFactory;
@@ -106,12 +103,18 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Autowired
     @Qualifier("eventProxy")
     protected EventProxy m_eventProxy;
+    
+    @Autowired
+    private WriteableThreshdDao m_threshdDao;
+    
+    @Autowired
+    private WriteablePollOutagesDao m_pollOutagesDao;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Outages getOutages() {
         Outages outages = new Outages();
-        outages.setOutages(m_pollOutagesConfigFactory.getOutages());
+        outages.setOutages(m_pollOutagesDao.getReadOnlyConfig().getOutages());
         return outages;
     }
 
@@ -119,7 +122,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Path("{outageName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Outage getOutage(@PathParam("outageName") String outageName) throws IllegalArgumentException {
-        Outage outage = m_pollOutagesConfigFactory.getOutage(outageName);
+        Outage outage = m_pollOutagesDao.getReadOnlyConfig().getOutage(outageName);
         if (outage == null) throw getException(Status.NOT_FOUND, "Scheduled outage {} was not found.", outageName);
         return outage;
     }
@@ -130,16 +133,16 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         writeLock();
         try {
             if (newOutage == null) throw getException(Status.BAD_REQUEST, "Outage object can't be null");
-            Outage oldOutage = m_pollOutagesConfigFactory.getOutage(newOutage.getName());
+            Outage oldOutage = m_pollOutagesDao.getWriteableConfig().getOutage(newOutage.getName());
             if (oldOutage == null) {
                 LOG.debug("saveOrUpdateOutage: adding outage {}", newOutage.getName());
-                m_pollOutagesConfigFactory.addOutage(newOutage);
+                m_pollOutagesDao.withWriteLock(outages -> outages.addOutage(newOutage));
             } else {
                 LOG.debug("saveOrUpdateOutage: updating outage {}", newOutage.getName());
-                m_pollOutagesConfigFactory.replaceOutage(oldOutage, newOutage);
+                m_pollOutagesDao.withWriteLock(outages -> outages.replaceOutage(oldOutage, newOutage));
             }
             try {
-                m_pollOutagesConfigFactory.saveCurrent();
+                m_pollOutagesDao.saveConfig();
             } catch (Exception e) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, "Can't save or update the scheduled outage {} because, {}", newOutage.getName(), e.getMessage());
             }
@@ -161,8 +164,8 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             updateThreshd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updateNotifd(ConfigAction.REMOVE, outageName);
             try {
-                m_pollOutagesConfigFactory.removeOutage(outageName);
-                m_pollOutagesConfigFactory.saveCurrent();
+                m_pollOutagesDao.withWriteLock(outages -> outages.removeOutage(outageName));
+                m_pollOutagesDao.saveConfig();
             } catch (Exception e) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, "Can't delete the scheduled outage {} because, {}", outageName, e.getMessage());
             }
@@ -284,7 +287,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Produces(MediaType.TEXT_PLAIN)
     public String isNodeInOutage(@PathParam("outageName") String outageName, @PathParam("nodeId") Integer nodeId) {
         Outage outage = getOutage(outageName);
-        Boolean inOutage = m_pollOutagesConfigFactory.isNodeIdInOutage(nodeId, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage);
+        Boolean inOutage = m_pollOutagesDao.isNodeIdInOutage(nodeId, outage) && m_pollOutagesDao.isCurTimeInOutage(outage);
         return inOutage.toString();
     }
 
@@ -292,8 +295,8 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Path("nodeInOutage/{nodeId}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isNodeInOutage(@PathParam("nodeId") int nodeId) {
-        for (Outage outage : m_pollOutagesConfigFactory.getOutages()) {
-            if (m_pollOutagesConfigFactory.isNodeIdInOutage(nodeId, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage)) {
+        for (Outage outage : m_pollOutagesDao.getReadOnlyConfig().getOutages()) {
+            if (m_pollOutagesDao.isNodeIdInOutage(nodeId, outage) && m_pollOutagesDao.isCurTimeInOutage(outage)) {
                 return Boolean.TRUE.toString();
             }
         }
@@ -306,7 +309,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     public String isInterfaceInOutage(@PathParam("outageName") String outageName, @PathParam("ipAddr") String ipAddr) {
         validateAddress(ipAddr);
         Outage outage = getOutage(outageName);
-        Boolean inOutage = m_pollOutagesConfigFactory.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage);
+        Boolean inOutage = m_pollOutagesDao.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesDao.isCurTimeInOutage(outage);
         return inOutage.toString();
     }
 
@@ -314,8 +317,8 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Path("interfaceInOutage/{ipAddr}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isInterfaceInOutage(@PathParam("ipAddr") String ipAddr) {
-        for (Outage outage : m_pollOutagesConfigFactory.getOutages()) {
-            if (m_pollOutagesConfigFactory.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesConfigFactory.isCurTimeInOutage(outage)) {
+        for (Outage outage : m_pollOutagesDao.getReadOnlyConfig().getOutages()) {
+            if (m_pollOutagesDao.isInterfaceInOutage(ipAddr, outage) && m_pollOutagesDao.isCurTimeInOutage(outage)) {
                 return Boolean.TRUE.toString();
             }
         }
@@ -404,21 +407,20 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             pkg.removeOutageCalendar(outageName);
         }
         if (action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
+            for (org.opennms.netmgt.config.threshd.Package pkg : m_threshdDao.getWriteableConfig().getPackages()) {
                 pkg.removeOutageCalendar(outageName);
             }
         }
         try {
-            ThreshdConfigFactory.getInstance().saveCurrent();
+            m_threshdDao.saveConfig();
         } catch (Exception e) {
             throw getException(Status.INTERNAL_SERVER_ERROR, "Can't save thresholds configuration: {}", e.getMessage());
         }
     }
 
-    private static org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) {
-        org.opennms.netmgt.config.threshd.Package pkg = ThreshdConfigFactory.getInstance().getPackage(packageName);
-        if (pkg == null) throw getException(Status.NOT_FOUND, "Threshold package {} does not exist.", packageName);
-        return pkg;
+    private org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) {
+        return m_threshdDao.getWriteableConfig().getPackage(packageName)
+                .orElseThrow(() -> getException(Status.NOT_FOUND, "Threshold package {} does not exist.", packageName));
     }
 
     private void updateNotifd(ConfigAction action, String outageName) {

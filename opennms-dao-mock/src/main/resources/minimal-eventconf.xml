@@ -645,7 +645,7 @@
     <uei>uei.opennms.org/nodes/snmp/interfaceAdminUp</uei>
     <event-label>OpenNMS-defined node event: snmp interface Admin Status Up</event-label>
     <descr>
-      &lt;p&gt;The administration status of interface is down
+      &lt;p&gt;The administration status of interface is up
       &lt;/p&gt; &lt;p&gt;This event is generated when an snmp poll on interface find the administration status up.
       &lt;/p&gt;
       &lt;p&gt;Params %parm[all]% &lt;/p&gt;

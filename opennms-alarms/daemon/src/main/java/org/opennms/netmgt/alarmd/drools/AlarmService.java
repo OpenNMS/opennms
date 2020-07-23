@@ -40,7 +40,7 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public interface AlarmService {
 
-    void clearAlarm(OnmsAlarm alarm, Date clearTime);
+    void clearAlarm(OnmsAlarm alarm, Date now);
 
     void deleteAlarm(OnmsAlarm alarm);
 

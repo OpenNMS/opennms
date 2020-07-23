@@ -60,8 +60,9 @@ import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
-import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.dao.outages.api.OverrideablePollOutagesDao;
+import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
+import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -81,6 +82,7 @@ import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -97,13 +99,16 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-thresholding.xml",
-        "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPostgresBlobStore.xml",
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-collector.xml",
+        "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={// We don't need a real pinger here
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
 @JUnitTemporaryDatabase(tempDbClass=MockDatabase.class,reuseDatabase=false)
+@DirtiesContext
 public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
 
     private CollectdConfigFactory collectdConfigFactory;
@@ -144,6 +149,15 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
 
     @Autowired
     private ThresholdingService thresholdingService;
+    
+    @Autowired
+    private OverrideableThreshdDao threshdDao;
+    
+    @Autowired
+    private OverrideableThresholdingDao thresholdingDao;
+    
+    @Autowired
+    private OverrideablePollOutagesDao pollOutagesDao;
 
     @Test
     public void canTriggerThreshold() throws Exception {
@@ -158,7 +172,7 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
 
         // Load custom threshd configuration
         initThreshdFactories("threshd-configuration.xml","test-thresholds.xml");
-        ThreshdConfigFactory.getInstance().rebuildPackageIpListMap();
+        threshdDao.rebuildPackageIpListMap();
         mockEventIpcManager.addEventListener((EventListener) thresholdingService, ThresholdingServiceImpl.UEI_LIST);
 
         // Wire and initialize collectd
@@ -173,6 +187,7 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
         collectd.setEventIpcManager(mockEventIpcManager);
         collectd.setPersisterFactory(persisterFactory);
         collectd.setThresholdingService(thresholdingService);
+        collectd.setPollOutagesDao(pollOutagesDao);
         collectd.init();
         collectd.start();
 
@@ -274,8 +289,8 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
     }
 
     private void initThreshdFactories(String threshd, String thresholds) throws Exception {
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
+        thresholdingDao.overrideConfig(getClass().getResourceAsStream(thresholds));
+        threshdDao.overrideConfig(getClass().getResourceAsStream(threshd));
     }
 
     @Override

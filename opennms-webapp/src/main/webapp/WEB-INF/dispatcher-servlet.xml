@@ -37,11 +37,6 @@
         <property name="order" value="0"/>
     </bean>
 
-    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
-        <property name="flowRegistry" ref="flowRegistry"/>
-        <property name="order" value="1"/>
-    </bean>
-
     <!-- These HandlerMapping beans ensure that @RequestMapping-annotated classes and methods are resolvable -->
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
@@ -64,11 +59,6 @@
 
     <!-- Dispatches requests mapped to org.springframework.web.servlet.mvc.Controller implementations -->
     <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
-
-    <!-- Enables FlowHandler URL mapping -->
-    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter">
-        <property name="flowExecutor" ref="flowExecutor"/>
-    </bean>
 
     <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">
         <property name="pendingForeignSourceRepository" ref="selectedPendingForeignSourceRepository"/>
@@ -482,7 +472,7 @@
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Database Reports"/>
-                                <property name="url" value="report/database/index.htm"/>
+                                <property name="url" value="report/database/index.jsp"/>
                                 <property name="locationMatch" value="database-reports"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
@@ -521,8 +511,13 @@
     <bean id="headerProvider" name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
         <property name="navBarItems" ref="navBarEntries" />
     </bean>
-    
-  <onmsgi:service interface="org.opennms.web.api.OnmsHeaderProvider" ref="headerProvider"/>
+
+  <onmsgi:service ref="headerProvider">
+      <onmsgi:interfaces>
+          <value>org.opennms.web.api.OnmsHeaderProvider</value>
+          <value>org.opennms.web.api.MenuProvider</value>
+      </onmsgi:interfaces>
+  </onmsgi:service>
 
     <bean name="/includes/nodeCategory-box.htm" class="org.opennms.web.controller.NodeCategoryBoxController">
         <property name="adminCategoryService" ref="adminCategoryService"/>
@@ -531,25 +526,6 @@
     <bean name="/includes/serviceApplication-box.htm"
           class="org.opennms.web.controller.ServiceApplicationBoxController">
         <property name="adminApplicationService" ref="adminApplicationService"/>
-    </bean>
-
-    <!-- Database Reports -->
-
-    <bean name="/report/database/index.htm"
-          class="org.springframework.web.servlet.mvc.UrlFilenameViewController"/>
-
-    <bean name="/report/database/reportList.htm"
-          class="org.opennms.web.controller.ReportListController">
-        <property name="databaseReportListService" ref="databaseReportListService"/>
-        <property name="pageSize" value="10"/>
-    </bean>
-
-    <bean name="/report/database/batchReport.htm"
-          class="org.opennms.web.report.database.BatchReportFlowHander"/>
-
-    <bean name="/report/database/downloadReport.htm"
-          class="org.opennms.web.controller.DownloadReportController">
-        <property name="reportStoreService" ref="reportStoreService"/>
     </bean>
 
     <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">

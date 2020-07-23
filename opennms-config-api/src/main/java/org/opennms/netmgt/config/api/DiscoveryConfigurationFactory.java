@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opennms.netmgt.config.discovery.Detector;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
@@ -68,16 +69,17 @@ public interface DiscoveryConfigurationFactory {
 	
 	/**
 	 * <p>isExcluded</p>
-	 * 
-	 * @param an InetAddress
-	 * @return a boolean
+	 *
+	 * @param address @{@link InetAddress}
+     * @param location a String
+     * @return a boolean
 	 */
-	boolean isExcluded(final InetAddress address);
+	boolean isExcluded(final InetAddress address, String location);
 	
 	/**
 	 * <p>getForeignSource</p>
 	 * 
-	 * @param an InetAddress
+	 * @param address InetAddress
 	 * @return a String
 	 */
 	String getForeignSource(InetAddress address);
@@ -102,7 +104,7 @@ public interface DiscoveryConfigurationFactory {
 	 * @param an Iterator<IPPollAddress>
 	 * @return an Iterator<IPPollAddress>
 	 */
-	Iterator<IPPollAddress> getExcludingInterator(final Iterator<IPPollAddress> it);
+	Iterator<IPPollAddress> getExcludingIterator(final Iterator<IPPollAddress> it);
 	
 	/**
 	 * <p>getConfiguredAddresses</p>
@@ -110,6 +112,9 @@ public interface DiscoveryConfigurationFactory {
 	 * @return an Iterable<IPPollAddress>
 	 */
 	Iterable<IPPollAddress> getConfiguredAddresses();
+
+
+	List<Detector> getListOfDetectors(InetAddress inetAddress, String location);
 	
 	/**
 	 * <p>getRestartSleepTime</p>

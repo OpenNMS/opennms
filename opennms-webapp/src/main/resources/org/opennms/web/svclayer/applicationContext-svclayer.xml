@@ -55,6 +55,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   </bean>
   <!-- Category Status View beans (note: categoryConfigDao is different that the DAO for the categories table -->
   <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao"/>
+  <onmsgi:service interface="org.opennms.web.svclayer.dao.CategoryConfigDao" ref="categoryConfigDao"/>
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao"/>
   <bean id="eventProxy" class="org.opennms.web.api.Util" factory-method="createEventProxy"/>
   <bean id="troubleTicketProxy" class="org.opennms.web.svclayer.support.DefaultTroubleTicketProxy">
@@ -127,6 +128,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="nodeDao" ref="nodeDao"/>
     <property name="rrdDao" ref="rrdDao"/>
     <property name="eventProxy" ref="eventProxy"/>
+    <property name="jsonStore" ref="jsonStore"/>
   </bean>
   <bean id="rrdGraphService" class="org.opennms.web.svclayer.support.DefaultRrdGraphService">
     <property name="resourceDao" ref="resourceDao"/>
@@ -149,6 +151,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="resourceService" ref="resourceService"/>
     <property name="kscReportFactory" ref="kscReportFactory"/>
   </bean>
+  <onmsgi:service interface="org.opennms.web.svclayer.api.KscReportService" ref="kscReportService" />
   <bean id="groupDao" class="org.opennms.netmgt.config.GroupManagerGroupDao">
     <property name="groupManager" ref="groupManager"/>
   </bean>
@@ -160,12 +163,13 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean id="databaseReportListService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportListService">
     <property name="globalReportRepository" ref="defaultGlobalReportRepository"/>
   </bean>
+  <onmsgi:service interface="org.opennms.web.svclayer.DatabaseReportListService" ref="databaseReportListService" />
   <bean id="reportSchedulerService" class="org.opennms.web.svclayer.support.DefaultSchedulerService">
     <property name="scheduler" ref="schedulerFactory"/>
     <property name="jobDetail" ref="batchReportJobDetail"/>
     <property name="triggerGroup" value="reporting"/>
-    <property name="reportWrapperService" ref="reportWrapperService"/>
   </bean>
+  <onmsgi:service interface="org.opennms.web.svclayer.SchedulerService" ref="reportSchedulerService" />
   <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
     <property name="schedulerName" value="databaseReport"/>
     <property name="dataSource" ref="dataSource"/>
@@ -175,6 +179,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="waitForJobsToCompleteOnShutdown">
       <value>true</value>
     </property>
+    <property name="autoStartup" value="${opennms.report.scheduler.enabled:true}" />
     <property name="quartzProperties">
       <props>
         <!-- Configure Main Scheduler Properties -->
@@ -198,12 +203,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     </property>
     <property name="durability" value="true"/>
   </bean>
-  <!-- Validators for Database Report web flow -->
-  <bean id="deliveryOptionsValidator" class="org.opennms.web.report.database.DeliveryOptionsValidator">
-    <property name="reportSchedulerService" ref="reportSchedulerService"/>
-  </bean>
-  <bean id="reportParametersValidator" class="org.opennms.web.report.database.ReportParametersValidator"/>
-  <bean id="triggerDetailsValidator" class="org.opennms.web.report.database.model.TriggerDetailsValidator"/>
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>
   </bean>
@@ -260,5 +259,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
   </bean>
   <bean id="foreignSourceAndRequisitionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
+  <onmsgi:service interface="org.opennms.web.svclayer.api.RequisitionAccessService" ref="foreignSourceAndRequisitionAccessService" />
   <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />
 </beans>

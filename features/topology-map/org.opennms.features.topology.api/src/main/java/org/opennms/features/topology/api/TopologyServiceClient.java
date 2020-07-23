@@ -29,7 +29,6 @@
 package org.opennms.features.topology.api;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.support.breadcrumbs.BreadcrumbStrategy;
@@ -38,7 +37,6 @@ import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public interface TopologyServiceClient extends SelectionAware {
@@ -56,7 +54,7 @@ public interface TopologyServiceClient extends SelectionAware {
 
     Defaults getDefaults();
 
-    List<Vertex> getChildren(VertexRef vertexId, Criteria[] criteria);
+//    List<Vertex> getChildren(VertexRef vertexId, Criteria[] criteria);
 
     Collection<GraphProvider> getGraphProviders();
 
@@ -64,7 +62,7 @@ public interface TopologyServiceClient extends SelectionAware {
 
     GraphProvider getGraphProviderBy(String namespace);
 
-    VertexProvider getDefaultGraphProvider();
+    GraphProvider getDefaultGraphProvider();
 
     LayoutAlgorithm getPreferredLayoutAlgorithm();
 

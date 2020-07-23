@@ -37,6 +37,7 @@ import org.opennms.smoketest.telemetry.FlowPacket;
 import org.opennms.smoketest.telemetry.FlowTestBuilder;
 import org.opennms.smoketest.telemetry.FlowTester;
 import org.opennms.smoketest.telemetry.Packets;
+import org.opennms.smoketest.telemetry.Sender;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -62,11 +63,8 @@ public class SinglePortFlowsIT {
         final InetSocketAddress elasticRestAddress = InetSocketAddress.createUnresolved(
                 stack.elastic().getContainerIpAddress(), stack.elastic().getMappedPort(9200));
 
-        final List<FlowPacket> collect = Packets.getFlowPackets().stream()
-                .map(p -> p.withDestinationAddress(flowTelemetryAddress))
-                .collect(Collectors.toList());
         final FlowTester tester = new FlowTestBuilder()
-                .withFlowPackets(collect)
+                .withFlowPackets(Packets.getFlowPackets(), Sender.udp(flowTelemetryAddress))
                 .verifyOpennmsRestEndpoint(opennmsWebAddress)
                 .build(elasticRestAddress);
         tester.verifyFlows();

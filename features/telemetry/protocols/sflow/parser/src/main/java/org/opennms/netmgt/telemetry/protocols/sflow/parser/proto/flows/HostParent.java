@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct host_parent {
 //    unsigned int container_type;     /* sFlowDataSource type */
@@ -46,7 +46,7 @@ public class HostParent implements CounterData {
     public final long container_type;
     public final long container_index;
 
-    public HostParent(final ByteBuffer buffer) throws InvalidPacketException {
+    public HostParent(final ByteBuf buffer) throws InvalidPacketException {
         this.container_type = BufferUtils.uint32(buffer);
         this.container_index = BufferUtils.uint32(buffer);
     }

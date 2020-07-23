@@ -552,7 +552,7 @@ public abstract class BasicScheduleUtils {
         return getIntervalsCovering(interval.getStart(), interval.getEnd(), sched, owner);
     }
 
-	static BasicSchedule getBasicOutageSchedule(final Outage out) {
+	public static BasicSchedule getBasicOutageSchedule(final Outage out) {
 		if (out == null) return null;
 		final BasicSchedule schedule = new BasicSchedule();
 		schedule.setName(out.getName());

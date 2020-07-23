@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
-import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -40,7 +39,6 @@ import java.util.stream.Stream;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ParserBase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
@@ -53,6 +51,8 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
+
+import io.netty.buffer.ByteBuf;
 
 public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
     private static final Logger LOG = LoggerFactory.getLogger(Packet.class);
@@ -75,19 +75,19 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
 
     public Packet(final Session session,
                   final Header header,
-                  final ByteBuffer buffer) throws InvalidPacketException {
+                  final ByteBuf buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
         final List<TemplateSet> templateSets = new LinkedList<>();
         final List<OptionsTemplateSet> optionTemplateSets = new LinkedList<>();
         final List<DataSet> dataSets = new LinkedList<>();
-        while (buffer.hasRemaining()) {
+        while (buffer.isReadable()) {
             // We ignore header.counter here, because different exporters interpret it as flowset count or record count
 
-            final ByteBuffer headerBuffer = slice(buffer, FlowSetHeader.SIZE);
+            final ByteBuf headerBuffer = slice(buffer, FlowSetHeader.SIZE);
             final FlowSetHeader setHeader = new FlowSetHeader(headerBuffer);
 
-            final ByteBuffer payloadBuffer = slice(buffer, setHeader.length - FlowSetHeader.SIZE);
+            final ByteBuf payloadBuffer = slice(buffer, setHeader.length - FlowSetHeader.SIZE);
             switch (setHeader.getType()) {
                 case TEMPLATE_FLOWSET: {
                     final TemplateSet templateSet = new TemplateSet(this, setHeader, payloadBuffer);

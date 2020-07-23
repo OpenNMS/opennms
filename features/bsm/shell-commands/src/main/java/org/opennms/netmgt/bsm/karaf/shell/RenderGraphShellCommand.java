@@ -36,7 +36,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 
-@Command(scope = "bsm", name = "render-graph", description="Renders the current state machine graph to a .png file.")
+@Command(scope = "opennms", name = "bsm-render-graph", description="Renders the current state machine graph to a .png file.")
 @Service
 public class RenderGraphShellCommand implements Action {
 

@@ -48,18 +48,17 @@ import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.TopologyService;
 import org.opennms.features.topology.api.TopologyServiceClient;
 import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
-import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
-import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.topo.BackendGraph;
 import org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.service.DefaultGraph;
 import org.opennms.features.topology.app.internal.support.LayoutManager;
@@ -483,7 +482,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 	public Collection<VertexRef> getVertexRefForest(Collection<VertexRef> vertexRefs) {
 		Set<VertexRef> processed = new LinkedHashSet<>();
 		for(VertexRef vertexRef : vertexRefs) {
-			addRefTreeToSet(getTopologyServiceClient(), vertexRef, processed, getCriteria());
+            processed.add(vertexRef);
 		}
 		return processed;
 	}
@@ -494,37 +493,23 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         setDirty(true);
     }
 
-    private static void addRefTreeToSet(TopologyServiceClient topologyServiceClient, VertexRef vertexId, Set<VertexRef> processed, Criteria[] criteria) {
-		processed.add(vertexId);
-
-		for(VertexRef childId : topologyServiceClient.getChildren(vertexId, criteria)) {
-			if (!processed.contains(childId)) {
-				addRefTreeToSet(topologyServiceClient, childId, processed, criteria);
-			}
-		}
-	}
-
 	@Override
-	public void edgeSetChanged(EdgeProvider provider) {
+	public void edgeSetChanged(BackendGraph graph) {
 		setDirty(true);
 	}
 
 	@Override
-	public void edgeSetChanged(EdgeProvider provider,
-			Collection<? extends Edge> added, Collection<? extends Edge> updated,
-			Collection<String> removedEdgeIds) {
+	public void edgeSetChanged(BackendGraph graph, Collection<? extends Edge> added, Collection<? extends Edge> updated, Collection<String> removedEdgeIds) {
 		setDirty(true);
 	}
 
 	@Override
-	public void vertexSetChanged(VertexProvider provider) {
+	public void vertexSetChanged(BackendGraph graph) {
 		setDirty(true);
 	}
 
 	@Override
-	public void vertexSetChanged(VertexProvider provider,
-			Collection<? extends Vertex> added, Collection<? extends Vertex> update,
-			Collection<String> removedVertexIds) {
+	public void vertexSetChanged(BackendGraph graph, Collection<? extends Vertex> added, Collection<? extends Vertex> update, Collection<String> removedVertexIds) {
 		setDirty(true);
 	}
 

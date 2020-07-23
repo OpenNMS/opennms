@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
 import java.util.List;
 
 import org.joda.time.Duration;
@@ -73,6 +74,8 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
+        "classpath:/META-INF/opennms/applicationContext-snmp-profile-mapper.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
         "classpath:/mockForeignSourceContext.xml",
@@ -121,7 +124,6 @@ public class NodeLocationChangeIT {
 
         m_eventAnticipator = m_mockEventIpcManager.getEventAnticipator();
 
-        //((TransactionAwareEventForwarder)m_provisioner.getEventForwarder()).setEventForwarder(m_mockEventIpcManager);
         m_provisioner.start();
 
         m_foreignSource = new ForeignSource();
@@ -143,6 +145,12 @@ public class NodeLocationChangeIT {
         m_foreignSourceRepository.flush();
 
         m_provisionService.setForeignSourceRepository(m_foreignSourceRepository);
+        m_provisionService.setHostnameResolver(new HostnameResolver() {
+            @Override
+            public String getHostname(InetAddress addr, String location) {
+                return "opennms-com";
+            }
+        });
 
         m_scheduledExecutor.pause();
     }
@@ -161,6 +169,9 @@ public class NodeLocationChangeIT {
         OnmsNode node = nodes.get(0);
         assertEquals("Hyderabad", node.getLocation().getLocationName());
         assertEquals(1, node.getIpInterfaces().size());
+        assertEquals(1, node.getSnmpInterfaces().size());
+        // Verify that persisted Ip interface will have resolved hostname.
+        assertEquals("opennms-com", node.getIpInterfaces().iterator().next().getIpHostName());
         m_eventAnticipator.reset();
         // Anticipate node location change and node updated events
         anticipateNodeLocationChangeEvent();

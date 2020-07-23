@@ -29,11 +29,10 @@
 package org.opennms.netmgt.flows.elastic;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -50,13 +49,14 @@ public class DocumentEnricherTest {
 
     private DocumentEnricher enricher;
     private AtomicInteger nodeDaoGetCounter;
+    private InterfaceToNodeCache interfaceToNodeCache;
 
     @Before
     public void setUp() {
         final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
         enricher = factory.getEnricher();
         final NodeDao nodeDao = factory.getNodeDao();
-        final InterfaceToNodeCache interfaceToNodeCache = factory.getInterfaceToNodeCache();
+        interfaceToNodeCache = factory.getInterfaceToNodeCache();
         nodeDaoGetCounter = factory.getNodeDaoGetCounter();
 
         interfaceToNodeCache.setNodeId("Default", InetAddressUtils.addr("10.0.0.1"), 1);
@@ -73,10 +73,28 @@ public class DocumentEnricherTest {
         final List<FlowDocument> documents = Lists.newArrayList();
         documents.add(createFlowDocument("10.0.0.1", "10.0.0.2"));
         documents.add(createFlowDocument("10.0.0.1", "10.0.0.3"));
-        enricher.enrich(documents, new FlowSource("Default", "127.0.0.1"));
+        enricher.enrich(documents.stream().map(TestFlow::new).collect(Collectors.toList()), new FlowSource("Default", "127.0.0.1", null));
 
         // get is also called for each save, so we account for those as well
         assertEquals(6, nodeDaoGetCounter.get());
+
+        // Try to enrich flow documents to existing IpAddresses.
+        documents.clear();
+        documents.add(createFlowDocument("10.0.0.2", "10.0.0.3"));
+        enricher.enrich(documents.stream().map(TestFlow::new).collect(Collectors.toList()), new FlowSource("Default", "127.0.0.1", null));
+        // Since above two addresses are cached, no extra calls to nodeDao.
+        assertEquals(6, nodeDaoGetCounter.get());
+
+
+        // Add two more interfaces to the system.
+        interfaceToNodeCache.setNodeId("Default", InetAddressUtils.addr("10.0.0.4"), 2);
+        interfaceToNodeCache.setNodeId("Default", InetAddressUtils.addr("10.0.0.5"), 3);
+        documents.add(createFlowDocument("10.0.0.4", "10.0.0.5"));
+        enricher.enrich(documents.stream().map(TestFlow::new).collect(Collectors.toList()), new FlowSource("Default", "127.0.0.1", null));
+        // Since above two addresses are added to same nodes, no extra calls to nodeDao
+        assertEquals(6, nodeDaoGetCounter.get());
+
+
     }
 
     private static FlowDocument createFlowDocument(String sourceIp, String destIp) {

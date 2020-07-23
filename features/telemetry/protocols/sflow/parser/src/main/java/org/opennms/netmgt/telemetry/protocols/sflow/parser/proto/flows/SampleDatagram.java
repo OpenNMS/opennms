@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct sample_datagram {
 //    sample_datagram_type version;
@@ -44,7 +44,7 @@ import com.google.common.base.MoreObjects;
 public class SampleDatagram {
     public final SampleDatagramType version;
 
-    public SampleDatagram(final ByteBuffer buffer) throws InvalidPacketException {
+    public SampleDatagram(final ByteBuf buffer) throws InvalidPacketException {
         this.version = new SampleDatagramType(buffer);
     }
 

@@ -486,7 +486,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     }
 
     @Override
-    public void markHavingFlows(Collection<Integer> nodeIds) {
+    public void markHavingFlows(Collection<Integer> ingressIds, Collection<Integer> egressIds) {
     }
 
     @Override
@@ -495,9 +495,22 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     }
 
     @Override
+    public List<OnmsNode> findAllHavingIngressFlows() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingEgressFlows() {
+        return Collections.emptyList();
+    }
+
+    @Override
     public OnmsNode getDefaultFocusPoint() {
         return null;
     }
 
-
+    @Override
+    public List<OnmsNode> findNodeWithMetaData(String context, String key, String value) {
+        return Collections.emptyList();
+    }
 }

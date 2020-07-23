@@ -46,19 +46,10 @@ public interface RuleDefinition {
 
     String getExporterFilter();
 
-    int getGroupPriority();
+    int getGroupPosition();
 
-    // a protocol definition has a lesser priority (+1) than port (+2) or address definition (+3)
-    default int calculatePriority() {
-        int priority = 0;
-        if (hasSrcAddressDefinition()) priority += 9;
-        if (hasSrcPortDefinition()) priority += 3;
-        if (hasDstAddressDefinition()) priority += 9;
-        if (hasDstPortDefinition()) priority += 3;
-        if (hasProtocolDefinition()) priority += 1;
-        if (hasExportFilterDefinition()) priority += 1;
-        return priority;
-    }
+    /** Defines the order in which the rules are evaluated. Lower positions go first */
+    int getPosition();
 
     default boolean hasProtocolDefinition() {
         return isDefined(getProtocol());

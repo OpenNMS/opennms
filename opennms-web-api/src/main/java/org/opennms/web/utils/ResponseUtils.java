@@ -39,7 +39,12 @@ public abstract class ResponseUtils {
         if (entities == null || entities.isEmpty()) {
             return Response.noContent().build();
         }
-        return Response.ok(entities).header("Content-Range", String.format("items %d-%d/%d", offset, offset + entities.size() - 1, totalCount)).build();
+        final String contentRangeHeader = getContentRange(entities.size(), offset, totalCount);
+        return Response.ok(entities).header("Content-Range", contentRangeHeader).build();
+    }
+
+    public static String getContentRange(long itemCount, long offset, long totalCount) {
+        return String.format("items %d-%d/%d", offset, offset + itemCount - 1, totalCount);
     }
 
 }

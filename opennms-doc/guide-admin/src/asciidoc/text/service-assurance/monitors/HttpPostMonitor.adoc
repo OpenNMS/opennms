@@ -25,6 +25,9 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | `payload`      | The body of the POST, for example properly escaped XML.               | required | `-` | No
 | `auth-password`| The password to use for HTTP BASIC auth.                              | optional | `-` | Yes
 | `auth-username`| The username to use for HTTP BASIC auth.                              | optional | `-` | Yes
+| `header[0-9]+` | Additional headers to be sent along with the request. Example of valid
+                   parameter's names are `header0`, `header1` and `header180`. +
+                   `header` is *not* a valid parameter name.                             | optional | `-` | No
 | `banner`       | A string that is matched against the response of the HTTP POST.
                    If the output contains the banner, the service is determined as up.
                    Specify a regex by starting with `~`.                                 | optional | `-` | Yes

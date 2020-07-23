@@ -22,14 +22,9 @@
         <property name="businessServiceManager" ref="businessServiceManager" />
         <property name="topologyProviderInfo" ref="bsmTopologyProviderInfo"/>
     </bean>
-    <bean id="bsmTopologyHopProvider"
-        class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
-        <argument ref="bsmTopologyProvider" />
-    </bean>
-
     <!-- Meta topology provider -->
-    <bean id="bsmMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
-        <argument ref="bsmTopologyHopProvider" />
+    <bean id="bsmMetaTopologyProvider" class="org.opennms.features.topology.api.topo.simple.SimpleMetaTopologyProvider">
+        <argument ref="bsmTopologyProvider" />
     </bean>
 
     <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="bsmMetaTopologyProvider">

@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +37,6 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketExcept
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.NullValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Field;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Scope;
@@ -46,6 +44,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
+
+import io.netty.buffer.ByteBuf;
 
 public final class ScopeFieldSpecifier implements Field, Scope {
 
@@ -70,7 +70,7 @@ public final class ScopeFieldSpecifier implements Field, Scope {
 
     public final InformationElement field;
 
-    public ScopeFieldSpecifier(final ByteBuffer buffer) throws InvalidPacketException {
+    public ScopeFieldSpecifier(final ByteBuf buffer) throws InvalidPacketException {
         this.fieldType = uint16(buffer);
         this.fieldLength = uint16(buffer);
 
@@ -87,7 +87,7 @@ public final class ScopeFieldSpecifier implements Field, Scope {
     }
 
     @Override
-    public Value<?> parse(Session.Resolver resolver, ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
+    public Value<?> parse(Session.Resolver resolver, ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
         return this.field.parse(resolver, buffer);
     }
 

@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +43,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Template;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public final class DataRecord implements Record {
 
@@ -70,7 +71,7 @@ public final class DataRecord implements Record {
     public DataRecord(final DataSet set,
                       final Session.Resolver resolver,
                       final Template template,
-                      final ByteBuffer buffer) throws InvalidPacketException, MissingTemplateException {
+                      final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
         this.set = Objects.requireNonNull(set);
 
         this.template = Objects.requireNonNull(template);

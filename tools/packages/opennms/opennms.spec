@@ -21,6 +21,8 @@
 %{!?servletdir:%define servletdir opennms}
 # Where OpenNMS binaries live
 %{!?bindir:%define bindir %instprefix/bin}
+# Where Systemd files live
+%{!?_unitdir:%define _unitdir /lib/systemd/system}
 
 # Description
 %{!?_name:%define _name "opennms"}
@@ -41,6 +43,10 @@
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
+%define _source_filedigest_algorithm 0
+%define _binary_filedigest_algorithm 0
+%define _source_payload w0.bzdio
+%define _binary_payload w0.bzdio
 %global _binaries_in_noarch_packages_terminate_build 0
 AutoReq: no
 AutoProv: no
@@ -62,8 +68,8 @@ Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
-Requires(pre):		postgresql-server  >= 9.1
-Requires:		postgresql-server  >= 9.1
+Requires(pre):		postgresql-server  >= 10
+Requires:		postgresql-server  >= 10
 Requires(pre):		%{jdk}
 Requires:		%{jdk}
 
@@ -492,8 +498,12 @@ VTD-XML is very fast GPL library for parsing XMLs with XPath Support.
 %{extrainfo2}
 
 %prep
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+$TAR -xzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 
-tar -xzf %{_sourcedir}/%{name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -526,30 +536,68 @@ if [ -e "settings.xml" ]; then
 	export OPTS_SETTINGS_XML="-s `pwd`/settings.xml"
 fi
 
+OPTS_UPDATE_POLICY="-DupdatePolicy=never"
+if [ "%{enable_snapshots}" = 1 ]; then
+	OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
+	OPTS_UPDATE_POLICY="-DupdatePolicy=always"
+fi
+
 if [ "%{skip_compile}" = 1 ]; then
 	echo "=== SKIPPING COMPILE ==="
-	if [ "%{enable_snapshots}" = 1 ]; then
-		OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"
-		OPTS_UPDATE_POLICY="-DupdatePolicy=always"
-	fi
 	TOPDIR=`pwd`
-	"$TOPDIR"/compile.pl -N $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" -Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
+	"$TOPDIR"/compile.pl -N \
+		$OPTS_SKIP_TESTS \
+		$OPTS_SETTINGS_XML \
+		$OPTS_ENABLE_SNAPSHOTS \
+		-Dinstall.version="%{version}-%{release}" \
+		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+		-Dopennms.home="%{instprefix}" \
+		-PskipCompile \
+		install
 else
 	echo "=== RUNNING COMPILE ==="
-	./compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
-		-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-		-Dopennms.home="%{instprefix}" -Prun-expensive-tasks install --builder smart --threads ${CCI_MAXCPU:-2}
+	./compile.pl \
+		$OPTS_SKIP_TESTS \
+		$OPTS_SETTINGS_XML \
+		$OPTS_ENABLE_SNAPSHOTS \
+		-Daether.connector.basic.threads=1 \
+		-Daether.connector.resumeDownloads=false \
+		-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+		-Dinstall.version="%{version}-%{release}" \
+		-Dopennms.home="%{instprefix}" \
+		-Dbuild=all \
+		-Prun-expensive-tasks \
+		install
 fi
 
 cd opennms-tools
-	../compile.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
-	-Dopennms.home="%{instprefix}" install --builder smart --threads ${CCI_MAXCPU:-2}
+	../compile.pl -N \
+		$OPTS_SKIP_TESTS \
+		$OPTS_SETTINGS_XML \
+		$OPTS_ENABLE_SNAPSHOTS \
+		-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+		-Dinstall.version="%{version}-%{release}" \
+		-Dopennms.home="%{instprefix}" \
+		install
 cd -
 
 echo "=== BUILDING ASSEMBLIES ==="
-./assemble.pl $OPTS_SKIP_TESTS $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
-	-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false \
-	-Dopennms.home="%{instprefix}" -Prun-expensive-tasks -Dbuild.profile=full install --builder smart --threads ${CCI_MAXCPU:-2}
+./assemble.pl \
+	$OPTS_SKIP_TESTS \
+	$OPTS_SETTINGS_XML \
+	$OPTS_ENABLE_SNAPSHOTS \
+	-Daether.connector.basic.threads=1 \
+	-Daether.connector.resumeDownloads=false \
+	-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+	-Dinstall.version="%{version}-%{release}" \
+	-Ddist.name="%{name}-%{version}-%{release}.%{_arch}" \
+	-Dopennms.home="%{instprefix}" \
+	-Dinstall.init.dir="/etc/init.d" \
+	-Dbuild=all \
+	-Dbuild.profile=full \
+	-Prun-expensive-tasks \
+	install
 
 echo "=== INSTALL COMPLETED ==="
 
@@ -557,8 +605,13 @@ echo "=== UNTAR BUILD ==="
 
 mkdir -p %{buildroot}%{instprefix}
 
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+
 # Untar the tar.gz created by opennms-full-assembly
-tar zxf %{_builddir}/%{name}-%{version}-%{release}/target/%{name}-%{version}-%{release}.%{_arch}.tar.gz -C %{buildroot}%{instprefix}
+$TAR -xzf %{_builddir}/%{name}-%{version}-%{release}/target/%{name}-%{version}-%{release}.%{_arch}.tar.gz -C %{buildroot}%{instprefix}
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
@@ -581,7 +634,7 @@ END
 # Move the docs into %{_docdir}
 rm -rf %{buildroot}%{_docdir}/%{name}-%{version}
 mkdir -p %{buildroot}%{_docdir}
-find %{buildroot}%{instprefix}/docs -xdev -depth -type d -print0 | xargs -0 -r rmdir 2>/dev/null || true
+find %{buildroot}%{instprefix}/docs -xdev -depth -type d -print0 | xargs -n 1 -0 -r rmdir 2>/dev/null || true
 mv %{buildroot}%{instprefix}/docs %{buildroot}%{_docdir}/%{name}-%{version}
 cp README* %{buildroot}%{instprefix}/etc/
 rm -rf %{buildroot}%{instprefix}/etc/README
@@ -599,7 +652,8 @@ rm -rf %{buildroot}%{instprefix}/share
 rsync -avr --exclude=examples %{buildroot}%{instprefix}/etc/ %{buildroot}%{sharedir}/etc-pristine/
 chmod -R go-w %{buildroot}%{sharedir}/etc-pristine/
 
-install -d -m 755 %{buildroot}%{_initrddir} %{buildroot}%{_sysconfdir}/sysconfig
+install -d -m 755 "%{buildroot}%{_initrddir}" "%{buildroot}%{_sysconfdir}/sysconfig" "%{buildroot}%{_unitdir}"
+install -m 644 %{buildroot}%{instprefix}/etc/opennms.service %{buildroot}%{_unitdir}
 install -m 755 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.init      %{buildroot}%{_initrddir}/opennms-remote-poller
 install -m 640 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/opennms-remote-poller
 rm -rf %{buildroot}%{instprefix}/contrib/remote-poller
@@ -701,9 +755,9 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 	grep -v 'xmp' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/system ! -type d | \
-    sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
+	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v 'jira-' | \
-    sort >> %{_tmppath}/files.main
+	sort >> %{_tmppath}/files.main
 # Put the etc, lib, and system subdirectories into the package
 find %{buildroot}%{instprefix}/etc %{buildroot}%{instprefix}/lib %{buildroot}%{instprefix}/system -type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
@@ -745,6 +799,7 @@ rm -rf %{buildroot}
 %defattr(664 root root 775)
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{logdir}
+%attr(644,root,root)    %{_unitdir}/opennms.service
                         %config %{instprefix}/etc/custom.properties
 %attr(640,root,root)	%config(noreplace) %{instprefix}/etc/users.xml
 			%{instprefix}/data
@@ -931,14 +986,14 @@ if [ "$1" = 0 ]; then
 fi
 
 if [ "$1" = 0 ]; then
-  if [ -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
-    rm -f "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
-  fi
+	if [ -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+		rm -f "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+	fi
 fi
 
 %pre -p /bin/bash core
 ROOT_INST="$RPM_INSTALL_PREFIX0"
-[ -z "$ROOT_INST"  ] && ROOT_INST="%{instprefix}"
+[ -z "$ROOT_INST" ] && ROOT_INST="%{instprefix}"
 if [ -e "${ROOT_INST}/etc/users.xml" ]; then
 	chmod 640 "${ROOT_INST}/etc/users.xml"
 fi
@@ -954,16 +1009,6 @@ LOG_INST="$RPM_INSTALL_PREFIX2"
 if [ -n "$DEBUG" ]; then
 	env | grep RPM_INSTALL_PREFIX | sort -u
 fi
-
-for prefix in lib lib64; do
-	if [ -d "/usr/$prefix/systemd" ]; then
-		SYSTEMDDIR="/usr/$prefix/systemd/system"
-		printf -- "- installing service into $SYSTEMDDIR... "
-		install -d -m 755 "$SYSTEMDDIR"
-		install -m 644 "${ROOT_INST}/etc/opennms.service" "${SYSTEMDDIR}"/
-		echo "done"
-	fi
-done
 
 if [ "$ROOT_INST/logs" != "$LOG_INST" ]; then
 	printf -- "- making symlink for $ROOT_INST/logs... "
@@ -999,7 +1044,7 @@ echo "done"
 
 printf -- "- checking for old update files... "
 
-JAR_UPDATES=`find $ROOT_INST/lib/updates -name \*.jar   -exec rm -rf {} \; -print 2>/dev/null | wc -l`
+JAR_UPDATES=`find $ROOT_INST/lib/updates -name \*.jar     -exec rm -rf {} \; -print 2>/dev/null | wc -l`
 CLASS_UPDATES=`find $ROOT_INST/lib/updates -name \*.class -exec rm -rf {} \; -print 2>/dev/null | wc -l`
 TOTAL_UPDATES=`expr $JAR_UPDATES + $CLASS_UPDATES`
 if [ "$TOTAL_UPDATES" -gt 0 ]; then

@@ -42,7 +42,7 @@ import org.opennms.netmgt.model.OnmsMemo;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsReductionKeyMemo;
 import org.opennms.netmgt.model.TroubleTicketState;
-import org.opennms.plugins.elasticsearch.rest.template.TemplateInitializer;
+import org.opennms.features.jest.client.template.TemplateInitializer;
 
 import com.codahale.metrics.MetricRegistry;
 

@@ -5,10 +5,10 @@
 === Geocoder Service
 
 The _Geocoder Service_ is used to resolve geolocation information within _{opennms-product-name}_.
-_{opennms-product-name}_ supports several _Geocoder Service_s.
-By default geolocation resoluation is disabled.
+_{opennms-product-name}_ supports several _Geocoder Services_.
+By default geolocation resolution is disabled.
 
-NOTE:   To enabed or configure the _Geocoer Service_ please use the web based configuration tool.
+NOTE:   To enable or configure the _Geocoder Service_ please use the web based configuration tool.
         This can be found in the administration section: _Admin -> Configure Geocoder Service_
 
 The currently used _Geocoder Service_ is configured via the property `activeGeocoderId` in `etc/org.opennms.features.geocoder.cfg`.

@@ -64,6 +64,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
+        "classpath:/META-INF/opennms/applicationContext-snmp-profile-mapper.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
@@ -134,6 +135,7 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         m_eventManager.getEventAnticipator().anticipateEvent(getStarted(invalidAssetFieldResource));
         m_eventManager.getEventAnticipator().anticipateEvent(getSuccessful(invalidAssetFieldResource));
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeAdded(nextNodeId));
+        m_eventManager.getEventAnticipator().anticipateEvent(getNodeScanStarted(nextNodeId));
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeGainedInterface(nextNodeId));
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeGainedService(nextNodeId));
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeScanCompleted(nextNodeId));
@@ -168,6 +170,7 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeGainedInterface(nextNodeId));
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeGainedService(nextNodeId));
         m_eventManager.getEventAnticipator().anticipateEvent(getNodeScanCompleted(nextNodeId));
+        m_eventManager.getEventAnticipator().anticipateEvent(getNodeScanStarted(nextNodeId));
 
         // This requisition has an asset called "maintContractNumber" which was changed in
         // OpenNMS 1.10. We want to preserve backwards compatibility so make sure that the
@@ -203,6 +206,25 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         
     }
 
+    @Test
+    public void shouldDisallowMultiplePrimaryInterfaces() throws Exception {
+        assertEquals(0, m_nodeDao.countAll());
+
+        final Resource invalidRequisitionResource = getResource("classpath:/import_multiplePrimaryInterfaces.xml");
+
+        m_eventManager.getEventAnticipator().anticipateEvent(getStarted(invalidRequisitionResource));
+        m_eventManager.getEventAnticipator().anticipateEvent(getFailed(invalidRequisitionResource));
+
+        // This requisition has two "snmp-primary" interfaces which is not allowed.
+        m_provisioner.doImport(invalidRequisitionResource.getURL().toString(), Boolean.TRUE.toString());
+        waitForEverything();
+        m_eventManager.getEventAnticipator().verifyAnticipated();
+
+        // should fail to import the node since two "snmp-primary" interfaces are not allowed.
+        assertEquals(0, m_nodeDao.countAll());
+
+    }
+
     private Event getStarted(final Resource resource) {
         return new EventBuilder( EventConstants.IMPORT_STARTED_UEI, "Provisiond" )
         .addParam( EventConstants.PARM_IMPORT_RESOURCE, resource.toString() )
@@ -235,6 +257,12 @@ public class InvalidRequisitionDataIT extends ProvisioningITCase implements Init
         return new EventBuilder( EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "Provisiond" )
         .setNodeid(nodeId).setInterface(InetAddressUtils.addr("10.0.0.1")).setService("ICMP").getEvent();
     }
+
+    private Event getNodeScanStarted(final int nodeId) {
+        return new EventBuilder( EventConstants.PROVISION_SCHEDULED_NODE_SCAN_STARTED, "Provisiond" )
+                .setNodeid(nodeId).getEvent();
+    }
+
 
     private Event getNodeScanCompleted(final int nodeId) {
         return new EventBuilder( EventConstants.PROVISION_SCAN_COMPLETE_UEI, "Provisiond" )

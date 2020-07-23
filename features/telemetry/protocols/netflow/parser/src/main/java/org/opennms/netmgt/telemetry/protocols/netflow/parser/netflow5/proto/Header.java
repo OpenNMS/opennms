@@ -28,11 +28,9 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
-
-import java.nio.ByteBuffer;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
@@ -40,6 +38,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedV
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
+
+import io.netty.buffer.ByteBuf;
 
 public final class Header {
 
@@ -58,7 +58,7 @@ public final class Header {
     public final int samplingAlgorithm;
     public final int samplingInterval;
 
-    public Header(final ByteBuffer buffer) throws InvalidPacketException {
+    public Header(final ByteBuf buffer) throws InvalidPacketException {
         this.versionNumber = uint16(buffer);
         if (this.versionNumber != VERSION) {
             throw new InvalidPacketException(buffer, "Invalid version number: 0x%04X", this.versionNumber);

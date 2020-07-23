@@ -27,13 +27,16 @@
             <cm:property name="proxy" value=""/>
             <cm:property name="retryCooldown" value="500" />
             <cm:property name="httpCompression" value="false"/>
+            <cm:property name="ignoreCertificates" value="false"/>
             <cm:property name="connTimeout" value="5000" /> <!-- 5 second timeout for Elasticsearch operations -->
             <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
             <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
+            <cm:property name="enableForwarding" value="false" /> <!-- Disable flow forwarding -->
             <cm:property name="nodeCache.enabled" value="true" /> <!-- Set to false to disable caching -->
-            <cm:property name="nodeCache.maximumSize" value="1000"/> <!-- Set value for unlimited size -->
-            <cm:property name="nodeCache.expireAfterWrite" value="300"/> <!-- in seconds. Set to 0 to never evict elements -->
+            <cm:property name="nodeCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
+            <cm:property name="nodeCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
             <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
+            <cm:property name="skipElasticsearchPersistence" value="false"/> <!-- Set to false to disable persisting flows to ES. -->
 
             <!-- Bulk Action Retry settings -->
             <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
@@ -45,11 +48,26 @@
             <cm:property name="settings.index.refresh_interval" value="" />
             <cm:property name="settings.index.routing_partition_size" value="" />
             <cm:property name="indexPrefix" value="" />
+
+            <!-- Aggregate Index settings -->
+            <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
+            <cm:property name="aggregate.settings.index.number_of_shards" value="" />
+            <cm:property name="aggregate.settings.index.number_of_replicas" value="" />
+            <cm:property name="aggregate.settings.index.refresh_interval" value="" />
+            <cm:property name="aggregate.settings.index.routing_partition_size" value="" />
+            <cm:property name="aggregate.indexPrefix" value="" />
+            <cm:property name="aggregate.elasticIndexStrategy" value="monthly" />
+
+            <!-- Intelligent query settings -->
+            <cm:property name="alwaysUseAggForQueries" value="false" />
+            <cm:property name="alwaysUseRawForQueries" value="true" />
+            <cm:property name="timeRangeDurationAggregateThresholdMs" value="120000" /> <!-- 2 minutes -->
+            <cm:property name="timeRangeEndpointAggregateThresholdMs" value="604800000" /> <!-- 7 days -->
         </cm:default-properties>
     </cm:property-placeholder>
 
     <!-- Used to define credentials in a properties file and enforcing the bundle to reload when credentials change -->
-    <bean id="credentialsProvider" class="org.opennms.plugins.elasticsearch.rest.credentials.DefaultCredentialsProvider">
+    <bean id="credentialsProvider" class="org.opennms.features.jest.client.credentials.DefaultCredentialsProvider">
         <argument value="elastic-credentials.xml" />
     </bean>
 
@@ -64,10 +82,10 @@
     </bean>
 
     <!-- Proxy for the JestClientFactory -->
-    <bean id="requestExecutorFactory" class="org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor">
+    <bean id="requestExecutorFactory" class="org.opennms.features.jest.client.executors.DefaultRequestExecutor">
         <argument value="${retryCooldown}"/>
     </bean>
-    <bean id="clientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
+    <bean id="clientFactory" class="org.opennms.features.jest.client.RestClientFactory">
         <argument value="${elasticUrl}"/>
         <argument value="${globalElasticUser}"/>
         <argument value="${globalElasticPassword}"/>
@@ -82,16 +100,21 @@
         <property name="connTimeout" value="${connTimeout}" />
         <property name="readTimeout" value="${readTimeout}" />
         <property name="retries" value="${retries}" />
+        <property name="ignoreCertificates" value="${ignoreCertificates}"/>
     </bean>
 
     <!-- Actually creates the client, but only once -->
     <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
 
-    <bean id="indexStrategy" class="org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory" factory-method="createIndexStrategy">
+    <bean id="rawIndexStrategy" class="org.opennms.features.jest.client.index.IndexStrategyFactory" factory-method="createIndexStrategy">
         <argument value="${elasticIndexStrategy}"/>
     </bean>
 
-    <bean id="indexSettings" class="org.opennms.plugins.elasticsearch.rest.template.IndexSettings">
+    <bean id="aggIndexStrategy" class="org.opennms.features.jest.client.index.IndexStrategyFactory" factory-method="createIndexStrategy">
+        <argument value="${aggregate.elasticIndexStrategy}"/>
+    </bean>
+
+    <bean id="rawIndexSettings" class="org.opennms.features.jest.client.template.IndexSettings">
         <property name="indexPrefix" value="${indexPrefix}"/>
         <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
         <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
@@ -99,23 +122,38 @@
         <property name="routingPartitionSize" value="${settings.index.routing_partition_size}"/>
     </bean>
 
+    <bean id="aggIndexSettings" class="org.opennms.features.jest.client.template.IndexSettings">
+        <property name="indexPrefix" value="${aggregate.indexPrefix}"/>
+        <property name="numberOfShards" value="${aggregate.settings.index.number_of_shards}"/>
+        <property name="numberOfReplicas" value="${aggregate.settings.index.number_of_replicas}"/>
+        <property name="refreshInterval" value="${aggregate.settings.index.refresh_interval}"/>
+        <property name="routingPartitionSize" value="${aggregate.settings.index.routing_partition_size}"/>
+    </bean>
+
     <!-- Enrichment -->
     <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
-    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
     <reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory" />
+    <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
     <bean id="documentEnricher" class="org.opennms.netmgt.flows.elastic.DocumentEnricher">
         <argument ref="flowRepositoryMetricRegistry" />
         <argument ref="classificationEngine" />
         <argument ref="nodeDao" />
         <argument ref="interfaceToNodeCache" />
-        <argument ref="transactionOperations" />
+        <argument ref="sessionUtils" />
         <argument ref="nodeCacheConfig" />
     </bean>
 
     <!-- Metrics -->
     <bean id="flowRepositoryMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="flowRepositoryMetricRegistry" interface="com.codahale.metrics.MetricSet">
+        <service-properties>
+            <entry key="name" value="org.opennms.netmgt.flows.elastic" />
+            <entry key="description" value="Elasticsearch Flow Repository" />
+        </service-properties>
+    </service>
     <bean id="flowRepositoryMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
         <argument ref="flowRepositoryMetricRegistry"/>
     </bean>
@@ -130,37 +168,80 @@
 
     <reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
     <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
+    <reference id="enrichedFlowForwarder" interface="org.opennms.netmgt.flows.api.EnrichedFlowForwarder"/>
+
+    <!-- The query services -->
+    <bean id="rawIndexSelector" class="org.opennms.features.jest.client.index.IndexSelector">
+        <argument ref="rawIndexSettings"/>
+        <argument value="netflow"/>
+        <argument ref="rawIndexStrategy"/>
+        <argument value="${maxFlowDurationMs}" />
+    </bean>
+    <bean id="rawFlowQueryService" class="org.opennms.netmgt.flows.elastic.RawFlowQueryService">
+        <argument ref="jestClient"/>
+        <argument ref="rawIndexSelector"/>
+    </bean>
+
+    <bean id="aggIndexSelector" class="org.opennms.features.jest.client.index.IndexSelector">
+        <argument ref="aggIndexSettings"/>
+        <argument value="netflow_agg"/>
+        <argument ref="aggIndexStrategy"/>
+        <argument value="${maxFlowDurationMs}" />
+    </bean>
+    <bean id="aggFlowQueryService" class="org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService">
+        <argument ref="jestClient"/>
+        <argument ref="aggIndexSelector"/>
+    </bean>
+
+    <bean id="smartQueryService" class="org.opennms.netmgt.flows.elastic.SmartQueryService">
+        <argument ref="flowRepositoryMetricRegistry"/>
+        <argument ref="rawFlowQueryService"/>
+        <argument ref="aggFlowQueryService"/>
+
+        <property name="alwaysUseAggForQueries" value="${alwaysUseAggForQueries}"/>
+        <property name="alwaysUseRawForQueries" value="${alwaysUseRawForQueries}"/>
+        <property name="timeRangeDurationAggregateThresholdMs" value="${timeRangeDurationAggregateThresholdMs}"/>
+        <property name="timeRangeEndpointAggregateThresholdMs" value="${timeRangeEndpointAggregateThresholdMs}"/>
+    </bean>
+
     <!-- The repository -->
     <bean id="elasticFlowRepository" class="org.opennms.netmgt.flows.elastic.ElasticFlowRepository"
           init-method="start">
         <argument ref="flowRepositoryMetricRegistry"/>
         <argument ref="jestClient"/>
-        <argument ref="indexStrategy"/>
+        <argument ref="rawIndexStrategy"/>
         <argument ref="documentEnricher"/>
-        <argument ref="classificationEngine"/>
-        <argument ref="transactionOperations"/>
+        <argument ref="sessionUtils"/>
         <argument ref="nodeDao"/>
         <argument ref="snmpInterfaceDao"/>
         <argument ref="identity"/>
         <argument ref="tracerRegistry"/>
-        <argument ref="indexSettings"/>
-        <argument value="${bulkRetryCount}" />
-        <argument value="${maxFlowDurationMs}" />
+        <argument ref="enrichedFlowForwarder"/>
+        <argument ref="rawIndexSettings"/>
+        <argument ref="smartQueryService" />
+
+        <property name="enableFlowForwarding" value="${enableForwarding}"/>
+        <property name="bulkRetryCount" value="${bulkRetryCount}"/>
+        <property name="skipElasticsearchPersistence" value="${skipElasticsearchPersistence}"/>
     </bean>
+
     <!-- Proxy it, to ensure initialization on first call of any method -->
     <bean id="initializingElasticFlowRepository" class="org.opennms.netmgt.flows.elastic.InitializingFlowRepository">
         <argument ref="blueprintBundleContext" />
         <argument ref="elasticFlowRepository" />
         <argument ref="jestClient" />
-        <argument ref="indexSettings" />
+        <argument ref="rawIndexSettings" />
+        <argument ref="aggIndexSettings" />
     </bean>
     <service interface="org.opennms.netmgt.flows.api.FlowRepository" ref="initializingElasticFlowRepository" />
 
     <!-- Health Check -->
     <service interface="org.opennms.core.health.api.HealthCheck">
-        <bean class="org.opennms.plugins.elasticsearch.rest.ElasticHealthCheck" >
+        <bean class="org.opennms.features.jest.client.RequireConfigurationElasticHealthCheck" >
             <argument ref="jestClient"/>
             <argument value="Flows"/>
+            <argument ref="configurationAdmin"/>
+            <argument value="org.opennms.features.flows.persistence.elastic" />
         </bean>
     </service>
 

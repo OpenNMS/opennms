@@ -33,6 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -103,7 +104,31 @@ public class NettyDnsResolverTest {
     public void canDoLookups() throws UnknownHostException, ExecutionException, InterruptedException {
         // Our DNS server knows about this one
         assertThat(dnsResolver.lookup("rnd.opennms.ca").get().get(), equalTo(InetAddress.getByName("173.242.186.51")));
-        // OUr DNS server does not know about this one
+        // Our DNS server does not know about this one
+        assertThat(dnsResolver.lookup("private.opennms.ca").get(), equalTo(Optional.empty()));
+    }
+
+    @Test
+    public void canCacheLookups() throws UnknownHostException, ExecutionException, InterruptedException {
+        // Cache should start empty
+        assertThat(dnsResolver.getCache().getSize(), equalTo(0L));
+
+        // Query for a known host
+        assertThat(dnsResolver.lookup("rnd.opennms.ca").get().get(), equalTo(InetAddress.getByName("173.242.186.51")));
+
+        // There should be 1 cached record now
+        assertThat(dnsResolver.getCache().getSize(), equalTo(1L));
+
+        // Cache hit
+        assertThat(dnsResolver.lookup("rnd.opennms.ca").get().get(), equalTo(InetAddress.getByName("173.242.186.51")));
+
+        // Our DNS server does not know about this one
+        assertThat(dnsResolver.lookup("private.opennms.ca").get(), equalTo(Optional.empty()));
+
+        // There should be at least 2 cached records now (there can be more that 2 if the system is configured with search domains)
+        assertThat(dnsResolver.getCache().getSize(), greaterThanOrEqualTo(2L));
+
+        // Cache hit
         assertThat(dnsResolver.lookup("private.opennms.ca").get(), equalTo(Optional.empty()));
     }
 
@@ -116,6 +141,30 @@ public class NettyDnsResolverTest {
         // But not about these
         assertThat(dnsResolver.reverseLookup(InetAddress.getByName("1.1.1.1")).get(), equalTo(Optional.empty()));
         assertThat(dnsResolver.reverseLookup(InetAddressUtils.addr("2606:4700:4700::1111")).get(), equalTo(Optional.empty()));
+    }
+
+    @Test
+    public void canCacheReverseLookups() throws UnknownHostException, ExecutionException, InterruptedException {
+        // Cache should start empty
+        assertThat(dnsResolver.getCache().getSize(), equalTo(0L));
+
+        // Query for a known host
+        assertThat(dnsResolver.reverseLookup(InetAddress.getByName("173.242.186.51")).get().get(), equalTo("rnd.opennms.ca"));
+
+        // There should be 1 cached record now
+        assertThat(dnsResolver.getCache().getSize(), equalTo(1L));
+
+        // Cache hit
+        assertThat(dnsResolver.reverseLookup(InetAddress.getByName("173.242.186.51")).get().get(), equalTo("rnd.opennms.ca"));
+
+        // Now query for an unknown host
+        assertThat(dnsResolver.reverseLookup(InetAddress.getByName("1.1.1.1")).get(), equalTo(Optional.empty()));
+
+        // There should be 2 cached record now
+        assertThat(dnsResolver.getCache().getSize(), equalTo(2L));
+
+        // Cache hit
+        assertThat(dnsResolver.reverseLookup(InetAddress.getByName("1.1.1.1")).get(), equalTo(Optional.empty()));
     }
 
     @Test

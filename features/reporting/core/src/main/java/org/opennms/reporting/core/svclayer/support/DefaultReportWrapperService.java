@@ -31,14 +31,26 @@ package org.opennms.reporting.core.svclayer.support;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.file.Paths;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportMode;
@@ -157,24 +169,38 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                 try {
                     out = new ByteArrayOutputStream();
                     bout = new BufferedOutputStream(out);
-                    if (!deliveryOptions.getPersist()) {
+
+                    final Map<String, Object> reportParameters = parameters.getReportParms(mode);
+                    if (!deliveryOptions.isPersist()) {
                         try {
-                            getReportService(reportId).runAndRender(parameters.getReportParms(mode), reportId, deliveryOptions.getFormat(), bout);
+                            getReportService(reportId).runAndRender(reportParameters, reportId, deliveryOptions.getFormat(), bout);
+                            if (deliveryOptions.isSendMail() && deliveryOptions.getMailTo().length() != 0) {
+                                mailReport(deliveryOptions, out);
+                            }
+                            if (deliveryOptions.isWebhook()) {
+                                postReport(deliveryOptions, reportParameters, out, deliveryOptions.getInstanceId() + "." + deliveryOptions.getFormat().name().toLowerCase());
+                            }
                         } catch (final ReportException reportException) {
                             logError(reportId, reportException);
                         }
-                        mailReport(deliveryOptions, out);
                     } else {
-                        final String outputPath = getReportService(reportId).run(parameters.getReportParms(mode), reportId);
+                        final String outputPath = getReportService(reportId).run(reportParameters, reportId);
                         final ReportCatalogEntry catalogEntry = new ReportCatalogEntry();
                         catalogEntry.setReportId(reportId);
                         catalogEntry.setTitle(deliveryOptions.getInstanceId());
                         catalogEntry.setLocation(outputPath);
                         catalogEntry.setDate(new Date());
                         m_reportStoreService.save(catalogEntry);
-                        if (deliveryOptions.getSendMail() && deliveryOptions.getMailTo().length() != 0) {
+
+                        if (deliveryOptions.isSendMail() || deliveryOptions.isWebhook()) {
                             getReportService(reportId).render(reportId, outputPath, deliveryOptions.getFormat(), bout);
-                            mailReport(deliveryOptions, out);
+                            if (deliveryOptions.isSendMail() && deliveryOptions.getMailTo().length() != 0) {
+                                mailReport(deliveryOptions, out);
+                            }
+                            if (deliveryOptions.isWebhook()) {
+                                final String fileName = Paths.get(catalogEntry.getLocation()).getFileName().toString().replaceAll("jrprint", "");
+                                postReport(deliveryOptions, reportParameters, out, fileName + deliveryOptions.getFormat().name().toLowerCase());
+                            }
                         }
                     }
                 } catch (final Exception e) {
@@ -189,6 +215,60 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     private static void logError(final String reportId, final Exception exception) {
         LOG.error("failed to run or render report: {}", reportId, exception);
+    }
+
+    private static void postReport(final DeliveryOptions deliveryOptions, final Map<String, Object> reportParameters, final ByteArrayOutputStream outputStream, final String fileName) {
+        final String url = deliveryOptions.getWebhookUrl();
+        final String substitutedUrl = substituteUrl(url, deliveryOptions, reportParameters);
+        try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+             final CloseableHttpClient client = HttpClients.createDefault();
+        ) {
+            // Build Request
+            LOG.debug("Posting generated report with name {} to endpoint {} (input was {})", fileName, substitutedUrl, url);
+            final HttpEntity entity = MultipartEntityBuilder.create()
+                    .addBinaryBody("file", inputStream, ContentType.DEFAULT_BINARY, fileName)
+                    .build();
+            final HttpPost httpPost = new HttpPost(substitutedUrl);
+            httpPost.setEntity(entity);
+
+            // Execute request and ensure it succeeded
+            try (CloseableHttpResponse response = client.execute(httpPost)) {
+                LOG.debug("Request performed. Received response: {}", response);
+                final int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode < 200 || statusCode > 299) {
+                    throw new IOException("Expected status code of >= 200 and <= 299 but received: " + statusCode + ". Reason: " + response.getStatusLine().getReasonPhrase());
+                }
+            }
+        } catch (IOException ex) {
+            LOG.error("Error while posting data to endpoint {}: {}", url, ex.getMessage(), ex);
+        }
+    }
+
+    protected static String substituteUrl(String url, DeliveryOptions deliveryOptions, Map<String, Object> reportParameters) {
+        final Map<String, Object> parameters = new HashMap<>();
+        reportParameters.entrySet().forEach(e -> parameters.put("parameter_" + e.getKey(), e.getValue()));
+        parameters.put("instanceId", deliveryOptions.getInstanceId());
+        parameters.put("format", deliveryOptions.getFormat().name());
+
+        final String newUrl = substituteUrl(url, parameters);
+        return newUrl;
+    }
+
+    protected static String substituteUrl(String url, Map<String, Object> parameters) {
+        if (url.contains(":")) {
+            String newUrl = url;
+            for (Entry<String, Object> entry : parameters.entrySet()) {
+                if (entry.getValue() != null) {
+                    try {
+                        newUrl = newUrl.replaceAll(":" + entry.getKey(), URLEncoder.encode(entry.getValue().toString(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        LOG.error("Could not find encoder: {}", e.getMessage(), e);
+                    }
+                }
+            }
+            return newUrl;
+        }
+        return url;
     }
 
     private static void mailReport(final DeliveryOptions deliveryOptions, final ByteArrayOutputStream outputStream) {
@@ -224,12 +304,6 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean validate(final ReportParameters parameters, final String reportId) {
-        return getReportService(reportId).validate(parameters.getReportParms(), reportId);
     }
 
     private ReportService getReportService(final String reportId) {

@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_decapsulate_ingress {
 //    unsigned int inner_header_offset;
@@ -45,7 +45,7 @@ import com.google.common.base.MoreObjects;
 public class ExtendedDecapsulateIngress implements FlowData {
     public final long inner_header_offset;
 
-    public ExtendedDecapsulateIngress(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedDecapsulateIngress(final ByteBuf buffer) throws InvalidPacketException {
         this.inner_header_offset = BufferUtils.uint32(buffer);
     }
 

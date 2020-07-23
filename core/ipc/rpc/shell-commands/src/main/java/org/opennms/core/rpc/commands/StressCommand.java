@@ -48,12 +48,12 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Strings;
 
-@Command(scope = "rpc", name = "stress", description="Generates RPC requests against the Echo module")
+@Command(scope = "opennms", name = "stress-rpc", description="Generates RPC requests against the Echo module")
 @Service
 public class StressCommand implements Action {
 
     @Reference
-    public RpcClientFactory rpcClientFactory;
+    private RpcClientFactory rpcClientFactory;
 
     @Option(name = "-l", aliases = "--location", description = "Location")
     String location = null;

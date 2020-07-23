@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
@@ -37,6 +35,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.AsciiString;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_url {
 //    url_direction direction;    /* Direction of connection */
@@ -49,7 +49,7 @@ public class ExtendedUrl implements FlowData {
     public final AsciiString url;
     public final AsciiString host;
 
-    public ExtendedUrl(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedUrl(final ByteBuf buffer) throws InvalidPacketException {
         this.direction = UrlDirection.from(buffer);
         this.url = new AsciiString(buffer);
         this.host = new AsciiString(buffer);

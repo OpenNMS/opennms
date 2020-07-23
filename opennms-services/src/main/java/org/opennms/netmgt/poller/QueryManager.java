@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.poller;
 
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+
+import org.opennms.netmgt.poller.pollables.PollableService;
 
 /**
  * <p>QueryManager interface.</p>
@@ -90,5 +93,7 @@ public interface QueryManager {
     void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName);
 
     void updateServiceStatus(int nodeId, String ipAddr, String serviceName, String status);
+
+    void updateLastGoodOrFail(int nodeId, InetAddress ipAddr, String serviceName, PollStatus status);
 
 }

@@ -62,10 +62,12 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class Snmp4JAgentConfig {
     
     private SnmpAgentConfig m_config;
-    
+
     public Snmp4JAgentConfig(SnmpAgentConfig config) {
         m_config = config;
     }
@@ -227,7 +229,7 @@ public class Snmp4JAgentConfig {
      * Adapts the OpenNMS SNMPv3 community name to an SNMP4J compatible
      * community name (String -> OctetString)
      * 
-     * @param agentConfig
+     * @param community
      * @return
      */
     private static OctetString convertCommunity(String community) {
@@ -252,7 +254,8 @@ public class Snmp4JAgentConfig {
         }            
     }
 
-    protected Target getTarget() {
+    @VisibleForTesting
+    public Target getTarget() {
         Target target = createTarget();
         target.setVersion(getVersion());
         target.setRetries(getRetries());
@@ -362,6 +365,7 @@ public class Snmp4JAgentConfig {
         }
         return session;
     }
+
 
     /**
      * Creates an SNMP4J PDU based on the SNMP4J version constants.

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,8 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -49,6 +48,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -94,9 +94,6 @@ public class ProvisionerTest {
         when(provisionService.isDiscoveryEnabled()).thenReturn(true);
         provisioner.setProvisionService(provisionService);
 
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        provisioner.setScheduledExecutor(scheduledExecutorService);
-
         MonitoringSystemDao monitoringSystemDao = mock(MonitoringSystemDao.class);
         provisioner.setMonitoringSystemDao(monitoringSystemDao);
 
@@ -108,10 +105,12 @@ public class ProvisionerTest {
                 .setDistPoller("non-existent")
                 .getEvent();
 
-        // Trigger the newSuspect and wait for the runnable to complete
-        provisioner.handleNewSuspectEvent(newSuspectEvent);
-        scheduledExecutorService.shutdown();
-        scheduledExecutorService.awaitTermination(1, TimeUnit.MINUTES);
+        // Trigger the newSuspect
+        provisioner.handleNewSuspectEvent(ImmutableMapper.fromMutableEvent(newSuspectEvent));
+        // Wait for the runnable to complete
+        final CountDownLatch latch = new CountDownLatch(1);
+        provisioner.getNewSuspectExecutor().execute(latch::countDown);
+        latch.await(1, TimeUnit.MINUTES);
 
         // Make sure we tried to lookup the monitoring system from the given id
         verify(monitoringSystemDao, times(1)).get("non-existent");
@@ -120,5 +119,47 @@ public class ProvisionerTest {
         assertThat(ipAddressRef.get(), equalTo(InetAddressUtils.ONE_TWENTY_SEVEN));
         assertThat(foreignSourceRef.get(), equalTo(null));
         assertThat(locationRef.get(), equalTo(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
+    }
+
+    @Test
+    public void testHandleDeleteServiceKeepUnmanaged() {
+        final Provisioner provisioner = new Provisioner();
+
+        ProvisionService provisionService = mock(ProvisionService.class);
+        when(provisionService.isDiscoveryEnabled()).thenReturn(true);
+        provisioner.setProvisionService(provisionService);
+
+        MonitoringSystemDao monitoringSystemDao = mock(MonitoringSystemDao.class);
+        provisioner.setMonitoringSystemDao(monitoringSystemDao);
+
+        final Event event = new EventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, "Test")
+            .setNodeid(1)
+            .setInterface(InetAddressUtils.UNPINGABLE_ADDRESS)
+            .setService("ICMP").getEvent();
+
+        provisioner.handleDeleteService(ImmutableMapper.fromMutableEvent(event));
+
+        verify(provisionService).deleteService(1, InetAddressUtils.UNPINGABLE_ADDRESS, "ICMP", false);
+    }
+
+    @Test
+    public void testHandleDeleteServiceIgnoreUnmanaged() {
+        final Provisioner provisioner = new Provisioner();
+
+        ProvisionService provisionService = mock(ProvisionService.class);
+        when(provisionService.isDiscoveryEnabled()).thenReturn(true);
+        provisioner.setProvisionService(provisionService);
+
+        MonitoringSystemDao monitoringSystemDao = mock(MonitoringSystemDao.class);
+        provisioner.setMonitoringSystemDao(monitoringSystemDao);
+
+        final Event event = new EventBuilder(EventConstants.DELETE_SERVICE_EVENT_UEI, "Test")
+            .setNodeid(1)
+            .setInterface(InetAddressUtils.UNPINGABLE_ADDRESS)
+            .setService("ICMP").addParam(EventConstants.PARM_IGNORE_UNMANAGED, "true").getEvent();
+
+        provisioner.handleDeleteService(ImmutableMapper.fromMutableEvent(event));
+
+        verify(provisionService).deleteService(1, InetAddressUtils.UNPINGABLE_ADDRESS, "ICMP", true);
     }
 }

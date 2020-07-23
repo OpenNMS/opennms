@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,6 +40,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -92,6 +93,20 @@ public class UserRestService extends OnmsRestService {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Path("whoami")
+    public OnmsUser whoami(@Context final SecurityContext securityContext) {
+        final String userName = securityContext.getUserPrincipal().getName();
+        final OnmsUser user = getOnmsUser(userName);
+        // Don't expose the user's password
+        if (user != null) {
+            user.setPassword(null);
+            user.setPasswordSalted(null);
+        }
+        return user;
+    }
+
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{username}")
     public OnmsUser getUser(@Context final SecurityContext securityContext, @PathParam("username") final String username) {
         final OnmsUser user = getOnmsUser(username);
@@ -100,7 +115,7 @@ public class UserRestService extends OnmsRestService {
 
     @POST
     @Consumes(MediaType.APPLICATION_XML)
-    public Response addUser(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final OnmsUser user) {
+    public Response addUser(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final OnmsUser user, @QueryParam("hashPassword") final boolean hashPassword) {
         writeLock();
         try {
             if (!hasEditRights(securityContext)) {
@@ -108,6 +123,7 @@ public class UserRestService extends OnmsRestService {
             }
             LOG.debug("addUser: Adding user {}", user);
             try {
+                if (hashPassword) hashPassword(user);
                 m_userManager.save(user);
             } catch (final Throwable t) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, t);
@@ -130,6 +146,8 @@ public class UserRestService extends OnmsRestService {
             final OnmsUser user = getOnmsUser(userCriteria);
             LOG.debug("updateUser: updating user {}", user);
             boolean modified = false;
+            boolean passwordModified = false;
+            boolean hashPassword = false;
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(user);
             for(final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -138,10 +156,16 @@ public class UserRestService extends OnmsRestService {
                     wrapper.setPropertyValue(key, value);
                     modified = true;
                 }
+                if (key.equals("password")) {
+                    passwordModified = true;
+                } else if (key.equals("hashPassword")) {
+                    hashPassword = Boolean.valueOf(params.getFirst("hashPassword"));
+                }
             }
             if (modified) {
                 LOG.debug("updateUser: user {} updated", user);
                 try {
+                    if (passwordModified && hashPassword) hashPassword(user);
                     m_userManager.save(user);
                 } catch (final Throwable t) {
                     throw getException(Status.INTERNAL_SERVER_ERROR, t);
@@ -248,6 +272,13 @@ public class UserRestService extends OnmsRestService {
             throw getException(Status.INTERNAL_SERVER_ERROR, t);
         }
         if (user == null) throw getException(Status.NOT_FOUND, "User {} does not exist.", username);
+        return user;
+    }
+
+    private OnmsUser hashPassword(final OnmsUser user) {
+        final String password = m_userManager.encryptedPassword(user.getPassword(), true);
+        user.setPassword(password);
+        user.setPasswordSalted(true);
         return user;
     }
 

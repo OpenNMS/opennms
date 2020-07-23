@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct extended_router {
 //    next_hop nexthop;            /* IP address of next hop router */
@@ -51,7 +51,7 @@ public class ExtendedRouter implements FlowData {
     public final long src_mask_len;
     public final long dst_mask_len;
 
-    public ExtendedRouter(final ByteBuffer buffer) throws InvalidPacketException {
+    public ExtendedRouter(final ByteBuf buffer) throws InvalidPacketException {
         this.nexthop = new NextHop(buffer);
         this.src_mask_len = BufferUtils.uint32(buffer);
         this.dst_mask_len = BufferUtils.uint32(buffer);

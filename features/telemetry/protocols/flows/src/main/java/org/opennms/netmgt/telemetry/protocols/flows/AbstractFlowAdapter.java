@@ -34,11 +34,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.core.rpc.utils.mate.ContextKey;
 import org.opennms.netmgt.flows.api.Converter;
+import org.opennms.netmgt.flows.api.DetailedFlowException;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
+import org.opennms.netmgt.flows.api.UnrecoverableFlowException;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
@@ -49,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.google.common.base.Strings;
 
 public abstract class AbstractFlowAdapter<P> implements Adapter {
 
@@ -57,6 +61,9 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
     private final FlowRepository flowRepository;
 
     private final Converter<P> converter;
+
+    private String metaDataNodeLookup;
+    private ContextKey contextKey;
 
     /**
      * Time taken to parse a log
@@ -68,22 +75,18 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
      */
     private final Histogram packetsPerLogHistogram;
 
-    public AbstractFlowAdapter(final String name,
+    public AbstractFlowAdapter(final AdapterDefinition adapterConfig,
                                final MetricRegistry metricRegistry,
                                final FlowRepository flowRepository,
                                final Converter<P> converter) {
-        Objects.requireNonNull(name);
+        Objects.requireNonNull(adapterConfig);
         Objects.requireNonNull(metricRegistry);
+
         this.flowRepository = Objects.requireNonNull(flowRepository);
         this.converter = Objects.requireNonNull(converter);
 
-        logParsingTimer = metricRegistry.timer(name("adapters", name, "logParsing"));
-        packetsPerLogHistogram = metricRegistry.histogram(name("adapters", name, "packetsPerLog"));
-    }
-
-    @Override
-    public void setConfig(AdapterDefinition protocol) {
-        // we do not need the protocol
+        this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getName(), "logParsing"));
+        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getName(), "packetsPerLog"));
     }
 
     @Override
@@ -106,10 +109,20 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
         try {
             LOG.debug("Persisting {} packets, {} flows.", flowPackets.size(), flows.size());
-            final FlowSource source = new FlowSource(messageLog.getLocation(), messageLog.getSourceAddress());
+            final FlowSource source = new FlowSource(messageLog.getLocation(),
+                    messageLog.getSourceAddress(),
+                    contextKey);
             flowRepository.persist(flows, source);
+        } catch (DetailedFlowException ex) {
+            LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
+            for (final String logMessage: ex.getDetailedLogMessages()) {
+                LOG.error(logMessage);
+            }
+        } catch(UnrecoverableFlowException ex) {
+            LOG.error("Error while persisting flows. Cannot recover: {}. {} messages are lost.", ex.getMessage(), messageLog.getMessageList().size(), ex);
+            return;
         } catch (FlowException ex) {
-            LOG.error("Failed to persist one or more packets: {}", ex.getMessage());
+            LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
         }
 
         LOG.debug("Completed processing {} telemetry messages.",
@@ -120,5 +133,19 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
     public void destroy() {
         // not needed
+    }
+
+    public String getMetaDataNodeLookup() {
+        return metaDataNodeLookup;
+    }
+
+    public void setMetaDataNodeLookup(String metaDataNodeLookup) {
+        this.metaDataNodeLookup = metaDataNodeLookup;
+
+        if (!Strings.isNullOrEmpty(this.metaDataNodeLookup)) {
+            this.contextKey = new ContextKey(metaDataNodeLookup);
+        } else {
+            this.contextKey = null;
+        }
     }
 }

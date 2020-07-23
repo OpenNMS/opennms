@@ -38,8 +38,6 @@ import org.opennms.netmgt.telemetry.api.receiver.ListenerFactory;
 import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
 import org.opennms.netmgt.telemetry.listeners.UdpListener;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 
 public class UdpListenerFactory implements ListenerFactory {
 
@@ -64,9 +62,6 @@ public class UdpListenerFactory implements ListenerFactory {
         if (parsers.size() != listenerDefinition.getParsers().size()) {
             throw new IllegalArgumentException("Each parser must be of type UdpParser but was not.");
         }
-        final Listener listener = new UdpListener(listenerDefinition.getName(), parsers, telemetryRegistry.getMetricRegistry());
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(listener);
-        wrapper.setPropertyValues(listenerDefinition.getParameterMap());
-        return listener;
+        return new UdpListener(listenerDefinition.getName(), parsers, telemetryRegistry.getMetricRegistry());
     }
 }

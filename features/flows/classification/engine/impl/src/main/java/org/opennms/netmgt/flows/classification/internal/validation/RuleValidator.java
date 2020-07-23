@@ -34,16 +34,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.opennms.core.utils.IPLike;
+import org.opennms.core.network.IPAddress;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.error.ErrorContext;
 import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.exception.InvalidRuleException;
+import org.opennms.netmgt.flows.classification.internal.value.IpValue;
 import org.opennms.netmgt.flows.classification.internal.value.StringValue;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 import com.google.common.base.Strings;
+import com.google.common.net.InetAddresses;
 
 public class RuleValidator {
 
@@ -56,6 +58,11 @@ public class RuleValidator {
     }
 
     public void validate(Rule rule) throws InvalidRuleException {
+
+        // Ensure that rule is associated to a group
+        if (rule.getGroup() == null) {
+            throw new InvalidRuleException(ErrorContext.Entity, Errors.RULE_GROUP_IS_REQUIRED);
+        }
         // Name is required
         validateName(rule.getName());
 
@@ -154,16 +161,36 @@ public class RuleValidator {
         if (Strings.isNullOrEmpty(ipAddressValue)) {
             throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_INVALID, ipAddressValue);
         }
-        try {
-            StringValue value = new StringValue(ipAddressValue);
-            if (!value.isWildcard()) {
-                // The matches method parses the pattern (in this case the ipAddressValue) and validates
-                // the address, as we don't care if it actually matches. We only want to know, if it considers the
-                // "pattern" (in this case a concrete address) correct.
-                IPLike.matches("8.8.8.8", ipAddressValue);
+        final StringValue inputValue = new StringValue(ipAddressValue);
+        final List<StringValue> actualValues = inputValue.splitBy(",");
+        for (StringValue eachValue : actualValues) {
+            // In case it is ranged, verify the range
+            if (eachValue.isRanged()) {
+                final List<StringValue> rangedValues = eachValue.splitBy("-");
+                // either a-, or a-b-c, etc.
+                if (rangedValues.size() != 2) {
+                    throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_RANGE_INVALID, eachValue.getValue());
+                }
+                // Ensure each range is an ip address
+                for (StringValue rangedValue : rangedValues) {
+                    if (rangedValue.contains("/")) {
+                        throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_RANGE_CIDR_NOT_SUPPORTED);
+                    }
+                    verifyIpAddress(errorContext, rangedValue.getValue());
+                }
+                // Now verify the range itself
+                final IPAddress begin = new IPAddress(rangedValues.get(0).getValue());
+                final IPAddress end = new IPAddress(rangedValues.get(1).getValue());
+                if (begin.isGreaterThan(end)) {
+                    throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_RANGE_BEGIN_END_INVALID, begin, end);
+                }
+            } else {
+                if (eachValue.contains("/")) {
+                    verifyCidrExpression(errorContext, eachValue.getValue());
+                } else {
+                    verifyIpAddress(errorContext, eachValue.getValue());
+                }
             }
-        } catch (Exception ex) {
-            throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_INVALID, ipAddressValue);
         }
     }
 
@@ -172,6 +199,22 @@ public class RuleValidator {
         int value = Integer.parseInt(input);
         if (value < Rule.MIN_PORT_VALUE || value > Rule.MAX_PORT_VALUE) {
             throw new InvalidRuleException(errorContext, Errors.RULE_PORT_VALUE_NOT_IN_RANGE, Rule.MIN_PORT_VALUE, Rule.MAX_PORT_VALUE);
+        }
+    }
+
+    // Validate each input to be a valid ip address
+    private static void verifyIpAddress(final String errorContext, final String input) throws InvalidRuleException {
+        if (!InetAddresses.isInetAddress(input)) {
+            throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_INVALID, input);
+        }
+    }
+
+    // Verify input is an actual valid cidr expression
+    private static void verifyCidrExpression(String errorContext, String input) {
+        try {
+            IpValue.parseCIDR(input);
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_INVALID_CIDR_EXPRESSION, input, ex.getMessage());
         }
     }
 }

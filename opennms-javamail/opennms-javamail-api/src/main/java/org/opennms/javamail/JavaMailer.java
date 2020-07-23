@@ -68,6 +68,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import com.google.common.base.Strings;
+
 /**
  * Sends an email message using the Java Mail API
  *
@@ -79,6 +81,7 @@ public class JavaMailer {
 	private static final Logger LOG = LoggerFactory.getLogger(JavaMailer.class);
 
     private static final String DEFAULT_FROM_ADDRESS = "root@[127.0.0.1]";
+    private static final String DEFAULT_REPLY_TO_ADDRESS = "";
 //  private static final String DEFAULT_TO_ADDRESS = "root@[127.0.0.1]";
     private static final String DEFAULT_MAIL_HOST = "127.0.0.1";
     private static final boolean DEFAULT_AUTHENTICATE = false;
@@ -112,6 +115,7 @@ public class JavaMailer {
     private String m_mailer;
     private String m_transport;
     private String m_from;
+    private String m_replyTo;
     private boolean m_authenticate;
     private String m_user;
     private String m_password;
@@ -191,6 +195,7 @@ public class JavaMailer {
         m_mailer = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.mailer", DEFAULT_MAILER);
         m_transport = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.transport", DEFAULT_TRANSPORT);
         m_from = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.fromAddress", DEFAULT_FROM_ADDRESS);
+        m_replyTo = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.replyToAddress", DEFAULT_REPLY_TO_ADDRESS);
         m_authenticate = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.authenticate", DEFAULT_AUTHENTICATE);
         m_user = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.authenticateUser", DEFAULT_AUTHENTICATE_USER);
         m_password = PropertiesUtils.getProperty(m_mailProps, "org.opennms.core.utils.authenticatePassword", DEFAULT_AUTHENTICATE_PASSWORD);
@@ -334,6 +339,9 @@ public class JavaMailer {
         MimeMessage message;
         message = new MimeMessage(getSession());
         message.setFrom(new InternetAddress(getFrom()));
+        if (!Strings.isNullOrEmpty(getReplyTo())) {
+            message.setReplyTo(new Address[]{new InternetAddress(getReplyTo())});
+        }
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(getTo(), false));
         message.setSubject(getSubject(), m_charSet);
         for (final String key : getExtraHeaders().keySet()) {
@@ -351,6 +359,10 @@ public class JavaMailer {
         sb.append(getTo());
         sb.append("\n\tFrom: ");
         sb.append(getFrom());
+        if (!Strings.isNullOrEmpty(getReplyTo())) {
+            sb.append("\n\tReply-To: ");
+            sb.append(getReplyTo());
+        }
         sb.append("\n\tSubject is: ");
         sb.append(getSubject());
         sb.append("\n\tFile: ");
@@ -581,6 +593,15 @@ public class JavaMailer {
      */
     public String getFrom() {
         return m_from;
+    }
+
+    /**
+     * <p>getReplyTo</p>
+     *
+     * @return Returns the replyTo address.
+     */
+    public String getReplyTo() {
+        return m_replyTo;
     }
 
     /**

@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
 
-import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -39,6 +38,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public class UndeclaredValue extends Value<byte[]> {
     public final byte[] value;
@@ -81,8 +82,8 @@ public class UndeclaredValue extends Value<byte[]> {
                                             final int informationElementId) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
-                return new UndeclaredValue(enterpriseNumber, informationElementId, bytes(buffer, buffer.remaining()));
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) {
+                return new UndeclaredValue(enterpriseNumber, informationElementId, bytes(buffer, buffer.readableBytes()));
             }
 
             @Override

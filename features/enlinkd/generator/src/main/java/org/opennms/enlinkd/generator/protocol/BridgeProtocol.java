@@ -42,7 +42,7 @@ import org.opennms.netmgt.model.OnmsNode;
 
 /**
  * Creates a topology with Bridges and Segments.
- * Call with: enlinkd:generate-topology --protocol bridge --nodes 10
+ * Call with: opennms:generate-topology --protocol bridge --nodes 10
  * will result in:
  *
  *                           bridge0

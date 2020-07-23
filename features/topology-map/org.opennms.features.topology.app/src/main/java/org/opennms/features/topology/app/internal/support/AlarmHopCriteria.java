@@ -28,17 +28,15 @@
 
 package org.opennms.features.topology.app.internal.support;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractCollapsibleVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.GroupRef;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.SearchCriteria;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -73,27 +71,11 @@ public class AlarmHopCriteria extends VertexHopCriteria implements SearchCriteri
 		return m_searchResult.getQuery();
 	}
 
-	public static class AlarmVertex extends AbstractVertex implements GroupRef {
-		private Set<VertexRef> m_children = new HashSet<>();
-
-        public AlarmVertex(String namespace, String id, String label) {
-			super(namespace, id, label);
+	public static class AlarmVertex extends AbstractCollapsibleVertex {
+        public AlarmVertex(String id, String label) {
+			super(NAMESPACE, id, label);
 			setIconKey("group");
 		}
-
-		@Override
-		public boolean isGroup() {
-			return true;
-		}
-
-        @Override
-        public Set<VertexRef> getChildren() {
-            return m_children;
-        }
-
-        public void setChildren(Set<VertexRef> children) {
-            m_children = children;
-        }
     }
 
 	public AlarmHopCriteria(AlarmSearchResult result, AlarmProvider alarmProvider) {
@@ -104,7 +86,7 @@ public class AlarmHopCriteria extends VertexHopCriteria implements SearchCriteri
 
         String severityLabel = OnmsSeverity.get(result.getLabel()).getLabel();
         
-        m_collapsedVertex = new AlarmVertex(NAMESPACE, severityLabel, "Alarms: "+severityLabel);
+        m_collapsedVertex = new AlarmVertex(severityLabel, "Alarms: "+severityLabel);
         m_collapsedVertex.setChildren(getVertices());
         setId(result.getId());
     }

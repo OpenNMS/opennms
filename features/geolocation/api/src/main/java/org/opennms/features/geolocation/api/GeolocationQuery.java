@@ -40,9 +40,9 @@ public class GeolocationQuery {
 
     /**
      * The strategy to calculate the status of each node.
-     * If null, {@link StatusCalculationStrategy#None} is assumed.
+     * Maybe null.
      */
-    private StatusCalculationStrategy statusCalculationStrategy = StatusCalculationStrategy.None;
+    private StatusCalculationStrategy statusCalculationStrategy;
 
     /**
      * Defines if only nodes of a certain location are returned.
@@ -58,7 +58,7 @@ public class GeolocationQuery {
 
     /**
      * If defined only nodes which have a severity >= the given severity are included in the result.
-     * Note: If {@link #statusCalculationStrategy} is {@link StatusCalculationStrategy#None} this property is ignored.
+     * Note: If {@link #statusCalculationStrategy} is null this property is ignored.
      */
     private GeolocationSeverity severity;
 

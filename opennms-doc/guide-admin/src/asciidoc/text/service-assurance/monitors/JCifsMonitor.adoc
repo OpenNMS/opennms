@@ -66,6 +66,8 @@ The _JCifsMonitor_ can *not* test:
                         `folder_empty` and `folder_not_empty`, otherwise it will be ignored.                            | optional | `-` | No
 |===
 
+CAUTION: Due to limitations in the JCifs library, only global timeouts can be used reliably.
+
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 TIP: It makes little sense to have retries higher than `1`.

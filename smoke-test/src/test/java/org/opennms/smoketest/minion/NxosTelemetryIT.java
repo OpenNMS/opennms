@@ -39,7 +39,6 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -56,6 +55,7 @@ import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.telemetry.Packet;
 import org.opennms.smoketest.telemetry.Packets;
+import org.opennms.smoketest.telemetry.Sender;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.RestClient;
 import org.slf4j.Logger;
@@ -94,7 +94,7 @@ public class NxosTelemetryIT {
 
     public static void sendNxosTelemetryMessage(InetSocketAddress udpAddress) {
         try {
-            new Packet(Packets.NXOS.getResource(), udpAddress).send();
+            new Packet(Packets.NXOS.getPayload()).send(Sender.udp(udpAddress));
         } catch (IOException e) {
             LOG.error("Exception while sending NXOS packets", e);
         }

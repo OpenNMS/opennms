@@ -28,29 +28,32 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.slice;
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
+import org.opennms.netmgt.telemetry.listeners.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow9MessageBuilder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+
+import io.netty.buffer.ByteBuf;
 
 public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispatchable {
     public Netflow9UdpParser(final String name,
@@ -63,7 +66,7 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
     }
 
     @Override
-    protected RecordProvider parse(Session session, ByteBuffer buffer) throws Exception {
+    protected RecordProvider parse(Session session, ByteBuf buffer) throws Exception {
         final Header header = new Header(slice(buffer, Header.SIZE));
         final Packet packet = new Packet(session, header, buffer);
 
@@ -73,13 +76,19 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
     }
 
     @Override
-    public boolean handles(final ByteBuffer buffer) {
+    public boolean handles(final ByteBuf buffer) {
         return uint16(buffer) == Header.VERSION;
     }
 
     @Override
     protected UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
         return new SessionKey(remoteAddress.getAddress(), localAddress);
+    }
+
+    @Override
+    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) {
+        Netflow9MessageBuilder builder = new Netflow9MessageBuilder(record, enrichment);
+        return builder.buildData();
     }
 
     public static class SessionKey implements UdpSessionManager.SessionKey {

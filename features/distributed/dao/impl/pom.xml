@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.features.distributed</groupId>
         <artifactId>org.opennms.features.distributed.dao</artifactId>
-        <version>25.0.0-SNAPSHOT</version>
+        <version>27.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.distributed</groupId>
@@ -33,6 +33,8 @@
                             org.opennms.netmgt.bsm.persistence.api.functions,
                             org.opennms.netmgt.bsm.persistence.api.functions.reduce,
                             org.opennms.netmgt.bsm.persistence.api.functions.map,
+                            org.opennms.netmgt.endpoints.grafana.api,
+                            org.opennms.netmgt.endpoints.grafana.persistence.api,
                             org.opennms.netmgt.flows.classification.persistence.api
                         </Export-Package>
                         <Import-Package>
@@ -60,6 +62,7 @@
                             org.slf4j,
 
                             org.hibernate,
+                            org.hibernate.classic,
                             org.hibernate.criterion,
                             org.hibernate.metadata,
                             org.hibernate.transform,
@@ -81,6 +84,7 @@
                             org.opennms.core.soa,
                             org.opennms.core.collections,
                             org.opennms.core.spring,
+                            org.opennms.core.sysprops,
 
                             org.opennms.features.reporting.model,
                             org.opennms.netmgt.collection.api,
@@ -128,6 +132,8 @@
                             org.opennms.netmgt.bsm.persistence.api,
                             org.opennms.netmgt.bsm.persistence.api.functions.map,
                             org.opennms.netmgt.bsm.persistence.api.functions.reduce,
+                            org.opennms.netmgt.endpoints.grafana.api,
+                            org.opennms.netmgt.endpoints.grafana.persistence.api,
                             org.opennms.netmgt.flows.classification.persistence.api,
 
                             org.springframework.stereotype,
@@ -176,6 +182,7 @@
                             org.opennms.netmgt.dao.jaxb,
                             org.opennms.netmgt.dao.jaxb.collector,
                             org.opennms.netmgt.dao.stats,
+                            org.opennms.netmgt.endpoints.grafana.persistence.impl
                             org.opennms.netmgt.flows.classification.persistence.impl
                         </Private-Package>
                     </instructions>
@@ -197,6 +204,7 @@
                                     <include>org.opennms.features.distributed:org.opennms.features.distributed.dao-api</include>
                                     <include>org.opennms:opennms-dao</include>
                                     <include>org.opennms.features.bsm:org.opennms.features.bsm.persistence.impl</include>
+                                    <include>org.opennms.features.endpoints.grafana.persistence:org.opennms.features.endpoints.grafana.persistence.impl</include>
                                     <include>org.opennms.features.flows.classification.persistence:org.opennms.features.flows.classification.persistence.impl</include>
                                 </includes>
                             </artifactSet>
@@ -247,6 +255,11 @@
         <dependency>
             <groupId>org.opennms.features.flows.classification.persistence</groupId>
             <artifactId>org.opennms.features.flows.classification.persistence.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.endpoints.grafana.persistence</groupId>
+            <artifactId>org.opennms.features.endpoints.grafana.persistence.impl</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

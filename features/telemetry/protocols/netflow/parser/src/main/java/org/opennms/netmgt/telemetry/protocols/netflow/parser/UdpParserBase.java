@@ -29,7 +29,6 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -47,6 +46,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
 
 import com.codahale.metrics.MetricRegistry;
+
+import io.netty.buffer.ByteBuf;
 
 public abstract class UdpParserBase extends ParserBase implements UdpParser {
     public final static long HOUSEKEEPING_INTERVAL = 60000;
@@ -66,11 +67,11 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
         super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
     }
 
-    protected abstract RecordProvider parse(final Session session, final ByteBuffer buffer) throws Exception;
+    protected abstract RecordProvider parse(final Session session, final ByteBuf buffer) throws Exception;
 
     protected abstract UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress);
 
-    public final CompletableFuture<?> parse(final ByteBuffer buffer,
+    public final CompletableFuture<?> parse(final ByteBuf buffer,
                                             final InetSocketAddress remoteAddress,
                                             final InetSocketAddress localAddress) throws Exception {
         final UdpSessionManager.SessionKey sessionKey = this.buildSessionKey(remoteAddress, localAddress);

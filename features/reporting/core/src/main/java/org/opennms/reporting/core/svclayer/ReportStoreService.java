@@ -49,7 +49,9 @@ public interface ReportStoreService {
      * @return a {@link java.util.List} object.
      */
     public List<ReportCatalogEntry> getAll();
-    
+
+    List<ReportCatalogEntry> getPage(int offset, int limit);
+
     /**
      * <p>getFormatMap</p>
      *
@@ -103,4 +105,6 @@ public interface ReportStoreService {
      * @param reportServiceLocator a {@link org.opennms.reporting.core.svclayer.ReportServiceLocator} object.
      */
     public void setReportServiceLocator(ReportServiceLocator reportServiceLocator);
+
+    long countAll();
 }

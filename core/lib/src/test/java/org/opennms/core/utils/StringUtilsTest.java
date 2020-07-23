@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class StringUtilsTest {
@@ -227,6 +228,7 @@ public class StringUtilsTest {
     }
 
     @Test
+    @Ignore
     public void testParseDecimalIntegerSpeed() {
         final int WARM_UP = 1000000;
         final int TEST_SPEED = 50000000;
@@ -266,6 +268,7 @@ public class StringUtilsTest {
     }
 
     @Test
+    @Ignore
     public void testFailToParseDecimalIntegerSpeed() {
         final int WARM_UP = 10000;
         final int TEST_SPEED = 50000;

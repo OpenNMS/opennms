@@ -88,4 +88,8 @@ public class Interpolator {
         outerMatcher.appendTail(stringBuffer);
         return stringBuffer.toString();
     }
+    
+    public static boolean containsMateData(String toCheck) {
+        return toCheck != null && OUTER_PATTERN.matcher(toCheck).find();
+    }
 }

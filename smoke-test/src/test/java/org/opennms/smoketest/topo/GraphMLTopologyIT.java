@@ -28,14 +28,17 @@
 
 package org.opennms.smoketest.topo;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
+import static org.opennms.smoketest.TopologyIT.waitForTransition;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,22 +46,19 @@ import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.link.Layout;
+import org.opennms.features.topology.link.TopologyLinkBuilder;
 import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.TopologyIT;
+import org.opennms.smoketest.graphml.GraphmlDocument;
+import org.opennms.smoketest.utils.RestClient;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
+import com.google.common.collect.Lists;
 
 /**
  * Tests the 'GraphML' Topology Provider
@@ -68,14 +68,18 @@ import static org.junit.Assert.assertEquals;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
 
-    private final String URL = getBaseUrlExternal() + "opennms/rest/graphml/test-graph";
+    public static final String LABEL = "GraphML Topology Provider (test-graph)";
 
-    private static final String LABEL = "GraphML Topology Provider (test-graph)";
+    private final GraphmlDocument graphmlDocument = new GraphmlDocument("test-topology.xml", "/topology/graphml/test-topology.xml");
 
     private TopologyIT.TopologyUIPage topologyUIPage;
 
+    private RestClient restClient;
+
     @Before
     public void setUp() throws IOException, InterruptedException {
+        restClient = stack.opennms().getRestClient();
+
         // Sometimes a previous run did not clean up properly, so we do that before we
         // import a graph
         if (existsGraph()) {
@@ -284,6 +288,29 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         Assert.assertEquals(1, topologyUIPage.getFocusedVertices().size());
     }
 
+    @Test
+    public void verifyCanSetLayerViaUrlParameter() {
+        adminPage(); // leave topology page to ensure the link actually works
+        final String namespace = "acme:markets";
+        final String searchTokenNamespace = "Acme:markets:";
+        final String url = new TopologyLinkBuilder()
+                .provider(() -> LABEL)
+                .focus("north.2", "north.3")
+                .szl(0)
+                .layer(namespace)
+                .getLink();
+        getDriver().get(getBaseUrlInternal() + url.substring(1) /* ignore leading / */);
+
+        // verify that the page loaded properly
+        // DO NOT invoke .open()
+        topologyUIPage = new TopologyIT.TopologyUIPage(this, getBaseUrlInternal());
+        waitForTransition();
+        Assert.assertThat(topologyUIPage.getSzl(), is(0));
+        Assert.assertThat(topologyUIPage.getFocusedVertices(), hasItems(
+                focusVertex(topologyUIPage, searchTokenNamespace, "North 2"),
+                focusVertex(topologyUIPage, searchTokenNamespace, "North 3")));
+    }
+
     /**
      * Creates and publishes a requisition with 2 dummy nodes with predefined parameters
      */
@@ -326,45 +353,25 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         Thread.sleep(5000); // Wait to allow the event to be processed
     }
 
-    private boolean existsGraph() throws IOException {
-        try (HttpClientWrapper client = createClientWrapper()) {
-            HttpGet httpGet = new HttpGet(URL);
-            httpGet.addHeader("Accept", "application/xml");
-            CloseableHttpResponse response = client.execute(httpGet);
-            return response.getStatusLine().getStatusCode() == 200;
-        }
+    private boolean existsGraph() {
+        return graphmlDocument.exists(restClient);
     }
 
-    private void importGraph() throws IOException, InterruptedException {
-        try (HttpClientWrapper client = createClientWrapper()) {
-            HttpPost httpPost = new HttpPost(URL);
-            httpPost.setHeader("Accept", "application/xml");
-            httpPost.setHeader("Content-Type", "application/xml");
-            httpPost.setEntity(new StringEntity(IOUtils.toString(GraphMLTopologyIT.class.getResourceAsStream("/topology/graphml/test-topology.xml"), Charsets.UTF_8)));
-            CloseableHttpResponse response = client.execute(httpPost);
-            assertEquals(201, response.getStatusLine().getStatusCode());
-        }
+    private void importGraph() throws InterruptedException {
+        graphmlDocument.create(restClient);
+
         // We wait to give the GraphMLMetaTopologyFactory the chance to initialize the new Topology
         Thread.sleep(20000);
     }
 
-    private void deleteGraph() throws IOException, InterruptedException {
-        try (HttpClientWrapper client = createClientWrapper()) {
-            HttpDelete httpDelete = new HttpDelete(URL);
-            CloseableHttpResponse response = client.execute(httpDelete);
-            assertEquals(200, response.getStatusLine().getStatusCode());
-        }
+    private void deleteGraph() throws InterruptedException {
+        graphmlDocument.delete(restClient);
+
         // We wait to give the GraphMLMetaTopologyFactory the chance to clean up afterwards
         Thread.sleep(20000);
     }
 
-    private static HttpClientWrapper createClientWrapper() {
-        HttpClientWrapper wrapper = HttpClientWrapper.create();
-        wrapper.addBasicCredentials(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
-        return wrapper;
-    }
-
     private static TopologyIT.FocusedVertex focusVertex(TopologyIT.TopologyUIPage topologyUIPage, String namespace, String label) {
-        return  new TopologyIT.FocusedVertex(topologyUIPage, namespace, label);
+        return new TopologyIT.FocusedVertex(topologyUIPage, namespace, label);
     }
 }

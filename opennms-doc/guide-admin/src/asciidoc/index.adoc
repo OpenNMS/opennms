@@ -10,7 +10,7 @@
 
 [[ga]]
 = Administrators Guide
-:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-{docyear} The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -146,17 +146,20 @@ include::text/service-assurance/monitors/XmpMonitor.adoc[]
 [[ga-performance-mgmt]]
 == Performance Management
 include::text/performance-data-collection/introduction.adoc[]
-include::text/performance-data-collection/configuration.adoc[]
-include::text/performance-data-collection/collection-packages.adoc[]
+include::text/performance-data-collection/collectd/configuration.adoc[]
+include::text/performance-data-collection/collectd/collection-packages.adoc[]
 
 [[ga-performance-mgmt-collectors]]
+=== Configuring Collectors
+include::text/performance-data-collection/collectors/collectors.adoc[]
+
 === Collectors
-include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
+include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/http.adoc[]
 include::text/performance-data-collection/collectors/jdbc.adoc[]
-include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/nsclient.adoc[]
+include::text/performance-data-collection/collectors/prometheus.adoc[]
 include::text/performance-data-collection/collectors/tca.adoc[]
 include::text/performance-data-collection/collectors/vmware-cim.adoc[]
 include::text/performance-data-collection/collectors/vmware.adoc[]
@@ -165,11 +168,23 @@ include::text/performance-data-collection/collectors/wsman.adoc[]
 include::text/performance-data-collection/collectors/xml.adoc[]
 include::text/performance-data-collection/collectors/xmp.adoc[]
 
+[[ga-resource-types]]
+=== Resource Types
+include::text/performance-data-collection/resource-types.adoc[]
+
 [[ga-performance-mgmt-shell]]
-=== Shell Commands
+=== Administration and Troubleshooting
+include::text/performance-data-collection/collectd/collect-admin.adoc[]
 include::text/performance-data-collection/shell/introduction.adoc[]
 include::text/performance-data-collection/shell/adhoc-collection.adoc[]
+include::text/performance-data-collection/shell/measurements.adoc[]
 include::text/performance-data-collection/shell/stress-testing.adoc[]
+
+
+
+[[ga-performance-mgmt-thresholds]]
+== Thresholding
+include::text/thresholds/thresholding.adoc[]
 
 [[ga-events]]
 == Events
@@ -218,6 +233,8 @@ include::text/provisioning/integration.adoc[]
 include::text/provisioning/single-node.adoc[]
 include::text/provisioning/fine-grained.adoc[]
 include::text/provisioning/api-examples.adoc[]
+include::text/provisioning/snmp-profile.adoc[]
+include::text/provisioning/auto-discovery-detectors.adoc[]
 
 [[ga-provisioning-detectors]]
 === Service Detectors
@@ -227,6 +244,7 @@ include::text/provisioning/detectors/HttpsDetector.adoc[]
 include::text/provisioning/detectors/SnmpDetector.adoc[]
 include::text/provisioning/detectors/wsman.adoc[]
 include::text/provisioning/detectors/wsmanwql.adoc[]
+include::text/provisioning/detectors/ReverseDNSLookupDetector.adoc[]
 
 [[ga-bsm]]
 == Business Service Monitoring
@@ -281,8 +299,8 @@ include::text/opentracing/setup.adoc[]
 include::text/operation/ssl/ssl.adoc[]
 include::text/operation/request-logging.adoc[]
 include::text/operation/geocoder.adoc[]
-include::text/operation/resourcecli.adoc[]
 include::text/operation/newts-repository-converter.adoc[]
+include::text/operation/config-tester.adoc[]
 
 [[ga-opennms-operation-newts]]
 === Newts
@@ -290,6 +308,11 @@ include::text/operation/newts/introduction.adoc[]
 include::text/operation/newts/configuration.adoc[]
 include::text/operation/newts/cassandra-jmx.adoc[]
 include::text/operation/newts/cassandra-newts-jmx.adoc[]
+
+[[ga-opennms-operation-timeseries]]
+=== Timeseries Integration Layer
+include::text/operation/timeseries/introduction.adoc[]
+include::text/operation/timeseries/configuration.adoc[]
 
 [[ga-opennms-operation-daemon-config-files]]
 === Daemon Configuration Files
@@ -318,23 +341,18 @@ include::text/ticketing/tsrm.adoc[]
 == Enabling RMI
 include::text/rmi.adoc[]
 
-ifndef::opennms-prime[]
 [[ga-minion]]
 == Minion
-include::text/minion/kafka.adoc[]
+include::text/minion/jms.adoc[]
 include::text/minion/aws-sqs.adoc[]
 include::text/minion/offheap.adoc[]
 include::text/minion/jdbc-driver.adoc[]
 include::text/minion/ttl.adoc[]
-endif::opennms-prime[]
+include::text/minion/kafka-rpc.adoc[]
 
 [[ga-sentinel]]
 == Sentinel
 include::text/sentinel/sentinel.adoc[]
-
-== Internal Plugins
-include::text/plugins/introduction.adoc[]
-include::text/plugins/opennms-es-rest.adoc[]
 
 [[ga-special-cases-and-workarounds]]
 == Special Cases and Workarounds
@@ -360,12 +378,14 @@ include::text/telemetryd/listener/udp.adoc[]
 
 [[ga-telemetryd-protocols]]
 === Protocol Reference
+include::text/telemetryd/protocols/bmp.adoc[]
 include::text/telemetryd/protocols/ipfix.adoc[]
 include::text/telemetryd/protocols/jti.adoc[]
 include::text/telemetryd/protocols/netflow5.adoc[]
 include::text/telemetryd/protocols/netflow9.adoc[]
 include::text/telemetryd/protocols/nxos.adoc[]
 include::text/telemetryd/protocols/sflow.adoc[]
+include::text/telemetryd/protocols/graphite.adoc[]
 
 [[ga-elasticsearch-integration]]
 == Elasticsearch Integration
@@ -386,6 +406,7 @@ include::text/elasticsearch/features/alarm-history.adoc[]
 include::text/flows/introduction.adoc[]
 include::text/flows/setup.adoc[]
 include::text/flows/classification-engine.adoc[]
+include::text/flows/aggregation.adoc[]
 
 [[ga-kafka-producer]]
 == Kafka Producer
@@ -398,3 +419,8 @@ include::text/alarm-correlation/situation-feedback.adoc[]
 [[ga-meta-data]]
 == Meta-Data
 include::text/meta-data.adoc[]
+
+[[ga-admin]]
+== {opennms-product-name} Administration
+include::text/admin/introduction.adoc[]
+include::text/admin/restart.adoc[]

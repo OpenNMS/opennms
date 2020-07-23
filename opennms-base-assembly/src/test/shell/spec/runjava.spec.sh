@@ -1,25 +1,12 @@
 #!/bin/bash
 
-# shellcheck disable=SC1091
-. ../init.sh
+# shellcheck disable=SC1090,SC1091
+. "$SHUNITDIR/init.sh"
 
 TESTDIR="$(get_testdir runjava)"
 FAKE_JAVA_HOME="$TESTDIR/java_home"
 FAKE_OPENNMS_HOME="$TESTDIR/opennms_home"
-
-makeFakeJava() {
-  if [ -z "$4" ]; then
-    echo "usage: makeFakeJava <java_home> <is_openjdk> <version> <build>"
-    exit 1
-  fi
-  mkdir -p "$1"/{bin,include,jre/bin,jre/lib,lib}
-  sed -e "s,@fake_java_version@,$3,g" \
-    -e "s,@fake_java_build@,$4,g" \
-    -e "s,@fake_openjdk@,$2,g" \
-    "./runjava-fakejava" > "$1/bin/java"
-    cp "$1/bin/java" "$1/jre/bin/java"
-    chmod 755 "$1/bin/java" "$1/jre/bin/java"
-}
+find "$TESTDIR" -type f \( -name \*.sh -o -name runjava\* \) -exec chmod a+x {} \;
 
 runRunjava() {
   runCommand runjava "$RUNJAVA" "$@"
@@ -30,10 +17,10 @@ oneTimeSetUp() {
   makeFakeJava "$FAKE_JAVA_HOME" false "1.8.0_69" "420-b42"
 
   mkdir -p "$FAKE_OPENNMS_HOME"/{bin,data,lib}
-  cp "$PROJECTDIR/src/main/resources/bin/_lib.sh" "$FAKE_OPENNMS_HOME/bin/"
-  cp "$PROJECTDIR/src/main/filtered/bin/find-java.sh" "$FAKE_OPENNMS_HOME/bin/"
+  install -m 755 "$PROJECTDIR/target/classes/bin/_lib.sh" "$FAKE_OPENNMS_HOME/bin/"
+  install -m 755 "$PROJECTDIR/target/classes/bin/find-java.sh" "$FAKE_OPENNMS_HOME/bin/"
   sed -e "s,\${install.dir},${FAKE_OPENNMS_HOME},g" \
-    "$PROJECTDIR/src/main/filtered/bin/runjava" \
+    "$PROJECTDIR/target/classes/bin/runjava" \
     > "$FAKE_OPENNMS_HOME/bin/runjava"
   chmod 755 "$FAKE_OPENNMS_HOME/bin/runjava"
 
@@ -100,4 +87,5 @@ testPrint() {
   assertEquals "8.0.215" "$output"
 }
 
-. ../shunit2
+# shellcheck disable=SC1090,SC1091
+. "$SHUNITDIR/shunit2"

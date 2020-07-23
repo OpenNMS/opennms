@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
+import org.opennms.netmgt.config.discovery.Detector;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
@@ -63,7 +64,7 @@ public class MockDiscoveryConfigurationFactory implements DiscoveryConfiguration
     }
 
     @Override
-    public boolean isExcluded(InetAddress address) {
+    public boolean isExcluded(InetAddress address, String location) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
@@ -83,12 +84,17 @@ public class MockDiscoveryConfigurationFactory implements DiscoveryConfiguration
     }
 
     @Override
-    public Iterator<IPPollAddress> getExcludingInterator(Iterator<IPPollAddress> it) {
+    public Iterator<IPPollAddress> getExcludingIterator(Iterator<IPPollAddress> it) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
     @Override
     public Iterable<IPPollAddress> getConfiguredAddresses() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public List<Detector> getListOfDetectors(InetAddress inetAddress, String location) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

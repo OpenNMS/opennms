@@ -30,17 +30,21 @@ package org.opennms.netmgt.flows.api;
 
 import java.util.Objects;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * Total bytes in/out related to some entity.
  */
 public class TrafficSummary<T> {
 
     private final T entity;
-    private long bytesIn;
-    private long bytesOut;
+    private final long bytesIn;
+    private final long bytesOut;
 
-    public TrafficSummary(T entity) {
-        this.entity = Objects.requireNonNull(entity);
+    public TrafficSummary(final TrafficSummary.Builder<T> builder) {
+        this.entity = Objects.requireNonNull(builder.entity);
+        this.bytesIn = builder.bytesIn;
+        this.bytesOut = builder.bytesOut;
     }
 
     public T getEntity() {
@@ -51,22 +55,91 @@ public class TrafficSummary<T> {
         return bytesIn;
     }
 
-    public void setBytesIn(long bytesIn) {
-        this.bytesIn = bytesIn;
-    }
-
     public long getBytesOut() {
         return bytesOut;
     }
 
-    public void setBytesOut(long bytesOut) {
-        this.bytesOut = bytesOut;
+    public BytesInOut getBytesInOut() {
+        // BytesInOut objects are mutable so we create a new one every get
+        return new BytesInOut(bytesIn, bytesOut);
     }
-    
-    public TrafficSummary<T> withBytesFrom(final TrafficSummary<?> source) {
-        Objects.requireNonNull(source);
-        bytesIn = source.getBytesIn();
-        bytesOut = source.getBytesOut();
-        return this;
+
+    public static class Builder<T> {
+        private T entity;
+        private long bytesIn;
+        private long bytesOut;
+
+        private Builder() {
+        }
+
+        public Builder<T> withEntity(final T entity) {
+            this.entity = Objects.requireNonNull(entity);
+            return this;
+        }
+
+        public Builder<T> withBytesIn(final long bytesIn) {
+            this.bytesIn = bytesIn;
+            return this;
+        }
+
+        public Builder<T> withBytesOut(final long bytesOut) {
+            this.bytesOut = bytesOut;
+            return this;
+        }
+
+        public Builder<T> withBytes(final long bytesIn, final long bytesOut) {
+            return this
+                    .withBytesIn(bytesIn)
+                    .withBytesOut(bytesOut);
+        }
+
+        public Builder<T> withBytesFrom(final TrafficSummary<?> source) {
+            Objects.requireNonNull(source);
+            this.bytesIn = source.getBytesIn();
+            this.bytesOut = source.getBytesOut();
+            return this;
+        }
+
+        public TrafficSummary<T> build() {
+            return new TrafficSummary<>(this);
+        }
+    }
+
+    public static <T> TrafficSummary.Builder<T> builder() {
+        return new TrafficSummary.Builder<>();
+    }
+
+    public static <T> TrafficSummary.Builder<T> from(final T entity) {
+        return new TrafficSummary.Builder<T>()
+                .withEntity(entity);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof TrafficSummary)) {
+            return false;
+        }
+
+        final TrafficSummary<?> that = (TrafficSummary<?>) o;
+        return this.bytesIn == that.bytesIn &&
+               this.bytesOut == that.bytesOut &&
+               Objects.equals(this.entity, that.entity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.entity, this.bytesIn, this.bytesOut);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("entity", this.entity)
+                .add("bytesIn", this.bytesIn)
+                .add("bytesOut", this.bytesOut)
+                .toString();
     }
 }

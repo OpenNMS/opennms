@@ -9,8 +9,8 @@
 		<pdf-template>file://${install.etc.dir}/reports/PDFAvailReport.xsl</pdf-template>
 		<html-template>file://${install.etc.dir}/reports/HTMLAvailReport.xsl</html-template>
 		<parameters>
-			<string-parm name="reportCategory" display-name="report category" input-type="reportCategorySelector" />
-			<date-parm name="endDate" display-name="end date" use-absolute-date="false">
+			<string-parm name="reportCategory" display-name="Report Category" input-type="reportCategorySelector" />
+			<date-parm name="endDate" display-name="End Date" use-absolute-date="false">
 				<default-interval>day</default-interval>
 				<default-count>1</default-count>
 				<default-time>
@@ -27,8 +27,8 @@
 		<pdf-template>file://${install.etc.dir}/reports/PDFAvailReport.xsl</pdf-template>
 		<html-template>file://${install.etc.dir}/reports/HTMLAvailReport.xsl</html-template>
 		<parameters>
-			<string-parm name="reportCategory" display-name="report category" input-type="reportCategorySelector" />
-			<date-parm name="endDate" display-name="end date" use-absolute-date="false">
+			<string-parm name="reportCategory" display-name="Report Category" input-type="reportCategorySelector" />
+			<date-parm name="endDate" display-name="End Date" use-absolute-date="false">
 				<default-interval>day</default-interval>
 				<default-count>1</default-count>
 				<default-time>

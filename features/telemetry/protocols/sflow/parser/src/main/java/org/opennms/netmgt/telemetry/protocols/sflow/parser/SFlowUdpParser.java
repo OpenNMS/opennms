@@ -28,10 +28,9 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -47,13 +46,15 @@ import org.bson.io.BasicOutputBuffer;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
-import org.opennms.netmgt.telemetry.api.receiver.Dispatchable;
+import org.opennms.netmgt.telemetry.listeners.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.DatagramVersion;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows.SampleDatagram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.netty.buffer.ByteBuf;
 
 public class SFlowUdpParser implements UdpParser, Dispatchable {
 
@@ -100,19 +101,19 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
     }
 
     @Override
-    public boolean handles(final ByteBuffer buffer) {
+    public boolean handles(final ByteBuf buffer) {
         return uint32(buffer) == DatagramVersion.VERSION5.value;
     }
 
     @Override
-    public CompletableFuture<?> parse(final ByteBuffer buffer,
+    public CompletableFuture<?> parse(final ByteBuf buffer,
                                       final InetSocketAddress remoteAddress,
                                       final InetSocketAddress localAddress) throws Exception {
         final SampleDatagram packet = new SampleDatagram(buffer);
 
         LOG.trace("Got packet: {}", packet);
 
-        final CompletableFuture<TelemetryMessage> future = new CompletableFuture<>();
+        final CompletableFuture<AsyncDispatcher.DispatchStatus> future = new CompletableFuture<>();
         executor.execute(() -> {
             enricher.enrich(packet).whenComplete((enrichment,ex) -> {
                 if (ex != null) {

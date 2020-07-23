@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -90,6 +91,12 @@ public class ThreshdConfiguration implements Serializable {
         if (packages == m_packages) return;
         m_packages.clear();
         if (packages != null) m_packages.addAll(packages);
+    }
+
+    public Optional<Package> getPackage(String packageName) {
+        return getPackages().stream()
+                .filter(p -> Objects.equals(packageName, p.getName()))
+                .findFirst();
     }
 
     public void addPackage(final Package p) {

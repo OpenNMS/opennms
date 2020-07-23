@@ -29,7 +29,10 @@
 package org.opennms.netmgt.config.api;
 
 import java.net.InetAddress;
+import java.util.List;
 
+import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 public interface SnmpAgentConfigFactory {
@@ -41,4 +44,42 @@ public interface SnmpAgentConfigFactory {
      * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
      */
     public SnmpAgentConfig getAgentConfig(InetAddress address, String location);
+
+    /**
+     * <p>getAgentConfig for a given profile </p>
+     *
+     * @param snmpProfile a @{@link Definition} object.
+     * @param address a {@link InetAddress} object.
+     * @return a {@link SnmpAgentConfig} object.
+     */
+    public SnmpAgentConfig getAgentConfigFromProfile(SnmpProfile snmpProfile, InetAddress address);
+
+    /**
+     * Merge this definition into current config.
+     * @param definition Definition that has SNMP parameters associated with a specific IP address or Range.
+     */
+    void saveDefinition(Definition definition);
+
+    /**
+     * Remove an address from the definitions.
+     * @param ipAddress IP address that needs to be removed from definition.
+     * @param location  location at which this ipaddress belongs.
+     * @param module    module from which the definition is getting removed.
+     */
+    boolean removeFromDefinition(InetAddress ipAddress, String location, String module);
+
+    /**
+     * Create definition and merge this definition into Current SNMP Config.
+     * @param snmpAgentConfig agentConfig that might have succeeded in SNMP walk/get.
+     * @param location the location that this agent config belongs.
+     * @param module   module from which the definition is getting saved.
+     */
+    void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module);
+
+    /**
+     * Get all the SNMP profiles from SNMP Config.
+     * @return a List of snmp profiles.
+     */
+    List<SnmpProfile> getProfiles();
+
 }

@@ -48,12 +48,14 @@ public class TopologyLinkBuilder {
     public static final String PARAMETER_FOCUS_VERTICES = "focus-vertices";
     public static final String PARAMETER_SEMANTIC_ZOOM_LEVEL = "szl";
     public static final String PARAMETER_GRAPH_PROVIDER = "provider";
+    public static final String PARAMETER_LAYER_NAMESPACE = "layer-namespace";
     private static final String TOPOLOGY_URL = "/opennms/topology";
 
     private Layout layout;
     private List<String> vertexIds = new ArrayList<>();
     private int szl = 1;
     private TopologyProvider provider = TopologyProvider.ENLINKD;
+    private String layer;
 
     public TopologyLinkBuilder() {
 
@@ -105,6 +107,15 @@ public class TopologyLinkBuilder {
         return this;
     }
 
+    // By default the default layer is always selected.
+    // Use this to override the layer you want to select
+    public TopologyLinkBuilder layer(String namespace) {
+        if (namespace != null && !namespace.isEmpty()) {
+            this.layer = namespace;
+        }
+        return this;
+    }
+
     public String getLink() {
         final List<String> parameters = new ArrayList<>();
         try {
@@ -119,6 +130,11 @@ public class TopologyLinkBuilder {
             // only add parameter, if we have a layout defined
             if (layout != null) {
                 parameters.add(parameter(PARAMETER_LAYOUT, layout.getLabel()));
+            }
+
+            // only add parameter, if a layer was defined
+            if (layer != null) {
+                parameters.add(parameter(PARAMETER_LAYER_NAMESPACE, layer));
             }
 
             // If we have parameters, build the link

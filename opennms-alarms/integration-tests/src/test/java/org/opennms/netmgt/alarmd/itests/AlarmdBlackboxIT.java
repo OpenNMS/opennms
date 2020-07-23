@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd.itests;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.lessThan;
@@ -126,13 +127,17 @@ public class AlarmdBlackboxIT {
      */
     @Test
     public void canFlapAlarm() {
+        // Alarms may not immediately clear/unclear due to the way to rules are structured
+        // so we add some delay between the steps to make sure that they do
+        long step = TimeUnit.MINUTES.toMillis(2);
         Scenario scenario = Scenario.builder()
                 .withLegacyAlarmBehavior()
-                .withNodeDownEvent(1, 1)
-                .withNodeUpEvent(2, 1)
-                .withNodeDownEvent(3, 1)
-                .withNodeUpEvent(4, 1)
-                .withNodeDownEvent(5, 1)
+                .withTickLength(1, TimeUnit.MINUTES)
+                .withNodeDownEvent(step, 1)
+                .withNodeUpEvent(2*step, 1)
+                .withNodeDownEvent(3*step, 1)
+                .withNodeUpEvent(4*step, 1)
+                .withNodeDownEvent(5*step, 1)
                 .build();
         ScenarioResults results = scenario.play();
 
@@ -141,33 +146,35 @@ public class AlarmdBlackboxIT {
         // t=0, no alarms
         assertThat(results.getAlarms(0), hasSize(0));
         // t=1, a single problem alarm
-        assertThat(results.getAlarms(1), hasSize(1));
-        assertThat(results.getProblemAlarm(1), hasSeverity(OnmsSeverity.MAJOR));
-        assertThat(results.getProblemAlarm(1).getCounter(), equalTo(1));
+        assertThat(results.getAlarms(step), hasSize(1));
+        assertThat(results.getProblemAlarm(step), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(results.getProblemAlarm(step).getCounter(), equalTo(1));
         // t=2, a (cleared) problem and a resolution
-        assertThat(results.getAlarms(2), hasSize(2));
-        assertThat(results.getProblemAlarm(2), hasSeverity(OnmsSeverity.CLEARED));
-        assertThat(results.getProblemAlarm(2).getCounter(), equalTo(1));
-        assertThat(results.getResolutionAlarm(2), hasSeverity(OnmsSeverity.NORMAL));
-        assertThat(results.getResolutionAlarm(2).getCounter(), equalTo(1));
+        assertThat(results.getAlarms(2*step), hasSize(2));
+        assertThat(results.getProblemAlarm(2*step), hasSeverity(OnmsSeverity.CLEARED));
+        assertThat(results.getProblemAlarm(2*step).getCounter(), equalTo(1));
+        assertThat(results.getResolutionAlarm(2*step), hasSeverity(OnmsSeverity.NORMAL));
+        assertThat(results.getResolutionAlarm(2*step).getCounter(), equalTo(1));
         // t=3, a (re-armed) problem and a resolution
-        assertThat(results.getAlarms(3), hasSize(2));
-        assertThat(results.getProblemAlarm(3), hasSeverity(OnmsSeverity.MAJOR));
-        assertThat(results.getProblemAlarm(3).getCounter(), equalTo(2));
-        assertThat(results.getResolutionAlarm(3), hasSeverity(OnmsSeverity.NORMAL));
-        assertThat(results.getResolutionAlarm(3).getCounter(), equalTo(1));
+        assertThat(results.getAlarms(3*step), hasSize(2));
+        assertThat(results.getProblemAlarm(3*step), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(results.getProblemAlarm(3*step).getCounter(), equalTo(2));
+        assertThat(results.getResolutionAlarm(3*step), hasSeverity(OnmsSeverity.NORMAL));
+        assertThat(results.getResolutionAlarm(3*step).getCounter(), equalTo(1));
         // t=4, a (cleared) problem and a resolution
-        assertThat(results.getAlarms(4), hasSize(2));
-        assertThat(results.getProblemAlarm(4), hasSeverity(OnmsSeverity.CLEARED));
-        assertThat(results.getProblemAlarm(4).getCounter(), equalTo(2));
-        assertThat(results.getResolutionAlarm(4), hasSeverity(OnmsSeverity.NORMAL));
-        assertThat(results.getResolutionAlarm(4).getCounter(), equalTo(2));
+        assertThat(results.getAlarms(4*step), hasSize(2));
+        assertThat(results.getProblemAlarm(4*step), hasSeverity(OnmsSeverity.CLEARED));
+        assertThat(results.getProblemAlarm(4*step).getCounter(), equalTo(2));
+        assertThat(results.getResolutionAlarm(4*step), hasSeverity(OnmsSeverity.NORMAL));
+        // Allow the resolution to have a counter of 1 or 2 - the alarm may have been deleted
+        assertThat(results.getResolutionAlarm(4*step).getCounter(), anyOf(equalTo(1), equalTo(2)));
         // t=5, a (re-armed) problem and a resolution
-        assertThat(results.getAlarms(5), hasSize(2));
-        assertThat(results.getProblemAlarm(5), hasSeverity(OnmsSeverity.MAJOR));
-        assertThat(results.getProblemAlarm(5).getCounter(), equalTo(3));
-        assertThat(results.getResolutionAlarm(5), hasSeverity(OnmsSeverity.NORMAL));
-        assertThat(results.getResolutionAlarm(5).getCounter(), equalTo(2));
+        assertThat(results.getAlarms(5*step), hasSize(2));
+        assertThat(results.getProblemAlarm(5*step), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(results.getProblemAlarm(5*step).getCounter(), equalTo(3));
+        assertThat(results.getResolutionAlarm(5*step), hasSeverity(OnmsSeverity.NORMAL));
+        // Allow the resolution to have a counter of 1 or 2 - the alarm may have been deleted
+        assertThat(results.getResolutionAlarm(5*step).getCounter(), anyOf(equalTo(1), equalTo(2)));
         // t=∞
         assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
     }

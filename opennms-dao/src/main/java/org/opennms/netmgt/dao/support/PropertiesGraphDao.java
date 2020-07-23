@@ -948,16 +948,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
 
     private void initExtensions() {
         m_extContainer = new ConfigReloadContainer.Builder<>(PrefabGraphs.class)
-                .withMerger((source, target) -> {
-                    if (target == null) {
-                        target = new PrefabGraphs();
-                    }
-                    if (source == null) {
-                        source = new PrefabGraphs();
-                    }
-                    target.getPrefabGraphs().addAll(source.getPrefabGraphs());
-                    return target;
-                })
+                .withFolder((accumulator, next) -> accumulator.getPrefabGraphs().addAll(next.getPrefabGraphs()))
                 .build();
     }
 

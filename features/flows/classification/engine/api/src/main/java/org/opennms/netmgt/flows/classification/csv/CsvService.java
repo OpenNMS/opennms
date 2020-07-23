@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.opennms.netmgt.flows.classification.exception.CSVImportException;
+import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 /**
@@ -46,7 +47,7 @@ public interface CsvService {
      * @return The list of rules. Only returns, if ALL rules are valid, otherwise the CSVImportException is thrown.
      * @throws CSVImportException is thrown when parsing the CSV fails.
      */
-    CsvImportResult parseCSV(InputStream inputStream, boolean hasHeader) throws CSVImportException;
+    CsvImportResult parseCSV(Group group, InputStream inputStream, boolean hasHeader) throws CSVImportException;
 
     /**
      * Creates a CSV string from the given rules.

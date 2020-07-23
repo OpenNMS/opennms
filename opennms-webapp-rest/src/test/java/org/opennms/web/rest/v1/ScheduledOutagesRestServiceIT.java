@@ -52,9 +52,9 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
-import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.PollerConfigFactory;
-import org.opennms.netmgt.config.ThreshdConfigFactory;
+import org.opennms.netmgt.config.dao.outages.api.OverrideablePollOutagesDao;
+import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
 import org.opennms.netmgt.config.poller.outages.Outage;
 import org.opennms.netmgt.config.poller.outages.Outages;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -92,9 +92,12 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
 
     @Autowired
     private ServletContext m_servletContext;
-
+    
     @Autowired
-    private PollOutagesConfigManager m_pollOutagesConfigManager;
+    private OverrideableThreshdDao m_threshdDao;
+    
+    @Autowired
+    private OverrideablePollOutagesDao m_pollOutagesDao;
 
     @Override
     protected void beforeServletStart() throws Exception {
@@ -115,12 +118,13 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "<node id='18'/><node id='40'/>"
                 + "</outage>"
                 + "</outages>");
-        m_pollOutagesConfigManager.setConfigResource(new FileSystemResource(outagesConfig));
-        m_pollOutagesConfigManager.afterPropertiesSet();
+        m_pollOutagesDao.overrideConfig(new FileSystemResource(outagesConfig).getInputStream());
 
         // Setup Filter DAO
         m_filterDao = EasyMock.createMock(FilterDao.class);
         EasyMock.expect(m_filterDao.getActiveIPAddressList("IPADDR != '0.0.0.0'")).andReturn(Collections.singletonList(InetAddressUtils.getLocalHostAddress())).anyTimes();
+        m_filterDao.validateRule("IPADDR != '0.0.0.0'");
+        EasyMock.expectLastCall().anyTimes();
         m_filterDao.flushActiveIpAddressListCache();
         EasyMock.expectLastCall().anyTimes();
         EasyMock.replay(m_filterDao);
@@ -173,7 +177,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "</service>"
                 + "</package>"
                 + "</threshd-configuration>");
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(new FileInputStream(threshdConfig)));
+        m_threshdDao.overrideConfig(new FileInputStream(threshdConfig));
 
         // Setup Notifid Configuration
         FileUtils.writeStringToFile(new File(etc, "notifd-configuration.xml"), "<?xml version=\"1.0\"?>"

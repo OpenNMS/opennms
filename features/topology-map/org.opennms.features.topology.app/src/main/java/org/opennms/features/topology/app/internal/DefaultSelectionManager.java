@@ -37,7 +37,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.hops.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -146,7 +146,7 @@ public class DefaultSelectionManager implements SelectionManager {
 			boolean fireGraphChanged = false;
 			for (VertexRef eachSelectedVertex : getSelectedVertexRefs()) {
 				if (!currentlyVisibleVertices.contains(eachSelectedVertex)) {
-					final VertexHopGraphProvider.DefaultVertexHopCriteria focusCriteria = new VertexHopGraphProvider.DefaultVertexHopCriteria(eachSelectedVertex);
+					final DefaultVertexHopCriteria focusCriteria = new DefaultVertexHopCriteria(eachSelectedVertex);
 					fireGraphChanged = true;
 					getGraphContainer().addCriteria(focusCriteria);
 				}

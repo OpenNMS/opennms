@@ -39,6 +39,13 @@
   </fileSets>
   <files>
     <file>
+      <source>${project.build.directory}/unpacked/sentinel-${project.version}/etc/container.service</source>
+      <outputDirectory>sentinel-${project.version}/etc</outputDirectory>
+      <destName>sentinel.service</destName>
+      <fileMode>0644</fileMode>
+      <filtered>true</filtered>
+    </file>
+    <file>
       <source>${project.build.directory}/unpacked/sentinel-${project.version}/etc/container.init</source>
       <outputDirectory>sentinel-${project.version}/etc</outputDirectory>
       <destName>sentinel.init</destName>

@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct context {
 //   application application;
@@ -47,7 +47,7 @@ public class Context {
     public final Operation operation;
     public final Attributes attributes;
 
-    public Context(final ByteBuffer buffer) throws InvalidPacketException {
+    public Context(final ByteBuf buffer) throws InvalidPacketException {
         this.application = new Application(buffer);
         this.operation = new Operation(buffer);
         this.attributes = new Attributes(buffer);

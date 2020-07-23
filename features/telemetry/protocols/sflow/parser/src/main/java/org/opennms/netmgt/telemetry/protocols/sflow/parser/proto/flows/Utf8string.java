@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
@@ -39,12 +38,14 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
 import com.google.common.base.MoreObjects;
 
+import io.netty.buffer.ByteBuf;
+
 // typedef opaque utf8string<>;
 
 public class Utf8string {
     public final Opaque<byte[]> utf8string;
 
-    public Utf8string(final ByteBuffer buffer) throws InvalidPacketException {
+    public Utf8string(final ByteBuf buffer) throws InvalidPacketException {
         this.utf8string = new Opaque(buffer, Optional.empty(), Opaque::parseBytes);
     }
 

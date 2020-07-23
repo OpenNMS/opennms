@@ -34,6 +34,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
@@ -94,6 +96,21 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
                 LAST_UPDATED_COLUMN, EXPIRES_AT_COLUMN, getTableName(), KEY_COLUMN, CONTEXT_COLUMN));
     }
 
+    private PreparedStatement getEnumerateStatement(Connection connection) throws SQLException {
+        return connection.prepareStatement(String.format("SELECT %s, %s, %s FROM %s WHERE %s = ?",
+                KEY_COLUMN, VALUE_COLUMN, EXPIRES_AT_COLUMN, getTableName(), CONTEXT_COLUMN));
+    }
+
+    private PreparedStatement getDeleteStatement(Connection connection) throws SQLException {
+        return connection.prepareStatement(String.format("DELETE FROM %s WHERE %s = ? AND %s = ?",
+                getTableName(), KEY_COLUMN, CONTEXT_COLUMN));
+    }
+
+    private PreparedStatement getTruncateStatement(Connection connection) throws SQLException {
+        return connection.prepareStatement(String.format("DELETE FROM %s WHERE %s = ?",
+                getTableName(), CONTEXT_COLUMN));
+    }
+
     @Override
     public long put(String key, T value, String context, Integer ttlInSeconds) {
         Objects.requireNonNull(key);
@@ -101,31 +118,27 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
 
         long now = System.currentTimeMillis();
 
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement upsertStatement = getUpsertStatement(connection)) {
-                // The below sets the prepared values for both the INSERT and UPDATE cases hence some values being 
-                // repeated
-                upsertStatement.setString(1, key);
-                upsertStatement.setString(2, context);
-                upsertStatement.setTimestamp(3, new java.sql.Timestamp(now));
-                upsertStatement.setTimestamp(6, new java.sql.Timestamp(now));
+        withStatement(this::getUpsertStatement, upsertStatement -> {
+            // The below sets the prepared values for both the INSERT and UPDATE cases hence some values being 
+            // repeated
+            upsertStatement.setString(1, key);
+            upsertStatement.setString(2, context);
+            upsertStatement.setTimestamp(3, new java.sql.Timestamp(now));
+            upsertStatement.setTimestamp(6, new java.sql.Timestamp(now));
 
-                if (ttlInSeconds != null) {
-                    long expireTime = now + TimeUnit.MILLISECONDS.convert(ttlInSeconds, TimeUnit.SECONDS);
-                    upsertStatement.setTimestamp(4, new java.sql.Timestamp(expireTime));
-                    upsertStatement.setTimestamp(7, new java.sql.Timestamp(expireTime));
-                } else {
-                    upsertStatement.setNull(4, Types.DATE);
-                    upsertStatement.setNull(7, Types.DATE);
-                }
-
-                upsertStatement.setObject(5, getSQLTypeFromValueType(value));
-                upsertStatement.setObject(8, getSQLTypeFromValueType(value));
-                upsertStatement.execute();
+            if (ttlInSeconds != null) {
+                long expireTime = now + TimeUnit.MILLISECONDS.convert(ttlInSeconds, TimeUnit.SECONDS);
+                upsertStatement.setTimestamp(4, new java.sql.Timestamp(expireTime));
+                upsertStatement.setTimestamp(7, new java.sql.Timestamp(expireTime));
+            } else {
+                upsertStatement.setNull(4, Types.DATE);
+                upsertStatement.setNull(7, Types.DATE);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
+            upsertStatement.setObject(5, getSQLTypeFromValueType(value));
+            upsertStatement.setObject(8, getSQLTypeFromValueType(value));
+            return upsertStatement.execute();
+        });
 
         return now;
     }
@@ -135,27 +148,23 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
         Objects.requireNonNull(key);
         Objects.requireNonNull(context);
 
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement selectStatement = getSelectStatement(connection)) {
-                selectStatement.setString(1, key);
-                selectStatement.setString(2, context);
+        return withStatement(this::getSelectStatement, selectStatement -> {
+            selectStatement.setString(1, key);
+            selectStatement.setString(2, context);
 
-                try (ResultSet resultSet = selectStatement.executeQuery()) {
-                    if (!resultSet.next()) {
-                        return Optional.empty();
-                    }
-
-                    // Return an empty result if we find an expired record
-                    if (isExpired(resultSet)) {
-                        return Optional.empty();
-                    }
-
-                    return Optional.of(getValueTypeFromSQLType(resultSet, VALUE_COLUMN));
+            try (ResultSet resultSet = selectStatement.executeQuery()) {
+                if (!resultSet.next()) {
+                    return Optional.empty();
                 }
+
+                // Return an empty result if we find an expired record
+                if (isExpired(resultSet)) {
+                    return Optional.empty();
+                }
+
+                return Optional.of(getValueTypeFromSQLType(resultSet, VALUE_COLUMN));
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
 
     @Override
@@ -194,27 +203,69 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
         Objects.requireNonNull(key);
         Objects.requireNonNull(context);
 
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement lastUpdatedStatement = getLastUpdatedStatement(connection)) {
-                lastUpdatedStatement.setString(1, key);
-                lastUpdatedStatement.setString(2, context);
+        return withStatement(this::getLastUpdatedStatement, lastUpdatedStatement -> {
+            lastUpdatedStatement.setString(1, key);
+            lastUpdatedStatement.setString(2, context);
 
-                try (ResultSet resultSet = lastUpdatedStatement.executeQuery()) {
-                    if (!resultSet.next()) {
-                        return OptionalLong.empty();
+            try (ResultSet resultSet = lastUpdatedStatement.executeQuery()) {
+                if (!resultSet.next()) {
+                    return OptionalLong.empty();
+                }
+
+                // Return an empty result if we find an expired record
+                if (isExpired(resultSet)) {
+                    return OptionalLong.empty();
+                }
+
+                return OptionalLong.of(resultSet.getTimestamp(LAST_UPDATED_COLUMN).getTime());
+            }
+        });
+    }
+
+    @Override
+    public Map<String, T> enumerateContext(String context) {
+        Objects.requireNonNull(context);
+
+        return withStatement(this::getEnumerateStatement, enumerateStatement -> {
+            Map<String, T> resultMap = new HashMap<>();
+            enumerateStatement.setString(1, context);
+
+            try (ResultSet enumerateResult = enumerateStatement.executeQuery()) {
+                while (enumerateResult.next()) {
+                    // Ignore results that are already expired
+                    if (!isExpired(enumerateResult)) {
+                        resultMap.put(enumerateResult.getString(KEY_COLUMN),
+                                getValueTypeFromSQLType(enumerateResult, VALUE_COLUMN));
                     }
-
-                    // Return an empty result if we find an expired record
-                    if (isExpired(resultSet)) {
-                        return OptionalLong.empty();
-                    }
-
-                    return OptionalLong.of(resultSet.getTimestamp(LAST_UPDATED_COLUMN).getTime());
                 }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
+            return resultMap;
+        });
+    }
+
+    @Override
+    public void delete(String key, String context) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(context);
+
+        withStatement(this::getDeleteStatement, deleteStatement -> {
+            deleteStatement.setString(1, key);
+            deleteStatement.setString(2, context);
+
+            return deleteStatement.execute();
+        });
+    }
+
+    @Override
+    public void truncateContext(String context) {
+        Objects.requireNonNull(context);
+        
+        withStatement(this::getTruncateStatement, truncateStatement -> {
+            truncateStatement.setString(1, context);
+            
+            return truncateStatement.execute();
+        });
     }
 
     /**
@@ -248,4 +299,29 @@ public abstract class AbstractPostgresKeyValueStore<T, S> extends AbstractAsyncK
      * @return the name of the primary key constraint for the table this store persists to
      */
     protected abstract String getPkConstraintName();
+
+    @Override
+    public String getName() {
+        return "Postgres";
+    }
+
+    private <U> U withStatement(ConnectionToStatement connectionToStatement, StatementToResult<U> statementToResult) {
+        try (Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connectionToStatement.getStatement(connection)) {
+                return statementToResult.getResult(statement);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @FunctionalInterface
+    private interface StatementToResult<T> {
+        T getResult(PreparedStatement statement) throws SQLException;
+    }
+
+    @FunctionalInterface
+    private interface ConnectionToStatement {
+        PreparedStatement getStatement(Connection connection) throws SQLException;
+    }
 }

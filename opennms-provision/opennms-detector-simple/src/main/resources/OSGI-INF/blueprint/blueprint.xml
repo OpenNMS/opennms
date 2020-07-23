@@ -30,9 +30,10 @@
 		<bean class="org.opennms.netmgt.provision.detector.smb.SmbDetectorFactory" />
 	</service>
 
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.netmgt.provision.detector.snmp.SnmpDetectorFactory" />
-	</service>
+	<!-- SnmpDetectorFactory needs destroy method -->
+	<bean id="snmpDetectorFactory" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetectorFactory"
+		  destroy-method="destroy"/>
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory" ref="snmpDetectorFactory"/>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
 		<bean class="org.opennms.netmgt.provision.detector.snmp.CiscoIpSlaDetectorFactory" />

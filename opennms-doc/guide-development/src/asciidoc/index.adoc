@@ -8,7 +8,7 @@
 :numbered:
 
 = Developers Guide
-:author: Copyright (c) 2015-2019 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-{docyear} The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -23,7 +23,6 @@ ifndef::opennms-prime[]
 == Minion development
 include::text/minion/introduction.adoc[]
 include::text/minion/container.adoc[]
-include::text/minion/packaging.adoc[]
 include::text/minion/guidelines.adoc[]
 include::text/minion/testing.adoc[]
 endif::opennms-prime[]
@@ -34,9 +33,14 @@ include::text/topology/infopanel.adoc[]
 include::text/topology/graphml.adoc[]
 include::text/topology/update.adoc[]
 
+[[ga-development-graph-service-api]]
+== Graph Service API
+include::text/graph/graph.adoc[]
+
 == CORS Support
 include::text/rest/CORS.adoc[]
 
+[[ga-development-rest]]
 == ReST API
 include::text/rest/rest-api.adoc[]
 
@@ -54,9 +58,11 @@ include::text/rest/categories.adoc[]
 include::text/rest/flows.adoc[]
 include::text/rest/classifications.adoc[]
 include::text/rest/foreign_sources.adoc[]
+include::text/rest/graph.adoc[]
 include::text/rest/groups.adoc[]
 include::text/rest/heatmap.adoc[]
 include::text/rest/ifservices.adoc[]
+include::text/rest/ipinterfaces.adoc[]
 include::text/rest/ksc_reports.adoc[]
 include::text/rest/maps.adoc[]
 include::text/rest/measurements.adoc[]
@@ -70,6 +76,7 @@ include::text/rest/resources.adoc[]
 include::text/rest/rtc.adoc[]
 include::text/rest/scheduled_outages.adoc[]
 include::text/rest/snmp_configuration.adoc[]
+include::text/rest/snmpinterfaces.adoc[]
 include::text/rest/users.adoc[]
 include::text/rest/user-defined-links.adoc[]
 include::text/rest/snmptrapnbi-config.adoc[]

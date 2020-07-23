@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+    <key id="breadcrumb-strategy" for="graphml" attr.name="breadcrumb-strategy" attr.type="string"/>
+    <key id="containerId" for="graphml" attr.name="containerId" attr.type="string"/>
+    <key id="label" for="all" attr.name="label" attr.type="string"></key>
+    <key id="description" for="graph" attr.name="description" attr.type="string"></key>
+    <key id="namespace" for="graph" attr.name="namespace" attr.type="string"></key>
+    <key id="focus-strategy" for="graph" attr.name="focus-strategy" attr.type="string"></key>
+    <key id="focus-ids" for="graph" attr.name="focus-ids" attr.type="string"></key>
+    <key id="preferred-layout" for="graph" attr.name="preferred-layout" attr.type="string"></key>
+    <key id="semantic-zoom-level" for="graph" attr.name="semantic-zoom-level" attr.type="int"/>
+    <key id="foreignSource" for="node" attr.name="foreignSource" attr.type="string"></key>
+    <key id="foreignID" for="node" attr.name="foreignID" attr.type="string"></key>
+    <key id="iconKey" for="node" attr.name="iconKey" attr.type="string"/>
+    <data key="label">GraphML Topology Provider (test-graph)</data>
+    <data key="containerId">test</data>
+    <graph id="test" edgedefault="undirected">
+        <data key="namespace">test</data>
+        <data key="focus-strategy">FIRST</data>
+        <node id="v1">
+            <data key="label">v1</data>
+        </node>
+        <node id="v1.1">
+            <data key="label">v1.1</data>
+        </node>
+        <node id="v1.2">
+            <data key="label">v1.2</data>
+        </node>
+        <node id="v1.1.1">
+            <data key="label">v1.1.1</data>
+        </node>
+        <node id="v1.1.2">
+            <data key="label">v1.1.2</data>
+        </node>
+        <node id="v1.2.1">
+            <data key="label">v1.2.1</data>
+        </node>
+        <node id="v1.2.2">
+            <data key="label">v1.2.2</data>
+        </node>
+        <edge id="v1_v1.1" source="v1" target="v1.1"/>
+        <edge id="v1_v1.2" source="v1" target="v1.2"/>
+        <edge id="v1.1_v1.1.1" source="v1.1" target="v1.1.1"/>
+        <edge id="v1.1_v1.1.2" source="v1.1" target="v1.1.2"/>
+        <edge id="v1.2_v1.2.1" source="v1.2" target="v1.2.1"/>
+        <edge id="v1.2_v1.2.2" source="v1.2" target="v1.2.2"/>
+    </graph>
+</graphml>

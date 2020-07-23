@@ -28,16 +28,21 @@
 
 package org.opennms.netmgt.config;
 
+import static org.junit.Assert.assertThat;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.hamcrest.Matchers;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
+import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.ByteArrayResource;
+
+import junit.framework.TestCase;
 
 public class SnmpPeerFactoryTest extends TestCase {
 
@@ -158,8 +163,46 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "   <definition version=\"v2c\" read-community=\"ipmatch\" max-vars-per-pdu=\"128\" max-repetitions=\"7\" >\n" + 
                 "       <ip-match>77.5-12,15.1-255.255</ip-match>\n" +
                 "   </definition>\n" + 
-                "\n" + 
-                "</snmp-config>";
+                "\n" +
+                    "<profiles>"
+                        +"<profile " +  "retry=\"2\" "
+                        + "  timeout=\"100\" "
+                        + "  read-community=\"public\" "
+                        + "  proxy-host=\""+myLocalHost()+"\""
+                        + "  version=\"v2c\" "
+                        + "  max-vars-per-pdu=\"4\" "
+                        + "  max-repetitions=\"5\" "
+                        + "  max-request-size=\"484\" "
+                        + "  security-name=\"securityName\" "
+                        + "  security-level=\"3\" "
+                        + "  auth-protocol=\"MD5\" "
+                        + "  engine-id=\"engineId\" "
+                        + "  context-engine-id=\"contextEngineId\" "
+                        + "  context-name=\"profileContext\" "
+                        + "  enterprise-id=\"enterpriseId\">"
+                        + "<label>profile2</label>"
+                        + "<filter>*.opennms.com</filter>"
+                        + "</profile>"
+                        + "<profile "  + "retry=\"5\" "
+                        + "  timeout=\"300\" "
+                        + "  write-community=\"private\" "
+                        + "  proxy-host=\""+myLocalHost()+"\""
+                        + "  version=\"v3\" "
+                        + "  max-vars-per-pdu=\"4\" "
+                        + "  max-repetitions=\"5\" "
+                        + "  max-request-size=\"484\" "
+                        + "  security-level=\"3\" "
+                        + "  auth-protocol=\"MD5\" "
+                        + "  engine-id=\"engineId\" "
+                        + "  context-engine-id=\"contextEngineId\" "
+                        + "  context-name=\"profileContext\" "
+                        //+ "  privacy-protocol=\"DES\" "
+                        + "  enterprise-id=\"enterpriseId\">"
+                        + "<label>profile2</label>"
+                        + "<filter>*.opennms.org</filter>"
+                        + "</profile>"
+                    + "</profiles>"
+                + "</snmp-config>";
     }
 
     /**
@@ -431,5 +474,21 @@ public class SnmpPeerFactoryTest extends TestCase {
 
         agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(myLocalHost()));
         assertEquals(3, agentConfig.getSecurityLevel());
+    }
+
+    public void testSnmpProfile() {
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
+        List<SnmpProfile> profiles = SnmpPeerFactory.getInstance().getProfiles();
+        assertEquals(2, profiles.size());
+        for(SnmpProfile snmpProfile : profiles) {
+            SnmpAgentConfig snmpAgentConfig = SnmpPeerFactory.getInstance().
+                    getAgentConfigFromProfile(snmpProfile, InetAddressUtils.addr("10.1.12.1"));
+            assertEquals("profileContext", snmpAgentConfig.getContextName());
+            // Even if read-community/write-community is not specified, should use defaults.
+            assertEquals("public", snmpAgentConfig.getReadCommunity());
+            assertEquals("private", snmpAgentConfig.getWriteCommunity());
+            assertNull(snmpAgentConfig.getPrivProtocol());
+            assertThat(snmpAgentConfig.getVersionAsString(), Matchers.isOneOf("v2c", "v3"));
+        }
     }
 }

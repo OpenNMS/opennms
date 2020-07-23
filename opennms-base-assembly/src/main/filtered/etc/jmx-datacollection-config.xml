@@ -94,6 +94,8 @@
             <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
             <attrib name="FreeSwapSpaceSize" alias="FreeSwapSpace" type="gauge"/>
             <attrib name="TotalSwapSpaceSize" alias="TotalSwapSpace" type="gauge"/>
+            <attrib name="MaxFileDescriptorCount" alias="OsMaxFDCount" type="gauge"/>
+            <attrib name="OpenFileDescriptorCount" alias="OsOpenFDCount" type="gauge"/>
          </mbean>
          <mbean name="JVM Threading" objectname="java.lang:type=Threading">
             <attrib name="ThreadCount" alias="ThreadCount" type="gauge"/>
@@ -337,16 +339,6 @@
             <attrib name="999thPercentile" alias="FlowFlwsPerLog999" type="gauge"/>
             <attrib name="Count" alias="FlowFlwsPerLogCnt" type="counter"/>
          </mbean>
-         <mbean name="org.opennms.netmgt.flows.logConversion" objectname="org.opennms.netmgt.flows:name=logConversion">
-            <attrib name="50thPercentile" alias="FlowLogConv50" type="gauge"/>
-            <attrib name="75thPercentile" alias="FlowLogConv75" type="gauge"/>
-            <attrib name="95thPercentile" alias="FlowLogConv95" type="gauge"/>
-            <attrib name="98thPercentile" alias="FlowLogConv98" type="gauge"/>
-            <attrib name="99thPercentile" alias="FlowLogConv99" type="gauge"/>
-            <attrib name="999thPercentile" alias="FlowLogConv999" type="gauge"/>
-            <attrib name="OneMinuteRate" alias="FlowLogConv1m" type="gauge"/>
-            <attrib name="FiveMinuteRate" alias="FlowLogConv5m" type="gauge"/>
-         </mbean>
          <mbean name="org.opennms.netmgt.flows.logEnrichment" objectname="org.opennms.netmgt.flows:name=logEnrichment">
             <attrib name="50thPercentile" alias="FlowLogEnrich50" type="gauge"/>
             <attrib name="75thPercentile" alias="FlowLogEnrich75" type="gauge"/>
@@ -474,6 +466,32 @@
             <attrib name="999thPercentile" alias="Duration999" type="gauge"/>
          </mbean>
          
+         <!-- Alarmd -->
+         <mbean name="drools.alarmd.facts" objectname="org.opennms.features.drools.alarmd:name=facts">
+            <attrib name="Value" alias="DroolsAlarmdFacts" type="gauge"/>
+         </mbean>
+         <mbean name="drools.alarmd.actions" objectname="org.opennms.features.drools.alarmd:name=atomicActionsInFlight">
+            <attrib name="Value" alias="DroolsAlarmdActions" type="gauge"/>
+         </mbean>
+         <mbean name="drools.alarmd.actions.queued" objectname="org.opennms.features.drools.alarmd:name=atomicActionsQueued">
+            <attrib name="OneMinuteRate" alias="DroolsAlarmdActQu1m" type="gauge"/>
+            <attrib name="Count" alias="DroolsAlarmdActQu" type="counter"/>
+         </mbean>
+         <mbean name="drools.alarmd.alarms" objectname="org.opennms.features.drools.alarmd:name=numAlarmsFromLastSnapshot">
+            <attrib name="Value" alias="DroolsAlarmdAlarms" type="gauge"/>
+         </mbean>
+         <mbean name="drools.alarmd.situations" objectname="org.opennms.features.drools.alarmd:name=numSituationsFromLastSnapshot">
+            <attrib name="Value" alias="DroolsAlarmdSitu" type="gauge"/>
+         </mbean>
+         <mbean name="drools.alarmd.liveness" objectname="org.opennms.features.drools.alarmd:name=liveness">
+            <attrib name="50thPercentile" alias="DroolsAlarmdLv50" type="gauge"/>
+            <attrib name="75thPercentile" alias="DroolsAlarmdLv75" type="gauge"/>
+            <attrib name="95thPercentile" alias="DroolsAlarmdLv95" type="gauge"/>
+            <attrib name="98thPercentile" alias="DroolsAlarmdLv98" type="gauge"/>
+            <attrib name="99thPercentile" alias="DroolsAlarmdLv99" type="gauge"/>
+            <attrib name="999thPercentile" alias="DroolsAlarmdLv999" type="gauge"/>
+         </mbean>
+
       </mbeans>
    </jmx-collection>
 </jmx-datacollection-config>

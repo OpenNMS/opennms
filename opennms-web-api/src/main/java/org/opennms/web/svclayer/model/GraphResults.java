@@ -68,6 +68,8 @@ public class GraphResults {
     private static final Map<Integer, String> s_hourMap;
 
     private String[] m_reports;
+    private String m_nodeCriteria;
+    private String m_generatedId;
     
     private Date m_start;
     private Date m_end;
@@ -299,6 +301,22 @@ public class GraphResults {
      */
     public void setReports(String[] reports) {
         m_reports = reports;
+    }
+
+    public String getNodeCriteria() {
+        return m_nodeCriteria;
+    }
+
+    public void setNodeCriteria(String nodeCriteria) {
+        m_nodeCriteria = nodeCriteria;
+    }
+
+    public String getGeneratedId() {
+        return m_generatedId;
+    }
+
+    public void setGeneratedId(String generatedId) {
+        m_generatedId = generatedId;
     }
 
     public class GraphResultSet {

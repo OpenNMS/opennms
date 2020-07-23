@@ -41,7 +41,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 
-@Command(scope = "events", name = "send", description = "Send event with specified uei and params")
+@Command(scope = "opennms", name = "send-event", description = "Send event with specified uei and params")
 @Service
 public class EventSendCommand implements Action {
 

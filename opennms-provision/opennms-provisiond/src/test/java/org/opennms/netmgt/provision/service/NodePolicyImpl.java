@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.service;
 
+import java.util.Map;
+
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.NodePolicy;
 
@@ -39,7 +41,7 @@ import org.opennms.netmgt.provision.NodePolicy;
 public class NodePolicyImpl implements NodePolicy {
 
     @Override
-    public OnmsNode apply(OnmsNode entity) {
+    public OnmsNode apply(OnmsNode entity, Map<String, Object> attributes) {
         return entity;
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -190,11 +190,6 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAssetRecord.class, "vendorAssetNumber", "Vendor Asset Number", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "vendorFax", "Vendor Fax", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "vendorPhone", "Vendor Phone", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareManagedEntityType", "VMware Managed Entity Type", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareManagedObjectId", "VMware Managed Object ID", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareManagementServer", "VMware Management Server", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareState", "VMware State", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareTopologyInfo", "VMware Topology Information", STRING)
 		//new SearchProperty(OnmsAssetRecord.class, "zip", "ZIP or Postal Code", STRING)
 	}));
 
@@ -288,7 +283,7 @@ public abstract class SearchProperties {
 	static final SortedSet<SearchProperty> IP_INTERFACE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty(OnmsIpInterface.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsIpInterface.class, "ipAddress", "IP Address", IP_ADDRESS),
-                new SearchProperty(OnmsIpInterface.class, "netMask", "Network Mask", IP_ADDRESS),
+		new SearchProperty(OnmsIpInterface.class, "netMask", "Network Mask", IP_ADDRESS),
 		new SearchProperty(OnmsIpInterface.class, "ipHostName", "Hostname", STRING),
 		new SearchProperty(OnmsIpInterface.class, "ipLastCapsdPoll", "Last Provisioning Scan", TIMESTAMP),
 		new SearchProperty(OnmsIpInterface.class, "isManaged", "Management Status", STRING)
@@ -391,6 +386,8 @@ public abstract class SearchProperties {
 	public static final Set<SearchProperty> APPLICATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> EVENT_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> IF_SERVICE_SERVICE_PROPERTIES = new LinkedHashSet<>();
+	public static final Set<SearchProperty> IP_INTERFACE_SERVICE_PROPERTIES = new LinkedHashSet<>();
+	public static final Set<SearchProperty> SNMP_INTERFACE_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> MINION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> LOCATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> NODE_SERVICE_PROPERTIES = new LinkedHashSet<>();
@@ -500,6 +497,25 @@ public abstract class SearchProperties {
 		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
 		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
 		IF_SERVICE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
+
+		// Root prefix
+		IP_INTERFACE_SERVICE_PROPERTIES.addAll(IP_INTERFACE_PROPERTIES);
+		IP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
+		IP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
+		//IP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.monitoredService, "Monitored Service", IF_SERVICE_PROPERTIES));
+		IP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, "Asset", ASSET_RECORD_PROPERTIES));
+		IP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, "Category", CATEGORY_PROPERTIES, false));
+		IP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
+		IP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
+
+		// Root prefix
+		SNMP_INTERFACE_SERVICE_PROPERTIES.addAll(SNMP_INTERFACE_PROPERTIES);
+		SNMP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.node, "Node", NODE_PROPERTIES));
+		SNMP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.ipInterface, "IP Interface", IP_INTERFACE_PROPERTIES));
+		//SNMP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.monitoredService, "Monitored Service", IF_SERVICE_PROPERTIES));
+		SNMP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.assetRecord, "Asset", ASSET_RECORD_PROPERTIES));
+		SNMP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.category, "Category", CATEGORY_PROPERTIES, false));
+		SNMP_INTERFACE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.location, "Location", LOCATION_PROPERTIES));
 
 		// Root prefix
 		MINION_SERVICE_PROPERTIES.addAll(MINION_PROPERTIES);

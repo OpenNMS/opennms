@@ -43,12 +43,17 @@ public enum NetworkProtocol {
     SSH(TCP),
     HTTP(TCP),
 
+    // Java Debug Wire Protocol
+    JDWP(TCP),
+
     SYSLOG(UDP),
     SNMP(UDP),
     JTI(UDP),
     NXOS(UDP),
     FLOWS(UDP),
-    IPFIX_TCP(TCP);
+    BMP(TCP),
+    IPFIX_TCP(TCP),
+    GRPC(TCP);
 
     private final InternetProtocol ipProtocol;
 

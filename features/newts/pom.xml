@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -59,7 +59,7 @@
     <dependency>
       <groupId>com.googlecode.concurrent-trees</groupId>
       <artifactId>concurrent-trees</artifactId>
-      <version>2.5.0</version>
+      <version>${concurrentTreesVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.lmax</groupId>
@@ -79,7 +79,7 @@
     <dependency>
       <groupId>de.ruedigermoeller</groupId>
       <artifactId>fst</artifactId>
-      <version>2.47</version>
+      <version>${fstVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

@@ -72,6 +72,10 @@ public class MockInterfaceToNodeCache extends AbstractInterfaceToNodeCache {
         keyToNodeId.clear();
     }
 
+    @Override
+    public void removeInterfacesForNode(int nodeId) {
+    }
+
     private static class Key {
         private String location;
         private InetAddress ipAddr;

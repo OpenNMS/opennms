@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Map;
 
 import org.bson.BsonWriter;
@@ -38,6 +37,8 @@ import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramVisitor
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Opaque;
 
 import com.google.common.collect.ImmutableMap;
+
+import io.netty.buffer.ByteBuf;
 
 // struct counter_record {
 //    data_format counter_format;     /* The format of counter_data */
@@ -87,7 +88,7 @@ public class CounterRecord extends Record<CounterData> {
             .put(DataFormat.from(5703, 1), NvidiaGpu::new)
             .build();
 
-    public CounterRecord(final ByteBuffer buffer) throws InvalidPacketException {
+    public CounterRecord(final ByteBuf buffer) throws InvalidPacketException {
         super(buffer, counterDataFormats);
     }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -326,20 +326,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected ExpectedCondition<Boolean> pageContainsText(final String text) {
-        LOG.debug("pageContainsText: {}", text);
-        final String escapedText = text.replace("\'", "\\\'");
-        return new ExpectedCondition<Boolean>() {
-            @Override public Boolean apply(final WebDriver driver) {
-                final String xpathExpression = "//*[contains(., '" + escapedText + "')]";
-                LOG.debug("XPath expression: {}", xpathExpression);
-                try {
-                    final WebElement element = driver.findElement(By.xpath(xpathExpression));
-                    return element != null;
-                } catch (final NoSuchElementException e) {
-                    return false;
-                }
-            }
-        };
+        return org.opennms.smoketest.selenium.ExpectedConditions.pageContainsText(text);
     }
 
     public void focusElement(final By by) {
@@ -460,12 +447,20 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected void clickMenuItem(final String menuItemText, final String submenuItemText, final String submenuItemHref) {
-        LOG.debug("clickMenuItem: itemText={}, submenuItemText={}, submenuHref={}", menuItemText, submenuItemText, submenuItemHref);
+        clickMenuItem(menuItemText, submenuItemText, submenuItemHref, 30);
+    }
+
+    protected void clickMenuItem(final String menuItemText, final String submenuItemText, final String submenuItemHref, int timeout) {
+        LOG.debug("clickMenuItem: itemText={}, submenuItemText={}, submenuHref={}, timeout={}", menuItemText, submenuItemText, submenuItemHref, timeout);
+
+        if (timeout == 0) {
+            timeout = 30;
+        }
 
         // Repeat the process altering the offset slightly everytime
         final AtomicInteger offset = new AtomicInteger(10);
         final WebDriverWait shortWait = new WebDriverWait(getDriver(), 1);
-        Unreliables.retryUntilSuccess(30, TimeUnit.SECONDS, () -> {
+        Unreliables.retryUntilSuccess(timeout, TimeUnit.SECONDS, () -> {
             final Actions action = new Actions(getDriver());
 
             final WebElement menuElement;

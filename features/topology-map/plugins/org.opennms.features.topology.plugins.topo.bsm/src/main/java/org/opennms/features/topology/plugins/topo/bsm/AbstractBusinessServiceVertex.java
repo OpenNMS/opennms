@@ -30,10 +30,10 @@ package org.opennms.features.topology.plugins.topo.bsm;
 
 import java.util.Set;
 
-import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.AbstractLevelAwareVertex;
 import org.opennms.features.topology.api.topo.LevelAware;
 
-public abstract class AbstractBusinessServiceVertex extends AbstractVertex implements LevelAware {
+public abstract class AbstractBusinessServiceVertex extends AbstractLevelAwareVertex implements LevelAware {
 
     enum Type {
         BusinessService,

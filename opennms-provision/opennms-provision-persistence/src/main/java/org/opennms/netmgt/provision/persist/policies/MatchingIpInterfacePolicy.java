@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.persist.policies;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -92,7 +94,7 @@ public class MatchingIpInterfacePolicy extends BasePolicy<OnmsIpInterface> imple
     
     /** {@inheritDoc} */
     @Override
-    public OnmsIpInterface act(OnmsIpInterface iface) {
+    public OnmsIpInterface act(OnmsIpInterface iface, Map<String, Object> attributes) {
         OnmsSnmpInterface snmpiface = iface.getSnmpInterface();
         switch (m_action) {
         case DO_NOT_PERSIST: 

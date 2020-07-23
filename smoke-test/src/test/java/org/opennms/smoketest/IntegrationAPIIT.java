@@ -72,13 +72,13 @@ public class IntegrationAPIIT {
                 .until(() -> {
                     try (final SshClient sshClient = new SshClient(sshAddress, "admin", "admin")) {
                         final PrintStream pipe = sshClient.openShell();
-                        pipe.println("health:check");
+                        pipe.println("opennms:health-check");
                         pipe.println("logout");
                         await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
 
                         // Read stdout and verify
                         String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
-                        shellOutput = org.apache.commons.lang.StringUtils.substringAfter(shellOutput, "health:check");
+                        shellOutput = org.apache.commons.lang.StringUtils.substringAfter(shellOutput, "opennms:health-check");
 
                         boolean healthCheckSuccess = false;
                         for (String line : shellOutput.split("\\r?\\n")) {
@@ -91,7 +91,7 @@ public class IntegrationAPIIT {
                         }
                         return healthCheckSuccess;
                     } catch (Exception ex) {
-                        LOG.error("Error while trying to verify health:check: {}", ex.getMessage());
+                        LOG.error("Error while trying to verify opennms:health-check: {}", ex.getMessage());
                         return false;
                     }
                 });

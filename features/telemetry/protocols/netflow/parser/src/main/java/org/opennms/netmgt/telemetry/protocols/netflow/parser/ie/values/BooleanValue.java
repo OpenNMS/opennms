@@ -28,10 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint8;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
-import java.net.Inet4Address;
-import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -42,6 +40,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public class BooleanValue extends Value<Boolean> {
     private final boolean value;
@@ -69,7 +69,7 @@ public class BooleanValue extends Value<Boolean> {
         return new InformationElement() {
             @Override
             public Value<?> parse(final Session.Resolver resolver,
-                                  final ByteBuffer buffer) throws InvalidPacketException {
+                                  final ByteBuf buffer) throws InvalidPacketException {
                 final int value = uint8(buffer);
                 if (value < 1 || value > 2) {
                     throw new InvalidPacketException(buffer, "Illegal value '%d' for boolean type (only 1/true and 2/false allowed)", value);

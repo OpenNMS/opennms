@@ -1,6 +1,11 @@
 package org.opennms.smoketest;
 
-import com.google.common.collect.Collections2;
+import java.time.Duration;
+import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,16 +16,16 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.collect.Collections2;
 
 /**
  * Verifies that the Vaadin JMX Configuration Generator Application is deployed correctly.
@@ -55,11 +60,26 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumIT {
     }
 
     private void waitForAndClickOnNext() {
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("next"))).click();
+        waitForAndClickOn(By.id("next"));
     }
 
     private void waitForAndClickOnPrevious() {
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("previous"))).click();
+        waitForAndClickOn(By.id("previous"));
+    }
+
+    private void waitForAndClickOn(By by) {
+        final Wait<RemoteWebDriver> wait = new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(30))
+                .pollingEvery(Duration.ofSeconds(1))
+                .ignoring(Exception.class);
+        // Wait for the button to be clickable
+        wait.until(ExpectedConditions.elementToBeClickable(by));
+        // Wait for the click to succeed - it's possible for elementToBeClickable to return even though it's not actually clickable yet
+        wait.until(driver -> {
+            final WebElement el = driver.findElement(by);
+            el.click();
+            return el;
+        });
     }
 
     @Test

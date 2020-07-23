@@ -28,21 +28,21 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
-import java.nio.ByteBuffer;
+import io.netty.buffer.ByteBuf;
 
 public class InvalidPacketException extends Exception {
 
-    public InvalidPacketException(final ByteBuffer buffer, final String fmt, final Object... args) {
+    public InvalidPacketException(final ByteBuf buffer, final String fmt, final Object... args) {
         super(appendPosition(String.format(fmt, args), buffer));
     }
 
-    public InvalidPacketException(final ByteBuffer buffer, final String message, final Throwable cause) {
+    public InvalidPacketException(final ByteBuf buffer, final String message, final Throwable cause) {
         super(appendPosition(message, buffer), cause);
     }
-
-    private static String appendPosition(final String message, final ByteBuffer buffer) {
+    
+    private static String appendPosition(final String message, final ByteBuf buffer) {
         if (buffer.hasArray()) {
-            return String.format("%s [0x%04X]", message, buffer.arrayOffset() + buffer.position());
+            return String.format("%s [0x%04X]", message, buffer.arrayOffset() + buffer.readerIndex());
         } else {
             return message;
         }

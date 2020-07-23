@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
-
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // struct mib2_tcp_group {
 //   unsigned int tcpRtoAlgorithm;
@@ -72,7 +72,7 @@ public class Mib2TcpGroup implements CounterData {
     public final long tcpOutRsts;
     public final long tcpInCsumErrs;
 
-    public Mib2TcpGroup(final ByteBuffer buffer) throws InvalidPacketException {
+    public Mib2TcpGroup(final ByteBuf buffer) throws InvalidPacketException {
         this.tcpRtoAlgorithm = BufferUtils.uint32(buffer);
         this.tcpRtoMin = BufferUtils.uint32(buffer);
         this.tcpRtoMax = BufferUtils.uint32(buffer);

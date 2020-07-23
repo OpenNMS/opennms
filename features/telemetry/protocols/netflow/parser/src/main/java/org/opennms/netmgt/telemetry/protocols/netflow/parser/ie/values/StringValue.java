@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.bytes;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Optional;
@@ -41,6 +40,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 public class StringValue extends Value<String> {
     public final static Charset UTF8_CHARSET = Charset.forName("UTF-8");
@@ -69,8 +70,8 @@ public class StringValue extends Value<String> {
     public static InformationElement parser(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
-                return new StringValue(name, semantics, new String(bytes(buffer, buffer.remaining()), UTF8_CHARSET));
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) {
+                return new StringValue(name, semantics, new String(bytes(buffer, buffer.readableBytes()), UTF8_CHARSET));
             }
 
             @Override

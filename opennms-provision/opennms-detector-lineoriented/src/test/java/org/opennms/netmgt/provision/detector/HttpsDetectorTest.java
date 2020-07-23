@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,7 +30,6 @@ package org.opennms.netmgt.provision.detector;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertFalse;
@@ -49,7 +48,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.detector.simple.HttpsDetector;
 import org.opennms.netmgt.provision.detector.simple.HttpsDetectorFactory;
-import org.opennms.netmgt.provision.server.SSLServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -67,7 +65,6 @@ public class HttpsDetectorTest {
     private HttpsDetectorFactory m_detectorFactory;
     
     private HttpsDetector m_detector;
-    private SSLServer m_server;
 
     @Rule
     public WireMockRule m_wireMockRule = new WireMockRule(wireMockConfig().httpsPort(SSL_PORT));
@@ -105,25 +102,12 @@ public class HttpsDetectorTest {
         m_detector.setRetries(0);
     }
 
-    @After
-    public void tearDown() throws IOException {
-        if(m_server != null) {
-            m_server.stopServer();
-            m_server = null;
-            try {
-                Thread.sleep(100);
-            } catch (final InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-
     @Test(timeout=20000)
     public void testDetectorFailWrongPort() throws Exception {
         m_detector.setPort(2000);
         m_detector.init();
 
-        stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
+        m_wireMockRule.stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
         assertFalse(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
@@ -131,7 +115,7 @@ public class HttpsDetectorTest {
     public void testDetectorFailNotAServerResponse() throws Exception {
         m_detector.init();
 
-        stubFor(get(urlEqualTo("/")).willReturn(aResponse().withFault(Fault.RANDOM_DATA_THEN_CLOSE)));
+        m_wireMockRule.stubFor(get(urlEqualTo("/")).willReturn(aResponse().withFault(Fault.RANDOM_DATA_THEN_CLOSE)));
         assertFalse(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
@@ -142,7 +126,7 @@ public class HttpsDetectorTest {
         m_detector.setMaxRetCode(301);
         m_detector.init();
 
-        stubFor(get(urlEqualTo("/blog")).willReturn(getNotFoundResponse()));
+        m_wireMockRule.stubFor(get(urlEqualTo("/blog")).willReturn(getNotFoundResponse()));
 
         assertFalse(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
@@ -154,7 +138,7 @@ public class HttpsDetectorTest {
         m_detector.setMaxRetCode(399);
         m_detector.init();
 
-        stubFor(get(urlEqualTo("/blog")).willReturn(getOKResponse()));
+        m_wireMockRule.stubFor(get(urlEqualTo("/blog")).willReturn(getOKResponse()));
 
         assertTrue(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
@@ -166,7 +150,7 @@ public class HttpsDetectorTest {
         m_detector.setMaxRetCode(199);
         m_detector.init();
 
-        stubFor(get(urlEqualTo("/blog")).willReturn(getOKResponse()));
+        m_wireMockRule.stubFor(get(urlEqualTo("/blog")).willReturn(getOKResponse()));
 
         assertFalse(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
@@ -177,7 +161,7 @@ public class HttpsDetectorTest {
         m_detector.setMaxRetCode(600);
         m_detector.init();
 
-        stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
+        m_wireMockRule.stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
 
         assertTrue(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
@@ -191,7 +175,7 @@ public class HttpsDetectorTest {
         m_detector.init();
         m_detector.setIdleTime(1000);
 
-        stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
+        m_wireMockRule.stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
 
         assertTrue(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
@@ -201,14 +185,14 @@ public class HttpsDetectorTest {
         m_detector.setCheckRetCode(false);
         m_detector.init();
 
-        stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
+        m_wireMockRule.stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
 
         assertTrue(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));
     }
 
     @Test(timeout=20000)
     public void testDetectorSuccess() throws Exception {
-        stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
+        m_wireMockRule.stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
 
         m_detector.init();
         assertTrue(doCheck(m_detector.isServiceDetected(InetAddressUtils.getLocalHostAddress())));

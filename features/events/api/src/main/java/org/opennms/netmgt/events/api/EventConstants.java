@@ -29,12 +29,11 @@
 package org.opennms.netmgt.events.api;
 
 import java.math.BigInteger;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -211,6 +210,11 @@ public abstract class EventConstants {
      * The delete service event UEI.
      */
     public static final String DELETE_SERVICE_EVENT_UEI = "uei.opennms.org/nodes/deleteService";
+
+    /**
+     * Whether to ignore unmanaged interfaces when cascading service delete.
+     */
+    public static final String PARM_IGNORE_UNMANAGED = "ignoreUnmanaged";
 
     /**
      * The service deleted event UEI.
@@ -455,6 +459,8 @@ public abstract class EventConstants {
     public static final String PROVISION_SCAN_COMPLETE_UEI="uei.opennms.org/internal/provisiond/nodeScanCompleted";
     /** Constant <code>PROVISION_SCAN_ABORTED_UEI="uei.opennms.org/internal/provisiond/nod"{trunked}</code> */
     public static final String PROVISION_SCAN_ABORTED_UEI="uei.opennms.org/internal/provisiond/nodeScanAborted";
+
+    public static final String PROVISION_SCHEDULED_NODE_SCAN_STARTED ="uei.opennms.org/internal/provisiond/scheduledNodeScanStarted";
     
     /** Constant <code>PARM_FAILURE_MESSAGE="failureMessage"</code> */
     public static final String PARM_FAILURE_MESSAGE = "failureMessage";
@@ -955,11 +961,20 @@ public abstract class EventConstants {
     public static final String PARM_ENDPOINT2 = "endPoint2";
 
     //
+    // for BMP
+    //
+    public static final String BMP_PEER_DOWN = "uei.opennms.org/bmp/peerDown";
+    public static final String BMP_PEER_UP = "uei.opennms.org/bmp/peerUp";
+
+    //
     // for Bsmd
     //
     public static final String BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI = "uei.opennms.org/bsm/serviceOperationalStatusChanged";
     public static final String BUSINESS_SERVICE_PROBLEM_UEI = "uei.opennms.org/bsm/serviceProblem";
     public static final String BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI = "uei.opennms.org/bsm/serviceProblemResolved";
+    public static final String BUSINESS_SERVICE_DELETED_EVENT_UEI = "uei.opennms.org/internal/serviceDeleted";
+    public static final String APPLICATION_DELETED_EVENT_UEI = "uei.opennms.org/internal/applicationDeleted";
+    public static final String BUSINESS_SERVICE_GRAPH_INVALIDATED = "uei.opennms.org/bsm/graphInvalidated";
 
     public static final String PARM_BUSINESS_SERVICE_ID = "businessServiceId";
     public static final String PARM_BUSINESS_SERVICE_NAME = "businessServiceName";
@@ -967,6 +982,8 @@ public abstract class EventConstants {
     public static final String PARM_NEW_SEVERITY_LABEL = "newSeverityLabel";
     public static final String PARM_PREV_SEVERITY_ID = "prevSeverityId";
     public static final String PARM_PREV_SEVERITY_LABEL = "prevSeverityLabel";
+    public static final String PARM_APPLICATION_ID = "applicationId";
+    public static final String PARM_APPLICATION_NAME = "applicationName";
 
     //
     // For Trapd
@@ -1023,95 +1040,10 @@ public abstract class EventConstants {
     /** Constant <code>OID_SNMP_IFINDEX</code> */
     public static final SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
 
-    public static final ThreadLocal<DateFormat> FORMATTER_FULL = new ThreadLocal<DateFormat>() {
-        @Override
-        protected synchronized DateFormat initialValue() {
-            int timeFormat = DateFormat.FULL;
-            // The DateFormat.FULL format for France/Germany do not include the seconds digit
-            // which is necessary to have sub-minute resolution in event times. For these
-            // locales, we'll fall back to using DateFormat.LONG.
-            //
-            // @see org.opennms.netmgt.DateFormatLocaleTest
-            //
-            if (Locale.getDefault().getLanguage().equals(Locale.FRANCE.getLanguage())) {
-                timeFormat = DateFormat.LONG;
-            } else if (Locale.getDefault().getLanguage().equals(Locale.GERMANY.getLanguage())) {
-                timeFormat = DateFormat.LONG;
-            }
-            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, timeFormat);
-            formatter.setLenient(true);
-            return formatter;
-        }
-    };
-
-    public static final ThreadLocal<DateFormat> FORMATTER_LONG = new ThreadLocal<DateFormat>() {
-        @Override
-        protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
-            formatter.setLenient(true);
-            return formatter;
-        }
-    };
-    
-    public static final ThreadLocal<DateFormat> FORMATTER_FULL_GMT = new ThreadLocal<DateFormat>() {
-        @Override
-        protected synchronized DateFormat initialValue() {
-            int timeFormat = DateFormat.FULL;
-            // The DateFormat.FULL format for France/Germany do not include the seconds digit
-            // which is necessary to have sub-minute resolution in event times. For these
-            // locales, we'll fall back to using DateFormat.LONG.
-            //
-            // @see org.opennms.netmgt.DateFormatLocaleTest
-            //
-            if (Locale.getDefault().getLanguage().equals(Locale.FRANCE.getLanguage())) {
-                timeFormat = DateFormat.LONG;
-            } else if (Locale.getDefault().getLanguage().equals(Locale.GERMANY.getLanguage())) {
-                timeFormat = DateFormat.LONG;
-            }
-            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, timeFormat);
-            formatter.setLenient(true);
-            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-            return formatter;
-        }
-    };
-
-    public static final ThreadLocal<DateFormat> FORMATTER_LONG_GMT = new ThreadLocal<DateFormat>() {
-        @Override
-        protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
-            formatter.setLenient(true);
-            formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-            return formatter;
-        }
-    };
-
-    /**
-     * This {@link DateFormat} is used to parse timestamps from XML events that are generated by
-     * the send-event.pl script. It always formats timestamps in English so we hard-code the locale
-     * as {@link Locale#ENGLISH} in this {@link DateFormat}.
-     */
-    public static final ThreadLocal<DateFormat> FORMATTER_CUSTOM = new ThreadLocal<DateFormat>() {
-        @Override
-        protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = new SimpleDateFormat("EEEEE, d MMMMM yyyy k:mm:ss 'o''clock' z", Locale.ENGLISH);
-            formatter.setLenient(true);
-            return formatter;
-        }
-    };
-
-    public static final ThreadLocal<DateFormat> FORMATTER_DEFAULT = new ThreadLocal<DateFormat>() {
-        @Override
-        protected synchronized DateFormat initialValue() {
-            final DateFormat formatter = DateFormat.getDateTimeInstance();
-            formatter.setLenient(true);
-            return formatter;
-        }
-    };
-
     /**
      * An utility method to parse a string into a 'Date' instance. Note that the
      * string should be in the locale-specific DateFormat.LONG style for both
-     * the date and time, althought DateFormat.FULL will be accepted as well.
+     * the date and time, although DateFormat.FULL will be accepted as well.
      *
      * @see java.text.DateFormat
      * @param timeString a {@link java.lang.String} object.
@@ -1119,18 +1051,7 @@ public abstract class EventConstants {
      * @throws java.text.ParseException if any.
      */
     public static final Date parseToDate(final String timeString) throws ParseException {
-        if (timeString == null) {
-            throw new ParseException("time was null!", -1);
-        }
-        try {
-            return FORMATTER_LONG.get().parse(timeString);
-        } catch (final ParseException parseException) {
-            try {
-                return FORMATTER_CUSTOM.get().parse(timeString);
-            } catch (final ParseException pe) {
-                return FORMATTER_FULL.get().parse(timeString);
-            }
-        }
+        return Date.from(ZonedDateTime.parse(timeString).toInstant());
     }
 
     /**
@@ -1142,7 +1063,7 @@ public abstract class EventConstants {
      * @return a {@link java.lang.String} object.
      */
     public static final String formatToString(final Date date) {
-    	return FORMATTER_LONG_GMT.get().format(date);
+        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(date.toInstant().atZone(ZoneId.systemDefault()));
     }
 
 	/**

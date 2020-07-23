@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.SearchResultUtils;
+import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.NetworkProtocol;
@@ -46,6 +46,7 @@ import org.opennms.smoketest.telemetry.FlowPacket;
 import org.opennms.smoketest.telemetry.FlowTestBuilder;
 import org.opennms.smoketest.telemetry.FlowTester;
 import org.opennms.smoketest.telemetry.Packets;
+import org.opennms.smoketest.telemetry.Sender;
 
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
@@ -67,14 +68,9 @@ public class SinglePortFlowsIT {
                 stack.elastic().getContainerIpAddress(), stack.elastic().getMappedPort(9200));
         final InetSocketAddress flowTelemetryAddress = stack.minion().getNetworkProtocolAddress(NetworkProtocol.FLOWS);
 
-        // For each existing FlowPacket, create a definition to point to "minionSinglePortAddress"
-        final List<FlowPacket> collect = Packets.getFlowPackets().stream()
-                .map(p -> p.withDestinationAddress(flowTelemetryAddress))
-                .collect(Collectors.toList());
-
         // Now verify Flow creation
         final FlowTester tester = new FlowTestBuilder()
-                .withFlowPackets(collect)
+                .withFlowPackets(Packets.getFlowPackets(), Sender.udp(flowTelemetryAddress))
                 .verifyBeforeSendingFlows((flowTester) -> {
                     try {
                         final SearchResult response = flowTester.getJestClient().execute(

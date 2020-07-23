@@ -1,0 +1,37 @@
+
+==== Configure {opennms-product-name}
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+===== Step 1: Set Kafka as RPC strategy and add Kafka server
+
+[source, shell]
+----
+cat <<EOF >${OPENNMS_HOME}/etc/opennms.properties.d/kafka.properties
+org.opennms.core.ipc.rpc.strategy=kafka
+org.opennms.core.ipc.rpc.kafka.bootstrap.servers=kafka-1:9092,kafka-2:9092,kafka-3:9092
+EOF
+----
+
+===== Step 2: Set Kafka as Sink strategy and add Kafka server
+
+[source, shell]
+----
+cat <<EOF >>${OPENNMS_HOME}/etc/opennms.properties.d/kafka.properties
+# Ensure that messages are not consumed from Kafka until the system has fully initialized
+org.opennms.core.ipc.sink.initialSleepTime=60000
+org.opennms.core.ipc.sink.strategy=kafka
+org.opennms.core.ipc.sink.kafka.bootstrap.servers=kafka-1:9092,kafka-2:9092,kafka-3:9092
+EOF
+----
+
+===== Step 3: Restart {opennms-product-name}
+
+[source, shell]
+----
+systemctl restart opennms
+----
+
+// Enable section numbers for step-by-step guide
+:sectnums:

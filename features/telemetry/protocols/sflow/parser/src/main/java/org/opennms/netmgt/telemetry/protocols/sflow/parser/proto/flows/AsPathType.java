@@ -28,16 +28,17 @@
 
 package org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.flows;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.common.utils.BufferUtils;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.SampleDatagramEnrichment;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.sflow.parser.proto.Array;
 
 import com.google.common.base.MoreObjects;
+
+import io.netty.buffer.ByteBuf;
 
 // union as_path_type switch (as_path_segment_type type) {
 //    case AS_SET:
@@ -51,7 +52,7 @@ public class AsPathType {
     public final Array<Long> asSet;
     public final Array<Long> asSequence;
 
-    public AsPathType(final ByteBuffer buffer) throws InvalidPacketException {
+    public AsPathType(final ByteBuf buffer) throws InvalidPacketException {
         this.type = AsPathSegmentType.from(buffer);
         switch (this.type) {
             case AS_SET:

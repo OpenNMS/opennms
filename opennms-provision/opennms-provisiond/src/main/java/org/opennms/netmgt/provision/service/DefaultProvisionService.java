@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -97,6 +98,7 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterfaceCollection;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.netmgt.snmp.SnmpProfileMapper;
 import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,6 +112,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Strings;
+
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 /**
  * DefaultProvisionService
@@ -192,6 +199,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     @Autowired
     private LocationAwareSnmpClient m_locationAwareSnmpClient;
+
+    @Autowired
+    private SnmpProfileMapper m_snmpProfileMapper;
+
+    private Tracer m_tracer;
 
     private final ThreadLocal<Map<String, OnmsServiceType>> m_typeCache = new ThreadLocal<Map<String, OnmsServiceType>>();
     private final ThreadLocal<Map<String, OnmsCategory>> m_categoryCache = new ThreadLocal<Map<String, OnmsCategory>>();
@@ -351,7 +363,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public void deleteService(final Integer nodeId, final InetAddress addr, final String svcName) {
+    public void deleteService(final Integer nodeId, final InetAddress addr, final String svcName, final boolean ignoreUnmanaged) {
         LOG.debug("deleteService: nodeId={}, addr={}, service={}", nodeId, addr, svcName);
 
         final OnmsMonitoredService service = m_monitoredServiceDao.get(nodeId, addr, svcName);
@@ -360,8 +372,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             final OnmsIpInterface iface = service.getIpInterface();
             final OnmsNode node = iface.getNode();
 
-            final boolean lastService = (iface.getMonitoredServices().size() == 1);
-            final boolean lastInterface = (node.getIpInterfaces().size() == 1);
+            Set<OnmsIpInterface> ifaces = node.getIpInterfaces();
+            Set<OnmsMonitoredService> ifaceServices = iface.getMonitoredServices();
+
+            if (ignoreUnmanaged) {
+                ifaces = ifaces.stream().filter(s -> s.isManaged()).collect(Collectors.toSet());
+                ifaceServices = ifaceServices.stream().filter(s -> s.getIpInterface().isManaged()).collect(Collectors.toSet());
+            }
+
+            final boolean lastService = (ifaceServices.size() < 2);
+            final boolean lastInterface = (ifaces.size() < 2);
 
             final DeleteEventVisitor visitor = new DeleteEventVisitor(m_eventForwarder);
 
@@ -969,8 +989,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     // this is a newSuspect-scanned node, so there are no requisitioned categories
                 } else {
                     final OnmsNodeRequisition req = m_foreignSourceRepository.getNodeRequisition(foreignSource, dbNode.getForeignId());
-                    for (final RequisitionCategory cat : req.getNode().getCategories()) {
-                        categories.add(cat.getName());
+                    if(req != null && req.getNode() != null) {
+                        for (final RequisitionCategory cat : req.getNode().getCategories()) {
+                            categories.add(cat.getName());
+                        }
                     }
                 }
 
@@ -1398,8 +1420,67 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return m_locationAwareSnmpClient;
     }
 
+    public SnmpProfileMapper getSnmpProfileMapper() {
+        return m_snmpProfileMapper;
+    }
+
+    public void setSnmpProfileMapper(SnmpProfileMapper snmpProfileMapper) {
+        m_snmpProfileMapper = snmpProfileMapper;
+    }
+
+    @Override
+    public void setTracer(Tracer tracer) {
+        m_tracer = tracer;
+    }
+    
     @Override
     public LocationAwareDnsLookupClient getLocationAwareDnsLookupClient() {
         return m_locationAwareDnsLookuClient;
+    }
+
+    public void setMonitoringLocationDao(final MonitoringLocationDao dao) {
+        m_monitoringLocationDao = dao;
+    }
+
+    public void setNodeDao(final NodeDao dao) {
+        m_nodeDao = dao;
+    }
+
+    public void setIpInterfaceDao(final IpInterfaceDao dao) {
+        m_ipInterfaceDao = dao;
+    }
+
+    public void setSnmpInterfaceDao(final SnmpInterfaceDao dao) {
+        m_snmpInterfaceDao = dao;
+    }
+
+    public void setMonitoredServiceDao(final MonitoredServiceDao dao) {
+        m_monitoredServiceDao = dao;
+    }
+
+    public void setServiceTypeDao(final ServiceTypeDao dao) {
+        m_serviceTypeDao = dao;
+    }
+
+    public void setEventForwarder(final EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
+    }
+
+    public Span buildAndStartSpan(String name, SpanContext spanContext) {
+        if(m_tracer == null) {
+            m_tracer = GlobalTracer.get();
+        }
+        if (spanContext == null) {
+            return m_tracer.buildSpan("Provisiond-" + name).start();
+        } else {
+            return m_tracer.buildSpan("Provisiond-" + name).asChildOf(spanContext).start();
+        }
+    }
+
+    public static void setTag(Span span, String name, String value) {
+        if ((!Strings.isNullOrEmpty(name)) && (!Strings.isNullOrEmpty(value))) {
+            span.setTag(name, value);
+        }
+
     }
 }

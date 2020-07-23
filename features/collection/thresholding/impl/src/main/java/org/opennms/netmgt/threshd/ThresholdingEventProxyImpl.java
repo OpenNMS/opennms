@@ -28,15 +28,12 @@
 
 package org.opennms.netmgt.threshd;
 
-import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.events.api.EventProxyException;
+import java.util.Objects;
+
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.threshd.api.ThresholdingEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.annotations.VisibleForTesting;
 
 /**
  * <p>ThresholdingEventProxy class.</p>
@@ -45,33 +42,25 @@ import com.google.common.annotations.VisibleForTesting;
  * @version $Id: $
  */
 public class ThresholdingEventProxyImpl implements ThresholdingEventProxy {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(ThresholdingEventProxy.class);
+    private EventForwarder eventForwarder;
 
-    private EventProxy eventMgr;
+    public ThresholdingEventProxyImpl(EventForwarder eventForwarder) {
+        this.eventForwarder = Objects.requireNonNull(eventForwarder);
+    }
 
     @Override
     public void sendEvent(Event event) {
-        try {
-            eventMgr.send(event);
-        } catch (EventProxyException e) {
-            LOG.error("Failed to send {} ", event, e);
-        }
+        eventForwarder.sendNow(event);
     }
 
     @Override
-    public void send(Event event) throws EventProxyException {
-        eventMgr.send(event);
+    public void send(Event event) {
+        sendEvent(event);
     }
 
     @Override
-    public void send(Log eventLog) throws EventProxyException {
-        eventMgr.send(eventLog);
-    }
-
-    @VisibleForTesting
-    public void setEventMgr(EventProxy eventMgr) {
-        this.eventMgr = eventMgr;
+    public void send(Log eventLog) {
+        eventForwarder.sendNow(eventLog);
     }
 
 }

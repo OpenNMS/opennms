@@ -28,9 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values;
 
-import static org.opennms.netmgt.telemetry.common.utils.BufferUtils.uint;
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint;
 
-import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -41,6 +40,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
+
+import io.netty.buffer.ByteBuf;
 
 public class UnsignedValue extends Value<UnsignedLong> {
     private final UnsignedLong value;
@@ -68,7 +69,7 @@ public class UnsignedValue extends Value<UnsignedLong> {
     public static InformationElement parserWith8Bit(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) {
                 return new UnsignedValue(name, semantics, uint(buffer, 1));
             }
 
@@ -92,8 +93,8 @@ public class UnsignedValue extends Value<UnsignedLong> {
     public static InformationElement parserWith16Bit(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, semantics, uint(buffer, buffer.remaining()));
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) {
+                return new UnsignedValue(name, semantics, uint(buffer, buffer.readableBytes()));
             }
 
             @Override
@@ -116,8 +117,8 @@ public class UnsignedValue extends Value<UnsignedLong> {
     public static InformationElement parserWith24Bit(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, semantics, uint(buffer, buffer.remaining()));
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) {
+                return new UnsignedValue(name, semantics, uint(buffer, buffer.readableBytes()));
             }
 
             @Override
@@ -140,8 +141,8 @@ public class UnsignedValue extends Value<UnsignedLong> {
     public static InformationElement parserWith32Bit(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, semantics, uint(buffer, buffer.remaining()));
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) {
+                return new UnsignedValue(name, semantics, uint(buffer, buffer.readableBytes()));
             }
 
             @Override
@@ -164,8 +165,8 @@ public class UnsignedValue extends Value<UnsignedLong> {
     public static InformationElement parserWith64Bit(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
-                return new UnsignedValue(name, semantics, uint(buffer, buffer.remaining()));
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) {
+                return new UnsignedValue(name, semantics, uint(buffer, buffer.readableBytes()));
             }
 
             @Override

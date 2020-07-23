@@ -3,13 +3,18 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>25.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
   <artifactId>org.opennms.core.web-assets</artifactId>
   <name>OpenNMS Web UI Assets (JavaScript &amp; CSS)</name>
   <packaging>bundle</packaging>
+
+  <properties>
+    <skipNodeJSBuild>false</skipNodeJSBuild>
+  </properties>
+
   <build>
     <pluginManagement>
       <plugins>
@@ -19,8 +24,6 @@
           <artifactId>frontend-maven-plugin</artifactId>
           <version>${frontendPluginVersion}</version>
           <configuration>
-            <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
-            <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
             <installDirectory>target</installDirectory>
             <srcdir>${basedir}/src/main/assets</srcdir>
             <triggerfiles>
@@ -50,31 +53,36 @@
         <artifactId>frontend-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>install node and yarn</id>
+            <id>install node</id>
             <goals>
-              <goal>install-node-and-yarn</goal>
+              <goal>install-node-and-npm</goal>
             </goals>
             <phase>generate-resources</phase>
             <configuration>
+              <skip>${skipNodeJSBuild}</skip>
               <nodeVersion>${nodeVersion}</nodeVersion>
-              <yarnVersion>${yarnVersion}</yarnVersion>
             </configuration>
           </execution>
           <execution>
             <id>install dependencies</id>
             <goals>
-              <goal>yarn</goal>
+              <goal>npm</goal>
             </goals>
             <phase>generate-resources</phase>
+            <configuration>
+              <skip>${skipNodeJSBuild}</skip>
+              <arguments>--prefer-offline --no-progress install</arguments>
+            </configuration>
           </execution>
           <execution>
             <id>build release</id>
             <goals>
-              <goal>yarn</goal>
+              <goal>npm</goal>
             </goals>
             <phase>compile</phase>
             <configuration>
-              <arguments>release</arguments>
+              <skip>${skipNodeJSBuild}</skip>
+              <arguments>--prefer-offline --no-progress run release</arguments>
             </configuration>
           </execution>
         </executions>
@@ -86,6 +94,8 @@
           <descriptors>
             <descriptor>src/assembly/dist.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
           <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
@@ -134,17 +144,33 @@
               <execution>
                 <id>run tests</id>
                 <goals>
-                  <goal>yarn</goal>
+                  <goal>npm</goal>
                 </goals>
                 <phase>test</phase>
                 <configuration>
-                  <arguments>maven-test</arguments>
+                  <arguments>--prefer-offline --no-progress run maven-test</arguments>
                 </configuration>
               </execution>
             </executions>
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <!-- When building the packages in assemble only mode don't install or run Node.js -->
+      <id>skipCompile</id>
+      <properties>
+        <skipNodeJSBuild>true</skipNodeJSBuild>
+      </properties>
+    </profile>
+    <profile>
+      <id>forceCompile</id>
+      <activation>
+        <file><missing>target/dist/assets/opennms.js</missing></file>
+      </activation>
+      <properties>
+        <skipNodeJSBuild>false</skipNodeJSBuild>
+      </properties>
     </profile>
   </profiles>
   <dependencies>

@@ -28,19 +28,28 @@
 
 package org.opennms.smoketest.containers;
 
+import java.net.InetSocketAddress;
+
 import org.opennms.smoketest.utils.TestContainerUtils;
 import org.testcontainers.containers.Network;
-
-import com.github.dockerjava.api.command.CreateContainerCmd;
 
 public class ElasticsearchContainer extends org.testcontainers.elasticsearch.ElasticsearchContainer {
 
     public ElasticsearchContainer() {
-        super("docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0");
+        super("docker.elastic.co/elasticsearch/elasticsearch-oss:7.6.1");
         withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(OpenNMSContainer.ELASTIC_ALIAS)
                 .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits);
     }
 
+    public InetSocketAddress getRestAddress() {
+        return InetSocketAddress.createUnresolved(getContainerIpAddress(), getMappedPort(9200));
+    }
+
+    public String getRestAddressString() {
+        final InetSocketAddress elasticRestAddress = getRestAddress();
+        final String addressString = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
+        return addressString;
+    }
 }
