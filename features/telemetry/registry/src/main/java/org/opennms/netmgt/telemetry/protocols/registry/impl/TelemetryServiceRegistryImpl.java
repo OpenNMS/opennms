@@ -42,9 +42,7 @@ import org.opennms.netmgt.telemetry.config.api.TelemetryBeanDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -123,9 +121,7 @@ public class TelemetryServiceRegistryImpl<F extends TelemetryBeanFactory, BD ext
             final T service = (T) registration.getServiceFactory().createBean(beanDefinition);
 
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(service);
-            PropertyValues propertyValues = new MutablePropertyValues(beanDefinition.getParameterMap());
-            // Ignores unknown and invalid setters.
-            wrapper.setPropertyValues(propertyValues, true, true);
+            wrapper.setPropertyValues(beanDefinition.getParameterMap());
 
             if (registration.shouldAutowire()) {
                 // Autowire!

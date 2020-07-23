@@ -13,9 +13,9 @@
   <artifactId>org.opennms.features.openconfig</artifactId>
   <packaging>pom</packaging>
   <modules>
-    <module>api</module>
     <module>common</module>
     <module>telemetry-client</module>
+    <module>itests</module>
   </modules>
 
 </project>

@@ -93,8 +93,8 @@
       <version>${grpcVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.openconfig</groupId>
-      <artifactId>org.opennms.features.openconfig.api</artifactId>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.stream-listener</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

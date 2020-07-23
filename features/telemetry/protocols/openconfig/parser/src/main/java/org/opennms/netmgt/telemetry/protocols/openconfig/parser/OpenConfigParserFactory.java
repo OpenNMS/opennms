@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.openconfig.parser;
 
+import java.util.Map;
+
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -36,6 +38,9 @@ import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
+import org.opennms.netmgt.telemetry.stream.listeners.ConnectionFactory;
+
+import com.google.common.collect.Maps;
 
 public class OpenConfigParserFactory implements ParserFactory {
 
@@ -45,10 +50,16 @@ public class OpenConfigParserFactory implements ParserFactory {
 
     private final IpInterfaceDao ipInterfaceDao;
 
-    public OpenConfigParserFactory(TelemetryRegistry telemetryRegistry, EntityScopeProvider entityScopeProvider, IpInterfaceDao ipInterfaceDao) {
+    private final ConnectionFactory connectionFactory;
+
+    public OpenConfigParserFactory(TelemetryRegistry telemetryRegistry,
+                                   EntityScopeProvider entityScopeProvider,
+                                   IpInterfaceDao ipInterfaceDao,
+                                   ConnectionFactory connectionFactory) {
         this.telemetryRegistry = telemetryRegistry;
         this.entityScopeProvider = entityScopeProvider;
         this.ipInterfaceDao = ipInterfaceDao;
+        this.connectionFactory = connectionFactory;
     }
 
     @Override
@@ -59,6 +70,13 @@ public class OpenConfigParserFactory implements ParserFactory {
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        return new OpenConfigParser(parserDefinition.getName(), parserDefinition.getParameterMap(), dispatcher, entityScopeProvider, ipInterfaceDao);
+        Map<String, String> parameterMap = Maps.newHashMap(parserDefinition.getParameterMap());
+        parserDefinition.getParameterMap().clear();
+        return new OpenConfigParser(parserDefinition.getName(),
+                parameterMap,
+                dispatcher,
+                entityScopeProvider,
+                ipInterfaceDao,
+                connectionFactory);
     }
 }

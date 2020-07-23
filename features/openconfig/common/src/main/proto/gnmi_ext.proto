@@ -14,8 +14,6 @@
 // limitations under the License.
 //
 syntax = "proto3";
-option java_package = "gnmi_ext";
-option java_outer_classname = "OpenConfigGnmiExt";
 
 // Package gnmi_ext defines a set of extensions messages which can be optionally
 // included with the request and response messages of gNMI RPCs. A set of
@@ -23,7 +21,8 @@ option java_outer_classname = "OpenConfigGnmiExt";
 // extensions defined outside of this package.
 package gnmi_ext;
 
-//option go_package = "github.com/openconfig/gnmi/proto/gnmi_ext";
+option go_package = "github.com/openconfig/gnmi/proto/gnmi_ext";
+option java_package = "org.opennms.features.openconfig.proto.gnmi";
 
 // The Extension message contains a single gNMI extension.
 message Extension {

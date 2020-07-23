@@ -15,9 +15,6 @@
 //
 syntax = "proto3";
 
-option java_package = "gnmi";
-option java_outer_classname = "OpenConfigGnmi";
-
 import "google/protobuf/any.proto";
 import "google/protobuf/descriptor.proto";
 import "gnmi_ext.proto";
@@ -31,6 +28,7 @@ import "gnmi_ext.proto";
 // This document references the gNMI Specification which can be found at
 // http://github.com/openconfig/reference/blob/master/rpc/gnmi
 package gnmi;
+option java_package = "org.opennms.features.openconfig.proto.gnmi";
 
 // Define a protobuf FileOption that defines the gNMI service version.
 extend google.protobuf.FileOptions {

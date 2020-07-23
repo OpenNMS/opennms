@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 
 import javax.script.ScriptException;
 
+import org.opennms.features.openconfig.proto.jti.Telemetry;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -56,8 +57,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Iterables;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import telemetry.OpenConfigTelemetryProto;
-
 public class OpenConfigAdapter extends AbstractScriptedCollectionAdapter {
 
     private CollectionAgentFactory collectionAgentFactory;
@@ -74,15 +73,15 @@ public class OpenConfigAdapter extends AbstractScriptedCollectionAdapter {
 
     @Override
     public Stream<CollectionSetWithAgent> handleCollectionMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog) {
-        OpenConfigTelemetryProto.OpenConfigData openConfigData = null;
+        Telemetry.OpenConfigData openConfigData = null;
         try {
-            openConfigData = OpenConfigTelemetryProto.OpenConfigData.parseFrom(message.getByteArray());
+            openConfigData = Telemetry.OpenConfigData.parseFrom(message.getByteArray());
         } catch (InvalidProtocolBufferException e) {
             LOG.warn("Invalid packet: {}", e);
             return Stream.empty();
         }
         String systemId = openConfigData.getSystemId();
-        Optional<OpenConfigTelemetryProto.KeyValue> ifName =
+        Optional<Telemetry.KeyValue> ifName =
                 openConfigData.getKvList().stream().filter(keyValue -> keyValue.getKey().contains("name")).findFirst();
         CollectionAgent agent = null;
         try {

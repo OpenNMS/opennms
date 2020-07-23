@@ -9,15 +9,13 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
   <reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" availability="mandatory" />
-  <reference id="openConfigClientFactory" interface="org.opennms.features.openconfig.api.OpenConfigClientFactory" availability="optional"/>
   <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService" availability="mandatory"/>
 
 
   <!-- Stream Listener Factory -->
-  <bean id="telemetryStreamListenerFactory" class="org.opennms.netmgt.telemetry.listeners.factory.TelemetryStreamListenerFactory">
+  <bean id="telemetryStreamListenerFactory" class="org.opennms.netmgt.telemetry.stream.listeners.factory.TelemetryStreamListenerFactory">
     <argument ref="telemetryRegistry" />
     <argument ref="eventSubscriptionService"/>
-    <property name="openConfigClientFactory" ref="openConfigClientFactory" />
   </bean>
 
   <service ref="telemetryStreamListenerFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ListenerFactory">

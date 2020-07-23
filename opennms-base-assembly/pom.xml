@@ -1133,11 +1133,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.openconfig</groupId>
-      <artifactId>org.opennms.features.openconfig.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.openconfig</groupId>
       <artifactId>org.opennms.features.openconfig.common</artifactId>
       <version>${project.version}</version>
     </dependency>

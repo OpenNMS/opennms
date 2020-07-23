@@ -977,14 +977,12 @@
         <feature>opennms-collection-api</feature>
         <feature>opennms-thresholding-api</feature>
         <feature>opennms-osgi-jsr223</feature>
-        <feature>opennms-events-api</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.adapters/${project.version}</bundle>
     </feature>
 
@@ -997,7 +995,6 @@
         <feature>opennms-dao-api</feature>
         <feature>opennms-dao</feature>
         <feature>opennms-telemetry-collection</feature>
-        <feature>opennms-events-api</feature>
         <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
@@ -1006,7 +1003,6 @@
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.api/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-bmp" version="${project.version}" description="OpenNMS :: Telemetry :: BMP">
         <feature>opennms-telemetry-collection</feature>
@@ -1041,11 +1037,11 @@
         <bundle>mvn:org.opennms.features.telemetry.protocols.openconfig/org.opennms.features.telemetry.protocols.openconfig.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.openconfig/org.opennms.features.telemetry.protocols.openconfig.parser/${project.version}</bundle>
     </feature>
-    <feature name="opennms-telemetry-openconfig-client" description="OpenNMS :: Features :: Telemetry :: OpenConfig :: Client" version="${project.version}">
+    <feature name="opennms-telemetry-openconfig-client" description="OpenNMS :: Telemetry :: OpenConfig :: Client" version="${project.version}">
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.stream-listener/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.common/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.telemetry-client/${project.version}</bundle>
     </feature>
     <feature name="opennms-karaf-health" description="OpenNMS :: Karaf Health">
@@ -1117,8 +1113,6 @@
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.parser/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification/org.opennms.features.flows.classification.shell/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
     </feature>
     <feature name="opennms-api-layer" version="${project.version}" description="OpenNMS :: Features :: API Layer">
         <feature>opennms-health</feature>

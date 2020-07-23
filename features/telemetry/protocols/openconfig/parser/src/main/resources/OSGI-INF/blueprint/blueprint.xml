@@ -14,12 +14,16 @@
 
   <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
 
+  <reference id="connectionFactory" interface="org.opennms.netmgt.telemetry.stream.listeners.ConnectionFactory" availability="mandatory"/>
+
   <!-- OpenConfig Parser Factory -->
   <bean id="openconfigParserFactory" class="org.opennms.netmgt.telemetry.protocols.openconfig.parser.OpenConfigParserFactory">
     <argument ref="telemetryRegistry" />
     <argument ref="entityScopeProvider" />
     <argument ref="ipInterfaceDao" />
+    <argument ref="connectionFactory"/>
   </bean>
+
   <service ref="openconfigParserFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
     <service-properties>
       <entry key="registration.export" value="true" />

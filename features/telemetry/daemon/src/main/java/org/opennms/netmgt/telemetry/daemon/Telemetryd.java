@@ -35,16 +35,16 @@ import java.util.stream.Collectors;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
-import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
 import org.opennms.netmgt.telemetry.config.model.AdapterConfig;
@@ -64,15 +64,13 @@ import org.springframework.context.ApplicationContext;
  *
  * @author jwhite
  */
-@EventListener(name = Telemetryd.NAME, logPrefix = Telemetryd.LOG_PREFIX)
+@EventListener(name=Telemetryd.NAME, logPrefix=Telemetryd.LOG_PREFIX)
 public class Telemetryd implements SpringServiceDaemon {
     private static final Logger LOG = LoggerFactory.getLogger(Telemetryd.class);
 
     public static final String NAME = "Telemetryd";
 
     public static final String LOG_PREFIX = "telemetryd";
-
-    public static final String OPENCONFIG_CONTEXT = "openconfig";
 
     @Autowired
     private TelemetrydConfigDao telemetrydConfigDao;
@@ -88,7 +86,6 @@ public class Telemetryd implements SpringServiceDaemon {
 
     @Autowired
     private TelemetryRegistry telemetryRegistry;
-
 
     private List<TelemetryMessageConsumer> consumers = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
@@ -138,9 +135,7 @@ public class Telemetryd implements SpringServiceDaemon {
                 continue;
             }
             final Listener listener = telemetryRegistry.getListener(listenerConfig);
-            if (listener != null) {
-                listeners.add(listener);
-            }
+            listeners.add(listener);
         }
 
         // Start the consumers
@@ -214,11 +209,9 @@ public class Telemetryd implements SpringServiceDaemon {
         }
     }
 
-    @EventHandler(ueis = {EventConstants.RELOAD_DAEMON_CONFIG_UEI})
-    public void handleReloadDaemon(IEvent iEvent) {
-        if (iEvent.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
-            DaemonTools.handleReloadEvent(iEvent, Telemetryd.NAME, (event) -> handleConfigurationChanged());
-        }
+    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleReloadEvent(IEvent e) {
+        DaemonTools.handleReloadEvent(e, Telemetryd.NAME, (event) -> handleConfigurationChanged());
     }
 
 }

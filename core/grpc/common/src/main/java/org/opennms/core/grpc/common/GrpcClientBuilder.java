@@ -48,9 +48,9 @@ import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 public class GrpcClientBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrpcClientBuilder.class);
-    private static final String CLIENT_CERTIFICATE_FILE_PATH = "tls.clientCertFilepath";
-    private static final String CLIENT_PRIVATE_KEY_FILE_PATH = "tls.clientPrivateKeyFilepath";
-    private static final String TRUST_CERTIFICATE_FILE_PATH = "tls.trustCertFilepath";
+    private static final String CLIENT_CERTIFICATE_FILE_PATH = "tls.client.cert.path";
+    private static final String CLIENT_PRIVATE_KEY_FILE_PATH = "tls.client.key.path";
+    private static final String TRUST_CERTIFICATE_FILE_PATH = "tls.trust.cert.path";
     private static final String TLS_ENABLED = "tls.enabled";
 
     public static ManagedChannel getChannel(String host, int port, Map<String, String> properties) throws IOException {
