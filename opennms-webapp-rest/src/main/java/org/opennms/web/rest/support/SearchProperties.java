@@ -362,7 +362,8 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsOutage.class, "ifLostService", "Lost Service Time", TIMESTAMP),
 		new SearchProperty(OnmsOutage.class, "ifRegainedService", "Regained Service Time", TIMESTAMP),
 		new SearchProperty(OnmsOutage.class, "suppressedBy", "Suppressed By User", STRING),
-		new SearchProperty(OnmsOutage.class, "suppressTime", "Suppressed Time", TIMESTAMP)
+		new SearchProperty(OnmsOutage.class, "suppressTime", "Suppressed Time", TIMESTAMP),
+		new SearchProperty(OnmsOutage.class, "perspective", "Perspective", STRING)
 	}));
 
 	static final SortedSet<SearchProperty> SCAN_REPORT_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
