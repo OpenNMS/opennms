@@ -158,6 +158,7 @@ public class IPLikeCoverageIT {
 
             rs = st.getResultSet();
             util.watch(rs);
+            rs.next();
             final boolean result = rs.getBoolean(1);
             if (expected) {
                 assertTrue("SELECT iplike(" + value + "," + rule + ") === " + expected, result);

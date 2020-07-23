@@ -381,6 +381,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             try {
                 m_migrator.dropExistingIpLike();
                 m_migrator.createLangPlPgsql();
+                m_migrator.setupPlPgsqlIplike();
             } catch (MigrationException e) {
                 throw new TemporaryDatabaseException("Failed to load PL/pgSQL iplike function: " + e.getMessage(), e);
             }
