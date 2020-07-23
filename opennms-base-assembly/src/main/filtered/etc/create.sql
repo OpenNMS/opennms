@@ -895,7 +895,7 @@ create table outages (
 	ifRegainedService	timestamp with time zone,
 	suppressTime    	timestamp with time zone,
 	suppressedBy		varchar(256),
-	ifServiceId		    INTEGER not null,
+	ifServiceId         integer not null,
 	perspective         text,
 
 	constraint pk_outageID primary key (outageID),
