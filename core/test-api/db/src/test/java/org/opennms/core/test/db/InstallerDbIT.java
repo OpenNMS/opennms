@@ -1654,7 +1654,7 @@ public class InstallerDbIT extends InstallerDbITCase {
     @Test
     public void testUpgradeAddCheckConstraint() throws Exception {
        	final String cname="setfilter_type_valid";
-    	final String checkexpression="(((type >= 0) AND (type <= 2)))";
+        final String checkexpression="(((type >= 0) AND (type <= 2)))";
         final String sql_start = "create table setFilter ( id integer, type integer);\n";
         executeSQL(sql_start);
         
@@ -1669,9 +1669,17 @@ public class InstallerDbIT extends InstallerDbITCase {
     	assertEquals(1, constraints.size());
     	Constraint constraint=constraints.get(0);
     	assertEquals(cname, constraint.getName());
-        // postgresql8.2 has quotes in the resulting expression
-        // postgresql8.3 has none... remove the quotes (if there are any) before comparing
-        assertEquals(checkexpression.replaceAll("\"type\"", "type"), "("+constraint.getCheckExpression().replaceAll("\"type\"", "type")+")");
+        switch (getInstallerDb().getDbMajorVersion()) {
+            case 10:
+            case 11:
+                // postgresql8.2 has quotes in the resulting expression
+                // postgresql8.3 has none... remove the quotes (if there are any) before comparing
+                assertEquals(checkexpression.replaceAll("\"type\"", "type"), "(" + constraint.getCheckExpression().replaceAll("\"type\"", "type") + ")");
+                break;
+            default:
+                // postgresql12 returns a "CHECK " at the beginning, strip for comparison
+                assertEquals(checkexpression, constraint.getCheckExpression().replaceAll("CHECK ",""));
+        }
     }
 
     public void addTableFromSQL(String tableName) throws SQLException {
