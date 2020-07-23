@@ -89,7 +89,7 @@ public abstract class OutageModel {
             		"    join service \n" + 
             		"      on ifservices.serviceid = service.serviceid \n" + 
             		"   where node.nodeid = ? \n" +
-                    "     and outages.perspective is null \n" +
+            		"     and outages.perspective is null \n" +
             		"     and outages.ifregainedservice is null \n" + 
             		"     and outages.suppresstime is null \n" + 
             		"      or outages.suppresstime < now() \n" + 
