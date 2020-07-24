@@ -1480,6 +1480,27 @@ CREATE INDEX appid_idx on application_service_map(appid);
 CREATE INDEX ifserviceid_idx on application_service_map(ifserviceid);
 CREATE UNIQUE INDEX appid_ifserviceid_idex on application_service_map(appid,ifserviceid);
 
+--########################################################################
+--# application_perspective_location_map table - Many-to-Many mapping table of
+--# applications to monitoringLocations
+--#
+--# This table contains the following fields:
+--#
+--# appId                : The application id from applications table
+--# monitoringLocationId : The id from the monitoringLocations table.
+--########################################################################
+
+create table application_perspective_location_map (
+                                         appId		integer,
+                                         monitoringLocationId	integer,
+
+                                         constraint applicationid_fkey1 foreign key (appId) references applications (id) ON DELETE CASCADE,
+                                         constraint monitoringLocation_fkey2 foreign key (monitoringLocationId) references monitoringlocations (id) ON DELETE CASCADE
+);
+
+CREATE INDEX appid_idx on application_perspective_location_map(appid);
+CREATE INDEX monitoringlocationid_idx on application_perspective_location_map(monitoringLocationId);
+CREATE UNIQUE INDEX appid_monitoringloationid_idx on application_perspective_location_map(appid, monitoringLocationId);
 
 --########################################################################
 --#

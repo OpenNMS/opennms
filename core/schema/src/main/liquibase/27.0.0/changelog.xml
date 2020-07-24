@@ -30,4 +30,30 @@
             <column name="statustime"></column>
         </createIndex>
     </changeSet>
+    <changeSet author="patrick.schweizer" id="27.0.0-remote-poller-tables">
+        <createTable tableName="application_perspective_location_map" remarks="locations from where an application shoud be monitored">
+            <column name="appId" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="monitoringLocationId" type="bigint">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="applicationid_fkey1"
+                                 baseTableName="application_perspective_location_map" baseColumnNames="appId"
+                                 referencedTableName="applications" referencedColumnNames="id" onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="monitoringLocation_fkey2"
+                                 baseTableName="application_perspective_location_map" baseColumnNames="monitoringLocationId"
+                                 referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE"/>
+        <createIndex tableName="application_perspective_location_map" indexName="appid_idx" unique="false">
+            <column name="appid" />
+        </createIndex>
+        <createIndex tableName="application_perspective_location_map" indexName="monitoringlocationid_idx" unique="false">
+            <column name="monitoringLocationId" />
+        </createIndex>
+        <createIndex tableName="application_perspective_location_map" indexName="appid_monitoringloationid_idx" unique="true">
+            <column name="appid" />
+            <column name="monitoringLocationId" />
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
