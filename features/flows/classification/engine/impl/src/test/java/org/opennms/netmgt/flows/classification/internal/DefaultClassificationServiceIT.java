@@ -100,14 +100,11 @@ public class DefaultClassificationServiceIT {
                         new DaoClassificationRuleProvider(ruleDao), filterService),
                 filterService,
                 sessionUtils);
-        userGroupDb = new GroupBuilder().withName(Groups.USER_DEFINED).build();
-        groupDao.save(userGroupDb);
-        assertThat(ruleDao.countAll(), is(0));
+        assertThat("The groups should be pre-populated from liquibase", groupDao.countAll(), is(2));
+        assertTrue("The rules should be pre-populated from liquibase", ruleDao.countAll() > 0);
+        userGroupDb = groupDao.findByName(Groups.USER_DEFINED);
         userGroupCsv = new GroupBuilder().withName(Groups.USER_DEFINED).build();
-
-        // Nothing of ours created yet (only default database schema)
-        initialCount = ruleDao.findAllEnabledRules().size();
-        assertTrue("initial enabled classification rules should be populated (count should be non-zero)", initialCount > 0);
+        initialCount = ruleDao.countAll();
     }
 
     @Test
