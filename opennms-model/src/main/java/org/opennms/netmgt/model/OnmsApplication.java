@@ -36,6 +36,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -113,10 +115,11 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         getMonitoredServices().add(service);
     }
 
-    @ManyToMany(
-            mappedBy="applications",
-            cascade={CascadeType.PERSIST, CascadeType.MERGE}
-    )
+
+    @ManyToMany( cascade={CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name="application_perspective_location_map",
+            joinColumns=@JoinColumn(name="app_id", referencedColumnName = "id"),
+            inverseJoinColumns=@JoinColumn(name="monitoring_location_id", referencedColumnName = "id"))
     @XmlIDREF
     @XmlElement(name="perspectiveLocationId")
     @XmlElementWrapper(name="perspectiveLocations")
