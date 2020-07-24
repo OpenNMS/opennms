@@ -32,28 +32,28 @@
     </changeSet>
     <changeSet author="patrick.schweizer" id="27.0.0-remote-poller-tables">
         <createTable tableName="application_perspective_location_map" remarks="locations from where an application shoud be monitored">
-            <column name="appId" type="bigint">
+            <column name="app_id" type="bigint">
                 <constraints nullable="false" />
             </column>
-            <column name="monitoringLocationId" type="bigint">
+            <column name="monitoring_location_id" type="text">
                 <constraints nullable="false" />
             </column>
         </createTable>
-        <addForeignKeyConstraint constraintName="applicationid_fkey1"
-                                 baseTableName="application_perspective_location_map" baseColumnNames="appId"
+        <addForeignKeyConstraint constraintName="application_id_fkey1"
+                                 baseTableName="application_perspective_location_map" baseColumnNames="app_id"
                                  referencedTableName="applications" referencedColumnNames="id" onDelete="CASCADE"/>
-        <addForeignKeyConstraint constraintName="monitoringLocation_fkey2"
-                                 baseTableName="application_perspective_location_map" baseColumnNames="monitoringLocationId"
+        <addForeignKeyConstraint constraintName="monitoring_Location_fkey2"
+                                 baseTableName="application_perspective_location_map" baseColumnNames="monitoring_location_id"
                                  referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE"/>
-        <createIndex tableName="application_perspective_location_map" indexName="appid_idx" unique="false">
-            <column name="appid" />
+        <createIndex tableName="application_perspective_location_map" indexName="apl_appid_idx" unique="false">
+            <column name="app_id" />
         </createIndex>
-        <createIndex tableName="application_perspective_location_map" indexName="monitoringlocationid_idx" unique="false">
-            <column name="monitoringLocationId" />
+        <createIndex tableName="application_perspective_location_map" indexName="monitoring_location_id_idx" unique="false">
+            <column name="monitoring_location_id" />
         </createIndex>
         <createIndex tableName="application_perspective_location_map" indexName="appid_monitoringloationid_idx" unique="true">
-            <column name="appid" />
-            <column name="monitoringLocationId" />
+            <column name="app_id" />
+            <column name="monitoring_location_id" />
         </createIndex>
     </changeSet>
 </databaseChangeLog>
