@@ -48,7 +48,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.*;
+import java.util.function.Predicate;
 
 import javax.sql.DataSource;
 
@@ -64,7 +64,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -202,10 +201,12 @@ public class MigratorIT implements TemporaryDatabaseAware<TemporaryDatabase> {
         return r -> {
             try {
                 URI uri = r.getURI();
-                return (uri.getScheme().equals("file") && uri.toString().contains("test-api/schema")) ||
-                        (uri.getScheme().equals("jar") && uri.toString().contains("test-api.schema"));
+                final String scheme = uri.getScheme();
+                final String uriString = uri.toString();
+                return (scheme.equals("file") && uriString.contains("test-api/schema")) ||
+                        (scheme.equals("jar") && uriString.contains("test-api.schema"));
             } catch (IOException e) {
-                return false;
+                throw new IllegalStateException("Resource is not a URI", e);
             }
         };
     }
