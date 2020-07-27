@@ -84,7 +84,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
 
         setClassName(MockDatabase.class.getName());
         setMethodName("MockDatabase constructor");
-        setTestDetails("I do not know who called me.... which is sad. Will you be my friend and help me fix this?");
+        setTestDetails("I do not know who called me.... which is sad. Will you be my friend and help me fix this?\n" + new Exception().getStackTrace());
 
         if (createNow) {
             create();

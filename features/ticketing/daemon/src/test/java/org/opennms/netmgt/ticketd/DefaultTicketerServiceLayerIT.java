@@ -109,7 +109,6 @@ public class DefaultTicketerServiceLayerIT implements InitializingBean {
 
     @After
     public void tearDown() {
-
         m_databasePopulator.resetDatabase();
     }
 
