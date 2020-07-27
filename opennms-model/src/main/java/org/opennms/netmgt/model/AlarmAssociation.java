@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -89,7 +90,7 @@ public class AlarmAssociation implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "situation_id")
     public OnmsAlarm getSituationAlarm() {
         return situationAlarm;
@@ -99,7 +100,7 @@ public class AlarmAssociation implements Serializable {
         this.situationAlarm = situationAlarm;
     }
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "related_alarm_id")
     public OnmsAlarm getRelatedAlarm() {
         return relatedAlarm;

@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmAssociationDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.UserNotificationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
+import org.opennms.netmgt.model.AlarmAssociation;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -147,6 +149,7 @@ public class DatabasePopulator {
     private OutageDao m_outageDao;
     private EventDao m_eventDao;
     private AlarmDao m_alarmDao;
+    private AlarmAssociationDao m_alarmAssociationDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
     private MonitoringLocationDao m_monitoringLocationDao;
@@ -242,6 +245,11 @@ public class DatabasePopulator {
         for (final OnmsNotification not : m_notificationDao.findAll()) {
             m_notificationDao.delete(not);
         }
+        if (m_alarmAssociationDao != null) {
+            for (final AlarmAssociation ass : m_alarmAssociationDao.findAll()) {
+                m_alarmAssociationDao.delete(ass);
+            }
+        }
         for (final OnmsAlarm alarm : m_alarmDao.findAll()) {
             m_alarmDao.delete(alarm);
         }
@@ -293,6 +301,7 @@ public class DatabasePopulator {
         m_outageDao.flush();
         m_userNotificationDao.flush();
         m_notificationDao.flush();
+        m_alarmAssociationDao.flush();
         m_alarmDao.flush();
         m_eventDao.flush();
         m_snmpInterfaceDao.flush();
@@ -620,6 +629,13 @@ public class DatabasePopulator {
         m_alarmDao = alarmDao;
     }
 
+    public AlarmAssociationDao getAlarmAssociationDao() {
+        return m_alarmAssociationDao;
+    }
+
+    public void setAlarmAssociationDao(final AlarmAssociationDao dao) {
+        m_alarmAssociationDao = dao;
+    }
 
     public AssetRecordDao getAssetRecordDao() {
         return m_assetRecordDao;
