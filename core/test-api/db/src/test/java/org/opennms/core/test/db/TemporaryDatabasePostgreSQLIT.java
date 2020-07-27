@@ -29,15 +29,14 @@
 package org.opennms.core.test.db;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.schema.Migrator;
 import org.opennms.core.test.MockLogAppender;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.context.support.StaticApplicationContext;
 
 public class TemporaryDatabasePostgreSQLIT {
     //private static final Logger LOG = LoggerFactory.getLogger(DatabasePopulatorIT.class);
@@ -51,6 +50,7 @@ public class TemporaryDatabasePostgreSQLIT {
     public void testOnce() throws Throwable {
         TemporaryDatabasePostgreSQL db = new TemporaryDatabasePostgreSQL();
         db.setupDatabase();
+        assertEquals(1, db.countRows("SELECT 1", new Object[0]));
         db.destroyTestDatabase();
     }
 
@@ -59,6 +59,7 @@ public class TemporaryDatabasePostgreSQLIT {
         TemporaryDatabasePostgreSQL db = new TemporaryDatabasePostgreSQL();
         db.setPopulateSchema(true);
         db.setupDatabase();
+        assertEquals(1, db.countRows("SELECT * FROM monitoringsystems", new Object[0]));
         db.destroyTestDatabase();
     }
 
@@ -67,13 +68,17 @@ public class TemporaryDatabasePostgreSQLIT {
         String dbName = TemporaryDatabasePostgreSQL.TEMPLATE_DATABASE_NAME_PREFIX + System.currentTimeMillis();
 
         TemporaryDatabasePostgreSQL temp = new TemporaryDatabasePostgreSQL();
+        temp.setPopulateSchema(true);
         temp.createIntegrationTestTemplateDatabase(dbName);
+        temp.setupDatabase();
+        assertEquals(1, temp.countRows("SELECT * FROM monitoringsystems", new Object[0]));
     }
 
     @Test
     public void testGetIntegrationTestDatabaseName() throws Throwable {
         TemporaryDatabasePostgreSQL temp = new TemporaryDatabasePostgreSQL();
-        temp.getIntegrationTestTemplateDatabaseName();
+        assertNotNull(temp.getIntegrationTestTemplateDatabaseName());
+        assertTrue(temp.getIntegrationTestTemplateDatabaseName().startsWith("opennms_it_template_"));
     }
 
     @Test
@@ -91,7 +96,9 @@ public class TemporaryDatabasePostgreSQLIT {
             for (int i = 0; i <= 10; i++) {
                 try {
                     TemporaryDatabasePostgreSQL db = new TemporaryDatabasePostgreSQL();
-                    System.out.println(Thread.currentThread() + " " + i + " " + db);
+                    // System.out.println(Thread.currentThread() + " " + i + " " + db);
+                    db.setPopulateSchema(populate);
+                    assertEquals(1, db.countRows(populate ? "SELECT * FROM monitoringsystems" : "SELECT 1", new Object[0]));
                     db.setupDatabase();
                     db.destroyTestDatabase();
                 } catch (Throwable e) {
@@ -110,8 +117,6 @@ public class TemporaryDatabasePostgreSQLIT {
 
     @Test
     public void testHashesMatch() throws IOException, Exception {
-        Migrator migrator = new Migrator();
-
         TemporaryDatabasePostgreSQL temp = new TemporaryDatabasePostgreSQL();
 
         assertEquals("liquibase configuration hash", temp.generateLiquibaseHash(), temp.generateLiquibaseHash());
