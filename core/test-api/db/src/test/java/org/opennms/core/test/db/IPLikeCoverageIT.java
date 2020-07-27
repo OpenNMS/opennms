@@ -28,8 +28,7 @@
 
 package org.opennms.core.test.db;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -160,11 +159,7 @@ public class IPLikeCoverageIT {
             util.watch(rs);
             rs.next();
             final boolean result = rs.getBoolean(1);
-            if (expected) {
-                assertTrue("SELECT iplike(" + value + "," + rule + ") === " + expected, result);
-            } else {
-                assertFalse("SELECT iplike(" + value + "," + rule + ") === " + expected, result);
-            }
+            assertEquals("SELECT iplike(" + value + "," + rule + ") === " + expected, expected, result);
         } finally {
             util.cleanUp();
         }

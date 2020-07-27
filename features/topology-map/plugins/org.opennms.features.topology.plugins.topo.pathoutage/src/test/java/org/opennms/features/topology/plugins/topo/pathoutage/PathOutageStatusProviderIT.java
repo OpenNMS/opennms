@@ -335,8 +335,7 @@ public class PathOutageStatusProviderIT {
 	 * @return Resulting service
 	 */
 	private OnmsMonitoredService createService(OnmsNode node) {
-		OnmsServiceType serviceType = new OnmsServiceType();
-		serviceType.setName("someType" + ++s_serviceTypeCounter);
+		OnmsServiceType serviceType = new OnmsServiceType(++s_serviceTypeCounter, "someType" + s_serviceTypeCounter);
 		serviceTypeDao.save(serviceType);
 
 		OnmsMonitoredService monitoredService = new OnmsMonitoredService();
