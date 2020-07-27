@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+export CCI_CHANGES_ONLY=false
+
 find_tests()
 {
     # Generate surefire & failsafe test list based on current
