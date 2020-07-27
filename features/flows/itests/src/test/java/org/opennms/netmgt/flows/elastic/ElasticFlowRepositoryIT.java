@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -62,7 +62,10 @@ public class ElasticFlowRepositoryIT {
     private static final String ERROR_RESPONSE = "{\"took\":97,\"errors\":true,\"items\":[{\"index\":{\"_index\":\"flow-2017-11\",\"_type\":\"flow\",\"_id\":\"AV_8xp7OaWbS_xJQivfD\",\"status\":400,\"error\":{\"type\":\"mapper_parsing_exception\",\"reason\":\"failed to parse [timestamp]\",\"caused_by\":{\"type\":\"number_format_exception\",\"reason\":\"For input string: \\\"XXX\\\"\"}}}}]}";
 
     @Rule
-    public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.options().dynamicPort());
+    public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.options()
+            .dynamicPort()
+            .keystorePath(System.getProperty("javax.net.ssl.keyStore","target/test-keystore.jks"))
+            .keystorePassword(System.getProperty("javax.net.ssl.keyStorePassword",  "changeit")));
 
     @Test(expected=PersistenceException.class)
     public void verifyThrowsPersistenceException() throws IOException, FlowException {
