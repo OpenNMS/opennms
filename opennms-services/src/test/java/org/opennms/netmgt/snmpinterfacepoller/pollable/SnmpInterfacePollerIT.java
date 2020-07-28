@@ -77,8 +77,8 @@ public class SnmpInterfacePollerIT {
         snmpInterfaceMonitor = new SnmpPollInterfaceMonitor(locationAwareSnmpClient);
         SnmpPeerFactory.setInstance(snmpPeerFactory);
         // Set admin/operational status as unknown
-        SnmpMinimalPollInterface iface = new SnmpMinimalPollInterface(6, SnmpMinimalPollInterface.IF_UNKNOWN,
-                SnmpMinimalPollInterface.IF_UNKNOWN);
+        SnmpMinimalPollInterface iface = new SnmpMinimalPollInterface(6, SnmpInterfaceStatus.INVALID,
+                SnmpInterfaceStatus.INVALID);
         interfacesResult.add(iface);
 
     }
