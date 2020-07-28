@@ -57,6 +57,9 @@
     <bean id="alarmDao" class="org.opennms.netmgt.dao.mock.MockAlarmDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmDao" ref="alarmDao" />
 
+    <bean id="alarmAssociationDao" class="org.opennms.netmgt.dao.mock.MockAlarmAssociationDao" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmAssociationDao" ref="alarmAssociationDao" />
+
     <bean id="applicationDao" class="org.opennms.netmgt.dao.mock.MockApplicationDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.ApplicationDao" ref="applicationDao" />
 
