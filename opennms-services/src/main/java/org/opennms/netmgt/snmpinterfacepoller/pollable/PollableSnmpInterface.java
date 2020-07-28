@@ -38,12 +38,15 @@ import java.util.Map;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.snmpinterfacepoller.pollable.SnmpInterfaceStatus.*;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmpinterfacepoller.SnmpPollInterfaceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.opennms.netmgt.snmpinterfacepoller.pollable.SnmpInterfaceStatus.INVALID;
 
 /**
  * Represents a PollableSnmpInterface
@@ -70,32 +73,19 @@ public class PollableSnmpInterface implements ReadyRunnable {
     private SnmpAgentConfig m_agentConfig;
     
     public static class SnmpMinimalPollInterface {
-        
-    	static final int IF_UP=1;
-    	static final int IF_DOWN=2;
-    	static final int IF_UNKNOWN=0;
-        
-        private final String[] s_statusNames = {"Unknown","InterfaceUp", "InterfaceDown"}; 
-        
+
         int ifindex;
-        int adminstatus;
-        int operstatus;
+        SnmpInterfaceStatus adminstatus;
+        SnmpInterfaceStatus operstatus;
         
         PollStatus m_status;
         
-        public SnmpMinimalPollInterface(int ifindex, int adminstatus,
-                int operstatus) {
+        public SnmpMinimalPollInterface(int ifindex, SnmpInterfaceStatus adminstatus,
+                SnmpInterfaceStatus operstatus) {
             this.ifindex = ifindex;
             this.adminstatus = adminstatus;
             this.operstatus = operstatus;
             m_status = PollStatus.unknown();
-        }
-
-        public String decodeStatus(int status) {
-            if (status >= 0 && status <= 2) {
-                return s_statusNames[status];
-            }
-            return s_statusNames[0];
         }
 
         public int getIfindex() {
@@ -104,24 +94,33 @@ public class PollableSnmpInterface implements ReadyRunnable {
         public void setIfindex(int ifindex) {
             this.ifindex = ifindex;
         }
-        public int getAdminstatus() {
+        public SnmpInterfaceStatus getAdminstatus() {
             return adminstatus;
         }
-        
-        public void setAdminstatus(int adminstatus) {
-            if (adminstatus > 2 )
-                this.adminstatus = IF_UNKNOWN;
-            else this.adminstatus = adminstatus;
+
+        /**
+         *
+         * @param adminstatus valid values are up(1), down(2), testing(3) according to RFC 2863. Value will be set to
+         *                    0 in the case where an improper value is attempted to be set.
+         */
+        public void setAdminstatus(SnmpInterfaceStatus adminstatus) {
+            if (adminstatus.getMibValue() > 3 )
+                this.adminstatus = INVALID;
+            else
+                this.adminstatus = adminstatus;
         }
         
-        public int getOperstatus() {
+        public SnmpInterfaceStatus getOperstatus() {
             return operstatus;
         }
-        
-        public void setOperstatus(int operstatus) {
-            if (operstatus > 2 )
-                this.operstatus = IF_UNKNOWN;
-            this.operstatus = operstatus;
+
+        /**
+         *
+         * @param operstatus valid values are up(1), down(2), testing(3), unknown(4), dormant(5), notPresent(6),
+         *                  lowerLayerDown(7) according to RFC 2863
+         */
+        public void setOperstatus(SnmpInterfaceStatus operstatus) {
+                this.operstatus = operstatus;
         }
 
         public PollStatus getStatus() {
@@ -172,9 +171,9 @@ public class PollableSnmpInterface implements ReadyRunnable {
                         // Note: If OpenNMS is restarted, the event is going to be sent no matter if it was sent before, if the current status of the interface is down.        
                         m_snmpinterfaces.put(iface.getIfIndex(), iface);
         		if (iface.getIfAdminStatus() != null &&
-        				iface.getIfAdminStatus().equals(SnmpMinimalPollInterface.IF_UP) && 
+        				iface.getIfAdminStatus().equals(SnmpInterfaceStatus.UP.getMibValue()) &&
         				iface.getIfOperStatus() != null &&
-        				iface.getIfOperStatus().equals(SnmpMinimalPollInterface.IF_DOWN) &&
+        				iface.getIfOperStatus().equals(SnmpInterfaceStatus.DOWN.getMibValue()) &&
         				(oldStatus == null || (iface.getIfOperStatus().intValue() != oldStatus.intValue()))) {
         			sendOperDownEvent(iface);
         		}
@@ -332,42 +331,42 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     LOG.debug("Current status Admin/Oper: {}/{}", miface.getAdminstatus(), miface.getOperstatus());
                     
                     // If the interface is Admin Up, and the interface is Operational Down, we generate an alarm.
-                    if ( miface.getAdminstatus() == SnmpMinimalPollInterface.IF_UP
-                      && iface.getIfAdminStatus() == SnmpMinimalPollInterface.IF_UP
-                      && miface.getOperstatus() == SnmpMinimalPollInterface.IF_DOWN 
-                      && iface.getIfOperStatus() == SnmpMinimalPollInterface.IF_UP) {
+                    if ( miface.getAdminstatus() == SnmpInterfaceStatus.UP
+                      && iface.getIfAdminStatus() == SnmpInterfaceStatus.UP.getMibValue()
+                      && miface.getOperstatus() == SnmpInterfaceStatus.DOWN
+                      && iface.getIfOperStatus() == SnmpInterfaceStatus.UP.getMibValue()) {
                       sendOperDownEvent(iface);
                     } 
                     
                     // If the interface is Admin Up, and the interface is Operational Up, we generate a clean alarm
                     // if was previuos down in alarm table
-                    if ( miface.getAdminstatus() == SnmpMinimalPollInterface.IF_UP
-                        && iface.getIfAdminStatus() == SnmpMinimalPollInterface.IF_UP
-                        && miface.getOperstatus() == SnmpMinimalPollInterface.IF_UP 
-                        && iface.getIfOperStatus() == SnmpMinimalPollInterface.IF_DOWN ) {
+                    if ( miface.getAdminstatus() == SnmpInterfaceStatus.UP
+                        && iface.getIfAdminStatus() == SnmpInterfaceStatus.UP.getMibValue()
+                        && miface.getOperstatus() == SnmpInterfaceStatus.UP
+                        && iface.getIfOperStatus() == SnmpInterfaceStatus.DOWN.getMibValue() ) {
                         sendOperUpEvent(iface);
                     } 
                                             
-                    if ( miface.getAdminstatus() == SnmpMinimalPollInterface.IF_DOWN 
-                            && iface.getIfAdminStatus() == SnmpMinimalPollInterface.IF_UP) {
+                    if ( miface.getAdminstatus() == SnmpInterfaceStatus.DOWN
+                            && iface.getIfAdminStatus() == SnmpInterfaceStatus.UP.getMibValue()) {
                             sendAdminDownEvent(iface);
                     } 
                     
-                    if ( miface.getAdminstatus() == SnmpMinimalPollInterface.IF_UP 
-                            && iface.getIfAdminStatus() == SnmpMinimalPollInterface.IF_DOWN
-                            && miface.getOperstatus() != SnmpMinimalPollInterface.IF_UP) {
+                    if ( miface.getAdminstatus() == SnmpInterfaceStatus.UP
+                            && iface.getIfAdminStatus() == SnmpInterfaceStatus.DOWN.getMibValue()
+                            && miface.getOperstatus() != SnmpInterfaceStatus.UP) {
                             sendAdminUpEvent(iface);
                     }
 
-                    if ( miface.getAdminstatus() == SnmpMinimalPollInterface.IF_UP 
-                            && iface.getIfAdminStatus() == SnmpMinimalPollInterface.IF_DOWN
-                            && miface.getOperstatus() == SnmpMinimalPollInterface.IF_UP) {
+                    if ( miface.getAdminstatus() == SnmpInterfaceStatus.UP
+                            && iface.getIfAdminStatus() == SnmpInterfaceStatus.DOWN.getMibValue()
+                            && miface.getOperstatus() == SnmpInterfaceStatus.UP) {
                             sendAdminUpEvent(iface);
                             sendOperUpEvent(iface);
                     }
 
-                    iface.setIfAdminStatus(Integer.valueOf(miface.getAdminstatus()));
-                    iface.setIfOperStatus(Integer.valueOf(miface.getOperstatus()));
+                    iface.setIfAdminStatus(Integer.valueOf(miface.getAdminstatus().getMibValue()));
+                    iface.setIfOperStatus(Integer.valueOf(miface.getOperstatus().getMibValue()));
                     iface.setLastSnmpPoll(now);
                                     
                     
@@ -421,17 +420,17 @@ public class PollableSnmpInterface implements ReadyRunnable {
     }
 
     private SnmpMinimalPollInterface getMinimalFromOnmsSnmpInterface(OnmsSnmpInterface iface) {
-        int adminStatus = SnmpMinimalPollInterface.IF_UP;
-        int operStatus = SnmpMinimalPollInterface.IF_UP;
+        SnmpInterfaceStatus adminStatus = SnmpInterfaceStatus.UP;
+        SnmpInterfaceStatus operStatus = SnmpInterfaceStatus.UP;
         if (iface.getIfAdminStatus() != null) {
-            adminStatus = iface.getIfAdminStatus().intValue();
+            adminStatus = SnmpInterfaceStatus.statusFromMibValue(iface.getIfAdminStatus().intValue());
         } else {
-            iface.setIfAdminStatus(SnmpMinimalPollInterface.IF_UNKNOWN);
+            iface.setIfAdminStatus(INVALID.getMibValue());
         }
         if (iface.getIfOperStatus() != null) {
-            operStatus = iface.getIfOperStatus().intValue();
+            operStatus = SnmpInterfaceStatus.statusFromMibValue(iface.getIfOperStatus().intValue());
         } else {
-            iface.setIfOperStatus(SnmpMinimalPollInterface.IF_UNKNOWN);
+            iface.setIfOperStatus(INVALID.getMibValue());
         }
         
         return new SnmpMinimalPollInterface(iface.getIfIndex().intValue(),adminStatus, operStatus);
