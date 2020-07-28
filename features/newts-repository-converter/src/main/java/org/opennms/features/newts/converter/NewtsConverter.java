@@ -735,6 +735,12 @@ public class NewtsConverter implements AutoCloseable {
                 samples = samples.headMap((int) Math.ceil(((double) lowerRraStart) / ((double) rraStep)) * rraStep, false);
             }
 
+            if (samples.isEmpty()) {
+                // The whole timespan of this RRA is covered by an RRA with an higher resolution - so there is nothing
+                // to add from this RRA
+                continue;
+            }
+
             final AbstractRRA higherRra = rras.higher(rra);
             if (higherRra != null) {
                 final long higherRraStep = higherRra.getPdpPerRow() * rrd.getStep();
