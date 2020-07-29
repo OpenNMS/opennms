@@ -179,6 +179,21 @@ public interface SnmpInterfacePollerConfig {
      * @return a int.
      */
     Integer getMaxVarsPerPdu(String pkgName,String pkgInterfaceName);
+
+    /**
+     * <p>getUpValues</p>
+     * @param pkgName a {@link java.lang.String} object.
+     * @param pkgInterfaceName a {@link java.lang.String} object.
+     * @return a String.
+     */
+    Optional<String> getUpValues(String pkgName,String pkgInterfaceName);
+    /**
+     * <p>getDownValues</p>
+     * @param pkgName a {@link java.lang.String} object.
+     * @param pkgInterfaceName a {@link java.lang.String} object.
+     * @return a String.
+     */
+    Optional<String> getDownValues(String pkgName,String pkgInterfaceName);
     /**
      * <p>rebuildPackageIpListMap</p>
      */

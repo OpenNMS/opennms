@@ -520,6 +520,18 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getMaxVarsPerPdu();        
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Optional<String> getUpValues(String pkgName, String pkgInterfaceName) {
+        return Optional.empty();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<String> getDownValues(String pkgName, String pkgInterfaceName) {
+        return Optional.empty();
+    }
+
     /**
      * <p>enumeratePackage</p>
      *

@@ -124,6 +124,23 @@ public class Interface implements Serializable {
     @XmlAttribute(name = "max-interface-per-pdu")
     private Integer m_maxInterfacePerPdu;
 
+    /**
+     * Values of ifAdminStatus and ifOperStatus to treat as up values.
+     * Expects a comma separated list of discrete values i.e. '1,3'.
+     * Defaults to '1'.
+     *
+     */
+    @XmlAttribute(name = "up-values")
+    private String m_upValues;
+
+    /**
+     * Values of ifAdminStatus and ifOperStatus to treat as down values.
+     * Expects a comma separated list of discrete values i.e. '2,3,5,7'.
+     * Defaults to '2'.
+     *
+     */
+    private String m_downValues;
+
     public Interface() {
     }
 
@@ -207,6 +224,14 @@ public class Interface implements Serializable {
         m_maxInterfacePerPdu = maxInterfacePerPdu;
     }
 
+    public Optional<String> getUpValues() { return Optional.ofNullable(m_upValues); }
+
+    public void setUpValues(final String upValues) { m_upValues = upValues; }
+
+    public Optional<String> getDownValues() { return Optional.ofNullable(m_downValues); }
+
+    public void setDownValues(final String downValues) { m_downValues = downValues; }
+
     @Override
     public int hashCode() {
         return Objects.hash(m_criteria, 
@@ -237,8 +262,10 @@ public class Interface implements Serializable {
                     && Objects.equals(this.m_port, that.m_port)
                     && Objects.equals(this.m_retry, that.m_retry)
                     && Objects.equals(this.m_timeout, that.m_timeout)
-                    && Objects.equals(this.m_maxVarsPerPdu, m_maxVarsPerPdu)
-                    && Objects.equals(this.m_maxInterfacePerPdu, m_maxInterfacePerPdu);
+                    && Objects.equals(this.m_maxVarsPerPdu, that.m_maxVarsPerPdu)
+                    && Objects.equals(this.m_maxInterfacePerPdu, that.m_maxInterfacePerPdu)
+                    && Objects.equals(this.m_upValues, that.m_upValues)
+                    && Objects.equals(this.m_downValues, that.m_downValues);
         }
         return false;
     }
