@@ -59,7 +59,7 @@ public class DetectorsOnMinionIT {
     private static final Logger LOG = LoggerFactory.getLogger(DetectorsOnMinionIT.class);
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINION;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinion();
 
     private static final String LOCALHOST = "127.0.0.1";
 

@@ -44,7 +44,7 @@ import io.restassured.RestAssured;
 public abstract class AbstractRestIT extends OpenNMSSeleniumIT {
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
     public enum Version {
         V1("/rest/"), V2("/api/v2/");

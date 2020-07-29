@@ -61,7 +61,7 @@ import io.restassured.http.ContentType;
 public class ClassificationRestIT {
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
     private List<Integer> groupIsToDelete;
 

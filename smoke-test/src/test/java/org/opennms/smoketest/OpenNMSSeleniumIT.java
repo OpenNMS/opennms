@@ -102,7 +102,7 @@ public class OpenNMSSeleniumIT extends AbstractOpenNMSSeleniumHelper {
         return options;
     }
 
-    protected static OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    protected static OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
     @ClassRule
     public static TestRule chain = RuleChain
