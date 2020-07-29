@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,10 +29,10 @@
 package org.opennms.netmgt.snmp.commands;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.Action;
@@ -74,12 +74,18 @@ public class WalkCommand implements Action {
     List<String> m_oids;
 
     @Override
-    public Object execute() throws Exception {
+    public Object execute() {
         LOG.debug("snmp:walk {} {} {}", m_location != null ? "-l " + m_location : "", m_host, m_oids);
         final List<SnmpObjId> snmpObjIds = m_oids.stream()
                     .map(SnmpObjId::get)
                     .collect(Collectors.toList());
-        final SnmpAgentConfig agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(m_host), m_location);
+        SnmpAgentConfig agent;
+        try {
+            agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(m_host), m_location);
+        } catch (UnknownHostException uhe) {
+            System.err.printf("Unknown host '%s' at location '%s': %s%n", m_host, m_location, uhe.getMessage());
+            return null;
+        }
         final CompletableFuture<List<SnmpResult>> future = locationAwareSnmpClient.walk(agent, snmpObjIds)
             .withDescription("snmp:walk")
             .withLocation(m_location)
@@ -93,10 +99,10 @@ public class WalkCommand implements Action {
                         System.out.printf("[%s].[%s] = %s%n", res.getBase(), res.getInstance(), res.getValue());
                     });
                 break;
-            } catch (TimeoutException e) {
-                // pass
+            } catch (Exception e) {
+                System.err.printf("%s: %s%n", m_host, e.getClass().getName());
+                break;
             }
-            System.out.print(".");
         }
         return null;
     }
