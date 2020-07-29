@@ -1016,9 +1016,9 @@
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
             <!-- The javax.net.ssl ones are used by integrations/opennms-jasper-extensions -->
             <javax.net.ssl.keyStore>target/test-keystore.jks</javax.net.ssl.keyStore>
-            <javax.net.ssl.keyStorePassword>password</javax.net.ssl.keyStorePassword>
+            <javax.net.ssl.keyStorePassword>changeit</javax.net.ssl.keyStorePassword>
             <javax.net.ssl.trustStore>target/test-keystore.jks</javax.net.ssl.trustStore>
-            <javax.net.ssl.trustStorePassword>password</javax.net.ssl.trustStorePassword>
+            <javax.net.ssl.trustStorePassword>changeit</javax.net.ssl.trustStorePassword>
             <!-- <ssl.debug>true</ssl.debug> -->
             <!-- <javax.net.debug>ssl,handshake,verbose</javax.net.debug> -->
           </systemPropertyVariables>

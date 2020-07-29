@@ -37,6 +37,8 @@
               <alias>${webstart.keyalias}</alias>
               <keypass>${webstart.keypass}</keypass>
               <dname>cn=${webstart.dnameCn}</dname>
+              <keyalg>RSA</keyalg>
+              <keysize>2048</keysize>
 
               <!-- I'm not sure if we need these extension attributes -->
               <!-- Add X.509 V3 "KeyUsage" attribute -->
