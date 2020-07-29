@@ -105,7 +105,8 @@ public class ModelMappers {
                 .setLogMessage(alarm.getLogMsg())
                 .setDescription(alarm.getDescription())
                 .setLastEventTime(alarm.getLastEventTime())
-                .setFirstEventTime(alarm.getFirstEventTime());
+                .setFirstEventTime(alarm.getFirstEventTime())
+                .setAcknowledged(alarm.isAcknowledged());
 
         try {
             if (alarm.getNode() != null) {
