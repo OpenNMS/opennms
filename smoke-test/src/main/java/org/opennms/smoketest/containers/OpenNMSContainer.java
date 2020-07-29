@@ -205,6 +205,10 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
         // If this test class writes something, we expect it to be there
         OverlayUtils.copyFiles(profile.getFiles(), home);
 
+        if (!profile.isDefaultConfigEnabled()) {
+            return;
+        }
+
         // Copy over files from the class-path
         // Files ending in .j2 will be templated using Jinja2 with a context that has the model
         OverlayUtils.copyAndTemplate("opennms-overlay", home, model);

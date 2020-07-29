@@ -10,36 +10,43 @@ To enable support for JTI, edit `${OPENNMS_HOME}/etc/telemetryd-configuration.xm
 
 .Enable JTI protocol in telemetryd-configuration.xml 
 [source, xml]
+[doctest-id = telemetryd-jti-full]
+[doctest-target = file:${OPENNMS_HOME}/etc/telemetryd-configuration.xml]
 ----
-<listener name="JTI-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.simple.Udp" enabled="false">
-    <parameter key="port" value="50000"/>
+<?xml version="1.0"?>
+<telemetryd-config>
+    <listener name="JTI-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+        <parameter key="port" value="50000"/>
 
-    <parser name="JTI-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="JTI" />
-</listener>
+        <parser name="JTI-Parser" class-name="org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser" queue="JTI" />
+    </listener>
 
-<queue name="JTI">
-    <adapter name="JTI-GPB" class-name="org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter" enabled="false">
-        <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/junos-telemetry-interface.groovy"/>
+    <queue name="JTI">
+        <adapter name="JTI-GPB" class-name="org.opennms.netmgt.telemetry.protocols.jti.adapter.JtiGpbAdapter" enabled="true">
+            <parameter key="script" value="${OPENNMS_HOME}/etc/telemetryd-adapters/junos-telemetry-interface.groovy"/>
 
-        <package name="JTI-Default">
-            <rrd step="300">
-                <rra>RRA:AVERAGE:0.5:1:2016</rra>
-                <rra>RRA:AVERAGE:0.5:12:1488</rra>
-                <rra>RRA:AVERAGE:0.5:288:366</rra>
-                <rra>RRA:MAX:0.5:288:366</rra>
-                <rra>RRA:MIN:0.5:288:366</rra>
-            </rrd>
-        </package>
-    </adapter>
-</queue>
+            <package name="JTI-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+    </queue>
+</telemetryd-config>
 ----
 
 Apply the changes without restarting by sending a `reloadDaemonConfig` event in the CLI or the Web UI:
 
 .Send a reloadDaemonConfig event through CLI
 [source]
+[doctest-id = telemetryd-jti-full]
+[doctest-target = shell:opennms]
 ----
-${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+# ${OPENNMS_HOME}/bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
 By default, this will open a UDP socket bound to `0.0.0.0:50000` to which _JTI_ messages can be forwarded.
@@ -49,16 +56,19 @@ By default, this will open a UDP socket bound to `0.0.0.0:50000` to which _JTI_ 
 To enable and configure a _UDP Listener_ for JTI on Minion, connect to the _Karaf Console_ and set the following properties:
 
 [source]
+[doctest-id = telemetryd-jti-full]
+[doctest-components = minion]
+[doctest-target = karaf:minion]
 ----
-$ ssh -p 8201 admin@localhost
-...
-admin@minion()> config:edit --alias udp-5000 --factory org.opennms.features.telemetry.listeners
-admin@minion()> config:property-set name JTI
-admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
-admin@minion()> config:property-set parameters.port 50000
-admin@minion()> config:property-set parsers.0.name JTI
-admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser
-admin@minion()> config:update
+# config:edit --alias udp-5000 --factory org.opennms.features.telemetry.listeners
+# config:property-set name JTI
+# config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
+# config:property-set parameters.port 50000
+# config:property-set parsers.0.name JTI
+# config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.common.parser.ForwardParser
+# config:update
+
+# opennms:health-check
 ----
 
 NOTE: The protocol must also be enabled on _{opennms-product-name}_ for the messages to be processed.
