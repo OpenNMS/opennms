@@ -29,7 +29,6 @@
 package org.opennms.doctests;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -37,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -72,8 +70,8 @@ import com.google.common.graph.MutableGraph;
 import com.google.common.graph.Traverser;
 import com.google.common.reflect.Invokable;
 
-public class Doctests extends ParentRunner<Sequence> {
-    public static final Logger LOG = LoggerFactory.getLogger(Doctests.class);
+public class Doctest extends ParentRunner<Sequence> {
+    public static final Logger LOG = LoggerFactory.getLogger(Doctest.class);
 
     private static final Pattern TARGET_FILE_PATTERN = Pattern.compile("file:(?<path>.+)");
     private static final Pattern TARGET_KARAF_PATTERN = Pattern.compile("karaf:(?<system>.+)");
@@ -81,7 +79,7 @@ public class Doctests extends ParentRunner<Sequence> {
 
     private final List<Sequence> sequences;
 
-    public Doctests(final Class<?> clazz) throws InitializationError {
+    public Doctest(final Class<?> clazz) throws InitializationError {
         super(clazz);
 
         try {
@@ -122,7 +120,7 @@ public class Doctests extends ParentRunner<Sequence> {
     }
 
     public static List<Sequence> load(final String path) throws IOException {
-        return Doctests.load(FileSystems.getDefault().getPath(path));
+        return Doctest.load(FileSystems.getDefault().getPath(path));
     }
 
     public static List<Sequence> load(final Path path) throws IOException {

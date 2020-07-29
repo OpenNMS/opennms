@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.junit.runner.Description;
 import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.OpenNMSProfile;
 import org.opennms.smoketest.stacks.OpenNMSStack;
@@ -75,7 +76,7 @@ public class Sequence {
                                                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(Component.class)));
 
         final OpenNMSProfile.Builder onmsProfile = OpenNMSProfile.newBuilder();
-        onmsProfile.withoutDefaultConfig();
+//        onmsProfile.withoutDefaultConfig();
 
         // Apply all preparations before starting the container
         for (final Preparation preparation : this.preparations) {

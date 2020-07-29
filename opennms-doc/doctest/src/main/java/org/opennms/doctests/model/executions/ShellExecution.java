@@ -30,7 +30,7 @@ package org.opennms.doctests.model.executions;
 
 import java.util.Objects;
 
-import org.opennms.doctests.Doctests;
+import org.opennms.doctests.Doctest;
 import org.opennms.doctests.model.Execution;
 import org.opennms.doctests.utils.CommandWithOutput;
 import org.opennms.smoketest.stacks.OpenNMSStack;
@@ -66,9 +66,9 @@ public class ShellExecution extends Execution {
             final Container.ExecResult result = stack.opennms().execInContainer("bash", "-c", cwo.command);
 
             if (result.getExitCode() != 0) {
-                Doctests.LOG.error("Command returned with exit-code " + result.getExitCode());
-                Doctests.LOG.error("  stderr: " + result.getStderr());
-                Doctests.LOG.error("  stdout: " + result.getStdout());
+                Doctest.LOG.error("Command returned with exit-code " + result.getExitCode());
+                Doctest.LOG.error("  stderr: " + result.getStderr());
+                Doctest.LOG.error("  stdout: " + result.getStdout());
 
                 throw new AssertionError("Command returned with exit-code != 0");
             }

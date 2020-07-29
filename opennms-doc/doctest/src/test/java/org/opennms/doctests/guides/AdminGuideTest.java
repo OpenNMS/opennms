@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
 import org.opennms.doctests.Doctest;
 
 @RunWith(Doctest.class)
-public class AdminGuideDoctest {
+public class AdminGuideTest {
 
     public static Path getPath() {
         return Paths.get("../guide-admin/src/asciidoc/index.adoc");
