@@ -231,7 +231,7 @@ public class IfTttDaemonTest {
 
         final TransactionOperations transactionOperations = mock(TransactionOperations.class);
         when(transactionOperations.execute(Matchers.anyObject())).thenAnswer((Answer<Void>) invocationOnMock -> {
-            TransactionCallbackWithoutResult transactionCallbackWithoutResult = invocationOnMock.getArgumentAt(0, TransactionCallbackWithoutResult.class);
+            TransactionCallbackWithoutResult transactionCallbackWithoutResult = invocationOnMock.getArgument(0);
             transactionCallbackWithoutResult.doInTransaction(null);
             return null;
         });

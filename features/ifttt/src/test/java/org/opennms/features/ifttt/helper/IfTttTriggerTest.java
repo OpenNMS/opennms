@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -74,7 +74,7 @@ public class IfTttTriggerTest {
         when(closeableHttpClient.execute(Matchers.anyObject())).thenAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                HttpPost httpPost = invocationOnMock.getArgumentAt(0, HttpPost.class);
+                HttpPost httpPost = invocationOnMock.getArgument(0);
                 Assert.assertEquals("POST https://maker.ifttt.com/trigger/" + TEST_EVENT + "/with/key/" + TEST_KEY + " HTTP/1.1", httpPost.getRequestLine().toString());
                 Assert.assertEquals("{\"value1\":\"abc1\",\"value2\":\"abc2\",\"value3\":\"abc3\"}", IOUtils.toString(httpPost.getEntity().getContent()));
                 return closeableHttpResponse;
