@@ -67,7 +67,7 @@ public class DetectorsCommandIT {
     private static final Logger LOG = LoggerFactory.getLogger(DetectorsCommandIT.class);
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINION;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinion();
 
     private ImmutableMap<String, String> expectedDetectors = ImmutableMap.<String, String> builder()
             .put("ActiveMQ", "org.opennms.netmgt.provision.detector.jms.ActiveMQDetector")

@@ -70,7 +70,7 @@ public class TrapIT {
     private static final Logger LOG = LoggerFactory.getLogger(TrapIT.class);
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINION;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinion();
 
     private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 

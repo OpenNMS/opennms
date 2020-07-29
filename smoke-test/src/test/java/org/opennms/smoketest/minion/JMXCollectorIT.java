@@ -49,7 +49,7 @@ public class JMXCollectorIT {
     private static final Logger LOG = LoggerFactory.getLogger(JMXCollectorIT.class);
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINION;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinion();
 
     @Test
     public void canPerformAdhocJmxCollection() throws Exception {

@@ -66,7 +66,7 @@ public class NxosTelemetryIT {
     private static final Logger LOG = LoggerFactory.getLogger(NxosTelemetryIT.class);
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINION;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinion();
 
     @Test
     public void verifyNxosTelemetryOnOpenNMS() throws Exception {

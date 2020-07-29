@@ -48,7 +48,7 @@ public class JolokiaRestIT {
     private static final Logger LOG = LoggerFactory.getLogger(CollectorListIT.class);
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINION;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinion();
 
     @Before
     public void setUp() {

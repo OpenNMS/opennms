@@ -51,13 +51,10 @@ public class SentinelProfile {
 
     private final List<OverlayFile> files;
 
-    private final boolean defaultConfigEnabled;
-
     private SentinelProfile(Builder builder) {
         id = builder.id;
         jvmDebuggingEnabled = builder.jvmDebuggingEnabled;
         files = Collections.unmodifiableList(builder.files);
-        defaultConfigEnabled = builder.defaultConfigEnabled;
     }
 
     public static Builder newBuilder() {
@@ -68,7 +65,6 @@ public class SentinelProfile {
         private String id = UUID.randomUUID().toString();
         private boolean jvmDebuggingEnabled = false;
         private List<OverlayFile> files = new LinkedList<>();
-        private boolean defaultConfigEnabled = true;
 
         public Builder withFile(Path source, String target) {
             try {
@@ -89,11 +85,6 @@ public class SentinelProfile {
             return this;
         }
 
-        public Builder withoutDefaultConfig() {
-            this.defaultConfigEnabled = false;
-            return this;
-        }
-
         public SentinelProfile build() {
             return new SentinelProfile(this);
         }
@@ -111,7 +102,4 @@ public class SentinelProfile {
         return files;
     }
 
-    public boolean isDefaultConfigEnabled() {
-        return this.defaultConfigEnabled;
-    }
 }

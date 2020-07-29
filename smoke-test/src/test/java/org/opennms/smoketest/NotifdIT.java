@@ -59,7 +59,7 @@ public class NotifdIT {
     private static final String IP_ADDRESS = "192.168.1.1";
 
     @ClassRule
-    public static OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
     @Test
     public void testNotifdAutoAcknowledgeAlarm() {

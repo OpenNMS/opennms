@@ -29,6 +29,7 @@
 package org.opennms.doctests;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -49,6 +50,11 @@ import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.ContentNode;
 import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.StructuralNode;
+import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunNotifier;
+import org.junit.runners.ParentRunner;
+import org.junit.runners.model.InitializationError;
 import org.opennms.doctests.model.Component;
 import org.opennms.doctests.model.Listing;
 import org.opennms.doctests.model.Sequence;
@@ -64,25 +70,62 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.google.common.graph.Traverser;
+import com.google.common.reflect.Invokable;
 
-public class Doctests {
+public class Doctests extends ParentRunner<Sequence> {
     public static final Logger LOG = LoggerFactory.getLogger(Doctests.class);
 
     private static final Pattern TARGET_FILE_PATTERN = Pattern.compile("file:(?<path>.+)");
     private static final Pattern TARGET_KARAF_PATTERN = Pattern.compile("karaf:(?<system>.+)");
     private static final Pattern TARGET_SHELL_PATTERN = Pattern.compile("shell:(?<system>.+)");
 
-    private final Set<Sequence> sequences;
+    private final List<Sequence> sequences;
 
-    private Doctests(final Set<Sequence> sequences) {
-        this.sequences = Objects.requireNonNull(sequences);
+    public Doctests(final Class<?> clazz) throws InitializationError {
+        super(clazz);
+
+        try {
+            final Path path = (Path) Invokable.from(clazz.getMethod("getPath"))
+                                              .invoke(null, new Objects[0]);
+            this.sequences = load(path);
+        } catch (Exception e) {
+            throw new InitializationError(e);
+        }
     }
 
-    public static Doctests load(final String path) throws IOException {
+    @Override
+    protected List<Sequence> getChildren() {
+        return this.sequences;
+    }
+
+    @Override
+    protected Description describeChild(final Sequence sequence) {
+        return this.describe(sequence);
+    }
+
+    @Override
+    protected void runChild(final Sequence sequence, final RunNotifier notifier) {
+        final Description description = this.describe(sequence);
+
+        notifier.fireTestStarted(description);
+        try {
+            sequence.execute();
+        } catch (final Exception e) {
+            notifier.fireTestFailure(new Failure(description, e));
+        } finally {
+            notifier.fireTestFinished(description);
+        }
+    }
+
+    private Description describe(final Sequence sequence) {
+        return Description.createTestDescription(this.getTestClass().getName(), sequence.getId(), sequence.getId());
+    }
+
+    public static List<Sequence> load(final String path) throws IOException {
         return Doctests.load(FileSystems.getDefault().getPath(path));
     }
 
-    public static Doctests load(final Path path) throws IOException {
+    public static List<Sequence> load(final Path path) throws IOException {
         final Asciidoctor asciidoctor = Asciidoctor.Factory.create();
 
         // Load the whole document as AST
@@ -146,7 +189,7 @@ public class Doctests {
         final Stream<String> leafs = dependencies.nodes().stream()
                                                  .filter(key -> dependencies.predecessors(key).isEmpty());
 
-        final Set<Sequence> sequences = leafs.map(key -> {
+        final List<Sequence> sequences = leafs.map(key -> {
             final Sequence.Builder sequence = Sequence.builder(key);
 
             for (final String s : Traverser.forGraph(dependencies).breadthFirst(key)) {
@@ -157,9 +200,9 @@ public class Doctests {
             }
 
             return sequence.build();
-        }).collect(Collectors.toSet());
+        }).collect(Collectors.toList());
 
-        return new Doctests(sequences);
+        return sequences;
     }
 
     private static Optional<String> getNodeAttr(final ContentNode node, final String key) {

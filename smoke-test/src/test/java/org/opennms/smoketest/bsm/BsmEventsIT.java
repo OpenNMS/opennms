@@ -49,7 +49,7 @@ import org.opennms.smoketest.utils.RestClient;
 
 public class BsmEventsIT {
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
     public Event getServiceProblemEvent(final int businessServiceId, final String severity) {
         final EventBuilder eventBuilder = new EventBuilder("uei.opennms.org/bsm/serviceProblem", "test")

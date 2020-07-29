@@ -50,7 +50,7 @@ import org.opennms.smoketest.utils.DaoUtils;
 public class MinionHeartBeatIT {
 
 	@ClassRule
-	public static final OpenNMSStack stack = OpenNMSStack.MINION;
+	public static final OpenNMSStack stack = OpenNMSStack.buildMinion();
 
     @Test
 	public void minionHeartBeatTestForLastUpdated() {

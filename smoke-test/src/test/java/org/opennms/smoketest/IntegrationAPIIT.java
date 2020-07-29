@@ -48,7 +48,7 @@ public class IntegrationAPIIT {
     private static final Logger LOG = LoggerFactory.getLogger(IntegrationAPIIT.class);
 
     @ClassRule
-    public static OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
     @Test
     public void canLoadSampleProject() throws Exception {

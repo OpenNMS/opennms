@@ -52,7 +52,7 @@ public abstract class AbstractNodeRestServiceTest {
     private final String endpoint;
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
     @Before
     public void setUp() {

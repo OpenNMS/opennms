@@ -28,13 +28,16 @@
 
 package org.opennms.doctests.guides;
 
-import org.junit.Test;
-import org.opennms.doctests.Doctests;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-public class AdminGuideTest {
+import org.junit.runner.RunWith;
+import org.opennms.doctests.Doctest;
 
-    @Test
-    public void test() throws Exception {
-        Doctests.load("../guide-admin/src/asciidoc/index.adoc").execute();
+@RunWith(Doctest.class)
+public class AdminGuideDoctest {
+
+    public static Path getPath() {
+        return Paths.get("../guide-admin/src/asciidoc/index.adoc");
     }
 }

@@ -82,7 +82,7 @@ public class JtiTelemetryIT {
     public static final String SENDER_IP = "192.168.1.1";
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINION;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinion();
 
     @Test
     public void verifyJtiTelemetryOnOpenNMS() throws Exception {

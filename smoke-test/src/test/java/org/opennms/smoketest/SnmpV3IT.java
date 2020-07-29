@@ -62,7 +62,7 @@ public class SnmpV3IT {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpV3IT.class);
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
     private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 

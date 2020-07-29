@@ -60,20 +60,26 @@ import org.testcontainers.containers.Network;
  */
 public final class OpenNMSStack implements TestRule {
 
-    public static final OpenNMSStack MINIMAL = OpenNMSStack.withModel(StackModel.newBuilder().build());
+    public static final OpenNMSStack buildMinimal() {
+        return OpenNMSStack.withModel(StackModel.newBuilder().build());
+    }
 
-    public static final OpenNMSStack MINION = OpenNMSStack.withModel(StackModel.newBuilder()
-            .withMinion()
-            .build());
+    public static final OpenNMSStack buildMinion() {
+        return OpenNMSStack.withModel(StackModel.newBuilder()
+                                                .withMinion()
+                                                .build());
+    }
 
-    public static final OpenNMSStack ALEC = OpenNMSStack.withModel(StackModel.newBuilder()
-            .withMinions(MinionProfile.DEFAULT, MinionProfile.newBuilder()
-                    .withLocation("BANANA")
-                    .build())
-            .withSentinel()
-            .withElasticsearch()
-            .withIpcStrategy(IpcStrategy.KAFKA)
-            .build());
+    public static final OpenNMSStack buildALEC() {
+        return OpenNMSStack.withModel(StackModel.newBuilder()
+                                                .withMinions(MinionProfile.DEFAULT, MinionProfile.newBuilder()
+                                                                                                 .withLocation("BANANA")
+                                                                                                 .build())
+                                                .withSentinel()
+                                                .withElasticsearch()
+                                                .withIpcStrategy(IpcStrategy.KAFKA)
+                                                .build());
+    }
 
     public static OpenNMSStack withModel(StackModel model) {
         return new OpenNMSStack(model);

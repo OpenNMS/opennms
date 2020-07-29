@@ -62,7 +62,7 @@ import org.opennms.smoketest.utils.SyslogUtils;
 public class SyslogIT {
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINION;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinion();
 
     @Test
     public void canReceiveSyslogMessages() throws Exception {

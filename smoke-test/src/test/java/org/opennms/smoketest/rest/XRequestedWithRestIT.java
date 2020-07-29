@@ -44,7 +44,7 @@ import io.restassured.RestAssured;
 public class XRequestedWithRestIT {
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
     @Before
     public void setUp() {

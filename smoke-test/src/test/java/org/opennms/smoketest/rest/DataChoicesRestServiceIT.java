@@ -44,7 +44,7 @@ import io.restassured.RestAssured;
 public class DataChoicesRestServiceIT {
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
     @Before
     public void before() {

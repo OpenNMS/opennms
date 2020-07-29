@@ -46,7 +46,7 @@ import io.restassured.http.ContentType;
 public class HealthCheckRestIT {
 
     @ClassRule
-    public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static final OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
     @Before
     public void before() {

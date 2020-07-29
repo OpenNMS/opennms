@@ -53,7 +53,7 @@ import org.opennms.smoketest.utils.RestClient;
 public class NodeRestIT {
 
     @ClassRule
-    public static OpenNMSStack stack = OpenNMSStack.MINIMAL;
+    public static OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
     @Test
     public void testRestCallsOnNodesInterfacesAndServices() {

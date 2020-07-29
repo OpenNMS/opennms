@@ -146,20 +146,15 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
         // If this test class writes something, we expect it to be there
         OverlayUtils.copyFiles(profile.getFiles(), home);
 
-        if (!profile.isDefaultConfigEnabled()) {
-            return;
-        }
-
         Path etc = home.resolve("etc");
         Files.createDirectories(etc);
 
         // Copy configuration from $OPENNMS_HOME/etc
-        // TODO fooker: revert this
-//        final Path opennmsSourceEtcDirectory = new TargetRoot(getClass()).getPath("system-test-resources", "etc");
-//        FileUtils.copyDirectory(opennmsSourceEtcDirectory.resolve("telemetryd-adapters").toFile(), etc.resolve("telemetryd-adapters").toFile());
-//        FileUtils.copyDirectory(opennmsSourceEtcDirectory.resolve("resource-types.d").toFile(), etc.resolve("resource-types.d").toFile());
-//        FileUtils.copyDirectory(opennmsSourceEtcDirectory.resolve("datacollection").toFile(), etc.resolve("datacollection").toFile());
-//        FileUtils.copyFile(opennmsSourceEtcDirectory.resolve("datacollection-config.xml").toFile(), etc.resolve("datacollection-config.xml").toFile());
+        final Path opennmsSourceEtcDirectory = new TargetRoot(getClass()).getPath("system-test-resources", "etc");
+        FileUtils.copyDirectory(opennmsSourceEtcDirectory.resolve("telemetryd-adapters").toFile(), etc.resolve("telemetryd-adapters").toFile());
+        FileUtils.copyDirectory(opennmsSourceEtcDirectory.resolve("resource-types.d").toFile(), etc.resolve("resource-types.d").toFile());
+        FileUtils.copyDirectory(opennmsSourceEtcDirectory.resolve("datacollection").toFile(), etc.resolve("datacollection").toFile());
+        FileUtils.copyFile(opennmsSourceEtcDirectory.resolve("datacollection-config.xml").toFile(), etc.resolve("datacollection-config.xml").toFile());
 
         // Copy over the fixed configuration from the class-path
         FileUtils.copyDirectory(new File(MountableFile.forClasspathResource("sentinel-overlay").getFilesystemPath()), home.toFile());

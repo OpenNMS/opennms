@@ -54,7 +54,7 @@ import org.opennms.smoketest.stacks.OpenNMSStack;
 public class WebappIT {
 
   @ClassRule
-  public static final OpenNMSStack stack = OpenNMSStack.MINIMAL;
+  public static final OpenNMSStack stack = OpenNMSStack.buildMinimal();
 
   @Before
   public void setUp() {

@@ -55,7 +55,7 @@ public class MonitorsListCommandIT {
     private static final Logger LOG = LoggerFactory.getLogger(MonitorsListCommandIT.class);
 
     @ClassRule
-    public final static OpenNMSStack stack = OpenNMSStack.MINION;
+    public final static OpenNMSStack stack = OpenNMSStack.buildMinion();
 
     private ImmutableSet<String> expectedMonitors = ImmutableSet.<String> builder().add(
             "org.opennms.netmgt.poller.monitors.DNSResolutionMonitor",
