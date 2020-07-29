@@ -245,10 +245,10 @@ public class DatabasePopulator {
         for (final OnmsNotification not : m_notificationDao.findAll()) {
             m_notificationDao.delete(not);
         }
-        if (m_alarmAssociationDao != null) {
-            for (final AlarmAssociation ass : m_alarmAssociationDao.findAll()) {
-                m_alarmAssociationDao.delete(ass);
-            }
+        for (final AlarmAssociation ass : m_alarmAssociationDao.findAll()) {
+            ass.getRelatedAlarm().getAssociatedAlarms().clear();
+            ass.getSituationAlarm().getAssociatedAlarms().clear();
+            m_alarmAssociationDao.delete(ass);
         }
         for (final OnmsAlarm alarm : m_alarmDao.findAll()) {
             m_alarmDao.delete(alarm);
