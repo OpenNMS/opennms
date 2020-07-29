@@ -26,8 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.doctests.guides;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
