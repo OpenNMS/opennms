@@ -70,9 +70,7 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
         getEventDao().save(alarm.getLastEvent());
         getNodeDao().save(alarm.getNode());
         getServiceTypeDao().save(alarm.getServiceType());
-        if (getAlarmAssociationDao() instanceof MockAlarmAssociationDao) {
-            ((MockAlarmAssociationDao)getAlarmAssociationDao()).rebuild();
-        }
+        alarm.getAssociatedAlarms().forEach(a -> getAlarmAssociationDao().saveOrUpdate(a));
     }
 
     @Override

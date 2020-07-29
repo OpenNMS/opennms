@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.AlarmAssociationDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.AlarmAssociation;
 import org.opennms.netmgt.model.OnmsAlarm;
 
@@ -57,8 +58,12 @@ public class MockAlarmAssociationDao extends AbstractMockDao<AlarmAssociation, I
     }
 
     private void updateSubObjects(final AlarmAssociation ass) {
-        getAlarmDao().save(ass.getRelatedAlarm());
-        getAlarmDao().save(ass.getSituationAlarm());
+        if (ass.getRelatedAlarm().getId() == null) {
+            getAlarmDao().save(ass.getRelatedAlarm());
+        }
+        if (ass.getSituationAlarm().getId() == null) {
+            getAlarmDao().save(ass.getSituationAlarm());
+        }
     }
 
     @Override
@@ -78,23 +83,5 @@ public class MockAlarmAssociationDao extends AbstractMockDao<AlarmAssociation, I
             return Collections.emptyList();
         }
         return new ArrayList<>(alarm.getAssociatedAlarms());
-    }
-
-    public void rebuild() {
-        final AlarmDao alarmDao = getAlarmDao();
-
-        // add all active associations in saved alarms, and add them
-        final Set<AlarmAssociation> associations = new HashSet<AlarmAssociation>();
-        alarmDao.findAll().forEach(alarm -> associations.addAll(alarm.getAssociatedAlarms()));
-        associations.forEach(ass -> this.saveOrUpdate(ass));
-
-        // get all saved associations that are not in saved alarms, and remove them
-        final Set<AlarmAssociation> remove = new HashSet<AlarmAssociation>();
-        this.findAll().forEach(ass -> {
-            if (!associations.contains(ass)) {
-                remove.add(ass);
-            }
-        });
-        remove.forEach(ass -> this.delete(ass));
     }
 }
