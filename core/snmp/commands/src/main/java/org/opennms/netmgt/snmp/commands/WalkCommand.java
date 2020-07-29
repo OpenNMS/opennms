@@ -60,7 +60,7 @@ public class WalkCommand extends SnmpRequestCommand implements Action {
         try {
             agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(m_host), m_location);
         } catch (UnknownHostException uhe) {
-            System.err.printf("Unknown host '%s' at location '%s': %s%n", m_host, m_location, uhe.getMessage());
+            System.out.println(String.format("Unknown host '%s' at location '%s': %s", m_host, m_location, uhe.getMessage()));
             return null;
         }
         final CompletableFuture<List<SnmpResult>> future = locationAwareSnmpClient.walk(agent, snmpObjIds)
@@ -73,11 +73,11 @@ public class WalkCommand extends SnmpRequestCommand implements Action {
             try {
                 future.get(1, TimeUnit.SECONDS).stream()
                     .forEach(res -> {
-                        System.out.printf("[%s].[%s] = %s%n", res.getBase(), res.getInstance(), res.getValue());
+                        System.out.println(String.format("[%s].[%s] = %s", res.getBase(), res.getInstance(), res.getValue()));
                     });
                 break;
             } catch (Exception e) {
-                System.err.printf("%s: %s%n", m_host, e.getClass().getName());
+                System.out.println(String.format("%s: %s", m_host, e.getClass().getName()));
                 break;
             }
         }
