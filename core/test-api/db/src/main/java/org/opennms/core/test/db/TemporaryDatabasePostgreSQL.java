@@ -255,9 +255,13 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         }
 
         String dbName = TEMPLATE_DATABASE_NAME_PREFIX + generateLiquibaseHash();
+        m_migrator.setDatabaseName(dbName);
 
         if (!m_migrator.databaseExists()) {
+            LOG.debug("Template database did not already exist.");
             createIntegrationTestTemplateDatabase(dbName);
+        } else {
+            LOG.debug("Template database already exists.");
         }
 
         s_templateDatabaseName = m_migrator.getDatabaseName();
@@ -330,9 +334,11 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
                 throw new TemporaryDatabaseException("Failed to get integration test template database name: " + e.getMessage(), e);
             }
             create = "CREATE DATABASE " + getTestDatabase() + " WITH TEMPLATE " + dbSource + " OWNER opennms";
+            LOG.debug("Populating schema from template database.");
         } else {
             dbSource = "template1";
             create = "CREATE DATABASE " + getTestDatabase() + " WITH ENCODING='UNICODE'";
+            LOG.debug("Populating schema.");
         }
 
         Statement st = null;
@@ -717,9 +723,12 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             throws ClassNotFoundException, MigrationException, Throwable, SQLException {
         m_migrator.setDatabaseName(dbName);
 
+        /*
+        // if it's hashed based on liquibase, shouldn't we not need to drop it?
         if (m_migrator.databaseExists()) {
             m_migrator.dropDatabase();
         }
+        */
 
         try {
             // We temporarily use a new data source for the template database with the Migrator
