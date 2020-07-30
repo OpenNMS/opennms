@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,6 +39,7 @@ import static org.opennms.topologies.service.api.EdgeMockUtil.SOURCE_ID;
 import static org.opennms.topologies.service.api.EdgeMockUtil.TARGET_NODE_ID;
 import static org.opennms.topologies.service.api.EdgeMockUtil.addPort;
 import static org.opennms.topologies.service.api.EdgeMockUtil.createEdge;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -50,7 +51,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.hibernate.ObjectNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.integration.api.v1.model.Alarm;
 import org.opennms.integration.api.v1.model.DatabaseEvent;
@@ -88,7 +88,7 @@ public class ModelMappersTest {
 
     @Before
     public void setup() {
-        when(nodeCriteriaCache.getNodeCriteria(Matchers.any(Long.class))).thenReturn(Optional.empty());
+        when(nodeCriteriaCache.getNodeCriteria(any(Long.class))).thenReturn(Optional.empty());
     }
 
     @Test
