@@ -5,7 +5,6 @@ MINIMAL=0
 if [ "$1" = "true" ]; then
   MINIMAL=1
 fi
-MINIMAL=0
 
 find_tests()
 {
