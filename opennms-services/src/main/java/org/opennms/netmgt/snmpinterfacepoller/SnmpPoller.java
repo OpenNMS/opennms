@@ -32,6 +32,7 @@ package org.opennms.netmgt.snmpinterfacepoller;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.config.SnmpInterfacePollerConfig;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -48,6 +49,8 @@ import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableNetwork;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * SnmpPoller daemon class
@@ -246,8 +249,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
     /**
      * <p>schedulePollableInterface</p>
      *
-     * @param nodeid a int.
-     * @param ipaddress a {@link java.lang.String} object.
+     * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
     protected void schedulePollableInterface(OnmsIpInterface iface) {
         String ipaddress = iface.getIpAddress().getHostAddress();
@@ -293,8 +295,19 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 int maxVarsPerPdu = -1;
                 if (hasMaxVarsPerPdu) maxVarsPerPdu = getPollerConfig().getMaxVarsPerPdu(pkgName, pkgInterfaceName);
 
-                PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(pkgInterfaceName, criteria, 
-                   port != -1, port, timeout != -1, timeout, retries != -1, retries, hasMaxVarsPerPdu, maxVarsPerPdu);
+                int[] upValues = null;
+                int[] downValues = null;
+                Map map = new HashMap<String, String>(2);
+                final String upValuesStr = getPollerConfig().getUpValues(pkgName, pkgInterfaceName).orElse("1");
+                final String downValuesStr = getPollerConfig().getDownValues(pkgName, pkgInterfaceName).orElse("2");
+                map.put("upValues", upValuesStr);
+                map.put("downValues", downValuesStr);
+                upValues = ParameterMap.getKeyedIntegerArray(map, "upValues", new int[]{1});
+                downValues = ParameterMap.getKeyedIntegerArray(map, "downValues", new int[]{2});
+
+                PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(pkgInterfaceName, criteria,
+                   port != -1, port, timeout != -1, timeout, retries != -1, retries,
+                        hasMaxVarsPerPdu, maxVarsPerPdu, upValues, downValues);
 
                 node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), criteria));
 
@@ -306,7 +319,8 @@ public class SnmpPoller extends AbstractServiceDaemon {
         if (!getPollerConfig().useCriteriaFilters()) {
             LOG.debug("excluding criteria used for default polling: {}", excludingCriteria);
             PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface("null", excludingCriteria, 
-                false, -1, false, -1, false, -1, false, -1);
+                false, -1, false, -1, false, -1, false, -1,
+                    new int[]{1}, new int[]{2});
 
             node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), excludingCriteria));
 
@@ -327,7 +341,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
             throw e;
         }
     }
-    
+
     /**
      * <p>reloadSnmpConfig</p>
      *

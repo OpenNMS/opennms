@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.snmpinterfacepoller.pollable;
 
+import org.opennms.netmgt.xml.event.Snmp;
+
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Represents possible values of ifAdminStatus and ifOperStatus of IF-MIB defined from RFC 2863
  *
@@ -84,5 +89,13 @@ public enum SnmpInterfaceStatus {
 
     public static String labelFromMibValue(int mibValue) {
         return statusFromMibValue(mibValue).getLabel();
+    }
+
+    public static Set<SnmpInterfaceStatus> getStatuses(int[] statuses) {
+        Set<SnmpInterfaceStatus> ret = new HashSet<SnmpInterfaceStatus>(statuses.length);
+        for (int s : statuses) {
+            ret.add(statusFromMibValue(s));
+        }
+        return ret;
     }
 }

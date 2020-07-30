@@ -93,8 +93,8 @@ public class SnmpInterfacePollerIT {
         // Check if Poll Status is UP
         assertEquals(1, interfacesResult.get(0).getStatus().getStatusCode());
         // Check if Admin/Operational Status are retrieved properly
-        assertEquals(1, interfacesResult.get(0).getAdminstatus());
-        assertEquals(2, interfacesResult.get(0).getOperstatus());
+        assertEquals(SnmpInterfaceStatus.UP, interfacesResult.get(0).getAdminstatus());
+        assertEquals(SnmpInterfaceStatus.DOWN, interfacesResult.get(0).getOperstatus());
     }
 
 }
