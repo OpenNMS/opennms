@@ -100,6 +100,7 @@ public class CollectionSetMapperTest {
         // Mock NodeDao.
         NodeDao nodeDao = mock(NodeDao.class);
         when(nodeDao.getNodeByCriteria(anyString())).thenReturn(node);
+        when(nodeDao.getNodeByCriteria(null)).thenReturn(node);
         // Mock the ResourceType and other storage strategies.
         ResourceType rt = mock(ResourceType.class, RETURNS_DEEP_STUBS);
         when(rt.getName()).thenReturn(RESOURCE_NAME);
