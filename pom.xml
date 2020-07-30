@@ -831,9 +831,36 @@
           </dynamicDependencies>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M3</version>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-enforcer-plugin</artifactId>
+       <executions>
+         <execution>
+           <id>enforce-maven</id>
+           <goals>
+             <goal>enforce</goal>
+           </goals>
+           <configuration>
+             <rules>
+               <requireMavenVersion>
+                 <version>[3.5,)</version>
+               </requireMavenVersion>
+               <requireJavaVersion>
+                 <version>[1.8.0,9)</version>
+               </requireJavaVersion>
+             </rules>
+           </configuration>
+         </execution>
+       </executions>
+     </plugin>
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-clean-plugin</artifactId>
@@ -921,17 +948,6 @@
           <execution>
             <phase>validate</phase>
             <configuration>
-              <target>
-                <condition property="java.versionokay">
-                  <or>
-                    <!-- Don't forget to update the <fail> message below -->
-                    <contains string="${java.version}" substring="1.8."/>
-                    <contains string="${java.vm.version}" substring="1.8."/>
-                  </or>
-                </condition>
-                <fail unless="java.versionokay">You must use Java 1.8 to build!</fail>
-                <echo message="update policy is ${updatePolicy}"/>
-              </target>
               <target>
                 <property name="opennms.build.basedir" location="." />
                 <echo message="base directory is ${opennms.build.basedir}" />
