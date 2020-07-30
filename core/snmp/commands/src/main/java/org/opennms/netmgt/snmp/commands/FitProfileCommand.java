@@ -110,7 +110,7 @@ public class FitProfileCommand implements Action {
                         System.out.println("*** Saved above config in definitions ***");
                     }
                     if (sendNewSuspect) {
-                        EventBuilder eventBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "Shell_snmp-fit")
+                        EventBuilder eventBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "KarafShell_snmp-fit")
                                 .setInterface(inetAddress);
                         if (! Strings.isNullOrEmpty(foreignSource)) {
                             eventBuilder.addParam(EventConstants.PARM_FOREIGN_SOURCE, foreignSource);
