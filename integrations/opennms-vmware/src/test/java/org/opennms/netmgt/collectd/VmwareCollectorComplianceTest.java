@@ -31,7 +31,7 @@ package org.opennms.netmgt.collectd;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyInt;
 
 import java.util.Map;
 import java.util.Optional;
