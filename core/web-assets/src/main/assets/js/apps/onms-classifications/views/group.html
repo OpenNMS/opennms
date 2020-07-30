@@ -1,3 +1,13 @@
+<style type="text/css">
+    .wrapped {
+        white-space: pre;
+    }
+    .text-ellipsis {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap !important;
+    }
+</style>
 <div class="card-body">
     <div class="btn-toolbar pull-right mb-2" role="toolbar">
         <div class="input-group" role="group" ng-show="group.ruleCount > 0">
@@ -108,12 +118,12 @@
                 <td class="col-md-1 text-nowrap">
                     <span ng-repeat="protocol in rule.protocols" class="badge badge-secondary mr-2">{{protocol}}</span>
                 </td>
-                <td class="col-md-2 text-nowrap">{{rule['srcAddress']}}</td>
-                <td class="col-md-1 text-nowrap">{{rule['srcPort']}}</td>
-                <td class="col-md-2 text-nowrap">{{rule['dstAddress']}}</td>
-                <td class="col-md-1 text-nowrap">{{rule['dstPort']}}</td>
-                <td ng-class="{'col-md-1': group.readOnly === false, 'col-md-2': group.readOnly === true}" class="text-nowrap">
-                    {{rule['exporterFilter']}}
+                <td class="col-md-2 wrapped">{{splitRule(rule['srcAddress'])}}</td>
+                <td class="col-md-1 wrapped">{{splitRule(rule['srcPort'])}}</td>
+                <td class="col-md-2 wrapped">{{splitRule(rule['dstAddress'])}}</td>
+                <td class="col-md-1 wrapped">{{splitRule(rule['dstPort'])}}</td>
+                <td ng-class="{'col-md-1': group.readOnly === false, 'col-md-2': group.readOnly === true}" class="text-ellipsis">
+                    <span title="{{rule['exporterFilter']}}">{{rule['exporterFilter']}}</span>
                 </td>
                 <td class="col-md-1 text-nowrap"><span class="fa fa-exchange" ng-if="rule['omnidirectional'] === true" aria-hidden="true"></span></td>
                 <td class="col-md-1" ng-if="group.readOnly === false">
