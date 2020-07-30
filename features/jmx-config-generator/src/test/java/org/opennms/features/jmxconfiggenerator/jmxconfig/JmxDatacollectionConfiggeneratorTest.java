@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,8 +30,10 @@ package org.opennms.features.jmxconfiggenerator.jmxconfig;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,15 +46,19 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
 import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
 import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
+
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,13 +78,19 @@ public class JmxDatacollectionConfiggeneratorTest {
     private ObjectName testObjectName;
     private Map<String, String> dictionary = new HashMap<String, String>();
 
+    @Rule
+    public TestName m_testName = new TestName();
+
     @Before
     public void setUp() throws Exception {
+        System.out.println("------------------- begin " + m_testName.getMethodName() + " ---------------------");
         jmxConfiggenerator = new JmxDatacollectionConfiggenerator(new Slf4jLogAdapter(JmxDatacollectionConfiggenerator.class));
         platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
         testObjectName = new ObjectName("org.opennms.tools.jmxconfiggenerator.jmxconfig:type=JmxTest");
         testMBean = new JmxTestDummy();
         platformMBeanServer.registerMBean(testMBean, testObjectName);
+        // Force a Full GC so LastGCInfo composite attribute exists.
+        System.gc();
     }
 
     @After
@@ -86,6 +98,7 @@ public class JmxDatacollectionConfiggeneratorTest {
         jmxConfiggenerator = null;
         platformMBeanServer.unregisterMBean(testObjectName);
         platformMBeanServer = null;
+        System.out.println("------------------- end " + m_testName.getMethodName() + " -----------------------");
     }
 
     @Test
@@ -125,32 +138,38 @@ public class JmxDatacollectionConfiggeneratorTest {
     @Test
     public void testGenerateJmxConfigModelUsingMbeanFilter() throws MBeanServerQueryException, IOException, JMException {
         List<String> mbeanIds = new ArrayList<>();
-        mbeanIds.add("java.lang:type=GarbageCollector,name=PS MarkSweep");
-        mbeanIds.add("java.lang:type=GarbageCollector,name=PS Scavenge");
+        List<GarbageCollectorMXBean> gcMxBeans = ManagementFactory.getGarbageCollectorMXBeans();
+        for (GarbageCollectorMXBean gcMxBean : gcMxBeans) {
+            mbeanIds.add(gcMxBean.getObjectName().toString());
+        }
+
         JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(mbeanIds, platformMBeanServer, "testService", true, true, dictionary);
         Assert.assertNotNull(jmxConfigModel);
         LOG.info(prettyPrint(jmxConfigModel));
 
-        Assert.assertEquals(2, jmxConfigModel.getJmxCollectionList().get(0).getMbeans().size());
+        Assert.assertEquals(mbeanIds.size(), jmxConfigModel.getJmxCollectionList().get(0).getMbeans().size());
         for (Mbean eachMbean : jmxConfigModel.getJmxCollectionList().get(0).getMbeans()) {
-            Assert.assertEquals(2, eachMbean.getAttribList().size());
-            Assert.assertEquals(0, eachMbean.getCompAttribList().size());
+            Assert.assertEquals(eachMbean.getObjectname()+" Attribute Count", 2, eachMbean.getAttribList().size());
+            Assert.assertEquals(eachMbean.getObjectname()+" Composite Attribute Count", 1, eachMbean.getCompAttribList().size());
         }
     }
 
     @Test
     public void testGenerateJmxConfigModelUsingIdFilter() throws MBeanServerQueryException, IOException, JMException {
         List<String> mbeanIds = new ArrayList<>();
-        mbeanIds.add("java.lang:type=GarbageCollector,name=PS MarkSweep:CollectionCount");
-        mbeanIds.add("java.lang:type=GarbageCollector,name=PS Scavenge:CollectionTime");
+        List<GarbageCollectorMXBean> gcMxBeans = ManagementFactory.getGarbageCollectorMXBeans();
+        for (GarbageCollectorMXBean gcMxBean : gcMxBeans) {
+            mbeanIds.add(gcMxBean.getObjectName().toString());
+        }
+
         JmxDatacollectionConfig jmxConfigModel = jmxConfiggenerator.generateJmxConfigModel(mbeanIds, platformMBeanServer, "testService", true, true, dictionary);
         Assert.assertNotNull(jmxConfigModel);
         LOG.info(prettyPrint(jmxConfigModel));
 
-        Assert.assertEquals(2, jmxConfigModel.getJmxCollectionList().get(0).getMbeans().size());
+        Assert.assertEquals(mbeanIds.size(), jmxConfigModel.getJmxCollectionList().get(0).getMbeans().size());
         for (Mbean eachMbean : jmxConfigModel.getJmxCollectionList().get(0).getMbeans()) {
-            Assert.assertEquals(1, eachMbean.getAttribList().size());
-            Assert.assertEquals(0, eachMbean.getCompAttribList().size());
+            Assert.assertEquals(eachMbean.getObjectname()+" Attribute Count", 2, eachMbean.getAttribList().size());
+            Assert.assertEquals(eachMbean.getObjectname()+" Composite Attribute Count", 1, eachMbean.getCompAttribList().size());
         }
     }
 
