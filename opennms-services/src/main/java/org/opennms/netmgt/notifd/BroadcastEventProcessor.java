@@ -782,7 +782,8 @@ public final class BroadcastEventProcessor implements EventListener {
                             .put("noticeid", String.valueOf(noticeId))
                             .build())
                     )
-        ));
+            )
+        );
 
         m_eventUtil.expandMapValues(paramMap, event);
 
