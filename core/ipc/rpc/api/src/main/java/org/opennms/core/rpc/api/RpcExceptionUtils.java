@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,7 +39,7 @@ public class RpcExceptionUtils {
 
         // Attempt to handle the exception directly
         Optional<T> val = handleExceptionInternal(t, visitor);
-        if (val != null) {
+        if (val != null) { // NOSONAR
             return val.orElse(null);
         }
 
@@ -47,7 +47,7 @@ public class RpcExceptionUtils {
         final Throwable cause = t.getCause();
         if (cause != null) {
             val = handleExceptionInternal(cause, visitor);
-            if (val != null) {
+            if (val != null) { // NOSONAR
                 return val.orElse(null);
             }
         }
@@ -66,7 +66,7 @@ public class RpcExceptionUtils {
         } else if (t instanceof RequestTimedOutException) {
             return Optional.ofNullable(visitor.onTimedOut(t));
         } else {
-            return null;
+            return null; // NOSONAR
         }
     }
 }

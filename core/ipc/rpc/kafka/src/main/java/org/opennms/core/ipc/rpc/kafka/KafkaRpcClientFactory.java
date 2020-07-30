@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -343,7 +343,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             LOG.warn("RPC request with id {} timedout ", responseCb.getRpcId());
                             responseHandlerExecutor.execute(() -> responseCb.sendResponse(null));
                         }
-                    } catch (InterruptedException e) {
+                    } catch (final InterruptedException e) { // NOSONAR
                         LOG.info("interrupted while waiting for an element from delayQueue", e);
                         break;
                     } catch (Exception e) {
@@ -552,7 +552,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
             while (!topicAdded.get()) {
                 try {
                     firstTopicAdded.await(1, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException e) { // NOSONAR
                     LOG.info("Interrupted before first topic was added. Terminating Kafka RPC consumer thread.", e);
                     return;
                 } catch (Throwable e) {

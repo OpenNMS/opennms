@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -174,7 +174,7 @@ private static final long serialVersionUID = 0L;
 
   private int bitField0_;
   public static final int RPC_ID_FIELD_NUMBER = 1;
-  private volatile Object rpcId_;
+  private volatile Object rpcId_; // NOSONAR
   /**
    * <code>string rpc_id = 1;</code>
    */
@@ -217,7 +217,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int SYSTEM_ID_FIELD_NUMBER = 3;
-  private volatile Object systemId_;
+  private volatile Object systemId_; // NOSONAR
   /**
    * <code>string system_id = 3;</code>
    */
@@ -354,7 +354,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int MODULE_ID_FIELD_NUMBER = 8;
-  private volatile Object moduleId_;
+  private volatile Object moduleId_; // NOSONAR
   /**
    * <code>string module_id = 8;</code>
    */

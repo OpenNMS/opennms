@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -113,8 +113,8 @@ public class MapBasedSQSConfig implements AmazonSQSConfig {
         return "MapBasedSQSConfig{" +
                 "queuePrefix='" + queuePrefix + '\'' +
                 ", region='" + region + '\'' +
-                ", accessKey='" + accessKey != null ? "********" : accessKey + '\'' +
-                ", secretKey='" + secretKey != null ? "********" : secretKey + '\'' +
+                ", accessKey='" + (accessKey != null ? "********" : accessKey) + '\'' +
+                ", secretKey='" + (secretKey != null ? "********" : secretKey) + '\'' +
                 ", useHttp=" + useHttp +
                 ", sinkQueueConfig=" + sinkQueueConfig +
                 ", rpcQueueConfig=" + rpcQueueConfig +

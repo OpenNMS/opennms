@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -89,7 +89,7 @@ public class KarDependencyHandler implements Runnable {
                 Thread.sleep(KAR_LIST_SLEEP_MS);
             } catch (InterruptedException e) {
                 LOG.info("Interrupted. Stopping thread.");
-                return;
+                return; // NOSONAR
             }
         }
         LOG.info("All .kar dependencies are ready now.");
@@ -149,7 +149,7 @@ public class KarDependencyHandler implements Runnable {
                 }
             } catch (InterruptedException e) {
                 LOG.info("Interrupted while waiting for {}. Assuming no feature repositories are used.", featureConfigFile);
-                return Collections.emptyList();
+                return Collections.emptyList(); // NOSONAR
             }
         }
 

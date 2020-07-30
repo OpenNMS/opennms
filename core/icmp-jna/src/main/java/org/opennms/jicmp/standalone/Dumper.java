@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,29 +45,33 @@ import com.sun.jna.Platform;
 public class Dumper {
     
     public void dump() throws Exception {
-        NativeDatagramSocket m_pingSocket =  NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, 1234);
-        
-        if (Platform.isWindows()) {
-            ICMPv6EchoPacket packet = new ICMPv6EchoPacket(64);
-            packet.setCode(0);
-            packet.setType(Type.EchoRequest);
-            packet.getContentBuffer().putLong(System.nanoTime());
-            packet.getContentBuffer().putLong(System.nanoTime());
-            m_pingSocket.send(packet.toDatagramPacket(InetAddress.getByName("::1")));
-        }
-
+        NativeDatagramSocket pingSocket = null;
         try {
-            NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
-            while (true) {
-                m_pingSocket.receive(datagram);
-                System.err.println(datagram);
+            pingSocket = NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, NativeDatagramSocket.IPPROTO_ICMPV6, 1234);
+            if (Platform.isWindows()) {
+                final ICMPv6EchoPacket packet = new ICMPv6EchoPacket(64);
+                packet.setCode(0);
+                packet.setType(Type.EchoRequest);
+                packet.getContentBuffer().putLong(System.nanoTime());
+                packet.getContentBuffer().putLong(System.nanoTime());
+                pingSocket.send(packet.toDatagramPacket(InetAddress.getByName("::1")));
             }
-    
-    
-        } catch(Throwable e) {
-            e.printStackTrace();
+
+            try {
+                NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
+                while (true) { // NOSONAR
+                    pingSocket.receive(datagram);
+                    System.err.println(datagram);
+                }
+            } catch(final Throwable e) {
+                e.printStackTrace();
+            }
+        } finally {
+            if (pingSocket != null) {
+                pingSocket.close();
+            }
+            System.err.println("Failed to open ICMPv6 socket on port 1234.");
         }
- 
     }
     
     public static void main(String[] args) throws Exception {

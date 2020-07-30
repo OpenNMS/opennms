@@ -122,7 +122,7 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
     }
 
     @Override
-    public <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer)
+    public synchronized <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer)
             throws Exception {
         // Register consumer in a separate thread.
         sinkRegisterConsumerExecutor.execute(()-> loadManagerAndRegisterConsumer(consumer));
@@ -142,7 +142,7 @@ public class OsgiIpcManager extends AbstractMessageConsumerManager implements Rp
 
 
     @Override
-    public <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
+    public synchronized <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception {
         if (consumerManagerDelegate != null) {
             consumerManagerDelegate.unregisterConsumer(consumer);
         }

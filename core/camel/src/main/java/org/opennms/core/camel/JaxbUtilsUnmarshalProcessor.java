@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -87,5 +87,11 @@ public class JaxbUtilsUnmarshalProcessor implements Processor {
 		// Somehow, using String is marginally faster than using InputStream ¯\_(ツ)_/¯
 		final String object = exchange.getIn().getBody(String.class);
 		exchange.getIn().setBody(m_class.cast(unmarshaller.unmarshal(new StringReader(object))));
+	}
+
+
+	protected void finalize() throws Throwable {
+		m_unmarshaller.remove();
+		super.finalize();
 	}
 }

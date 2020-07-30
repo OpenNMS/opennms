@@ -169,7 +169,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int MESSAGE_ID_FIELD_NUMBER = 1;
-  private volatile Object messageId_;
+  private volatile Object messageId_; // NOSONAR
   /**
    * <code>string message_id = 1;</code>
    * @return The messageId.
@@ -215,7 +215,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int SYSTEM_ID_FIELD_NUMBER = 3;
-  private volatile Object systemId_;
+  private volatile Object systemId_; // NOSONAR
   /**
    * <code>string system_id = 3;</code>
    * @return The systemId.
@@ -251,7 +251,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int LOCATION_FIELD_NUMBER = 4;
-  private volatile Object location_;
+  private volatile Object location_; // NOSONAR
   /**
    * <code>string location = 4;</code>
    * @return The location.
@@ -287,7 +287,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int MODULE_ID_FIELD_NUMBER = 5;
-  private volatile Object moduleId_;
+  private volatile Object moduleId_; // NOSONAR
   /**
    * <code>string module_id = 5;</code>
    * @return The moduleId.

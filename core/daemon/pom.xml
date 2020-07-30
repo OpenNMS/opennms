@@ -24,7 +24,7 @@
           <artifactId>tools-jar</artifactId>
           <version>1</version>
           <scope>system</scope>
-          <systemPath>${java.home}/../lib/tools.jar</systemPath>
+          <systemPath>${java.home}/../lib/tools.jar</systemPath> <!-- NOSONAR -->
         </dependency>
       </dependencies>
     </profile>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -82,7 +82,7 @@ public class OpenNMSJaasAuthenticationBroker extends AbstractAuthenticationBroke
             if (context.getSecurityContext() == null) {
                 // We don't trust the remote address, authenticate using JAAS
                 synchronized(this) {
-                    // The JAAS context may not be currently available, so staal
+                    // The JAAS context may not be currently available, so stall
                     // until it does become available
                     if (!isJaasContextAvailable) {
                         isJaasContextAvailable = waitForJaasContext();
@@ -154,8 +154,8 @@ public class OpenNMSJaasAuthenticationBroker extends AbstractAuthenticationBroke
 
             try {
                 Thread.sleep(sleepMs);
-            } catch (InterruptedException e) {
-                break;
+            } catch (final InterruptedException e) {
+                break; // NOSONAR
             }
         }
         return false;

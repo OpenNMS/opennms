@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -94,9 +94,9 @@ public class HealthCheckCommand implements Action {
         // Determine attributes (e.g. max length) for visualization
         final Collection<ServiceReference<HealthCheck>> serviceReferences = bundleContext.getServiceReferences(HealthCheck.class, null);
         final List<HealthCheck> healthChecks = serviceReferences.stream().map(s -> bundleContext.getService(s)).collect(Collectors.toList());
-        final int maxColorLength = Arrays.stream(Color.values()).map(c -> c.toAnsi()).max(Comparator.comparingInt(String::length)).get().length();
+        final int maxColorLength = Arrays.stream(Color.values()).map(c -> c.toAnsi()).max(Comparator.comparingInt(String::length)).orElse("").length();
         final int maxDescriptionLength = healthChecks.stream().map(check -> check.getDescription()).max(Comparator.comparingInt(String::length)).orElse("").length();
-        final int maxStatusLength = Arrays.stream(Status.values()).map(v -> v.name()).max(Comparator.comparingInt(String::length)).get().length() + maxColorLength + "\033[m".length() * 2 + Color.NoColor.toAnsi().length();
+        final int maxStatusLength = Arrays.stream(Status.values()).map(v -> v.name()).max(Comparator.comparingInt(String::length)).orElse("").length() + maxColorLength + "\033[m".length() * 2 + Color.NoColor.toAnsi().length();
         final String descFormat = String.format(DESCRIPTION_FORMAT, maxDescriptionLength);
         final String statusFormat = String.format(STATUS_FORMAT, maxStatusLength);
 

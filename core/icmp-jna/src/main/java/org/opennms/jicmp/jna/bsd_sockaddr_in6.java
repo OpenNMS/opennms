@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,13 +44,13 @@ public class bsd_sockaddr_in6 extends Structure {
     public byte[]     sin6_addr     = new byte[16];  /* IP6 address */
     public byte[]     sin6_scope_id = new byte[4];   /* scope zone index */
     
-    public bsd_sockaddr_in6(int family, byte[] addr, byte[] port) {
+    public bsd_sockaddr_in6(final int family, final byte[] addr, final byte[] port) {
         sin6_family = (byte)(0xff & family);
         assertLen("port", port, 2);
-        sin6_port = port == null? null : port.clone();
+        sin6_port = port.clone();
         sin6_flowinfo = new byte[4];
         assertLen("address", addr, 16);
-        sin6_addr = addr == null? null : addr.clone();
+        sin6_addr = addr.clone();
         sin6_scope_id = new byte[4];
         sin6_len = (byte)(0xff & size());
     }

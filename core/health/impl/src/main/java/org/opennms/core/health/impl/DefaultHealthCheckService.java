@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -133,16 +133,20 @@ public class DefaultHealthCheckService implements HealthCheckService {
                 if (onFinishConsumer != null) {
                     onFinishConsumer.accept(response);
                 }
-            } catch (TimeoutException timeoutException) {
+            } catch (final TimeoutException timeoutException) {
                 if (currentFuture != null) {
                     currentFuture.cancel(true);
                 }
-                onFinishConsumer.accept(new Response(Status.Timeout, "Health Check did not finish within " + context.getTimeout() + " ms"));
-            } catch (Exception ex) {
+                if (onFinishConsumer != null) {
+                    onFinishConsumer.accept(new Response(Status.Timeout, "Health Check did not finish within " + context.getTimeout() + " ms"));
+                }
+            } catch (final Exception ex) {
                 if (currentFuture != null) {
                     currentFuture.cancel(true);
                 }
-                onFinishConsumer.accept(new Response(ex));
+                if (onFinishConsumer != null) {
+                    onFinishConsumer.accept(new Response(ex));                    
+                }
             }
         }
     }

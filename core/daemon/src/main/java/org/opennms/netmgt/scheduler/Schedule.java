@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2004-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,8 @@
 package org.opennms.netmgt.scheduler;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +53,8 @@ public class Schedule {
     private final ReadyRunnable m_schedulable;
     private final ScheduleInterval m_interval;
     private final ScheduleTimer m_timer;
-    private volatile int m_currentExpirationCode;
-    private volatile boolean m_scheduled = false;
+    private AtomicInteger m_currentExpirationCode = new AtomicInteger(0);
+    private AtomicBoolean m_scheduled = new AtomicBoolean(false);
 	
     
     class ScheduleEntry implements ReadyRunnable {
@@ -66,7 +68,7 @@ public class Schedule {
          * @return
          */
         private boolean isExpired() {
-            return m_expirationCode < m_currentExpirationCode;
+            return m_expirationCode < m_currentExpirationCode.get();
         }
         
         @Override
@@ -99,7 +101,7 @@ public class Schedule {
             }
             
             long interval = m_interval.getInterval();
-            if (interval >= 0 && m_scheduled)
+            if (interval >= 0 && m_scheduled.get())
                 m_timer.schedule(interval, this);
 
         }
@@ -119,20 +121,20 @@ public class Schedule {
         m_schedulable = schedulable;
         m_interval = interval;
         m_timer = timer;
-        m_currentExpirationCode = 0;
+        m_currentExpirationCode.set(0);
     }
 
     /**
      * <p>schedule</p>
      */
     public void schedule() {
-        m_scheduled = true;
+        m_scheduled.set(true);
         schedule(0);
     }
 
     private void schedule(long interval) {
-        if (interval >= 0 && m_scheduled)
-            m_timer.schedule(interval, new ScheduleEntry(++m_currentExpirationCode));
+        if (interval >= 0 && m_scheduled.get())
+            m_timer.schedule(interval, new ScheduleEntry(m_currentExpirationCode.incrementAndGet()));
     }
 
     /**
@@ -153,8 +155,8 @@ public class Schedule {
      * <p>unschedule</p>
      */
     public void unschedule() {
-        m_scheduled = false;
-        m_currentExpirationCode++;
+        m_scheduled.set(false);
+        m_currentExpirationCode.incrementAndGet();
     }
 
 }

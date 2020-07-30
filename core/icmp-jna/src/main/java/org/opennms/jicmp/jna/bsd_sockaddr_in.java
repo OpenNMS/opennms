@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,12 +48,12 @@ public class bsd_sockaddr_in extends Structure {
     public byte[]  sin_addr;
     public byte[]  sin_zero = new byte[8];
 
-    public bsd_sockaddr_in(int family, byte[] addr, byte[] port) {
+    public bsd_sockaddr_in(final int family, final byte[] addr, final byte[] port) {
         sin_family = (byte)(0xff & family);
         assertLen("port", port, 2);
-        sin_port = port == null? null : port.clone();
+        sin_port = port.clone();
         assertLen("address", addr, 4);
-        sin_addr = addr == null? null : addr.clone();
+        sin_addr = addr.clone();
         sin_len = (byte)(0xff & size());
     }
     
