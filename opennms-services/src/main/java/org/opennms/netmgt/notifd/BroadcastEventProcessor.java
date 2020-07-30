@@ -47,6 +47,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import org.opennms.core.rpc.utils.mate.FallbackScope;
+import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.rpc.utils.mate.MapScope;
 import org.opennms.core.utils.RowProcessor;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.config.DestinationPathManager;
@@ -83,6 +87,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
@@ -114,6 +119,9 @@ public final class BroadcastEventProcessor implements EventListener {
     
     @Autowired
     private ReadablePollOutagesDao m_pollOutagesDao;
+
+    @Autowired
+    private EntityScopeProvider m_entityScopeProvider;
 
     /**
      * <p>Constructor for BroadcastEventProcessor.</p>
@@ -760,6 +768,22 @@ public final class BroadcastEventProcessor implements EventListener {
         paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
         paramMap.put("eventID", String.valueOf(event.getDbid()));
         paramMap.put("eventUEI", event.getUei());
+
+        final Integer nodeId = event.getNodeid() != null ? event.getNodeid().intValue() : null;
+
+        paramMap = new HashMap(Interpolator.interpolateStrings(paramMap, new FallbackScope(
+            m_entityScopeProvider.getScopeForNode(nodeId),
+            m_entityScopeProvider.getScopeForInterface(nodeId, event.getInterface()),
+            m_entityScopeProvider.getScopeForService(nodeId, event.getInterfaceAddress(), event.getService()),
+            MapScope.singleContext("notification",
+                    new ImmutableMap.Builder<String,String>()
+                            .put("eventID", String.valueOf(event.getDbid()))
+                            .put("eventUEI", event.getUei())
+                            .put("noticeid", String.valueOf(noticeId))
+                            .build())
+                    )
+            )
+        );
 
         m_eventUtil.expandMapValues(paramMap, event);
 
