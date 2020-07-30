@@ -69,8 +69,7 @@ public abstract class DroolsExampleIT {
         FileUtils.copyDirectory(DroolsAlarmContext.getDefaultRulesFolder(), rulesFolder);
 
         // Copy the rules from the example folder alongside the rules in our temporary folder
-        FileUtils.copyFile(Paths.get(ConfigFileConstants.getHome(), "etc", "examples",
-                "alarmd", "drools-rules.d", getRulesFile()).toFile(),
+        FileUtils.copyFile(Paths.get("/home/jesse/git/opennms/opennms-base-assembly/src/main/filtered/etc/examples/alarmd/drools-rules.d/minecraft.drl").toFile(),
                 new File(rulesFolder, getRulesFile()));
 
         // Wire up the engine with mocks
