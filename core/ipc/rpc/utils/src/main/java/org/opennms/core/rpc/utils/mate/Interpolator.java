@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 public class Interpolator {
@@ -60,6 +61,10 @@ public class Interpolator {
     }
 
     public static String interpolate(final String raw, final Scope scope) {
+        if (Strings.isNullOrEmpty(raw)) {
+            return raw;
+        }
+
         final StringBuffer stringBuffer = new StringBuffer();
         final Matcher outerMatcher = OUTER_PATTERN.matcher(raw);
         while (outerMatcher.find()) {
