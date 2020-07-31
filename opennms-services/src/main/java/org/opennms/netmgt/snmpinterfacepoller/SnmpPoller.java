@@ -295,15 +295,10 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 int maxVarsPerPdu = -1;
                 if (hasMaxVarsPerPdu) maxVarsPerPdu = getPollerConfig().getMaxVarsPerPdu(pkgName, pkgInterfaceName);
 
-                int[] upValues = null;
-                int[] downValues = null;
-                Map map = new HashMap<String, String>(2);
-                final String upValuesStr = getPollerConfig().getUpValues(pkgName, pkgInterfaceName).orElse("1");
-                final String downValuesStr = getPollerConfig().getDownValues(pkgName, pkgInterfaceName).orElse("2");
-                map.put("upValues", upValuesStr);
-                map.put("downValues", downValuesStr);
-                upValues = ParameterMap.getKeyedIntegerArray(map, "upValues", new int[]{1});
-                downValues = ParameterMap.getKeyedIntegerArray(map, "downValues", new int[]{2});
+                int[] upValues = statusValuesFromString(getPollerConfig().getUpValues(pkgName, pkgInterfaceName)
+                        .orElse(getPollerConfig().getUpValues()), new int[]{1});
+                int[] downValues = statusValuesFromString(getPollerConfig().getDownValues(pkgName, pkgInterfaceName)
+                        .orElse(getPollerConfig().getDownValues()), new int[]{2});
 
                 PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(pkgInterfaceName, criteria,
                    port != -1, port, timeout != -1, timeout, retries != -1, retries,
@@ -320,12 +315,19 @@ public class SnmpPoller extends AbstractServiceDaemon {
             LOG.debug("excluding criteria used for default polling: {}", excludingCriteria);
             PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface("null", excludingCriteria, 
                 false, -1, false, -1, false, -1, false, -1,
-                    new int[]{1}, new int[]{2});
+                    statusValuesFromString(getPollerConfig().getUpValues(), new int[]{1}),
+                    statusValuesFromString(getPollerConfig().getDownValues(), new int[]{2}));
 
             node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), excludingCriteria));
 
             getNetwork().schedule(node,getPollerConfig().getInterval(),getScheduler());
         }
+    }
+
+    private int[] statusValuesFromString(String str, int[] defValues) {
+        Map map = new HashMap<String, String>(1);
+        map.put("values", str);
+        return ParameterMap.getKeyedIntegerArray(map, "values", defValues);
     }
     
     private void createScheduler() {

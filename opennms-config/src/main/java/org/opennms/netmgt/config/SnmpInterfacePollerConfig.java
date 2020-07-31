@@ -59,6 +59,17 @@ public interface SnmpInterfacePollerConfig {
      */
     boolean useCriteriaFilters();
     /**
+     * <p>getUpValues</p>
+     * @return a String
+     */
+    String getUpValues();
+
+    /**
+     * <p>getDownValues</p>
+     * @return a String
+     */
+    String getDownValues();
+    /**
      * <p>getService</p>
      *
      * @return a {@link java.lang.String} object.

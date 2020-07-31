@@ -523,13 +523,13 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
     /** {@inheritDoc} */
     @Override
     public Optional<String> getUpValues(String pkgName, String pkgInterfaceName) {
-        return Optional.empty();
+        return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getUpValues();
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<String> getDownValues(String pkgName, String pkgInterfaceName) {
-        return Optional.empty();
+        return m_pkgIntMap.get(pkgName).get(pkgInterfaceName).getDownValues();
     }
 
     /**
@@ -601,4 +601,21 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         return getConfiguration().getUseCriteriaFilters();
     }
 
+    /**
+     * <p>getUpValues</p>
+     * @return a String
+     */
+    @Override
+    public String getUpValues() {
+        return getConfiguration().getUpValues();
+    }
+
+    /**
+     * <p>getDownValues</p>
+     * @return a String
+     */
+    @Override
+    public String getDownValues() {
+        return getConfiguration().getDownValues();
+    }
 }

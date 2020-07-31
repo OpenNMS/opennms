@@ -92,6 +92,20 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
     private Boolean m_useCriteriaFilters;
 
     /**
+     * Values of ifAdminStatus and ifOperStatus to treat as up values.
+     * Expects a comma separated list of values i.e. '1,3'.
+     */
+    @XmlAttribute(name = "up-values")
+    private String m_upValues;
+
+    /**
+     * Values of ifAdminStatus and ifOperStatus to treat as down values.
+     * Expects a comma separated list of values i.e. '2,3,5,7'.
+     */
+    @XmlAttribute(name = "down-values")
+    private String m_downValues;
+
+    /**
      * Configuration of node-outage functionality
      */
     @XmlElement(name = "node-outage", required = true)
@@ -142,6 +156,22 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
 
     public void setUseCriteriaFilters(final Boolean useCriteriaFilters) {
         m_useCriteriaFilters = useCriteriaFilters;
+    }
+
+    public void setUpValues(final String upValues) {
+        m_upValues = upValues;
+    }
+
+    public String getUpValues() {
+        return m_upValues;
+    }
+
+    public void setDownValues(final String downValues) {
+        m_downValues = downValues;
+    }
+
+    public String getDownValues() {
+        return m_downValues;
     }
 
     public NodeOutage getNodeOutage() {
@@ -200,5 +230,4 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
         }
         return false;
     }
-
 }
