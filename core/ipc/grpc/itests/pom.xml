@@ -20,6 +20,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.xml</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc.grpc</groupId>
       <artifactId>org.opennms.core.ipc.grpc.server</artifactId>
       <version>${project.version}</version>
