@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.events.sink.dispatcher;
+package org.opennms.netmgt.events.commands;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -37,6 +37,7 @@ import java.util.Map;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
@@ -51,9 +52,6 @@ public class EventSendCommand implements Action {
 
     @Reference
     private EventForwarder eventForwarder;
-
-    @Option(name="-u", aliases="--uei", description="Event UEI", required=true, multiValued=false)
-    private String eventUei;
     
     @Option(name="-n", aliases="--nodeid", description="Database ID of associated node (or use parameters _foreignSource, _foreignId)", required=false, multiValued=false)
     private Long nodeId;
@@ -76,8 +74,12 @@ public class EventSendCommand implements Action {
     @Option(name="-l", aliases="--logmsg", description="A short logmsg for the event browser (secure field by default)", required=false, multiValued=false)
     private String logmsg;
 
-    @Argument(index = 0, name = "parameters", description = "Parameters in key=value form", multiValued = true)
+    @Option(name = "-p", aliases="--parameter", description = "Parameter in key=value form", required = false, multiValued = true)
     List<String> params;
+
+    @Argument(index = 0, name="uei", description="Event UEI", required=true, multiValued=false)
+    @Completion(EventUeiCompleter.class)
+    private String eventUei;
 
     @Override
     public Object execute() {
