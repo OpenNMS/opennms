@@ -61,6 +61,10 @@
             <artifactId>guava</artifactId>
             <version>${guavagRPCVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
