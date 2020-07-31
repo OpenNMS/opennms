@@ -15,6 +15,10 @@
   </properties>
   <dependencies>
     <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc.sink.kafka</groupId>
       <artifactId>org.opennms.core.ipc.sink.kafka.client</artifactId>
       <version>${project.version}</version>
