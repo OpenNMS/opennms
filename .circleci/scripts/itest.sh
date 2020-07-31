@@ -56,7 +56,7 @@ sudo killall -9 apt-get || true && \
             sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f nsis R-base rrdtool
 
 echo "#### Building Assembly Dependencies"
-mvn install -P'!checkstyle' \
+./compile.pl install -P'!checkstyle' \
            -Pbuild-bamboo \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
@@ -71,7 +71,7 @@ mvn install -P'!checkstyle' \
            -pl "$(< /tmp/this_node_projects paste -s -d, -)"
 
 echo "#### Executing tests"
-mvn install -P'!checkstyle' \
+./compile.pl install -P'!checkstyle' \
            -Pbuild-bamboo \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
