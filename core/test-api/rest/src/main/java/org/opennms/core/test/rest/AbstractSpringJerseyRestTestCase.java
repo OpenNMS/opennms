@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -97,11 +97,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
     public static final String CXF_REST_V1_CONTEXT_PATH = "file:src/main/webapp/WEB-INF/applicationContext-cxf-rest-v1.xml";
     public static final String CXF_REST_V2_CONTEXT_PATH = "file:src/main/webapp/WEB-INF/applicationContext-cxf-rest-v2.xml";
 
-    public static String GET = "GET";
-    public static String POST = "POST";
-    public static String DELETE = "DELETE";
-    public static String PUT = "PUT";
-    public static String ACCEPT = "Accept";
+    public static final String GET = "GET";
+    public static final String POST = "POST";
+    public static final String DELETE = "DELETE";
+    public static final String PUT = "PUT";
+    public static final String ACCEPT = "Accept";
 
     private static int nodeCounter = 1;
 

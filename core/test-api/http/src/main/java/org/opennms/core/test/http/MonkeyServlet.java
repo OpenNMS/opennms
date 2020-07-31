@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,16 +40,18 @@ public class MonkeyServlet extends HttpServlet {
     private static final long serialVersionUID = 5010146048652721388L;
 
     @Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //		super.doGet(req, resp);
 		
 		String responseText = "You are reading this from a servlet!\n";
-		ServletOutputStream os = resp.getOutputStream();
-		os.print(responseText);
-		os.close();
-		resp.setContentType("text/plain");
-		resp.setContentLength(responseText.length());
+		try (final ServletOutputStream os = resp.getOutputStream()) {
+			os.print(responseText);
+			os.close();
+			resp.setContentType("text/plain");
+			resp.setContentLength(responseText.length());
+		} catch (final IOException e) {
+		    throw new RuntimeException("Failed to write servlet response.", e);
+		}
 	}
 
 }

@@ -42,52 +42,52 @@ import org.slf4j.LoggerFactory;
 public class JaasSupport {
 	private static final transient Logger LOG = LoggerFactory.getLogger(OpenNMSLoginModule.class);
 
-	private static AtomicReference<BundleContext> m_context;
-	private static AtomicReference<UserConfig> m_userConfig;
-	private static AtomicReference<GroupDao> m_groupDao;
-	private static AtomicReference<SpringSecurityUserDao> m_userDao;
+	private static AtomicReference<BundleContext> s_context;
+	private static AtomicReference<UserConfig> s_userConfig;
+	private static AtomicReference<GroupDao> s_groupDao;
+	private static AtomicReference<SpringSecurityUserDao> s_userDao;
 
 	public static synchronized void setContext(final BundleContext context) {
-		m_userConfig = new AtomicReference<>();
-		m_groupDao = new AtomicReference<>();
-		m_userDao = new AtomicReference<>();
-		m_context = new AtomicReference<>(context);
+		s_context = new AtomicReference<>(context);
+		s_userConfig = new AtomicReference<>();
+		s_groupDao = new AtomicReference<>();
+		s_userDao = new AtomicReference<>();
 	}
 
 	public static synchronized BundleContext getContext() {
-		if (m_context.equals(null)) {
+		if (s_context.get() == null) {
 			setContext(FrameworkUtil.getBundle(JaasSupport.class).getBundleContext());
 		}
-		return m_context.get();
+		return s_context.get();
 	}
 
 	public static UserConfig getUserConfig() {
-		if (m_userConfig.equals(null)) {
-			m_userConfig.set(getFromRegistry(UserConfig.class));
+		if (s_userConfig.get() == null) {
+			s_userConfig.set(getFromRegistry(UserConfig.class));
 		}
-		return m_userConfig.get();
+		return s_userConfig.get();
 	}
 
 	public static SpringSecurityUserDao getSpringSecurityUserDao() {
-		if (m_userDao.equals(null)) {
-			m_userDao.set(getFromRegistry(SpringSecurityUserDao.class));
+		if (s_userDao.get() == null) {
+			s_userDao.set(getFromRegistry(SpringSecurityUserDao.class));
 		}
-		return m_userDao.get();
+		return s_userDao.get();
 	}
 
 	public static GroupDao getGroupDao() {
-		if (m_groupDao.equals(null)) {
-			m_groupDao.set(getFromRegistry(GroupDao.class));
+		if (s_groupDao.get() == null) {
+			s_groupDao.set(getFromRegistry(GroupDao.class));
 		}
-		return m_groupDao.get();
+		return s_groupDao.get();
 	}
 
 	private static <T> T getFromRegistry(final Class<T> clazz) {
-		if (m_context.equals(null)) {
+		if (s_context.get() == null) {
 			LOG.warn("No bundle context.  Unable to get class {} from the registry.", clazz);
 			return null;
 		}
-		final BundleContext context = m_context.get();
+		final BundleContext context = s_context.get();
 		final ServiceReference<T> ref = context.getServiceReference(clazz);
 		return context.getService(ref);
 	}

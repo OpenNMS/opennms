@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -537,7 +537,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
         for (String name : list) {
             try {
                 if ("".equals(name)) {
-                    LOG.warn("Error in {}: Variable name must not be empty. Perhaps your properties list contains something like ', ,' or a trailing ', \\'.", filename != null ? filename : "unknown file");
+                    LOG.warn("Error in {}: Variable name must not be empty. Perhaps your properties list contains something like ', ,' or a trailing ', \\'.", filename != null ? filename.replaceAll("[\n|\r|\t]", "_") : "unknown file");
                     continue;
                 }
                 PrefabGraph graph = makePrefabGraph(name, properties,
@@ -710,9 +710,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
                 String graphName = graph.getName();
                 Properties props = new Properties();
                 props.load(resource.getInputStream());
-                List<PrefabGraph> reloadedGraphs = loadPrefabGraphDefinitions(m_type,
-                                                                              props,
-                                                                              resource != null ? resource.getFilename() : null);
+                List<PrefabGraph> reloadedGraphs = loadPrefabGraphDefinitions(m_type, props, resource.getFilename());
                 PrefabGraph result = null;
                 for (PrefabGraph reloadedGraph : reloadedGraphs) {
                     //The reloadedGraphs may contain nulls; see loadPrefabGraphDefinitions for reasons

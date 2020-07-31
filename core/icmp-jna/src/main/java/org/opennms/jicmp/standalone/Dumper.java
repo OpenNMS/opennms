@@ -63,14 +63,14 @@ public class Dumper {
                     pingSocket.receive(datagram);
                     System.err.println(datagram);
                 }
-            } catch(final Throwable e) {
+            } catch(final Exception e) {
                 e.printStackTrace();
             }
         } finally {
             if (pingSocket != null) {
                 pingSocket.close();
             }
-            System.err.println("Failed to open ICMPv6 socket on port 1234.");
+            System.err.println("Failed to open ICMPv6 socket on port 1234."); // NOSONAR
         }
     }
     

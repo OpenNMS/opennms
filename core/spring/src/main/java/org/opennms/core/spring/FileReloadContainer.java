@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -218,7 +218,7 @@ public class FileReloadContainer<T> {
         }
         
         if (object == null) {
-        	LOG.info("Not updating object for file '{}' due to reload callback returning null.", m_file.getAbsolutePath());
+        	LOG.info("Not updating object for file '{}' due to reload callback returning null.", m_file.getAbsolutePath().replaceAll("[\n|\r|\t]", "_"));
         } else {
             m_object = object;
         }

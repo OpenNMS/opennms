@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileSystemView;
+import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -50,12 +51,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public abstract class StringUtils {
-
-    private static final Logger LOG = LoggerFactory.getLogger(StringUtils.class);
+    // private static final Logger LOG = LoggerFactory.getLogger(StringUtils.class);
 
     private static final boolean HEADLESS = Boolean.getBoolean("java.awt.headless");
     private static final Pattern WINDOWS_DRIVE = Pattern.compile("^[A-Za-z]\\:\\\\");
@@ -226,6 +223,8 @@ public abstract class StringUtils {
         StringWriter out = new StringWriter();
 
         TransformerFactory transFactory = TransformerFactory.newInstance();
+        transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
         Transformer transformer  = transFactory.newTransformer();
 
         // Set options on the transformer so that it will indent the XML properly

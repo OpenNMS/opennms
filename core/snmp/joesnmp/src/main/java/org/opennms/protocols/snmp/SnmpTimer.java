@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -71,12 +71,12 @@ class SnmpTimer extends Object {
         /**
          * The runnable object
          */
-        public Runnable m_toRun;
+        private Runnable m_toRun;
 
         /**
          * The date to run the runnable
          */
-        public long m_when;
+        private long m_when;
 
         /**
          * Default Constructor. Takes an Offset from now and a runnable that

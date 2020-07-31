@@ -88,7 +88,7 @@ public class ELParser implements ELParserConstants {
  **/
   final public Object ExpressionString() throws ParseException {
   Object ret = "";
-  List elems = null;
+  List<Object> elems = null;
   Object elem;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case NON_EXPRESSION_TEXT:
@@ -126,8 +126,8 @@ public class ELParser implements ELParserConstants {
         throw new ParseException();
       }
        if (elems == null) {
-         elems = new ArrayList ();
-         elems.add (ret);
+         elems = new ArrayList<Object>();
+         elems.add(ret);
        }
        elems.add (elem);
     }

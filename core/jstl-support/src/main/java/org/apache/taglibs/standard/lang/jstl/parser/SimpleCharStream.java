@@ -33,7 +33,7 @@ public final class SimpleCharStream
   int bufsize;
   int available;
   int tokenBegin;
-  public int bufpos = -1;
+  protected int bufpos = -1;
   private int bufline[];
   private int bufcolumn[];
 

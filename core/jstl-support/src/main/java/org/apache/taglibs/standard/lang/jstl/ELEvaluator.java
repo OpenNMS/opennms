@@ -366,19 +366,21 @@ public class ELEvaluator
     int maxSize = 0;
     boolean printedOne = false;
 
-    if (pExc.expectedTokenSequences == null)
+    final int[][] expectedTokenSequences = pExc.getExpectedTokenSequences();
+
+    if (expectedTokenSequences == null)
       return pExc.toString();
 
-    for (int i = 0; i < pExc.expectedTokenSequences.length; i++) {
-      if (maxSize < pExc.expectedTokenSequences [i].length) {
-        maxSize = pExc.expectedTokenSequences [i].length;
+    for (int i = 0; i < expectedTokenSequences.length; i++) {
+      if (maxSize < expectedTokenSequences [i].length) {
+        maxSize = expectedTokenSequences [i].length;
       }
-      for (int j = 0; j < pExc.expectedTokenSequences [i].length; j++) {
+      for (int j = 0; j < expectedTokenSequences [i].length; j++) {
 	if (printedOne) {
 	  expectedBuf.append (", ");
 	}
         expectedBuf.append 
-	  (pExc.tokenImage [pExc.expectedTokenSequences [i] [j]]);
+	  (pExc.tokenImage [expectedTokenSequences [i] [j]]);
 	printedOne = true;
       }
     }
@@ -386,7 +388,7 @@ public class ELEvaluator
 
     // Generate the String of encountered tokens
     StringBuffer encounteredBuf = new StringBuffer ();
-    Token tok = pExc.currentToken.next;
+    Token tok = pExc.getCurrentToken().next;
     for (int i = 0; i < maxSize; i++) {
       if (i != 0) encounteredBuf.append (" ");
       if (tok.kind == 0) {

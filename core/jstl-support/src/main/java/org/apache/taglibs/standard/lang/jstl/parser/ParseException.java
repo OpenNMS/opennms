@@ -33,7 +33,7 @@ package org.apache.taglibs.standard.lang.jstl.parser;
  */
 public class ParseException extends Exception {
 
-  /**
+/**
    * This constructor is used by the method "generateParseException"
    * in the generated parser.  Calling this constructor generates
    * a new object of this type with the fields "currentToken",
@@ -89,14 +89,14 @@ public class ParseException extends Exception {
    * this object has been created due to a parse error, the token
    * followng this token will (therefore) be the first error token.
    */
-  public Token currentToken;
+  protected Token currentToken;
 
   /**
    * Each entry in this array is an array of integers.  Each array
    * of integers represents a sequence of tokens (by their ordinal
    * values) that is expected at this point of the parse.
    */
-  public int[][] expectedTokenSequences;
+  protected int[][] expectedTokenSequences;
 
   /**
    * This is a reference to the "tokenImage" array of the generated
@@ -104,6 +104,14 @@ public class ParseException extends Exception {
    * defined in the generated ...Constants interface.
    */
   public String[] tokenImage;
+
+  public Token getCurrentToken() {
+      return this.currentToken;
+  }
+
+  public int[][] getExpectedTokenSequences() {
+      return this.expectedTokenSequences;
+  }
 
   /**
    * This method has the standard behavior when this object has been

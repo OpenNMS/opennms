@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -109,22 +109,22 @@ public class ElasticSearchRule implements TestRule {
 
 
     private void createHomeDirectory() {
-        deleteHomeDirectory();
+        deleteHomeDirectory(); // NOSONAR
         new File(config.getHomeDirectory()).mkdirs();
     }
 
-    private void deleteHomeDirectory() {
-        recursiveDelete(new File(config.getHomeDirectory()));
+    private boolean deleteHomeDirectory() {
+        return recursiveDelete(new File(config.getHomeDirectory()));
     }
 
-    private void recursiveDelete(File file) {
+    private boolean recursiveDelete(File file) {
         File[] files = file.listFiles();
         if (files != null) {
             for (File each : files) {
                 recursiveDelete(each);
             }
         }
-        file.delete();
+        return file.delete();
     }
 
     public String getUrl() {

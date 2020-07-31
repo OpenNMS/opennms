@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -102,7 +102,7 @@ public class DefaultConnectionManager implements JmxConnectionManager {
             retryCallback.onRetry();
             try {
                 JmxServerConnectionWrapper connectionWrapper = connector.createConnection(ipAddress, properties);
-                if (connectionWrapper == null) {
+                if (connectionWrapper == null) { // NOSONAR
                     throw new JmxServerConnectionException("Received null connection");
                 }
                 return connectionWrapper;

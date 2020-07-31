@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -325,12 +325,8 @@ public class CollectionResourceWrapper {
      * @param attribute a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    protected String getIfInfoValue(String attribute) {
-        if (m_ifInfo != null) {
-            return m_ifInfo.get(attribute);
-        } else {
-            return null;
-        }
+    protected String getIfInfoValue(final String attribute) {
+        return m_ifInfo.get(attribute);
     }
 
     public boolean isLatencyResource() {

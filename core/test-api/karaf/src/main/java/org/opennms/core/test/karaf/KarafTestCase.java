@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -121,7 +121,7 @@ public abstract class KarafTestCase {
         LOG.error("getOpenNMSVersion pom file: {}", pomFile);
         Objects.requireNonNull(pomFile, "Unable to find pom.xml!  This should not happen...");
         try {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); // NOSONAR
             final DocumentBuilder db = dbf.newDocumentBuilder(); 
             final Document doc = db.parse(pomFile);
             final Element root = doc.getDocumentElement();
@@ -204,9 +204,12 @@ public abstract class KarafTestCase {
         // Create a new empty file
         File emptyFile = new File("target/emptyFile");
         try {
-            emptyFile.createNewFile();
+            final boolean success = emptyFile.createNewFile();
+            if (!success) {
+                throw new IOException("failed to create new file");
+            }
         } catch (IOException e) {
-            LOG.warn("Could not create empty file");
+            LOG.warn("Could not create empty file", e);
         }
 
         Option[] options = new Option[]{
