@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision.detector;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -59,15 +59,13 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 public class HttpsDetectorTest {
-    private static final int SSL_PORT = 7142;
-
     @Autowired
     private HttpsDetectorFactory m_detectorFactory;
     
     private HttpsDetector m_detector;
 
     @Rule
-    public WireMockRule m_wireMockRule = new WireMockRule(wireMockConfig().httpsPort(SSL_PORT));
+    public WireMockRule m_wireMockRule = new WireMockRule(options().dynamicPort().dynamicHttpsPort());
 
     private ResponseDefinitionBuilder getOKResponse() {
         return aResponse()
@@ -94,7 +92,7 @@ public class HttpsDetectorTest {
         m_detector = m_detectorFactory.createDetector(new HashMap<>());
 
         /* make sure defaults are initialized */
-        m_detector.setPort(SSL_PORT);
+        m_detector.setPort(m_wireMockRule.httpsPort());
         m_detector.setUseSSLFilter(true);
         m_detector.setUrl("/");
         m_detector.setCheckRetCode(false);
@@ -104,7 +102,7 @@ public class HttpsDetectorTest {
 
     @Test(timeout=20000)
     public void testDetectorFailWrongPort() throws Exception {
-        m_detector.setPort(2000);
+        m_detector.setPort(m_wireMockRule.httpsPort()-1);
         m_detector.init();
 
         m_wireMockRule.stubFor(get(urlEqualTo("/")).willReturn(getOKResponse()));
@@ -171,7 +169,7 @@ public class HttpsDetectorTest {
     public void testDetectorSucessCheckCodeTrue() throws Exception {
         m_detector.setCheckRetCode(true);
         m_detector.setUrl("http://localhost/");
-        m_detector.setPort(SSL_PORT);
+        m_detector.setPort(m_wireMockRule.httpsPort());
         m_detector.init();
         m_detector.setIdleTime(1000);
 
