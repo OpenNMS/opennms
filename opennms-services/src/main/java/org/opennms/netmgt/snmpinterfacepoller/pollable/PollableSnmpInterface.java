@@ -329,6 +329,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
                         doPoll(pollMonitor,mifaces.subList(start, start+maxiface));
                         start += maxiface;
                     }
+                    LOG.debug("passing subList of mifaces, which is {}, from {} to {} which is how large m_snmpinterfaces is.", mifaces.size(), start, m_snmpinterfaces.size());
                     doPoll(pollMonitor,mifaces.subList(start, m_snmpinterfaces.size()));
                 }
 
@@ -357,7 +358,15 @@ public class PollableSnmpInterface implements ReadyRunnable {
 
                     LOG.debug("Previous status Admin/Oper: {}/{}", iface.getIfAdminStatus(), iface.getIfOperStatus());
                     LOG.debug("Current status Admin/Oper: {}/{}", miface.getAdminstatus(), miface.getOperstatus());
-                    
+                    LOG.debug("valid up-values for this interface are: ");
+                    for( SnmpInterfaceStatus status : m_upValues) {
+                        LOG.debug(status.getLabel());
+                    }
+                    LOG.debug("valid down-values for this interface are: ");
+                    for( SnmpInterfaceStatus status : m_downValues) {
+                        LOG.debug(status.getLabel());
+                    }
+
                     // If the interface is Admin Up, and the interface is Operational Down, we generate an alarm.
                     if ( m_upValues.contains(miface.getAdminstatus())
                          && m_upValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfAdminStatus()))
