@@ -95,6 +95,8 @@ public class ImmutableEventTest {
     @Test
     public void testSimple() {
         Event event = new Event();
+        event.setSource("test-source");
+        event.setTime(new Date());
 
         // The following must have values due to the implementation of their getters.
         event.setParmCollection(Collections.emptyList());
@@ -159,7 +161,7 @@ public class ImmutableEventTest {
         event.setPathoutage("test-pathoutage");
 
         Correlation correlation = new Correlation();
-        correlation.setPath("test-path");
+        correlation.setPath("suppressDuplicates");
         event.setCorrelation(correlation);
 
         event.setOperinstruct("test-operinstruct");
@@ -170,6 +172,7 @@ public class ImmutableEventTest {
 
         Operaction operaction = new Operaction();
         operaction.setContent("test");
+        operaction.setMenutext("");
         event.getOperactionCollection().add(operaction);
 
         Autoacknowledge autoacknowledge = new Autoacknowledge();
@@ -188,6 +191,7 @@ public class ImmutableEventTest {
 
         Script script = new Script();
         script.setContent("test");
+        script.setLanguage("test");
         event.getScriptCollection().add(script);
 
         event.setIfIndex(100);
@@ -196,7 +200,7 @@ public class ImmutableEventTest {
 
         AlarmData alarmData = new AlarmData();
         alarmData.setReductionKey("test");
-        alarmData.setAlarmType(0);
+        alarmData.setAlarmType(1);
         alarmData.setAutoClean(false);
         alarmData.setX733ProbableCause(0);
         ManagedObject managedObject = new ManagedObject();
