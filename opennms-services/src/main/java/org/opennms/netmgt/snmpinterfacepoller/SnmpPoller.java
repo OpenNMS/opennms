@@ -295,6 +295,10 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 int maxVarsPerPdu = -1;
                 if (hasMaxVarsPerPdu) maxVarsPerPdu = getPollerConfig().getMaxVarsPerPdu(pkgName, pkgInterfaceName);
 
+                LOG.debug("package interface up-values: {}", getPollerConfig().getUpValues(pkgName, pkgInterfaceName));
+                LOG.debug("package interface down-values: {}", getPollerConfig().getDownValues(pkgName, pkgInterfaceName));
+                LOG.debug("package up-values: {}", getPollerConfig().getUpValues());
+                LOG.debug("package down-values: {}", getPollerConfig().getDownValues());
                 int[] upValues = statusValuesFromString(getPollerConfig().getUpValues(pkgName, pkgInterfaceName)
                         .orElse(getPollerConfig().getUpValues()), new int[]{1});
                 int[] downValues = statusValuesFromString(getPollerConfig().getDownValues(pkgName, pkgInterfaceName)

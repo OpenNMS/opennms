@@ -139,6 +139,7 @@ public class Interface implements Serializable {
      * Defaults to '2'.
      *
      */
+    @XmlAttribute(name = "down-values")
     private String m_downValues;
 
     public Interface() {
