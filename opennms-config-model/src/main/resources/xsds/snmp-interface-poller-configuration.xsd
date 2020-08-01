@@ -65,9 +65,10 @@
 
       <attribute type="boolean" default="false" name="useCriteriaFilters" use="optional">
         <annotation>
-          <documentation>Flag which indicates if the filters defined on packages and interface
-          criterias must be used to select the SNMP interfaces to be tracked by the poller
-          instead of do this selection through requisition policies.
+          <documentation>Flag which indicates if interfaces that do not match the criteria
+            attribute of an interface element in an otherwise matching package should be polled
+            with default settings or not. When 'false' such an interface will be polled with
+            default settings; when 'true' that interface will not be polled.
           </documentation>
         </annotation>
       </attribute>

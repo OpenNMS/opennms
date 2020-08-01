@@ -320,6 +320,7 @@ include::text/operation/daemon-config-files/introduction.adoc[]
 include::text/operation/daemon-config-files/eventd.adoc[]
 include::text/operation/daemon-config-files/notifd.adoc[]
 include::text/operation/daemon-config-files/pollerd.adoc[]
+include::text/operation/daemon-config-files/snmppoller.adoc[]
 include::text/operation/daemon-config-files/syslogd.adoc[]
 include::text/operation/daemon-config-files/trapd.adoc[]
 
@@ -419,6 +420,10 @@ include::text/alarm-correlation/situation-feedback.adoc[]
 [[ga-meta-data]]
 == Meta-Data
 include::text/meta-data.adoc[]
+
+[[ga-snmp-interface-poller]]
+== SNMP Interface Poller
+include::text/snmp-poller/concepts.adoc[]
 
 [[ga-admin]]
 == {opennms-product-name} Administration
