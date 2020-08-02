@@ -285,7 +285,7 @@ Use the "ENABLE_POLLING" and "DISABLE_POLLING" actions available in this policy 
 Let's create another policy named _pollVoIPDialPeers_ that marks interfaces with _ifType_ _104_. We'll set the _action_ to _ENABLE_POLLING_ and _matchBehavior_ to _ALL_PARAMETERS_.
 Add a parameter for _ifType_ as the key and _104_ as the value.
 
-Decide to move all your meetings to Minecraft and Bumble? Decommission your voice circuits and flip the the action to _DISABLE_POLLING_!
+Decide to move all your meetings to Minecraft and Mumble? Decommission your voice circuits and flip the the action to _DISABLE_POLLING_!
 
 .Node Categorization Policy
 
