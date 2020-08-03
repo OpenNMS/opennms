@@ -44,7 +44,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "opennms", name = "snmp-get", description = "Request a fully-qualified MIB object from the agent on the specified host and print the results.")
+@Command(scope = "opennms", name = "snmp-get", description = "Request one or more fully-qualified MIB objects from the agent on the specified host and print the results.")
 @Service
 public class GetCommand extends SnmpRequestCommand implements Action {
 

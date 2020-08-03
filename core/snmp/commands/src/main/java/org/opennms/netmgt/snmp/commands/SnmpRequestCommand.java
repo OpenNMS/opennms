@@ -47,7 +47,7 @@ public class SnmpRequestCommand implements Action {
     protected String m_location;
     @Option(name = "-s", aliases = "--system-id", description = "System ID")
     protected String m_systemId = null;
-    @Argument(index = 0, name = "host", description = "Hostname or IP Address of the system to walk", required = true, multiValued = false)
+    @Argument(index = 0, name = "host", description = "Hostname or IP Address of the target agent", required = true, multiValued = false)
     protected String m_host;
     @Argument(index = 1, name = "oids", description = "List of OIDs to retrieve from the agent", required = true, multiValued = true)
     protected List<String> m_oids;
