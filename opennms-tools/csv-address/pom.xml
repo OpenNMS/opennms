@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-tools</artifactId>
-    <version>26.1.3</version>
+    <version>26.1.4-SNAPSHOT</version>
   </parent>
   <artifactId>opennms-csv-assets</artifactId>
   <packaging>jar</packaging>
