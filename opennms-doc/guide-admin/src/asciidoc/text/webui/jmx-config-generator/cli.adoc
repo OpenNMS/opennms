@@ -40,7 +40,7 @@ This file can be invoked by:
 
 [source, shell]
 ----
-java -jar target/jmxconfiggenerator-2017.1.25-onejar.jar
+java -jar target/jmxconfiggenerator-2017.1.26-SNAPSHOT-onejar.jar
 ----
 
 ===== Usage

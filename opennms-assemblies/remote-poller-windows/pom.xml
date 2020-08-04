@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>2017.1.25</version>
+    <version>2017.1.26-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>

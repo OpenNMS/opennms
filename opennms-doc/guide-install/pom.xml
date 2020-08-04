@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.doc</groupId>
         <artifactId>parent</artifactId>
-        <version>2017.1.25</version>
+        <version>2017.1.26-SNAPSHOT</version>
     </parent>
     <artifactId>guide-install</artifactId>
     <packaging>pom</packaging>
