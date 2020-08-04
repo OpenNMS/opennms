@@ -399,9 +399,6 @@ include::text/alarm-correlation/situation-feedback.adoc[]
 == Meta-Data
 include::text/meta-data.adoc[]
 
-[[ga-snmp-encryption]]
-== Snmp Encryption
-include::text/snmp/snmp-encryption.adoc[]
 
 [[ga-admin]]
 == {opennms-product-name} Administration
