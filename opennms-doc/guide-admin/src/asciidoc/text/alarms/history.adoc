@@ -18,7 +18,7 @@ A simple _REST_ API is also made available for the purposes of evaluating the re
 [[ga-alarm-history-requirements]]
 ==== Requirements
 
-This feature requires _Elasticsearch_ v6.3.x or greater.
+This feature requires _Elasticsearch_ 7.x.
 
 [[ga-alarm-history-setup]]
 ==== Setup

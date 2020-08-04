@@ -160,7 +160,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumIT {
         assertThat(rule.getName(), is("http"));
         assertThat(rule.getProtocol(), is("TCP,UDP"));
         assertThat(rule.getDstAddress(), is(""));
-        assertThat(rule.getDstPort(), is("80,8080"));
+        assertThat(rule.getDstPort(), is("80\n8080"));
         assertThat(rule.getSrcAddress(), is(""));
         assertThat(rule.getSrcPort(), is(""));
         assertThat(rule.getExporterFilter(), is(""));
