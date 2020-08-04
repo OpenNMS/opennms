@@ -28,8 +28,6 @@
 
 package org.opennms.web.rest.v1.config;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
@@ -59,18 +57,13 @@ public class PollerConfigurationResource {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    // TODO: Patrick: do we still need this class?
     public Response getPollerConfigurationForLocation(@PathParam("location") final String location) throws ConfigurationResourceException {
 
         final OnmsMonitoringLocation def = m_monitoringLocationDao.get(location);
         if (def == null) {
             LOG.warn("Unable to find monitoring location {}", location);
             return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        final List<String> pollingPackageNames = def.getPollingPackageNames();
-        if (pollingPackageNames != null && pollingPackageNames.size() > 0) {
-            final PollerConfiguration pollerConfig = m_pollerConfigResource.get().getPollerConfigurationForPackages(pollingPackageNames);
-            return Response.ok(pollerConfig).build();
         }
 
         LOG.warn("Monitoring location {} does not have a polling package defined.", location);

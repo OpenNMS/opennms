@@ -73,6 +73,9 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
      */
     private Set<OnmsMonitoringLocation> perspectiveLocations = new LinkedHashSet<>();
 
+    /** References a pollinDefaultDistributedStatusServiceTestg package by name. Optional - may be null. */
+    private String pollingPackage;
+
     @Id
     @Column(nullable=false)
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -118,12 +121,11 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     @ManyToMany( cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name="application_perspective_location_map",
-            joinColumns=@JoinColumn(name="app_id", referencedColumnName = "id"),
-            inverseJoinColumns=@JoinColumn(name="monitoring_location_id", referencedColumnName = "id"))
+            joinColumns=@JoinColumn(name="appId", referencedColumnName = "id"),
+            inverseJoinColumns=@JoinColumn(name="monitoringLocationId", referencedColumnName = "id"))
     @XmlIDREF
     @XmlElement(name="perspectiveLocationId")
     @XmlElementWrapper(name="perspectiveLocations")
-    @JsonBackReference
     public Set<OnmsMonitoringLocation> getPerspectiveLocations() {
         return this.perspectiveLocations;
     }
@@ -134,6 +136,16 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     public void addPerspectiveLocation(OnmsMonitoringLocation perspectiveLocation) {
         getPerspectiveLocations().add(perspectiveLocation);
+    }
+
+    /** Can be null. */
+    @Column(name = "pollingPackage")
+    public String getPollingPackage() {
+        return pollingPackage;
+    }
+
+    public void setPollingPackage(String pollingPackage) {
+        this.pollingPackage = pollingPackage;
     }
 
     @Override

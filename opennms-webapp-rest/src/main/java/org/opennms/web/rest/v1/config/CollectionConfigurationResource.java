@@ -28,8 +28,6 @@
 
 package org.opennms.web.rest.v1.config;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
@@ -67,11 +65,7 @@ public class CollectionConfigurationResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        final List<String> collectionPackageNames = def.getCollectionPackageNames();
-        if (collectionPackageNames != null && collectionPackageNames.size() > 0) {
-            final CollectdConfiguration collectdConfig = m_collectdConfigResource.get().getCollectdConfigurationForPackages(collectionPackageNames);
-            return Response.ok(collectdConfig).build();
-        }
+        // TODO: Patrick: do we still need this method?
 
         LOG.warn("Monitoring location {} does not have a collection package defined.", location);
         return Response.status(Response.Status.NOT_FOUND).build();

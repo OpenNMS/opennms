@@ -80,10 +80,14 @@ public class OnmsOutageTest {
                 "  \"monitoredService\" : {\n" +
                 "    \"applications\" : [ {\n" +
                 "      \"name\" : \"Dummy\",\n" +
-                "      \"id\" : 100\n" +
+                "      \"perspectiveLocations\" : [ ],\n" +
+                "      \"id\" : 100\n," +
+                "      \"pollingPackage\" : null\n" +
                 "    }, {\n" +
                 "      \"name\" : \"Another Dummy\",\n" +
-                "      \"id\" : 102\n" +
+                "      \"perspectiveLocations\" : [ ],\n" +
+                "      \"id\" : 102,\n" +
+                "      \"pollingPackage\" : null\n" +
                 "    } ],\n" +
                 "    \"serviceType\" : {\n" +
                 "      \"name\" : \"Webservices\",\n" +

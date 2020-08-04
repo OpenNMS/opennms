@@ -55,8 +55,6 @@ drop table node cascade;
 drop table service cascade;
 drop table scanreports cascade;
 drop table monitoringlocations cascade;
-drop table monitoringlocationspollingpackages cascade;
-drop table monitoringlocationscollectionpackages cascade;
 drop table monitoringlocationstags cascade;
 drop table monitoringsystems cascade;
 drop table events cascade;
@@ -235,28 +233,6 @@ CREATE TABLE monitoringlocations (
 
     CONSTRAINT monitoringlocations_pkey PRIMARY KEY (id)
 );
-
-
-CREATE TABLE monitoringlocationspollingpackages (
-    monitoringlocationid TEXT NOT NULL,
-    packagename TEXT NOT NULL,
-
-    CONSTRAINT monitoringlocationspollingpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE INDEX monitoringlocationspollingpackages_id_idx on monitoringlocationspollingpackages(monitoringlocationid);
-CREATE UNIQUE INDEX monitoringlocationspollingpackages_id_pkg_idx on monitoringlocationspollingpackages(monitoringlocationid, packagename);
-
-
-CREATE TABLE monitoringlocationscollectionpackages (
-    monitoringlocationid TEXT NOT NULL,
-    packagename TEXT NOT NULL,
-
-    CONSTRAINT monitoringlocationscollectionpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE INDEX monitoringlocationscollectionpackages_id_idx on monitoringlocationscollectionpackages(monitoringlocationid);
-CREATE UNIQUE INDEX monitoringlocationscollectionpackages_id_pkg_idx on monitoringlocationscollectionpackages(monitoringlocationid, packagename);
 
 
 CREATE TABLE monitoringlocationstags (
@@ -1451,9 +1427,10 @@ CREATE INDEX location_specific_status_changes_statustime ON location_specific_st
 
 create table applications (
 	id			integer,
-	name			varchar(32) not null,
+	name		   varchar(32) not null,
+    pollingPackage varchar(256) null,
 
-	constraint applications_pkey primary key (id)
+        constraint applications_pkey primary key (id)
 );
 
 CREATE UNIQUE INDEX applications_name_idx ON applications(name);
@@ -1493,7 +1470,6 @@ CREATE UNIQUE INDEX appid_ifserviceid_idex on application_service_map(appid,ifse
 create table application_perspective_location_map (
                                          appId		integer,
                                          monitoringLocationId	text,
-
                                          constraint appId_fkey foreign key (appId) references applications (id) ON DELETE CASCADE,
                                          constraint monitoringLocationId_fkey foreign key (monitoringLocationId) references monitoringlocations (id) ON DELETE CASCADE
 );

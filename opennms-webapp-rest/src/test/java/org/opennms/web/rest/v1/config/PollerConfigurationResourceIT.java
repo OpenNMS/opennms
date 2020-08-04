@@ -76,11 +76,11 @@ public class PollerConfigurationResourceIT extends AbstractSpringJerseyRestTestC
     @Override
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
-        OnmsMonitoringLocation location = new OnmsMonitoringLocation("RDU", "East Coast", new String[] { "example1" }, new String[] { "example1" }, "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L);
+        OnmsMonitoringLocation location = new OnmsMonitoringLocation("RDU", "East Coast", "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L);
         m_monitoringLocationDao.saveOrUpdate(location);
-        location = new OnmsMonitoringLocation("00002", "IN", new String[] { "example2" }, new String[0], "2 Open St., Network, MS 00002", 38.2096f, -85.8704f, 100L, "even");
+        location = new OnmsMonitoringLocation("00002", "IN", "2 Open St., Network, MS 00002", 38.2096f, -85.8704f, 100L, "even");
         m_monitoringLocationDao.saveOrUpdate(location);
-        location = new OnmsMonitoringLocation("00003", "IN", new String[] { "example2" }, new String[] { "example2" }, "2 Open St., Network, MS 00002", 38.2096f, -85.8704f, 100L, "odd");
+        location = new OnmsMonitoringLocation("00003", "IN", "2 Open St., Network, MS 00002", 38.2096f, -85.8704f, 100L, "odd");
         m_monitoringLocationDao.saveOrUpdate(location);
     }
     

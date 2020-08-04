@@ -38,8 +38,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
@@ -48,8 +46,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -97,9 +93,10 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         // add polling package
-        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
-        sendPut("/monitoringLocations/location1", "pollingPackageNames=foo", 204);
-        this.eventIpcManager.getEventAnticipator().verifyAnticipated();
+        // TODO: Patrick remove
+//        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
+//        sendPut("/monitoringLocations/location1", "pollingPackageNames=foo", 204);
+//        this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         sendRequest(DELETE, "/monitoringLocations/location1", 204);
     }
@@ -122,20 +119,19 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         location2.setLocationName("location2");
         location2.setMonitoringArea("monitoringarea2");
         location2.setPriority(100L);
-        location2.setPollingPackageNames(Lists.newArrayList("foo", "bar"));
 
         // create location with associated polling packages
-        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
+        // TODO: Patrick this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
         sendData(POST, MediaType.APPLICATION_XML,"/monitoringLocations", JaxbUtils.marshal(location2), 201);
-        this.eventIpcManager.getEventAnticipator().verifyAnticipated();
+        // TODO: Patrick this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         // delete the one without polling packages
         sendRequest(DELETE, "/monitoringLocations/location1", 204);
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         // delete the one with polling packages
-        this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
+        // TODO: Patrick         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
         sendRequest(DELETE, "/monitoringLocations/location2", 204);
-        this.eventIpcManager.getEventAnticipator().verifyAnticipated();
+        // TODO: Patrick         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
     }
 }

@@ -55,5 +55,14 @@
             <column name="appId" />
             <column name="monitoringLocationId" />
         </createIndex>
+
+        <addColumn tableName="applications">
+            <column name="pollingPackage" type="text">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+
+        <dropTable tableName="monitoringlocationspollingpackages"/>
+        <dropTable tableName="monitoringlocationscollectionpackages"/>
     </changeSet>
 </databaseChangeLog>
