@@ -73,7 +73,7 @@ public class EventSinkIT {
         EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class);
         final OnmsEvent onmsEvent = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
                 .until(DaoUtils.findMatchingCallable(eventDao, new CriteriaBuilder(OnmsEvent.class).eq("eventUei", "uei.opennms.org/alarms/trigger")
-                        .eq("eventSource", "karaf-shell").ge("eventCreateTime", startOfTest).toCriteria()), notNullValue());
+                        .eq("eventSource", "KarafShell_send-event").ge("eventCreateTime", startOfTest).toCriteria()), notNullValue());
 
         assertNotNull("The event sent is not received at OpenNMS", onmsEvent);
     }
@@ -87,7 +87,7 @@ public class EventSinkIT {
         EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class);
         final OnmsEvent onmsEvent = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
                 .until(DaoUtils.findMatchingCallable(eventDao, new CriteriaBuilder(OnmsEvent.class).eq("eventUei", "uei.opennms.org/threshold/relativeChangeExceeded")
-                        .eq("eventSource", "karaf-shell").ge("eventCreateTime", startOfTest).toCriteria()), notNullValue());
+                        .eq("eventSource", "KarafShell_send-event").ge("eventCreateTime", startOfTest).toCriteria()), notNullValue());
 
         assertNotNull("The event sent is not received at OpenNMS", onmsEvent);
     }
