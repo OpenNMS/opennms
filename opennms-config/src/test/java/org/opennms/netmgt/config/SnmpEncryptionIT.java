@@ -31,7 +31,6 @@ package org.opennms.netmgt.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.opennms.netmgt.config.SnmpPeerFactory.ENCRYPTION_ENABLED;
 
 import java.io.File;
@@ -63,14 +62,11 @@ public class SnmpEncryptionIT {
         System.setProperty(ENCRYPTION_ENABLED, "true");
     }
 
-    private SnmpPeerFactory snmpPeerFactory;
-
     @Test
     public void testEncryption() throws IOException {
         URL url = getClass().getResource("/snmp-config.xml");
         try (InputStream configStream = url.openStream()) {
-            snmpPeerFactory = new SnmpPeerFactory(new InputStreamResource(configStream));
-            snmpPeerFactory.setEncryptionKey("OpenNMS-SNMP-Encryption-Key");
+            SnmpPeerFactory snmpPeerFactory = new SnmpPeerFactory(new InputStreamResource(configStream));
             SnmpPeerFactory.setFile(new File(url.getFile()));
             // Check if encryption is enabled
             assertTrue(snmpPeerFactory.getEncryptionEnabled());
@@ -121,8 +117,6 @@ public class SnmpEncryptionIT {
             agentConfig = snmpPeerFactory.getAgentConfig(InetAddressUtils.getInetAddress("127.0.0.5"));
             assertEquals("snmp1", agentConfig.getReadCommunity());
             assertEquals("snmp2", agentConfig.getWriteCommunity());
-        } catch (IOException e) {
-            fail(e.getMessage());
         }
     }
 

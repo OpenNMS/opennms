@@ -127,9 +127,7 @@
     <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
   </bean>
 
-  <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="snmpPeerFactory-init" factory-method="getInstance">
-    <property name="encryptionKey" value="962e17d1-4da3-410f-b80b-af9b10557784"/>
-  </bean>
+  <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="snmpPeerFactory-init" factory-method="getInstance"/>
 
   <onmsgi:service interface="org.opennms.netmgt.config.api.SnmpAgentConfigFactory" ref="snmpPeerFactory"/>
   

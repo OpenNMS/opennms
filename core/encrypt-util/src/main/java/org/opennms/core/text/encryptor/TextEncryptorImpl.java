@@ -29,20 +29,17 @@
 package org.opennms.core.text.encryptor;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.AES256TextEncryptor;
 import org.opennms.core.config.api.TextEncryptor;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class TextEncryptorImpl implements TextEncryptor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TextEncryptorImpl.class);
     private final SecureCredentialsVault secureCredentialsVault;
     private Map<String, Credentials> passwordsByAlias = new ConcurrentHashMap<>();
 
@@ -51,30 +48,28 @@ public class TextEncryptorImpl implements TextEncryptor {
     }
 
     @Override
-    public String encrypt(String alias, String encryptionKey, String text) {
-
+    public String encrypt(String alias, String text) {
         final AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
-        String password = getPasswordFromCredentials(alias, encryptionKey);
+        String password = getPasswordFromCredentials(alias);
         textEncryptor.setPassword(password);
         return textEncryptor.encrypt(text);
-
     }
 
     @Override
-    public String decrypt(String alias, String encryptionKey, String encrypted) {
+    public String decrypt(String alias, String encrypted) {
         final AES256TextEncryptor textEncryptor = new AES256TextEncryptor();
-        String password = getPasswordFromCredentials(alias, encryptionKey);
+        String password = getPasswordFromCredentials(alias);
         textEncryptor.setPassword(password);
         return textEncryptor.decrypt(encrypted);
 
     }
 
-    private String getPasswordFromCredentials(String alias, String key) {
+    private String getPasswordFromCredentials(String alias) {
         Credentials credentials = passwordsByAlias.get(alias);
         if (credentials == null) {
             credentials = secureCredentialsVault.getCredentials(alias);
             if (credentials == null) {
-                return generateAndStorePassword(alias, key);
+                return generateAndStorePassword(alias);
             } else {
                 passwordsByAlias.put(alias, credentials);
             }
@@ -83,10 +78,9 @@ public class TextEncryptorImpl implements TextEncryptor {
     }
 
     // For encryption, create a new password in scv.
-    private String generateAndStorePassword(String alias, String key) {
-        StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
-        String password = passwordEncryptor.encryptPassword(key);
-        Credentials credentials = new Credentials(key, password);
+    private String generateAndStorePassword(String alias) {
+        String password = UUID.randomUUID().toString();
+        Credentials credentials = new Credentials(alias, password);
         secureCredentialsVault.setCredentials(alias, credentials);
         passwordsByAlias.put(alias, credentials);
         return password;

@@ -41,16 +41,12 @@ import org.opennms.core.config.api.TextEncryptor;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
-import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class TextEncryptorTest {
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
-
-    @Autowired
-    private TextEncryptor textEncryptor;
 
     @Test
     public void testEncryption() {
@@ -63,25 +59,23 @@ public class TextEncryptorTest {
         assertNull(credentials);
         // Encrypt and decrypt
         String textToEncrypt = "OpenNMS";
-        String key = "encrypt-key";
-        String encrypted = textEncryptor.encrypt(alias, key, textToEncrypt);
-        String result = textEncryptor.decrypt(alias, key, encrypted);
+        String encrypted = textEncryptor.encrypt(alias, textToEncrypt);
+        String result = textEncryptor.decrypt(alias, encrypted);
         assertEquals(textToEncrypt, result);
         // Should have created one key.
         credentials = scv.getCredentials(alias);
         assertNotNull(credentials);
         // Try different text to encrypt.
         textToEncrypt = "Minion-Sentinel";
-        encrypted = textEncryptor.encrypt(alias, key, textToEncrypt);
-        result = textEncryptor.decrypt(alias, key, encrypted);
+        encrypted = textEncryptor.encrypt(alias, textToEncrypt);
+        result = textEncryptor.decrypt(alias, encrypted);
         assertEquals(textToEncrypt, result);
         // Use different alias.
         String alias2 = "syslog-config";
-        String key2 = "someKeyToEncrypt";
         credentials = scv.getCredentials(alias2);
         assertNull(credentials);
-        encrypted = textEncryptor.encrypt(alias2, key2, textToEncrypt);
-        result = textEncryptor.decrypt(alias2, key2, encrypted);
+        encrypted = textEncryptor.encrypt(alias2, textToEncrypt);
+        result = textEncryptor.decrypt(alias2, encrypted);
         assertEquals(textToEncrypt, result);
         credentials = scv.getCredentials(alias2);
         assertNotNull(credentials);

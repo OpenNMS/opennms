@@ -29,20 +29,19 @@
 package org.opennms.core.config.api;
 
 /**
- * For a given context/alias, encrypt/decrypt text with specified encryptionKey.
- * encryptionKey will be digested to generate a password. This password is used to encrypt/decrypt text.
- * (encryptionKey,password) is stored in SCV as Credentials with the specified alias.
+ * For a given context, encrypt/decrypt text.
+ * (alias,password) is stored in SCV as Credentials with the specified alias.
  */
 public interface TextEncryptor {
 
     /**
-     * Encrypt text with encryptionKey
+     * Encrypt text for the given context
      */
-    String encrypt(String alias, String encryptionKey, String text);
+    String encrypt(String alias, String text);
 
     /**
-     * Decrypt encrypted with encryptionKey.
+     * Decrypt encrypted for the given context
      */
-    String decrypt(String alias, String encryptionKey, String encrypted);
+    String decrypt(String alias, String encrypted);
 
 }

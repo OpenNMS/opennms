@@ -125,7 +125,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     private TextEncryptor textEncryptor;
 
     private Boolean encryptionEnabled = Boolean.getBoolean(ENCRYPTION_ENABLED);
-    private String encryptionKey;
 
     /**
      * <p>Constructor for SnmpPeerFactory.</p>
@@ -647,19 +646,19 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
         try {
             if (!Strings.isNullOrEmpty(config.getAuthPassphrase())) {
-                String authPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getAuthPassphrase());
+                String authPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getAuthPassphrase());
                 config.setAuthPassphrase(authPassPhrase);
             }
             if (!Strings.isNullOrEmpty(config.getPrivacyPassphrase())) {
-                String privPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getPrivacyPassphrase());
+                String privPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getPrivacyPassphrase());
                 config.setPrivacyPassphrase(privPassPhrase);
             }
             if (!Strings.isNullOrEmpty(config.getReadCommunity())) {
-                String readCommunity = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getReadCommunity());
+                String readCommunity = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getReadCommunity());
                 config.setReadCommunity(readCommunity);
             }
             if (!Strings.isNullOrEmpty(config.getWriteCommunity())) {
-                String writeCommunity = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getWriteCommunity());
+                String writeCommunity = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getWriteCommunity());
                 config.setWriteCommunity(writeCommunity);
             }
             config.setEncrypted(false);
@@ -674,19 +673,19 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
         try {
             if (!Strings.isNullOrEmpty(config.getAuthPassphrase())) {
-                String authPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getAuthPassphrase());
+                String authPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getAuthPassphrase());
                 config.setAuthPassphrase(authPassPhrase);
             }
             if (!Strings.isNullOrEmpty(config.getPrivacyPassphrase())) {
-                String privPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getPrivacyPassphrase());
+                String privPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getPrivacyPassphrase());
                 config.setPrivacyPassphrase(privPassPhrase);
             }
             if (!Strings.isNullOrEmpty(config.getReadCommunity())) {
-                String readCommunity = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getReadCommunity());
+                String readCommunity = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getReadCommunity());
                 config.setReadCommunity(readCommunity);
             }
             if (!Strings.isNullOrEmpty(config.getWriteCommunity())) {
-                String writeCommunity = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, encryptionKey, config.getWriteCommunity());
+                String writeCommunity = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getWriteCommunity());
                 config.setWriteCommunity(writeCommunity);
             }
             config.setEncrypted(true);
@@ -701,10 +700,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return encryptionEnabled;
     }
 
-
-    public void setEncryptionKey(String encryptionKey) {
-        this.encryptionKey = encryptionKey;
-    }
 
     @VisibleForTesting
     void setTextEncryptor(TextEncryptor textEncryptor) {

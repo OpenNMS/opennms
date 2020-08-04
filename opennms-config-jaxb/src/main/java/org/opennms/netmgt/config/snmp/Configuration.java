@@ -773,7 +773,7 @@ public class Configuration implements Serializable {
     }
 
     public void setEncrypted(Boolean encrypted) {
-        this.m_encrypted = encrypted;
+        m_encrypted = encrypted;
     }
 
     @Override
