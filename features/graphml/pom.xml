@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>2018.1.21-SNAPSHOT</version>
+    <version>2018.1.21</version>
   </parent>
   <properties>
     <bundle.symbolicName>org.opennms.features.graphml</bundle.symbolicName>
