@@ -300,6 +300,11 @@ const handleErrorResponse = function(response, $scope) {
                 groups: [$stateParams.id],
                 search: undefined
             };
+
+            $scope.splitRule = (entry) => {
+                return entry ? entry.replaceAll(',', '\n') : entry;
+            };
+
             $scope.findGroup = function(groupId) {
                 return ClassificationGroupService.get({id: groupId}, function(response) {
                     $scope.group = response;
