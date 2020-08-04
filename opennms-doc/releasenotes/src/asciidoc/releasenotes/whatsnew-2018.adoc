@@ -85,6 +85,19 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.21]
+
+==== Release Meridian-2018.1.21
+
+Release 2018.1.21 is a small update to 2018.1.20 that fixes a bug and updates some documentation.
+
+The codename for 2018.1.20 is _Blizzard_.
+
+===== Bug
+
+* Support for optional snmpTrapAddress varbind needs documenting (Issue http://issues.opennms.org/browse/NMS-12795[NMS-12795])
+* RRD-to-Newts Converter doesn't handle fully-overlapping RRAs (Issue http://issues.opennms.org/browse/NMS-12835[NMS-12835])
+
 [releasenotes-changelog-Meridian-2018.1.20]
 
 ==== Release Meridian-2018.1.20

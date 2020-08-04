@@ -1,7 +1,7 @@
 module.exports = {
   // Destinations
   LIB_DEST: '/lib',
-  OPENNMS_HOME: process.env.OPENNMS_HOME || '../target/opennms-2018.1.20',
+  OPENNMS_HOME: process.env.OPENNMS_HOME || '../target/opennms-2018.1.21-SNAPSHOT',
   JETTY_WEBAPP: '/jetty-webapps/opennms',
 
   // Sources.

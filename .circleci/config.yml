@@ -456,14 +456,11 @@ workflows:
 #              only:
 #                - develop
 #    jobs:
-#      - build:
-#          context: << parameters.context_name >>
-#      - integration-test-with-coverage:
-#          context: << parameters.context_name >>
+#      - build
+#      - integration-test-with-coverage
 #          requires:
 #            - build
-#      - code-coverage:
-#          context: << parameters.context_name >>
+#      - code-coverage
 #          requires:
 #            - integration-test-with-coverage
 
@@ -471,7 +468,6 @@ workflows:
     <<: *defaults
     jobs:
       - build:
-          context: << parameters.context_name >>
           filters:
             branches:
               ignore:
@@ -480,19 +476,15 @@ workflows:
           requires:
             - build
       - meridian-rpm-build:
-          context: << parameters.context_name >>
           requires:
             - build
       - minion-rpm-build:
-          context: << parameters.context_name >>
           requires:
             - build
       - integration-test:
-          context: << parameters.context_name >>
           requires:
             - build
       - smoke-test-full:
-          context: << parameters.context_name >>
           requires:
             - meridian-rpm-build
             - minion-rpm-build
@@ -506,7 +498,6 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
       - smoke-test-minimal:
-          context: << parameters.context_name >>
           requires:
             - meridian-rpm-build
             - minion-rpm-build
@@ -520,7 +511,6 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
 #      - meridian-publish-oci:
-#          context: << parameters.context_name >>
 #          requires:
 #            - meridian-rpm-build
 #          filters:
@@ -530,7 +520,6 @@ workflows:
 #                - /^master-.*/
 #                - /^release-.*/
 #      - minion-publish-oci:
-#          context: << parameters.context_name >>
 #          requires:
 #            - minion-rpm-build
 #          filters:
@@ -542,7 +531,6 @@ workflows:
 #      # These don't actually require `integration-test` but we shouldn't bother
 #      # spending cycles unless everything else passed
 #      - meridian-deb-build:
-#          context: << parameters.context_name >>
 #          requires:
 #            - integration-test
 #          filters:
@@ -556,7 +544,6 @@ workflows:
 #                - /^merge-foundation\/.*/
 #                - /.*smoke.*/
 #      - minion-deb-build:
-#          context: << parameters.context_name >>
 #          requires:
 #            - integration-test
 #          filters:
@@ -570,7 +557,6 @@ workflows:
 #                - /^merge-foundation\/.*/
 #                - /.*smoke.*/
 #      - create-merge-foundation-branch:
-#          context: << parameters.context_name >>
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
@@ -582,7 +568,6 @@ workflows:
 #            branches:
 #              only: << parameters.main_branch >>
 #      - merge-foundation-branch:
-#          context: << parameters.context_name >>
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
@@ -594,7 +579,6 @@ workflows:
 #            branches:
 #              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
 #      - create-merge-meridian-branch:
-#          context: << parameters.context_name >>
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
@@ -610,7 +594,6 @@ workflows:
 #            branches:
 #              only: /^from-foundation.*/
 #      - merge-poweredby-branch:
-#          context: << parameters.context_name >>
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
@@ -623,7 +606,6 @@ workflows:
 #              only:
 #                - /^foundation.*/
       - publish-cloudsmith:
-          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
