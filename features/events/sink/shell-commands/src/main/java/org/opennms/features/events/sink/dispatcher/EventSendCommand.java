@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.features.events.sink.dispatcher;
+package org.opennms.features.events.sink.dispatcher;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
