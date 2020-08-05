@@ -9,8 +9,6 @@ Using a task-based approach, chapters appear in a recommended order for working 
 . link:#ga-users-intro[Create users] and security roles.
 . link:#ga-provisioning-introduction[Provision] your system. 
 
-#TODO: Add steps as the documentation is reorganized#
-
 [[ga-admin-audience]]
 === Audience
 This guide is suitable for administrative users and those who will use {opennms-product-name} to monitor their network.    
