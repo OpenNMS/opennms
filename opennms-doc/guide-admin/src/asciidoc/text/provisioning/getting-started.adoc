@@ -90,6 +90,30 @@ We will then give an example of how to be more _directed_ and deliberate about y
 Automatically discovered entities are analyzed, persisted to the relational data store, and then managed based on the policies defined in the default foreign source definition.
 This is very similar to the way that entities were previously handled by the (now obsolete) Capsd daemon but with finer grained sense of control.
 
+==== Encrypting SNMP Credentials
+
+You can save SNMP credentials like readCommunity/WriteCommunity, authPassPhrase/privPassPhrase on the file system in encrypted format.
+
+===== Encryption methodology
+
+A random password is generated (once) for `snmp-config` alias and it is stored in java keystore file at `$OPENNMS_HOME/etc/scv.jce`.
+This password is used to encrypt/decrypt SNMP credentials.
+
+===== Enabling Encrption on SNMP Config
+
+Enable encryption on SNMP config by setting the following system property:
+[source, sh]
+----
+echo 'org.opennms.snmp.encryption.enabled=true' >> "$OPENNMS_HOME/etc/opennms.properties.d/snmp-encryption.properties"
+----
+
+SNMP config that is modified through the user interface will be encrypted directly on the file system.
+Config that is updated on the file system needs to be saved with Karaf command `opennms-snmp:save-config` to get encrypted.
+
+NOTE: Currently, SNMP config encryption is not supported on the SNMP profiles.
+
+NOTE: Encryption Utils needs https://www.oracle.com/java/technologies/javase-jce-all-downloads.html[JCE] (Java Cryptography Extension) enabled on the JDK.
+
 ==== Automatic Discovery
 
 Currently in {opennms-product-name}, the ICMP is used to automatically provision node entities into {opennms-product-name}.

@@ -57,5 +57,6 @@
     <module>web-assets</module>
     <module>xml</module>
     <module>tracing</module>
+    <module>encrypt-util</module>
   </modules>
 </project>
