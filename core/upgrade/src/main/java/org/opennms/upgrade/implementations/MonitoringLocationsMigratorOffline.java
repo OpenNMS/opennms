@@ -141,13 +141,9 @@ public class MonitoringLocationsMigratorOffline extends AbstractOnmsUpgrade {
                 dbUtils.watch(connection);
 
                 PreparedStatement insertLocation = connection.prepareStatement("INSERT INTO monitoringlocations (id, monitoringarea, geolocation, latitude, longitude, priority) VALUES (?,?,?,?,?,?)");
-                PreparedStatement insertPollingPackage = connection.prepareStatement("INSERT INTO monitoringlocationspollingpackages (monitoringlocationid, packagename) VALUES (?,?)");
-                PreparedStatement insertCollectionPackage = connection.prepareStatement("INSERT INTO monitoringlocationscollectionpackages (monitoringlocationid, packagename) VALUES (?,?)");
                 PreparedStatement insertTag = connection.prepareStatement("INSERT INTO monitoringlocationstags (monitoringlocationid, tag) VALUES (?,?)");
 
                 dbUtils.watch(insertLocation);
-                dbUtils.watch(insertPollingPackage);
-                dbUtils.watch(insertCollectionPackage);
                 dbUtils.watch(insertTag);
 
                 for (LocationDef location : monitoringLocationsConfig.getLocations()) {
@@ -179,18 +175,6 @@ public class MonitoringLocationsMigratorOffline extends AbstractOnmsUpgrade {
                     }
                     insertLocation.execute();
                     count++;
-
-                    if (location.getPollingPackageName() != null && !"".equals(location.getPollingPackageName())) {
-                        insertPollingPackage.setString(1, location.getLocationName()); // monitoringlocationid
-                        insertPollingPackage.setString(2, location.getPollingPackageName()); // packagename
-                        insertPollingPackage.execute();
-                    }
-
-                    if (location.getCollectionPackageName() != null && !"".equals(location.getCollectionPackageName())) {
-                        insertCollectionPackage.setString(1, location.getLocationName()); // monitoringlocationid
-                        insertCollectionPackage.setString(2, location.getCollectionPackageName()); // packagename
-                        insertCollectionPackage.execute();
-                    }
 
                     for (Tag tag : location.getTags()) {
                         if (tag.getName() != null && !"".equals(tag.getName().trim())) {
