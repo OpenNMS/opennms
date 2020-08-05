@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.events.commands;
+package org.opennms.features.events.sink.dispatcher;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -37,7 +37,6 @@ import java.util.Map;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
@@ -78,7 +77,6 @@ public class EventSendCommand implements Action {
     List<String> params;
 
     @Argument(index = 0, name="uei", description="Event UEI", required=true, multiValued=false)
-    @Completion(EventUeiCompleter.class)
     private String eventUei;
 
     @Override
