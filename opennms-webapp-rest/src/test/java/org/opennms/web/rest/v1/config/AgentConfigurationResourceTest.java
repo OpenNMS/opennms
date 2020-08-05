@@ -33,6 +33,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
@@ -162,6 +163,11 @@ public class AgentConfigurationResourceTest {
             final SnmpConfiguration config = new SnmpConfiguration();
             config.setPort(1161);
             return config;
+        }
+
+        @Override
+        public void saveCurrent() throws IOException {
+            //Ignore
         }
 
         @Override

@@ -428,7 +428,7 @@
         <feature>opennms-rrd-api</feature>
         <feature>opennms-snmp</feature>
         <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0</bundle>
-        <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/1.9.0</bundle>
+        <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/1.9.3</bundle>
         <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
     <feature name="opennms-kafka" version="${project.version}" description="OpenNMS :: Features :: Kafka">

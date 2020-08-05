@@ -47,6 +47,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.core.config.api.TextEncryptor;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.core.spring.FileReloadContainer;
 import org.opennms.core.utils.ByteArrayComparator;
@@ -56,6 +58,7 @@ import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmp.AddressSnmpConfigVisitor;
+import org.opennms.netmgt.config.snmp.Configuration;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -67,6 +70,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
 import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
 
@@ -77,7 +82,6 @@ import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
  * {@link org.opennms.netmgt.snmp.SnmpAgentConfig SnmpAgentConfig} objects for specific
  * addresses. If an address cannot be located in the configuration then a
  * default peer instance is returned to the caller.
- *
  * <strong>Note: </strong>Users of this class should make sure the
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
@@ -90,6 +94,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     private static final Logger LOG = LoggerFactory.getLogger(SnmpPeerFactory.class);
 
     private static final int VERSION_UNSPECIFIED = -1;
+    private static final String SNMP_ENCRYPTION_CONTEXT = "snmp-config";
+    protected static final String ENCRYPTION_ENABLED = "org.opennms.snmp.encryption.enabled";
 
     private static File s_configFile;
 
@@ -116,6 +122,10 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     private FileReloadCallback<SnmpConfig> m_callback;
 
+    private TextEncryptor textEncryptor;
+
+    private Boolean encryptionEnabled = Boolean.getBoolean(ENCRYPTION_ENABLED);
+
     /**
      * <p>Constructor for SnmpPeerFactory.</p>
      *
@@ -125,7 +135,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         LOG.debug("creating new instance for resource {}: {}", resource, this);
 
         final SnmpConfig config = JaxbUtils.unmarshal(SnmpConfig.class, resource);
-
         try {
             final File file = resource.getFile();
             if (file != null) {
@@ -168,7 +177,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     /**
      * Load the config from the default config file and create the singleton instance of this factory.
      *
-     * @exception java.io.IOException Thrown if the specified config file cannot be read
+     * @throws java.io.IOException Thrown if the specified config file cannot be read
      */
     public static synchronized SnmpPeerFactory getInstance() {
         if (!s_loaded.get()) {
@@ -220,6 +229,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      *
      * @throws java.io.IOException if any.
      */
+    @Override
     public void saveCurrent() throws IOException {
         saveToFile(getFile());
     }
@@ -251,7 +261,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public SnmpAgentConfig getAgentConfig(final InetAddress agentAddress) {
         return getAgentConfig(agentAddress, null, VERSION_UNSPECIFIED);
     }
@@ -304,8 +316,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             getSnmpConfig().visit(visitor);
             final Definition matchingDef = visitor.getDefinition();
             // Is agent config matching specific definition or coming from default config
-            if(!visitor.isMatchingDefaultConfig()) {
-               agentConfig.setDefault(false);
+            if (!visitor.isMatchingDefaultConfig()) {
+                agentConfig.setDefault(false);
             }
             if (matchingDef != null) {
                 setSnmpAgentConfig(agentConfig, matchingDef, requestedSnmpVersion);
@@ -339,7 +351,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         agentConfig.setVersion(version);
         agentConfig.setPort(def.getPort());
         agentConfig.setRetries(def.getRetry());
-        agentConfig.setTimeout((int)def.getTimeout());
+        agentConfig.setTimeout((int) def.getTimeout());
         agentConfig.setMaxRequestSize(def.getMaxRequestSize());
         agentConfig.setMaxVarsPerPdu(def.getMaxVarsPerPdu());
         agentConfig.setMaxRepetitions(def.getMaxRepetitions());
@@ -412,9 +424,12 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         getReadLock().lock();
         try {
             if (m_container == null) {
+                decryptSnmpConfig(m_config);
                 return m_config;
             } else {
-                return m_container.getObject();
+                SnmpConfig config = m_container.getObject();
+                decryptSnmpConfig(config);
+                return config;
             }
         } finally {
             getReadLock().unlock();
@@ -426,7 +441,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * with many other attributes.  Uses new classes the wrap JAXB-generated code to
      * help with merging, comparing, and optimizing definitions.  Thanks for your
      * initial work on this Gerald.
-     *
      * Puts a specific IP address with associated read-community string into
      * the currently loaded snmp-config.xml.
      *
@@ -454,7 +468,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         try {
             // Check if there is a matching definition from the config itself instead of doing getAgentConfig.
             Definition matchingDefinition = findMatchingDefinition(inetAddress, location);
-            if(matchingDefinition !=  null) {
+            if (matchingDefinition != null) {
                 // Form a definition just with this IP Address.
                 Definition definition = createDefinition(matchingDefinition);
                 List<String> specifics = new ArrayList<>();
@@ -466,7 +480,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         } finally {
             getWriteLock().unlock();
         }
-        if(succeeded) {
+        if (succeeded) {
             try {
                 saveCurrent();
                 LOG.info("Removed {} at location {} from definitions by module {}", inetAddress.getHostAddress(), location, module);
@@ -484,7 +498,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return definitions.stream().filter(definition -> matchDefinition(definition, inetAddress, location)).findFirst().orElse(null);
     }
 
-    private  static Definition createDefinition(Definition matchingDefinition) {
+    private static Definition createDefinition(Definition matchingDefinition) {
         Definition definition = new Definition();
         definition.setProfileLabel(matchingDefinition.getProfileLabel());
         definition.setLocation(matchingDefinition.getLocation());
@@ -515,18 +529,18 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     }
 
     private boolean matchDefinition(Definition definition, InetAddress inetAddress, String location) {
-        boolean locationMatched =  LocationUtils.doesLocationsMatch(location, definition.getLocation());
+        boolean locationMatched = LocationUtils.doesLocationsMatch(location, definition.getLocation());
         return locationMatched && matchingIpAddress(inetAddress, definition);
     }
 
     private static boolean matchingIpAddress(InetAddress inetAddress, Definition definition) {
 
-         boolean matchingIpAddress = definition.getSpecifics().stream()
-                 .anyMatch(saddr -> saddr.equals(inetAddress.getHostAddress()));
-         if(!matchingIpAddress) {
-             return definition.getRanges().stream().anyMatch(range -> matchingRanges(inetAddress, range));
-         }
-         return true;
+        boolean matchingIpAddress = definition.getSpecifics().stream()
+                .anyMatch(saddr -> saddr.equals(inetAddress.getHostAddress()));
+        if (!matchingIpAddress) {
+            return definition.getRanges().stream().anyMatch(range -> matchingRanges(inetAddress, range));
+        }
+        return true;
     }
 
     private static boolean matchingRanges(InetAddress inetAddress, Range range) {
@@ -543,7 +557,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
         return inRange;
     }
-
 
 
     @Override
@@ -581,13 +594,115 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     public String getSnmpConfigAsString() {
         String marshalledConfig = null;
         StringWriter writer = null;
+        SnmpConfig snmpConfig = getSnmpConfig();
+        encryptSnmpConfig(snmpConfig);
         try {
             writer = new StringWriter();
-            JaxbUtils.marshal(getSnmpConfig(), writer);
+            JaxbUtils.marshal(snmpConfig, writer);
             marshalledConfig = writer.toString();
         } finally {
             IOUtils.closeQuietly(writer);
         }
         return marshalledConfig;
+    }
+
+    private void encryptSnmpConfig(SnmpConfig snmpConfig) {
+        if (!encryptionEnabled) {
+            return;
+        }
+        if (textEncryptor == null) {
+            try {
+                textEncryptor = BeanUtils.getBean("daoContext", "textEncryptor", TextEncryptor.class);
+            } catch (Exception e) {
+                LOG.warn("Exception while trying to get textEncryptor", e);
+                return;
+            }
+        }
+        encryptConfig(snmpConfig);
+        snmpConfig.getDefinitions().forEach(this::encryptConfig);
+    }
+
+    private void decryptSnmpConfig(SnmpConfig snmpConfig) {
+        if (!encryptionEnabled) {
+            return;
+        }
+
+        if (textEncryptor == null) {
+            try {
+                textEncryptor = BeanUtils.getBean("daoContext", "textEncryptor", TextEncryptor.class);
+            } catch (Exception e) {
+                LOG.warn("Exception while trying to get textEncryptor", e);
+                return;
+            }
+        }
+        decryptConfig(snmpConfig);
+
+        snmpConfig.getDefinitions().forEach(this::decryptConfig);
+    }
+
+    private void decryptConfig(Configuration config) {
+        if(!config.getEncrypted()) {
+            return;
+        }
+        try {
+            if (!Strings.isNullOrEmpty(config.getAuthPassphrase())) {
+                String authPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getAuthPassphrase());
+                config.setAuthPassphrase(authPassPhrase);
+            }
+            if (!Strings.isNullOrEmpty(config.getPrivacyPassphrase())) {
+                String privPassPhrase = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getPrivacyPassphrase());
+                config.setPrivacyPassphrase(privPassPhrase);
+            }
+            if (!Strings.isNullOrEmpty(config.getReadCommunity())) {
+                String readCommunity = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getReadCommunity());
+                config.setReadCommunity(readCommunity);
+            }
+            if (!Strings.isNullOrEmpty(config.getWriteCommunity())) {
+                String writeCommunity = textEncryptor.decrypt(SNMP_ENCRYPTION_CONTEXT, config.getWriteCommunity());
+                config.setWriteCommunity(writeCommunity);
+            }
+            config.setEncrypted(false);
+        } catch (Exception e) {
+            LOG.error("Exception while trying to decrypt snmp config", e);
+        }
+    }
+
+    private void encryptConfig(Configuration config) {
+        if (config.getEncrypted()) {
+            return;
+        }
+        try {
+            if (!Strings.isNullOrEmpty(config.getAuthPassphrase())) {
+                String authPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getAuthPassphrase());
+                config.setAuthPassphrase(authPassPhrase);
+            }
+            if (!Strings.isNullOrEmpty(config.getPrivacyPassphrase())) {
+                String privPassPhrase = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getPrivacyPassphrase());
+                config.setPrivacyPassphrase(privPassPhrase);
+            }
+            if (!Strings.isNullOrEmpty(config.getReadCommunity())) {
+                String readCommunity = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getReadCommunity());
+                config.setReadCommunity(readCommunity);
+            }
+            if (!Strings.isNullOrEmpty(config.getWriteCommunity())) {
+                String writeCommunity = textEncryptor.encrypt(SNMP_ENCRYPTION_CONTEXT, config.getWriteCommunity());
+                config.setWriteCommunity(writeCommunity);
+            }
+            config.setEncrypted(true);
+        } catch (Exception e) {
+            LOG.error("Exception while trying to encrypt snmp config", e);
+        }
+
+    }
+
+    @VisibleForTesting
+    Boolean getEncryptionEnabled() {
+        return encryptionEnabled;
+    }
+
+
+    @VisibleForTesting
+    void setTextEncryptor(TextEncryptor textEncryptor) {
+        this.textEncryptor = textEncryptor;
     }
 }

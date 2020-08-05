@@ -69,6 +69,7 @@ import com.google.common.collect.Sets;
 public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
 
     public static final Logger LOG = LoggerFactory.getLogger(JCEKSSecureCredentialsVault.class);
+    public static final String SCV_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
 
     private final KeyStore m_keystore;
     private final File m_keystoreFile;
