@@ -31,8 +31,8 @@
         </createIndex>
     </changeSet>
     <changeSet author="patrick.schweizer" id="27.0.0-remote-poller-tables">
-        <createTable tableName="application_perspective_location_map" remarks="locations from where an application shoud be monitored">
-            <column name="appId" type="bigint">
+        <createTable tableName="application_perspective_location_map" remarks="locations from where an application should be monitored">
+            <column name="appId" type="integer">
                 <constraints nullable="false" />
             </column>
             <column name="monitoringLocationId" type="text">

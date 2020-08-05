@@ -139,7 +139,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
     }
 
     /** Can be null. */
-    @Column(name = "polling_package", nullable=true)
+    @Column(name = "pollingpackage", nullable=true)
     public String getPollingPackage() {
         return pollingPackage;
     }
@@ -150,7 +150,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     @Override
     public int compareTo(OnmsApplication o) {
-        return getName().compareToIgnoreCase(o.getName());
+        return getName().compareTo(o.getName());
     }
     
     /** {@inheritDoc} */
