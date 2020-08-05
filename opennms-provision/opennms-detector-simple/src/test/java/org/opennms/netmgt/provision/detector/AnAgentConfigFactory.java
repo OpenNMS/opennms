@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.detector;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -44,6 +45,11 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 public class AnAgentConfigFactory implements SnmpAgentConfigFactory {
 
     public void define(final SnmpEventInfo info) {
+    }
+
+    @Override
+    public void saveCurrent() throws IOException {
+
     }
 
     @Override
