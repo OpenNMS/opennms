@@ -248,7 +248,7 @@ public class DefaultDistributedStatusService implements DistributedStatusService
                           "bright");
             table.addCell(getResponseText(s.getPollResult()), "");
             table.addCell(reDateify(s.getPollResult().getTimestamp()), "");
-            table.addCell(reDateify(new Date()), ""); // TODO Patrick: from where do we get the date?
+            table.addCell(reDateify(new Date()), ""); // TODO Patrick: workaround for now, whole code will soon go away.
         }
         
         return table;
