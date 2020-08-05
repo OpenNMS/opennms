@@ -73,7 +73,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
      */
     private Set<OnmsMonitoringLocation> perspectiveLocations = new LinkedHashSet<>();
 
-    /** References a pollinDefaultDistributedStatusServiceTestg package by name. Optional - may be null. */
+    /** References a polling package by name. Optional - may be null. */
     private String pollingPackage;
 
     @Id
@@ -139,7 +139,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
     }
 
     /** Can be null. */
-    @Column(name = "pollingPackage")
+    @Column(name = "polling_package", nullable=true)
     public String getPollingPackage() {
         return pollingPackage;
     }

@@ -1428,7 +1428,7 @@ CREATE INDEX location_specific_status_changes_statustime ON location_specific_st
 create table applications (
 	id			integer,
 	name		   varchar(32) not null,
-    pollingPackage varchar(256) null,
+    pollingpackage varchar(256) null,
 
         constraint applications_pkey primary key (id)
 );

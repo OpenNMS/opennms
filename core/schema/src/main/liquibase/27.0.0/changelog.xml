@@ -57,7 +57,7 @@
         </createIndex>
 
         <addColumn tableName="applications">
-            <column name="pollingPackage" type="text">
+            <column name="pollingpackage" type="text">
                 <constraints nullable="true" />
             </column>
         </addColumn>
