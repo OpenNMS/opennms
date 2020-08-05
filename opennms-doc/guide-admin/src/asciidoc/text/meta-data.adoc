@@ -170,3 +170,4 @@ The following places allow the use the Metadata DSL:
 * link:#ga-collectd-packages-services-meta-data[Performance Management]
 * link:#ga-metadata-ttl[TTLs with Minion]
 * link:#ga-threshhold-metadata[Expression-Based Thresholds]
+* link:#ga-notifications[Notifications]

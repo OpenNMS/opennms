@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -40,19 +40,19 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpResult;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "opennms", name = "snmp-walk", description = "Walk one or more MIB objects from the agent on the specified host and print the results.")
+@Command(scope = "opennms", name = "snmp-get", description = "Request one or more fully-qualified MIB objects from the agent on the specified host and print the results.")
 @Service
-public class WalkCommand extends SnmpRequestCommand implements Action {
+public class GetCommand extends SnmpRequestCommand implements Action {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WalkCommand.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetCommand.class);
 
     @Override
     public Object execute() {
-        LOG.debug("snmp:walk {} {} {}", m_location != null ? "-l " + m_location : "", m_host, m_oids);
+        LOG.debug("snmp:get {} {} {}", m_location != null ? "-l " + m_location : "", m_host, m_oids);
         final List<SnmpObjId> snmpObjIds = m_oids.stream()
                     .map(SnmpObjId::get)
                     .collect(Collectors.toList());
@@ -63,8 +63,8 @@ public class WalkCommand extends SnmpRequestCommand implements Action {
             System.out.println(String.format("Unknown host '%s' at location '%s': %s", m_host, m_location, uhe.getMessage()));
             return null;
         }
-        final CompletableFuture<List<SnmpResult>> future = locationAwareSnmpClient.walk(agent, snmpObjIds)
-            .withDescription("snmp:walk")
+        final CompletableFuture<List<SnmpValue>> future = locationAwareSnmpClient.get(agent, snmpObjIds)
+            .withDescription("snmp:get")
             .withLocation(m_location)
             .withSystemId(m_systemId)
             .execute();
@@ -73,7 +73,11 @@ public class WalkCommand extends SnmpRequestCommand implements Action {
             try {
                 future.get(1, TimeUnit.SECONDS).stream()
                     .forEach(res -> {
-                        System.out.println(String.format("[%s].[%s] = %s", res.getBase(), res.getInstance(), res.getValue()));
+                        if (res.isError()) {
+                            System.out.println(String.format("ERROR: %s", res));
+                        } else {
+                            System.out.println(String.format("%s%n", res));
+                        }
                     });
                 break;
             } catch (Exception e) {
