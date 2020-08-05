@@ -1,3 +1,14 @@
+opennms-sentinel (26.1.3-2) stable; urgency=low
+
+  * New minor release.  It contains a bunch of bug fixes and improvements,
+    including big optimizations to the new time-series layer, some UI fixes,
+    and more.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 04 Aug 2020 20:14:00 -0400
+
 opennms-sentinel (26.1.2-1) stable; urgency=medium
 
   * New enhancement release. It contains a bunch of bug fixes and improvements,
