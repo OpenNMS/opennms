@@ -16,7 +16,7 @@ Organizing users into groups helps with notifications and allows you to assign a
 . Choose *Configure OpenNMS>Configure Users, Groups and On-Call roles* and select *Configure Groups*.
 . Specify a group name and description and click *OK*.
 . Add users to the group by selecting them from the *Available Users* column and using the arrows to move them to the *Currently in Group* column.
-. _(Optional)_ Assign categories of responsibility to the group, such as Routers, Switchers, Servers, etc. 
+. _(Optional)_ Assign categories of responsibility to the group, such as Routers, Switches, Servers, etc. 
 . _(Optional)_ Create a link:ga-user-schedule[duty schedule].
 . Click *Finish*. 
 
