@@ -28,6 +28,9 @@
 
 package org.opennms.web.rest.v2;
 
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
+
 import java.util.Collection;
 import java.util.Set;
 
@@ -39,11 +42,18 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.v1.support.OnmsApplicationList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,8 +68,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ApplicationRestService extends AbstractDaoRestService<OnmsApplication,OnmsApplication,Integer,Integer> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationRestService.class);
+
+    private final ApplicationDao m_dao;
+
+    private final EventProxy m_eventProxy;
+
     @Autowired
-    private ApplicationDao m_dao;
+    public ApplicationRestService(final ApplicationDao dao, final EventProxy eventProxy) {
+        this.m_dao = dao;
+        this.m_eventProxy = eventProxy;
+    }
 
     @Override
     protected ApplicationDao getDao() {
@@ -104,11 +123,25 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
     @Override
     public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsApplication object) {
         final Integer id = getDao().save(object);
+        sentEvent(object, EventConstants.APPLICATION_CREATED_EVENT_UEI);
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
     }
 
     @Override
     protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsApplication object) {
         getDao().delete(object);
+        sentEvent(object, EventConstants.APPLICATION_DELETED_EVENT_UEI);
+    }
+
+    private void sentEvent(final OnmsApplication application, final String uei) {
+        final Event event = new EventBuilder(uei, "Web UI")
+                .addParam(PARM_APPLICATION_ID, application.getId())
+                .addParam(PARM_APPLICATION_NAME, application.getName())
+                .getEvent();
+        try {
+            m_eventProxy.send(event);
+        } catch (final EventProxyException e) {
+            LOG.warn("Failed to send event {}: {}", event.getUei(), e.getMessage(), e);
+        }
     }
 }
