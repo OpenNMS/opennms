@@ -1468,15 +1468,15 @@ CREATE UNIQUE INDEX appid_ifserviceid_idex on application_service_map(appid,ifse
 --########################################################################
 
 create table application_perspective_location_map (
-                                         appId		integer NOT NULL,
-                                         monitoringLocationId	text NOT NULL,
-                                         constraint appId_fkey foreign key (appId) references applications (id) ON DELETE CASCADE,
-                                         constraint monitoringLocationId_fkey foreign key (monitoringLocationId) references monitoringlocations (id) ON DELETE CASCADE
+                                         appid		integer NOT NULL,
+                                         monitoringlocationid	text NOT NULL,
+                                         constraint appId_fkey foreign key (appid) references applications (id) ON DELETE CASCADE,
+                                         constraint monitoringlocationid_fkey foreign key (monitoringlocationid) references monitoringlocations (id) ON DELETE CASCADE
 );
 
-CREATE INDEX application_perspective_location_map_appId_idx on application_perspective_location_map(appId);
-CREATE INDEX monitoringLocationId_idx on application_perspective_location_map(monitoringLocationId);
-CREATE UNIQUE INDEX appid_monitoringLocationId_idx on application_perspective_location_map(appId, monitoringLocationId);
+CREATE INDEX application_perspective_location_map_appid_idx on application_perspective_location_map(appid);
+CREATE INDEX monitoringlocationid_idx on application_perspective_location_map(monitoringlocationid);
+CREATE UNIQUE INDEX appid_monitoringlocationid_idx on application_perspective_location_map(appid, monitoringlocationid);
 
 --########################################################################
 --#
