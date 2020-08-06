@@ -30,4 +30,39 @@
             <column name="statustime"></column>
         </createIndex>
     </changeSet>
+    <changeSet author="patrick.schweizer" id="27.0.0-remote-poller-tables">
+        <createTable tableName="application_perspective_location_map" remarks="locations from where an application should be monitored">
+            <column name="appId" type="integer">
+                <constraints nullable="false" />
+            </column>
+            <column name="monitoringLocationId" type="text">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="appId_fkey"
+                                 baseTableName="application_perspective_location_map" baseColumnNames="appId"
+                                 referencedTableName="applications" referencedColumnNames="id" onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="monitoringLocationId_fkey"
+                                 baseTableName="application_perspective_location_map" baseColumnNames="monitoringLocationId"
+                                 referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE"/>
+        <createIndex tableName="application_perspective_location_map" indexName="application_perspective_location_map_appId_idx" unique="false">
+            <column name="appId" />
+        </createIndex>
+        <createIndex tableName="application_perspective_location_map" indexName="monitoringLocationId_idx" unique="false">
+            <column name="monitoringLocationId" />
+        </createIndex>
+        <createIndex tableName="application_perspective_location_map" indexName="appid_monitoringLocationId_idx" unique="true">
+            <column name="appId" />
+            <column name="monitoringLocationId" />
+        </createIndex>
+
+        <addColumn tableName="applications">
+            <column name="pollingpackage" type="text">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+
+        <dropTable tableName="monitoringlocationspollingpackages"/>
+        <dropTable tableName="monitoringlocationscollectionpackages"/>
+    </changeSet>
 </databaseChangeLog>

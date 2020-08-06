@@ -108,6 +108,7 @@ public abstract class EventConstants {
     /**
      * The poller package association changed event UEI.
      */
+    // TODO Patrick: not needed anymore, will be removed by: https://issues.opennms.org/browse/NMS-12838
     public static final String POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI = "uei.opennms.org/internal/poller/pollingPackageAssociationsChanged";
 
     /**
