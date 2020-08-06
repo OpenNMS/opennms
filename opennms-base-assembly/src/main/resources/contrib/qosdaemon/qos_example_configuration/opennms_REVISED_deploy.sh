@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo This file deploys the opennms Qos RX and TX files
 
