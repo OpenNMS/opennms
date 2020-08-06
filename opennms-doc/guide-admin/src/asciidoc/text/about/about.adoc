@@ -6,6 +6,7 @@ This documentation provides information and procedures on setup, configuration, 
 Using a task-based approach, chapters appear in a recommended order for working with {opennms-product-name}:
 
 . link:#ga-data-choices[Opt in or out] of usage statistics collection (requirement during first login).
+. link:#ga-admin-user-setup[Setup the admin user].
 . link:#ga-users-intro[Create users] and security roles.
 . link:#ga-provisioning-introduction[Provision] your system. 
 
@@ -22,7 +23,7 @@ https://docs.opennms.org/opennms/releases/latest/guide-development/guide-develop
 
 https://www.youtube.com/playlist?list=PLsXgBGH3nG7iZSlssmZB3xWsAJlst2j2z[OpenNMS 101]: a series of video training tutorials that build on each other to get you up and running with {opennms-product-name}
 
-https://www.youtube.com/watch?v=aoiSjNvDC7E&list=PLsXgBGH3nG7h6zy2hENGRJbs0BYQaqBu4[OpenNMS 102]: a series of stand-alone video tutorials on OpenNMS features.
+https://www.youtube.com/watch?v=aoiSjNvDC7E&list=PLsXgBGH3nG7h6zy2hENGRJbs0BYQaqBu4[OpenNMS 102]: a series of stand-alone video tutorials on OpenNMS features
 
 https://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html#[OpenNMS Helm]: a guide to OpenNMS Helm, an application for creating flexible dashboards to interact with data stored by OpenNMS
 
@@ -39,14 +40,14 @@ This guide uses the following typographical conventions:
 
 |*Convention* |*Meaning*
 |*bold* | Indicates UI elements to click or select in a procedure, and the names of UI elements like dialogs or icons. 
-|_italics_| Introduce a defined or special word. Also used for the titles of publications.
-|`code` | Anything you must type or enter, and the names for code-related elements (classes, methods, commands).
-
+|_italics_| Introduces a defined or special word. Also used for the titles of publications.
+|`code` | Anything you must type or enter, and the names for code-related elements (classes, methods, commands). 
 
 |===
 
 [[ga-admin-help]]
 === Need Help?
 
-* contact 
-* join our community on xref:https://opennms.discourse.group/latest[Discourse]
+* join the https://chat.opennms.com/opennms/channels/opennms-discussion[OpenNMS Discussion] chat
+* join our community on https://opennms.discourse.group/latest[Discourse]
+* contact sales@opennms.com to purchase https://www.opennms.com/support/[customer support]

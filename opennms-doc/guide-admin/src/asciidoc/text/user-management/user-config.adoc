@@ -6,7 +6,7 @@
 === User Creation and Configuration
 
 Only a user with admin privileges can create users and assign security roles to them. 
-We recommend creating a new admin user instead of using the default. 
+We recommend creating a new user with admin privileges instead of using the default `admin` (see link:#ga-admin-user-setup[Admin User Setup]).
 
 Ideally, each user account corresponds to a person, to help track who performs tasks in your {opennms-product-name} system.
 Assigning different link:#ga-role-user-management-roles[security roles] to each user helps restrict what tasks the user can perform. 
@@ -22,7 +22,7 @@ WARNING: Do not delete the default _admin_ and _rtc_ users.
 
 . Log in as a user with administrative permissions.
 . Click the gear icon in the top right. 
-. Choose *Configure OpenNMS>Configure Users, Groups and On-Call roles* and select *Configure Users*.
+. Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users*.
 . Click *Add new user* and specify a user ID, password, password confirmation and click *OK*. 
 . _Optional_: add user information in the appropriate fields.  
 . _Optional_: assign link:#ga-role-user-management-roles[user permissions].
@@ -55,7 +55,7 @@ To add a duty schedule for a user (or group), follow these steps:
 
 . Log in as a user with administrative permissions.
 . Click the gear icon in the top-right. 
-. Choose *Configure OpenNMS>Configure Users, Groups and On-Call roles* and select *Configure Users* (*Configure Groups*).
+. Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users* (*Configure Groups*).
 . Choose the user (or group) you want to modify. 
 . In the *Duty Schedule* area, select the number of schedules you want to add from the drop-down and click *Add Schedule*. 
 . Specify the days and times during which you want the user (or group) to receive notifications. 

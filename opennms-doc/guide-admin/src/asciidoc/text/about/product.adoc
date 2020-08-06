@@ -4,7 +4,7 @@
 
 = What is {opennms-product-name}?
 
-{opennms-product-name} is a free, open source platform to build network monitoriing solutions. 
+{opennms-product-name} is a free, open source platform to build network monitoring solutions. 
 Its event-driven architecture allows flexible workflow integration in existing monitoring and management stacks.
 
 {opennms-product-name} normalizes device- and vendor-specific messages and protocol-specific performance measurements. 

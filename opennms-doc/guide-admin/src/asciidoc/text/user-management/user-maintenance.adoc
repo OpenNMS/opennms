@@ -11,7 +11,7 @@ User maintenance describes additional tasks and information related to users.
 .*Setting a new password for any user*
 . Log in as a *User* with administrative permissions.
 . Click the gear icon in the top right. 
-. Choose *Configure OpenNMS>Configure Users, Groups and On-Call roles* and select *Configure Users*.
+. Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users*.
 . Click the *Modify* icon next to an existing user and select *Reset Password*.
 . Type a new *Password*, *Confirm Password*, and click *OK*.
 . Click *Finish*.
@@ -24,17 +24,15 @@ User maintenance describes additional tasks and information related to users.
 . Click *Submit*.
 . Log out and log in with your new password.
 
-==== Removing users and groups
+==== Deleting users and groups
 
-.*Deleting a user or group*
-
-. Log in as a *User* with administrative permissions
+. Log in as a user with administrative permissions.
 . Click the gear icon in the top right. 
-. Choose *Configure OpenNMS>Configure Users, Groups and On-Call roles* and select *Configure Users* (*Configure Groups*).
+. Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users* (*Configure Groups*).
 . Click the trash bin icon beside the user (or group) you want to delete. 
 . Confirm delete request with *OK*.
 
-#are there issues with permissions and deleting users or groups?#
+IMPORTANT: When you delete a group no one receives notification that the group has been deleted. Be aware that deleting a group or user also removes any schedules associated with that group or user, meaning they will not receive notifcations specified as part of a schedule. 
 
 ==== Advanced Configuration
 

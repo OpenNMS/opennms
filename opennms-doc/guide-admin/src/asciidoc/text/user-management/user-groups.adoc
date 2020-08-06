@@ -13,13 +13,13 @@ Organizing users into groups helps with notifications and allows you to assign a
 
  . Log in as a user with administrative permissions.
 . Click the gear icon in the top right. 
-. Choose *Configure OpenNMS>Configure Users, Groups and On-Call roles* and select *Configure Groups*.
+. Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Groups*.
 . Specify a group name and description and click *OK*.
 . Add users to the group by selecting them from the *Available Users* column and using the arrows to move them to the *Currently in Group* column.
 . _(Optional)_ Assign categories of responsibility to the group, such as Routers, Switches, Servers, etc. 
 . _(Optional)_ Create a link:ga-user-schedule[duty schedule].
 . Click *Finish*. 
 
-NOTE: Users will receive notifications in the order in which they appear in the group. 
+NOTE: Users will receive notifications in the order in which the user appears in the group. 
 
 #What happens when you delete a group? Does anyone receive notification that the group has been deleted? What if there are duty schedules. No notifications would end up going out. Is there an alert saying the group is associated with a notification or schedule?#
