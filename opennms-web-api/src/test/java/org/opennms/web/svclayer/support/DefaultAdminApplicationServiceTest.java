@@ -69,11 +69,11 @@ public class DefaultAdminApplicationServiceTest {
         verify(proxy).send(argument.capture());
         assertEquals(EventConstants.APPLICATION_CREATED_EVENT_UEI, argument.getValue().getUei());
 
-        // Change: no actual change
+        // Edit: no actual change
         service.performEdit("1", "Add", new String[0], new String[0]);
         verifyNoMoreInteractions(proxy);
 
-        // Chane: adding a service
+        // Edit: adding a service
         service.performEdit("1", "Add", new String[]{"1"}, new String[0]);
         verify(proxy, times(2)).send(argument.capture());
         assertEquals(EventConstants.APPLICATION_CHANGED_EVENT_UEI, argument.getValue().getUei());
