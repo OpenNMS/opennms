@@ -107,6 +107,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="applicationDao" ref="applicationDao"/>
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
     <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
+    <property name="eventProxy" ref="eventProxy"/>
   </bean>
   <bean id="adminCategoryService" class="org.opennms.web.svclayer.support.DefaultAdminCategoryService">
     <property name="categoryDao" ref="categoryDao"/>
