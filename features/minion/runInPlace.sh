@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
+
 test -d repository || (echo "This command must be ran from the features/minion directory" && exit 1)
 
 # Inclue the bundled Maven in the $PATH
