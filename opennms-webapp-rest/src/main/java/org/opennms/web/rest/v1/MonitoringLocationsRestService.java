@@ -46,10 +46,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.Duration;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.events.api.EventProxyException;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.persist.StringIntervalPropertyEditor;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
@@ -141,12 +138,8 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 			wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
 			for(final String key : params.keySet()) {
 				if (wrapper.isWritableProperty(key)) {
-					Object value = null;
 					String stringValue = params.getFirst(key);
-					value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
-					if (POLLING_PACKAGE_NAMES.equals(key)) {
-						sendEvent = (value != null ? !value.equals(wrapper.getPropertyValue(POLLING_PACKAGE_NAMES)) : wrapper.getPropertyValue(key) != null);
-					}
+					Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
 					wrapper.setPropertyValue(key, value);
 					modified = true;
 				}
@@ -154,15 +147,6 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 			if (modified) {
 			    LOG.debug("updateMonitoringLocation: monitoring location {} updated", monitoringLocation);
 			    m_monitoringLocationDao.save(def);
-				if (sendEvent) {
-					final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
-					eventBuilder.addParam(EventConstants.PARM_LOCATION, monitoringLocation);
-					try {
-						m_eventProxy.send(eventBuilder.getEvent());
-					} catch (final EventProxyException e) {
-						LOG.warn("Failed to send Event on polling package modification " + e.getMessage(), e);
-					}
-				}
 				return Response.noContent().build();
 			}
 			return Response.notModified().build();

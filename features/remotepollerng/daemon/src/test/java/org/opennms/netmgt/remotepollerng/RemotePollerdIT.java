@@ -218,9 +218,10 @@ public class RemotePollerdIT implements InitializingBean {
     }
 
     private void sendPollingPackageAssociationChanged(final String locationName) {
-        final EventBuilder ebldr = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_LOCATION, locationName);
-        this.eventIpcManager.sendNow(ebldr.getEvent());
+        // TODO Patrick: do we need to send a different event?
+        // final EventBuilder ebldr = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "test");
+        // ebldr.addParam(EventConstants.PARM_LOCATION, locationName);
+        // this.eventIpcManager.sendNow(ebldr.getEvent());
     }
 
     @Test

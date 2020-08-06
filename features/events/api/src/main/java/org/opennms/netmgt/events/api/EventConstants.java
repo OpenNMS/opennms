@@ -106,12 +106,6 @@ public abstract class EventConstants {
     public static final String OUTAGE_RESOLVED_EVENT_UEI = "uei.opennms.org/internal/poller/outageResolved";
 
     /**
-     * The poller package association changed event UEI.
-     */
-    // TODO Patrick: not needed anymore, will be removed by: https://issues.opennms.org/browse/NMS-12838
-    public static final String POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI = "uei.opennms.org/internal/poller/pollingPackageAssociationsChanged";
-
-    /**
      * The node added event UEI.
      */
     public static final String NODE_ADDED_EVENT_UEI = "uei.opennms.org/nodes/nodeAdded";
