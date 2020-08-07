@@ -28,20 +28,13 @@
 
 package org.opennms.web.svclayer.support;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.PollerConfigManager;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -55,8 +48,6 @@ import org.opennms.web.svclayer.AdminApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-
 /**
  * <p>DefaultAdminApplicationService class.</p>
  *
@@ -64,28 +55,7 @@ import com.google.common.base.Strings;
  * @version $Id: $
  * @since 1.8.1
  */
-public class DefaultAdminApplicationService implements
-        AdminApplicationService {
-
-    private static class ReadOnlyPollerConfigManager extends PollerConfigManager {
-
-        private ReadOnlyPollerConfigManager(InputStream stream) {
-            super(stream);
-        }
-
-        public static ReadOnlyPollerConfigManager create() throws IOException {
-            final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
-            try (InputStream is = new FileInputStream(cfgFile)) {
-                return new ReadOnlyPollerConfigManager(is);
-            }
-        }
-
-        @Override
-        protected void saveXml(String xml) throws IOException {
-            // pass
-        }
-    }
-
+public class DefaultAdminApplicationService implements AdminApplicationService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultAdminApplicationService.class);
 
     private ApplicationDao m_applicationDao;
@@ -108,7 +78,7 @@ public class DefaultAdminApplicationService implements
             m_applicationDao.initialize(service.getIpInterface().getNode());
         }
 
-        return new ApplicationAndMemberServices(application, memberServices, application.getPerspectiveLocations(), application.getPollingPackage());
+        return new ApplicationAndMemberServices(application, memberServices, application.getPerspectiveLocations());
     }
 
     /**
@@ -130,18 +100,6 @@ public class DefaultAdminApplicationService implements
         return m_monitoringLocationDao.findAll().stream().sorted().collect(Collectors.toList());
     }
 
-    @Override
-    public List<String> findAllPollerPackages() {
-        try {
-            final PollerConfig pollerConfig = ReadOnlyPollerConfigManager.create();
-            return Collections.list(pollerConfig.enumeratePackage()).stream().map(p -> p.getName()).sorted().collect(Collectors.toList());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return Collections.emptyList();
-    }
-
     /** {@inheritDoc} */
     @Override
     public EditModel findApplicationAndAllMonitoredServices(String applicationIdString) {
@@ -151,9 +109,7 @@ public class DefaultAdminApplicationService implements
                 findAllMonitoredServices(),
                 app.getMemberServices(),
                 findAllMonitoringLocations(),
-                app.getMemberLocations(),
-                findAllPollerPackages(),
-                app.getPollerPackage());
+                app.getMemberLocations());
     }
 
     /**
@@ -347,16 +303,6 @@ public class DefaultAdminApplicationService implements
                     + editAction
                     + "' is not allowed");
         }
-    }
-
-    public void performEditPollerPackage(final String applicationIdString, final String pollingPackage) {
-        if (applicationIdString == null) {
-            throw new IllegalArgumentException("applicationIdString cannot be null");
-        }
-
-        final OnmsApplication application = findApplication(applicationIdString);
-        application.setPollingPackage(Strings.isNullOrEmpty(pollingPackage) ? null : pollingPackage);
-        m_applicationDao.save(application);
     }
 
     /** {@inheritDoc} */
@@ -575,13 +521,11 @@ public class DefaultAdminApplicationService implements
         private OnmsApplication m_application;
         private Collection<OnmsMonitoredService> m_memberServices;
         private Collection<OnmsMonitoringLocation> m_memberLocations;
-        private String m_pollerPackage;
 
-        public ApplicationAndMemberServices(OnmsApplication application, Collection<OnmsMonitoredService> memberServices, Collection<OnmsMonitoringLocation> memberLocations, String pollerPackage) {
+        public ApplicationAndMemberServices(OnmsApplication application, Collection<OnmsMonitoredService> memberServices, Collection<OnmsMonitoringLocation> memberLocations) {
             m_application = application;
             m_memberServices = memberServices;
             m_memberLocations = memberLocations;
-            m_pollerPackage = pollerPackage;
         }
 
         public OnmsApplication getApplication() {
@@ -594,10 +538,6 @@ public class DefaultAdminApplicationService implements
         public Collection<OnmsMonitoringLocation> getMemberLocations() {
             return m_memberLocations;
         }
-
-        public String getPollerPackage() {
-            return m_pollerPackage;
-        }
     }
 
     public static class EditModel {
@@ -606,22 +546,16 @@ public class DefaultAdminApplicationService implements
         private List<OnmsMonitoredService> m_sortedMemberServices;
         private List<OnmsMonitoringLocation> m_monitoringLocations;
         private List<OnmsMonitoringLocation> m_sortedMemberLocations;
-        private List<String> m_pollerPackages;
-        private String m_selectedPollerPackage;
 
         public EditModel(OnmsApplication application,
                 List<OnmsMonitoredService> monitoredServices,
                 Collection<OnmsMonitoredService> memberServices,
                 List<OnmsMonitoringLocation> monitoringLocations,
-                Collection<OnmsMonitoringLocation> memberLocations,
-                List<String> pollerPackages,
-                String selectedPollerPackage) {
+                Collection<OnmsMonitoringLocation> memberLocations) {
             m_application = application;
             m_monitoredServices = monitoredServices;
             m_monitoringLocations = monitoringLocations;
-            m_pollerPackages = pollerPackages;
-            m_selectedPollerPackage = selectedPollerPackage;
-            
+
             m_monitoredServices.removeAll(memberServices);
             m_monitoringLocations.removeAll(memberLocations);
             
@@ -650,14 +584,6 @@ public class DefaultAdminApplicationService implements
 
         public List<OnmsMonitoringLocation> getSortedMemberLocations() {
             return m_sortedMemberLocations;
-        }
-
-        public List<String> getPollerPackages() {
-            return m_pollerPackages;
-        }
-
-        public String getSelectedPollerPackage() {
-            return m_selectedPollerPackage;
         }
     }
 

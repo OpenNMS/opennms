@@ -92,32 +92,6 @@
           </table>
         </p>
 
-
-        <p>
-          <h5>Polling package:</h5>
-
-          <table class="table table-sm">
-            <tr>
-              <th>Name</th>
-            </tr>
-            <tr>
-              <td>
-                <c:choose>
-                  <c:when test="${not empty model.pollerPackage}">
-                    ${model.pollerPackage}
-                    <br />
-                  </c:when>
-                  <c:otherwise>
-                    Default
-                    <br />
-                  </c:otherwise>
-                </c:choose>
-              </td>
-            </tr>
-          </table>
-        </p>
-
-
       </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->

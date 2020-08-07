@@ -137,26 +137,6 @@ public class ApplicationController extends AbstractController {
                                     model);
         }
 
-        if (applicationIdString != null && "pollerPackage".equals(editString)) {
-            final String editAction = getNonEmptyParameter(request, "action");
-            if (editAction != null) {
-                final String pollerPackage = request.getParameter("pollerPackage");
-
-                m_adminApplicationService.performEditPollerPackage(applicationIdString, pollerPackage);
-
-                final ModelAndView modelAndView = new ModelAndView(new RedirectView("/admin/applications.htm", true));
-                modelAndView.addObject("applicationid", applicationIdString);
-                modelAndView.addObject("edit", "pollerPackage");
-                return modelAndView;
-            }
-
-            final EditModel model = m_adminApplicationService.findApplicationAndAllMonitoredServices(applicationIdString);
-
-            return new ModelAndView("/admin/editApplication",
-                                    "model",
-                                    model);
-        }
-
         if (applicationIdString != null) {
             return new ModelAndView("/admin/showApplication",
                                     "model",

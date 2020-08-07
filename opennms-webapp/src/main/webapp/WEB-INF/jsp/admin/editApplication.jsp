@@ -112,39 +112,6 @@
           </div>
         </form>
 
-        <h5>Polling package:</h5>
-
-        <form class="form-row" role="form" action="admin/applications.htm" method="get">
-          <input type="hidden" name="applicationid" value="${model.application.id}"/>
-          <input type="hidden" name="edit" value="pollerPackage"/>
-          <input type="hidden" name="action" value="setPollerPackage"/>
-
-          <div class="form-group col-md-5">
-            <label for="input_pollerPackage">Poller package</label>
-            <select name="pollerPackage" id="input_pollerPackage" class="form-control" size="1" onchange="this.form.submit()">
-              <c:choose>
-                <c:when test="${model.selectedPollerPackage == '' or model.selectedPollerPackage == null}">
-                  <option value="" selected>Default</option>
-                </c:when>
-                <c:otherwise>
-                  <option value="">Default</option>
-                </c:otherwise>
-              </c:choose>
-
-              <c:forEach items="${model.pollerPackages}" var="pollerPackage">
-                <c:choose>
-                  <c:when test="${pollerPackage == model.selectedPollerPackage}">
-                    <option value="${pollerPackage}" selected>${fn:escapeXml(pollerPackage)}</option>
-                  </c:when>
-                  <c:otherwise>
-                    <option value="${pollerPackage}">${fn:escapeXml(pollerPackage)}</option>
-                  </c:otherwise>
-                </c:choose>
-              </c:forEach>
-            </select>
-          </div>
-        </form>
-
       </div> <!-- card-body -->
     </div> <!-- panel -->
 

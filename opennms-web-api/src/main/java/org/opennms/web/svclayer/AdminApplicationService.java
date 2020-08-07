@@ -64,8 +64,6 @@ public interface AdminApplicationService {
 
     public List<OnmsMonitoringLocation> findAllMonitoringLocations();
 
-    public List<String> findAllPollerPackages();
-
     /**
      * <p>findApplicationAndAllMonitoredServices</p>
      *
@@ -79,9 +77,6 @@ public interface AdminApplicationService {
 
     @Transactional(readOnly = false)
     public void performEditLocations(String appId, String editAction, String[] locationAdds, String[] locationDeletes);
-
-    @Transactional(readOnly = false)
-    public void performEditPollerPackage(String appId, String pollerPackage);
 
     /**
      * <p>addNewApplication</p>
