@@ -52,13 +52,15 @@
         Application '${fn:escapeXml(model.application.name)}' has ${fn:length(model.sortedMemberServices)} services
         </p>
 
+        <h5>Defined service(s):</h5>
+
         <form class="form-row" role="form" action="admin/applications.htm" method="get">
           <input type="hidden" name="applicationid" value="${model.application.id}"/>
-          <input type="hidden" name="edit" value="edit"/>
+          <input type="hidden" name="edit" value="services"/>
 
           <div class="form-group col-md-5">
             <label for="input_toAdd">Available services</label>
-            <select name="toAdd" id="input_toAdd" class="form-control" size="20" multiple>
+            <select name="serviceAdds" id="input_toAdd" class="form-control" size="15" multiple>
               <c:forEach items="${model.monitoredServices}" var="service">
                 <option value="${service.id}">${fn:escapeXml(service.ipInterface.node.label)} / ${service.ipAddressAsString} / ${service.serviceName}</option>
               </c:forEach>
@@ -72,13 +74,77 @@
 
           <div class="form-group col-md-5">
             <label for="input_toDelete">Services on application</label>
-            <select name="toDelete" id="input_toDelete" class="form-control" size="20" multiple>
+            <select name="serviceDeletes" id="input_toDelete" class="form-control" size="15" multiple>
               <c:forEach items="${model.sortedMemberServices}" var="service">
                 <option value="${service.id}">${fn:escapeXml(service.ipInterface.node.label)} / ${service.ipAddressAsString} / ${service.serviceName}</option>
               </c:forEach>
             </select>
           </div>
         </form>
+
+        <h5>Associated location(s):</h5>
+
+        <form class="form-row" role="form" action="admin/applications.htm" method="get">
+          <input type="hidden" name="applicationid" value="${model.application.id}"/>
+          <input type="hidden" name="edit" value="locations"/>
+
+          <div class="form-group col-md-5">
+            <label for="input_locationAdd">Available locations</label>
+            <select name="locationAdds" id="input_locationAdd" class="form-control" size="10" multiple>
+              <c:forEach items="${model.monitoringLocations}" var="location">
+                <option value="${location.locationName}">${fn:escapeXml(location.locationName)}</option>
+              </c:forEach>
+            </select>
+          </div>
+
+          <div class="form-group col-md-2 text-center mb-auto mt-auto">
+            <input type="submit" class="btn btn-secondary" name="action" value="Add &#155;&#155;"/>
+            <input type="submit" class="btn btn-secondary" name="action" value="&#139;&#139; Remove"/>
+          </div>
+
+          <div class="form-group col-md-5">
+            <label for="input_locationDelete">Locations on application</label>
+            <select name="locationDeletes" id="input_locationDelete" class="form-control" size="10" multiple>
+              <c:forEach items="${model.sortedMemberLocations}" var="location">
+                <option value="${location.locationName}">${fn:escapeXml(location.locationName)}</option>
+              </c:forEach>
+            </select>
+          </div>
+        </form>
+
+        <h5>Polling package:</h5>
+
+        <form class="form-row" role="form" action="admin/applications.htm" method="get">
+          <input type="hidden" name="applicationid" value="${model.application.id}"/>
+          <input type="hidden" name="edit" value="pollerPackage"/>
+          <input type="hidden" name="action" value="setPollerPackage"/>
+
+          <div class="form-group col-md-5">
+            <label for="input_pollerPackage">Poller package</label>
+            <select name="pollerPackage" id="input_pollerPackage" class="form-control" size="1" onchange="this.form.submit()">
+              <c:choose>
+                <c:when test="${model.selectedPollerPackage == '' or model.selectedPollerPackage == null}">
+                  <option value="" selected>Default</option>
+                </c:when>
+                <c:otherwise>
+                  <option value="">Default</option>
+                </c:otherwise>
+              </c:choose>
+
+              <c:forEach items="${model.pollerPackages}" var="pollerPackage">
+                <c:choose>
+                  <c:when test="${pollerPackage == model.selectedPollerPackage}">
+                    <option value="${pollerPackage}" selected>${fn:escapeXml(pollerPackage)}</option>
+                  </c:when>
+                  <c:otherwise>
+                    <option value="${pollerPackage}">${fn:escapeXml(pollerPackage)}</option>
+                  </c:otherwise>
+                </c:choose>
+              </c:forEach>
+            </select>
+          </div>
+        </form>
+
       </div> <!-- card-body -->
     </div> <!-- panel -->
 
