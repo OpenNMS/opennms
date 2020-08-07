@@ -114,7 +114,7 @@ public class Interface implements Serializable {
      *  
      */
     @XmlAttribute(name = "max-vars-per-pdu")
-    private Integer m_maxVarsPerPdu;
+    private Integer m_maxVarsPerPdu = 10;
 
     /**
      * Max Number of Interface per runnable. This is deprecated and will be
@@ -131,7 +131,7 @@ public class Interface implements Serializable {
      *
      */
     @XmlAttribute(name = "up-values")
-    private String m_upValues;
+    private String m_upValues = "1";
 
     /**
      * Values of ifAdminStatus and ifOperStatus to treat as down values.
@@ -140,7 +140,7 @@ public class Interface implements Serializable {
      *
      */
     @XmlAttribute(name = "down-values")
-    private String m_downValues;
+    private String m_downValues = "2";
 
     public Interface() {
     }
@@ -210,7 +210,7 @@ public class Interface implements Serializable {
     }
 
     public Integer getMaxVarsPerPdu() {
-        return m_maxVarsPerPdu != null ? m_maxVarsPerPdu : 10;
+        return m_maxVarsPerPdu;
     }
 
     public void setMaxVarsPerPdu(final Integer maxVarsPerPdu) {
@@ -218,7 +218,7 @@ public class Interface implements Serializable {
     }
 
     public Integer getMaxInterfacePerPdu() {
-        return m_maxInterfacePerPdu != null ? m_maxInterfacePerPdu : 0;
+        return m_maxInterfacePerPdu;
     }
 
     public void setMaxInterfacePerPdu(final Integer maxInterfacePerPdu) {
@@ -244,7 +244,8 @@ public class Interface implements Serializable {
                             m_retry, 
                             m_timeout, 
                             m_maxVarsPerPdu, 
-                            m_maxInterfacePerPdu);
+                            m_upValues,
+                            m_downValues);
     }
 
     @Override
@@ -264,7 +265,6 @@ public class Interface implements Serializable {
                     && Objects.equals(this.m_retry, that.m_retry)
                     && Objects.equals(this.m_timeout, that.m_timeout)
                     && Objects.equals(this.m_maxVarsPerPdu, that.m_maxVarsPerPdu)
-                    && Objects.equals(this.m_maxInterfacePerPdu, that.m_maxInterfacePerPdu)
                     && Objects.equals(this.m_upValues, that.m_upValues)
                     && Objects.equals(this.m_downValues, that.m_downValues);
         }
