@@ -193,18 +193,18 @@ public interface SnmpInterfacePollerConfig {
 
     /**
      * <p>getUpValues</p>
-     * @param pkgName a {@link java.lang.String} object.
-     * @param pkgInterfaceName a {@link java.lang.String} object.
+     * @param pkgName a {@link String} object.
+     * @param pkgInterfaceName a {@link String} object.
      * @return a String.
      */
-    Optional<String> getUpValues(String pkgName,String pkgInterfaceName);
+    String getUpValues(String pkgName, String pkgInterfaceName);
     /**
      * <p>getDownValues</p>
      * @param pkgName a {@link java.lang.String} object.
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a String.
      */
-    Optional<String> getDownValues(String pkgName,String pkgInterfaceName);
+    String getDownValues(String pkgName,String pkgInterfaceName);
     /**
      * <p>rebuildPackageIpListMap</p>
      */

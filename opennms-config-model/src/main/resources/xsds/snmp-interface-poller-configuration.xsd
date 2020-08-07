@@ -338,22 +338,22 @@
         </annotation>
       </attribute>
 
-      <attribute name="up-values" type="string" use="optional" default="1" >
+      <attribute name="up-values" type="string" use="optional" >
         <annotation>
           <documentation>
             Values of ifAdminStatus and ifOperStatus to treat as up values.
             Expects a comma separated list of discrete values i.e.
-            '1,3'. Defaults to '1'.
+            '1,3'. Inherits global values when not specified.
           </documentation>
         </annotation>
       </attribute>
 
-      <attribute name="down-values" type="string" use="optional" default="2" >
+      <attribute name="down-values" type="string" use="optional" >
         <annotation>
           <documentation>
             Values of ifAdminStatus and ifOperStatus to treat as down values.
             Expects a comma separated list of discrete values i.e.
-            '2,3,5,7'. Defaults to '2'.
+            '2,3,5,7'. Inherits global values when not specified.
           </documentation>
         </annotation>
       </attribute>

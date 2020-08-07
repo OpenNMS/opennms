@@ -127,20 +127,18 @@ public class Interface implements Serializable {
     /**
      * Values of ifAdminStatus and ifOperStatus to treat as up values.
      * Expects a comma separated list of discrete values i.e. '1,3'.
-     * Defaults to '1'.
      *
      */
     @XmlAttribute(name = "up-values")
-    private String m_upValues = "1";
+    private String m_upValues;
 
     /**
      * Values of ifAdminStatus and ifOperStatus to treat as down values.
      * Expects a comma separated list of discrete values i.e. '2,3,5,7'.
-     * Defaults to '2'.
      *
      */
     @XmlAttribute(name = "down-values")
-    private String m_downValues = "2";
+    private String m_downValues;
 
     public Interface() {
     }

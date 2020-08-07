@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SnmpInterfacePollerConfigFactoryTest {
     private SnmpInterfacePollerConfigFactory m_factory;
@@ -119,7 +120,6 @@ public class SnmpInterfacePollerConfigFactoryTest {
         i1.setRetry(6);
         i1.setPort(616);
         i1.setMaxVarsPerPdu(11);
-        i1.setMaxInterfacePerPdu(0);
         i1.setUpValues("1");
         i1.setDownValues("2,3");
         p.addInterface(i1);
@@ -130,9 +130,6 @@ public class SnmpInterfacePollerConfigFactoryTest {
         i2.setUserDefined(false);
         i2.setStatus("on");
         i2.setMaxVarsPerPdu(10);
-        i2.setUpValues("1");
-        i2.setDownValues("2");
-        i2.setMaxInterfacePerPdu(0);
         p.addInterface(i2);
         Assert.assertTrue(p.equals(m_factory.getPackage("example1")));
     }
@@ -150,4 +147,17 @@ public class SnmpInterfacePollerConfigFactoryTest {
         p.addInterface(i);
         Assert.assertTrue(p.equals(m_factory.getPackage("example2")));
     }
+
+    @Test
+    public void resolveEffectiveUpValues() {
+        Assert.assertEquals("1", m_factory.getUpValues("example1", "Ethernet"));
+        Assert.assertEquals("1,5", m_factory.getUpValues("example2", "deuce"));
+    }
+
+    @Test
+    public void resolveEffectiveDownValues() {
+        Assert.assertEquals("2,3", m_factory.getDownValues("example1", "Ethernet"));
+        Assert.assertEquals("2,3,4,6,7", m_factory.getDownValues("example2", "deuce"));
+    }
+
 }
