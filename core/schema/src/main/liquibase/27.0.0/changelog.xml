@@ -32,28 +32,28 @@
     </changeSet>
     <changeSet author="patrick.schweizer" id="27.0.0-remote-poller-tables">
         <createTable tableName="application_perspective_location_map" remarks="locations from where an application should be monitored">
-            <column name="appId" type="integer">
+            <column name="appid" type="integer">
                 <constraints nullable="false" />
             </column>
-            <column name="monitoringLocationId" type="text">
+            <column name="monitoringlocationid" type="text">
                 <constraints nullable="false" />
             </column>
         </createTable>
-        <addForeignKeyConstraint constraintName="appId_fkey"
-                                 baseTableName="application_perspective_location_map" baseColumnNames="appId"
+        <addForeignKeyConstraint constraintName="appid_fkey"
+                                 baseTableName="application_perspective_location_map" baseColumnNames="appid"
                                  referencedTableName="applications" referencedColumnNames="id" onDelete="CASCADE"/>
-        <addForeignKeyConstraint constraintName="monitoringLocationId_fkey"
-                                 baseTableName="application_perspective_location_map" baseColumnNames="monitoringLocationId"
+        <addForeignKeyConstraint constraintName="monitoringLocationid_fkey"
+                                 baseTableName="application_perspective_location_map" baseColumnNames="monitoringlocationid"
                                  referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE"/>
-        <createIndex tableName="application_perspective_location_map" indexName="application_perspective_location_map_appId_idx" unique="false">
-            <column name="appId" />
+        <createIndex tableName="application_perspective_location_map" indexName="application_perspective_location_map_appid_idx" unique="false">
+            <column name="appid" />
         </createIndex>
-        <createIndex tableName="application_perspective_location_map" indexName="monitoringLocationId_idx" unique="false">
-            <column name="monitoringLocationId" />
+        <createIndex tableName="application_perspective_location_map" indexName="monitoringlocationid_idx" unique="false">
+            <column name="monitoringlocationid" />
         </createIndex>
-        <createIndex tableName="application_perspective_location_map" indexName="appid_monitoringLocationId_idx" unique="true">
-            <column name="appId" />
-            <column name="monitoringLocationId" />
+        <createIndex tableName="application_perspective_location_map" indexName="appid_monitoringlocationid_idx" unique="true">
+            <column name="appid" />
+            <column name="monitoringlocationid" />
         </createIndex>
 
         <addColumn tableName="applications">

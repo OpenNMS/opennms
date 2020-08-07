@@ -121,8 +121,8 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     @ManyToMany( cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name="application_perspective_location_map",
-            joinColumns=@JoinColumn(name="appId", referencedColumnName = "id"),
-            inverseJoinColumns=@JoinColumn(name="monitoringLocationId", referencedColumnName = "id"))
+            joinColumns=@JoinColumn(name="appid", referencedColumnName = "id"),
+            inverseJoinColumns=@JoinColumn(name="monitoringlocationid", referencedColumnName = "id"))
     @XmlIDREF
     @XmlElement(name="perspectiveLocationId")
     @XmlElementWrapper(name="perspectiveLocations")
