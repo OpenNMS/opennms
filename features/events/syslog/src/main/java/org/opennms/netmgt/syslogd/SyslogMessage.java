@@ -83,6 +83,7 @@ public class SyslogMessage implements Cloneable {
     private ZoneId m_zoneId;
 
     private String m_hostname;
+    private InetAddress m_hostAddress;
     private String m_processName;
     private String m_processId;
     private String m_messageId;
@@ -271,9 +272,12 @@ public class SyslogMessage implements Cloneable {
     }
 
     public InetAddress getHostAddress() {
+        if(m_hostAddress != null) {
+            return m_hostAddress;
+        }
         if (m_hostname != null) {
             try {
-                return InetAddress.getByName(m_hostname);
+                return m_hostAddress = InetAddress.getByName(m_hostname);
             } catch (UnknownHostException e) {
                 if (LOG.isTraceEnabled()) {
                     LOG.trace("Unable to resolve hostname '{}' in syslog message", m_hostname, e);
@@ -288,6 +292,10 @@ public class SyslogMessage implements Cloneable {
         } else {
             return null;
         }
+    }
+
+    public void setHostAddress(InetAddress hostAddress) {
+        this.m_hostAddress = m_hostAddress;
     }
 
     public String getProcessName() {
