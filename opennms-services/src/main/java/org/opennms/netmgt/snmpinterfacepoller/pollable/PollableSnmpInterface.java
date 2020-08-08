@@ -329,7 +329,6 @@ public class PollableSnmpInterface implements ReadyRunnable {
                         doPoll(pollMonitor,mifaces.subList(start, start+maxiface));
                         start += maxiface;
                     }
-                    LOG.debug("passing subList of mifaces, which is {}, from {} to {} which is how large m_snmpinterfaces is.", mifaces.size(), start, m_snmpinterfaces.size());
                     doPoll(pollMonitor,mifaces.subList(start, m_snmpinterfaces.size()));
                 }
 
@@ -408,7 +407,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
                         sendAdminUpEvent(iface);
                         sendOperUpEvent(iface);
                         miface.setAdminPollStatus(PollStatus.available());
-                        miface.setOperPollStatus(PollStatus.unavailable("ifOperStatus is " + miface.getOperstatus().getLabel()));
+                        miface.setOperPollStatus(PollStatus.available());
                     }
 
                     iface.setIfAdminStatus(miface.getAdminstatus().getMibValue());

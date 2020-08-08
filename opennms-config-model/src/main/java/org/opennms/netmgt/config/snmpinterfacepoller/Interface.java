@@ -122,7 +122,7 @@ public class Interface implements Serializable {
      *  
      */
     @XmlAttribute(name = "max-interface-per-pdu")
-    private Integer m_maxInterfacePerPdu;
+    private Integer m_maxInterfacePerPdu = 0;
 
     /**
      * Values of ifAdminStatus and ifOperStatus to treat as up values.
