@@ -20,6 +20,11 @@
 		<onmsgi:listener ref="listenerRegistry" bind-method="onBind" unbind-method="onUnbind" />
 	</onmsgi:list>
 
+	<bean id="connectorRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryConnectorRegistryImpl" />
+	<onmsgi:list id="connectorFactoryList" interface="org.opennms.netmgt.telemetry.api.receiver.ConnectorFactory">
+		<onmsgi:listener ref="connectorRegistry" bind-method="onBind" unbind-method="onUnbind" />
+	</onmsgi:list>
+
 	<bean id="parserRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryParserRegistryImpl" />
 	<onmsgi:list id="parserFactoryList" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
 		<onmsgi:listener ref="parserRegistry" bind-method="onBind" unbind-method="onUnbind" />

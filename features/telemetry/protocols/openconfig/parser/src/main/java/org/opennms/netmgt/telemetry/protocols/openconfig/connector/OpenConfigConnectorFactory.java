@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.api.registry;
-
-import java.util.Collection;
+package org.opennms.netmgt.telemetry.protocols.openconfig.connector;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.api.receiver.Connector;
-import org.opennms.netmgt.telemetry.api.receiver.Listener;
-import org.opennms.netmgt.telemetry.api.receiver.Parser;
+import org.opennms.netmgt.telemetry.api.receiver.ConnectorFactory;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
-import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.ConnectorDefinition;
-import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
-import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 
-import com.codahale.metrics.MetricRegistry;
+public class OpenConfigConnectorFactory implements ConnectorFactory {
 
-public interface TelemetryRegistry {
-    Adapter getAdapter(AdapterDefinition adapterDefinition);
-    Listener getListener(ListenerDefinition listenerDefinition);
-    Connector getConnector(ConnectorDefinition connectorDefinition);
-    Parser getParser(ParserDefinition parserDefinition);
+    private final TelemetryRegistry telemetryRegistry;
 
-    void registerDispatcher(String queueName, AsyncDispatcher<TelemetryMessage> dispatcher);
-    void clearDispatchers();
-    void removeDispatcher(String queueName);
-    Collection<AsyncDispatcher<TelemetryMessage>> getDispatchers();
-    AsyncDispatcher<TelemetryMessage> getDispatcher(String queueName);
+    public OpenConfigConnectorFactory(TelemetryRegistry telemetryRegistry) {
+        this.telemetryRegistry = telemetryRegistry;
+    }
 
-    MetricRegistry getMetricRegistry();
+    @Override
+    public Class<? extends Connector> getBeanClass() {
+        return OpenConfigConnector.class;
+    }
+
+    @Override
+    public Connector createBean(ConnectorDefinition connectorDefinition) {
+        final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(connectorDefinition.getQueueName());
+        return new OpenConfigConnector(dispatcher);
+    }
 }

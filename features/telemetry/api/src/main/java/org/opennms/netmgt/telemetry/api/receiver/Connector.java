@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.telemetry.api.receiver;
 
+import java.io.Closeable;
+import java.net.InetAddress;
+import java.util.Map;
+
 /**
  * Interface used by the daemon to manage connector.
  *
@@ -35,9 +39,8 @@ package org.opennms.netmgt.telemetry.api.receiver;
  *
  * @author jwhite
  */
-public interface Connector {
-    String getName();
+public interface Connector extends Closeable {
 
-    void start() throws InterruptedException;
-    void stop() throws InterruptedException;
+    void stream(int nodeId, InetAddress ipAddress, Map<String, String> params);
+
 }

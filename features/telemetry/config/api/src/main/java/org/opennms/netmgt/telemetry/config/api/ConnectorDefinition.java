@@ -44,6 +44,13 @@ public interface ConnectorDefinition extends TelemetryBeanDefinition {
     String getName();
 
     /**
+     * The name of the queue the connector "writes" to.
+     *
+     * @return The name of the queue the parser "writes" to. Must not be null.
+     */
+    String getQueueName();
+
+    /**
      * The name of the IP-service associated with this connector definition
      *
      * @return the name of the service
@@ -57,12 +64,4 @@ public interface ConnectorDefinition extends TelemetryBeanDefinition {
      */
     List<? extends PackageDefinition> getPackages();
 
-    /**
-     * The {@link ParserDefinition} to create.
-     * Should not be null or empty.
-     * If empty, the connector will not be created.
-     *
-     * @return The list of parsers to create. Should neither be null or empty. However if empty, the listener will not be created
-     */
-    List<? extends ParserDefinition> getParsers();
 }

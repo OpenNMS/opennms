@@ -29,4 +29,16 @@
       <entry key="registration.export" value="true" />
     </service-properties>
   </service>
+
+  <!-- Connector -->
+  <bean id="openConfigConnectorFactory" class="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnectorFactory">
+    <argument ref="telemetryRegistry" />
+  </bean>
+
+  <service ref="openConfigConnectorFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ConnectorFactory">
+    <service-properties>
+      <entry key="registration.export" value="true" />
+    </service-properties>
+  </service>
+
 </blueprint>

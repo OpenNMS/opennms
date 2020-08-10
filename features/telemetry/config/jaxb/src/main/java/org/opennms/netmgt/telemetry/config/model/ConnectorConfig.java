@@ -38,9 +38,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
-import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.config.api.ConnectorDefinition;
 
 import com.google.common.base.MoreObjects;
@@ -57,6 +58,10 @@ public class ConnectorConfig implements ConnectorDefinition {
     @XmlAttribute(name="service-name", required=true)
     private String serviceName;
 
+    @XmlAttribute(name="queue", required=true)
+    @XmlIDREF()
+    private QueueConfig queue;
+
     @XmlAttribute(name="enabled")
     private boolean enabled;
 
@@ -65,9 +70,6 @@ public class ConnectorConfig implements ConnectorDefinition {
 
     @XmlElement(name="package")
     private List<PackageConfig> packages = new ArrayList<>();
-
-    @XmlElement(name="parser")
-    private List<ParserConfig> parsers = new ArrayList<>();
 
     @Override
     public String getName() {
@@ -96,6 +98,23 @@ public class ConnectorConfig implements ConnectorDefinition {
         this.serviceName = serviceName;
     }
 
+    public QueueConfig getQueue() {
+        return this.queue;
+    }
+
+    public void setQueue(final QueueConfig queue) {
+        this.queue = queue;
+    }
+
+    @Override
+    @XmlTransient
+    public String getQueueName() {
+        if (queue != null) {
+            return queue.getName();
+        }
+        return null;
+    }
+
     public boolean isEnabled() {
         return this.enabled;
     }
@@ -110,14 +129,6 @@ public class ConnectorConfig implements ConnectorDefinition {
 
     public void setParameters(final List<Parameter> parameters) {
         this.parameters = parameters;
-    }
-
-    public List<ParserConfig> getParsers() {
-        return this.parsers;
-    }
-
-    public void setParsers(final List<ParserConfig> parsers) {
-        this.parsers = parsers;
     }
 
     @Override
@@ -143,10 +154,10 @@ public class ConnectorConfig implements ConnectorDefinition {
         return Objects.equals(this.name, that.name) &&
                 Objects.equals(this.className, that.className) &&
                 Objects.equals(this.serviceName, that.serviceName) &&
+                Objects.equals(this.queue, that.queue) &&
                 Objects.equals(this.enabled, that.enabled) &&
                 Objects.equals(this.parameters, that.parameters) &&
-                Objects.equals(this.packages, that.packages) &&
-                Objects.equals(this.parsers, that.parsers);
+                Objects.equals(this.packages, that.packages);
     }
 
     @Override
@@ -155,10 +166,10 @@ public class ConnectorConfig implements ConnectorDefinition {
                 this.name,
                 this.className,
                 this.serviceName,
+                this.queue,
                 this.enabled,
                 this.parameters,
-                this.packages,
-                this.parsers);
+                this.packages);
     }
 
     @Override
@@ -167,10 +178,10 @@ public class ConnectorConfig implements ConnectorDefinition {
                 .add("name", this.name)
                 .add("class-name", this.className)
                 .add("service-name", this.serviceName)
+                .add("queue", this.queue)
                 .add("enabled", this.enabled)
                 .addValue(this.parameters)
                 .add("packages", this.packages)
-                .add("parsers", this.parsers)
                 .toString();
     }
 }

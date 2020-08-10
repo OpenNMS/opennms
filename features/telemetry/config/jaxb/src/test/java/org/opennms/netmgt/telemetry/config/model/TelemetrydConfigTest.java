@@ -81,7 +81,12 @@ public class TelemetrydConfigTest extends XmlTestNoCastor<TelemetrydConfig> {
         rrd.getRras().add("RRA:MIN:0.5:288:366");
         jtiDefaultPkg.setRrd(rrd);
 
+        QueueConfig openConfigQueue = new QueueConfig();
+        openConfigQueue.setName("openconfig");
+        telemetrydConfig.getQueues().add(openConfigQueue);
+
         ConnectorConfig openConfigConnector = new ConnectorConfig();
+        openConfigConnector.setQueue(openConfigQueue);
         openConfigConnector.setName("OpenConfig-Connector");
         openConfigConnector.setClassName("org.opennms.netmgt.telemetry.connectors.OpenConfigConnector");
         openConfigConnector.setServiceName("OpenConfig");
@@ -90,7 +95,7 @@ public class TelemetrydConfigTest extends XmlTestNoCastor<TelemetrydConfig> {
 
         PackageConfig openConfigPkg = new PackageConfig();
         openConfigPkg.setFilter(new PackageConfig.Filter("catIncX"));
-        openConfigPkg.setName("openConfig-Default");
+        openConfigPkg.setName("OpenConfig-Default");
         openConfigPkg.getParameters().add(new Parameter("port", "8000"));
         openConfigConnector.getPackages().add(openConfigPkg);
 
@@ -101,8 +106,8 @@ public class TelemetrydConfigTest extends XmlTestNoCastor<TelemetrydConfig> {
                 "    <parameter key=\"port\" value=\"50000\"/>\n" +
                 "    <parser name=\"JTI\" class-name=\"org.opennms.netmgt.collection.streaming.jti.JtiParser\" queue=\"jti\" />\n" +
                 "  </listener>\n" +
-                "  <connector name=\"OpenConfig-Connector\" class-name=\"org.opennms.netmgt.telemetry.connectors.OpenConfigConnector\" service-name=\"OpenConfig\" enabled=\"true\">\n" +
-                "    <package name=\"openConfig-Default\">\n" +
+                "  <connector name=\"OpenConfig-Connector\" class-name=\"org.opennms.netmgt.telemetry.connectors.OpenConfigConnector\" service-name=\"OpenConfig\" queue=\"openconfig\" enabled=\"true\">\n" +
+                "    <package name=\"OpenConfig-Default\">\n" +
                 "      <filter>catIncX</filter>\n" +
                 "      <parameter key=\"port\" value=\"8000\"/>\n" +
                 "   </package>\n" +
@@ -123,6 +128,7 @@ public class TelemetrydConfigTest extends XmlTestNoCastor<TelemetrydConfig> {
                 "      </package>\n" +
                 "    </adapter>\n" +
                 "  </queue>\n" +
+                "  <queue name=\"openconfig\"/>\n" +
                 "</telemetryd-config>"
                 } });
     }
