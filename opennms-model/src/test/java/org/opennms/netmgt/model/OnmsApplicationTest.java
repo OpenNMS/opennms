@@ -58,6 +58,6 @@ public class OnmsApplicationTest {
         application.setName("Dummy");
 
         String applicationString = JsonTest.marshalToJson(application);
-        JsonTest.assertJsonEquals("{\"name\" : \"Dummy\", \"id\" : 100, \"pollingPackage\" : null, \"perspectiveLocations\" : []}}", applicationString);
+        JsonTest.assertJsonEquals("{\"name\" : \"Dummy\", \"id\" : 100, \"perspectiveLocations\" : []}}", applicationString);
     }
 }

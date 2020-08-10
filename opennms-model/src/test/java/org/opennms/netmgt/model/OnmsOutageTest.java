@@ -82,12 +82,10 @@ public class OnmsOutageTest {
                 "      \"name\" : \"Dummy\",\n" +
                 "      \"perspectiveLocations\" : [ ],\n" +
                 "      \"id\" : 100\n," +
-                "      \"pollingPackage\" : null\n" +
                 "    }, {\n" +
                 "      \"name\" : \"Another Dummy\",\n" +
                 "      \"perspectiveLocations\" : [ ],\n" +
                 "      \"id\" : 102,\n" +
-                "      \"pollingPackage\" : null\n" +
                 "    } ],\n" +
                 "    \"serviceType\" : {\n" +
                 "      \"name\" : \"Webservices\",\n" +
