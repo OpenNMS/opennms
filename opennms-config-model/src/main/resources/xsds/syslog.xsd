@@ -165,6 +165,13 @@
                     </documentation>
                 </annotation>
             </attribute>
+          <attribute name="fallback-to-source-addr" type="boolean" use="optional" default="false">
+            <annotation>
+              <documentation>When hostname from syslog is not resolvable, fallback on using source address as the interface
+                associated with the syslog message.
+              </documentation>
+            </annotation>
+          </attribute>
         </complexType>
 
     </element>

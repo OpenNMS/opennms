@@ -159,6 +159,9 @@ public interface SyslogdConfig {
      */
     boolean shouldIncludeRawSyslogmessage();
 
+
+    boolean getFallbackOnSourceAddr();
+
     /**
      * reload configuration
      * @throws IOException

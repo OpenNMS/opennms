@@ -57,6 +57,7 @@ public final class SyslogConfigBean implements SyslogdConfig {
 	private int m_batchIntervalMs;
 	private TimeZone timeZone;
 	private boolean includeRawSyslogmessage;
+	private boolean m_fallbackOnSourceAddr;
 
 	@Override
 	public int getSyslogPort() {
@@ -187,6 +188,15 @@ public final class SyslogConfigBean implements SyslogdConfig {
 	@Override
 	public boolean shouldIncludeRawSyslogmessage() {
 		return includeRawSyslogmessage;
+	}
+
+	@Override
+	public boolean getFallbackOnSourceAddr() {
+		return m_fallbackOnSourceAddr;
+	}
+
+	public void setFallbackOnSourceAddr(boolean fallbackOnSourceAddr) {
+		m_fallbackOnSourceAddr = fallbackOnSourceAddr;
 	}
 
 	public void setIncludeRawSyslogmessage(boolean includeRawSyslogmessage) {

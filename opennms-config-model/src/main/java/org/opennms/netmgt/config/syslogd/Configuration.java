@@ -155,6 +155,9 @@ public class Configuration implements Serializable {
     @XmlAttribute(name = "includeRawSyslogmessage")
     private Boolean includeRawSyslogmessage;
 
+    @XmlAttribute(name = "fallback-to-source-addr")
+    private Boolean m_fallbackToSourceAddr;
+
     public Optional<String> getListenAddress() {
         return Optional.ofNullable(m_listenAddress);
     }
@@ -275,6 +278,14 @@ public class Configuration implements Serializable {
         this.includeRawSyslogmessage = includeRawSyslogmessage;
     }
 
+    public Boolean getFallbackToSourceAddr() {
+        return m_fallbackToSourceAddr != null ? m_fallbackToSourceAddr : false;
+    }
+
+    public void setFallbackToSourceAddr(Boolean fallbackToSourceAddr) {
+        m_fallbackToSourceAddr = fallbackToSourceAddr;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(m_listenAddress, 
@@ -290,7 +301,8 @@ public class Configuration implements Serializable {
                             m_batchSize, 
                             m_batchInterval,
                             timeZone,
-                            includeRawSyslogmessage);
+                            includeRawSyslogmessage,
+                            m_fallbackToSourceAddr);
     }
 
     /**
@@ -320,7 +332,8 @@ public class Configuration implements Serializable {
                     && Objects.equals(this.m_batchSize, that.m_batchSize)
                     && Objects.equals(this.m_batchInterval, that.m_batchInterval)
                     && Objects.equals(this.timeZone, that.timeZone)
-                    && Objects.equals(this.includeRawSyslogmessage, that.includeRawSyslogmessage);
+                    && Objects.equals(this.includeRawSyslogmessage, that.includeRawSyslogmessage)
+                    && Objects.equals(this.m_fallbackToSourceAddr, that.m_fallbackToSourceAddr);
         }
         return false;
     }

@@ -314,11 +314,16 @@ public class ConvertToEvent {
         }
 
         // If no host name was provided we will use the source IP address
-        // If hostname is not resolvable, we will use source IP Address
-        if(message.getHostAddress() == null)
+        if(message.getHostName() == null)
         {
             message.setHostName(addr.getHostAddress());
         }
+
+        // If hostname is not resolvable, we will use source IP Address
+        if (config.getFallbackOnSourceAddr() && message.getHostAddress() == null) {
+            message.setHostName(addr.getHostAddress());
+        }
+
 
         final String priorityTxt = message.getSeverity().toString();
         final String facilityTxt = message.getFacility().toString();
@@ -336,7 +341,11 @@ public class ConvertToEvent {
         * We matched on a regexp for host/message pair.
         * This can be a forwarded message as in BSD Style
         * or syslog-ng.
-        */
+        * We assume that the host is given to us
+        * as an IP/Hostname and that the resolver
+        * on the ONMS host actually can resolve the
+        * node to match against nodeId.
+         */
 
         // Time to verify UEI matching.
 

@@ -233,6 +233,11 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
         return m_config.getConfiguration().shouldIncludeRawSyslogmessage();
     }
 
+    @Override
+    public boolean getFallbackOnSourceAddr() {
+        return m_config.getConfiguration().getFallbackToSourceAddr();
+    }
+
     /**
      * Parse import-file tags and add all uei-matchs and hide-messages.
      * 
