@@ -678,19 +678,13 @@ abstract public class PollerConfigManager implements PollerConfig {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Returns the first package that the ip belongs to, null if none.
-     *
-     * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
-     */
+    /** {@inheritDoc} */
     @Override
-    public Package getFirstPackageMatch(final String ipaddr) {
+    public Package getFirstRemotePackageMatch(final String ipaddr) {
         try {
             getReadLock().lock();
             for(final Package pkg : packages()) {
+                // TODO fooker: Should this be remote only?
                 if (isInterfaceInPackage(ipaddr, pkg)) {
                     return pkg;
                 }

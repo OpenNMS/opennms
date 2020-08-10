@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -46,6 +47,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import com.google.common.collect.Lists;
@@ -144,5 +146,16 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 			entityList.add(entity);
 		}
 		return entityList;
+	}
+
+	public List<OnmsMonitoringLocation> getPerspectiveLocationsForService(final int nodeId, final InetAddress ipAddress, final String serviceName) {
+		return (List<OnmsMonitoringLocation>) getHibernateTemplate().find("select distinct perspectiveLocation " +
+																		  "from OnmsMonitoredService service " +
+																		  "join service.applications application " +
+																		  "join application.perspectiveLocations perspectiveLocation " +
+																		  "where service.ipInterface.node.id = ? and " +
+																		  "      service.ipInterface.ipAddress = ? and " +
+																		  "      service.serviceType.name = ?",
+																		  nodeId, ipAddress, serviceName);
 	}
 }

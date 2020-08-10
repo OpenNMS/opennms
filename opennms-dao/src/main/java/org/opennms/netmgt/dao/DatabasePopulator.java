@@ -38,6 +38,7 @@ import java.util.Map;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -109,8 +110,8 @@ import com.google.common.collect.Lists;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class DatabasePopulator {
-	
-	public static interface Extension<T extends OnmsDao<?,?>> {
+
+    public static interface Extension<T extends OnmsDao<?,?>> {
 		DaoSupport<T> getDaoSupport();
 		void onPopulate(DatabasePopulator populator, T dao);
 		void onShutdown(DatabasePopulator populator, T dao);
@@ -151,6 +152,7 @@ public class DatabasePopulator {
     private UserNotificationDao m_userNotificationDao;
     private MonitoringLocationDao m_monitoringLocationDao;
     private LocationSpecificStatusDao m_locationSpecificStatusDao;
+    private ApplicationDao applicationDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     private TransactionOperations m_transOperation;
 
@@ -160,6 +162,9 @@ public class DatabasePopulator {
     private OnmsNode m_node4;
     private OnmsNode m_node5;
     private OnmsNode m_node6;
+
+    private OnmsMonitoringLocation locRDU;
+    private OnmsMonitoringLocation locFD;
     
     private boolean m_populateInSeparateTransaction = true;
     private boolean m_resetInSeperateTransaction = true;
@@ -376,15 +381,25 @@ public class DatabasePopulator {
         getAcknowledgmentDao().save(ack);
         getAcknowledgmentDao().flush();
         
-        final OnmsMonitoringLocation def = new OnmsMonitoringLocation();
-        def.setLocationName("RDU");
-        def.setMonitoringArea("East Coast");
-        def.setGeolocation("Research Triangle Park, NC");
-        def.setLatitude(35.715751f);
-        def.setLongitude(-79.16262f);
-        def.setPriority(1L);
-        def.setTags(Collections.singletonList("blah"));
-        m_monitoringLocationDao.save(def);
+        locRDU = new OnmsMonitoringLocation();
+        locRDU.setLocationName("RDU");
+        locRDU.setMonitoringArea("East Coast");
+        locRDU.setGeolocation("Research Triangle Park, NC");
+        locRDU.setLatitude(35.715751f);
+        locRDU.setLongitude(-79.16262f);
+        locRDU.setPriority(1L);
+        locRDU.setTags(Collections.singletonList("blah"));
+        m_monitoringLocationDao.save(locRDU);
+
+        locFD = new OnmsMonitoringLocation();
+        locFD.setLocationName("Fulda");
+        locFD.setMonitoringArea("Europe");
+        locFD.setGeolocation("Fulda, DE");
+        locFD.setLatitude(50.5558f);
+        locFD.setLongitude(9.6808f);
+        locFD.setPriority(1L);
+        locFD.setTags(Collections.singletonList("blub"));
+        m_monitoringLocationDao.save(locFD);
 
         // added this to assure that the old behaviour before RemotePollerNG is still the same, see NMS-12792
         final OnmsOutage remoteResolved = new OnmsOutage(new Date(1436881448292L), new Date(1436881448292L), event, event, svc, null, null);
@@ -792,6 +807,14 @@ public class DatabasePopulator {
         m_node5 = node5;
     }
 
+    public OnmsMonitoringLocation getLocRDU() {
+        return this.locRDU;
+    }
+
+    public OnmsMonitoringLocation getLocFD() {
+        return this.locFD;
+    }
+
     private void setNode6(final OnmsNode node6) {
         m_node6 = node6;
     }
@@ -810,6 +833,14 @@ public class DatabasePopulator {
 
     public void setLocationSpecificStatusDao(final LocationSpecificStatusDao locationSpecificStatusDao) {
         m_locationSpecificStatusDao = locationSpecificStatusDao;
+    }
+
+    public ApplicationDao getApplicationDao() {
+        return this.applicationDao;
+    }
+
+    public void setApplicationDao(final ApplicationDao applicationDao) {
+        this.applicationDao = applicationDao;
     }
 
     public AcknowledgmentDao getAcknowledgmentDao() {

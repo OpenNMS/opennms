@@ -143,4 +143,12 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
                 "left join fetch ip.node as node");
     }
 
+    @Override
+    public List<OnmsMonitoredService> findByNode(int nodeId) {
+        return find("select distinct svc from OnmsMonitoredService as svc " +
+                    "left join fetch svc.ipInterface as iface " +
+                    "left join fetch iface.node as node " +
+                    "where node.id = ?",
+                    nodeId);
+    }
 }

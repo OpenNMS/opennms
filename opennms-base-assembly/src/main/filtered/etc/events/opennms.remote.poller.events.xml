@@ -30,6 +30,7 @@
     </event>
 
     <event>
+        <!-- TODO: Renmove me -->
         <uei>uei.opennms.org/internal/poller/pollingPackageAssociationsChanged</uei>
         <event-label>OpenNMS-defined remote poller event: Poller package association changed for location %parm[location]%</event-label>
         <descr>&lt;p>The poller association for remote location %parm[location]% changed.&lt;/p>

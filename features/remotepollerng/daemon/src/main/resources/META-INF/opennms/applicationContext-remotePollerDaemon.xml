@@ -22,6 +22,7 @@
   <onmsgi:reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
   <onmsgi:reference id="locationAwarePollerClient" interface="org.opennms.netmgt.poller.LocationAwarePollerClient"/>
   <onmsgi:reference id="locationSpecificStatusDao" interface="org.opennms.netmgt.dao.api.LocationSpecificStatusDao"/>
+  <onmsgi:reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao"/>
   <onmsgi:reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"/>
   <onmsgi:reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
   <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder"/>
@@ -31,18 +32,26 @@
 
 
   <bean id="daemon" class="org.opennms.netmgt.remotepollerng.RemotePollerd">
-    <constructor-arg index="0" ref="sessionUtils"/>
-    <constructor-arg index="1" ref="monitoringLocationDao"/>
-    <constructor-arg index="2" ref="pollerConfig"/>
-    <constructor-arg index="3" ref="monitoredServiceDao"/>
-    <constructor-arg index="4" ref="locationAwarePollerClient"/>
-    <constructor-arg index="5" ref="locationSpecificStatusDao"/>
-    <constructor-arg index="6" ref="collectionAgentFactory" />
-    <constructor-arg index="7" ref="persisterFactory"/>
-    <constructor-arg index="8" ref="eventForwarder"/>
-    <constructor-arg index="9" ref="thresholdingService"/>
-    <constructor-arg index="10" ref="eventDao"/>
-    <constructor-arg index="11" ref="outageDao"/>
+    <constructor-arg ref="sessionUtils"/>
+    <constructor-arg ref="monitoringLocationDao"/>
+    <constructor-arg ref="pollerConfig"/>
+    <constructor-arg ref="monitoredServiceDao"/>
+    <constructor-arg ref="locationAwarePollerClient"/>
+    <constructor-arg ref="locationSpecificStatusDao"/>
+    <constructor-arg ref="applicationDao"/>
+    <constructor-arg ref="collectionAgentFactory" />
+    <constructor-arg ref="persisterFactory"/>
+    <constructor-arg ref="eventForwarder"/>
+    <constructor-arg ref="thresholdingService"/>
+    <constructor-arg ref="eventDao"/>
+    <constructor-arg ref="outageDao"/>
+  </bean>
+
+  <bean id="serviceTrackerListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener">
+      <bean id="daemon.serviceTracker" class="org.springframework.beans.factory.config.PropertyPathFactoryBean"/>
+    </property>
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
