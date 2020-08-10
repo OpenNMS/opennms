@@ -28,33 +28,41 @@
 
 package org.opennms.netmgt.telemetry.config.api;
 
-import java.util.Map;
+import java.util.List;
 
 /**
- * Telemetry protocol package configuration.
+ * Telemetry connector definition.
  */
-public interface PackageDefinition {
+public interface ConnectorDefinition extends TelemetryBeanDefinition {
 
     /**
-     * The filter rule is used to match which sources should belong to this package.
+     * The name of the connect.
      *
-     * If the rule is <code>null</code>, then all sources should match.
-     *
-     * @return the filter rule
+     * @return the protocol name
      */
-    String getFilterRule();
+    @Override
+    String getName();
 
     /**
-     * The RRD settings are use to control the control of RRD files, when applicable.
+     * The name of the IP-service associated with this connector definition
      *
-     * @return the rrd settings
+     * @return the name of the service
      */
-    RrdDefinition getRrd();
+    String getServiceName();
 
     /**
-     * Package specific parameters.
+     * Packages may contain settings for specific sources.
      *
-     * @return the parameter map
+     * @return the list of configured packages
      */
-    Map<String, String> getParameterMap();
+    List<? extends PackageDefinition> getPackages();
+
+    /**
+     * The {@link ParserDefinition} to create.
+     * Should not be null or empty.
+     * If empty, the connector will not be created.
+     *
+     * @return The list of parsers to create. Should neither be null or empty. However if empty, the listener will not be created
+     */
+    List<? extends ParserDefinition> getParsers();
 }

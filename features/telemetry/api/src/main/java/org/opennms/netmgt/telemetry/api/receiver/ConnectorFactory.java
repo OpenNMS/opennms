@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.config.api;
+package org.opennms.netmgt.telemetry.api.receiver;
 
-import java.util.Map;
+import org.opennms.netmgt.telemetry.api.TelemetryBeanFactory;
+import org.opennms.netmgt.telemetry.config.api.ConnectorDefinition;
 
 /**
- * Telemetry protocol package configuration.
+ * Factory to create beans of type {@link Connector} defined by a {@link ConnectorDefinition}
+ *
+ * @author mvrueden
  */
-public interface PackageDefinition {
+public interface ConnectorFactory extends TelemetryBeanFactory<Connector, ConnectorDefinition> {
 
-    /**
-     * The filter rule is used to match which sources should belong to this package.
-     *
-     * If the rule is <code>null</code>, then all sources should match.
-     *
-     * @return the filter rule
-     */
-    String getFilterRule();
-
-    /**
-     * The RRD settings are use to control the control of RRD files, when applicable.
-     *
-     * @return the rrd settings
-     */
-    RrdDefinition getRrd();
-
-    /**
-     * Package specific parameters.
-     *
-     * @return the parameter map
-     */
-    Map<String, String> getParameterMap();
 }

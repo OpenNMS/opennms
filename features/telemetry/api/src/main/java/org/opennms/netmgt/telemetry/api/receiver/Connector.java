@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.config.api;
-
-import java.util.Map;
+package org.opennms.netmgt.telemetry.api.receiver;
 
 /**
- * Telemetry protocol package configuration.
+ * Interface used by the daemon to manage connector.
+ *
+ * When messages are received, they should be forwarded to the given {@link Parser}s.
+ *
+ * @author jwhite
  */
-public interface PackageDefinition {
+public interface Connector {
+    String getName();
 
-    /**
-     * The filter rule is used to match which sources should belong to this package.
-     *
-     * If the rule is <code>null</code>, then all sources should match.
-     *
-     * @return the filter rule
-     */
-    String getFilterRule();
-
-    /**
-     * The RRD settings are use to control the control of RRD files, when applicable.
-     *
-     * @return the rrd settings
-     */
-    RrdDefinition getRrd();
-
-    /**
-     * Package specific parameters.
-     *
-     * @return the parameter map
-     */
-    Map<String, String> getParameterMap();
+    void start() throws InterruptedException;
+    void stop() throws InterruptedException;
 }
