@@ -29,7 +29,6 @@
 package org.opennms.web.rest.v1;
 
 import java.text.ParseException;
-import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -117,19 +116,6 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 		try {
 			LOG.debug("addMonitoringLocation: Adding monitoringLocation {}", monitoringLocation.getLocationName());
 			m_monitoringLocationDao.save(monitoringLocation);
-
-			final boolean sendEvent = monitoringLocation.getPollingPackageNames() != null && !monitoringLocation.getPollingPackageNames().isEmpty();
-
-			if (sendEvent) {
-				final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
-				eventBuilder.addParam(EventConstants.PARM_LOCATION, monitoringLocation.getLocationName());
-				try {
-					m_eventProxy.send(eventBuilder.getEvent());
-				} catch (final EventProxyException e) {
-					LOG.warn("Failed to send Event on polling package modification " + e.getMessage(), e);
-				}
-			}
-
 			return Response.created(getRedirectUri(uriInfo, monitoringLocation.getLocationName())).build();
 		} finally {
 			writeUnlock();
@@ -192,20 +178,8 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 		writeLock();
 		try {
 			LOG.debug("deleteMonitoringLocation: deleting monitoring location {}", monitoringLocation);
-			final List<String> packageNames = m_monitoringLocationDao.get(monitoringLocation).getPollingPackageNames();
-			final boolean sendEvent = packageNames != null && !packageNames.isEmpty();
 
 			m_monitoringLocationDao.delete(monitoringLocation);
-
-			if (sendEvent) {
-				final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
-				eventBuilder.addParam(EventConstants.PARM_LOCATION, monitoringLocation);
-				try {
-					m_eventProxy.send(eventBuilder.getEvent());
-				} catch (final EventProxyException e) {
-					LOG.warn("Failed to send Event on polling package modification " + e.getMessage(), e);
-				}
-			}
 
 			return Response.noContent().build();
 		} finally {

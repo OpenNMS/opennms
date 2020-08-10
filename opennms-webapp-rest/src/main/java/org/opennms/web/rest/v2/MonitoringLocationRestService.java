@@ -29,7 +29,6 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.Path;
@@ -41,10 +40,7 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.events.api.EventProxyException;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.support.SearchProperties;
@@ -117,39 +113,14 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
 
     @Override
     public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsMonitoringLocation location) {
-        final boolean sendEvent = location.getPollingPackageNames() != null && !location.getPollingPackageNames().isEmpty();
 
         final String id = getDao().save(location);
-
-        if (sendEvent) {
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
-            eventBuilder.addParam(EventConstants.PARM_LOCATION, location.getLocationName());
-            try {
-                m_eventProxy.send(eventBuilder.getEvent());
-            } catch (final EventProxyException e) {
-                LOG.warn("Failed to send Event on creation of location " + e.getMessage(), e);
-            }
-        }
 
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
     }
 
-    private boolean comparePollingPackageNames(final OnmsMonitoringLocation aLocation, final OnmsMonitoringLocation bLocation) {
-        if (aLocation != null && bLocation != null) {
-            final List<String> aPkgs = aLocation.getPollingPackageNames();
-            final List<String> bPkgs = bLocation.getPollingPackageNames();
-            if (aPkgs != null && bPkgs != null) {
-                return aPkgs.containsAll(bPkgs) && bPkgs.containsAll(aPkgs);
-            } else {
-                return (aPkgs == null && bPkgs == null);
-            }
-        }
-        return (aLocation == null && bLocation == null);
-    }
-
     @Override
     protected Response doUpdate(final SecurityContext securityContext, final UriInfo uriInfo, final String key, final OnmsMonitoringLocation targetObject) {
-        final boolean sendEvent = !comparePollingPackageNames(m_dao.get(key), targetObject);
 
         if (!key.equals(targetObject.getLocationName())) {
             throw getException(Status.BAD_REQUEST, "The ID of the object doesn't match the ID of the path: {} != {}", targetObject.getLocationName(), key);
@@ -159,33 +130,11 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
 
         getDao().saveOrUpdate(targetObject);
 
-        if (sendEvent) {
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
-            eventBuilder.addParam(EventConstants.PARM_LOCATION, targetObject.getLocationName());
-            try {
-                m_eventProxy.send(eventBuilder.getEvent());
-            } catch (final EventProxyException e) {
-                LOG.warn("Failed to send Event on polling package modification " + e.getMessage(), e);
-            }
-        }
-
         return Response.noContent().build();
     }
 
     @Override
     protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoringLocation location) {
-        final boolean sendEvent = location.getPollingPackageNames() != null && !location.getPollingPackageNames().isEmpty();
-
         getDao().delete(location);
-
-        if (sendEvent) {
-            final EventBuilder eventBuilder = new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST");
-            eventBuilder.addParam(EventConstants.PARM_LOCATION, location.getLocationName());
-            try {
-                m_eventProxy.send(eventBuilder.getEvent());
-            } catch (final EventProxyException e) {
-                LOG.warn("Failed to send Event on deletion of location " + e.getMessage(), e);
-            }
-        }
     }
 }

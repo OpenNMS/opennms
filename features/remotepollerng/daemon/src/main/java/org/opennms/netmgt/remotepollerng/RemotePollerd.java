@@ -189,7 +189,7 @@ public class RemotePollerd implements SpringServiceDaemon {
         LOG.info("Scheduling all services...");
         sessionUtils.withReadOnlyTransaction(() -> {
             for (OnmsMonitoringLocation location : monitoringLocationDao.findAll()) {
-                final List<String> pollingPackageNames = location.getPollingPackageNames();
+                final List<String> pollingPackageNames = new ArrayList(); // TODO: Patrick // location.getPollingPackageNames();
                 LOG.debug("Location '{}' has polling packages: {}", location.getLocationName(), pollingPackageNames);
                 for (String pollingPackageName : pollingPackageNames) {
                     final List<RemotePolledService> servicesForPackage = servicesByPackage.computeIfAbsent(pollingPackageName, (pkgName) -> getServicesForPackage(location, pkgName));
@@ -229,8 +229,9 @@ public class RemotePollerd implements SpringServiceDaemon {
         return mapOfScheduledServices;
     }
 
+    // TODO: Patrick: should this be updateScheduledServicesForApplication() going forward?
     private void updateScheduledServicesForLocation(final OnmsMonitoringLocation location) {
-        final List<String> pollingPackageNames = location.getPollingPackageNames();
+        final List<String> pollingPackageNames =new ArrayList(); // TODO: Patrick // location.getPollingPackageNames();
         final Map<String, List<RemotePolledService>> servicesByPackage = new HashMap<>();
         LOG.debug("Location '{}' has polling packages: {}", location.getLocationName(), pollingPackageNames);
 
