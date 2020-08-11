@@ -54,7 +54,7 @@
     </Call>
   </New>
 
-  <New id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory">
+  <New id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory.Server">
     <Set name="KeyStorePath"><SystemProperty name="org.opennms.netmgt.jetty.https-keystore" /></Set>
     <Set name="KeyStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" default="changeit" /></Set>
     <Set name="KeyStoreType"><SystemProperty name="org.opennms.netmgt.jetty.https-keystoretype" default="JKS" /></Set>
