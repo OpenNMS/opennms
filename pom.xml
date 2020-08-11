@@ -1388,7 +1388,7 @@
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <jcifsVersion>1.3.14</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
-    <jettyVersion>9.4.29.v20200521</jettyVersion>
+    <jettyVersion>9.4.30.v20200611</jettyVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jinteropVersion>2.0.8</jinteropVersion>
     <jldapVersion>4.3</jldapVersion>
