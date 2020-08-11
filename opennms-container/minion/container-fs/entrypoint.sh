@@ -11,6 +11,7 @@ set -e
 umask 002
 MINION_HOME="/opt/minion"
 MINION_CONFIG="/opt/minion/etc/org.opennms.minion.controller.cfg"
+MINION_PROCESS_ENV_CFG="/opt/minion/etc/minion-process.env"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
 CONFD_KEY_STORE="/opt/minion/minion-config.yaml"
 CONFD_CONFIG_DIR="/opt/minion/confd"
@@ -185,6 +186,12 @@ configure() {
   initConfig
   applyConfd
   applyOverlayConfig
+  if [[ -f "$MINION_PROCESS_ENV_CFG" ]]; then
+    while read assignment; do
+      [[ $assignment =~ ^#.* ]] && continue
+      export "$assignment"
+    done < "$MINION_PROCESS_ENV_CFG"
+  fi
 }
 
 # Evaluate arguments for build script.
