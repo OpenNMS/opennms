@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -63,6 +63,10 @@ public class AbstractXmlCollectionHandlerTest {
         String multiline = "<data>\n   <source label='{nodeLabel}'/>\n</data>";
         String xml = AbstractXmlCollectionHandler.parseString("Content", multiline, node, "127.0.0.1", 300, parameters);
         Assert.assertEquals("<data>\n   <source label='mynode.local'/>\n</data>", xml);
+
+        String jsonContent = "{'test':{'key':'value','key2':0}}";
+        String json = AbstractXmlCollectionHandler.parseString("Content", jsonContent, node, "127.0.0.1", 300, parameters);
+        Assert.assertEquals(jsonContent, json);
     }
 
 }
