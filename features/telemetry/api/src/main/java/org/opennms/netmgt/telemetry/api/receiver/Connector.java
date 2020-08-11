@@ -33,9 +33,11 @@ import java.net.InetAddress;
 import java.util.Map;
 
 /**
- * Interface used by the daemon to manage connector.
+ * A given instance of a connector is responsible for connecting to a single agent and
+ * dispatching the received payloads directly to the configured queue.
  *
- * When messages are received, they should be forwarded to the given {@link Parser}s.
+ * The connectors are expected to be resilient in case of failure and are responsible for maintain
+ * their own retry and reconnection logic
  *
  * @author jwhite
  */

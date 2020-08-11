@@ -26,40 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.daemon;
+package org.opennms.netmgt.dao.api;
 
+import java.io.Closeable;
 import java.net.InetAddress;
 
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.SessionUtils;
-import org.opennms.netmgt.filter.api.FilterDao;
-import org.springframework.beans.factory.annotation.Autowired;
+public interface FilterService {
 
-/**
- * FIXME: Move this elsewhere.
- */
-public class FilterService {
+    interface Session extends Closeable {
 
-    public static final String MATCH_ALL_FILTER_RULE = "IPADDR != '0.0.0.0'";
-
-    @Autowired
-    private FilterDao filterDao;
-
-    @Autowired
-    private IpInterfaceDao ipInterfaceDao;
-
-    @Autowired
-    private SessionUtils sessionUtils;
-
-
-    public static class Session implements AutoCloseable {
-        @Override
-        public void close() throws Exception {
-
-        }
     }
 
-    public interface NodeInterfaceUpdateListener {
+    interface NodeInterface {
+        int getNodeId();
+
+        InetAddress getInterfaceAddress();
+    }
+
+    interface NodeInterfaceUpdateListener {
         /**
          * Called when an interface matches the filter.
          *
@@ -76,25 +60,20 @@ public class FilterService {
         void onInterfaceStoppedMatchingFilter(NodeInterface iff);
     }
 
-    public Session watchFilter(String filterRule, NodeInterfaceUpdateListener listener) {
-        return new Session();
-    }
+    /**
+     * Issues callbacks to the given listener for interfaces that:
+     *   1) Have the given service name attached
+     *   2) Match the given filter rule
+     *
+     * Callbacks are expected to be issued immediately for all existing services that match the criteria.
+     * Additional callback will be made as services are added/removed.
+     *
+     * @param serviceName only interfaces with the given service name attached will be considered
+     * @param filterRule only interfaces that match the given filter will be considered
+     *                   if null, or empty the filter will match everything
+     * @param listener used for callbacks
+     * @return close when done watching
+     */
+    Session watchServicesMatchingFilter(String serviceName, String filterRule, NodeInterfaceUpdateListener listener);
 
-    public static class NodeInterface {
-        private final int nodeId;
-        private final InetAddress interfaceAddress;
-
-        public NodeInterface(int nodeId, InetAddress interfaceAddress) {
-            this.nodeId = nodeId;
-            this.interfaceAddress = interfaceAddress;
-        }
-
-        public int getNodeId() {
-            return nodeId;
-        }
-
-        public InetAddress getInterfaceAddress() {
-            return interfaceAddress;
-        }
-    }
 }

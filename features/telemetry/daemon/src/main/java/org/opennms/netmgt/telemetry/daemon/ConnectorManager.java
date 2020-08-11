@@ -41,6 +41,7 @@ import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.FilterService;
 import org.opennms.netmgt.telemetry.api.receiver.Connector;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.model.ConnectorConfig;
@@ -50,8 +51,6 @@ import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.base.Strings;
 
 /**
  * The ConnectorManager is responsible for starting/stopping connectors that connect to the target agents.
@@ -129,14 +128,10 @@ public class ConnectorManager {
             } else {
                 // One or more packages defined
                 for (PackageConfig packageConfig : connectorConfig.getPackages()) {
-                    // If no filter rule is set, treat it effectively as a "match any" rule
-                    String filterRule = packageConfig.getFilterRule();
-                    if (Strings.isNullOrEmpty(filterRule)) {
-                        filterRule = FilterService.MATCH_ALL_FILTER_RULE;
-                    }
-
-                    // Watch the rule
-                    FilterService.Session session = filterService.watchFilter(filterRule, new FilterService.NodeInterfaceUpdateListener() {
+                    // Watch the services matching the filter rule
+                    FilterService.Session session = filterService.watchServicesMatchingFilter(
+                            connectorConfig.getServiceName(), packageConfig.getFilterRule(),
+                            new FilterService.NodeInterfaceUpdateListener() {
                         @Override
                         public void onInterfaceMatchedFilter(FilterService.NodeInterface iff) {
                             startStreamingFor(connectorConfig, packageConfig, iff);
@@ -159,7 +154,7 @@ public class ConnectorManager {
             try {
                 s.close();
             } catch (Exception e) {
-                LOG.warn("Failed to close session.", e);
+                LOG.warn("Failed to close filter watch session. Resources may not be properly recovered.", e);
             }
         });
         filterWatchSessions.clear();
@@ -170,7 +165,7 @@ public class ConnectorManager {
                 try {
                     connector.close();
                 } catch (IOException e) {
-                    LOG.warn("Error closing connector: {}", key, e);
+                    LOG.warn("Error closing connector: {}. Resources may not be properly recovered.", key, e);
                 }
             });
         }

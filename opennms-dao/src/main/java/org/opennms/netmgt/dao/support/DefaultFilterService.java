@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,16 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.api.receiver;
+package org.opennms.netmgt.dao.support;
 
-import org.opennms.netmgt.telemetry.api.TelemetryBeanFactory;
-import org.opennms.netmgt.telemetry.config.api.ConnectorDefinition;
+import java.io.IOException;
 
-/**
- * Responsible for creating {@link Connector} beans defined by a given {@link ConnectorDefinition}.
- *
- * @author jwhite
- */
-public interface ConnectorFactory extends TelemetryBeanFactory<Connector, ConnectorDefinition> {
+import org.opennms.netmgt.dao.api.FilterService;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.springframework.beans.factory.annotation.Autowired;
 
+public class DefaultFilterService implements FilterService {
+
+    private static final String MATCH_ALL_FILTER_RULE = "IPADDR != '0.0.0.0'";
+
+    @Autowired
+    private FilterDao filterDao;
+
+    @Autowired
+    private IpInterfaceDao ipInterfaceDao;
+
+    @Autowired
+    private SessionUtils sessionUtils;
+
+    @Override
+    public Session watchServicesMatchingFilter(String serviceName, String filterRule, NodeInterfaceUpdateListener listener) {
+        return new Session() {
+            @Override
+            public void close() throws IOException {
+
+            }
+        };
+    }
 }

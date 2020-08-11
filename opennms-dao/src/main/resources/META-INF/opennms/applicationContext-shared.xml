@@ -289,4 +289,8 @@
     <onmsgi:list id="alarmEntityListeners" interface="org.opennms.netmgt.dao.api.AlarmEntityListener">
         <onmsgi:listener ref="alarmEntityNotifier" bind-method="onListenerRegistered" unbind-method="onListenerUnregistered" />
     </onmsgi:list>
+
+    <bean id="filterService" class="org.opennms.netmgt.dao.support.DefaultFilterService" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.FilterService" ref="filterService" />
+
 </beans>
