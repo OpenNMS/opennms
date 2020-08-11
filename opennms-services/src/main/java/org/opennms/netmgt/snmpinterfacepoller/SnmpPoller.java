@@ -300,9 +300,9 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 LOG.debug("package up-values: {}", getPollerConfig().getUpValues());
                 LOG.debug("package down-values: {}", getPollerConfig().getDownValues());
                 int[] upValues = statusValuesFromString(getPollerConfig().getUpValues(pkgName, pkgInterfaceName)
-                        .orElse(getPollerConfig().getUpValues()), new int[]{1});
+                        , new int[]{1});
                 int[] downValues = statusValuesFromString(getPollerConfig().getDownValues(pkgName, pkgInterfaceName)
-                        .orElse(getPollerConfig().getDownValues()), new int[]{2});
+                        , new int[]{2});
 
                 PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(pkgInterfaceName, criteria,
                    port != -1, port, timeout != -1, timeout, retries != -1, retries,

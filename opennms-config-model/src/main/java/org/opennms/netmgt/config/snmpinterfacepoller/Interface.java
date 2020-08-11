@@ -114,7 +114,7 @@ public class Interface implements Serializable {
      *  
      */
     @XmlAttribute(name = "max-vars-per-pdu")
-    private Integer m_maxVarsPerPdu;
+    private Integer m_maxVarsPerPdu = 10;
 
     /**
      * Max Number of Interface per runnable. This is deprecated and will be
@@ -122,12 +122,11 @@ public class Interface implements Serializable {
      *  
      */
     @XmlAttribute(name = "max-interface-per-pdu")
-    private Integer m_maxInterfacePerPdu;
+    private Integer m_maxInterfacePerPdu = 0;
 
     /**
      * Values of ifAdminStatus and ifOperStatus to treat as up values.
      * Expects a comma separated list of discrete values i.e. '1,3'.
-     * Defaults to '1'.
      *
      */
     @XmlAttribute(name = "up-values")
@@ -136,7 +135,6 @@ public class Interface implements Serializable {
     /**
      * Values of ifAdminStatus and ifOperStatus to treat as down values.
      * Expects a comma separated list of discrete values i.e. '2,3,5,7'.
-     * Defaults to '2'.
      *
      */
     @XmlAttribute(name = "down-values")
@@ -210,7 +208,7 @@ public class Interface implements Serializable {
     }
 
     public Integer getMaxVarsPerPdu() {
-        return m_maxVarsPerPdu != null ? m_maxVarsPerPdu : 10;
+        return m_maxVarsPerPdu;
     }
 
     public void setMaxVarsPerPdu(final Integer maxVarsPerPdu) {
@@ -218,7 +216,7 @@ public class Interface implements Serializable {
     }
 
     public Integer getMaxInterfacePerPdu() {
-        return m_maxInterfacePerPdu != null ? m_maxInterfacePerPdu : 0;
+        return m_maxInterfacePerPdu;
     }
 
     public void setMaxInterfacePerPdu(final Integer maxInterfacePerPdu) {
@@ -244,7 +242,8 @@ public class Interface implements Serializable {
                             m_retry, 
                             m_timeout, 
                             m_maxVarsPerPdu, 
-                            m_maxInterfacePerPdu);
+                            m_upValues,
+                            m_downValues);
     }
 
     @Override
@@ -264,7 +263,6 @@ public class Interface implements Serializable {
                     && Objects.equals(this.m_retry, that.m_retry)
                     && Objects.equals(this.m_timeout, that.m_timeout)
                     && Objects.equals(this.m_maxVarsPerPdu, that.m_maxVarsPerPdu)
-                    && Objects.equals(this.m_maxInterfacePerPdu, that.m_maxInterfacePerPdu)
                     && Objects.equals(this.m_upValues, that.m_upValues)
                     && Objects.equals(this.m_downValues, that.m_downValues);
         }
