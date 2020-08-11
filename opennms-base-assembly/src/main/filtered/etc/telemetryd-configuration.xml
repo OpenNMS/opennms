@@ -24,6 +24,34 @@
         </adapter>
     </queue>
 
+    <!-- OpenConfig -->
+    <connector name="OpenConfig-Connector"
+               class-name="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector"
+               service-name="OpenConfig"
+               queue="OpenConfig"
+               enabled="true">
+        <package name="OpenConfig-Default">
+            <filter>IPADDR != '0.0.0.0'</filter>
+            <parameter key="port" value="${requisition:oc.port|9000}"/>
+            <parameter key="paths" value="/network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp"/>
+         </package>
+    </connector>
+
+    <queue name="OpenConfig">
+        <adapter name="OpenConfig-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter" enabled="true">
+            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/openconfig-telemetry-resources.groovy"/>
+            <package name="OpenConfig-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+    </queue>
+
     <!-- Netflow v5 listener & adapters -->
     <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
         <parameter key="port" value="8877"/>

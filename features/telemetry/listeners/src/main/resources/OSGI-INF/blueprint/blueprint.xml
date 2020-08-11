@@ -29,4 +29,5 @@
             <entry key="registration.export" value="true" />
         </service-properties>
     </service>
+
 </blueprint>

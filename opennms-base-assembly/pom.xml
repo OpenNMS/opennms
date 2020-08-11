@@ -1122,8 +1122,28 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.openconfig</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.openconfig.adapter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.openconfig</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.openconfig.parser</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.openconfig</groupId>
+      <artifactId>org.opennms.features.openconfig.common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.telemetry</groupId>
       <artifactId>org.opennms.features.telemetry.listeners</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.stream-listener</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

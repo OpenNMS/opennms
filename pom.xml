@@ -1365,10 +1365,10 @@
     <fstVersion>2.47</fstVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.4.5</groovyVersion>
-    <grpcVersion>1.24.0</grpcVersion>
+    <grpcVersion>1.30.0</grpcVersion>
     <gsonVersion>2.8.5</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
-    <guavagRPCVersion>23.0</guavagRPCVersion>
+    <guavagRPCVersion>28.2-jre</guavagRPCVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
     <gwtVersion>2.8.2</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
@@ -1415,7 +1415,7 @@
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>7.2.8</paxWebVersion>
-    <protobufVersion>3.11.4</protobufVersion>
+    <protobufVersion>3.12.0</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.2.5</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>

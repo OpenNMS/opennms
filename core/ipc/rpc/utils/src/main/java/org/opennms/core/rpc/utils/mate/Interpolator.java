@@ -93,7 +93,24 @@ public class Interpolator {
         outerMatcher.appendTail(stringBuffer);
         return stringBuffer.toString();
     }
-    
+
+    public static Optional<ContextKey> getContextKeyFromMateData(final String raw) {
+        final Matcher outerMatcher = OUTER_PATTERN.matcher(raw);
+        ContextKey contextKey = null;
+        while (outerMatcher.find()) {
+            final Matcher innerMatcher = INNER_PATTERN.matcher(outerMatcher.group(1));
+
+            String result = "";
+            while (innerMatcher.find()) {
+                if (innerMatcher.group(1) != null) {
+                    final String[] arr = innerMatcher.group(1).split(":", 2);
+                    contextKey = new ContextKey(arr[0], arr[1]);
+                }
+            }
+        }
+        return Optional.ofNullable(contextKey);
+    }
+
     public static boolean containsMateData(String toCheck) {
         return toCheck != null && OUTER_PATTERN.matcher(toCheck).find();
     }
