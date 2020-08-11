@@ -79,7 +79,7 @@ public class OpenConfigClient implements Connection {
             subscribeToTelemetry(handler);
         } else {
             LOG.error("Unable to subscribe, OpenConfig gRPC Server at `{}` is not in ready state", host);
-            throw new IOException("Couldn't connect to gRPC Server at" + host);
+            throw new IOException("Couldn't connect to gRPC Server at " + host);
         }
     }
 

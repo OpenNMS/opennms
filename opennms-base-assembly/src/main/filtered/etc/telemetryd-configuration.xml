@@ -24,24 +24,21 @@
         </adapter>
     </queue>
 
-    <!-- OpenConfig Stream Consumer & adapters -->
-    <listener name="OpenConfig-Stream-Listener" class-name="org.opennms.netmgt.telemetry.stream.listeners.TelemetryStreamListener" enabled="false">
-        <parser name="OpenConfig-Parser" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.parser.OpenConfigParser" queue="OpenConfig" >
-            <!-- Configure this metadata at interface level -->
-            <parameter key="enabled" value="${requisition:oc.enabled}"/>
-            <parameter key="port" value="${requisition:oc.port}"/>
-            <parameter key="mode" value="${requisition:oc.mode}"/>
-            <parameter key="paths" value="${requisition:oc.paths}"/>
-            <parameter key="tls.enabled" value="${requisition:oc.tls.enabled}"/>
-            <parameter key="tls.trust.cert.path" value="${requisition:trust.cert.path}"/>
-            <!-- If mutual auth is needed -->
-            <parameter key="tls.client.cert.path" value="${requisition:client.cert.path}"/>
-            <parameter key="tls.client.key.path" value="${requisition:client.key.path}"/>
-        </parser>
-    </listener>
+    <!-- OpenConfig -->
+    <connector name="OpenConfig-Connector"
+               class-name="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector"
+               service-name="OpenConfig"
+               queue="OpenConfig"
+               enabled="true">
+        <package name="OpenConfig-Default">
+            <filter>IPADDR != '0.0.0.0'</filter>
+            <parameter key="port" value="${requisition:oc.port|9000}"/>
+            <parameter key="paths" value="/network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp"/>
+         </package>
+    </connector>
 
     <queue name="OpenConfig">
-        <adapter name="OpenConfig-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter" enabled="false">
+        <adapter name="OpenConfig-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter" enabled="true">
             <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/openconfig-telemetry-resources.groovy"/>
             <package name="OpenConfig-Default">
                 <rrd step="300">

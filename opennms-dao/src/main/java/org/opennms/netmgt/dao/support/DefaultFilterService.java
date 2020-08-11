@@ -29,11 +29,14 @@
 package org.opennms.netmgt.dao.support;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Objects;
 
 import org.opennms.netmgt.dao.api.FilterService;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class DefaultFilterService implements FilterService {
@@ -51,11 +54,37 @@ public class DefaultFilterService implements FilterService {
 
     @Override
     public Session watchServicesMatchingFilter(String serviceName, String filterRule, NodeInterfaceUpdateListener listener) {
-        return new Session() {
-            @Override
-            public void close() throws IOException {
-
+        // FIXME: This is just mocked for now
+        sessionUtils.withReadOnlyTransaction(() -> {
+            for (OnmsIpInterface ipInterface : ipInterfaceDao.findByServiceType(serviceName)) {
+                listener.onInterfaceMatchedFilter(new NodeInterfaceImpl(ipInterface));
             }
-        };
+            return null;
+        });
+        return () -> { };
+    }
+
+    private static class NodeInterfaceImpl implements NodeInterface {
+        private final int nodeId;
+        private final InetAddress ipAddress;
+
+        public NodeInterfaceImpl(OnmsIpInterface ipInterface) {
+            this(ipInterface.getNodeId(), ipInterface.getIpAddress());
+        }
+
+        public NodeInterfaceImpl(int nodeId, InetAddress ipAddress) {
+            this.nodeId = nodeId;
+            this.ipAddress = Objects.requireNonNull(ipAddress);
+        }
+
+        @Override
+        public int getNodeId() {
+            return nodeId;
+        }
+
+        @Override
+        public InetAddress getInterfaceAddress() {
+            return ipAddress;
+        }
     }
 }

@@ -101,6 +101,7 @@ public class ConnectorManager {
             ));
 
             // Create a new connector
+            LOG.debug("Starting connector for: {}", key);
             final Connector connector = telemetryRegistry.getConnector(connectorConfig);
             connector.stream(iff.getNodeId(), iff.getInterfaceAddress(), parmMap);
         }
@@ -112,6 +113,7 @@ public class ConnectorManager {
             final Connector connector = connectorsByKey.remove(key);
             if (connector != null) {
                 try {
+                    LOG.debug("Closing connector for: {}", key);
                     connector.close();
                 } catch (IOException e) {
                     LOG.warn("Error closing connector: {}", key, e);
@@ -126,6 +128,7 @@ public class ConnectorManager {
                 // No packages defined
                 LOG.warn("No packages defined for connector named: {}. No connections will be attempted.", connectorConfig.getName());
             } else {
+                LOG.info("Watching for services named '{}' for connector: {}", connectorConfig.getServiceName(), connectorConfig.getName());
                 // One or more packages defined
                 for (PackageConfig packageConfig : connectorConfig.getPackages()) {
                     // Watch the services matching the filter rule
@@ -202,6 +205,16 @@ public class ConnectorManager {
         @Override
         public int hashCode() {
             return Objects.hash(connectorName, packageName, nodeId, interfaceAddress);
+        }
+
+        @Override
+        public String toString() {
+            return "ConnectorKey{" +
+                    "connectorName='" + connectorName + '\'' +
+                    ", packageName='" + packageName + '\'' +
+                    ", nodeId=" + nodeId +
+                    ", interfaceAddress=" + interfaceAddress +
+                    '}';
         }
     }
 

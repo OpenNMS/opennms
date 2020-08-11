@@ -59,6 +59,10 @@ public class OpenConfigConnector implements Connector {
 
     @Override
     public void stream(int nodeId, InetAddress ipAddress, Map<String, String> params) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Starting new OpenConfig client for: {}", InetAddressUtils.str(ipAddress));
+        }
+
         // FIXME: Should not need to convert IP to string
         Config config = new Config(nodeId, InetAddressUtils.toIpAddrString(ipAddress), params);
         try {

@@ -154,7 +154,10 @@ public class Telemetryd implements SpringServiceDaemon {
         }
 
         // Start the connectors
-        connectorManager.start(config);
+        if (!config.getConnectors().isEmpty()) {
+            LOG.info("Starting connectors.");
+            connectorManager.start(config);
+        }
 
         LOG.info("{} is started.", NAME);
     }
@@ -175,6 +178,7 @@ public class Telemetryd implements SpringServiceDaemon {
         listeners.clear();
 
         // Stop the connectors
+        LOG.info("Stopping connectors.");
         connectorManager.stop();
 
         // Stop the dispatchers
