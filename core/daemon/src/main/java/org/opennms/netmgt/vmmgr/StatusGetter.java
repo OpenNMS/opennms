@@ -68,7 +68,8 @@ public class StatusGetter {
      *
      * @throws java.lang.Exception if any.
      */
-    public void queryStatus() throws Exception {
+    @SuppressWarnings("unchecked")
+	public void queryStatus() throws Exception {
 
         Pattern p = Pattern.compile("Status: OpenNMS:Name=(\\S+) = (\\S+)");
 

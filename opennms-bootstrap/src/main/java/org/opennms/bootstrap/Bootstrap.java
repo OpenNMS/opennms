@@ -256,7 +256,7 @@ public abstract class Bootstrap {
             // Descend into sub-directories
             File[] dirlist = dir.listFiles(m_dirFilter);
             if (dirlist != null) {
-            	Arrays.sort(dirlist);
+                Arrays.sort(dirlist);
                 for (File childDir : dirlist) {
                     loadClasses(childDir, recursive, urls);
                 }
@@ -266,7 +266,7 @@ public abstract class Bootstrap {
         // Add individual JAR files
         File[] children = dir.listFiles(m_jarFilter);
         if (children != null) {
-        	Arrays.sort(children);
+            Arrays.sort(children);
             for (File childFile : children) {
                 urls.add(childFile.toURI().toURL());
             }
@@ -357,7 +357,7 @@ public abstract class Bootstrap {
                 if (DEBUG) { System.err.println("Skipping: " + propertiesFile.getAbsolutePath()); }
             }
         }
-	}
+    }
 
     /**
      * Validates the OpenNMS home directory by checking
@@ -500,11 +500,11 @@ public abstract class Bootstrap {
         }
 
         if (System.getProperty("org.opennms.protocols.icmp.interfaceJar") != null) {
-        	dir += File.pathSeparator + System.getProperty("org.opennms.protocols.icmp.interfaceJar");
+            dir += File.pathSeparator + System.getProperty("org.opennms.protocols.icmp.interfaceJar");
         }
         
         if (System.getProperty("org.opennms.rrd.interfaceJar") != null) {
-        	dir += File.pathSeparator + System.getProperty("org.opennms.rrd.interfaceJar");
+            dir += File.pathSeparator + System.getProperty("org.opennms.rrd.interfaceJar");
         }
 
         if (DEBUG) {
