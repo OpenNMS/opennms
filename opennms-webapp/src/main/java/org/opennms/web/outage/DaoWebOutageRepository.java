@@ -148,6 +148,9 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
                 case LOCATION:
                     criteria.addOrder(Order.desc("node.location"));
                     break;
+                case PERSPECTIVE:
+                    criteria.addOrder(Order.desc("perspective"));
+                    break;
                 case REVERSE_FOREIGNSOURCE:
                     criteria.addOrder(Order.asc("node.foreignSource"));
                     break;
@@ -171,6 +174,9 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
                     break;
                 case REVERSE_LOCATION:
                     criteria.addOrder(Order.asc("node.location"));
+                    break;
+                case REVERSE_PERSPECTIVE:
+                    criteria.addOrder(Order.asc("perspective"));
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown SortStyle: " + sortStyle);
