@@ -42,6 +42,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
@@ -57,9 +59,11 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -68,8 +72,10 @@ import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.events.api.model.IValue;
+import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -82,6 +88,7 @@ import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.xml.event.Event;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -118,6 +125,8 @@ public class RemotePollerd implements SpringServiceDaemon {
     private final PersisterFactory persisterFactory;
     private final EventForwarder eventForwarder;
     private final ThresholdingService thresholdingService;
+    private final EventDao eventDao;
+    private final OutageDao outageDao;
 
     Scheduler scheduler;
 
@@ -130,7 +139,9 @@ public class RemotePollerd implements SpringServiceDaemon {
                          final CollectionAgentFactory collectionAgentFactory,
                          final PersisterFactory persisterFactory,
                          final EventForwarder eventForwarder,
-                         final ThresholdingService thresholdingService) {
+                         final ThresholdingService thresholdingService,
+                         final EventDao eventDao,
+                         final OutageDao outageDao) {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.monitoringLocationDao = Objects.requireNonNull(monitoringLocationDao);
         this.pollerConfig = Objects.requireNonNull(pollerConfig);
@@ -141,6 +152,8 @@ public class RemotePollerd implements SpringServiceDaemon {
         this.persisterFactory = Objects.requireNonNull(persisterFactory);
         this.eventForwarder = Objects.requireNonNull(eventForwarder);
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
+        this.eventDao = Objects.requireNonNull(eventDao);
+        this.outageDao = Objects.requireNonNull(outageDao);
     }
 
     @Override
@@ -395,7 +408,8 @@ public class RemotePollerd implements SpringServiceDaemon {
         final String uei = pollResult.isAvailable() ? EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI : EventConstants.REMOTE_NODE_LOST_SERVICE_UEI;
 
         final EventBuilder builder = createEventBuilder(locationName, uei)
-                .setMonitoredService(monSvc);
+                .setMonitoredService(monSvc)
+                .addParam("perspective", locationName);
 
         if (!pollResult.isAvailable() && pollResult.getReason() != null) {
             builder.addParam(EventConstants.PARM_LOSTSERVICE_REASON, pollResult.getReason());
@@ -507,6 +521,65 @@ public class RemotePollerd implements SpringServiceDaemon {
             if (value != null) {
                 handleConfigurationChangedForLocation(value.getContent());
             }
+        }
+    }
+
+    @EventHandler(uei = EventConstants.REMOTE_NODE_LOST_SERVICE_UEI)
+    public void handleRemoteNodeLostService(final IEvent e) {
+        if (e.hasNodeid() && e.getInterfaceAddress() != null && e.getService() != null && e.getParm("perspective") != null) {
+            final OnmsEvent onmsEvent = eventDao.get(e.getDbid());
+            final OnmsMonitoredService service = monSvcDao.get(onmsEvent.getNodeId(), onmsEvent.getIpAddr(), onmsEvent.getServiceType().getId());
+            final OnmsMonitoringLocation perspective = monitoringLocationDao.get(e.getParm("perspective").getValue().getContent());
+            final OnmsOutage onmsOutage = new OnmsOutage(onmsEvent.getEventCreateTime(), onmsEvent, service);
+            onmsOutage.setPerspective(perspective);
+            outageDao.save(onmsOutage);
+
+            final Event outageEvent = new EventBuilder(EventConstants.OUTAGE_CREATED_EVENT_UEI, "RemotePollerd")
+                    .setNodeid(onmsEvent.getNodeId())
+                    .setService(service.getServiceName())
+                    .setTime(onmsEvent.getEventCreateTime())
+                    .setParam("perspective", perspective.getLocationName())
+                    .getEvent();
+            eventForwarder.sendNow(outageEvent);
+        } else {
+            LOG.warn("Received incomplete {} event: {}", EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, e);
+        }
+    }
+
+    @EventHandler(uei = EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI)
+    public void handleRemoteNodeGainedService(final IEvent e) {
+        if (e.hasNodeid() && e.getInterfaceAddress() != null && e.getService() != null && e.getParm("perspective") != null) {
+            final OnmsEvent onmsEvent = eventDao.get(e.getDbid());
+            final OnmsMonitoredService service = monSvcDao.get(onmsEvent.getNodeId(), onmsEvent.getIpAddr(), onmsEvent.getServiceType().getId());
+            final OnmsMonitoringLocation perspective = monitoringLocationDao.get(e.getParm("perspective").getValue().getContent());
+
+            final Criteria criteria = new CriteriaBuilder(OnmsOutage.class)
+                    .eq("perspective", perspective)
+                    .isNull("serviceRegainedEvent")
+                    .isNull("ifRegainedService")
+                    .eq("monitoredService", service).toCriteria();
+
+            final List<OnmsOutage> onmsOutages = outageDao.findMatching(criteria);
+
+            if (onmsOutages.size() == 1) {
+                final OnmsOutage onmsOutage = onmsOutages.get(0);
+                onmsOutage.setIfRegainedService(onmsEvent.getEventCreateTime());
+                onmsOutage.setServiceRegainedEvent(onmsEvent);
+                outageDao.update(onmsOutage);
+
+                final Event outageEvent = new EventBuilder(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, "RemotePollerd")
+                        .setNodeid(onmsEvent.getNodeId())
+                        .setService(service.getServiceName())
+                        .setTime(onmsEvent.getEventCreateTime())
+                        .setParam("perspective", perspective.getLocationName())
+                        .getEvent();
+                eventForwarder.sendNow(outageEvent);
+            } else {
+                LOG.warn("Found more than one outages for {} event: {}", EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, e);
+                return;
+            }
+        } else {
+            LOG.warn("Received incomplete {} event: {}", EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, e);
         }
     }
 }

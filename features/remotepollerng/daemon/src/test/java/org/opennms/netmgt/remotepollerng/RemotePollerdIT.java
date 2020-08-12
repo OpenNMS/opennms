@@ -53,6 +53,8 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter;
@@ -131,6 +133,12 @@ public class RemotePollerdIT implements InitializingBean {
     @Autowired
     private OverrideableThresholdingDao thresholdingDao;
 
+    @Autowired
+    private EventDao eventDao;
+
+    @Autowired
+    private OutageDao outageDao;
+
     @BeforeTransaction
     public void beforeTransaction() throws Exception {
         this.databasePopulator.populateDatabase();
@@ -184,7 +192,9 @@ public class RemotePollerdIT implements InitializingBean {
                 this.collectionAgentFactory,
                 this.persisterFactory,
                 this.eventIpcManager,
-                this.thresholdingService
+                this.thresholdingService,
+                this.eventDao,
+                this.outageDao
         );
         this.annotationBasedEventListenerAdapter = new AnnotationBasedEventListenerAdapter(this.remotePollerd, eventIpcManager);
         this.remotePollerd.start();

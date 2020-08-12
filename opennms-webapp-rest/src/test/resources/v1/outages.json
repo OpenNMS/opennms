@@ -10,6 +10,7 @@
             "ifRegainedService": 1436881548292,
             "ipAddress": "192.168.1.1",
             "locationName": "Default",
+            "perspective": null,
             "monitoredService": {
                 "applications": [],
                 "down": true,

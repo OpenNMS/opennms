@@ -871,19 +871,22 @@ create table outages (
 	ifRegainedService	timestamp with time zone,
 	suppressTime    	timestamp with time zone,
 	suppressedBy		varchar(256),
-	ifServiceId		INTEGER not null,
+	ifServiceId         integer not null,
+	perspective         text,
 
 	constraint pk_outageID primary key (outageID),
 	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
 	constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE,
-	CONSTRAINT ifServices_fkey2 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE
+	CONSTRAINT ifServices_fkey2 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE,
+	constraint fk_outages_perspective foreign key (perspective) references monitoringlocations (id) on delete cascade on update cascade
 );
 
 create index outages_svclostid_idx on outages(svcLostEventID);
 create index outages_svcregainedid_idx on outages(svcRegainedEventID);
 create index outages_regainedservice_idx on outages(ifRegainedService);
 create index outages_ifServiceId_idx on outages(ifServiceId);
-create unique index one_outstanding_outage_per_service_idx on outages (ifserviceid) where ifregainedservice is null;
+create unique index one_outstanding_outage_per_service_and_location_idx1 on outages (ifserviceid) where perspective is null and ifregainedservice is null;
+create unique index one_outstanding_outage_per_service_and_location_idx2 on outages (ifserviceid, perspective) where not perspective is null and ifregainedservice is null;
 
 --########################################################################
 --# notification table - Contains information on acknowleged and outstanding
@@ -2484,7 +2487,7 @@ CREATE VIEW node_outage_status AS
           max(events.eventseverity) AS severity
          FROM events
            JOIN outages ON outages.svclosteventid = events.eventid
-        WHERE outages.ifregainedservice IS NULL
+        WHERE outages.ifregainedservice IS NULL AND outages.perspective IS NULL
         GROUP BY events.nodeid) tmp
  RIGHT JOIN node ON tmp.nodeid = node.nodeid;
 
@@ -2637,6 +2640,8 @@ CREATE VIEW node_outages AS (
         node_outage_status nos
     ON
         nc.nodeid = nos.nodeid
+    WHERE
+        outages.perspective IS NULL
 );
 
 CREATE VIEW node_ip_services AS (

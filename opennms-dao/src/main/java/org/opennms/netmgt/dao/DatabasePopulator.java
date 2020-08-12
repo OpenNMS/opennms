@@ -342,7 +342,7 @@ public class DatabasePopulator {
         event.setEventTime(new Date(1436881548292L));
         getEventDao().save(event);
         getEventDao().flush();
-        
+
         final OnmsNotification notif = buildTestNotification(builder, event);
         getNotificationDao().save(notif);
         getNotificationDao().flush();
@@ -363,7 +363,7 @@ public class DatabasePopulator {
         final OnmsOutage unresolved = new OnmsOutage(new Date(1436881548292L), event, svc);
         getOutageDao().save(unresolved);
         getOutageDao().flush();
-        
+
         final OnmsAlarm alarm = buildAlarm(event);
         getAlarmDao().save(alarm);
         getAlarmDao().flush();
@@ -385,6 +385,17 @@ public class DatabasePopulator {
         def.setPriority(1L);
         def.setTags(Collections.singletonList("blah"));
         m_monitoringLocationDao.save(def);
+
+        // added this to assure that the old behaviour before RemotePollerNG is still the same, see NMS-12792
+        final OnmsOutage remoteResolved = new OnmsOutage(new Date(1436881448292L), new Date(1436881448292L), event, event, svc, null, null);
+        remoteResolved.setPerspective(def);
+        getOutageDao().save(remoteResolved);
+        getOutageDao().flush();
+
+        final OnmsOutage remoteUnresolved = new OnmsOutage(new Date(1436881448292L), event, svc);
+        remoteUnresolved.setPerspective(def);
+        getOutageDao().save(remoteUnresolved);
+        getOutageDao().flush();
 
         LOG.debug("= DatabasePopulatorExtension Populate Starting =");
         for (Extension eachExtension : extensions) {
