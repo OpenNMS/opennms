@@ -146,12 +146,6 @@
             <column name="monitoringlocationid" />
         </createIndex>
 
-        <addColumn tableName="applications">
-            <column name="pollingpackage" type="text">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-
         <dropTable tableName="monitoringlocationspollingpackages"/>
         <dropTable tableName="monitoringlocationscollectionpackages"/>
     </changeSet>

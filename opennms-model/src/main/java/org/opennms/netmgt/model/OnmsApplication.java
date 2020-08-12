@@ -73,9 +73,6 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
      */
     private Set<OnmsMonitoringLocation> perspectiveLocations = new LinkedHashSet<>();
 
-    /** References a polling package by name. Optional - may be null. */
-    private String pollingPackage;
-
     @Id
     @Column(nullable=false)
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -136,16 +133,6 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     public void addPerspectiveLocation(OnmsMonitoringLocation perspectiveLocation) {
         getPerspectiveLocations().add(perspectiveLocation);
-    }
-
-    /** Can be null. */
-    @Column(name = "pollingpackage", nullable=true)
-    public String getPollingPackage() {
-        return pollingPackage;
-    }
-
-    public void setPollingPackage(String pollingPackage) {
-        this.pollingPackage = pollingPackage;
     }
 
     @Override
