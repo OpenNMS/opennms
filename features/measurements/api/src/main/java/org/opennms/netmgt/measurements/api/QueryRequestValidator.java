@@ -27,9 +27,12 @@
  *******************************************************************************/
 package org.opennms.netmgt.measurements.api;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 import org.opennms.netmgt.measurements.api.exceptions.ValidationException;
 import org.opennms.netmgt.measurements.model.Expression;
@@ -38,6 +41,10 @@ import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.Source;
 
 public class QueryRequestValidator {
+
+    private final static String VALID_ATTRIBUTE_NAME_PATTERN = "[a-zA-Z_$]+[0-9a-zA-Z_$]*";
+    private final Pattern validAttributeName = Pattern.compile(VALID_ATTRIBUTE_NAME_PATTERN);
+
     public void validate(QueryRequest request) throws ValidationException {
         if (request.getEnd() < 0) {
             throw new ValidationException("Query end must be >= 0: {}", request.getEnd());
@@ -94,6 +101,9 @@ public class QueryRequestValidator {
                 labels.put(expression.getLabel(), "expression");
             }
         }
+
+        checkIfInvalidVariablesAreUsedInExpressions(labels.keySet(), request.getExpressions());
+
         List<FilterDef> filters = request.getFilters();
         if (filters.size() > 0) {
             for (FilterDef filter : filters) {
@@ -102,5 +112,26 @@ public class QueryRequestValidator {
                 }
             }
         }
+    }
+
+    void checkIfInvalidVariablesAreUsedInExpressions(final Collection<String> variables, final Collection<Expression> expressions) throws ValidationException {
+        Objects.requireNonNull(variables);
+        Objects.requireNonNull(expressions);
+
+        for(String variable : variables) {
+            if(isValidAttributeName(variable)) {
+                continue;
+            }
+            for(Expression expression : expressions) {
+                if(expression.getExpression().contains(variable)) {
+                    throw new ValidationException("Invalid label used in expression. Label='{}', Expression='{}'. Allowed characters: '{}' ",
+                            variable, expression, VALID_ATTRIBUTE_NAME_PATTERN);
+                }
+            }
+        }
+    }
+
+    boolean isValidAttributeName(final String s) {
+        return this.validAttributeName.matcher(s).matches();
     }
 }

@@ -88,7 +88,7 @@ Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacol
 ===== PersistRegexSelectorStrategy
 
 The PersistRegexSelectorStrategy class takes a single parameter, `match-expression`, which defines a JEXL expressions.
-On evaulation, this expression should return either true, persist index to storage, or false, discard data.
+On evaluation, this expression should return either true, persist index to storage, or false, discard data.
 
 
 ==== Storage Strategies
