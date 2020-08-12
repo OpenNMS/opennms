@@ -26,6 +26,9 @@
   <onmsgi:reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
   <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder"/>
   <onmsgi:reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
+  <onmsgi:reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao"/>
+  <onmsgi:reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao"/>
+
 
   <bean id="daemon" class="org.opennms.netmgt.remotepollerng.RemotePollerd">
     <constructor-arg index="0" ref="sessionUtils"/>
@@ -38,6 +41,8 @@
     <constructor-arg index="7" ref="persisterFactory"/>
     <constructor-arg index="8" ref="eventForwarder"/>
     <constructor-arg index="9" ref="thresholdingService"/>
+    <constructor-arg index="10" ref="eventDao"/>
+    <constructor-arg index="11" ref="outageDao"/>
   </bean>
 
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">

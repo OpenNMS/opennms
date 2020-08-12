@@ -1771,6 +1771,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
                 svc.getNodeId(), svc.getAddress(), svc.getSvcName());
 
         Criteria criteria = new CriteriaBuilder(OnmsOutage.class)
+            .isNull("perspective")
             .eq("monitoredService", monitoredSvc)
             .orderBy("ifLostService")
             .toCriteria();
@@ -1795,7 +1796,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
         OutageChecker(MockService svc, Event lostSvcEvent,
                       Event regainedSvcEvent) {
-            super(m_db, "select * from outages where nodeid = ? and ipAddr = ? and serviceId = ?");
+            super(m_db, "select * from outages where perspective is null and nodeid = ? and ipAddr = ? and serviceId = ?");
 
             m_svc = svc;
             m_lostSvcEvent = lostSvcEvent;
