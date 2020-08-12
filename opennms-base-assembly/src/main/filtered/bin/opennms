@@ -351,6 +351,18 @@ runCmd(){
 	fi
 }
 
+clearPids(){
+	for PIDFILE in \
+		"${OPENNMS_PIDFILE}" \
+		"/karaf.pid" \
+		"${LOG_DIRECTORY}/karaf.pid" \
+	; do
+		if [ -n "${PIDFILE}" ] && [ -r "${PIDFILE}" ]; then
+			rm -f "${PIDFILE}"
+		fi
+	done
+}
+
 doStart(){
 	checkConfigured || return 1
 	checkXmlFiles   || return 1
@@ -557,7 +569,7 @@ doStop() {
 	while [ "$STATUS_ATTEMPTS" -lt "$STOP_TIMEOUT" ]; do
 		doStatus "$@"
 		if [ "$?" -eq 3 ]; then
-			echo "" > "$OPENNMS_PIDFILE"
+			clearPids
 			return 0
 		fi
 
@@ -606,7 +618,7 @@ doKill(){
 		fi
 	fi
 
-	echo "" > "$OPENNMS_PIDFILE"
+	clearPids
 	return 0
 }
 
@@ -949,6 +961,11 @@ case "$COMMAND" in
 				echo "failed"
 			fi
 		fi
+
+		if [ "$__ret" -eq 0 ]; then
+			clearPids
+		fi
+
 		exit "$__ret"
 		;;
 
