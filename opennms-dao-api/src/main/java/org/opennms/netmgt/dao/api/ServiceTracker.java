@@ -31,7 +31,7 @@ package org.opennms.netmgt.dao.api;
 import java.io.Closeable;
 import java.net.InetAddress;
 
-public interface FilterService {
+public interface ServiceTracker {
 
     interface Session extends Closeable {
 
@@ -75,5 +75,7 @@ public interface FilterService {
      * @return close when done watching
      */
     Session watchServicesMatchingFilter(String serviceName, String filterRule, NodeInterfaceUpdateListener listener);
+
+    Session watchServices(String serviceName, NodeInterfaceUpdateListener listener);
 
 }

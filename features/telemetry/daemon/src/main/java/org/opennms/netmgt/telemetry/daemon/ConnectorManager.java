@@ -41,7 +41,7 @@ import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.FilterService;
+import org.opennms.netmgt.dao.api.ServiceTracker;
 import org.opennms.netmgt.telemetry.api.receiver.Connector;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.model.ConnectorConfig;
@@ -74,13 +74,13 @@ public class ConnectorManager {
     private EntityScopeProvider entityScopeProvider;
 
     @Autowired
-    private FilterService filterService;
+    private ServiceTracker serviceTracker;
 
     private final Map<ConnectorKey, Connector> connectorsByKey = new LinkedHashMap<>();
 
-    private final List<FilterService.Session> filterWatchSessions = new LinkedList<>();
+    private final List<ServiceTracker.Session> filterWatchSessions = new LinkedList<>();
 
-    private void startStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, FilterService.NodeInterface iff) {
+    private void startStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceTracker.NodeInterface iff) {
         synchronized (connectorsByKey) {
             final ConnectorKey key = toKey(connectorConfig, packageConfig, iff);
             if (connectorsByKey.containsKey(key)) {
@@ -107,7 +107,7 @@ public class ConnectorManager {
         }
     }
 
-    private void stopStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, FilterService.NodeInterface iff) {
+    private void stopStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceTracker.NodeInterface iff) {
         synchronized (connectorsByKey) {
             final ConnectorKey key = toKey(connectorConfig, packageConfig, iff);
             final Connector connector = connectorsByKey.remove(key);
@@ -132,16 +132,16 @@ public class ConnectorManager {
                 // One or more packages defined
                 for (PackageConfig packageConfig : connectorConfig.getPackages()) {
                     // Watch the services matching the filter rule
-                    FilterService.Session session = filterService.watchServicesMatchingFilter(
+                    ServiceTracker.Session session = serviceTracker.watchServicesMatchingFilter(
                             connectorConfig.getServiceName(), packageConfig.getFilterRule(),
-                            new FilterService.NodeInterfaceUpdateListener() {
+                            new ServiceTracker.NodeInterfaceUpdateListener() {
                         @Override
-                        public void onInterfaceMatchedFilter(FilterService.NodeInterface iff) {
+                        public void onInterfaceMatchedFilter(ServiceTracker.NodeInterface iff) {
                             startStreamingFor(connectorConfig, packageConfig, iff);
                         }
 
                         @Override
-                        public void onInterfaceStoppedMatchingFilter(FilterService.NodeInterface iff) {
+                        public void onInterfaceStoppedMatchingFilter(ServiceTracker.NodeInterface iff) {
                             stopStreamingFor(connectorConfig, packageConfig, iff);
                         }
                     });
@@ -174,7 +174,7 @@ public class ConnectorManager {
         }
     }
 
-    private static ConnectorKey toKey(ConnectorConfig connectorConfig, PackageConfig packageConfig, FilterService.NodeInterface iff) {
+    private static ConnectorKey toKey(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceTracker.NodeInterface iff) {
         return new ConnectorKey(connectorConfig.getName(), packageConfig.getName(), iff.getNodeId(), iff.getInterfaceAddress());
     }
 
