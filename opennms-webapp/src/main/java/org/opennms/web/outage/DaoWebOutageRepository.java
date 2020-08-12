@@ -196,6 +196,7 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
             outage.serviceName = onmsOutage.getMonitoredService() != null ? onmsOutage.getMonitoredService().getServiceName() : "";
             outage.suppressedBy = onmsOutage.getSuppressedBy();
             outage.suppressTime = onmsOutage.getSuppressTime();
+            outage.perspectiveLocation = "TODO Patrick";
 
             // Node-related fields
             outage.nodeId = onmsOutage.getNodeId();

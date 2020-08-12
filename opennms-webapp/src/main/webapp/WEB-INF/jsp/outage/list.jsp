@@ -126,6 +126,7 @@
         <th><%=this.makeSortLink(request, parms, SortStyle.SERVICE,           SortStyle.REVERSE_SERVICE,           "service",                   "Service")%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.IFLOSTSERVICE,     SortStyle.REVERSE_IFLOSTSERVICE,     "time service was lost",     "Down")%></th>
         <th><%=this.makeSortLink(request, parms, SortStyle.IFREGAINEDSERVICE, SortStyle.REVERSE_IFREGAINEDSERVICE, "time service was regained", "Up")%></th>
+        <th><%=this.makeSortLink(request, parms, SortStyle.PERSPECTIVE,       SortStyle.REVERSE_PERSPECTIVE,       "location from where the outage was detected", "Perspective")%></th>
       </tr>      
       
       <%
@@ -246,6 +247,9 @@
           <% } else { %>
             <td class="bright"><%=OutageUtil.getStatusLabel(outages[i])%></td>
           <% } %>
+
+          <!-- perspective -->
+          <td class="noWrap"><%= outages[i].getPerspectiveLocation()%></td>
         </tr>
       <% } %>
     </table>
