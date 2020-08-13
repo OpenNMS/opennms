@@ -527,6 +527,17 @@ workflows:
       - horizon-deb-build:
           requires:
             - integration-test
+          filters:
+            branches:
+              only:
+                - develop
+                - /^master-.*/
+                - /^release-.*/
+                - /^foundation.*/
+                - /^features.*/
+                - /^merge-foundation\/.*/
+                - /.*smoke.*/
+                - /.*debian.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
