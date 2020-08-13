@@ -22,7 +22,7 @@ ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dopennms.poller.server.
 ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostname=<your-server-ip-address>"
 ----
 
-This tells {opennms-product-name} to listen for RMI on port `18980`, and to listen on all interfaces.  (Originally, RMI was only used for the Remote Poller, so despite the porperty name mentioning the "opennms poller server" it applies to RMI as a whole.)  Note that you _must_ include the `-Djava.rmi.server.hostname=` option or {opennms-product-name} will accept connections on the RMI port, but not be able to complete a valid connection.
+This tells {opennms-product-name} to listen for RMI on port `18980`, and to listen on all interfaces. (Originally, RMI was only used for the deprecated Remote Poller, so despite the property name mentioning the "opennms poller server" it applies to RMI as a whole.)  Note that you _must_ include the `-Djava.rmi.server.hostname=` option or {opennms-product-name} will accept connections on the RMI port, but not be able to complete a valid connection.
 
 Authentication will only be allowed for users that are in the `admin` role (i.e. `ROLE_ADMIN`), or the `jmx` role (i.e. `ROLE_JMX`).
 To make a user an admin, be sure to add only the `ROLE_ADMIN` role to the user in `users.xml`.
