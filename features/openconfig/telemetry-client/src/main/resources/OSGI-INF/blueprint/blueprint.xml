@@ -10,8 +10,8 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-  <service interface="org.opennms.netmgt.telemetry.stream.listeners.ConnectionFactory">
-    <bean class="org.opennms.features.openconfig.telemetry.OpenConfigClientFactory"/>
+  <service interface="org.opennms.features.openconfig.api.OpenConfigClientFactory">
+    <bean class="org.opennms.features.openconfig.telemetry.OpenConfigClientFactoryImpl"/>
   </service>
 
 </blueprint>

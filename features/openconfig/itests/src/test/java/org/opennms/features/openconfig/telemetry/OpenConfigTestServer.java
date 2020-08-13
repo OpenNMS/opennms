@@ -49,6 +49,7 @@ public class OpenConfigTestServer {
     private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private static final Logger LOG = LoggerFactory.getLogger(OpenConfigTestServer.class);
     private Server server;
+    private Boolean errorStream = false;
 
 
     public void start() throws IOException {
@@ -80,6 +81,11 @@ public class OpenConfigTestServer {
             Telemetry.KeyValue keyValue = Telemetry.KeyValue.newBuilder().setKey("frequency")
                     .setIntValue(System.currentTimeMillis()).build();
             builder.addKv(keyValue);
+            if(errorStream) {
+                responseObserver.onError(new IllegalArgumentException());
+                errorStream = false;
+                return;
+            }
             executor.scheduleAtFixedRate(() ->
                     responseObserver.onNext(builder.build()), 0, frequency, TimeUnit.MILLISECONDS);
         }
@@ -90,5 +96,12 @@ public class OpenConfigTestServer {
         if (server != null) {
             server.shutdown();
         }
+        if(executor != null) {
+            executor.shutdown();
+        }
+    }
+
+    protected void setErrorStream() {
+        this.errorStream = true;
     }
 }

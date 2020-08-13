@@ -14,7 +14,7 @@
   <packaging>pom</packaging>
   <modules>
     <module>adapter</module>
-    <module>parser</module>
+    <module>connector</module>
   </modules>
 
 

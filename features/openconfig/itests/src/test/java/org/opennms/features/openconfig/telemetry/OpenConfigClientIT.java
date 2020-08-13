@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,9 +43,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.features.openconfig.api.OpenConfigClient;
 import org.opennms.features.openconfig.proto.jti.Telemetry;
-import org.opennms.netmgt.telemetry.stream.listeners.Config;
-import org.opennms.netmgt.telemetry.stream.listeners.Connection;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -62,21 +62,38 @@ public class OpenConfigClientIT {
     @Test
     public void testOpenConfigJti() throws Exception {
 
-        Map<String, String> params = new HashMap<>();
-        params.put("port", "50051");
-        params.put("paths", "/interfaces");
-        params.put("frequency", "5000");
-        Config config = new Config(1, "127.0.0.1", params);
-        OpenConfigClient openConfigClient = new OpenConfigClient(config);
+        Map<String, String> params = getParams();
+        InetAddress host = InetAddress.getLocalHost();
+        OpenConfigClientImpl openConfigClient = new OpenConfigClientImpl(host, params);
         openConfigClient.subscribe(new DataHandler());
         await().atMost(10, TimeUnit.SECONDS).until(openConfigData::size, is(greaterThan(0)));
 
     }
 
-    private class DataHandler implements Connection.Handler {
+    @Test
+    public void testOpenConfigScheduling() throws Exception {
+        Map<String, String> params = getParams();
+        InetAddress host = InetAddress.getLocalHost();
+        server.setErrorStream();
+        OpenConfigClientImpl openConfigClient = new OpenConfigClientImpl(host, params);
+        openConfigClient.subscribe(new DataHandler());
+        await().atMost(30, TimeUnit.SECONDS).until(openConfigData::size, is(greaterThan(0)));
+    }
+
+    private Map<String, String> getParams() {
+        Map<String, String> params = new HashMap<>();
+        params.put("port", "50051");
+        params.put("paths", "/interfaces," +
+                "/network-instances/network-instance[instance-name='master']," +
+                "/protocols/protocol/bgp");
+        params.put("frequency", "5000");
+        return params;
+    }
+
+    private class DataHandler implements OpenConfigClient.Handler {
 
         @Override
-        public void accept(byte[] data) {
+        public void accept(InetAddress host, Integer port, byte[] data) {
             try {
                 Telemetry.OpenConfigData ocData = Telemetry.OpenConfigData.parseFrom(data);
                 openConfigData.add(ocData);
