@@ -57,6 +57,8 @@
 <%@page import="org.opennms.web.outage.filter.LocationFilter" %>
 <%@page import="org.opennms.web.outage.filter.NegativeLocationFilter" %>
 <%@page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.opennms.web.outage.filter.PerspectiveLocationFilter" %>
+<%@ page import="org.opennms.web.outage.filter.NegativePerspectiveLocationFilter" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -249,7 +251,17 @@
           <% } %>
 
           <!-- perspective -->
-          <td class="noWrap"><%= outages[i].getPerspectiveLocation()%></td>
+          <td class="noWrap">
+            <%= outages[i].getPerspectiveLocation() == null ? "&lt;local&gt;" : outages[i].getPerspectiveLocation() %>
+            <% String perspectiveLocation = outages[i].getPerspectiveLocation(); %>
+            <% Filter filter = new PerspectiveLocationFilter(perspectiveLocation); %>
+            <% if( !parms.filters.contains(filter) ) { %>
+            <a href="<%=OutageUtil.makeLink( request, parms, filter, true)%>" title="Show only outages for this perspective"><%=ZOOM_IN_ICON%></a>
+            <a href="<%=OutageUtil.makeLink( request, parms, new NegativePerspectiveLocationFilter(perspectiveLocation), true)%>" title="Do not show outages for this perspective"><%=DISCARD_ICON%></a>
+            <% } %>
+          </td>
+
+
         </tr>
       <% } %>
     </table>
