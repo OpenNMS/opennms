@@ -128,9 +128,6 @@
     
     <bean id="rrdDao" class="org.opennms.netmgt.dao.mock.MockRrdDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.RrdDao" ref="rrdDao"/>
-    
-    <bean id="scanReportDao" class="org.opennms.netmgt.dao.mock.MockScanReportDao" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.ScanReportDao" ref="scanReportDao" />
 
     <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.mock.MockServiceTypeDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.ServiceTypeDao" ref="serviceTypeDao" />

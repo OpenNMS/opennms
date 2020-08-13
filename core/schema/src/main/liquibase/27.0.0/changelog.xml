@@ -149,4 +149,11 @@
         <dropTable tableName="monitoringlocationspollingpackages"/>
         <dropTable tableName="monitoringlocationscollectionpackages"/>
     </changeSet>
+    
+    <changeSet author="cpape" id="27.0.0-remove-scanreports">
+        <dropTable tableName="scanreportlogs"/>
+        <dropTable tableName="scanreportpollresults"/>
+        <dropTable tableName="scanreportproperties"/>
+        <dropTable tableName="scanreports"/>
+    </changeSet>
 </databaseChangeLog>
