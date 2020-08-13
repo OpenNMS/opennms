@@ -169,4 +169,5 @@
     <constructor-arg value="org.opennms.netmgt.config.poller.PollerConfiguration" />
     <constructor-arg value="file:${opennms.home}/etc/poller-configuration.xml" />
   </bean>
+
 </beans>

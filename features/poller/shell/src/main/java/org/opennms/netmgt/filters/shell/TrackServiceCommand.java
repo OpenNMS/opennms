@@ -31,6 +31,8 @@ package org.opennms.netmgt.filters.shell;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.karaf.shell.api.action.Action;
@@ -69,21 +71,26 @@ public class TrackServiceCommand implements Action {
     public Object execute() throws IOException {
         System.out.printf("Tracking service named %s%s. Press CTRL+C to stop.\n", serviceName,
                 filterRule != null ? String.format(" with filter rule \"%s\"", filterRule) : "");
+
+        // Callback may occur from other threads, but we can't use those to print the results
+        // since output isn't redirected to the console. To work around this we push messages to a queue
+        // and pull/print these from the command execution thread
+        BlockingQueue<String> messageQueue = new LinkedBlockingDeque<>();
         Closeable session = serviceTracker.trackServiceMatchingFilterRule(serviceName, filterRule, new ServiceTracker.ServiceListener() {
             @Override
             public void onServiceMatched(ServiceRef serviceRef) {
-                System.out.printf("FOUND: %s\n", getDescription(serviceRef));
+                messageQueue.add(String.format("FOUND: %s\n", getDescription(serviceRef)));
             }
 
             @Override
             public void onServiceStoppedMatching(ServiceRef serviceRef) {
-                System.out.printf("REMOVED: %s\n", getDescription(serviceRef));
+                messageQueue.add(String.format("REMOVED: %s\n", getDescription(serviceRef)));
             }
         });
 
         while (true) {
             try {
-                Thread.sleep(TimeUnit.SECONDS.toMillis(5));
+                System.out.print(messageQueue.take());
             } catch (InterruptedException e) {
                 break;
             }
@@ -106,7 +113,7 @@ public class TrackServiceCommand implements Action {
                     nodeLocation = LocationUtils.DEFAULT_LOCATION_NAME;
                 }
             }
-            return String.format("%s on interface %s on node %s (%d) at location %s.\n",
+            return String.format("%s on interface %s on node %s (id=%d) at location %s.",
                     serviceRef.getServiceName(), InetAddressUtils.str(serviceRef.getIpAddress()),
                     nodeLabel, serviceRef.getNodeId(), nodeLocation);
         });

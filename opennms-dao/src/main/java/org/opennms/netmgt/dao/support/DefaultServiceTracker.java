@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.core.utils.StringUtils;
@@ -94,10 +95,12 @@ public class DefaultServiceTracker implements ServiceTracker {
         private final Set<ServiceRef> activeServices = new HashSet<>();
 
         public TrackingSession(String serviceName, String filterRule, ServiceListener listener) {
-            this.serviceName = serviceName;
+            this.serviceName = Objects.requireNonNull(serviceName);
+            this.listener = Objects.requireNonNull(listener);
             this.filterRule = filterRule;
+            // Ensure this is the last call in the constructor since it may issue the callback immediately
+            // from this calling thread
             this.filterSession = filterWatcher.watch(filterRule, this::onFilterChanged);
-            this.listener = listener;
         }
 
         private void onFilterChanged(FilterWatcher.FilterResults results) {

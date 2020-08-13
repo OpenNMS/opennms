@@ -79,12 +79,15 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
     @Autowired
     private SessionUtils sessionUtils;
 
+    private long refreshRateLimitMs = REFRESH_RATE_LIMIT_MS;
+
     private final Timer timer = new Timer("FilterService-Timer");
 
     private final Map<String, FilterSession> sessionByRule = new ConcurrentHashMap<>();
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
+        long timerIntevalMs = Math.min(refreshRateLimitMs, TimeUnit.SECONDS.toMillis(5));
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -93,14 +96,14 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
                         try {
                             s.refreshIfNeeded();
                         } catch (Exception e) {
-                            LOG.warn("Error refreshing filter for rule: {}. Will retry again in {}ms.", s.rule, REFRESH_RATE_LIMIT_MS, e);
+                            LOG.warn("Error refreshing filter for rule: {}. Will retry again in {}ms.", s.rule, timerIntevalMs, e);
                         }
                     });
                 } catch (Exception e) {
-                    LOG.warn("Error refreshing filter results. Will retry again in {}ms.", REFRESH_RATE_LIMIT_MS, e);
+                    LOG.warn("Error refreshing filter results. Will retry again in {}ms.", timerIntevalMs, e);
                 }
             }
-        }, REFRESH_RATE_LIMIT_MS, REFRESH_RATE_LIMIT_MS);
+        }, timerIntevalMs, timerIntevalMs);
     }
 
     @Override
@@ -148,6 +151,9 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
             EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI,
             EventConstants.INTERFACE_DELETED_EVENT_UEI,
             EventConstants.INTERFACE_REPARENTED_EVENT_UEI,
+            // Issued when the status changes on a service
+            EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI,
+            EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI
     })
     public void inventoryChangeEventHandler(final IEvent event) {
         // Filters can depend on arbitrary node fields & relationships so we need to refresh these periodically
@@ -186,8 +192,8 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
         private final String rule;
         private final List<Consumer<FilterResults>> callbacks = new LinkedList<>();
         private final AtomicReference<FilterResults> lastFilterResultsRef = new AtomicReference<>();
-        private volatile Long lastRefreshedMs;
-        private volatile Long lastRefreshRequestMs;
+        private long lastRefreshedMs;
+        private long lastRefreshRequestMs;
 
         public FilterSession(String rule) {
             this.rule = Objects.requireNonNull(rule);
@@ -197,11 +203,15 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
         public synchronized void addCallback(Consumer<FilterResults> callback) {
             callbacks.add(callback);
 
+            // Request a refresh whenever callback are added
+            if(requestRefresh()) {
+                // Our request actually triggered a refresh, so the callback was already made
+                return;
+            }
+
             final FilterResults lastFilterResults = lastFilterResultsRef.get();
             if (lastFilterResults != null) {
                 callback.accept(lastFilterResults);
-            } else {
-                refreshNow();
             }
         }
 
@@ -211,8 +221,10 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
 
         public synchronized void refreshNow() {
             lastRefreshedMs = System.currentTimeMillis();
+            LOG.debug("Refreshing results for filter rule: {}", rule);
             FilterResults newFilterResults = sessionUtils.withReadOnlyTransaction(() ->
                     new FilterResultsImpl(filterDao.getNodeIPAddressServiceMap(rule)));
+            LOG.debug("Done refreshing results for rule.");
 
             final FilterResults lastFilterResults = lastFilterResultsRef.get();
             if (Objects.equals(lastFilterResults, newFilterResults)) {
@@ -224,15 +236,20 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
             notifyCallbacks(newFilterResults);
         }
 
-        public void refreshIfNeeded() {
-            if (lastRefreshRequestMs - lastRefreshedMs >= REFRESH_RATE_LIMIT_MS) {
+        public synchronized boolean refreshIfNeeded() {
+            if (lastRefreshRequestMs > 0
+                    && lastRefreshRequestMs >= lastRefreshedMs
+                    && System.currentTimeMillis() - lastRefreshedMs >= refreshRateLimitMs) {
+                lastRefreshRequestMs = 0;
                 refreshNow();
+                return true;
             }
+            return false;
         }
 
-        public void requestRefresh() {
+        public synchronized boolean requestRefresh() {
             lastRefreshRequestMs = System.currentTimeMillis();
-            refreshIfNeeded();
+            return refreshIfNeeded();
         }
 
         private void notifyCallbacks(FilterResults results) {
@@ -246,4 +263,19 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
         }
     }
 
+    public void setRefreshRateLimitMs(long refreshRateLimitMs) {
+        this.refreshRateLimitMs = refreshRateLimitMs;
+    }
+
+    public long getRefreshRateLimitMs() {
+        return refreshRateLimitMs;
+    }
+
+    public void setFilterDao(FilterDao filterDao) {
+        this.filterDao = filterDao;
+    }
+
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
+    }
 }
