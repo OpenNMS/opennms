@@ -63,6 +63,15 @@ public interface FilterDao {
      */
     Map<InetAddress, Set<String>> getIPAddressServiceMap(String rule) throws FilterParseException;
 
+    /**
+     * Retrieve a mapping of IP-services scoped by node that match the given rule.
+     *
+     * @param rule filter rule to evaluate
+     * @return map of IP-services
+     * @throws FilterParseException if the rule is invalid
+     */
+    Map<Integer, Map<InetAddress, Set<String>>> getNodeIPAddressServiceMap(String rule) throws FilterParseException;
+
     void flushActiveIpAddressListCache();
 
     /**

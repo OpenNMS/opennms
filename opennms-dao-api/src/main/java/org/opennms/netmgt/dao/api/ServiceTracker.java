@@ -29,40 +29,32 @@
 package org.opennms.netmgt.dao.api;
 
 import java.io.Closeable;
-import java.net.InetAddress;
 
+/**
+ * Tracking services is a pain - use this service to handle it for you.
+ */
 public interface ServiceTracker {
 
-    interface Session extends Closeable {
-
-    }
-
-    interface NodeInterface {
-        int getNodeId();
-
-        InetAddress getInterfaceAddress();
-    }
-
-    interface NodeInterfaceUpdateListener {
+    interface ServiceListener {
         /**
-         * Called when an interface matches the filter.
+         * Called when a service matches the criteria.
          *
-         * @param iff interface
+         * @param serviceRef service reference
          */
-        void onInterfaceMatchedFilter(NodeInterface iff);
+        void onServiceMatched(ServiceRef serviceRef);
 
         /**
-         * Called when an interface that was previously passed to a {@link #onInterfaceMatchedFilter} call,
-         * no longer matches the filter.
+         * Called when a service that was previously passed to a {@link #onServiceMatched} call
+         * no longer matches the criteria
          *
-         * @param iff interface
+         * @param serviceRef service reference
          */
-        void onInterfaceStoppedMatchingFilter(NodeInterface iff);
+        void onServiceStoppedMatching(ServiceRef serviceRef);
     }
 
     /**
-     * Issues callbacks to the given listener for interfaces that:
-     *   1) Have the given service name attached
+     * Issues callbacks to the given listener for services that:
+     *   1) Have the given service name
      *   2) Match the given filter rule
      *
      * Callbacks are expected to be issued immediately for all existing services that match the criteria.
@@ -74,8 +66,19 @@ public interface ServiceTracker {
      * @param listener used for callbacks
      * @return close when done watching
      */
-    Session watchServicesMatchingFilter(String serviceName, String filterRule, NodeInterfaceUpdateListener listener);
+    Closeable trackServiceMatchingFilterRule(String serviceName, String filterRule, ServiceListener listener);
 
-    Session watchServices(String serviceName, NodeInterfaceUpdateListener listener);
+    /**
+     * Issues callbacks to the given listener for services that:
+     *   1) Have the given service name
+     *
+     * Callbacks are expected to be issued immediately for all existing services that match the criteria.
+     * Additional callback will be made as services are added/removed.
+     *
+     * @param serviceName only interfaces with the given service name attached will be considered
+     * @param listener used for callbacks
+     * @return close when done watching
+     */
+    Closeable trackService(String serviceName, ServiceListener listener);
 
 }

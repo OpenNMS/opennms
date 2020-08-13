@@ -68,6 +68,11 @@ public class MockFilterDao implements FilterDao, InitializingBean {
     }
 
     @Override
+    public Map<Integer, Map<InetAddress, Set<String>>> getNodeIPAddressServiceMap(String rule) throws FilterParseException {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
     public void flushActiveIpAddressListCache() {}
 
     @Override

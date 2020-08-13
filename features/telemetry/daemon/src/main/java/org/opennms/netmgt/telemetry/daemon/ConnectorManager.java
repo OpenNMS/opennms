@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.daemon;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.LinkedHashMap;
@@ -41,6 +42,7 @@ import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
 import org.opennms.core.rpc.utils.mate.FallbackScope;
 import org.opennms.core.rpc.utils.mate.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.dao.api.ServiceTracker;
 import org.opennms.netmgt.telemetry.api.receiver.Connector;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
@@ -78,11 +80,11 @@ public class ConnectorManager {
 
     private final Map<ConnectorKey, Connector> connectorsByKey = new LinkedHashMap<>();
 
-    private final List<ServiceTracker.Session> filterWatchSessions = new LinkedList<>();
+    private final List<Closeable> serviceTrackerSessions = new LinkedList<>();
 
-    private void startStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceTracker.NodeInterface iff) {
+    private void startStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
         synchronized (connectorsByKey) {
-            final ConnectorKey key = toKey(connectorConfig, packageConfig, iff);
+            final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
             if (connectorsByKey.containsKey(key)) {
                 LOG.debug("Connector already exists. Ignoring.");
             }
@@ -95,21 +97,21 @@ public class ConnectorManager {
                     ));
             // Interpolate meta-data in parameter values
             parmMap = Interpolator.interpolateStrings(parmMap, new FallbackScope(
-                    entityScopeProvider.getScopeForNode(iff.getNodeId()),
-                    entityScopeProvider.getScopeForInterface(iff.getNodeId(), InetAddressUtils.toIpAddrString(iff.getInterfaceAddress())),
-                    entityScopeProvider.getScopeForService(iff.getNodeId(), iff.getInterfaceAddress(), connectorConfig.getServiceName())
+                    entityScopeProvider.getScopeForNode(serviceRef.getNodeId()),
+                    entityScopeProvider.getScopeForInterface(serviceRef.getNodeId(), InetAddressUtils.str(serviceRef.getIpAddress())),
+                    entityScopeProvider.getScopeForService(serviceRef.getNodeId(), serviceRef.getIpAddress(), serviceRef.getServiceName())
             ));
 
             // Create a new connector
             LOG.debug("Starting connector for: {}", key);
             final Connector connector = telemetryRegistry.getConnector(connectorConfig);
-            connector.stream(iff.getNodeId(), iff.getInterfaceAddress(), parmMap);
+            connector.stream(serviceRef.getNodeId(), serviceRef.getIpAddress(), parmMap);
         }
     }
 
-    private void stopStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceTracker.NodeInterface iff) {
+    private void stopStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
         synchronized (connectorsByKey) {
-            final ConnectorKey key = toKey(connectorConfig, packageConfig, iff);
+            final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
             final Connector connector = connectorsByKey.remove(key);
             if (connector != null) {
                 try {
@@ -132,20 +134,20 @@ public class ConnectorManager {
                 // One or more packages defined
                 for (PackageConfig packageConfig : connectorConfig.getPackages()) {
                     // Watch the services matching the filter rule
-                    ServiceTracker.Session session = serviceTracker.watchServicesMatchingFilter(
+                    Closeable session = serviceTracker.trackServiceMatchingFilterRule(
                             connectorConfig.getServiceName(), packageConfig.getFilterRule(),
-                            new ServiceTracker.NodeInterfaceUpdateListener() {
-                        @Override
-                        public void onInterfaceMatchedFilter(ServiceTracker.NodeInterface iff) {
-                            startStreamingFor(connectorConfig, packageConfig, iff);
-                        }
+                            new ServiceTracker.ServiceListener() {
+                                @Override
+                                public void onServiceMatched(ServiceRef serviceRef) {
+                                    startStreamingFor(connectorConfig, packageConfig, serviceRef);
+                                }
 
-                        @Override
-                        public void onInterfaceStoppedMatchingFilter(ServiceTracker.NodeInterface iff) {
-                            stopStreamingFor(connectorConfig, packageConfig, iff);
-                        }
+                                @Override
+                                public void onServiceStoppedMatching(ServiceRef serviceRef) {
+                                    stopStreamingFor(connectorConfig, packageConfig, serviceRef);
+                                }
                     });
-                    filterWatchSessions.add(session);
+                    serviceTrackerSessions.add(session);
                 }
             }
         }
@@ -153,14 +155,14 @@ public class ConnectorManager {
 
     public void stop() {
         // Close the filter watches
-        filterWatchSessions.forEach(s -> {
+        serviceTrackerSessions.forEach(s -> {
             try {
                 s.close();
             } catch (Exception e) {
                 LOG.warn("Failed to close filter watch session. Resources may not be properly recovered.", e);
             }
         });
-        filterWatchSessions.clear();
+        serviceTrackerSessions.clear();
 
         // Close the connectors
         synchronized (connectorsByKey) {
@@ -174,8 +176,8 @@ public class ConnectorManager {
         }
     }
 
-    private static ConnectorKey toKey(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceTracker.NodeInterface iff) {
-        return new ConnectorKey(connectorConfig.getName(), packageConfig.getName(), iff.getNodeId(), iff.getInterfaceAddress());
+    private static ConnectorKey toKey(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
+        return new ConnectorKey(connectorConfig.getName(), packageConfig.getName(), serviceRef.getNodeId(), serviceRef.getIpAddress());
     }
 
     private static class ConnectorKey {

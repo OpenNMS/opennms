@@ -28,377 +28,108 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.net.InetAddress;
-import java.util.ArrayList;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.StringUtils;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.FilterWatcher;
+import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.dao.api.ServiceTracker;
-import org.opennms.netmgt.dao.api.SessionUtils;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.annotations.EventHandler;
-import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.opennms.netmgt.events.api.model.IEvent;
-import org.opennms.netmgt.filter.api.FilterDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.base.MoreObjects;
+import com.google.common.collect.Sets;
 
-@EventListener(name = "ServiceTracker")
+/**
+ * Maintains sessions for each service being tracked.
+ *
+ * Most of the work is delegated to the {@link FilterWatcher}: when the results of a filter change, we re-evaluate
+ * the state and issue callback accordingly.
+ *
+ * @author jwhite
+ */
 public class DefaultServiceTracker implements ServiceTracker {
 
-    private static final String MATCH_ALL_FILTER_RULE = "IPADDR != '0.0.0.0'";
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultServiceTracker.class);
 
     @Autowired
-    private FilterDao filterDao;
+    private FilterWatcher filterWatcher;
 
-    @Autowired
-    private IpInterfaceDao ipInterfaceDao;
-
-    @Autowired
-    private SessionUtils sessionUtils;
-
-    private final Map<String, List<TrackingSession>> sessionsByServiceName = new HashMap<>();
+    private final List<TrackingSession> trackingSessions = new LinkedList<>();
 
     @Override
-    public Session watchServicesMatchingFilter(String serviceName, String filterRule, NodeInterfaceUpdateListener listener) {
+    public Closeable trackServiceMatchingFilterRule(String serviceName, String filterRule, ServiceListener listener) {
         if (StringUtils.isEmpty(serviceName)) {
             throw new IllegalArgumentException("Service name is required, but was given: " + serviceName);
         }
 
-        String effectiveFilterRule = filterRule;
-        if (StringUtils.isEmpty(filterRule)) {
-            // No filter rule, match any
-            effectiveFilterRule = MATCH_ALL_FILTER_RULE;
-        } else {
-            filterDao.validateRule(filterRule);
+        final TrackingSession trackingSession;
+        synchronized (trackingSessions) {
+            trackingSession = new TrackingSession(serviceName, filterRule, listener);
+            trackingSessions.add(trackingSession);
         }
 
-        synchronized (sessionsByServiceName) {
-            TrackingSession session = new TrackingSession(serviceName, effectiveFilterRule, listener);
-            sessionsByServiceName.computeIfAbsent(serviceName, k -> new ArrayList<>()).add(session);
-
-            sessionUtils.withReadOnlyTransaction(() -> {
-                // IP interfaces for the service name
-                List<OnmsIpInterface> ipInterfaces = ipInterfaceDao.findByServiceType(serviceName);
-
-                if (!ipInterfaces.isEmpty()) {
-                    // Evaluate the filter expression
-                    Map<Integer, String> nodesMatchingFilter = filterDao.getNodeMap(filterRule);
-                    Set<Integer> nodeIdsMatchingFilter = nodesMatchingFilter.keySet();
-                    // Only consider IP interfaces for nodes that matched the filter expression
-                    ipInterfaces = ipInterfaces.stream()
-                            .filter(ipInterface -> nodeIdsMatchingFilter.contains(ipInterface.getNodeId()))
-                            .collect(Collectors.toList());
-                    // FIXME: We should really be matching *both* the node and interface returned the filter
-                }
-
-                for (OnmsIpInterface ipInterface : ipInterfaces) {
-                    listener.onInterfaceMatchedFilter(new NodeInterfaceImpl(ipInterface));
-                }
-                return null;
-            });
-
-            return session;
-        }
+        return trackingSession;
     }
 
     @Override
-    public Session watchServices(String serviceName, NodeInterfaceUpdateListener listener) {
-        return watchServicesMatchingFilter(serviceName, MATCH_ALL_FILTER_RULE, listener);
+    public Closeable trackService(String serviceName, ServiceListener listener) {
+        return trackServiceMatchingFilterRule(serviceName, null, listener);
     }
 
-    private List<TrackingSession> getSessionsWatchingService(Service service) {
-        return sessionsByServiceName.getOrDefault(service.getServiceName(), Collections.emptyList());
-    }
-
-    @EventHandler(ueis = {EventConstants.NODE_GAINED_SERVICE_EVENT_UEI})
-    public void nodeGainedServiceHandler(final IEvent event) {
-        final Service service = Service.fromEvent(event);
-        final List<TrackingSession> sessionsWatchingService = getSessionsWatchingService(service);
-        if (sessionsWatchingService.isEmpty()) {
-            // The services is not being watched by any of the session, noop
-            return;
-        }
-
-        for (TrackingSession session : sessionsWatchingService) {
-            session.onNewOrUpdatedService(service);
-        }
-    }
-
-    @EventHandler(ueis = {EventConstants.NODE_LOST_SERVICE_EVENT_UEI})
-    public void nodeLostServiceHandler(final IEvent event) {
-        final Service service = Service.fromEvent(event);
-        final List<TrackingSession> sessionsWatchingService = getSessionsWatchingService(service);
-        if (sessionsWatchingService.isEmpty()) {
-            // The services is not being watched by any of the session, noop
-            return;
-        }
-
-        for (TrackingSession session : sessionsWatchingService) {
-            session.onDeletedService(service);
-        }
-    }
-
-    private void onNodeChangeEvent() {
-        // Filters can depend on arbitrary node fields & relationships so we need to refresh these periodically
-
-        // Are there any filters being used?
-
-        // Re-evaluate filter immediately if it has been > 1 minute since we last refreshed
-        // Otherwise schedule another run in (1 min - X) to have a dampening effect
-
-        // https://github.com/resilience4j/resilience4j#ratelimiter
-    }
-
-    private class TrackingSession implements Session {
+    private class TrackingSession implements Closeable {
         private final String serviceName;
         private final String filterRule;
-        private final NodeInterfaceUpdateListener listener;
+        private final Closeable filterSession;
+        private final ServiceListener listener;
 
-        private final Set<Service> activeServices = new HashSet<>();
+        private final Set<ServiceRef> activeServices = new HashSet<>();
 
-        public TrackingSession(String serviceName, String filterRule, NodeInterfaceUpdateListener listener) {
+        public TrackingSession(String serviceName, String filterRule, ServiceListener listener) {
             this.serviceName = serviceName;
             this.filterRule = filterRule;
+            this.filterSession = filterWatcher.watch(filterRule, this::onFilterChanged);
             this.listener = listener;
         }
 
-        public synchronized void onNewOrUpdatedService(Service service) {
-            // Is this service already considered to be active?
-            if (activeServices.contains(service)) {
-                // The listener already knows about the service, nothing to do
-                return;
+        private void onFilterChanged(FilterWatcher.FilterResults results) {
+            Set<ServiceRef> candidateServices = results.getServicesNamed(serviceName);
+            Set<ServiceRef> servicesToAdd = Sets.difference(candidateServices, activeServices);
+            Set<ServiceRef> servicesToRemove = Sets.difference(activeServices, candidateServices);
+
+            for (ServiceRef service : servicesToAdd) {
+                activeServices.add(service);
+                listener.onServiceMatched(service);
             }
-
-            // Does this service match the session criteria?
-            // FIXME
-
-            activeServices.add(service);
-            listener.onInterfaceMatchedFilter(new NodeInterfaceImpl(service));
-        }
-
-        public synchronized void onDeletedService(Service service) {
-            // Is this service already considered to be active?
-            if (!activeServices.remove(service)) {
-                // The listener doesn't know about this service, nothing to do
-                return;
+            for (ServiceRef service : servicesToRemove) {
+                activeServices.remove(service);
+                listener.onServiceStoppedMatching(service);
             }
-
-            listener.onInterfaceStoppedMatchingFilter(new NodeInterfaceImpl(service));
         }
 
         @Override
-        public synchronized void close() {
-            synchronized (sessionsByServiceName) {
-                sessionsByServiceName.getOrDefault(serviceName, Collections.emptyList()).remove(this);
+        public void close() {
+            synchronized (trackingSessions) {
+                trackingSessions.remove(this);
+
+                try {
+                    filterSession.close();
+                } catch (IOException e) {
+                    LOG.warn("Error closing session for filter rule: {}. Some resources may not be cleaned up properly.", filterRule);
+                }
             }
         }
     }
 
-    private static class NodeInterfaceImpl implements NodeInterface {
-        private final int nodeId;
-        private final InetAddress ipAddress;
-
-        public NodeInterfaceImpl(OnmsIpInterface ipInterface) {
-            this(ipInterface.getNodeId(), ipInterface.getIpAddress());
-        }
-
-        public NodeInterfaceImpl(Service service) {
-            this(service.nodeId, service.ipAddress);
-        }
-
-        public NodeInterfaceImpl(int nodeId, InetAddress ipAddress) {
-            this.nodeId = nodeId;
-            this.ipAddress = Objects.requireNonNull(ipAddress);
-        }
-
-        @Override
-        public int getNodeId() {
-            return nodeId;
-        }
-
-        @Override
-        public InetAddress getInterfaceAddress() {
-            return ipAddress;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof NodeInterfaceImpl)) return false;
-            NodeInterfaceImpl that = (NodeInterfaceImpl) o;
-            return nodeId == that.nodeId &&
-                    Objects.equals(ipAddress, that.ipAddress);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(nodeId, ipAddress);
-        }
-    }
-
-
-    private static class Node {
-        public final int nodeId;
-
-        public Node(final int nodeId) {
-            this.nodeId = nodeId;
-        }
-
-        public static Node fromEvent(final IEvent event) {
-            final int nodeId = event.getNodeid().intValue();
-
-            return new Node(nodeId);
-        }
-
-        public Interface iface(final InetAddress ipAddress) {
-            return new Interface(this.nodeId, ipAddress);
-        }
-
-        public int getNodeId() {
-            return this.nodeId;
-        }
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("nodeId", this.nodeId)
-                    .toString();
-        }
-    }
-
-    private static class Interface {
-        public final int nodeId;
-        public final InetAddress ipAddress;
-
-        public Interface(final int nodeId, final InetAddress ipAddress) {
-            this.nodeId = nodeId;
-            this.ipAddress = Objects.requireNonNull(ipAddress);
-        }
-
-        public static Interface fromEvent(final IEvent event) {
-            final int nodeId = event.getNodeid().intValue();
-            final String ipAddress = event.getInterface();
-
-            return new Interface(nodeId, InetAddressUtils.addr(ipAddress));
-        }
-
-        public Node node() {
-            return new Node(this.nodeId);
-        }
-
-        public Service service(final String serviceName) {
-            return new Service(this.nodeId, this.ipAddress, serviceName);
-        }
-
-        public int getNodeId() {
-            return this.nodeId;
-        }
-
-        public InetAddress getIpAddress() {
-            return this.ipAddress;
-        }
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("nodeId", this.nodeId)
-                    .add("address", this.ipAddress)
-                    .toString();
-        }
-    }
-
-    public static class Service {
-        private final int nodeId;
-        private final InetAddress ipAddress;
-        private final String serviceName;
-
-        public Service(final int nodeId,
-                       final InetAddress ipAddress,
-                       final String serviceName) {
-            this.nodeId = nodeId;
-            this.ipAddress = Objects.requireNonNull(ipAddress);
-            this.serviceName = Objects.requireNonNull(serviceName);
-        }
-
-        public static Service fromEvent(final IEvent event) {
-            final int nodeId = event.getNodeid().intValue();
-            final String ipAddress = event.getInterface();
-            final String serviceName = event.getService();
-
-            return new Service(nodeId, InetAddressUtils.addr(ipAddress), serviceName);
-        }
-
-        public Node node() {
-            return new Node(this.nodeId);
-        }
-
-        public Interface iface() {
-            return new Interface(this.nodeId, this.ipAddress);
-        }
-
-        public int getNodeId() {
-            return this.nodeId;
-        }
-
-        public InetAddress getIpAddress() {
-            return this.ipAddress;
-        }
-
-        public String getServiceName() {
-            return serviceName;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (!(o instanceof Service)) {
-                return false;
-            }
-
-            final Service service = (Service) o;
-            return Objects.equals(this.nodeId, service.nodeId) &&
-                    Objects.equals(this.ipAddress, service.ipAddress) &&
-                    Objects.equals(this.serviceName, service.serviceName);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.nodeId, this.ipAddress, this.serviceName);
-        }
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("nodeId", this.nodeId)
-                    .add("address", this.ipAddress)
-                    .add("serviceName", this.serviceName)
-                    .toString();
-        }
-    }
-
-    public void setFilterDao(FilterDao filterDao) {
-        this.filterDao = filterDao;
-    }
-
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        this.ipInterfaceDao = ipInterfaceDao;
-    }
-
-    public void setSessionUtils(SessionUtils sessionUtils) {
-        this.sessionUtils = sessionUtils;
+    public void setFilterWatcher(FilterWatcher filterWatcher) {
+        this.filterWatcher = filterWatcher;
     }
 }

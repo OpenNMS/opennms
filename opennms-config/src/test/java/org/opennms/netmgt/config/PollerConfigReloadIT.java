@@ -31,6 +31,9 @@ package org.opennms.netmgt.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedWriter;
@@ -45,9 +48,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.IOUtils;
@@ -61,8 +61,6 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.filter.api.FilterParseException;
-
-import com.google.common.collect.Lists;
 
 public class PollerConfigReloadIT {
 
@@ -79,7 +77,7 @@ public class PollerConfigReloadIT {
         includeUrlFile = tempFolder.newFile("poller-config-include-url.txt");
         fillInitialData(includeUrlFile);
         InputStream configStream = setIncludeUrlFileInConfig(PollerConfigReloadIT.class.getResource("/poller-configuration.xml"));;
-        FilterDao mockFilterDao = Mockito.mock(FilterDao.class);
+        FilterDao mockFilterDao = mock(FilterDao.class);
         List<InetAddress> inetAddressList = new ArrayList<>();
         inetAddressList.add(InetAddressUtils.addr("127.0.0.5"));
         inetAddressList.add(InetAddressUtils.addr("128.0.1.10"));
@@ -148,48 +146,14 @@ public class PollerConfigReloadIT {
         PollerConfigFactory.setPollerConfigFile(temporaryFile);
 
         final AtomicBoolean invalid = new AtomicBoolean(false);
-        FilterDaoFactory.setInstance(new FilterDao() {
-            @Override
-            public SortedMap<Integer, String> getNodeMap(String rule) throws FilterParseException {
-                return null;
+        FilterDao filterDao = mock(FilterDao.class);
+        doAnswer(invocation -> {
+            if (invalid.get()) {
+                throw new FilterParseException("Something fishy");
             }
-
-            @Override
-            public Map<InetAddress, Set<String>> getIPAddressServiceMap(String rule) throws FilterParseException {
-                return null;
-            }
-
-            @Override
-            public void flushActiveIpAddressListCache() {
-            }
-
-            @Override
-            public List<InetAddress> getIPAddressList(String rule) throws FilterParseException {
-                return null;
-            }
-
-            @Override
-            public boolean isValid(String addr, String rule) throws FilterParseException {
-                return false;
-            }
-
-            @Override
-            public boolean isRuleMatching(String rule) throws FilterParseException {
-                return false;
-            }
-
-            @Override
-            public void validateRule(String rule) throws FilterParseException {
-                if (invalid.get()) {
-                    throw new FilterParseException("Something fishy");
-                }
-            }
-
-            @Override
-            public List<InetAddress> getActiveIPAddressList(String rule) throws FilterParseException {
-                return Lists.newArrayList();
-            }
-        });
+            return null;
+        }).when(filterDao).validateRule(any(String.class));
+        FilterDaoFactory.setInstance(filterDao);
 
         IOUtils.copy(new FileInputStream(PollerConfigReloadIT.class.getResource("/poller-configuration-valid1.xml").getFile()), new FileOutputStream(temporaryFile));
         long lastModified = temporaryFile.lastModified();
