@@ -560,6 +560,7 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - minion-deb-build:
           requires:
             - integration-test
@@ -573,6 +574,7 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - sentinel-deb-build:
           requires:
             - integration-test
@@ -586,6 +588,7 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
