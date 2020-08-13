@@ -32,18 +32,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.events.EventUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
 import org.opennms.web.svclayer.AdminApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Ordering;
 
 /**
  * <p>DefaultAdminApplicationService class.</p>
@@ -52,13 +57,12 @@ import org.slf4j.LoggerFactory;
  * @version $Id: $
  * @since 1.8.1
  */
-public class DefaultAdminApplicationService implements
-        AdminApplicationService {
-
+public class DefaultAdminApplicationService implements AdminApplicationService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultAdminApplicationService.class);
 
     private ApplicationDao m_applicationDao;
     private MonitoredServiceDao m_monitoredServiceDao;
+    private MonitoringLocationDao m_monitoringLocationDao;
 
     /** {@inheritDoc} */
     @Override
@@ -67,16 +71,16 @@ public class DefaultAdminApplicationService implements
             throw new IllegalArgumentException("applicationIdString must not be null");
         }
 
-        OnmsApplication application = findApplication(applicationIdString);
+        final OnmsApplication application = findApplication(applicationIdString);
         
-        Collection<OnmsMonitoredService> memberServices =
-            m_monitoredServiceDao.findByApplication(application);
+        final Collection<OnmsMonitoredService> memberServices = m_monitoredServiceDao.findByApplication(application);
+
         for (OnmsMonitoredService service : memberServices) {
             m_applicationDao.initialize(service.getIpInterface());
             m_applicationDao.initialize(service.getIpInterface().getNode());
         }
-        
-        return new ApplicationAndMemberServices(application, memberServices);
+
+        return new ApplicationAndMemberServices(application, memberServices, application.getPerspectiveLocations());
     }
 
     /**
@@ -92,16 +96,22 @@ public class DefaultAdminApplicationService implements
         
         return list;
     }
-    
+
+    @Override
+    public List<OnmsMonitoringLocation> findAllMonitoringLocations() {
+        return m_monitoringLocationDao.findAll().stream().sorted(Ordering.natural().nullsFirst().onResultOf(OnmsMonitoringLocation::getLocationName)).collect(Collectors.toList());
+    }
+
     /** {@inheritDoc} */
     @Override
     public EditModel findApplicationAndAllMonitoredServices(String applicationIdString) {
-        ApplicationAndMemberServices app = getApplication(applicationIdString); 
-        
-        List<OnmsMonitoredService> monitoredServices =
-            findAllMonitoredServices();
-        return new EditModel(app.getApplication(), monitoredServices,
-                             app.getMemberServices());
+        final ApplicationAndMemberServices app = getApplication(applicationIdString);
+        return new EditModel(
+                app.getApplication(),
+                findAllMonitoredServices(),
+                app.getMemberServices(),
+                findAllMonitoringLocations(),
+                app.getMemberLocations());
     }
 
     /**
@@ -140,6 +150,10 @@ public class DefaultAdminApplicationService implements
         m_monitoredServiceDao = monitoredServiceDao;
     }
 
+    public void setMonitoringLocationDao(MonitoringLocationDao monitoringLocationDao) {
+        m_monitoringLocationDao = monitoringLocationDao;
+    }
+
     /**
      * <p>performEdit</p>
      *
@@ -149,8 +163,7 @@ public class DefaultAdminApplicationService implements
      * @param toDelete an array of {@link java.lang.String} objects.
      */
     @Override
-    public void performEdit(String applicationIdString, String editAction,
-            String[] toAdd, String[] toDelete) {
+    public void performEditServices(String applicationIdString, String editAction, String[] toAdd, String[] toDelete) {
         if (applicationIdString == null) {
             throw new IllegalArgumentException("applicationIdString cannot be null");
         }
@@ -163,7 +176,6 @@ public class DefaultAdminApplicationService implements
         if (editAction.contains("Add")) { // @i18n
             if (toAdd == null) {
                 return;
-                //throw new IllegalArgumentException("toAdd cannot be null if editAction is 'Add'");
             }
            
             for (String idString : toAdd) {
@@ -195,7 +207,6 @@ public class DefaultAdminApplicationService implements
        } else if (editAction.contains("Remove")) { // @i18n
             if (toDelete == null) {
                 return;
-                //throw new IllegalArgumentException("toDelete cannot be null if editAction is 'Remove'");
             }
             
             for (String idString : toDelete) {
@@ -231,6 +242,69 @@ public class DefaultAdminApplicationService implements
                                               + editAction
                                               + "' is not allowed");
        }
+    }
+
+    public void performEditLocations(final String applicationIdString, final String editAction, final String[] locationAdds, final String[] locationDeletes) {
+        if (applicationIdString == null) {
+            throw new IllegalArgumentException("applicationIdString cannot be null");
+        }
+        if (editAction == null) {
+            throw new IllegalArgumentException("editAction cannot be null");
+        }
+
+        OnmsApplication application = findApplication(applicationIdString);
+
+        if (editAction.contains("Add")) {
+            if (locationAdds == null) {
+                return;
+            }
+
+            for (final String locationName : locationAdds) {
+                if (locationName == null) {
+                    continue;
+                }
+
+                final OnmsMonitoringLocation location = m_monitoringLocationDao.get(locationName);
+
+                if (location == null) {
+                    throw new IllegalArgumentException("location with "
+                            + "name of " + locationName
+                            + "could not be found");
+                }
+
+                application.addPerspectiveLocation(location);
+            }
+
+            m_applicationDao.save(application);
+
+        } else if (editAction.contains("Remove")) {
+            if (locationDeletes == null) {
+                return;
+            }
+
+            for (final String locationName : locationDeletes) {
+                if (locationName == null) {
+                    continue;
+                }
+
+                final OnmsMonitoringLocation location = m_monitoringLocationDao.get(locationName);
+
+                if (location == null) {
+                    throw new IllegalArgumentException("location with "
+                            + "name of " + locationName
+                            + "could not be found");
+                }
+
+                application.getPerspectiveLocations().remove(location);
+            }
+
+            m_applicationDao.save(application);
+
+        } else {
+            throw new IllegalArgumentException("editAction of '"
+                    + editAction
+                    + "' is not allowed");
+        }
     }
 
     /** {@inheritDoc} */
@@ -448,11 +522,12 @@ public class DefaultAdminApplicationService implements
     public static class ApplicationAndMemberServices {
         private OnmsApplication m_application;
         private Collection<OnmsMonitoredService> m_memberServices;
+        private Collection<OnmsMonitoringLocation> m_memberLocations;
 
-        public ApplicationAndMemberServices(OnmsApplication application,
-                Collection<OnmsMonitoredService> memberServices) {
+        public ApplicationAndMemberServices(OnmsApplication application, Collection<OnmsMonitoredService> memberServices, Collection<OnmsMonitoringLocation> memberLocations) {
             m_application = application;
             m_memberServices = memberServices;
+            m_memberLocations = memberLocations;
         }
 
         public OnmsApplication getApplication() {
@@ -462,24 +537,35 @@ public class DefaultAdminApplicationService implements
         public Collection<OnmsMonitoredService> getMemberServices() {
             return m_memberServices;
         }
+        public Collection<OnmsMonitoringLocation> getMemberLocations() {
+            return m_memberLocations;
+        }
     }
 
     public static class EditModel {
         private OnmsApplication m_application;
         private List<OnmsMonitoredService> m_monitoredServices;
         private List<OnmsMonitoredService> m_sortedMemberServices;
+        private List<OnmsMonitoringLocation> m_monitoringLocations;
+        private List<OnmsMonitoringLocation> m_sortedMemberLocations;
 
         public EditModel(OnmsApplication application,
                 List<OnmsMonitoredService> monitoredServices,
-                Collection<OnmsMonitoredService> memberServices) {
+                Collection<OnmsMonitoredService> memberServices,
+                List<OnmsMonitoringLocation> monitoringLocations,
+                Collection<OnmsMonitoringLocation> memberLocations) {
             m_application = application;
             m_monitoredServices = monitoredServices;
-            
+            m_monitoringLocations = monitoringLocations;
+
             m_monitoredServices.removeAll(memberServices);
+            m_monitoringLocations.removeAll(memberLocations);
             
-            m_sortedMemberServices =
-                new ArrayList<OnmsMonitoredService>(memberServices);
+            m_sortedMemberServices = new ArrayList<OnmsMonitoredService>(memberServices);
             Collections.sort(m_sortedMemberServices);
+
+            m_sortedMemberLocations = new ArrayList<OnmsMonitoringLocation>(memberLocations);
+            Collections.sort(m_sortedMemberLocations, Ordering.natural().nullsFirst().onResultOf(OnmsMonitoringLocation::getLocationName));
         }
 
         public OnmsApplication getApplication() {
@@ -493,7 +579,14 @@ public class DefaultAdminApplicationService implements
         public List<OnmsMonitoredService> getSortedMemberServices() {
             return m_sortedMemberServices;
         }
-        
+
+        public List<OnmsMonitoringLocation> getMonitoringLocations() {
+            return m_monitoringLocations;
+        }
+
+        public List<OnmsMonitoringLocation> getSortedMemberLocations() {
+            return m_sortedMemberLocations;
+        }
     }
 
 

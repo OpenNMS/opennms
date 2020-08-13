@@ -273,5 +273,4 @@ public class OnmsMonitoringLocation implements Serializable {
                 ", priority=" + m_priority +
                 ", tags=" + m_tags + "]";
     }
-
 }
