@@ -32,7 +32,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -75,10 +74,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 @Table(name="monitoringLocations")
 @XmlRootElement(name="location")
 @XmlAccessorType(XmlAccessType.NONE)
-public class OnmsMonitoringLocation implements Serializable, Comparable<OnmsMonitoringLocation> {
+public class OnmsMonitoringLocation implements Serializable {
     private static final long serialVersionUID = -7651610012389148818L;
-
-    private static final Comparator<String> NULL_SAFE_STRING_COMPARATOR = Comparator.nullsFirst(String::compareToIgnoreCase);
 
     /**
      * The name of the location.  This must be a unique identifier.
@@ -275,10 +272,5 @@ public class OnmsMonitoringLocation implements Serializable, Comparable<OnmsMoni
                 ", longitude=" + m_longitude +
                 ", priority=" + m_priority +
                 ", tags=" + m_tags + "]";
-    }
-
-    @Override
-    public int compareTo(OnmsMonitoringLocation o) {
-        return NULL_SAFE_STRING_COMPARATOR.compare(this.m_locationName, o.m_locationName);
     }
 }

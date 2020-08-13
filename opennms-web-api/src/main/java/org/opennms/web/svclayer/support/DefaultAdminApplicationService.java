@@ -48,6 +48,8 @@ import org.opennms.web.svclayer.AdminApplicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Ordering;
+
 /**
  * <p>DefaultAdminApplicationService class.</p>
  *
@@ -97,7 +99,7 @@ public class DefaultAdminApplicationService implements AdminApplicationService {
 
     @Override
     public List<OnmsMonitoringLocation> findAllMonitoringLocations() {
-        return m_monitoringLocationDao.findAll().stream().sorted().collect(Collectors.toList());
+        return m_monitoringLocationDao.findAll().stream().sorted(Ordering.natural().nullsFirst().onResultOf(OnmsMonitoringLocation::getLocationName)).collect(Collectors.toList());
     }
 
     /** {@inheritDoc} */
@@ -563,7 +565,7 @@ public class DefaultAdminApplicationService implements AdminApplicationService {
             Collections.sort(m_sortedMemberServices);
 
             m_sortedMemberLocations = new ArrayList<OnmsMonitoringLocation>(memberLocations);
-            Collections.sort(m_sortedMemberLocations);
+            Collections.sort(m_sortedMemberLocations, Ordering.natural().nullsFirst().onResultOf(OnmsMonitoringLocation::getLocationName));
         }
 
         public OnmsApplication getApplication() {
