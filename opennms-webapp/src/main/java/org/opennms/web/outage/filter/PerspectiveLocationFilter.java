@@ -30,21 +30,19 @@ package org.opennms.web.outage.filter;
 
 import java.util.Objects;
 
-import org.opennms.web.filter.EqualsFilter;
+import org.opennms.web.filter.EqualsFilterNullAware;
 import org.opennms.web.filter.SQLType;
 
-public class PerspectiveLocationFilter extends EqualsFilter<String> {
+public class PerspectiveLocationFilter extends EqualsFilterNullAware {
     public static final String TYPE = "perspective";
-    final private String perspective;
 
     public PerspectiveLocationFilter(final String perspective) {
         super(TYPE, SQLType.STRING, "PERSPECTIVE", "perspective.locationName", perspective);
-        this.perspective = perspective;
     }
 
     @Override
     public String getTextDescription() {
-        String perspectiveString = perspective == null || "null".equals(perspective) ? "<local>" : perspective;
+        String perspectiveString = getValue() == null ? "<local>" : getValue();
         return ("perspective=" + perspectiveString);
     }
 
@@ -58,11 +56,11 @@ public class PerspectiveLocationFilter extends EqualsFilter<String> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PerspectiveLocationFilter that = (PerspectiveLocationFilter) o;
-        return Objects.equals(perspective, that.perspective);
+        return Objects.equals(getValue(), that.getValue());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(perspective);
+        return Objects.hash(getValue());
     }
 }
