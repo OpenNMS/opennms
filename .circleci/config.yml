@@ -545,6 +545,17 @@ workflows:
 #          context: << parameters.context_name >>
 #          requires:
 #            - integration-test
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#                - /^master-.*/
+#                - /^release-.*/
+#                - /^foundation.*/
+#                - /^features.*/
+#                - /^merge-foundation\/.*/
+#                - /.*smoke.*/
+#                - /.*debian.*/
 #      - create-merge-foundation-branch:
 #          context: << parameters.context_name >>
 #          # technically only requires the RPM/deb builds, but only publish
