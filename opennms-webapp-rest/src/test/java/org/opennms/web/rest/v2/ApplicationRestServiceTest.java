@@ -56,7 +56,7 @@ import org.opennms.netmgt.xml.event.Event;
 
 public class ApplicationRestServiceTest {
     @Test
-    public void shouldSentEvents() throws EventProxyException {
+    public void shouldSendEvents() throws EventProxyException {
 
         EventProxy proxy = mock(EventProxy.class);
         ApplicationDao dao = new MockApplicationDao();

@@ -28,6 +28,7 @@
 
 package org.opennms.web.svclayer.support;
 
+import static org.opennms.netmgt.events.api.EventConstants.APPLICATION_CHANGED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.APPLICATION_DELETED_EVENT_UEI;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
@@ -47,7 +48,6 @@ import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -219,7 +219,7 @@ public class DefaultAdminApplicationService implements AdminApplicationService {
                 
                 service.addApplication(application);
                 m_monitoredServiceDao.save(service);
-                sentEvent(application, EventConstants.APPLICATION_CHANGED_EVENT_UEI);
+                sendEvent(application, EventConstants.APPLICATION_CHANGED_EVENT_UEI);
             }
        } else if (editAction.contains("Remove")) { // @i18n
             if (toDelete == null || toDelete.length == 0) {
@@ -254,7 +254,7 @@ public class DefaultAdminApplicationService implements AdminApplicationService {
             }
 
             m_applicationDao.save(application);
-            sentEvent(application, EventConstants.APPLICATION_CHANGED_EVENT_UEI);
+            sendEvent(application, EventConstants.APPLICATION_CHANGED_EVENT_UEI);
        } else {
            throw new IllegalArgumentException("editAction of '"
                                               + editAction
@@ -294,6 +294,7 @@ public class DefaultAdminApplicationService implements AdminApplicationService {
             }
 
             m_applicationDao.save(application);
+            sendEvent(application, EventConstants.APPLICATION_CHANGED_EVENT_UEI);
 
         } else if (editAction.contains("Remove")) {
             if (locationDeletes == null) {
@@ -317,6 +318,7 @@ public class DefaultAdminApplicationService implements AdminApplicationService {
             }
 
             m_applicationDao.save(application);
+            sendEvent(application, EventConstants.APPLICATION_CHANGED_EVENT_UEI);
 
         } else {
             throw new IllegalArgumentException("editAction of '"
@@ -325,7 +327,7 @@ public class DefaultAdminApplicationService implements AdminApplicationService {
         }
     }
 
-    private void sentEvent(final OnmsApplication application, final String uei) {
+    private void sendEvent(final OnmsApplication application, final String uei) {
         final Event event = new EventBuilder(uei, "Web UI")
                 .addParam(PARM_APPLICATION_ID, application.getId())
                 .addParam(PARM_APPLICATION_NAME, application.getName())
@@ -343,7 +345,7 @@ public class DefaultAdminApplicationService implements AdminApplicationService {
         OnmsApplication application = new OnmsApplication();
         application.setName(name);
         m_applicationDao.save(application);
-        sentEvent(application, EventConstants.APPLICATION_CREATED_EVENT_UEI);
+        sendEvent(application, EventConstants.APPLICATION_CREATED_EVENT_UEI);
         return application;
     }
 
@@ -367,7 +369,7 @@ public class DefaultAdminApplicationService implements AdminApplicationService {
     public void removeApplication(String applicationIdString) {
         OnmsApplication application = findApplication(applicationIdString);
         m_applicationDao.delete(application);
-        sentEvent(application, APPLICATION_DELETED_EVENT_UEI);
+        sendEvent(application, APPLICATION_DELETED_EVENT_UEI);
     }
 
     /** {@inheritDoc} */
@@ -410,9 +412,8 @@ public class DefaultAdminApplicationService implements AdminApplicationService {
         if (editAction.contains("Add")) { // @i18n
             if (toAdd == null) {
                 return;
-                //throw new IllegalArgumentException("toAdd cannot be null if editAction is 'Add'");
             }
-           
+            List<OnmsApplication> changedApplications = new ArrayList<>();
             for (String idString : toAdd) {
                 Integer id;
                 try {
@@ -436,15 +437,17 @@ public class DefaultAdminApplicationService implements AdminApplicationService {
                                                        + service.getServiceName());
                 }
                 service.getApplications().add(application);
+                changedApplications.add(application);
             }
             
             m_monitoredServiceDao.save(service);
+            changedApplications.forEach(a -> this.sendEvent(a, APPLICATION_CHANGED_EVENT_UEI));
        } else if (editAction.contains("Remove")) { // @i18n
             if (toDelete == null) {
                 return;
                 //throw new IllegalArgumentException("toDelete cannot be null if editAction is 'Remove'");
             }
-            
+            List<OnmsApplication> changedApplications = new ArrayList<>();
             for (String idString : toDelete) {
                 Integer id;
                 try {
@@ -468,9 +471,11 @@ public class DefaultAdminApplicationService implements AdminApplicationService {
                                                        + service.getServiceName());
                 }
                 service.getApplications().add(application);
+                changedApplications.add(application);
             }
 
             m_monitoredServiceDao.save(service);
+            changedApplications.forEach(a -> this.sendEvent(a, APPLICATION_CHANGED_EVENT_UEI));
        } else {
            throw new IllegalArgumentException("editAction of '"
                                               + editAction

@@ -50,7 +50,7 @@ import org.opennms.netmgt.xml.event.Event;
 public class DefaultAdminApplicationServiceTest {
 
     @Test
-    public void shouldSentEventsForApplication() throws EventProxyException {
+    public void shouldSendEventsForApplication() throws EventProxyException {
 
         OnmsMonitoredService monitoredService = Mockito.mock(OnmsMonitoredService.class);
         DefaultAdminApplicationService service = new DefaultAdminApplicationService();
@@ -70,11 +70,11 @@ public class DefaultAdminApplicationServiceTest {
         assertEquals(EventConstants.APPLICATION_CREATED_EVENT_UEI, argument.getValue().getUei());
 
         // Edit: no actual change
-        service.performEdit("1", "Add", new String[0], new String[0]);
+        service.performEditServices("1", "Add", new String[0], new String[0]);
         verifyNoMoreInteractions(proxy);
 
         // Edit: adding a service
-        service.performEdit("1", "Add", new String[]{"1"}, new String[0]);
+        service.performEditServices("1", "Add", new String[]{"1"}, new String[0]);
         verify(proxy, times(2)).send(argument.capture());
         assertEquals(EventConstants.APPLICATION_CHANGED_EVENT_UEI, argument.getValue().getUei());
 
