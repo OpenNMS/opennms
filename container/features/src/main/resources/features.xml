@@ -1029,6 +1029,7 @@
     </feature>
     <feature name="opennms-telemetry-openconfig"  description="OpenNMS :: Telemetry :: OpenConfig" version="${project.version}">
         <feature>opennms-telemetry-collection</feature>
+        <feature>opennms-telemetry-openconfig-client</feature>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>

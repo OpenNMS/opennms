@@ -61,11 +61,17 @@ import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.stub.StreamObserver;
 
+/**
+ * OpenConfig Client makes a gRPC connection and subscribes to telemetry data for the paths specified.
+ * When it fails to make a connection, it attempts to make a connection after given interval.
+ * When retries are specified, it bails out after those many attempts.
+ * If no retries or <=0 specified, it always attempts to connect after given interval.
+ */
 public class OpenConfigClientImpl implements OpenConfigClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenConfigClientImpl.class);
     // Internal retries and timeout are used to make a connection and wait till channel is active.
-    private static final int DEFAULT_INTERNAL_RETRIES = 15;
+    private static final int DEFAULT_INTERNAL_RETRIES = 5;
     private static final int DEFAULT_INTERNAL_TIMEOUT = 1000;
     private static final int DEFAULT_FREQUENCY = 300000; //5min
     private static final int DEFAULT_INTERVAL_IN_SEC = 300; //5min
@@ -118,7 +124,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
         Telemetry.SubscriptionRequest.Builder requestBuilder = Telemetry.SubscriptionRequest.newBuilder();
         paths.forEach(path -> requestBuilder.addPathList(Telemetry.Path.newBuilder().setPath(path).setSampleFrequency(frequency).build()));
         asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(host, port, handler));
-        LOG.info("Subscribed to OpenConfig telemetry stream at {}", host);
+        LOG.info("Subscribed to OpenConfig telemetry stream at {}", InetAddressUtils.str(host));
     }
 
     private void scheduleSubscription(OpenConfigClient.Handler handler) {
@@ -196,7 +202,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
         @Override
         public void onError(Throwable t) {
-            LOG.error("Received error on stream for host {}", host, t);
+            LOG.error("Received error on stream for host {}", InetAddressUtils.str(host), t);
             handler.onError(t.getMessage());
             close();
             executor.execute(() -> scheduleSubscription(handler));
@@ -204,8 +210,8 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
         @Override
         public void onCompleted() {
-            LOG.info("Response stream closed for host {}", host);
-            handler.onError("Server closed connection");
+            LOG.info("Response stream closed for host {}", InetAddressUtils.str(host));
+            handler.onError("OpenConfig Server closed connection for host " + InetAddressUtils.str(host));
             close();
             executor.execute(() -> scheduleSubscription(handler));
         }
@@ -219,7 +225,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
         while (retries > 0 && !closed.get()) {
             state = channel.getState(true);
             if (!state.equals(READY)) {
-                LOG.warn("OpenConfig Server at `{}` is not in ready state, current state {}, retrying..", host, state);
+                LOG.warn("OpenConfig Server at `{}` is not in ready state, current state {}, retrying..", InetAddressUtils.str(host), state);
                 waitBeforeRetrying(DEFAULT_INTERNAL_TIMEOUT);
                 retries--;
             } else {

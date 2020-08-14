@@ -462,11 +462,4 @@ public abstract class StringUtils {
         }
     }
 
-    public static Integer getInteger(String value, Integer defaultValue) {
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
-    }
 }

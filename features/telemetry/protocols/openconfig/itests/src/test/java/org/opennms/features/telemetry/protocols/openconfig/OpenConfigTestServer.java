@@ -30,7 +30,6 @@ package org.opennms.features.telemetry.protocols.openconfig;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -83,13 +82,10 @@ public class OpenConfigTestServer {
             builder.setTimestamp(System.currentTimeMillis());
             Telemetry.KeyValue keyValue = Telemetry.KeyValue.newBuilder().setKey("in-octets")
                     .setIntValue(4000).build();
+            builder.addKv(keyValue);
             Telemetry.KeyValue keyValue1 = Telemetry.KeyValue.newBuilder().setKey("name")
                     .setStrValue("eth0").build();
             builder.addKv(keyValue1);
-            builder.addKv(keyValue);
-            Telemetry.OpenConfigData openConfigData = builder.build();
-            Optional<Telemetry.KeyValue> ifName =
-                    openConfigData.getKvList().stream().filter(kv -> kv.getKey().contains("name")).findFirst();
 
             if(errorStream) {
                 responseObserver.onError(new IllegalArgumentException());

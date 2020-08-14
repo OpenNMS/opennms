@@ -289,5 +289,4 @@
     <onmsgi:list id="alarmEntityListeners" interface="org.opennms.netmgt.dao.api.AlarmEntityListener">
         <onmsgi:listener ref="alarmEntityNotifier" bind-method="onListenerRegistered" unbind-method="onListenerUnregistered" />
     </onmsgi:list>
-
 </beans>

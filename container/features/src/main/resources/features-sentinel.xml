@@ -166,6 +166,7 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
+
     <!--Coordination-->
     <feature name="sentinel-coordination-api" description="OpenNMS :: Features :: Distributed :: Coordination :: API"
              version="${project.version}">
