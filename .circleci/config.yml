@@ -84,6 +84,7 @@ commands:
         - add_ssh_keys:
             fingerprints:
               - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+              - "9f:0d:94:15:19:43:6b:1d:81:90:f9:63:e0:d8:c1:b2"
         - cached-checkout
         - run:
             name: Create git identity
@@ -544,6 +545,7 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - minion-deb-build:
           requires:
             - integration-test
@@ -557,6 +559,7 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - sentinel-deb-build:
           requires:
             - integration-test
@@ -570,6 +573,7 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -607,6 +611,10 @@ workflows:
           filters:
             branches:
               only: /^foundation.*/
+      - merge-meridian-branch:
+          filters:
+            branches:
+              only: /^from-foundation.*/
       - merge-poweredby-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -1177,6 +1185,26 @@ jobs:
             - run:
                 name: Push to Meridian github
                 command: git push -f meridian from-<< parameters.main_branch >>:from-<< parameters.main_branch >>
+
+  merge-meridian-branch:
+    <<: *defaults
+    <<: *docker_container_config
+    steps:
+      - cached-checkout-for-pushing
+      - run:
+          name: Checkout from-foundation-YYYY and merge to release-YYYY.x
+          command: |
+            export GIT_MERGE_AUTOEDIT=no
+            TARGET_VERSION="$(echo "<< parameters.main_branch >>" | sed -e 's,^foundation-,,')"
+            git fetch --all
+            git checkout "release-${TARGET_VERSION}.x"
+            git reset --hard "origin/release-${TARGET_VERSION}.x"
+            git merge "origin/from-foundation-${TARGET_VERSION}"
+      - run:
+          name: Push to github
+          command: |
+            TARGET_BRANCH="release-$(echo "<< parameters.main_branch >>" | sed -e 's,^foundation-,,').x"
+            git push origin "${TARGET_BRANCH}:${TARGET_BRANCH}"
 
   merge-poweredby-branch:
     <<: *defaults
