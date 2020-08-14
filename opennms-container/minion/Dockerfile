@@ -6,7 +6,7 @@
 ##
 ARG BASE_IMAGE="opennms/deploy-base:jre-1.0.0.b39"
 
-FROM ${BASE_IMAGE} as minion-base
+FROM ${BASE_IMAGE} as meridian-minion-base
 
 ADD ./tarball/minion.tar.gz /opt/
 
@@ -24,7 +24,7 @@ RUN groupadd --gid 10001 minion && \
 ##
 # Prod image with minimal image size
 ##
-FROM ${BASE_IMAGE}
+FROM meridian-minion-base
 
 # Create user to be able to run as non root with a known user and group id.
 RUN groupadd --gid 10001 minion && \
@@ -69,7 +69,7 @@ ARG BUILD_URL
 ARG BUILD_BRANCH
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.title="OpenNMS Minion ${VERSION}" \
+      org.opencontainers.image.title="OpenNMS Meridian Minion ${VERSION}" \
       org.opencontainers.image.source="${SOURCE}" \
       org.opencontainers.image.revision="${REVISION}" \
       org.opencontainers.image.version="${VERSION}" \

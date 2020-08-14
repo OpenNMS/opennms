@@ -86,7 +86,7 @@ public class SentinelContainer extends GenericContainer implements KarafContaine
     private final Path overlay;
 
     public SentinelContainer(StackModel model, SentinelProfile profile) {
-        super("sentinel");
+        super("meridian-sentinel");
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
         this.overlay = writeOverlay();

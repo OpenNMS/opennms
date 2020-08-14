@@ -44,16 +44,22 @@ echo "#### Installing other dependencies"
 # limit the sources we need to update
 sudo rm -f /etc/apt/sources.list.d/*
 # limit more sources and add mirrors
-echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt trusty main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ trusty main restricted
-deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted' | sudo tee /etc/apt/sources.list
+echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt xenial main restricted universe multiverse
+deb http://archive.ubuntu.com/ubuntu/ xenial main restricted
+deb http://debian.opennms.org stable main' | sudo tee /etc/apt/sources.list
+
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+curl -sSf https://debian.opennms.org/OPENNMS-GPG-KEY | sudo apt-key add -
+
+sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
 
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt-get || true && \
             sudo apt-get update && \
-	    sudo apt-get -y install debconf-utils && \
-	    echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
-            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f nsis R-base rrdtool
+            RRDTOOL_VERSION=$(apt-cache show rrdtool | grep Version: | grep -v opennms | awk '{ print $2 }') && \
+            sudo apt-get -y install debconf-utils && \
+            echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f nsis r-base "rrdtool=$RRDTOOL_VERSION" jrrd2 jicmp jicmp6
 
 echo "#### Building Assembly Dependencies"
 mvn install -P'!checkstyle' \

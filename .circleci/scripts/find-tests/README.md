@@ -49,21 +49,21 @@ No module match for ./.circleci/scripts/find-tests/git.py
 No module match for ./.gitignore
 No module match for ./.circleci/scripts/find-tests/sample.json
 Modules with changes:
-org.opennms.features.telemetry:org.opennms.features.telemetry.daemon:25.0.0-SNAPSHOT
+org.opennms.features.telemetry:org.opennms.features.telemetry.daemon:26.1.3-SNAPSHOT
 Modules to consider:
-org.opennms.features.minion:core-repository:25.0.0-SNAPSHOT
-org.opennms.features.container:minion:25.0.0-SNAPSHOT
-org.opennms.karaf:opennms:25.0.0-SNAPSHOT
-org.opennms.features.container:sentinel:25.0.0-SNAPSHOT
-org.opennms.features.telemetry:org.opennms.features.telemetry.daemon:25.0.0-SNAPSHOT
-org.opennms.features.telemetry.distributed:org.opennms.features.telemetry.distributed.sentinel:25.0.0-SNAPSHOT
-org.opennms.container:org.opennms.container.shared:25.0.0-SNAPSHOT
-org.opennms.features.minion:repository:25.0.0-SNAPSHOT
-org.opennms.features.sentinel:repository:25.0.0-SNAPSHOT
-org.opennms.features.telemetry:org.opennms.features.telemetry.itests:25.0.0-SNAPSHOT
-org.opennms.container:org.opennms.container.karaf:25.0.0-SNAPSHOT
+org.opennms.features.minion:core-repository:26.1.3-SNAPSHOT
+org.opennms.features.container:minion:26.1.3-SNAPSHOT
+org.opennms.karaf:opennms:26.1.3-SNAPSHOT
+org.opennms.features.container:sentinel:26.1.3-SNAPSHOT
+org.opennms.features.telemetry:org.opennms.features.telemetry.daemon:26.1.3-SNAPSHOT
+org.opennms.features.telemetry.distributed:org.opennms.features.telemetry.distributed.sentinel:26.1.3-SNAPSHOT
+org.opennms.container:org.opennms.container.shared:26.1.3-SNAPSHOT
+org.opennms.features.minion:repository:26.1.3-SNAPSHOT
+org.opennms.features.sentinel:repository:26.1.3-SNAPSHOT
+org.opennms.features.telemetry:org.opennms.features.telemetry.itests:26.1.3-SNAPSHOT
+org.opennms.container:org.opennms.container.karaf:26.1.3-SNAPSHOT
 Modules with tests:
-org.opennms.features.telemetry:org.opennms.features.telemetry.itests:25.0.0-SNAPSHOT
+org.opennms.features.telemetry:org.opennms.features.telemetry.itests:26.1.3-SNAPSHOT
         /home/jesse/git/opennms/features/telemetry/itests/src/test/java/org/opennms/netmgt/telemetry/itests/ThresholdingIT.java - org.opennms.netmgt.telemetry.itests.ThresholdingIT (Failsafe)
         /home/jesse/git/opennms/features/telemetry/itests/src/test/java/org/opennms/netmgt/telemetry/itests/ListenerParserThreadingIT.java - org.opennms.netmgt.telemetry.itests.ListenerParserThreadingIT (Failsafe)
         /home/jesse/git/opennms/features/telemetry/itests/src/test/java/org/opennms/netmgt/telemetry/itests/JtiIT.java - org.opennms.netmgt.telemetry.itests.JtiIT (Failsafe)

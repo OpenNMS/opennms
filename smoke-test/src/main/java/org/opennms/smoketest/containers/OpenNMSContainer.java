@@ -131,7 +131,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
     private final Path overlay;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
-        super("horizon");
+        super("meridian");
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
         this.overlay = writeOverlay();

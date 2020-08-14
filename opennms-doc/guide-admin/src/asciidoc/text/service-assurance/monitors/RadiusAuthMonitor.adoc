@@ -11,15 +11,10 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 
 IMPORTANT: To use this monitor it is required to install the _RADIUS_ protocol for {opennms-product-name}.
 
-For RPM-based distributions:
-====
-`yum install {opennms-package-base-name}-plugin-protocol-radius`
-====
-
-For Debian-based distributions:
-====
-`apt-get install {opennms-package-base-name}-plugin-protocol-radius`
-====
+[source, bash]
+----
+{apt-get,yum} install {opennms-package-base-name}-plugin-protocol-radius
+----
 
 The test is similar to test the behavior of a _RADIUS_ server by evaluating the result with the command line tool `radtest`.
 

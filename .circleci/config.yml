@@ -20,30 +20,34 @@ executors:
 # branches have slashes in them, that way the merge branch gets created properly
 defaults: &defaults
   parameters:
-    previous_branch:
-      description: the previous branch, if any
+    context_name:
+      description: the context to use for sensitive settings like GPG keys
       type: string
-      default: foundation-2019
-    previous_branch_label:
-      description: the previous branch, if any (escaped, no slashes)
-      type: string
-      default: foundation-2019
-    main_branch:
-      description: the auto-merge main branch
-      type: string
-      default: foundation-2020
-    main_branch_label:
-      description: the auto-merge main branch (escaped, no slashes)
-      type: string
-      default: foundation-2020
-    next_branch:
-      description: the auto-merge target branch
-      type: string
-      default: release-26.x
-    next_branch_label:
-      description: the auto-merge target branch (escaped, no slashes)
-      type: string
-      default: release-26.x
+      default: "OpenNMS Build"
+#    previous_branch:
+#      description: the previous branch, if any
+#      type: string
+#      default: foundation-2019
+#    previous_branch_label:
+#      description: the previous branch, if any (escaped, no slashes)
+#      type: string
+#      default: foundation-2019
+#    main_branch:
+#      description: the auto-merge main branch
+#      type: string
+#      default: foundation-2020
+#    main_branch_label:
+#      description: the auto-merge main branch (escaped, no slashes)
+#      type: string
+#      default: foundation-2020
+#    next_branch:
+#      description: the auto-merge target branch
+#      type: string
+#      default: release-26.x
+#    next_branch_label:
+#      description: the auto-merge target branch (escaped, no slashes)
+#      type: string
+#      default: release-26.x
 
 docker_container_config: &docker_container_config
   executor: docker-executor
@@ -189,7 +193,7 @@ commands:
             sudo sysctl vm.swappiness=5
             cat /proc/sys/vm/swappiness
       - load-oci:
-          key: horizon
+          key: meridian
       - load-oci:
           key: minion
       - load-oci:
@@ -377,7 +381,7 @@ commands:
           name: Stowing Assets in << parameters.source_path >> to cache prefix << parameters.cache_prefix >>
           command: |
             TARGET_PATH="/tmp/<< parameters.cache_prefix >>"
-            rsync -ar "$(echo "<< parameters.source_path >>" | sed -e 's,/*$,,')/" "${TARGET_PATH}/"
+            rsync -avr "$(echo "<< parameters.source_path >>" | sed -e 's,/*$,,')/" "${TARGET_PATH}/"
             find "${TARGET_PATH}" -type d -print0 | xargs -0 chmod 775
             find "${TARGET_PATH}" ! -type d -print0 | xargs -0 chmod 664
       - save_cache:
@@ -441,24 +445,25 @@ commands:
             done
 
 workflows:
-  weekly-coverage:
-    <<: *defaults
-    triggers:
-      - schedule:
-          # Saturday at 12:00 AM
-          cron: "0 0 * * 6"
-          filters:
-            branches:
-              only:
-                - develop
-    jobs:
-      - build
-      - integration-test-with-coverage:
-          requires:
-            - build
-      - code-coverage:
-          requires:
-            - integration-test-with-coverage
+#  weekly-coverage:
+#    <<: *defaults
+#    triggers:
+#      - schedule:
+#          # Saturday at 12:00 AM
+#          cron: "0 0 * * 6"
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#    jobs:
+#      - build
+#      - integration-test-with-coverage:
+#          requires:
+#            - build
+#      - code-coverage:
+#          requires:
+#            - integration-test-with-coverage
+
   build-deploy:
     <<: *defaults
     jobs:
@@ -470,7 +475,7 @@ workflows:
       - tarball-assembly:
           requires:
             - build
-      - horizon-rpm-build:
+      - meridian-rpm-build:
           requires:
             - build
       - minion-rpm-build:
@@ -484,7 +489,7 @@ workflows:
             - build
       - smoke-test-full:
           requires:
-            - horizon-rpm-build
+            - meridian-rpm-build
             - tarball-assembly
             - sentinel-rpm-build
           filters:
@@ -499,7 +504,7 @@ workflows:
                 - /^dependabot.*/
       - smoke-test-minimal:
           requires:
-            - horizon-rpm-build
+            - meridian-rpm-build
             - tarball-assembly
             - sentinel-rpm-build
           filters:
@@ -512,137 +517,138 @@ workflows:
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
-      - horizon-publish-oci:
-          requires:
-            - horizon-rpm-build
-          filters:
-            branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-      - sentinel-publish-oci:
-          requires:
-            - sentinel-rpm-build
-          filters:
-            branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-      # These don't actually require `integration-test` but we shouldn't bother
-      # spending cycles unless everything else passed
-      - horizon-deb-build:
-          requires:
-            - integration-test
-          filters:
-            branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /^merge-foundation\/.*/
-                - /.*smoke.*/
-                - /.*debian.*/
-      - minion-deb-build:
-          requires:
-            - integration-test
-          filters:
-            branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /^merge-foundation\/.*/
-                - /.*smoke.*/
-                - /.*debian.*/
-      - sentinel-deb-build:
-          requires:
-            - integration-test
-          filters:
-            branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-                - /^features.*/
-                - /^merge-foundation\/.*/
-                - /.*smoke.*/
-                - /.*debian.*/
-      - create-merge-foundation-branch:
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - horizon-deb-build
-            - minion-deb-build
-            - sentinel-deb-build
-            - smoke-test-minimal
-            - smoke-test-full
-            - integration-test
-          filters:
-            branches:
-              only: << parameters.main_branch >>
-      - merge-foundation-branch:
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - horizon-deb-build
-            - minion-deb-build
-            - sentinel-deb-build
-            - smoke-test-minimal
-            - smoke-test-full
-            - integration-test
-          filters:
-            branches:
-              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
-      - create-merge-meridian-branch:
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - horizon-deb-build
-            - smoke-test-minimal
-            - smoke-test-full
-            - integration-test
-          filters:
-            branches:
-              only: /^foundation.*/
-      - merge-meridian-branch:
-          filters:
-            branches:
-              only: /^from-foundation.*/
-      - merge-poweredby-branch:
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - horizon-deb-build
-            - smoke-test-minimal
-            - smoke-test-full
-            - integration-test
-          filters:
-            branches:
-              only:
-                - /^foundation.*/
+#      - meridian-publish-oci:
+#          requires:
+#            - meridian-rpm-build
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#                - /^master-.*/
+#                - /^release-.*/
+#      - sentinel-publish-oci:
+#          requires:
+#            - sentinel-rpm-build
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#                - /^master-.*/
+#                - /^release-.*/
+#      # These don't actually require `integration-test` but we shouldn't bother
+#      # spending cycles unless everything else passed
+#      - meridian-deb-build:
+#          requires:
+#            - integration-test
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#                - /^master-.*/
+#                - /^release-.*/
+#                - /^foundation.*/
+#                - /^features.*/
+#                - /^merge-foundation\/.*/
+#                - /.*smoke.*/
+#                - /.*debian.*/
+#      - minion-deb-build:
+#          requires:
+#            - integration-test
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#                - /^master-.*/
+#                - /^release-.*/
+#                - /^foundation.*/
+#                - /^features.*/
+#                - /^merge-foundation\/.*/
+#                - /.*smoke.*/
+#                - /.*debian.*/
+#      - sentinel-deb-build:
+#          requires:
+#            - integration-test
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#                - /^master-.*/
+#                - /^release-.*/
+#                - /^foundation.*/
+#                - /^features.*/
+#                - /^merge-foundation\/.*/
+#                - /.*smoke.*/
+#                - /.*debian.*/
+#      - create-merge-foundation-branch:
+#          # technically only requires the RPM/deb builds, but only publish
+#          # if everything passes
+#          requires:
+#            - meridian-deb-build
+#            - minion-deb-build
+#            - sentinel-deb-build
+#            - smoke-test-minimal
+#            - smoke-test-full
+#            - integration-test
+#          filters:
+#            branches:
+#              only: << parameters.main_branch >>
+#      - merge-foundation-branch:
+#          # technically only requires the RPM/deb builds, but only publish
+#          # if everything passes
+#          requires:
+#            - meridian-deb-build
+#            - minion-deb-build
+#            - sentinel-deb-build
+#            - smoke-test-minimal
+#            - smoke-test-full
+#            - integration-test
+#          filters:
+#            branches:
+#              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+#      - create-merge-meridian-branch:
+#          # technically only requires the RPM/deb builds, but only publish
+#          # if everything passes
+#          requires:
+#            - meridian-deb-build
+#            - smoke-test-minimal
+#            - smoke-test-full
+#            - integration-test
+#          filters:
+#            branches:
+#              only: /^foundation.*/
+#      - merge-meridian-branch:
+#          filters:
+#            branches:
+#              only: /^from-foundation.*/
+#      - merge-poweredby-branch:
+#          # technically only requires the RPM/deb builds, but only publish
+#          # if everything passes
+#          requires:
+#            - meridian-deb-build
+#            - smoke-test-minimal
+#            - smoke-test-full
+#            - integration-test
+#          filters:
+#            branches:
+#              only:
+#                - /^foundation.*/
       - publish-cloudsmith:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-deb-build
-            - minion-deb-build
-            - sentinel-deb-build
+#            - meridian-deb-build
+#            - minion-deb-build
+#            - sentinel-deb-build
             - smoke-test-minimal
             - smoke-test-full
+            - integration-test
           filters:
             branches:
               only:
-                - develop
+#                - develop
                 - /^master-.*/
                 - /^release-.*/
-                - /^foundation.*/
+#                - /^foundation.*/
 
 jobs:
   build:
@@ -715,16 +721,16 @@ jobs:
           command: |
             mkdir -p target/{artifacts,tarballs}
             OPENNMS_VERSION="$(python opennms-container/pom2version.py pom.xml)"
-            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
+            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/meridian-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/remote-poller-standalone -name "*.tar.gz" -type f -exec cp {} "./target/artifacts/remote-poller-client-${OPENNMS_VERSION}.tar.gz" \;
             pushd target/site/apidocs
-              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+              tar -czf "../../artifacts/meridian-${OPENNMS_VERSION}-javadoc.tar.gz" *
             popd
-            cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
-            cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-docs.tar.gz"
-            cp target/*-source.tar.gz ./target/artifacts/
+            cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/meridian-${OPENNMS_VERSION}-xsds.tar.gz"
+            cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/meridian-${OPENNMS_VERSION}-docs.tar.gz"
+            cp target/*-source.tar.gz "./target/artifacts/meridian-${OPENNMS_VERSION}-source.tar.gz"
       - run:
           name: Build Minion OCI
           command: |
@@ -740,10 +746,10 @@ jobs:
 
             # Build for multiple architectures only in release branches and push images with manifest to a registry
             # For develop we set a floating tag "bleeding" instead the x.y.z-SNAPSHOT version number
+            # For Meridian, we don't push to dockerhub, so `DOCKER_FLAGS=--push` has been removed
             case "${CIRCLE_BRANCH}" in
               "master-"*)
                 make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
                      VERSION="$(../pom2version.py ../../pom.xml)" \
                      BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                      BUILD_URL="${CIRCLE_BUILD_URL}" \
@@ -751,7 +757,6 @@ jobs:
                 ;;
               "release-"*)
                 make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
                      VERSION="release-candidate" \
                      BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                      BUILD_URL="${CIRCLE_BUILD_URL}" \
@@ -759,7 +764,6 @@ jobs:
                 ;;
               "develop")
                 make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
                      VERSION="bleeding" \
                      BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                      BUILD_URL="${CIRCLE_BUILD_URL}" \
@@ -789,7 +793,7 @@ jobs:
       #    paths:
       #      - project/target/tarballs
 
-  horizon-rpm-build:
+  meridian-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
     resource_class: large
@@ -815,26 +819,26 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Fetch RPM artifacts and build Horizon container image
+          name: Fetch RPM artifacts and build Meridian container image
           command: |
-            cd opennms-container/horizon
+            cd opennms-container/meridian
             ./build_container_image.sh
       - store_artifacts:
-          path: ~/project/opennms-container/horizon/images/container.oci
-          destination: horizon.oci
+          path: ~/project/opennms-container/meridian/images/container.oci
+          destination: meridian.oci
       - store_artifacts:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
       - cache-workflow-assets:
-          cache_prefix: rpm-horizon
+          cache_prefix: rpm-meridian
           source_path: target/rpm/RPMS/noarch
       - cache-oci:
-          key: horizon
-          path: opennms-container/horizon/images/
+          key: meridian
+          path: opennms-container/meridian/images/
   minion-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    # Will need to increase resource class if horizon-rpm-build is under 15 min
+    # Will need to increase resource class if meridian-rpm-build is under 15 min
     resource_class: large
     steps:
       - attach_workspace:
@@ -865,7 +869,7 @@ jobs:
   sentinel-rpm-build:
     executor: centos-build-executor
     # Larger memory footprint required to speed up builds using Takari smartbuilder
-    # Will need to increase resource class if horizon-rpm-build is under 19 min
+    # Will need to increase resource class if meridian-rpm-build is under 19 min
     resource_class: large
     steps:
       - attach_workspace:
@@ -906,7 +910,7 @@ jobs:
       - cache-oci:
           key: sentinel
           path: opennms-container/sentinel/images/
-  horizon-deb-build:
+  meridian-deb-build:
     executor: debian-build-executor
     resource_class: xlarge
     steps:
@@ -949,7 +953,7 @@ jobs:
           path: ~/project/target/debs
           destination: debs
       - cache-workflow-assets:
-          cache_prefix: deb-horizon
+          cache_prefix: deb-meridian
           source_path: target/debs
   minion-deb-build:
     executor: debian-build-executor
@@ -1005,7 +1009,7 @@ jobs:
       - cache-workflow-assets:
           cache_prefix: deb-sentinel
           source_path: target/debs
-  horizon-publish-oci:
+  meridian-publish-oci:
     executor: centos-build-executor
     steps:
       - cached-checkout
@@ -1013,11 +1017,11 @@ jobs:
           docker_layer_caching: true
       - dockerhub-login
       - load-oci:
-          key: horizon
+          key: meridian
       - run:
-          name: tag horizon Docker image and publish to registry
+          name: tag meridian Docker image and publish to registry
           command: |
-            cd opennms-container/horizon
+            cd opennms-container/meridian
             ./tag.sh
             ./publish.sh
   sentinel-publish-oci:
@@ -1234,18 +1238,24 @@ jobs:
       - checkout
       - cloudsmith/ensure-api-key
       - cloudsmith/install-cli
+#      - restore-workflow-assets:
+#          cache_prefix: deb-meridian
       - restore-workflow-assets:
-          cache_prefix: deb-horizon
-      - restore-workflow-assets:
-          cache_prefix: deb-minion
-      - restore-workflow-assets:
-          cache_prefix: deb-sentinel
-      - restore-workflow-assets:
-          cache_prefix: rpm-horizon
+          cache_prefix: rpm-meridian
+#      - restore-workflow-assets:
+#          cache_prefix: deb-minion
       - restore-workflow-assets:
           cache_prefix: rpm-minion
+#      - restore-workflow-assets:
+#          cache_prefix: deb-sentinel
       - restore-workflow-assets:
           cache_prefix: rpm-sentinel
+      - restore-workflow-assets:
+          cache_prefix: oci-meridian
+      - restore-workflow-assets:
+          cache_prefix: oci-minion
+      - restore-workflow-assets:
+          cache_prefix: oci-sentinel
       - run:
           name: Publish Packages
           command: |

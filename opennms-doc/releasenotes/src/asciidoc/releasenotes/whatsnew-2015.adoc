@@ -1,0 +1,315 @@
+[releasenotes-2015]
+=== OpenNMS Meridian 2015
+
+[releasenotes-changelog-Meridian-2015.1.10]
+==== Release Meridian-2015.1.10
+
+Release 2015.1.10 is the eleventh release of OpenNMS Meridian 2015.
+It contains a critical fix for RADIUS support as well as a couple of other smaller fixes.
+The codename for 2015.1.10 is _TAHT_ (it's a magical place).
+
+===== Breaking Changes
+
+A security issue in the `RadiusAuthenticatinProvider` has been fixed (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+This requires changes to the `radius.xml` file located in `${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d`.
+Now instead of providing a bean for the `authTypeClass` property, it is sufficient to just provide the class name:
+
+.Before
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+ xmlns:beans="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+             http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+ <beans:bean id="externalAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
+   <!-- ... -->
+   <beans:property name="authTypeClass"><beans:bean class="net.jradius.client.auth.PAPAuthenticator"/></beans:property>
+   <!-- ... -->
+ </beans:bean>
+</beans:beans>
+----
+
+.After
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+xmlns:beans="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+<beans:bean id="externalAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
+  <!-- ... -->
+  <beans:property name="authTypeClass" value="net.jradius.client.auth.PAPAuthenticator"/>
+  <!-- ... -->
+</beans:bean>
+</beans:beans>
+----
+
+Supported values for `authTypeClass` are:
+
+* net.jradius.client.auth.TunnelAuthenticator
+* net.jradius.client.auth.PAPAuthenticator
+* net.jradius.client.auth.EAPMSCHAPv2Authenticator
+* net.jradius.client.auth.MSCHAPv2Authenticator
+* net.jradius.client.auth.EAPMD5Authenticator
+* net.jradius.client.auth.CHAPAuthenticator
+* net.jradius.client.auth.MSCHAPv1Authenticator
+* net.jradius.client.auth.RadiusAuthenticator
+* net.jradius.client.auth.EAPAuthenticator
+
+If no value is provided `net.jradius.client.auth.PAPAuthenticator` is used.
+
+===== Bug
+
+* ConcurrentModificationException in DefaultEventHandlerImpl (Issue http://issues.opennms.org/browse/NMS-8413[NMS-8413])
+* Java not found properly when building from Windows CMD proc (Issue http://issues.opennms.org/browse/NMS-9947[NMS-9947])
+* Radius Login Problem (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+
+[releasenotes-changelog-Meridian-2015.1.9]
+==== Release Meridian-2015.1.9
+
+Release 2015.1.9 is the tenth release of OpenNMS Meridian 2015.
+It contains a keyboard-navigation fix and a few documentation/date updates.
+The codename for 2015.1.9 is _MIST_.
+
+===== Bug
+
+* Tweak Mattermost notification docs not to specify a channel (Issue http://issues.opennms.org/browse/NMS-9362[NMS-9362])
+* Inconsistent handling of keyboard navigation on top menu (Issue http://issues.opennms.org/browse/NMS-9867[NMS-9867])
+* Copyright dates need a bump for 2018 (Issue http://issues.opennms.org/browse/NMS-9871[NMS-9871])
+
+[releasenotes-changelog-Meridian-2015.1.8]
+==== Release Meridian-2015.1.8
+
+Release 2015.1.8 is the ninth release of OpenNMS Meridian 2015.  It contains a cross-site-scripting security fix.
+The codename for 2015.1.8 is _CHOST_.
+
+===== Bug
+
+* Multiple XSS vulnerabilities in OpenNMS webapp (Issue http://issues.opennms.org/browse/NMS-9457[NMS-9457])
+* opennms-webapp-remoting JARs are not signed (Issue http://issues.opennms.org/browse/NMS-9638[NMS-9638])
+
+[releasenotes-changelog-Meridian-2015.1.7]
+==== Release Meridian-2015.1.7
+
+Release 2015.1.7 is the eighth release of OpenNMS Meridian 2015.  It contains a few small bug fixes.
+The codename for 2015.1.7 is _ROTT_.
+
+===== Bug
+
+* The reason parameter for a nodeLostService event is limited to 255 characters (Issue http://issues.opennms.org/browse/NMS-9550[NMS-9550])
+* Remote Poller log path incorrect when using the NSIS installer (Issue http://issues.opennms.org/browse/NMS-9631[NMS-9631])
+
+[releasenotes-changelog-Meridian-2015.1.6]
+==== Release Meridian-2015.1.6
+
+Release 2015.1.6 is the seventh release of OpenNMS Meridian 2015.  It contains a few bug fixes.
+The codename for 2015.1.6 is _MVT_.
+
+===== Bug
+
+* collectd does not unschedule deleted nodes (Issue http://issues.opennms.org/browse/NMS-5105[NMS-5105])
+* Security issue for all admin vaadin applications exposed as OSGI Service (Issue http://issues.opennms.org/browse/NMS-8431[NMS-8431])
+* XSS vulnerability on node error page (Issue http://issues.opennms.org/browse/NMS-9354[NMS-9354])
+* XSS vulnerability with application names (Issue http://issues.opennms.org/browse/NMS-9355[NMS-9355])
+* NullPointerException during nodeScan on devices with broken IP-MIB::ipAddressIfIndex (Issue http://issues.opennms.org/browse/NMS-9415[NMS-9415])
+* "query" parameter allows SQL injection (Issue http://issues.opennms.org/browse/NMS-9478[NMS-9478])
+* Fix ownership of users.xml (Issue http://issues.opennms.org/browse/NMS-9493[NMS-9493])
+* Update copyright date in docs (Issue http://issues.opennms.org/browse/NMS-9516[NMS-9516])
+* users.xml being overwritten on installation (Issue http://issues.opennms.org/browse/NMS-9573[NMS-9573])
+
+
+[releasenotes-changelog-Meridian-2015.1.5]
+==== Release Meridian-2015.1.5
+
+Release 2015.1.5 is the sixth release of OpenNMS Meridian 2015.  It contains a few bug fixes and minor enhancements.
+The codename for 2015.1.5 is _NT_.
+
+===== Bug
+
+* OpenNMS doesn't correctly support IPv6 addresses for (jasper) reporting (Issue http://issues.opennms.org/browse/NMS-5450[NMS-5450])
+* Restarting OMNS results in numerous SNMP outage alarms and notifications (Issue http://issues.opennms.org/browse/NMS-8620[NMS-8620])
+* Poller Node Down without outages (Issue http://issues.opennms.org/browse/NMS-8751[NMS-8751])
+* Threshold editor help text unclear about comparison operators (Issue http://issues.opennms.org/browse/NMS-8826[NMS-8826])
+* Invalid graph templates (Issue http://issues.opennms.org/browse/NMS-8907[NMS-8907])
+* Near Real-Time Graphing unable to graph Cisco BDI interfaces (Issue http://issues.opennms.org/browse/NMS-8908[NMS-8908])
+* Copyright bump 2017 (Issue http://issues.opennms.org/browse/NMS-9060[NMS-9060])
+* opennms.conf can break the snmp-request command (Issue http://issues.opennms.org/browse/NMS-9068[NMS-9068])
+* Jsr160ConnectionFactory doesn't work with IPv6 address (Issue http://issues.opennms.org/browse/NMS-9071[NMS-9071])
+* Migrate RTC related objects to JAXB instead of Castor (Issue http://issues.opennms.org/browse/NMS-9100[NMS-9100])
+* Pollerd continues to monitor deleted nodes (Issue http://issues.opennms.org/browse/NMS-9112[NMS-9112])
+* SNMP client code can get stuck in infinite retry loops (Issue http://issues.opennms.org/browse/NMS-9164[NMS-9164])
+* SyslogParser should not assume UTC timestamps (Issue http://issues.opennms.org/browse/NMS-9201[NMS-9201])
+
+===== Enhancement
+
+* SNMP data collection definitions for Cisco ASA5585-SSP-60 devices (Issue http://issues.opennms.org/browse/NMS-9094[NMS-9094])
+* Enhance to MockSnmpAgent to support returning arbitrary SNMP error codes (Issue http://issues.opennms.org/browse/NMS-9163[NMS-9163])
+
+[releasenotes-changelog-2015.1.4]
+==== Release Meridian-2015.1.4
+
+Release 2015.1.4 is the fifth release of OpenNMS Meridian 2015.  It contains a few bug fixes and minor enhancements.
+The codename for 2015.1.4 is _ULAST_.
+
+===== Bug
+
+* If a target node is rebooted the RRD/JRB files contains spikes because the sysUpTime check is not working (Issue http://issues.opennms.org/browse/NMS-7106[NMS-7106])
+* SVG maps shows minimum alarm severity color instead of maximum (Issue http://issues.opennms.org/browse/NMS-8658[NMS-8658])
+* Any SNMP error-status > 5 treated as unrecognized, aborts AggregateTracker (Issue http://issues.opennms.org/browse/NMS-8671[NMS-8671])
+* RRDtool 1.6 doesn't like vames called ds (Issue http://issues.opennms.org/browse/NMS-8775[NMS-8775])
+* Elasticsearch Test Cluster is started even if tests are skipped (Issue http://issues.opennms.org/browse/NMS-8783[NMS-8783])
+* The search page for events is not working as expected (Issue http://issues.opennms.org/browse/NMS-8790[NMS-8790])
+* The "Recent Events" in the node page, shows HTML tags on the message (Issue http://issues.opennms.org/browse/NMS-8794[NMS-8794])
+* Several ICMPv6 tests fail with NoRouteToHostException (Issue http://issues.opennms.org/browse/NMS-8840[NMS-8840])
+* user detection in `install` is busted on some Linux systems (Issue http://issues.opennms.org/browse/NMS-8843[NMS-8843])
+* Updating assets/categories through ReST affects Forced Unmanaged services. (Issue http://issues.opennms.org/browse/NMS-8879[NMS-8879])
+* wsdl2java in features/ticketing/remedy is causing build failures (Issue http://issues.opennms.org/browse/NMS-8940[NMS-8940])
+
+===== Enhancement
+
+* Allow filtering by severity in alarm list (Issue http://issues.opennms.org/browse/NMS-8851[NMS-8851])
+* Expose alarm-list "limit" parameter as a UI control (Issue http://issues.opennms.org/browse/NMS-8852[NMS-8852])
+
+
+[releasenotes-changelog-2015.1.3]
+==== Release Meridian-2015.1.3
+
+Release 2015.1.3 is the fourth release of OpenNMS Meridian 2015.  It contains a few bug fixes, including a fix to a XSS vulnerability in the web UI.
+The codename for 2015.1.3 is _LHST_.
+
+===== Bug
+
+* Syslogd may not associate messages with new nodes without a restart (Issue http://issues.opennms.org/browse/NMS-7236[NMS-7236])
+* No event for Informational syslog (Issue http://issues.opennms.org/browse/NMS-7934[NMS-7934])
+* The categories ReST end point returns HTTP 500 when querying it with a browser. (Issue http://issues.opennms.org/browse/NMS-8637[NMS-8637])
+* Database Reports Are Emailed When "Email report" is Unchecked (Issue http://issues.opennms.org/browse/NMS-8654[NMS-8654])
+* Custom Resource graphs draw magenta lines if "Blue" is selected (Issue http://issues.opennms.org/browse/NMS-8655[NMS-8655])
+* SVG maps shows minimum alarm severity color instead of maximum (Issue http://issues.opennms.org/browse/NMS-8658[NMS-8658])
+* Site status view gives a 400 error for aggregate view for node downs (Issue http://issues.opennms.org/browse/NMS-8700[NMS-8700])
+* XSS vulnerability in display of SNMP sysName and trap varbind values (Issue http://issues.opennms.org/browse/NMS-8722[NMS-8722])
+* Trapd JMX trap counters don't count traps (Issue http://issues.opennms.org/browse/NMS-8744[NMS-8744])
+
+[releasenotes-changelog-2015.1.2]
+==== Release Meridian-2015.1.2
+
+Release 2015.1.2 is the third release of OpenNMS Meridian 2015.  It contains a number of bug fixes and new device support since 2015.1.1.
+The codename for 2015.1.2 is _EASST_.
+
+===== Breaking Changes
+
+* Graph definition errors AERA (Issue http://issues.opennms.org/browse/LTS-199[LTS-199])
+* OEM graph for Storage Utilization fails due to '::' (Issue http://issues.opennms.org/browse/NMS-8519[NMS-8519])
+
+===== Bug
+
+* Topology-UI shows LLDP links not correct (Issue http://issues.opennms.org/browse/NMS-8003[NMS-8003])
+* JNA ping code reuses buffer causing inconsistent reads of packet contents (Issue http://issues.opennms.org/browse/NMS-8126[NMS-8126])
+* Install -dis on "SocketException:Too many open files" on centos:latest docker  (Issue http://issues.opennms.org/browse/NMS-8200[NMS-8200])
+* All the defined Statsd's reports are being executed even if they are disabled. (Issue http://issues.opennms.org/browse/NMS-8274[NMS-8274])
+* An error on threshd-configuration.xml breaks Collectd when reloading thresholds configuration (Issue http://issues.opennms.org/browse/NMS-8304[NMS-8304])
+* JdbcCollector does not close database connections correctly (Issue http://issues.opennms.org/browse/NMS-8488[NMS-8488])
+* HW ENTITY_MIB plugin is not showing all information for certain devices (Issue http://issues.opennms.org/browse/NMS-8506[NMS-8506])
+* Requisitioned IP interfaces never have ipHostName set (Issue http://issues.opennms.org/browse/NMS-8593[NMS-8593])
+
+===== Configuration
+
+* Distributed/Geographical Maps do not show images anymore (Issue http://issues.opennms.org/browse/NMS-8597[NMS-8597])
+
+===== Enhancement
+
+* Create a command line tool for compiling all the report template files. (Issue http://issues.opennms.org/browse/LTS-198[LTS-198])
+* Backport Configuration from Meridian 2016 to Meridian 2015 (Issue http://issues.opennms.org/browse/LTS-202[LTS-202])
+* Copyright bump on asciidoc docs (Issue http://issues.opennms.org/browse/NMS-8219[NMS-8219])
+* Alphabetize nodes in surveillance category listing (Issue http://issues.opennms.org/browse/NMS-8535[NMS-8535])
+
+[releasenotes-changelog-2015.1.1]
+==== Release Meridian-2015.1.1
+
+Release 2015.1.1 is the second release of OpenNMS Meridian 2015.  It contains a number of bug fixes as well as a few security fixes over 2015.1.0.
+The codename for 2015.1.1 is _UTC_.
+
+===== Bug
+
+* Database reports fail with 500 error (Issue LTS-184)
+* Forecasting reports fail to render when datasource includes "inf" (Issue LTS-185)
+* Default JMX Config Generator Throw Error (Issue LTS-187)
+* JMX Config Generator Does Not Run in PoweredBy Branch (Issue LTS-191)
+* When removing nodes from a provisioning group, the removed nodes may still be referenced in KSC reports; thus resulting in errors accessing those reports until the nodes are manually removed. (Issue http://issues.opennms.org/browse/NMS-4399[NMS-4399])
+* JMX Config Tool CLI is not packaged correctly (Issue http://issues.opennms.org/browse/NMS-5946[NMS-5946])
+* NRTG is throwing ConcurrentModificationException (Issue http://issues.opennms.org/browse/NMS-6536[NMS-6536])
+* IfIndex not updated in ipinterface table on change (Issue http://issues.opennms.org/browse/NMS-6567[NMS-6567])
+* Event Translator cant translate events with update-field data present (Issue http://issues.opennms.org/browse/NMS-7024[NMS-7024])
+* Remove the logging directories from the DEB package (Issue http://issues.opennms.org/browse/NMS-7192[NMS-7192])
+* IllegalArgumentException on ipnettomediatable (Issue http://issues.opennms.org/browse/NMS-7358[NMS-7358])
+* 1.12.9-2 rpm install broken (Issue http://issues.opennms.org/browse/NMS-7398[NMS-7398])
+* KSC Reports with non-existing resources generate exceptions on the WebUI  (Issue http://issues.opennms.org/browse/NMS-7400[NMS-7400])
+* Double footer in resource graph page (Issue http://issues.opennms.org/browse/NMS-7412[NMS-7412])
+* queued creates its own category for loggings (Issue http://issues.opennms.org/browse/NMS-7485[NMS-7485])
+* Queued daemon seems to ignore loglevel (Issue http://issues.opennms.org/browse/NMS-7510[NMS-7510])
+* XML Collector is not working as expected for node-level resources (Issue http://issues.opennms.org/browse/NMS-7516[NMS-7516])
+* Some parameters logged out of order since slf4j conversion (Issue http://issues.opennms.org/browse/NMS-7603[NMS-7603])
+* Compass can't make a POST request from FILE URLs in some cases (Issue http://issues.opennms.org/browse/NMS-7616[NMS-7616])
+* The PSM doesn't work with IPv6 addresses if the ${ipaddr} placeholder is used on host or virtual-host (Issue http://issues.opennms.org/browse/NMS-7626[NMS-7626])
+* Timeline image links are not working with services containing spaces (Issue http://issues.opennms.org/browse/NMS-7629[NMS-7629])
+* Match event params for auto-ack of Notification (Issue http://issues.opennms.org/browse/NMS-7631[NMS-7631])
+* include-url doesn't work on poller packages (Issue http://issues.opennms.org/browse/NMS-7633[NMS-7633])
+* Node resources are deleted when provisiond aborts a scan (Issue http://issues.opennms.org/browse/NMS-7636[NMS-7636])
+* Default date width in Database Reports is too small (Issue http://issues.opennms.org/browse/NMS-7637[NMS-7637])
+* The global variable org.opennms.rrd.queuing.category is set to OpenNMS.Queued and should be queued (Issue http://issues.opennms.org/browse/NMS-7642[NMS-7642])
+* Fixing Logging Prefix/Category on several classes (Issue http://issues.opennms.org/browse/NMS-7644[NMS-7644])
+* XML data collection with HTTP POST requests is not working (Issue http://issues.opennms.org/browse/NMS-7650[NMS-7650])
+* Improving exception handling on the XML Collector (Issue http://issues.opennms.org/browse/NMS-7651[NMS-7651])
+* Logging not initialized but used on Drools Rule files. (Issue http://issues.opennms.org/browse/NMS-7695[NMS-7695])
+* NumberFormatException in LldpUtils (Issue http://issues.opennms.org/browse/NMS-7697[NMS-7697])
+* Hibernate exception in AlarmDetailsDashlet (Issue http://issues.opennms.org/browse/NMS-7698[NMS-7698])
+* 'More...' event link on /opennms/element/service.jsp encodes URL incorrectly (Issue http://issues.opennms.org/browse/NMS-7714[NMS-7714])
+* Log messages for the Correlation Engine appear in manager.log (Issue http://issues.opennms.org/browse/NMS-7729[NMS-7729])
+* SeleniumMonitor with PhantomJS driver needs gson JAR (Issue http://issues.opennms.org/browse/NMS-7748[NMS-7748])
+* Cannot edit some Asset Info fields (Issue http://issues.opennms.org/browse/NMS-7750[NMS-7750])
+* The command /opt/opennms/bin/ilr doesn't work (Issue http://issues.opennms.org/browse/NMS-7760[NMS-7760])
+* nodeCategoryChanged event on already-down node makes extra nodeDown events (Issue http://issues.opennms.org/browse/NMS-7761[NMS-7761])
+* Incorrect unit divisor in LM-SENSORS-MIB graph definitions (Issue http://issues.opennms.org/browse/NMS-7766[NMS-7766])
+* OpenNMS won't start anymore with 512MB of Heap Size (Issue http://issues.opennms.org/browse/NMS-7783[NMS-7783])
+* Some weak cipher suites allowed in example jetty.xml HTTPS config (Issue http://issues.opennms.org/browse/NMS-7812[NMS-7812])
+* The reload config for Collectd might throws a ConcurrentModificationException (Issue http://issues.opennms.org/browse/NMS-7824[NMS-7824])
+* NPE on "manage and unmanage services and interfaces" (Issue http://issues.opennms.org/browse/NMS-7828[NMS-7828])
+* "No session" error during startup in EnhancedLinkdTopologyProvider (Issue http://issues.opennms.org/browse/NMS-7835[NMS-7835])
+* Fix for NMS-6567 prevents interfaces from acquiring SNMP interface records on rescan (Issue http://issues.opennms.org/browse/NMS-7838[NMS-7838])
+* Counter variables reported as strings (like Net-SNMP extent) are not stored properly when using RRDtool (Issue http://issues.opennms.org/browse/NMS-7839[NMS-7839])
+* Slow LinkdTopologyProvider/EnhancedLinkdTopologyProvider in bigger enviroments (Issue http://issues.opennms.org/browse/NMS-7846[NMS-7846])
+* distributed details page broken (Issue http://issues.opennms.org/browse/NMS-7855[NMS-7855])
+* Cisco Packets In/Out legend label wrong (Issue http://issues.opennms.org/browse/NMS-7857[NMS-7857])
+* Enlinkd CDP code fails to parse hex-encoded IP address string (Issue http://issues.opennms.org/browse/NMS-7858[NMS-7858])
+* IpNetToMedia Hibernate exception in enlinkd.log (Issue http://issues.opennms.org/browse/NMS-7861[NMS-7861])
+* HttpClient ignores socket timeout (Issue http://issues.opennms.org/browse/NMS-7877[NMS-7877])
+* RTC Ops Board category links are broken (Issue http://issues.opennms.org/browse/NMS-7884[NMS-7884])
+* Remedy Integration: the custom code added to the Alarm Detail Page is gone. (Issue http://issues.opennms.org/browse/NMS-7890[NMS-7890])
+* Statsd PDF export gives class not found exception (Issue http://issues.opennms.org/browse/NMS-7897[NMS-7897])
+* JMX Configgenerator Web UI throws NPE when navigating to 2nd page. (Issue http://issues.opennms.org/browse/NMS-7900[NMS-7900])
+* Alarm detail filters get mixed up on the ops board (Issue http://issues.opennms.org/browse/NMS-7917[NMS-7917])
+* Exception Decoding LLDP ChassisId When type is NetworkAddress (Issue http://issues.opennms.org/browse/NMS-7931[NMS-7931])
+* Bouncycastle JARs break large-key crypto operations (Issue http://issues.opennms.org/browse/NMS-7959[NMS-7959])
+* JSoup doesn't properly parse encoded HTML character which confuses the XML Collector (Issue http://issues.opennms.org/browse/NMS-7963[NMS-7963])
+* MBean attribute names are restricted to a specifix max length (Issue http://issues.opennms.org/browse/NMS-7964[NMS-7964])
+* RMI should only bind to localhost by default. (Issue http://issues.opennms.org/browse/NMS-7971[NMS-7971])
+* The ICMP monitor can fail, even if valid responses are received before the timeout (Issue http://issues.opennms.org/browse/NMS-7974[NMS-7974])
+* JMX Configuration Generation misbehavior on validation error (Issue http://issues.opennms.org/browse/NMS-7977[NMS-7977])
+* JMX configuration generator throws NoClassDefFoundError exception (Issue http://issues.opennms.org/browse/HZN-432[HZN-432])
+* Migrate the JMX Configuration Generator (webUI) to Vaadin 7 (Issue http://issues.opennms.org/browse/HZN-417[HZN-417])
+
+===== Enhancement
+
+* Interactive JMX data collection configuration UI (Issue http://issues.opennms.org/browse/NMS-4364[NMS-4364])
+* Improve links for SLA categories on start page (Issue http://issues.opennms.org/browse/NMS-7713[NMS-7713])
+
+[releasenotes-changelog-2015.1.0]
+==== Release Meridian-2015.1.0
+
+Release 2015.1.0 is the first release of OpenNMS Meridian 2015.  It is based on OpenNMS Horizon 14.0.3, the Bootstrap GUI shipped in OpenNMS Horizon 15, and many smaller bug fixes.
+
+The codename for 2015.1.0 is _Greenwich_.
+

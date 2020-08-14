@@ -26,9 +26,84 @@
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
-                <configuration>
-                    <sourceDocumentName>index.adoc</sourceDocumentName>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>output-html</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <sourceHighlighter>prettify</sourceHighlighter>
+                            <backend>html5</backend>
+                            <doctype>book</doctype>
+                            <attributes>
+                                <stylesheet>../../../asciidoctor-default.css</stylesheet>
+                            </attributes>
+                            <sourceDocumentName>index.adoc</sourceDocumentName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-pdf-doc</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipPdfGeneration}</skip>
+                            <backend>pdf</backend>
+                            <doctype>book</doctype>
+                            <!-- WARNING callout bullets don't yet work with CodeRay -->
+                            <sourceHighlighter>coderay</sourceHighlighter>
+                            <attributes>
+                                <pagenums/>
+                                <toc/>
+                                <idprefix/>
+                                <idseparator>-</idseparator>
+                                <pdf-style>../../../default-theme.yml</pdf-style>
+                            </attributes>
+                            <sourceDocumentName>index.adoc</sourceDocumentName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>output-html-full</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <sourceHighlighter>prettify</sourceHighlighter>
+                            <backend>html5</backend>
+                            <doctype>book</doctype>
+                            <attributes>
+                                <stylesheet>../../../asciidoctor-default.css</stylesheet>
+                            </attributes>
+                            <sourceDocumentName>all-releases.adoc</sourceDocumentName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-pdf-doc-full</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipPdfGeneration}</skip>
+                            <backend>pdf</backend>
+                            <doctype>book</doctype>
+                            <!-- WARNING callout bullets don't yet work with CodeRay -->
+                            <sourceHighlighter>coderay</sourceHighlighter>
+                            <attributes>
+                                <pagenums/>
+                                <toc/>
+                                <idprefix/>
+                                <idseparator>-</idseparator>
+                                <pdf-style>../../../default-theme.yml</pdf-style>
+                            </attributes>
+                            <sourceDocumentName>all-releases.adoc</sourceDocumentName>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -18,7 +18,7 @@ if [ -z "${MINION_TARBALL}" ]; then
 fi
 cp "${MINION_TARBALL}" tarball/minion.tar.gz
 
-docker build -t minion \
+docker build -t meridian-minion \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
   --build-arg VERSION="${VERSION}" \
   --build-arg SOURCE="${SOURCE}" \
@@ -29,7 +29,7 @@ docker build -t minion \
   --build-arg BUILD_BRANCH="${BUILD_BRANCH}" \
   .
 
-docker image save minion -o images/container.oci
+docker image save meridian-minion -o images/container.oci
 
 rm -f rpms/*.repo
 ../stop_yum_server.sh

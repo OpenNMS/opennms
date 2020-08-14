@@ -4,7 +4,7 @@
 ARG BASE_IMAGE="opennms/openjdk"
 ARG BASE_IMAGE_VERSION="11.0.5.10-b3108"
 
-FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as sentinel-base
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION} as meridian-sentinel-base
 
 ARG REQUIRED_RPMS="wget gettext openssh-clients"
 
@@ -38,10 +38,10 @@ RUN mkdir /opt/sentinel/.ssh && \
 ##
 # Install and setup OpenNMS Sentinel RPMS
 ##
-FROM sentinel-base
+FROM meridian-sentinel-base
 
-# A default which installs the minimum required Minion packages
-ARG SENTINEL_PACKAGES="opennms-sentinel"
+# A default which installs the minimum required Sentinel packages
+ARG SENTINEL_PACKAGES="meridian-sentinel"
 
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
@@ -106,7 +106,7 @@ ARG BUILD_URL
 ARG BUILD_BRANCH
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.title="OpenNMS Sentinel ${VERSION}" \
+      org.opencontainers.image.title="OpenNMS Meridian Sentinel ${VERSION}" \
       org.opencontainers.image.source="${SOURCE}" \
       org.opencontainers.image.revision="${REVISION}" \
       org.opencontainers.image.version="${VERSION}" \

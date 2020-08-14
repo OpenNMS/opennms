@@ -43,7 +43,7 @@
     right: 0;
     bottom: 0;
     /*overflow: auto;*/
-    background-image: url('images/wallpapers/IMG_9269-X2.jpg');
+    background-image: url('images/wallpapers/space-ulf.png');
     background-size: cover;
   }
 
@@ -84,8 +84,8 @@
   <div class="" style=""> <!-- this way it appears a bit above center which feels more natural -->
     <div class="card login-form rounded">
       <div style="padding-bottom: 50px; padding-top: 20px">
-        <img src="images/opennms-logo.png" class="" width="170px" />
-        <span style="font-size: 100%" class="badge badge-horizon pull-right">Horizon</span>
+        <img src="images/meridian_logo.svg" class="" width="170px" />
+        <span style="font-size: 100%" class="badge badge-meridian pull-right">Meridian</span>
       </div>
       <form class="" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>">
         <div class="form-content">
@@ -127,7 +127,7 @@
   </div>
 
   <div class="" style="position: absolute; bottom: 0px; right: 0px; font-size: 3em; padding: 20pt 20pt 5pt 20pt">
-    <a href="https://docs.opennms.org/opennms" class="text-light" style="padding: 0.5rem" title="Show documentation"><i class="fa fa-book" aria-hidden="true"></i></a>
+    <a href="https://meridian.opennms.com" class="text-light" style="padding: 0.5rem" title="Show documentation"><i class="fa fa-book" aria-hidden="true"></i></a>
     <a href="https://github.com/OpenNMS/opennms.git" class="text-light" style="padding: 0.5rem" title="Fork us on Github"><i class="fa fa-github" aria-hidden="true"></i></a>
   </div>
 </div>

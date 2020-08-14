@@ -1,7 +1,7 @@
 //colors
 $color_horizon:                     #4c9d29;
-$color_meridian:                    #227cb8;
-$link_color:                        #265A87;
+$color_meridian:                    #237cb7;
+$link_color:                        #237cb7;
 
 // Severities
 $severity-cleared:                  #CDCDD0;
@@ -47,6 +47,11 @@ $theme-colors: (
     "severity-Major":               $severity-major,
     "severity-critical":            $severity-critical,
     "severity-Critical":            $severity-critical,
+
+    // The primary and meridian color are pretty similar.
+    // It looks weird to have a slightly different blue,
+    // so for primary $color_meridian is used as well
+    "primary":                      $color_meridian
 );
 
 // Spacing of cards is a bit too much by default.

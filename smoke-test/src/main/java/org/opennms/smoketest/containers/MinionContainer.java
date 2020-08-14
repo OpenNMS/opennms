@@ -89,7 +89,7 @@ public class MinionContainer extends GenericContainer implements KarafContainer,
     private final MinionProfile profile;
 
     public MinionContainer(StackModel model, MinionProfile profile) {
-        super("minion");
+        super("meridian-minion");
         this.model = Objects.requireNonNull(model);
         this.profile = Objects.requireNonNull(profile);
 

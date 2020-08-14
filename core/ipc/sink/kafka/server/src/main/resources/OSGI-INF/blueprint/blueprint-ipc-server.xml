@@ -13,7 +13,7 @@
 
     <cm:property-placeholder id="kafkaConsumerProperties" persistent-id="org.opennms.core.ipc.sink.kafka.consumer" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="group.id" value="OpenNMS"/>
+            <cm:property name="group.id" value="OpenNMS-Meridian"/>
         </cm:default-properties>
     </cm:property-placeholder>
 

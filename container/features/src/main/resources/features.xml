@@ -208,6 +208,9 @@
     <feature name="jrobin" version="1.6.0" description="JRobin">
         <bundle>mvn:org.jrobin/jrobin/1.6.0</bundle>
     </feature>
+    <feature name="jrrd2" description="JRRD2" version="2.0.3">
+      <bundle>mvn:org.opennms/jrrd2-api/2.0.3</bundle>
+    </feature>
     <feature name="json-lib" version="2.2.3" description="json-lib">
         <bundle>wrap:mvn:net.sf.ezmorph/ezmorph/1.0.6</bundle>
         <bundle>wrap:mvn:net.sf.json-lib/json-lib/2.2.3/jar/jdk15</bundle>
@@ -689,6 +692,12 @@
         <feature>jrobin</feature>
         <feature>opennms-rrd-api</feature>
         <bundle>mvn:org.opennms/opennms-rrd-jrobin/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-rrd-jrrd2" description="OpenNMS :: RRD :: JRRD2" version="${project.version}">
+      <feature version="[4.2,4.3)">spring</feature>
+      <feature>jrrd2</feature>
+      <feature>opennms-rrd-api</feature>
+      <bundle>mvn:org.opennms/opennms-rrdtool-api/${project.version}</bundle>
     </feature>
     <feature name="opennms-snmp" version="${project.version}" description="OpenNMS :: Core :: SNMP">
         <feature>org.json</feature>
