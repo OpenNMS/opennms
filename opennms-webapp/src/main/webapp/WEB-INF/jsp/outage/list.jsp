@@ -252,8 +252,8 @@
 
           <!-- perspective -->
           <td class="noWrap">
-            <%= outages[i].getPerspectiveLocation() == null ? "&lt;local&gt;" : outages[i].getPerspectiveLocation() %>
             <% String perspectiveLocation = outages[i].getPerspectiveLocation(); %>
+            <%=OutageUtil.getPerspectiveLabel(perspectiveLocation)%>
             <% Filter filter = new PerspectiveLocationFilter(perspectiveLocation); %>
             <% if( !parms.filters.contains(filter) ) { %>
             <a href="<%=OutageUtil.makeLink( request, parms, filter, true)%>" title="Show only outages for this perspective"><%=ZOOM_IN_ICON%></a>

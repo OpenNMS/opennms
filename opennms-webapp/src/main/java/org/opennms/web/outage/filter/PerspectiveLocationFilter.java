@@ -32,6 +32,7 @@ import java.util.Objects;
 
 import org.opennms.web.filter.EqualsFilterNullAware;
 import org.opennms.web.filter.SQLType;
+import org.opennms.web.outage.OutageUtil;
 
 public class PerspectiveLocationFilter extends EqualsFilterNullAware {
     public static final String TYPE = "perspective";
@@ -42,8 +43,14 @@ public class PerspectiveLocationFilter extends EqualsFilterNullAware {
 
     @Override
     public String getTextDescription() {
-        String perspectiveString = getValue() == null ? "<local>" : getValue();
-        return ("perspective=" + perspectiveString);
+        String perspectiveString = OutageUtil.getPerspectiveLabel(getValue());
+        return ("perspective is " + perspectiveString);
+    }
+
+    @Override
+    public String getTextDescriptionAsSanitizedHtml() {
+        String perspectiveString = OutageUtil.getPerspectiveLabel(getValue());
+        return ("perspective is " + perspectiveString);
     }
 
     @Override

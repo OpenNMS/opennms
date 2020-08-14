@@ -32,7 +32,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 /** Allows null as a valid value for not equals filtering. */
-public abstract class NotEqualsFilterNullAware<T> extends OneArgFilter<String> {
+public abstract class NotEqualsFilterNullAware extends OneArgFilter<String> {
 
     public NotEqualsFilterNullAware(final String filterType, final SQLType<String> type, final String fieldName, final String daoPropertyName, final String value) {
         super(filterType, type, fieldName, daoPropertyName, toValueAllowNull(value));

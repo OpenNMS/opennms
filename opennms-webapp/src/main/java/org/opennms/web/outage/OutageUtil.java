@@ -445,4 +445,14 @@ public abstract class OutageUtil extends Object {
         return makeHiddenTags(request, parms.sortStyle, parms.outageType, newList, parms.limit);
     }
 
+    public static String getPerspectiveLabel(final String perspective) {
+        String html;
+        if (perspective == null) {
+            html = "<i class=\"fa fa-home\" aria-hidden=\"true\"></i> ";
+        } else {
+            html = "<i class=\"fa fa-server\" aria-hidden=\"true\"></i> " + WebSecurityUtils.sanitizeString(perspective);
+        }
+        return html;
+    }
+
 }
