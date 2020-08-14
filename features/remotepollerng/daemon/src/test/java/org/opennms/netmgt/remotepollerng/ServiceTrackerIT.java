@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -77,6 +78,7 @@ import com.google.common.collect.Sets;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
+@Ignore
 public class ServiceTrackerIT {
 
 //    @Autowired

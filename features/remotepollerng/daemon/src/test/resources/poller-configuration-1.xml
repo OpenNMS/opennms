@@ -34,6 +34,11 @@
             <parameter key="ds-name" value="http" />
         </service>
         <service name="SNMP" interval="300000" user-defined="false" status="on">
+            <parameter key="retry" value="1" />
+            <parameter key="timeout" value="3000" />
+            <parameter key="rrd-repository" value="target/rrd/response" />
+            <parameter key="rrd-base-name" value="snmp" />
+            <parameter key="ds-name" value="snmp" />
             <parameter key="oid" value=".1.3.6.1.2.1.1.2.0"/>
         </service>
 
