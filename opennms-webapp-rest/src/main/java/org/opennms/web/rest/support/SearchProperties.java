@@ -62,7 +62,6 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
@@ -366,13 +365,6 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsOutage.class, "perspective", "Perspective", STRING)
 	}));
 
-	static final SortedSet<SearchProperty> SCAN_REPORT_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
-		new SearchProperty(ScanReport.class, "id", "ID", STRING),
-		new SearchProperty(ScanReport.class, "locale", "Locale", STRING),
-		new SearchProperty(ScanReport.class, "location", "Monitoring Location", STRING),
-		new SearchProperty(ScanReport.class, "timestamp", "Timestamp", TIMESTAMP)
-	}));
-
 	static final SortedSet<SearchProperty> SERVICE_TYPE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
 		new SearchProperty(OnmsServiceType.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsServiceType.class, "name", "Service Name", STRING)
@@ -399,7 +391,6 @@ public abstract class SearchProperties {
 	public static final Set<SearchProperty> NODE_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> NOTIFICATION_SERVICE_PROPERTIES = new LinkedHashSet<>();
 	public static final Set<SearchProperty> OUTAGE_SERVICE_PROPERTIES = new LinkedHashSet<>();
-	public static final Set<SearchProperty> SCAN_REPORT_SERVICE_PROPERTIES = new LinkedHashSet<>();
 
 	/**
 	 * Prepend a join alias to the property ID for each {@link SearchProperty}.
@@ -568,8 +559,5 @@ public abstract class SearchProperties {
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("serviceRegainedEvent", "Service Regained Event", EVENT_PROPERTIES));
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
-
-		// Root prefix
-		SCAN_REPORT_SERVICE_PROPERTIES.addAll(SCAN_REPORT_PROPERTIES);
 	}
 }
