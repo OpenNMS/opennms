@@ -46,7 +46,7 @@ class TestMaven(unittest.TestCase):
 
     def test_get_modules_using(self):
         project = MavenProject(self.sample_graph)
-        schema_module = project.get_module("org.opennms.core:org.opennms.core.schema:26.1.3-SNAPSHOT")
+        schema_module = project.get_module("org.opennms.core:org.opennms.core.schema:2020.1.0-SNAPSHOT")
         # Verify that the retrieved the correct module
         self.assertEqual(schema_module.artifact_id, "org.opennms.core.schema")
 
