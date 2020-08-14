@@ -403,12 +403,12 @@ public class DatabasePopulator {
 
         // added this to assure that the old behaviour before RemotePollerNG is still the same, see NMS-12792
         final OnmsOutage remoteResolved = new OnmsOutage(new Date(1436881448292L), new Date(1436881448292L), event, event, svc, null, null);
-        remoteResolved.setPerspective(def);
+        remoteResolved.setPerspective(locFD);
         getOutageDao().save(remoteResolved);
         getOutageDao().flush();
 
         final OnmsOutage remoteUnresolved = new OnmsOutage(new Date(1436881448292L), event, svc);
-        remoteUnresolved.setPerspective(def);
+        remoteUnresolved.setPerspective(locRDU);
         getOutageDao().save(remoteUnresolved);
         getOutageDao().flush();
 

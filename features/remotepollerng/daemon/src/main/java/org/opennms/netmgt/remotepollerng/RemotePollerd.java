@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.remotepollerng;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -39,16 +42,22 @@ import java.util.stream.Collectors;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.PersisterFactory;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
+import org.opennms.netmgt.collection.dto.CollectionSetDTO;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.RemoteLatencyResource;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -59,16 +68,12 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
-import org.opennms.netmgt.events.api.model.IParm;
-import org.opennms.netmgt.events.api.model.IValue;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ResourcePath;
-import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
@@ -76,7 +81,10 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 import org.opennms.netmgt.poller.support.DefaultServiceMonitorRegistry;
+import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
+import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.xml.event.Event;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -94,6 +102,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 @EventListener(name=RemotePollerd.NAME, logPrefix=RemotePollerd.LOG_PREFIX)
 public class RemotePollerd implements SpringServiceDaemon {
@@ -162,6 +171,15 @@ public class RemotePollerd implements SpringServiceDaemon {
 
     private Optional<Set<RemotePolledService>> filterService(final ServiceTracker.Service service) {
         return this.sessionUtils.withReadOnlyTransaction(() -> {
+            // Get the monitored service entitiy
+            final OnmsMonitoredService monitoredService = this.monitoredServiceDao.get(service.nodeId, service.ipAddress, service.serviceName);
+            if (monitoredService == null) {
+                return Optional.empty();
+            }
+
+            final OnmsIpInterface ipInterface = monitoredService.getIpInterface();
+            final OnmsNode node = ipInterface.getNode();
+
             // Get all perspective locations from which the service is monitored via its assigned applications
             final List<OnmsMonitoringLocation> perspectiveLocations = this.applicationDao.getPerspectiveLocationsForService(service.nodeId, service.ipAddress, service.serviceName);
             if (perspectiveLocations.isEmpty()) {
@@ -186,50 +204,73 @@ public class RemotePollerd implements SpringServiceDaemon {
                 return Optional.empty();
             }
 
+            final RrdRepository rrdRepository = new RrdRepository();
+            rrdRepository.setStep(this.pollerConfig.getStep(pkg));
+            rrdRepository.setHeartBeat(rrdRepository.getStep() * 2);
+            rrdRepository.setRraList(this.pollerConfig.getRRAList(pkg));
+
+            final String rrdRepositoryDir = getServiceParameter(serviceMatch.get().service, "rrd-repository");
+            rrdRepository.setRrdBaseDir(new File(rrdRepositoryDir));
+
+            // Create the thresholding session for this poller
+            final ThresholdingSession thresholdingSession;
+            try {
+                thresholdingSession = this.thresholdingService.createSession(service.nodeId,
+                                                                             InetAddressUtils.str(service.ipAddress),
+                                                                             service.serviceName,
+                                                                             rrdRepository,
+                                                                             new ServiceParameters(Collections.emptyMap()));
+            } catch (final ThresholdInitializationException e) {
+                LOG.error("Failed to create thresholding session", e);
+                return Optional.empty();
+            }
+
             // Build remote polled services for each location
             return Optional.of(perspectiveLocations.stream()
                                                    .map(OnmsMonitoringLocation::getLocationName)
                                                    .map(perspectiveLocation -> new RemotePolledService(service,
+                                                                                                       node.getForeignSource(),
+                                                                                                       node.getForeignId(),
+                                                                                                       node.getLabel(),
                                                                                                        pkg,
                                                                                                        serviceMatch.get(),
                                                                                                        serviceMonitor,
-                                                                                                       perspectiveLocation))
+                                                                                                       perspectiveLocation,
+                                                                                                       node.getLocation().getLocationName(),
+                                                                                                       rrdRepository,
+                                                                                                       thresholdingSession))
                                                    .collect(Collectors.toSet()));
         });
     }
 
     private void addService(final ServiceTracker.ServiceEntry<Set<RemotePolledService>> entry) {
-        this.sessionUtils.withReadOnlyTransaction(() -> {
-            entry.getElement().forEach(remotePolledService -> {
-                final JobKey key = buildJobKey(remotePolledService);
+        entry.getElement().forEach(remotePolledService -> {
+            final JobKey key = buildJobKey(remotePolledService);
 
-                final JobDetail job = JobBuilder
-                        .newJob(RemotePollJob.class)
-                        .withIdentity(key)
-                        .setJobData(new JobDataMap(ImmutableMap.builder()
-                                                               .put(RemotePollJob.POLLED_SERVICE, remotePolledService)
-                                                               .put(RemotePollJob.REMOTE_POLLER_BACKEND, this)
-                                                               .build()))
-                        .build();
+            final JobDetail job = JobBuilder
+                    .newJob(RemotePollJob.class)
+                    .withIdentity(key)
+                    .setJobData(new JobDataMap(ImmutableMap.builder()
+                                                           .put(RemotePollJob.POLLED_SERVICE, remotePolledService)
+                                                           .put(RemotePollJob.REMOTE_POLLER_BACKEND, this)
+                                                           .build()))
+                    .build();
 
-                final Trigger trigger = TriggerBuilder
-                        .newTrigger()
-                        .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                                                           .withIntervalInMilliseconds(remotePolledService.getServiceConfig().getInterval())
-                                                           .repeatForever())
-                        .build();
+            final Trigger trigger = TriggerBuilder
+                    .newTrigger()
+                    .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                                                       .withIntervalInMilliseconds(remotePolledService.getServiceConfig().getInterval())
+                                                       .repeatForever())
+                    .build();
 
-                LOG.debug("Scheduling service named {} at location {} with interval {}ms", remotePolledService.getService().serviceName,
-                          remotePolledService.getPerspectiveLocation(), remotePolledService.getServiceConfig().getInterval());
+            LOG.debug("Scheduling service named {} at location {} with interval {}ms", remotePolledService.getServiceName(),
+                      remotePolledService.getPerspectiveLocation(), remotePolledService.getServiceConfig().getInterval());
 
-                try {
-                    this.scheduler.scheduleJob(job, trigger);
-                } catch (final SchedulerException e) {
-                    LOG.error("Failed to schedule {} ({}).", remotePolledService, key, e);
-                }
-            });
-
-            return null;
+            try {
+                this.scheduler.scheduleJob(job, trigger);
+            } catch (final SchedulerException e) {
+                LOG.error("Failed to schedule {} ({}).", remotePolledService, key, e);
+            }
         });
     }
 
@@ -267,9 +308,9 @@ public class RemotePollerd implements SpringServiceDaemon {
     }
     
     public static JobKey buildJobKey(RemotePolledService remotePolledService) {
-        return buildJobKey(remotePolledService.getService().nodeId,
-                           remotePolledService.getService().ipAddress,
-                           remotePolledService.getService().serviceName,
+        return buildJobKey(remotePolledService.getNodeId(),
+                           remotePolledService.getIpAddress(),
+                           remotePolledService.getServiceName(),
                            remotePolledService.getPerspectiveLocation());
     }
 
@@ -296,135 +337,82 @@ public class RemotePollerd implements SpringServiceDaemon {
     }
 
     protected void reportResult(final RemotePolledService polledService, final PollStatus pollResult) {
-        sessionUtils.withTransaction(() -> {
-            final OnmsMonitoringLocation location = this.monitoringLocationDao.get(polledService.getPerspectiveLocation());
-
-//            final OnmsLocationSpecificStatus oldLocationSpecificStatus = this.locationSpecificStatusDao.getMostRecentStatusChange(location, polledService.getMonSvc());
-
-//            if (oldLocationSpecificStatus == null || oldLocationSpecificStatus.getPollResult().getStatusCode() != pollResult.getStatusCode() ||
-//                    (pollResult.getReason() != null && !pollResult.getReason().equals(oldLocationSpecificStatus.getPollResult().getReason()))) {
-//                final OnmsLocationSpecificStatus status = new OnmsLocationSpecificStatus();
-//                status.setLocation(location);
-//                status.setMonitoredService(polledService.getMonSvc());
-//                status.setPollResult(pollResult);
-//
-//                this.locationSpecificStatusDao.saveStatusChange(status);
-
-                try {
-                    sendRegainedOrLostServiceEvent(locationName, polledService.getMonSvc(), pollResult);
-                } catch (final Exception e) {
-                    LOG.error("Unable to save result for location {}, monitored service ID {}.", locationSpecificStatusDao, polledService.getMonSvc().getId(), e);
-                }
-//            }
-
-//            try {
-//                if (pollResult.getResponseTime() != null) {
-//                    persistResponseTimeData(locationName, polledService, pollResult);
-//                }
-//            } catch (final Exception e) {
-//                LOG.error("Unable to save response time data for location {}, monitored service ID {}.", locationSpecificStatusDao, polledService.getMonSvc().getId(), e);
-//            }
-
-            return null;
-        });
-    }
-
-    private static EventBuilder createEventBuilder(final String locationName, final String uei) {
-        final EventBuilder eventBuilder = new EventBuilder(uei, "RemotePollerd")
-                .addParam(EventConstants.PARM_LOCATION, locationName);
-        return eventBuilder;
-    }
-
-    private void sendRegainedOrLostServiceEvent(final String locationName, final OnmsMonitoredService monSvc, final PollStatus pollResult) {
         final String uei = pollResult.isAvailable() ? EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI : EventConstants.REMOTE_NODE_LOST_SERVICE_UEI;
 
-        final EventBuilder builder = createEventBuilder(locationName, uei)
-                .setMonitoredService(monSvc)
-                .addParam("perspective", locationName);
+        final EventBuilder builder = new EventBuilder(uei, RemotePollerd.NAME);
+        builder.addParam(EventConstants.PARM_LOCATION, polledService.getPerspectiveLocation());
+        builder.setNodeid(polledService.getNodeId());
+        builder.setInterface(polledService.getIpAddress());
+        builder.setService(polledService.getServiceName());
+        builder.addParam("perspective", polledService.getPerspectiveLocation());
 
         if (!pollResult.isAvailable() && pollResult.getReason() != null) {
             builder.addParam(EventConstants.PARM_LOSTSERVICE_REASON, pollResult.getReason());
         }
 
-        eventForwarder.sendNow(builder.getEvent());
+        this.eventForwarder.sendNow(builder.getEvent());
     }
 
-    public void persistResponseTimeData(final RemotePolledService remotePolledService, final PollStatus pollStatus) {
-        // TODO fooker: Reactivate
-//        final OnmsMonitoredService monSvc = remotePolledService.getMonSvc();
-//        final Package pkg = remotePolledService.getPkg();
-//
-//        final String svcName = monSvc.getServiceName();
-//        final Service svc = this.pollerConfig.getServiceInPackage(svcName, pkg);
-//
-//        final String residentLocationName = monSvc.getIpInterface().getNode().getLocation().getLocationName();
-//
-//        String dsName = getServiceParameter(svc, "ds-name");
-//        if (dsName == null) {
-//            dsName = PollStatus.PROPERTY_RESPONSE_TIME;
-//        }
-//
-//        String rrdBaseName = getServiceParameter(svc, "rrd-base-name");
-//        if (rrdBaseName == null) {
-//            rrdBaseName = dsName;
-//        }
-//
-//        final String rrdRepository = getServiceParameter(svc, "rrd-repository");
-//        if (rrdRepository == null) {
-//            return;
-//        }
-//
-//        final RrdRepository repository = new RrdRepository();
-//        repository.setStep(this.pollerConfig.getStep(pkg));
-//        repository.setHeartBeat(repository.getStep() * 2);
-//        repository.setRraList(this.pollerConfig.getRRAList(pkg));
-//        repository.setRrdBaseDir(new File(rrdRepository));
-//
-//        // Prefer ds-name over "response-time" for primary response-time value
-//        final Map<String, Number> properties = Maps.newHashMap(pollStatus.getProperties());
-//        if (!properties.containsKey(dsName) && properties.containsKey(PollStatus.PROPERTY_RESPONSE_TIME)) {
-//            properties.put(dsName, properties.get(PollStatus.PROPERTY_RESPONSE_TIME));
-//            properties.remove(PollStatus.PROPERTY_RESPONSE_TIME);
-//        }
-//
-//        // Build collection agent
-//        final CollectionAgentDTO agent = new CollectionAgentDTO();
-//        agent.setAddress(monSvc.getIpAddress());
-//        agent.setForeignId(monSvc.getForeignId());
-//        agent.setForeignSource(monSvc.getForeignSource());
-//        agent.setNodeId(monSvc.getNodeId());
-//        agent.setNodeLabel(monSvc.getIpInterface().getNode().getLabel());
-//        agent.setLocationName(locationName);
-//        agent.setStorageResourcePath(ResourcePath.get(LocationUtils.isDefaultLocationName(residentLocationName)
-//                                                      ? ResourcePath.get()
-//                                                      : ResourcePath.get(ResourcePath.sanitize(residentLocationName)),
-//                                                      InetAddressUtils.str(monSvc.getIpAddress())));
-//        agent.setStoreByForeignSource(false);
-//
-//        // Create collection set from response times as gauges and persist
-//        final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
-//        final RemoteLatencyResource resource = new RemoteLatencyResource(locationName, InetAddressUtils.str(monSvc.getIpAddress()), svcName);
-//        for (final Map.Entry<String, Number> e: properties.entrySet()) {
-//            final String key = PollStatus.PROPERTY_RESPONSE_TIME.equals(e.getKey())
-//                               ? dsName
-//                               : e.getKey();
-//
-//            collectionSetBuilder.withGauge(resource, rrdBaseName, key, e.getValue());
-//        }
-//
-//        final CollectionSetDTO collectionSetDTO = collectionSetBuilder.build();
-//
-//        collectionSetDTO.visit(this.persisterFactory.createPersister(new ServiceParameters(Collections.emptyMap()),
-//                                                                         repository,
-//                                                                         false,
-//                                                                         true,
-//                                                                         true));
-//
-//        remotePolledService.applyThresholds(thresholdingService, collectionSetDTO, remotePolledService.getMonitoredService(), dsName, repository);
+    public void persistResponseTimeData(final RemotePolledService polledService, final PollStatus pollStatus) {
+        String dsName = getServiceParameter(polledService.getServiceConfig(), "ds-name");
+        if (dsName == null) {
+            dsName = PollStatus.PROPERTY_RESPONSE_TIME;
+        }
+
+        String rrdBaseName = getServiceParameter(polledService.getServiceConfig(), "rrd-base-name");
+        if (rrdBaseName == null) {
+            rrdBaseName = dsName;
+        }
+
+        // Prefer ds-name over "response-time" for primary response-time value
+        final Map<String, Number> properties = Maps.newHashMap(pollStatus.getProperties());
+        if (!properties.containsKey(dsName) && properties.containsKey(PollStatus.PROPERTY_RESPONSE_TIME)) {
+            properties.put(dsName, properties.get(PollStatus.PROPERTY_RESPONSE_TIME));
+            properties.remove(PollStatus.PROPERTY_RESPONSE_TIME);
+        }
+
+        // Build collection agent
+        final CollectionAgentDTO agent = new CollectionAgentDTO();
+        agent.setAddress(polledService.getIpAddress());
+        agent.setForeignId(polledService.getForeignId());
+        agent.setForeignSource(polledService.getForeignSource());
+        agent.setNodeId(polledService.getNodeId());
+        agent.setNodeLabel(polledService.getNodeLabel());
+        agent.setLocationName(polledService.getPerspectiveLocation());
+        agent.setStorageResourcePath(ResourcePath.get(LocationUtils.isDefaultLocationName(polledService.getResidentLocation())
+                                                      ? ResourcePath.get()
+                                                      : ResourcePath.get(ResourcePath.sanitize(polledService.getResidentLocation())),
+                                                      InetAddressUtils.str(polledService.getIpAddress())));
+        agent.setStoreByForeignSource(false);
+
+        // Create collection set from response times as gauges and persist
+        final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
+        final RemoteLatencyResource resource = new RemoteLatencyResource(polledService.getPerspectiveLocation(), InetAddressUtils.str(polledService.getIpAddress()), polledService.getServiceName());
+        for (final Map.Entry<String, Number> e: properties.entrySet()) {
+            final String key = PollStatus.PROPERTY_RESPONSE_TIME.equals(e.getKey())
+                               ? dsName
+                               : e.getKey();
+
+            collectionSetBuilder.withGauge(resource, rrdBaseName, key, e.getValue());
+        }
+
+        final CollectionSetDTO collectionSetDTO = collectionSetBuilder.build();
+
+        collectionSetDTO.visit(this.persisterFactory.createPersister(new ServiceParameters(Collections.emptyMap()),
+                                                                         polledService.getRrdRepository(),
+                                                                         false,
+                                                                         true,
+                                                                         true));
+
+        try {
+            polledService.getThresholdingSession().accept(collectionSetDTO);
+        } catch (final Throwable e) {
+            LOG.error("Failed to threshold on {} for {} because of an exception", polledService, dsName, e);
+        }
     }
 
-    private String getServiceParameter(final Service svc, final String key) {
-        for(final Parameter parm : pollerConfig.parameters(svc)) {
+    private String getServiceParameter(final Service service, final String key) {
+        for(final Parameter parm : this.pollerConfig.parameters(service)) {
             if (key.equals(parm.getKey())) {
                 if (parm.getValue() != null) {
                     return parm.getValue();
@@ -476,7 +464,7 @@ public class RemotePollerd implements SpringServiceDaemon {
     public void handleRemoteNodeLostService(final IEvent e) {
         if (e.hasNodeid() && e.getInterfaceAddress() != null && e.getService() != null && e.getParm("perspective") != null) {
             final OnmsEvent onmsEvent = eventDao.get(e.getDbid());
-            final OnmsMonitoredService service = monSvcDao.get(onmsEvent.getNodeId(), onmsEvent.getIpAddr(), onmsEvent.getServiceType().getId());
+            final OnmsMonitoredService service = this.monitoredServiceDao.get(onmsEvent.getNodeId(), onmsEvent.getIpAddr(), onmsEvent.getServiceType().getId());
             final OnmsMonitoringLocation perspective = monitoringLocationDao.get(e.getParm("perspective").getValue().getContent());
             final OnmsOutage onmsOutage = new OnmsOutage(onmsEvent.getEventCreateTime(), onmsEvent, service);
             onmsOutage.setPerspective(perspective);
@@ -498,7 +486,7 @@ public class RemotePollerd implements SpringServiceDaemon {
     public void handleRemoteNodeGainedService(final IEvent e) {
         if (e.hasNodeid() && e.getInterfaceAddress() != null && e.getService() != null && e.getParm("perspective") != null) {
             final OnmsEvent onmsEvent = eventDao.get(e.getDbid());
-            final OnmsMonitoredService service = monSvcDao.get(onmsEvent.getNodeId(), onmsEvent.getIpAddr(), onmsEvent.getServiceType().getId());
+            final OnmsMonitoredService service = this.monitoredServiceDao.get(onmsEvent.getNodeId(), onmsEvent.getIpAddr(), onmsEvent.getServiceType().getId());
             final OnmsMonitoringLocation perspective = monitoringLocationDao.get(e.getParm("perspective").getValue().getContent());
 
             final Criteria criteria = new CriteriaBuilder(OnmsOutage.class)
@@ -524,7 +512,6 @@ public class RemotePollerd implements SpringServiceDaemon {
                 eventForwarder.sendNow(outageEvent);
             } else {
                 LOG.warn("Found more than one outages for {} event: {}", EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, e);
-                return;
             }
         } else {
             LOG.warn("Received incomplete {} event: {}", EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, e);

@@ -29,13 +29,11 @@
 package org.opennms.netmgt.remotepollerng;
 
 import java.net.InetAddress;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
@@ -43,8 +41,6 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.scheduler.Schedule;
-import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,34 +48,52 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.MoreObjects;
 
 public class RemotePolledService {
-    private static final Logger LOG = LoggerFactory.getLogger(RemotePolledService.class);
-    private static final ServiceParameters EMPTY_SERVICE_PARAMS = new ServiceParameters(Collections.emptyMap());
-
     private final ServiceTracker.Service service;
 
+    private final String foreignSource;
+    private final String foreignId;
+
+    private final String nodeLabel;
+
     private final Package pkg;
+
     private final Package.ServiceMatch serviceMatch;
 
     private final ServiceMonitor serviceMonitor;
 
-    private final MonitoredService monitoredService;
-
     private final String perspectiveLocation;
+    private final String residentLocation;
 
-    private ThresholdingSession thresholdingSession;
+    private final RrdRepository rrdRepository;
+
+    private final ThresholdingSession thresholdingSession;
+
+    private final MonitoredService monitoredService;
 
     private PollStatus lastStatus;
 
-    public RemotePolledService(ServiceTracker.Service service,
+    public RemotePolledService(final ServiceTracker.Service service,
+                               final String foreignSource,
+                               final String foreignId,
+                               final String nodeLabel,
                                final Package pkg,
                                final Package.ServiceMatch serviceMatch,
                                final ServiceMonitor serviceMonitor,
-                               final String perspectiveLocation) {
+                               final String perspectiveLocation,
+                               final String residentLocation,
+                               final RrdRepository rrdRepository,
+                               final ThresholdingSession thresholdingSession) {
         this.service = Objects.requireNonNull(service);
+        this.foreignSource = Objects.requireNonNull(foreignSource);
+        this.foreignId = Objects.requireNonNull(foreignId);
+        this.nodeLabel = Objects.requireNonNull(nodeLabel);
         this.pkg = Objects.requireNonNull(pkg);
         this.serviceMatch = Objects.requireNonNull(serviceMatch);
         this.serviceMonitor = Objects.requireNonNull(serviceMonitor);
         this.perspectiveLocation = Objects.requireNonNull(perspectiveLocation);
+        this.residentLocation = Objects.requireNonNull(residentLocation);
+        this.rrdRepository = Objects.requireNonNull(rrdRepository);
+        this.thresholdingSession = Objects.requireNonNull(thresholdingSession);
 
         this.monitoredService = new MonitoredService() {
             @Override
@@ -130,6 +144,18 @@ public class RemotePolledService {
         return this.service;
     }
 
+    public String getForeignSource() {
+        return this.foreignSource;
+    }
+
+    public String getForeignId() {
+        return this.foreignId;
+    }
+
+    public String getNodeLabel() {
+        return this.nodeLabel;
+    }
+
     public Package getPkg() {
         return pkg;
     }
@@ -154,6 +180,30 @@ public class RemotePolledService {
         return this.perspectiveLocation;
     }
 
+    public String getResidentLocation() {
+        return this.residentLocation;
+    }
+
+    public RrdRepository getRrdRepository() {
+        return this.rrdRepository;
+    }
+
+    public int getNodeId() {
+        return this.service.nodeId;
+    }
+
+    public InetAddress getIpAddress() {
+        return this.service.ipAddress;
+    }
+
+    public String getServiceName() {
+        return this.service.serviceName;
+    }
+
+    public ThresholdingSession getThresholdingSession() {
+        return this.thresholdingSession;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
@@ -163,7 +213,6 @@ public class RemotePolledService {
                           .add("serviceMonitor", this.serviceMonitor)
                           .add("monitoredService", this.monitoredService)
                           .add("perspectiveLocation", this.perspectiveLocation)
-                          .add("thresholdingSession", this.thresholdingSession)
                           .toString();
     }
 
@@ -181,27 +230,11 @@ public class RemotePolledService {
                Objects.equals(this.serviceMatch, that.serviceMatch) &&
                Objects.equals(this.serviceMonitor, that.serviceMonitor) &&
                Objects.equals(this.monitoredService, that.monitoredService) &&
-               Objects.equals(this.perspectiveLocation, that.perspectiveLocation) &&
-               Objects.equals(this.thresholdingSession, that.thresholdingSession);
+               Objects.equals(this.perspectiveLocation, that.perspectiveLocation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.service, this.pkg, this.serviceMatch, this.serviceMonitor, this.monitoredService, this.perspectiveLocation, this.thresholdingSession);
-    }
-
-    public void applyThresholds(final ThresholdingService thresholdingService, final CollectionSet collectionSet, final MonitoredService service, final String dsName, final RrdRepository repository) {
-        try {
-            if (this.thresholdingSession == null) {
-                this.thresholdingSession = thresholdingService.createSession(service.getNodeId(),
-                                                                             service.getIpAddr(),
-                                                                             service.getSvcName(),
-                                                                             repository,
-                                                                             EMPTY_SERVICE_PARAMS);
-            }
-            this.thresholdingSession.accept(collectionSet);
-        } catch (Throwable e) {
-            LOG.error("Failed to threshold on {} for {} because of an exception", service, dsName, e);
-        }
+        return Objects.hash(this.service, this.pkg, this.serviceMatch, this.serviceMonitor, this.monitoredService, this.perspectiveLocation);
     }
 }

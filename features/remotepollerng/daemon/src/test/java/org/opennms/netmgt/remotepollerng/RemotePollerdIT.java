@@ -249,7 +249,7 @@ public class RemotePollerdIT implements InitializingBean {
         final InetAddress ipAddress = this.node1icmp.getIpAddress();
         final String location = this.node1icmp.getIpInterface().getNode().getLocation().getLocationName();
 
-        RemotePolledService remotePolledService = new RemotePolledService(new ServiceTracker.Service(this.node1icmp.getNodeId(), this.node1icmp.getIpAddress(), this.node1icmp.getServiceName()), pkg, serviceMatch, svcMon, "RDU");
+        RemotePolledService remotePolledService = new RemotePolledService(new ServiceTracker.Service(this.node1icmp.getNodeId(), this.node1icmp.getIpAddress(), this.node1icmp.getServiceName()), this.node1icmp.getIpInterface().getNode().getForeignSource(), this.node1icmp.getIpInterface().getNode().getForeignId(), this.node1icmp.getIpInterface().getNode().getLabel(), pkg, serviceMatch, svcMon, "RDU", "Default", null, null);
         Assert.assertEquals(0, this.databasePopulator.getLocationSpecificStatusDao().findAll().size());
 
         this.eventIpcManager.getEventAnticipator().reset();
@@ -372,7 +372,7 @@ public class RemotePollerdIT implements InitializingBean {
         final Package.ServiceMatch serviceMatch = pkg.findService("ICMP").get();
         final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
 
-        RemotePolledService remotePolledService = new RemotePolledService(new ServiceTracker.Service(this.node1icmp.getNodeId(), this.node1icmp.getIpAddress(), this.node1icmp.getServiceName()), pkg, serviceMatch, svcMon, "RDU");
+        RemotePolledService remotePolledService = new RemotePolledService(new ServiceTracker.Service(this.node1icmp.getNodeId(), this.node1icmp.getIpAddress(), this.node1icmp.getServiceName()), this.node1icmp.getIpInterface().getNode().getForeignSource(), this.node1icmp.getIpInterface().getNode().getForeignId(), this.node1icmp.getIpInterface().getNode().getLabel(), pkg, serviceMatch, svcMon, "RDU", "Default", null, null);
         Assert.assertEquals(0, this.databasePopulator.getLocationSpecificStatusDao().findAll().size());
 
         // first, report PollStatus.available(), so RegainedService event is sent
