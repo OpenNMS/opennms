@@ -57,6 +57,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
+import com.google.common.base.Strings;
 
 public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, SyslogMessageLogDTO>, InitializingBean {
 
@@ -166,6 +167,7 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
         if (syslogdConfig.getNewSuspectOnMessage()) {
             eventLog.getEvents().getEventCollection().stream()
                 .filter(e -> !e.hasNodeid())
+                .filter(e -> !Strings.isNullOrEmpty(e.getInterface()))
                 .forEach(e -> {
                     LOG.trace("Syslogd: Found a new suspect {}", e.getInterface());
                     sendNewSuspectEvent(localAddr, e.getInterface(), e.getDistPoller());

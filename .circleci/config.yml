@@ -39,11 +39,11 @@ defaults: &defaults
     next_branch:
       description: the auto-merge target branch
       type: string
-      default: release-26.x
+      default: foundation-2020
     next_branch_label:
       description: the auto-merge target branch (escaped, no slashes)
       type: string
-      default: release-26.x
+      default: foundation-2020
 
 docker_container_config: &docker_container_config
   executor: docker-executor
@@ -544,6 +544,7 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - minion-deb-build:
           requires:
             - integration-test
@@ -557,6 +558,7 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - sentinel-deb-build:
           requires:
             - integration-test
@@ -570,6 +572,7 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes

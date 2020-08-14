@@ -29,6 +29,7 @@
 package org.opennms.netmgt.syslogd;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static junit.framework.TestCase.assertFalse;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -232,6 +233,61 @@ public class SyslogSinkConsumerNewSuspectIT {
         LOG.debug("Found node ID: {}", foundid);
         assertTrue("Node ID was unexpectedly present: " + e.getNodeid(), foundid < 1);
     }
+
+    /**
+     * Enables `new-suspect-on-message` and tests that a valid syslog message will produce new suspect event.
+     * When syslog message has invalid interface will not produce new suspect event.
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void testInvalidInterfaceWillNotProduceNewSuspectEvent() throws Exception {
+
+        // Overwrite with new config by enabling new suspect on message flag.
+        SyslogdConfigFactory config = loadSyslogConfiguration("/etc/syslogd-new-suspect-enable-configuration.xml");
+        // Create new consumer and module with the new config.
+        SyslogSinkConsumer syslogSinkConsumer = new SyslogSinkConsumer(new MetricRegistry());
+        syslogSinkConsumer.setDistPollerDao(m_distPollerDao);
+        syslogSinkConsumer.setSyslogdConfig(config);
+        syslogSinkConsumer.setEventForwarder(m_eventIpcManager);
+        SyslogSinkModule syslogSinkModule = syslogSinkConsumer.getModule();
+        // One of the interfaces on node1
+        final InetAddress addr = InetAddressUtils.addr("192.168.1.3");
+
+        // This is a valid syslog message with valid interface.
+        byte[] bytes = ("<34>1 2010-08-19T22:14:15.000Z " + InetAddressUtils.str(addr) + " - - - - \uFEFFfoo0: load test 0 on tty1\0").getBytes();
+        DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, addr, SyslogClient.PORT);
+
+        // Create a new SyslogConnection and call it to create the processed event
+        SyslogMessageLogDTO messageLog = syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+        // Dispatch
+        syslogSinkConsumer.handleMessage(messageLog);
+        // Capture
+        await().until(() -> m_anticipator.getUnanticipatedEvents().size(), equalTo(2));
+        List<Event> events = m_anticipator.getUnanticipatedEvents();
+        assertEquals(2, events.size());
+        // One of the events should be New Suspect.
+        assertTrue(events.stream().anyMatch(event -> event.getUei().equals(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)));
+        m_anticipator.reset();
+
+        // Syslog message without a valid host (NotAHost), shouldn't create new suspect event.
+        
+        bytes = ("<34>1 2010-08-19T22:14:15.000Z " + "NotAHost" + " - - - - \uFEFFfoo0: load test 0 on tty1\0").getBytes();
+        pkt = new DatagramPacket(bytes, bytes.length, addr, SyslogClient.PORT);
+        // Create a new SyslogConnection and call it to create the processed event
+        messageLog = syslogSinkModule.toMessageLog(new SyslogConnection(pkt, false));
+        // Dispatch
+        syslogSinkConsumer.handleMessage(messageLog);
+        // Capture
+        await().until(() -> m_anticipator.getUnanticipatedEvents().size(), equalTo(1));
+        events = m_anticipator.getUnanticipatedEvents();
+        assertEquals(1, events.size());
+        Event event = events.get(0);
+        assertFalse(event.getUei().equals(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI));
+        m_anticipator.reset();
+
+    }
+
 
     /**
      * Converts given connection to a DTO and dispatches it to the consumer.
