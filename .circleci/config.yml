@@ -44,11 +44,11 @@ defaults: &defaults
 #    next_branch:
 #      description: the auto-merge target branch
 #      type: string
-#      default: release-26.x
+#      default: foundation-2020
 #    next_branch_label:
 #      description: the auto-merge target branch (escaped, no slashes)
 #      type: string
-#      default: release-26.x
+#      default: foundation-2020
 
 docker_container_config: &docker_container_config
   executor: docker-executor
