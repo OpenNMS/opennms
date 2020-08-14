@@ -123,17 +123,17 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
     @Override
     public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsApplication object) {
         final Integer id = getDao().save(object);
-        sentEvent(object, EventConstants.APPLICATION_CREATED_EVENT_UEI);
+        sendEvent(object, EventConstants.APPLICATION_CREATED_EVENT_UEI);
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
     }
 
     @Override
     protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsApplication object) {
         getDao().delete(object);
-        sentEvent(object, EventConstants.APPLICATION_DELETED_EVENT_UEI);
+        sendEvent(object, EventConstants.APPLICATION_DELETED_EVENT_UEI);
     }
 
-    private void sentEvent(final OnmsApplication application, final String uei) {
+    private void sendEvent(final OnmsApplication application, final String uei) {
         final Event event = new EventBuilder(uei, "Web UI")
                 .addParam(PARM_APPLICATION_ID, application.getId())
                 .addParam(PARM_APPLICATION_NAME, application.getName())

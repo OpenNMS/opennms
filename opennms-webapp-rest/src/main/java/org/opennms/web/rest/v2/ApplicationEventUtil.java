@@ -42,7 +42,7 @@ import org.opennms.netmgt.xml.event.Event;
 
 public class ApplicationEventUtil {
 
-    public List<Event> getApplicationChangedEvents(final Collection<OnmsApplication> applications) {
+    public static List<Event> getApplicationChangedEvents(final Collection<OnmsApplication> applications) {
         List<Event> events = new ArrayList<>();
         if(applications == null) {
             return events;

@@ -164,7 +164,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         final Event e = EventUtils.createNodeGainedServiceEvent("ReST", iface.getNode().getId(), iface.getIpAddress(), service.getServiceName(), iface.getNode().getLabel(),
                                                                 iface.getNode().getLabelSource(), iface.getNode().getSysName(), iface.getNode().getSysDescription());
         sendEvent(e);
-        new ApplicationEventUtil().getApplicationChangedEvents(service.getApplications()).forEach(this::sendEvent);
+        ApplicationEventUtil.getApplicationChangedEvents(service.getApplications()).forEach(this::sendEvent);
 
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, service.getServiceName())).build();
     }
@@ -188,7 +188,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         getDao().update(targetObject);
 
         Set<OnmsApplication> changedApplications = Sets.symmetricDifference(applicationsOriginal, targetObject.getApplications());
-        new ApplicationEventUtil().getApplicationChangedEvents(changedApplications).forEach(this::sendEvent);
+        ApplicationEventUtil.getApplicationChangedEvents(changedApplications).forEach(this::sendEvent);
 
         boolean changed = m_component.hasStatusChanged(previousStatus, targetObject);
         return changed ? Response.noContent().build() : Response.notModified().build();
@@ -200,7 +200,7 @@ public class NodeMonitoredServiceRestService extends AbstractNodeDependentRestSe
         getDao().delete(svc);
         final Event e = EventUtils.createDeleteServiceEvent("ReST", svc.getNodeId(), svc.getIpAddress().getHostAddress(), svc.getServiceName(), -1L);
         sendEvent(e);
-        new ApplicationEventUtil().getApplicationChangedEvents(svc.getApplications()).forEach(this::sendEvent);
+        ApplicationEventUtil.getApplicationChangedEvents(svc.getApplications()).forEach(this::sendEvent);
     }
 
     @Override

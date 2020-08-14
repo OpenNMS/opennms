@@ -164,7 +164,7 @@ public class IfServiceRestService extends AbstractDaoRestService<OnmsMonitoredSe
         getDao().update(targetObject);
 
         Set<OnmsApplication> changedApplications = Sets.symmetricDifference(applicationsOriginal, targetObject.getApplications());
-        new ApplicationEventUtil().getApplicationChangedEvents(changedApplications).forEach(this::sendEvent);
+        ApplicationEventUtil.getApplicationChangedEvents(changedApplications).forEach(this::sendEvent);
 
         boolean changed = m_component.hasStatusChanged(previousStatus, targetObject);
         return changed ? Response.noContent().build() : Response.notModified().build();
