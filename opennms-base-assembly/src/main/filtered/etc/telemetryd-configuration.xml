@@ -29,7 +29,7 @@
                class-name="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector"
                service-name="OpenConfig"
                queue="OpenConfig"
-               enabled="true">
+               enabled="false">
         <package name="OpenConfig-Default">
             <filter>IPADDR != '0.0.0.0'</filter>
             <parameter key="port" value="${requisition:oc.port|9000}"/>
@@ -38,7 +38,7 @@
     </connector>
 
     <queue name="OpenConfig">
-        <adapter name="OpenConfig-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter" enabled="true">
+        <adapter name="OpenConfig-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter" enabled="false">
             <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/openconfig-telemetry-resources.groovy"/>
             <package name="OpenConfig-Default">
                 <rrd step="300">

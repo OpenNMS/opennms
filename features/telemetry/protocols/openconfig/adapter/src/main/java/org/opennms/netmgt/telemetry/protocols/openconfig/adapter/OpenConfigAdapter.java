@@ -54,6 +54,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -80,13 +81,10 @@ public class OpenConfigAdapter extends AbstractScriptedCollectionAdapter {
             LOG.warn("Invalid packet: {}", e);
             return Stream.empty();
         }
-        String systemId = openConfigData.getSystemId();
-        Optional<Telemetry.KeyValue> ifName =
-                openConfigData.getKvList().stream().filter(keyValue -> keyValue.getKey().contains("name")).findFirst();
         CollectionAgent agent = null;
         try {
-            // Attempt to resolve the systemId to an InetAddress
-            final InetAddress inetAddress = InetAddress.getByName(systemId);
+            // Match source address to the interface.
+            final InetAddress inetAddress = InetAddress.getByName(messageLog.getSourceAddress());
             final Optional<Integer> nodeId = interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), inetAddress);
             if (nodeId.isPresent()) {
                 // NOTE: This will throw a IllegalArgumentException if the
@@ -94,16 +92,16 @@ public class OpenConfigAdapter extends AbstractScriptedCollectionAdapter {
                 agent = collectionAgentFactory.createCollectionAgent(Integer.toString(nodeId.get()), inetAddress);
             }
         } catch (UnknownHostException e) {
-            LOG.debug("Could not convert system id to address: {}", systemId);
+            LOG.debug("Could not convert resolve from source address: {}", messageLog.getSourceAddress());
         }
-
-        if (agent == null) {
-            // We were unable to build the agent by resolving the systemId,
-            // try finding
-            // a node with a matching label
+        String systemId = openConfigData.getSystemId();
+        if (agent == null && !Strings.isNullOrEmpty(systemId)) {
+            // We were unable to build the agent from source address,
+            // try finding a node with a matching label
             agent = transactionTemplate.execute(new TransactionCallback<CollectionAgent>() {
                 @Override
                 public CollectionAgent doInTransaction(TransactionStatus status) {
+
                     final OnmsNode node = Iterables.getFirst(nodeDao.findByLabel(systemId), null);
                     if (node != null) {
                         final OnmsIpInterface primaryInterface = node.getPrimaryInterface();

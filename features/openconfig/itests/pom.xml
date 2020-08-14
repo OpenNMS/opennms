@@ -30,7 +30,6 @@
     <dependency>
       <groupId>org.opennms.features.openconfig</groupId>
       <artifactId>org.opennms.features.openconfig.telemetry-client</artifactId>
-      <scope>test</scope>
       <version>${project.version}</version>
     </dependency>
     <dependency>

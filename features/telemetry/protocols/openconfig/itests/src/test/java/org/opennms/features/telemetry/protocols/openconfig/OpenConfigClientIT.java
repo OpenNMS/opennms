@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.openconfig.telemetry;
+package org.opennms.features.telemetry.protocols.openconfig;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.greaterThan;
@@ -45,6 +45,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.openconfig.api.OpenConfigClient;
 import org.opennms.features.openconfig.proto.jti.Telemetry;
+import org.opennms.features.openconfig.telemetry.OpenConfigClientImpl;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -91,12 +92,12 @@ public class OpenConfigClientIT {
 
     private Map<String, String> getParams() {
         Map<String, String> params = new HashMap<>();
-        params.put("port", "50051");
+        params.put("port", "50052");
         params.put("paths", "/interfaces," +
                 "/network-instances/network-instance[instance-name='master']," +
                 "/protocols/protocol/bgp");
         params.put("frequency", "2000");
-        params.put("timeout", "3");
+        params.put("interval", "3");
         return params;
     }
 

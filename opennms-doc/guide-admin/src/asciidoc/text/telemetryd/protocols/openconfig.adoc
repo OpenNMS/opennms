@@ -1,0 +1,120 @@
+
+==== OpenConfig Telemetry
+
+The _OpenConfig_ telemetry adapter allows you to stream telemetry data over gRPC to _{opennms-product-name}_.
+
+To enable support for OpenConfig, edit `${OPENNMS_HOME}/etc/telemetryd-configuration.xml` set `enabled=true` for the `OpenConfig` protocol.
+
+.Enable OpenConfig protocol in telemetryd-configuration.xml
+[source, xml]
+----
+<!-- OpenConfig -->
+    <connector name="OpenConfig-Connector"
+               class-name="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector"
+               service-name="OpenConfig"
+               queue="OpenConfig"
+               enabled="true">
+        <package name="OpenConfig-Default">
+            <filter>IPADDR != '0.0.0.0'</filter>
+            <parameter key="port" value="${requisition:oc.port|9000}"/>
+            <parameter key="paths" value="/network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp"/>
+            <parameter key="frequency" value="${requisition:oc.frequency|300000}"/>
+            <parameter key="retries" value="12"/>
+            <parameter key="interval" value="300"/>
+            <parameter key="tls.enabled" value="${requisition:oc.tls.enabled}"/>
+            <parameter key="tls.trust.cert.path" value="${requisition:trust.cert.path}"/>
+         </package>
+    </connector>
+
+    <queue name="OpenConfig">
+        <adapter name="OpenConfig-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter" enabled="true">
+            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/openconfig-telemetry-resources.groovy"/>
+            <package name="OpenConfig-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+    </queue>
+----
+
+Apply the changes without restarting by sending a `reloadDaemonConfig` event in the CLI or the WebUI:
+
+.Send a reloadDaemonConfig event through CLI
+[source]
+----
+${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+----
+
+
+===== OpenConfig Connector
+
+OpenConfig Connector invokes a `gRPC` client that connects to a `gRPC` server that can stream telemetry data.
+ConnectorManager invokes a connector whenever it matches `OpenConfig` service for the interfaces currently present or new interface being added.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector`
+| Service Name          | `OpenConfig`
+|===
+
+====== Packages
+Connector can have multiple packages with a filter to match IP Interfaces and multiple parameters.
+
+.Connector specific parameters for the OpenConfigConnector
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                       | Required | Default value
+| `port`           | Port that `gRPC` Client can connect to                            | required | (none)
+| `paths`          | Paths that needs to subscribed to                                 | required | (empty)
+| `frequency`      | Frequency at which OpenConfig data can be streamed                | required | (300000)(5mins)
+| `retries`        | Number of retries to attempt to make a connection when failed     | optional | (0)(unlimited)
+| `interval`       | Interval at which client tries to make a connection when failed   | optional | (300)(5mins)
+| `tls.enabled`    | Enable tls authentication                                         | optional | false
+| `tls.trust.cert.path`    | trust cert path                                           | optional | (none)
+|===
+
+
+===== OpenConfig Adapter
+
+The OpenConfig adapter is used to handle _OpenConfig_ payloads.
+Messages are decoded and forwarded to a JSR-223 compatible script (i.e. Beanshell or Groovy) for further processing.
+Using the script extension you can extract the desired metrics from the Graphite messages and persist the results as time series data.
+
+====== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter`
+|===
+
+====== Parameters
+
+.Adapter specific parameters for the OpenConfigAdapter
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                       | Required | Default value
+| `script`         | Full path to the script used to handle the OpenConfig data      | required | (none)
+|===
+
+====== Scripting
+
+The script will be invoked for every OpenConfig stream data that is received and succesfully decoded.
+
+The following globals will be passed to the script:
+
+.Globals passed to the script
+[options="header, autowidth"]
+|===
+| Parameter  | Description                                                    | Type
+| `agent`    | The agent (node) against which the metrics will be associated  | `org.opennms.netmgt.collection.api.CollectionAgent`
+| `builder`  | Builder in which the resources and metrics should be added     | `org.opennms.netmgt.collection.support.builder.CollectionSetBuilder`
+| `msg`      | Decoded message from which the metrics should be extracted     | `org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData`
+|===
+

@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import io.grpc.Server;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
+import io.grpc.stub.StreamObserver;
 
 public class OpenConfigTestServer {
 
@@ -50,6 +51,7 @@ public class OpenConfigTestServer {
     private static final Logger LOG = LoggerFactory.getLogger(OpenConfigTestServer.class);
     private Server server;
     private Boolean errorStream = false;
+    private StreamObserver<Telemetry.OpenConfigData> observer;
 
 
     public void start() throws IOException {
@@ -65,6 +67,7 @@ public class OpenConfigTestServer {
 
         public void telemetrySubscribe(Telemetry.SubscriptionRequest request,
                                        io.grpc.stub.StreamObserver<Telemetry.OpenConfigData> responseObserver) {
+            observer = responseObserver;
             LOG.info("Got request {}", request.toString());
             List<Telemetry.Path> paths  = request.getPathListList();
             if(paths.isEmpty()) {
@@ -94,10 +97,8 @@ public class OpenConfigTestServer {
 
     public void stop() {
         if (server != null) {
+            observer.onCompleted();
             server.shutdown();
-        }
-        if(executor != null) {
-            executor.shutdown();
         }
     }
 

@@ -64,9 +64,11 @@ import io.grpc.stub.StreamObserver;
 public class OpenConfigClientImpl implements OpenConfigClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenConfigClientImpl.class);
-    private static final int DEFAULT_RETRIES = 15;
-    private static final int DEFAULT_TIMEOUT = 1000;
-    private static final int DEFAULT_FREQUENCY = 300000; //5minutes
+    // Internal retries and timeout are used to make a connection and wait till channel is active.
+    private static final int DEFAULT_INTERNAL_RETRIES = 15;
+    private static final int DEFAULT_INTERNAL_TIMEOUT = 1000;
+    private static final int DEFAULT_FREQUENCY = 300000; //5min
+    private static final int DEFAULT_INTERVAL_IN_SEC = 300; //5min
     private ManagedChannel channel;
     private final InetAddress host;
     private Integer port;
@@ -86,6 +88,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     public void subscribe(OpenConfigClient.Handler handler) {
         boolean succeeded = trySubscribing(handler);
         if (!succeeded) {
+            close();
             executor.execute(() -> scheduleSubscription(handler));
         }
     }
@@ -124,15 +127,18 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             return;
         }
         scheduled.set(true);
+        // Try at least once.
         boolean succeeded = trySubscribing(handler);
         if (succeeded) {
             scheduled.set(false);
             return;
         }
+        // If it's not subscribed, schedule this to run after configured timeout
+        Integer timeout = StringUtils.parseInt(parameters.get("interval"), DEFAULT_INTERVAL_IN_SEC);
+        // When retries is null or <= 0, scheduling will happen indefinitely until it succeeds.
+        Integer retries = StringUtils.parseInt(parameters.get("retries"), null);
         while (!closed.get()) {
-            // If it's not subscribed, schedule this to run after configured delay
-            Integer delay = StringUtils.parseInt(parameters.get("frequency"), DEFAULT_FREQUENCY);
-            ScheduledFuture<Boolean> future = scheduledExecutor.schedule(() -> trySubscribing(handler), delay, TimeUnit.MILLISECONDS);
+            ScheduledFuture<Boolean> future = scheduledExecutor.schedule(() -> trySubscribing(handler), timeout, TimeUnit.SECONDS);
             try {
                 succeeded = future.get();
                 if (succeeded) {
@@ -141,6 +147,13 @@ public class OpenConfigClientImpl implements OpenConfigClient {
                 }
             } catch (InterruptedException | ExecutionException e) {
                 LOG.warn("Exception while scheduling subscription at host `{}` ", InetAddressUtils.str(host), e);
+            }
+            if (retries != null && retries > 0) {
+                retries--;
+                if (retries == 0) {
+                    scheduled.set(false);
+                    break;
+                }
             }
         }
     }
@@ -201,13 +214,13 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
     /*gRPC channel may not be in ready state instantly, this is internal wait to make a connection*/
     private ConnectivityState retrieveChannelState() {
-        int retries = DEFAULT_RETRIES;
+        int retries = DEFAULT_INTERNAL_RETRIES;
         ConnectivityState state = null;
-        while (retries > 0) {
+        while (retries > 0 && !closed.get()) {
             state = channel.getState(true);
             if (!state.equals(READY)) {
                 LOG.warn("OpenConfig Server at `{}` is not in ready state, current state {}, retrying..", host, state);
-                waitBeforeRetrying(DEFAULT_TIMEOUT);
+                waitBeforeRetrying(DEFAULT_INTERNAL_TIMEOUT);
                 retries--;
             } else {
                 break;

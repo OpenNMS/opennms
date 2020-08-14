@@ -105,6 +105,7 @@ public class ConnectorManager {
             // Create a new connector
             LOG.debug("Starting connector for: {}", key);
             final Connector connector = telemetryRegistry.getConnector(connectorConfig);
+            connectorsByKey.put(key, connector);
             connector.stream(serviceRef.getNodeId(), serviceRef.getIpAddress(), parmMap);
         }
     }

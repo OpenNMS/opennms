@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2020-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,31 +27,30 @@
  *******************************************************************************/
 
 
-
-
-import Slf4j
+import groovy.util.logging.Slf4j
 import org.opennms.core.utils.RrdLabelUtils
+import org.opennms.features.openconfig.proto.jti.Telemetry
 import org.opennms.netmgt.collection.api.AttributeType
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource
-import telemetry.OpenConfigTelemetryProto
+
 
 @Slf4j
 class CollectionSetGenerator {
     static generate(agent, builder, openConfigData) {
-        CollectionSetGenerator.log.debug("Generating collection set for message: {}", openConfigData)
+        log.debug("Generating collection set for message: {}", openConfigData)
         NodeLevelResource nodeLevelResource = new NodeLevelResource(agent.getNodeId())
         // Record the sequence number
         builder.withSequenceNumber(openConfigData.getSequenceNumber())
         // This is just an example on how to build interface level resources.
-        Optional<OpenConfigTelemetryProto.KeyValue> ifName =
+        Optional<Telemetry.KeyValue> ifName =
                 openConfigData.getKvList().stream().filter({keyValue -> keyValue.getKey().contains("name")}).findFirst();
         if (ifName.isPresent()) {
             String interfaceLabel = RrdLabelUtils.computeLabelForRRD(ifName.get().getStrValue(), null, null)
             InterfaceLevelResource interfaceResource = new InterfaceLevelResource(nodeLevelResource, interfaceLabel)
             openConfigData.getKvList().stream().filter({keyValue -> keyValue.getKey().contains("in-octets")}).findFirst()
                     .ifPresent({kv ->
-                builder.withNumericAttribute(interfaceResource, "mib2-interfaces", "ifInOctets", kv.getValue(), AttributeType.COUNTER)})
+                builder.withNumericAttribute(interfaceResource, "mib2-interfaces", "ifInOctets", kv.getDoubleValue(), AttributeType.COUNTER)})
 
         }
 
@@ -63,7 +62,7 @@ class CollectionSetGenerator {
 // builder: a reference to a CollectionSetBuilder to which the resources/metrics should be added
 // msg: the message from which to extract the metrics
 
-OpenConfigTelemetryProto.OpenConfigData openConfigData = msg
+Telemetry.OpenConfigData openConfigData = msg
 
 // Generate the CollectionSet
 CollectionSetGenerator.generate(agent, builder, openConfigData)
