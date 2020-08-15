@@ -125,7 +125,7 @@ public class SearchSuggestion implements Comparable<SearchSuggestion> {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("context", context)
-                .add("id", context)
+                .add("id", id)
                 .add("label", label)
                 .add("provider", provider)
                 .toString();
