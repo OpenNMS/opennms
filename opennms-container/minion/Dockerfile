@@ -24,7 +24,7 @@ RUN groupadd --gid 10001 minion && \
 ##
 # Prod image with minimal image size
 ##
-FROM meridian-minion-base
+FROM ${BASE_IMAGE}
 
 # Create user to be able to run as non root with a known user and group id.
 RUN groupadd --gid 10001 minion && \
