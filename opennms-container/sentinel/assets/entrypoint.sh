@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 # =====================================================================
 # Build script running OpenNMS Sentinel in Docker environment
 #
@@ -9,6 +9,8 @@
 
 # Cause false/positives
 # shellcheck disable=SC2086
+
+set -e
 
 umask 002
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"

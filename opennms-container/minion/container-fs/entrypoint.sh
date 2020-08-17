@@ -1,10 +1,12 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 # =====================================================================
 # Entrypoint for the Minion container image
 # =====================================================================
 
 # Cause false/positives
 # shellcheck disable=SC2086
+
+set -e
 
 umask 002
 MINION_HOME="/opt/minion"

@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 # =====================================================================
 # Build script running OpenNMS in Docker environment
 #
@@ -9,6 +9,8 @@
 
 # Cause false/positives
 # shellcheck disable=SC2086
+
+set -e
 
 umask 002
 OPENNMS_HOME="/opt/opennms"

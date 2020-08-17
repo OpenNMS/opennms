@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ -z "$OPENNMS_ROOT" ]; then
 	OPENNMS_ROOT=`ls -d ../target/opennms-*-SNAPSHOT 2>/dev/null | sort -u | tail -n 1`
