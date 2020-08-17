@@ -58,7 +58,7 @@ commands:
       steps:
         - run:
             name: Extract Maven POM version
-            command: opennms-container/pom2version.py pom.xml > pom-version-cache.key
+            command: .circleci/scripts/pom2version.sh pom.xml > pom-version-cache.key
   cached-checkout:
       description: "Checkout with caching"
       steps:
@@ -255,6 +255,11 @@ commands:
     steps:
       - cached-checkout
       - extract-pom-version
+      - run:
+          name: Check for Releasability
+          command: |
+            export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            .circleci/scripts/release-lint.sh "${OPENNMS_VERSION}"
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
@@ -710,7 +715,7 @@ jobs:
           name: Collect Artifacts
           command: |
             mkdir -p target/{artifacts,tarballs}
-            OPENNMS_VERSION="$(python opennms-container/pom2version.py pom.xml)"
+            OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
