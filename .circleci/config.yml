@@ -746,24 +746,30 @@ jobs:
 
             # Build for multiple architectures only in release branches and push images with manifest to a registry
             # For develop we set a floating tag "bleeding" instead the x.y.z-SNAPSHOT version number
-            # For Meridian, we don't push to dockerhub, so `DOCKER_FLAGS=--push` has been removed
+            # For Meridian, we don't push to dockerhub, so I added "break" to each of the options
             case "${CIRCLE_BRANCH}" in
               "master-"*)
+                break
                 make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+                     DOCKER_FLAGS=--push \
                      VERSION="$(../pom2version.py ../../pom.xml)" \
                      BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                      BUILD_URL="${CIRCLE_BUILD_URL}" \
                      BUILD_BRANCH="${CIRCLE_BRANCH}"
                 ;;
               "release-"*)
+                break
                 make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+                     DOCKER_FLAGS=--push \
                      VERSION="release-candidate" \
                      BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                      BUILD_URL="${CIRCLE_BUILD_URL}" \
                      BUILD_BRANCH="${CIRCLE_BRANCH}"
                 ;;
               "develop")
+                break
                 make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+                     DOCKER_FLAGS=--push \
                      VERSION="bleeding" \
                      BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                      BUILD_URL="${CIRCLE_BUILD_URL}" \
