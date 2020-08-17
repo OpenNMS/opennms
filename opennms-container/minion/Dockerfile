@@ -42,7 +42,7 @@ COPY container-fs/health.sh /
 
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
-COPY --chown=10001:0 --from=minion-base /opt /opt
+COPY --chown=10001:0 --from=meridian-minion-base /opt /opt
 
 # Install confd.io configuration files and scripts and ensure they are executable
 COPY ./container-fs/confd/ /opt/minion/confd/
