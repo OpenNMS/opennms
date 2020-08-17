@@ -9,7 +9,9 @@ $|++;
 
 use lib '.';
 use Net::SNMP;
-use Getopt::Mixed qw(nextOption);
+use Getopt::Long 2.17; # Released with Perl 5.005
+Getopt::Long::Configure(qw(bundling no_getopt_compat));
+
 use Time::HiRes qw(usleep time);
 
 use vars qw(
@@ -35,28 +37,25 @@ $OID         = '.1.3.6.1.4.1.7001';
 $PORT        = 162;
 $STRING      = 'OpenNMS Rules!';
 $VERBOSE     = 0;
+$PRINT_HELP  = 0;
 
-Getopt::Mixed::init('d=s dest>d i=i interval>i n=i number>n b burst>b c=s community>c o=s oid>o p=i port>p s=s string>s v verbose>v h help>h');
+GetOptions(
+  "destination|d=s" => \$DESTINATION,
+  "interval|i=i"    => \$INTERVAL,
+  "number|n=i"      => \$NUMBER,
+  "burst|b"         => \$BURST,
+  "community|c=s"   => \$COMMUNITY,
+  "oid|o=s"         => \$OID,
+  "port|p=i"        => \$PORT,
+  "string|s=s"      => \$STRING,
+  "verbose|v+"      => \$VERBOSE,
+  "help|h"          => \$PRINT_HELP,
+);
 
-while (my ($option, $value) = nextOption()) {
-
-  $BURST++              if ($option eq 'b');
-  $COMMUNITY   = $value if ($option eq 'c');
-  $DESTINATION = $value if ($option eq 'd');
-  $INTERVAL    = $value if ($option eq 'i');
-  $NUMBER      = $value if ($option eq 'n');
-  $OID         = $value if ($option eq 'o');
-  $PORT        = $value if ($option eq 'p');
-  $STRING      = $value if ($option eq 's');
-  $VERBOSE++            if ($option eq 'v');
-
-  if ($option eq 'h') {
-    print_help();
-    exit;
-  }
+if ($PRINT_HELP) {
+  print_help();
+  exit;
 }
-
-Getopt::Mixed::cleanup();
 
 if ($VERBOSE > 1) {
 
@@ -117,7 +116,7 @@ usage:
 
 -b / --burst       try to flood the SNMP agent (default: no)
 -c / --community   the community string to use (default: public)
--d / --dest        destination address of the agent (default: 127.0.0.1)
+-d / --destination destination address of the agent (default: 127.0.0.1)
 -p / --port        the port to send to (default: 162)
 -i / --interval    interval (in milliseconds) between sends (default: 1000)
                    ignored if -b
