@@ -60,9 +60,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * TODO: Review/document concurrency model
- */
 @EventListener(name = "FilterWatcher")
 public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, DisposableBean {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultFilterWatcher.class);
@@ -111,6 +108,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
         timer.cancel();
     }
 
+    @Override
     public Closeable watch(String filterRule, Consumer<FilterResults> callback) {
         String effectiveFilterRule;
         if (StringUtils.isEmpty(filterRule)) {
@@ -119,16 +117,20 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
             effectiveFilterRule = filterRule.trim();
         }
 
-        // Create a new session if necessary
-        FilterSession session = sessionByRule.computeIfAbsent(effectiveFilterRule, FilterSession::new);
-
-        // Register the callback with the session
-        session.addCallback(callback);
+        final FilterSession session;
+        synchronized (sessionByRule) {
+            // Create a new session if necessary
+            session = sessionByRule.computeIfAbsent(effectiveFilterRule, FilterSession::new);
+            // Register the callback with the session
+            session.addCallback(callback);
+        }
 
         // Remove the callback and close any sessions we no longer need
         return () -> {
-            session.removeCallback(callback);
-            garbageCollectSessions();
+            synchronized (sessionByRule) {
+                session.removeCallback(callback);
+                garbageCollectSessions();
+            }
         };
     }
 
