@@ -58,8 +58,8 @@ git reset --hard "${POWEREDBY}/master"
 echo "=== merging ${CIRCLE_BRANCH} to ${MAIN_BRANCH}"
 git merge "origin/${CIRCLE_BRANCH}"
 
-echo "=== pushing ${CIRCLE_BRANCH} to ${POWEREDBY}/from-foundation-${YEAR}"
-git push "${POWEREDBY}" "${MAIN_BRANCH}:from-foundation-${YEAR}"
+echo "=== pushing ${CIRCLE_BRANCH} to ${POWEREDBY}/${CIRCLE_BRANCH}"
+git push "${POWEREDBY}" "${MAIN_BRANCH}:${CIRCLE_BRANCH}"
 
 echo "=== pushing ${MAIN_BRANCH} to ${POWEREDBY}/master"
 git push "${POWEREDBY}" "${MAIN_BRANCH}:master"
