@@ -92,7 +92,7 @@ For more details, refer to issue https://issues.opennms.org/browse/NMS-12422[NMS
 
 ==== Events and Kafka
 
-Events forwarded to Kafka  are now keyed by `id` rather than `uei`.
+Events forwarded to Kafka are now keyed by `id` rather than `uei`.
 
 ==== Karaf Shell Command Changes
 
