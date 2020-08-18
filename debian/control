@@ -149,7 +149,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Hawtio Co
 
 Package: opennms-common
 Architecture: all
-Depends: libdbi-perl, libdbd-pg-perl, libgetopt-mixed-perl
+Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl
 Recommends: libnet-snmp-perl, libxml2-utils, libwww-perl, libxml-twig-perl
 Conflicts: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version})
 Replaces: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version})
