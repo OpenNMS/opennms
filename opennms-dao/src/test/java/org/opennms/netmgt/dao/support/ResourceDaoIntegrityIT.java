@@ -198,10 +198,6 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
 
         // We must have at least one resource for every known type
         for (OnmsResourceType type : m_resourceDao.getResourceTypes()) {
-            // Ignore this type for now #needstoomanydbojects
-            if (DistributedStatusResourceType.TYPE_NAME.equals(type.getName())) {
-                continue;
-            }
             // Ignore the interfaceSnmpByIfIndex since it functions as a pure alias
             // and should never be returned when enumerating resources
             if (InterfaceSnmpByIfIndexResourceType.TYPE_NAME.equals(type.getName())) {

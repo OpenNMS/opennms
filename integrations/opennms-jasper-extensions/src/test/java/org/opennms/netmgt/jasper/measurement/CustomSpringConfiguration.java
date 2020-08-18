@@ -43,14 +43,12 @@ import org.opennms.netmgt.measurements.impl.AbstractRrdBasedFetchStrategy;
 import org.opennms.netmgt.measurements.model.QueryMetadata;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsAttribute;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -107,11 +105,6 @@ public class CustomSpringConfiguration {
 
             @Override
             public OnmsResource getResourceForNode(OnmsNode node) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsMonitoringLocation location) {
                 throw new UnsupportedOperationException();
             }
 

@@ -131,30 +131,6 @@
         <property name="service" ref="surveillanceService"/>
     </bean>
 
-    <bean name="/distributedStatusSummary.htm"
-          class="org.opennms.web.controller.DistributedStatusSummaryController">
-        <property name="distributedStatusService"
-                  ref="distributedStatusService"/>
-    </bean>
-
-    <bean id="distributedStatusDetailsValidator" class="org.opennms.web.validator.DistributedStatusDetailsValidator">
-        <property name="applicationDao" ref="applicationDao"/>
-        <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
-        <property name="locationSpecificStatusDao" ref="locationSpecificStatusDao" />
-    </bean>
-
-    <bean name="/distributedStatusHistory.htm"
-          class="org.opennms.web.controller.DistributedStatusHistoryController">
-        <property name="distributedStatusService"
-                  ref="distributedStatusService"/>
-    </bean>
-
-    <bean name="/distributed/locationMonitorList.htm"
-          class="org.opennms.web.controller.distributed.LocationMonitorListController">
-        <property name="distributedPollerService"
-                  ref="distributedPollerService"/>
-    </bean>
-
     <bean name="/alarm/ticket/create.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
         <property name="troubleTicketProxy" ref="troubleTicketProxy"/>
     </bean>
@@ -294,18 +270,6 @@
         <property name="webOutageRepository" ref="webOutageRepository"/>
     </bean>
 
-    <bean name="/admin/distributed/locationMonitorPauseAll.htm"
-          class="org.opennms.web.controller.distributed.LocationMonitorPauseAllController">
-        <property name="distributedPollerService" ref="distributedPollerService"/>
-        <property name="successView" value="redirect:/distributed/locationMonitorList.htm"/>
-    </bean>
-
-    <bean name="/admin/distributed/locationMonitorResumeAll.htm"
-          class="org.opennms.web.controller.distributed.LocationMonitorResumeAllController">
-        <property name="distributedPollerService" ref="distributedPollerService"/>
-        <property name="successView" value="redirect:/distributed/locationMonitorList.htm"/>
-    </bean>
-
     <bean name="/admin/thresholds/index.htm" class="org.opennms.web.controller.admin.thresholds.ThresholdController">
         <property name="resourceDao" ref="resourceDao"/>
         <property name="eventConfDao" ref="eventConfDao"/>
@@ -430,12 +394,6 @@
                                 <property name="name" value="Trend"/>
                                 <property name="url" value="trend/index.jsp"/>
                                 <property name="locationMatch" value="trend"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.DistributedStatusNavBarEntry">
-                                <property name="name" value="Distributed Status"/>
-                                <property name="url" value="distributedStatusSummary.htm"/>
-                                <property name="locationMatch" value="distributedstatus"/>
-                                <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
                             </bean>
                         </list>
                     </property>

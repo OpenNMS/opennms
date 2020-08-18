@@ -39,7 +39,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.CharEncoding;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.CollectdConfigFactory;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.collectd.Package;
@@ -48,12 +47,10 @@ import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -238,9 +235,6 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resourceType = new ResponseTimeResourceType(m_resourceStorageDao, m_ipInterfaceDao);
         resourceTypes.put(resourceType.getName(), resourceType);
 
-        resourceType = new DistributedStatusResourceType(m_resourceStorageDao, m_locationSpecificStatusDao);
-        resourceTypes.put(resourceType.getName(), resourceType);
-
         resourceTypes.putAll(GenericIndexResourceType.createTypes(m_resourceTypesDao.getResourceTypes(), m_resourceStorageDao));
 
         m_nodeResourceType = new NodeResourceType(this, m_nodeDao);
@@ -329,21 +323,6 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     public OnmsResource getResourceForNode(OnmsNode node) {
         Assert.notNull(node, "node argument must not be null");
         return m_nodeResourceType.createResourceForNode(node);
-    }
-
-    /**
-     * @return OnmsResource for the <code>distributedStatus</code> resource on the interface or 
-     * null if the <code>distributedStatus</code> resource cannot be found for the given IP interface.
-     */ 
-    @Override
-    public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsMonitoringLocation location) {
-        Assert.notNull(ipInterface, "ipInterface argument must not be null");
-        Assert.notNull(location, "location argument must not be null");
-        Assert.notNull(ipInterface.getNode(), "getNode() on ipInterface must not return null");
-        
-        final String ipAddress = InetAddressUtils.str(ipInterface.getIpAddress());
-        final OnmsResource nodeResource = getResourceForNode(ipInterface.getNode());
-        return getChildResource(nodeResource, DistributedStatusResourceType.TYPE_NAME, DistributedStatusResourceType.getResourceName(location.getLocationName(), ipAddress));
     }
 
     @Override
