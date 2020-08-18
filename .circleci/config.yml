@@ -452,8 +452,7 @@ workflows:
   weekly-coverage:
     <<: *defaults
     when:
-      condition:
-        not: << parameters.minimal >>
+      equal: [ false, << parameters.minimal >> ]
     triggers:
       - schedule:
           # Saturday at 12:00 AM
@@ -473,7 +472,7 @@ workflows:
   build-minimal:
     <<: *defaults
     when:
-      condition: << parameters.minimal >>
+      equal: [ true, << parameters.minimal >> ]
     jobs:
       - build
       - create-merge-foundation-branch:
@@ -506,8 +505,7 @@ workflows:
   build-deploy:
     <<: *defaults
     when:
-      condition:
-        not: << parameters.minimal >>
+      equal: [ false, << parameters.minimal >> ]
     jobs:
       - build:
           filters:
