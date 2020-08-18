@@ -213,7 +213,7 @@ They are converted to mutable versions in places where they are often manipulate
 
 Since Meridian 2020 is based on Horizon 26, it contains all the fixes and updates that have occurred since Meridian 2019 was created from the Horizon 25 codebase.
 
-For a more complete list of changes included in this release, see link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html[the "What's New" documentation for Horizon 26].
+For a more complete list of changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.
 
 [[releasenotes-changelog-Meridian-2020.1.0]]
 
