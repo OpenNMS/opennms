@@ -7,12 +7,7 @@
 
 A _Security Roles_ is a set of permissions and can be assigned to an _User_.
 They regulate access to the Web User Interface and the _ReST API_ to exchange monitoring and inventory information.
-ifndef::opennms-prime[]
-In case of a distributed installation, the _Minion_ or _Remote Poller_ instances interact with _{opennms-product-name}_ and require specific permissions which are defined in the _Security Roles_ _ROLE_MINION_ and _ROLE_REMOTING_.
-endif::opennms-prime[]
-ifdef::opennms-prime[]
-In case of a distributed installation, the _Remote Poller_ instances interact with _{opennms-product-name}_ and require specific permissions which are defined in the _Security Role_ _ROLE_REMOTING_.
-endif::opennms-prime[]
+In case of a distributed installation, the _Minion_ instances interact with _{opennms-product-name}_ and require specific permissions which are defined in the _Security Roles_ _ROLE_MINION_.
 The following _Security Roles_ are available:
 
 .Functions and existing system roles in _{opennms-product-name}_
@@ -25,13 +20,10 @@ The following _Security Roles_ are available:
 | _ROLE_DASHBOARD_    | Allow users to just have access to the _Dashboard_.
 | _ROLE_DELEGATE_     | Allows actions (such as acknowledging an alarm) to be performed on behalf of another user.
 | _ROLE_JMX_          | Allows retrieving JMX metrics but does not allow executing MBeans of the _{opennms-product-name}_ JVM, even if they just return simple values.
-ifndef::opennms-prime[]
 | _ROLE_MINION_       | Minimal amount of permissions required for a _Minion_ to operate.
-endif::opennms-prime[]
 | _ROLE_MOBILE_       | Allow user to use _OpenNMS COMPASS_ mobile application to acknowledge _Alarms_ and _Notifications_ via the ReST API.
 | _ROLE_PROVISION_    | Allow user to use the _Provisioning System_ and configure _SNMP_ in _{opennms-product-name}_ to access management information from devices.
 | _ROLE_READONLY_     | Limited to just read information in the Web User Interface and are no possibility to change _Alarm_ states or _Notifications_.
-| _ROLE_REMOTING_     | Permissions to allow access from a _Remote Poller_ instance to exchange monitoring information.
 | _ROLE_REST_         | Allow users interact with the whole _ReST API_ of _{opennms-product-name}_
 | _ROLE_RTC_          | Exchange information with the _{opennms-product-name}_ _Real-Time Console_ for availability calculations.
 | _ROLE_USER_         | Default permissions of a new created user to interact with the Web User Interface which allow to escalate and acknowledge _Alarms_ and _Notifications_.
