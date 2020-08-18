@@ -28,13 +28,15 @@
 
 package org.opennms.web.element;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 
 public interface NetworkElementFactoryInterface {
 
@@ -458,4 +460,9 @@ public interface NetworkElementFactoryInterface {
 	boolean nodeExistsInRequisition(final String foreignSource, final String foreignId);
 
 	List<String> getCategories();
+
+	/**
+	 * Return all current open outages for the given service be it detected from local or from remote (perspective).
+	 */
+	Collection<OnmsOutage> currentOutagesForService(OnmsMonitoredService service);
 }

@@ -47,6 +47,11 @@
 	"
 %>
 <%@ page import="java.util.Optional" %>
+<%@ page import="org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation" %>
+<%@ page import="org.opennms.web.element.NetworkElementFactory" %>
+<%@ page import="org.opennms.netmgt.model.OnmsOutage" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="org.opennms.web.services.ServiceJspUtil" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -55,6 +60,7 @@
 
 <%
     OnmsMonitoredService service = (OnmsMonitoredService)request.getAttribute("service");
+    Collection<OnmsOutage> outages = NetworkElementFactory.getInstance(getServletContext()).currentOutagesForService(service);
 
     String ipAddr = service.getIpAddress().getHostAddress();
     String serviceName = service.getServiceName();
@@ -314,7 +320,29 @@ function doDelete() {
       
             <!-- Recent outages box -->
             <jsp:include page="/outage/serviceOutages-box.htm" flush="false" />
-      </div> <!-- content-right -->
+
+            <div class="card">
+              <div class="card-header"><span>Remote Monitoring Locations</span></div>
+              <table class="table table-sm">
+                  <tr>
+                      <th>Perspective Location</th>
+                      <th>Polling Status</th>
+                      <th>Outage ID</th>
+                  </tr>
+                  <% ServiceJspUtil util = new ServiceJspUtil(service, outages);
+                     for(OnmsMonitoringLocation location : util.getAllPerspectives()) {
+                         Optional<OnmsOutage> outage = util.getOutageForPerspective(location);
+                  %>
+                  <tr>
+                      <td><%=location.getLocationName()%></td>
+                      <td><%=outage.isPresent() ? "DOWN" : "UP"%></td>
+                      <td><%=outage.isPresent() ? util.getOutageUrl(outage.get()) : ""%></td>
+                  </tr>
+                  <% } %>
+              </table>
+
+
+          </div> <!-- content-right -->
 </div>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

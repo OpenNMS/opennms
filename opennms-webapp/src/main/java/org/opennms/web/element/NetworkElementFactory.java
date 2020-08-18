@@ -31,6 +31,7 @@ package org.opennms.web.element;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -59,6 +60,7 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -68,6 +70,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -79,11 +82,11 @@ import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.web.svclayer.model.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 
 /**
@@ -120,7 +123,10 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     @Autowired
     private MonitoringSystemDao m_monitoringSystemDao;
-    
+
+    @Autowired
+    private OutageDao m_outageDao;
+
 	@Autowired
 	private PlatformTransactionManager m_transactionManager;
 
@@ -997,5 +1003,10 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     public List<String> getCategories() {
         return m_categoryDao.findAll().stream().map(c -> c.getName()).sorted().collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<OnmsOutage> currentOutagesForService(OnmsMonitoredService service){
+        return m_outageDao.currentOutagesForService(service);
     }
 }
