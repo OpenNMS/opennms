@@ -40,7 +40,7 @@ The RPC APIs for communicating between the OpenNMS core, Minion, and Sentinel ha
 
 It is now possible to configure Kafka to use a single topic for communication rather than one per module.
 
-Flow data can now be configured to be enriched with node metadata before being forwarded to Kafka.
+You can now configure flow data to be enriched with node metadata before being forwarded to Kafka.
 
 ==== Minion and Sentinel
 
