@@ -49,6 +49,7 @@ public enum SortStyle {
     IFREGAINEDSERVICE("ifregainedservice"),
     ID("id"),
     LOCATION("location"),
+    PERSPECTIVE("perspective"),
     REVERSE_NODE("rev_node"),
     REVERSE_FOREIGNSOURCE("rev_foreignsource"),
     REVERSE_INTERFACE("rev_interface"),
@@ -56,7 +57,9 @@ public enum SortStyle {
     REVERSE_IFLOSTSERVICE("rev_iflostservice"),
     REVERSE_IFREGAINEDSERVICE("rev_ifregainedservice"),
     REVERSE_ID("rev_id"),
-    REVERSE_LOCATION("rev_location");
+    REVERSE_LOCATION("rev_location"),
+    REVERSE_PERSPECTIVE("rev_perspective");
+
 
     /** Constant <code>DEFAULT_SORT_STYLE</code> */
     public static final SortStyle DEFAULT_SORT_STYLE = SortStyle.ID;
@@ -174,6 +177,12 @@ public enum SortStyle {
             break;
         case REVERSE_LOCATION:
             clause = " ORDER BY LOCATION ASC";
+            break;
+        case PERSPECTIVE:
+            clause = " ORDER BY PERSPECTIVE DESC";
+            break;
+        case REVERSE_PERSPECTIVE:
+            clause = " ORDER BY PERSPECTIVE ASC";
             break;
         default:
             throw new IllegalArgumentException("Unknown SortStyle: " + this);
