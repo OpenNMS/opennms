@@ -450,7 +450,8 @@ workflows:
   weekly-coverage:
     <<: *defaults
     when:
-      not: << parameters.minimal >>
+      condition:
+        not: << parameters.minimal >>
     triggers:
       - schedule:
           # Saturday at 12:00 AM
@@ -503,7 +504,8 @@ workflows:
   build-deploy:
     <<: *defaults
     when:
-      not: << parameters.minimal >>
+      condition:
+        not: << parameters.minimal >>
     jobs:
       - build:
           filters:
