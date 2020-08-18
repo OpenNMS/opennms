@@ -38,7 +38,7 @@ This API consolidates a number of internal APIs for accessing topology, applicat
 
 The RPC APIs for communicating between the OpenNMS core, Minion, and Sentinel have been improved, including adding support for gRPC communication.
 
-It is now possible to configure Kafka to use a single topic for communication rather than one-per-module.
+It is now possible to configure Kafka to use a single topic for communication rather than one per module.
 
 Flow data can now be configured to be enriched with node metadata before being forwarded to Kafka.
 
