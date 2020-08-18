@@ -221,7 +221,7 @@ For a more complete list of changes included in this release, see link:https://d
 
 Release 2020.1.0 is the first release in the Meridian 2020 series.
 
-The codename for 2020.1.0 is _link:$$https://en.wikipedia.org/wiki/Mercury_(planet)$$[Mercury]_
+The codename for 2020.1.0 is _link:$$https://en.wikipedia.org/wiki/Mercury_(planet)$$[Mercury]_.
 
 ===== Bug
 
