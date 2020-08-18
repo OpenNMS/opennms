@@ -1,8 +1,10 @@
 
 ==== OpenConfig Telemetry
 
+https://www.openconfig.net/[OpenConfig] is an open-source initiative by network operators to develop vendor-neutral data models, programmatic interfaces, and tools for managing networks.   
 
-The _OpenConfig_ telemetry allows you to stream OpenConfig telemetry data over gRPC to _{opennms-product-name}_.
+The OpenConfig client allows you to stream OpenConfig telemetry data over gRPC to {opennms-product-name}. 
+Some vendors currently using OpenConfig telemetry include Juniper, Arista, and Cisco.   
 
 To enable support for OpenConfig, edit `${OPENNMS_HOME}/etc/telemetryd-configuration.xml` set `enabled=true` for the `OpenConfig` protocol.
 
@@ -38,7 +40,7 @@ To enable support for OpenConfig, edit `${OPENNMS_HOME}/etc/telemetryd-configura
     </queue>
 ----
 
-Apply the changes without restarting by sending a `reloadDaemonConfig` event in the CLI or the WebUI:
+Apply the changes without restarting by sending a `reloadDaemonConfig` event in the CLI or the Web UI:
 
 .Send a reloadDaemonConfig event through CLI
 [source]
@@ -46,10 +48,12 @@ Apply the changes without restarting by sending a `reloadDaemonConfig` event in 
 ${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
-
 ===== OpenConfig Connector
 
-OpenConfig Connector initiates a connection via gRPC and subscribes to one or more OpenConfig data paths (strings) and then forwards the data to a queue.
+OpenConfig Connector initiates a connection with an agent via gRPC and subscribes to one or more OpenConfig data paths (strings), then collects and forwards the data to a queue.
+The data contains metadata and is structured as a list of `key:value` pairs.
+
+{opennms-product-name} creates a new connector for each agent is responsible for connecting to. 
 
 ====== Connector Config
 
@@ -82,26 +86,25 @@ The `filter` element is optional; if missing, all services with the given name w
 
 Parameters are passed to the connector and are interpolated for node/interface and service-level metadata.
 
-
-.Connector specific parameters for the OpenConfigConnector
+.Connector-specific parameters for the OpenConfigConnector
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                       | Required | Default value
-| `port`           | Port that OpenConfig Client can connect to                        | required | (none)
+| `port`           | Port that OpenConfig client can connect to                        | required | (none)
 | `paths`          | Paths that needs to subscribed to                                 | required | (empty)
 | `frequency`      | Frequency at which OpenConfig data can be streamed                | required | (300000)(5mins)
 | `retries`        | Number of retries to attempt to make a connection when failed     | optional | (0)(unlimited)
 | `interval`       | Interval at which client tries to make a connection when failed   | optional | (300)(5mins)
-| `tls.enabled`    | Enable tls authentication                                         | optional | false
+| `tls.enabled`    | Enable TLS authentication                                         | optional | false
 | `tls.trust.cert.path`    | Server trust certificate path                             | optional | (none)
 |===
 
 
 ===== OpenConfig Adapter
 
-The OpenConfig adapter is used to handle _OpenConfig_ payloads.
-Messages are decoded and forwarded to a JSR-223 compatible script (i.e. Beanshell or Groovy) for further processing.
-Using the script extension you can extract the desired metrics from the OpenConfig stream data and persist the results as time series data.
+The OpenConfig adapter handles OpenConfig payloads.
+Messages are decoded and forwarded to a JSR-223 compatible script (e.g., BeanShell or Groovy) for further processing.
+Use the script extension to extract the desired metrics from the OpenConfig stream data and persist the results as time series data.
 
 ====== Facts
 
@@ -112,11 +115,11 @@ Using the script extension you can extract the desired metrics from the OpenConf
 
 ====== Parameters
 
-.Adapter specific parameters for the OpenConfigAdapter
+.Adapter-specific parameters for the OpenConfigAdapter
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                       | Required | Default value
-| `script`         | Full path to the script used to handle the OpenConfig data        | required | (none)
+| `script`         | Full path to the script that handles the OpenConfig data        | required | (none)
 |===
 
 ====== Scripting
@@ -134,4 +137,4 @@ The following globals will be passed to the script:
 | `msg`      | Decoded message from which the metrics should be extracted     | `org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData`
 |===
 
-NOTE: OpenConfig protocol is not supported on _Minion_.
+NOTE: OpenConfig protocol is not supported on Minion.
