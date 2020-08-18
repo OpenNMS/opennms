@@ -49,7 +49,7 @@ ${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/inte
 
 ===== OpenConfig Connector
 
-OpenConfig Connector initiates a connection via gRPC and subscribe to one or more OpenConfig data paths (strings) and then forwards the data to queue.
+OpenConfig Connector initiates a connection via gRPC and subscribes to one or more OpenConfig data paths (strings) and then forwards the data to a queue.
 
 ====== Connector Config
 
@@ -76,11 +76,11 @@ OpenConfig Connector initiates a connection via gRPC and subscribe to one or mor
 
 ====== Packages
 At least one package must be present for the connector to function.
-Multiple packages can be used to customize the parameters subsets of nodes.
+Use multiple packages to customize the parameter's subsets of nodes.
 
-The `filter` element is optional, if missing, all services with the given name will be considered.
+The `filter` element is optional; if missing, all services with the given name will be considered.
 
-Parameters are passed to the connector and are interpolated for node/interface & service level meta-data.
+Parameters are passed to the connector and are interpolated for node/interface and service-level metadata.
 
 
 .Connector specific parameters for the OpenConfigConnector

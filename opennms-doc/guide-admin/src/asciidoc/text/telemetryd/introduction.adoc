@@ -10,7 +10,7 @@ With _telemetryd_, operators can define listeners supporting different protocols
 image::telemetryd/telemetryd-overview.png[]
 
 The configuration is split in two parts.
-_Listeners_ and attached _Parsers_ or _Connectors_ on one side, receive telemetry data transported over a specific protocol and parse the protocol according to its specification.
+_Listeners_ and attached _Parsers_ or _Connectors_ on one side receive telemetry data transported over a specific protocol and parse the data according to protocol's specification.
 On the other side, _Adapters_ pick up the parsed data and enrich it before persisting it.
 
 _Queues_ transport the parsed telemetry data from _Parsers_ to _Adapters_ by binding a specific _Parser_ to a specific _Adapter_.
@@ -30,9 +30,9 @@ Which _Parser_ is supported by which _Listener_ is described in the documentatio
 
 === Connectors
 
-_Connectors_ initiate a connection and maintain a session with agent. A new connector is created for every agent it is responsible for connecting to.
-Agent here refers to an IP-Service which is a named service attached to an IP interface on a specific node.
-Connectors don't use parsers and dispatch messages directly to queue.
+_Connectors_ initiate a connection and maintain a session with an agent. A new connector is created for every agent it is responsible for connecting to.
+Agent here refers to an IP service that is a named service attached to an IP interface on a specific node.
+Connectors don't use parsers, and dispatch messages directly to a queue.
 
 .Connectors in telemetryd
 image::telemetryd/telemetryd-connectors.png[]
