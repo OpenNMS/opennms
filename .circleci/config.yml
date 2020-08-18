@@ -739,7 +739,7 @@ jobs:
             # Create always a downloadable single OCI artifact for AMD architecture.
             # This image is used in our integration test suite which relies on the tag "minion:latest".
             make VERSION="$(../pom2version.py ../../pom.xml)" \
-                 DOCKER_TAG="minion:latest" \
+                 DOCKER_TAG="meridian-minion:latest" \
                  BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
                  BUILD_URL="${CIRCLE_BUILD_URL}" \
                  BUILD_BRANCH="${CIRCLE_BRANCH}"
@@ -747,38 +747,35 @@ jobs:
             # Build for multiple architectures only in release branches and push images with manifest to a registry
             # For develop we set a floating tag "bleeding" instead the x.y.z-SNAPSHOT version number
             # For Meridian, we don't push to dockerhub, so I added "break" to each of the options
-            case "${CIRCLE_BRANCH}" in
-              "master-"*)
-                break
-                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
-                     VERSION="$(../pom2version.py ../../pom.xml)" \
-                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
-                     BUILD_URL="${CIRCLE_BUILD_URL}" \
-                     BUILD_BRANCH="${CIRCLE_BRANCH}"
-                ;;
-              "release-"*)
-                break
-                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
-                     VERSION="release-candidate" \
-                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
-                     BUILD_URL="${CIRCLE_BUILD_URL}" \
-                     BUILD_BRANCH="${CIRCLE_BRANCH}"
-                ;;
-              "develop")
-                break
-                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
-                     DOCKER_FLAGS=--push \
-                     VERSION="bleeding" \
-                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
-                     BUILD_URL="${CIRCLE_BUILD_URL}" \
-                     BUILD_BRANCH="${CIRCLE_BRANCH}"
-                ;;
-              *)
-                echo "No branch to push to registry."
-                ;;
-            esac
+#            case "${CIRCLE_BRANCH}" in
+#              "master-"*)
+#                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+#                     DOCKER_FLAGS=--push \
+#                     VERSION="$(../pom2version.py ../../pom.xml)" \
+#                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+#                     BUILD_URL="${CIRCLE_BUILD_URL}" \
+#                     BUILD_BRANCH="${CIRCLE_BRANCH}"
+#                ;;
+#              "release-"*)
+#                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+#                     DOCKER_FLAGS=--push \
+#                     VERSION="release-candidate" \
+#                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+#                     BUILD_URL="${CIRCLE_BUILD_URL}" \
+#                     BUILD_BRANCH="${CIRCLE_BRANCH}"
+#                ;;
+#              "develop")
+#                make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
+#                     DOCKER_FLAGS=--push \
+#                     VERSION="bleeding" \
+#                     BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+#                     BUILD_URL="${CIRCLE_BUILD_URL}" \
+#                     BUILD_BRANCH="${CIRCLE_BRANCH}"
+#                ;;
+#              *)
+#                echo "No branch to push to registry."
+#                ;;
+#            esac
       - store_artifacts:
           when: always
           path: ~/project/target/artifacts
