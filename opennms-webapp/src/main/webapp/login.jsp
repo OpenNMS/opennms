@@ -90,16 +90,16 @@
       <form class="" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>">
         <div class="form-content">
           <div class="form-group">
-            <label for="input_j_username" class="sr-only">Username</label>
-            <input type="text" class="form-control input-underline form-control-lg" id="input_j_username" name="j_username"
+            <label for="input_username" class="sr-only">Username</label>
+            <input type="text" class="form-control input-underline form-control-lg" id="input_username" name="username"
             <%-- This is deprecated and requires a custom AuthenticationFailureHandler to function properly --%>
                    <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if>
                    placeholder="Username" autofocus="autofocus" autocomplete="username" required />
           </div>
 
           <div class="form-group">
-            <label for="j_password" class="sr-only">Password</label>
-            <input type="password" class="form-control input-underline form-control-lg" id="input_j_password" name="j_password" placeholder="Password" autocomplete="current-password" required>
+            <label for="password" class="sr-only">Password</label>
+            <input type="password" class="form-control input-underline form-control-lg" id="input_password" name="password" placeholder="Password" autocomplete="current-password" required>
           </div>
 
           <c:if test="${not empty param.session_expired}">

@@ -275,8 +275,8 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         waitForLogin();
 
-        enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
-        enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
+        enterText(By.name("username"), BASIC_AUTH_USERNAME);
+        enterText(By.name("password"), BASIC_AUTH_PASSWORD);
         findElementByName("Login").click();
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
@@ -320,8 +320,8 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     private void waitForLogin() {
         // Wait until the login form is complete
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_username")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("j_password")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("username")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("password")));
         wait.until(ExpectedConditions.elementToBeClickable(By.name("Login")));
     }
 

@@ -173,8 +173,8 @@ public class MetadataPageIT extends OpenNMSSeleniumIT {
     private void loginUnpriviledgedUser() {
         logout();
         this.driver.get(this.getBaseUrlInternal() + "opennms/login.jsp");
-        this.enterText(By.name("j_username"), UNPRIVILEDGED_USERNAME);
-        this.enterText(By.name("j_password"), UNPRIVILEDGED_PASSWORD);
+        this.enterText(By.name("username"), UNPRIVILEDGED_USERNAME);
+        this.enterText(By.name("password"), UNPRIVILEDGED_PASSWORD);
         this.findElementByName("Login").click();
     }
 

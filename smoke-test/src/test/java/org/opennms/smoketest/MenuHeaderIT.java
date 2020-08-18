@@ -143,7 +143,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
             Thread.sleep(200);
             final String userMenuName = "nav-user-top";
             clickMenuItemWithIcon(userMenuName, "Log Out", "opennms/j_spring_security_logout");
-            findElementById("input_j_username");
+            findElementById("input_username");
             return null;
         });
     }
