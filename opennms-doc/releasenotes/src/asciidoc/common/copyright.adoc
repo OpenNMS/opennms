@@ -1,1 +1,1 @@
-Copyright (C) 2004-2018 The OpenNMS Group, Inc.
+Copyright (C) 2004-2020 The OpenNMS Group, Inc.
