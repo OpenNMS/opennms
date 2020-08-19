@@ -21,6 +21,10 @@ executors:
 # branches have slashes in them, that way the merge branch gets created properly
 defaults: &defaults
   parameters:
+    minimal:
+      description: whether to do a minimal (build-and-merge only) build
+      type: boolean
+      default: false
     previous_branch:
       description: the previous branch, if any
       type: string
@@ -447,6 +451,8 @@ commands:
 workflows:
   weekly-coverage:
     <<: *defaults
+    when:
+      equal: [ false, << parameters.minimal >> ]
     triggers:
       - schedule:
           # Saturday at 12:00 AM
@@ -463,8 +469,43 @@ workflows:
       - code-coverage:
           requires:
             - integration-test-with-coverage
+  build-minimal:
+    <<: *defaults
+    when:
+      equal: [ true, << parameters.minimal >> ]
+    jobs:
+      - build
+      - create-merge-foundation-branch:
+          requires:
+            - build
+          filters:
+            branches:
+              only: << parameters.main_branch >>
+      - merge-foundation-branch:
+          requires:
+            - build
+          filters:
+            branches:
+              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+      - create-merge-meridian-branch:
+          requires:
+            - build
+          filters:
+            branches:
+              only: /^foundation.*/
+      - merge-poweredby-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - /^foundation.*/
   build-deploy:
     <<: *defaults
+    when:
+      equal: [ false, << parameters.minimal >> ]
     jobs:
       - build:
           filters:
