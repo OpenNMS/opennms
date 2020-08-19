@@ -518,12 +518,24 @@ workflows:
       - horizon-rpm-build:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - minion-rpm-build:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - integration-test:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - smoke-test-full:
           requires:
             - horizon-rpm-build
@@ -581,7 +593,6 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
-                - /^merge-foundation\/.*/
                 - /.*smoke.*/
                 - /.*debian.*/
       - minion-deb-build:
