@@ -53,7 +53,7 @@ ${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/inte
 OpenConfig Connector initiates a connection with an agent via gRPC and subscribes to one or more OpenConfig data paths (strings), then collects and forwards the data to a queue.
 The data contains metadata and is structured as a list of `key:value` pairs.
 
-{opennms-product-name} creates a new connector for each agent is responsible for connecting to. 
+{opennms-product-name} creates a new connector for each agent it is responsible for connecting to. 
 
 ====== Connector Config
 
