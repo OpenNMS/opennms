@@ -606,7 +606,6 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
-                - /^merge-foundation\/.*/
                 - /.*smoke.*/
                 - /.*debian.*/
       - create-merge-foundation-branch:
