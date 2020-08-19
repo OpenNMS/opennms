@@ -111,7 +111,7 @@ public class JmsNorthBounderTest {
         MockLogAppender.setupLogging();
         // this spawns an embedded broker
         m_template = new JmsTemplate(m_jmsNorthbounderConnectionFactory);
-        m_template.setReceiveTimeout(100L);
+        m_template.setReceiveTimeout(1000L);
     }
 
     /**
