@@ -25,6 +25,10 @@ defaults: &defaults
       description: the context to use for sensitive settings like GPG keys
       type: string
       default: "OpenNMS Build"
+    minimal:
+      description: whether to do a minimal (build-and-merge only) build
+      type: boolean
+      default: true
 #    previous_branch:
 #      description: the previous branch, if any
 #      type: string
@@ -450,6 +454,8 @@ commands:
 workflows:
 #  weekly-coverage:
 #    <<: *defaults
+#    when:
+#      equal: [ false, << parameters.minimal >> ]
 #    triggers:
 #      - schedule:
 #          # Saturday at 12:00 AM
@@ -470,8 +476,47 @@ workflows:
 #          requires:
 #            - integration-test-with-coverage
 
+  build-minimal:
+    <<: *defaults
+    when:
+      equal: [ true, << parameters.minimal >> ]
+    jobs:
+      - build
+#      - create-merge-foundation-branch:
+#          context: << parameters.context_name >>
+#          requires:
+#            - build
+#          filters:
+#            branches:
+#              only: << parameters.main_branch >>
+#      - merge-foundation-branch:
+#          context: << parameters.context_name >>
+#          requires:
+#            - build
+#          filters:
+#            branches:
+#              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+#      - create-merge-meridian-branch:
+#          context: << parameters.context_name >>
+#          requires:
+#            - build
+#          filters:
+#            branches:
+#              only: /^foundation.*/
+#      - merge-poweredby-branch:
+#          context: << parameters.context_name >>
+#          # technically only requires the RPM/deb builds, but only publish
+#          # if everything passes
+#          requires:
+#            - build
+#          filters:
+#            branches:
+#              only:
+#                - /^foundation.*/
   build-deploy:
     <<: *defaults
+    when:
+      equal: [ false, << parameters.minimal >> ]
     jobs:
       - build:
           context: << parameters.context_name >>
@@ -480,6 +525,7 @@ workflows:
               ignore:
                 - /^from-foundation.*/
       - tarball-assembly:
+          context: << parameters.context_name >>
           requires:
             - build
       - meridian-rpm-build:
