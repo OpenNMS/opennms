@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +42,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.features.topology.api.support.FocusStrategy;
@@ -109,9 +110,9 @@ public class PathOutageProviderTest {
 
 	private void setBehaviour(PathOutageStatusProvider statusProvider) {
 		Mockito.when(statusProvider.getStatusForVertices(
-					Matchers.any(BackendGraph.class),
-					Matchers.anyCollection(),
-					Matchers.any()))
+					any(BackendGraph.class),
+					anyCollection(),
+					any()))
 				.thenReturn(new HashMap());
 	}
 
