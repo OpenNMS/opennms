@@ -22,6 +22,9 @@ find_tests()
       .
 }
 
+echo "#### Making sure git is up-to-date"
+git fetch --all
+
 echo "#### Generate project structure .json"
 mvn --batch-mode --fail-at-end --legacy-local-repository --offline -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
 

@@ -39,24 +39,27 @@ else
 fi
 git config merge.renameLimit 999999
 
-echo "=== fetching from origin"
-git fetch origin
+echo "=== remotes:"
+git remote --verbose
 
-echo "=== fetching from ${POWEREDBY}"
-git fetch "${POWEREDBY}"
+echo "=== fetching from git"
+git fetch --all
 
-MASTER_BRANCH="${POWEREDBY}-master"
-if ! [ "$(git branch | grep -c -E "\\b${MASTER_BRANCH}\$" || :)" -gt 0 ]; then
-  echo "=== creating local checkout of master from ${POWEREDBY} - ${MASTER_BRANCH}"
-  git checkout -b "${MASTER_BRANCH}" "${POWEREDBY}/master"
+MAIN_BRANCH="${POWEREDBY}-master"
+if ! [ "$(git branch | grep -c -E "\\b${MAIN_BRANCH}\$" || :)" -gt 0 ]; then
+  echo "=== creating local checkout of master from ${POWEREDBY} - ${MAIN_BRANCH}"
+  git checkout -b "${MAIN_BRANCH}" "${POWEREDBY}/master"
 fi
 
 echo "=== checking out master from ${POWEREDBY}"
-git checkout "${MASTER_BRANCH}"
+git checkout "${MAIN_BRANCH}"
 git reset --hard "${POWEREDBY}/master"
 
-echo "=== merging ${CIRCLE_BRANCH} to ${MASTER_BRANCH}"
+echo "=== merging ${CIRCLE_BRANCH} to ${MAIN_BRANCH}"
 git merge "origin/${CIRCLE_BRANCH}"
 
-echo "=== pushing ${MASTER_BRANCH} to ${POWEREDBY}/master"
-git push "${POWEREDBY}" "${MASTER_BRANCH}:master"
+echo "=== pushing ${CIRCLE_BRANCH} to ${POWEREDBY}/${CIRCLE_BRANCH}"
+git push "${POWEREDBY}" "${MAIN_BRANCH}:${CIRCLE_BRANCH}"
+
+echo "=== pushing ${MAIN_BRANCH} to ${POWEREDBY}/master"
+git push "${POWEREDBY}" "${MAIN_BRANCH}:master"
