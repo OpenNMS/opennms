@@ -29,6 +29,7 @@ include::common/legalnotice.adoc[]
 include::common/preface.adoc[]
 
 :numbered!:
+include::releasenotes/whatsnew-2020.adoc[]
 include::releasenotes/whatsnew-2019.adoc[]
 include::releasenotes/whatsnew-2018.adoc[]
 include::releasenotes/whatsnew-2017.adoc[]
