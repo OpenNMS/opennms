@@ -440,7 +440,7 @@ public class DatabasePopulator {
         return cat;
     }
 
-    private OnmsServiceType getService(final String serviceName) {
+    public OnmsServiceType getService(final String serviceName) {
         OnmsServiceType service = m_serviceTypeDao.findByName(serviceName);
         if (service == null) {
             service = new OnmsServiceType(serviceName);

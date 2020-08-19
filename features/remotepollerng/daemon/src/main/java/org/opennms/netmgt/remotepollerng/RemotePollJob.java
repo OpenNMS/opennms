@@ -73,10 +73,8 @@ public class RemotePollJob implements Job {
                     if (ex == null) {
                         LOG.debug("Poll for {} completed successfully: {}", svc, res);
 
-                        // Report the result to the backend if changed
-                        if (svc.updateStatus(res.getPollStatus())) {
-                            backend.reportResult(svc, res.getPollStatus());
-                        }
+                        // Report the result to the backend
+                        backend.reportResult(svc, res.getPollStatus());
 
                         // Persist the response times from the result
                         backend.persistResponseTimeData(svc, res.getPollStatus());

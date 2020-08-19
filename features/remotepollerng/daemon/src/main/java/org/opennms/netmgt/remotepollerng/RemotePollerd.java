@@ -68,6 +68,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -75,6 +76,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
@@ -187,6 +189,7 @@ public class RemotePollerd implements SpringServiceDaemon {
             }
 
             // Get the polling package for the service
+            this.pollerConfig.rebuildPackageIpListMap();
             final Package pkg = this.pollerConfig.getFirstRemotePackageMatch(InetAddressUtils.str(service.ipAddress));
             if (pkg == null) {
                 return Optional.empty();
@@ -319,24 +322,17 @@ public class RemotePollerd implements SpringServiceDaemon {
         return new JobKey(name, perspectiveLocation);
     }
 
-    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void reloadConfigHandler(final IEvent event) {
-        DaemonTools.handleReloadEvent(event, RemotePollerd.NAME, (ev) ->  {
-            try {
-                this.pollerConfig.update();
-            } catch (final IOException e) {
-                LOG.error("Failed to load poller configuration", e);
-            }
-
-            this.serviceTracker.rescheduleAllServices();
-        });
-    }
-
     public LocationAwarePollerClient getLocationAwarePollerClient() {
         return locationAwarePollerClient;
     }
 
     protected void reportResult(final RemotePolledService polledService, final PollStatus pollResult) {
+        // Update the status in the polled service
+        if (!polledService.updateStatus(pollResult)) {
+            // Nothing to do if status has not changed
+            return;
+        }
+
         final String uei = pollResult.isAvailable() ? EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI : EventConstants.REMOTE_NODE_LOST_SERVICE_UEI;
 
         final EventBuilder builder = new EventBuilder(uei, RemotePollerd.NAME);
@@ -460,6 +456,39 @@ public class RemotePollerd implements SpringServiceDaemon {
         }
     }
 
+    @EventHandler(ueis = { EventConstants.APPLICATION_CREATED_EVENT_UEI,
+                           EventConstants.APPLICATION_CHANGED_EVENT_UEI,
+                           EventConstants.APPLICATION_DELETED_EVENT_UEI })
+    public void applicationEventHandler(final IEvent event) {
+        final int applicationId = EventUtils.getIntParm(event, EventConstants.PARM_APPLICATION_ID, -1);
+        if (applicationId == -1) {
+            LOG.error("application ID missing in event: {}", event);
+            return;
+        }
+
+        this.sessionUtils.withReadOnlyTransaction(() -> {
+            final OnmsApplication application = this.applicationDao.get(applicationId);
+
+            for (final OnmsMonitoredService service : application.getMonitoredServices()) {
+                this.serviceTracker.rescheduleService(new ServiceTracker.Service(service.getNodeId(), service.getIpAddress(), service.getServiceName()));
+            }
+            return null;
+        });
+    }
+
+    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void reloadConfigHandler(final IEvent event) {
+        DaemonTools.handleReloadEvent(event, RemotePollerd.NAME, (ev) ->  {
+            try {
+                this.pollerConfig.update();
+            } catch (final IOException e) {
+                LOG.error("Failed to load poller configuration", e);
+            }
+
+            this.serviceTracker.rescheduleAllServices();
+        });
+    }
+
     @EventHandler(uei = EventConstants.REMOTE_NODE_LOST_SERVICE_UEI)
     public void handleRemoteNodeLostService(final IEvent e) {
         if (e.hasNodeid() && e.getInterfaceAddress() != null && e.getService() != null && e.getParm("perspective") != null) {
@@ -472,6 +501,7 @@ public class RemotePollerd implements SpringServiceDaemon {
 
             final Event outageEvent = new EventBuilder(EventConstants.OUTAGE_CREATED_EVENT_UEI, "RemotePollerd")
                     .setNodeid(onmsEvent.getNodeId())
+                    .setInterface(onmsEvent.getIpAddr())
                     .setService(service.getServiceName())
                     .setTime(onmsEvent.getEventCreateTime())
                     .setParam("perspective", perspective.getLocationName())
@@ -505,6 +535,7 @@ public class RemotePollerd implements SpringServiceDaemon {
 
                 final Event outageEvent = new EventBuilder(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, "RemotePollerd")
                         .setNodeid(onmsEvent.getNodeId())
+                        .setInterface(onmsEvent.getIpAddr())
                         .setService(service.getServiceName())
                         .setTime(onmsEvent.getEventCreateTime())
                         .setParam("perspective", perspective.getLocationName())

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.remotepollerng;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -119,6 +117,17 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
         this.network.nodes().forEach(node -> this.serviceReschedule(node, true));
     }
 
+    public void rescheduleService(final Service service) {
+        this.network.remove(service)
+                    .ifPresent(this.delService);
+
+        this.filterService.apply(service).ifPresent(element -> {
+            if (this.network.add(service, element)) {
+                this.addService.accept(new ServiceEntry<>(service, element));
+            }
+        });
+    }
+
     private void serviceReschedule(final Node node,
                                    final boolean rescheduleExisting) {
 //        Date closeDate = sourceEvent.getTime();
@@ -130,8 +139,6 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
         for (final Service service : Sets.difference(trackedServices, databaseServices)) {
             this.network.remove(service)
                         .ifPresent(this.delService);
-
-            // this.getQueryManager().closeOutagesForService(sourceEvent, nodeId, closeDate, polledService);
         }
 
         // Remove remaining services if existing services should be rescheduled
@@ -220,8 +227,6 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
     public void nodeDeletedHandler(final IEvent event) {
         final Node node = Node.fromEvent(event);
 
-//        this.getQueryManager().closeOutagesForNode(event.getTime(), event.getDbid(), node.nodeId);
-
         this.network.remove(node)
                     .forEach(this.delService);
     }
@@ -238,8 +243,6 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
     public void serviceDeletedHandler(final IEvent event) {
         final Service service = Service.fromEvent(event);
 
-//        this.getQueryManager().closeOutagesForService(event.getTime(), event.getDbid(), nodeId.intValue(), str(ipAddr), service);
-
         final Optional<ServiceEntry<E>> entry = this.network.remove(service);
         if (!entry.isPresent()) { // TODO fooker: this smells
             LOG.debug("Service not know: {}", service);
@@ -249,6 +252,7 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
         entry.ifPresent(this.delService);
     }
 
+    // TODO fooker: do we care about scheduled outages?
 //    @EventHandler(uei = EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)
 //    public void scheduledOutagesChangeHandler(final IEvent event) {
 //        try {
@@ -274,12 +278,6 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
     public void assetInfoChangedHandler(final IEvent event) {
         this.rescheduleNodeServices(event, false);
     }
-
-//    public interface Callback<E> {
-//        void add(final Service service, final E element);
-//
-//        void remove(final Service service, final E element);
-//    }
 
     public interface QueryManager {
         List<Service> findServices();
