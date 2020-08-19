@@ -28,7 +28,7 @@ defaults: &defaults
     minimal:
       description: whether to do a minimal (build-and-merge only) build
       type: boolean
-      default: true
+      default: false
 #    previous_branch:
 #      description: the previous branch, if any
 #      type: string
