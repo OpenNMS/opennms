@@ -1607,7 +1607,7 @@
     <profile>
       <id>jdk7+</id>
       <activation>
-        <jdk>[1.7,)</jdk>
+        <jdk>[1.7,9)</jdk>
       </activation>
       <build>
         <plugins>
