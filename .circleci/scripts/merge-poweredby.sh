@@ -39,11 +39,11 @@ else
 fi
 git config merge.renameLimit 999999
 
-echo "=== fetching from origin"
-git fetch origin
+echo "=== remotes:"
+git remote --verbose
 
-echo "=== fetching from ${POWEREDBY}"
-git fetch "${POWEREDBY}"
+echo "=== fetching from git"
+git fetch --all
 
 MAIN_BRANCH="${POWEREDBY}-master"
 if ! [ "$(git branch | grep -c -E "\\b${MAIN_BRANCH}\$" || :)" -gt 0 ]; then
