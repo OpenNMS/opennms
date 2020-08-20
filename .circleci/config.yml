@@ -534,14 +534,26 @@ workflows:
           context: << parameters.context_name >>
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - minion-rpm-build:
           context: << parameters.context_name >>
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - integration-test:
           context: << parameters.context_name >>
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - smoke-test-full:
           context: << parameters.context_name >>
           requires:
@@ -570,10 +582,9 @@ workflows:
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
-#      - meridian-publish-oci:
-#          context: << parameters.context_name >>
+#      - horizon-publish-oci:
 #          requires:
-#            - meridian-rpm-build
+#            - horizon-rpm-build
 #          filters:
 #            branches:
 #              only:
@@ -581,7 +592,6 @@ workflows:
 #                - /^master-.*/
 #                - /^release-.*/
 #      - minion-publish-oci:
-#          context: << parameters.context_name >>
 #          requires:
 #            - minion-rpm-build
 #          filters:
@@ -592,8 +602,7 @@ workflows:
 #                - /^release-.*/
 #      # These don't actually require `integration-test` but we shouldn't bother
 #      # spending cycles unless everything else passed
-#      - meridian-deb-build:
-#          context: << parameters.context_name >>
+#      - horizon-deb-build:
 #          requires:
 #            - integration-test
 #          filters:
@@ -604,15 +613,13 @@ workflows:
 #                - /^release-.*/
 #                - /^foundation.*/
 #                - /^features.*/
-#                - /^merge-foundation\/.*/
 #                - /.*smoke.*/
 #                - /.*debian.*/
 #      - create-merge-foundation-branch:
-#          context: << parameters.context_name >>
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - meridian-deb-build
+#            - horizon-deb-build
 #            - smoke-test-minimal
 #            - smoke-test-full
 #            - integration-test
@@ -620,23 +627,18 @@ workflows:
 #            branches:
 #              only: << parameters.main_branch >>
 #      - merge-foundation-branch:
-#          context: << parameters.context_name >>
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - meridian-deb-build
-#            - smoke-test-minimal
-#            - smoke-test-full
-#            - integration-test
+#            - tarball-assembly
 #          filters:
 #            branches:
 #              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
 #      - create-merge-meridian-branch:
-#          context: << parameters.context_name >>
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - meridian-deb-build
+#            - horizon-deb-build
 #            - smoke-test-minimal
 #            - smoke-test-full
 #            - integration-test
@@ -648,11 +650,10 @@ workflows:
 #            branches:
 #              only: /^from-foundation.*/
 #      - merge-poweredby-branch:
-#          context: << parameters.context_name >>
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - meridian-deb-build
+#            - horizon-deb-build
 #            - smoke-test-minimal
 #            - smoke-test-full
 #            - integration-test
