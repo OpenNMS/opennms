@@ -106,12 +106,6 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
             this.databasePopulator.getOutageDao().delete(outage);
         }
 
-        final OnmsMonitoringLocation onmsMonitoringLocation = new OnmsMonitoringLocation();
-        onmsMonitoringLocation.setLocationName("Fulda");
-        onmsMonitoringLocation.setMonitoringArea("Hessen");
-        onmsMonitoringLocation.setPriority(100L);
-        this.databasePopulator.getMonitoringLocationDao().save(onmsMonitoringLocation);
-
         rdu = this.databasePopulator.getMonitoringLocationDao().get("RDU");
         fulda = this.databasePopulator.getMonitoringLocationDao().get("Fulda");
 

@@ -21,7 +21,6 @@
 		<property name="notificationDao" ref="notificationDao" />
 		<property name="userNotificationDao" ref="userNotificationDao" />
 		<property name="monitoringLocationDao" ref="monitoringLocationDao" />
-		<property name="locationSpecificStatusDao" ref="locationSpecificStatusDao" />
 		<property name="applicationDao" ref="applicationDao" />
 		<property name="acknowledgmentDao" ref="acknowledgmentDao" />
 		<property name="serviceTypeDao" ref="serviceTypeDao" />

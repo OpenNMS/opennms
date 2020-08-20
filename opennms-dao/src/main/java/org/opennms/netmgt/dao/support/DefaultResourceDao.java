@@ -43,7 +43,6 @@ import org.opennms.netmgt.config.api.CollectdConfigFactory;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
@@ -91,7 +90,6 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
     private ResourceStorageDao m_resourceStorageDao;
     private NodeDao m_nodeDao;
-    private LocationSpecificStatusDao m_locationSpecificStatusDao;
     private IpInterfaceDao m_ipInterfaceDao;
     private CollectdConfigFactory m_collectdConfig;
     private ResourceTypesDao m_resourceTypesDao;
@@ -149,24 +147,6 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     public void setCollectdConfig(CollectdConfigFactory collectdConfig) {
         m_collectdConfig = collectdConfig;
     }
-    
-    /**
-     * <p>getLocationSpecificStatusDao</p>
-     *
-     * @return a {@link org.opennms.netmgt.dao.api.LocationSpecificStatusDao} object.
-     */
-    public LocationSpecificStatusDao getLocationMonitorDao() {
-        return m_locationSpecificStatusDao;
-    }
-    
-    /**
-     * <p>setLocationSpecificStatusDao</p>
-     *
-     * @param locationSpecificStatusDao a {@link org.opennms.netmgt.dao.api.LocationSpecificStatusDao} object.
-     */
-    public void setLocationSpecificStatusDao(LocationSpecificStatusDao locationSpecificStatusDao) {
-        m_locationSpecificStatusDao = locationSpecificStatusDao;
-    }
 
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
@@ -206,10 +186,6 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
 
         if (m_nodeDao == null) {
             throw new IllegalStateException("nodeDao property has not been set");
-        }
-
-        if (m_locationSpecificStatusDao == null) {
-            throw new IllegalStateException("locationSpecificStatusDao property has not been set");
         }
 
         if (m_resourceStorageDao == null) {

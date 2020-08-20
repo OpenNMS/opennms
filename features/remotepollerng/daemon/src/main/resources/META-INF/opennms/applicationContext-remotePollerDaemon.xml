@@ -21,7 +21,6 @@
   <onmsgi:reference id="pollerConfig" interface="org.opennms.netmgt.config.PollerConfig"/>
   <onmsgi:reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
   <onmsgi:reference id="locationAwarePollerClient" interface="org.opennms.netmgt.poller.LocationAwarePollerClient"/>
-  <onmsgi:reference id="locationSpecificStatusDao" interface="org.opennms.netmgt.dao.api.LocationSpecificStatusDao"/>
   <onmsgi:reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao"/>
   <onmsgi:reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory"/>
   <onmsgi:reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory"/>
@@ -37,7 +36,6 @@
     <constructor-arg ref="pollerConfig"/>
     <constructor-arg ref="monitoredServiceDao"/>
     <constructor-arg ref="locationAwarePollerClient"/>
-    <constructor-arg ref="locationSpecificStatusDao"/>
     <constructor-arg ref="applicationDao"/>
     <constructor-arg ref="collectionAgentFactory" />
     <constructor-arg ref="persisterFactory"/>

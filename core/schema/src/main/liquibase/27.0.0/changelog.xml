@@ -5,33 +5,15 @@
         xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
-    <changeSet runOnChange="false" author="cpape" id="27.0.0-rp-change">
+    <changeSet runOnChange="false" author="cpape" id="27.0.0-remove-old-remote-poller">
         <sql>
             DELETE FROM monitoringsystems WHERE type='Remote Poller';
         </sql>
 
-        <dropUniqueConstraint tableName="location_specific_status_changes" constraintName="location_specific_status_changes_systemid_fkey"/>
-        <dropColumn tableName="location_specific_status_changes" columnName="systemid"/>
-        <addColumn tableName="location_specific_status_changes">
-            <column name="location" type="text">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-        <createIndex tableName="location_specific_status_changes" indexName="location_specific_status_changes_location">
-            <column name="location"></column>
-        </createIndex>
-        <createIndex tableName="location_specific_status_changes" indexName="location_specific_status_changes_location_ifserviceid">
-            <column name="location"></column>
-            <column name="ifserviceid"></column>
-        </createIndex>
-        <createIndex unique="true" tableName="location_specific_status_changes" indexName="location_specific_status_changes_location_if_time">
-            <column name="location"></column>
-            <column name="ifserviceid"></column>
-            <column name="statustime"></column>
-        </createIndex>
+        <dropTable tableName="location_specific_status_changes"/>
     </changeSet>
 
-    <changeSet runOnChange="false" author="cpape" id="27.0.0-outages-perspective">
+    <changeSet runOnChange="false" author="cpape" id="27.0.0-add-perspective-to-outage-table">
         <addColumn tableName="outages">
             <column name="perspective" type="text"/>
         </addColumn>
@@ -51,7 +33,7 @@
         </sql>
     </changeSet>
 
-    <changeSet author="cpape" id="27.0.0-alter-views">
+    <changeSet author="cpape" id="27.0.0-recreate-views-based-on-outage-table">
         <dropView viewName="node_outages"/>
         <dropView viewName="node_outage_status"/>
 

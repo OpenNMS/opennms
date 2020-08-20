@@ -89,9 +89,6 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.AfterTransaction;
-import org.springframework.test.context.transaction.BeforeTransaction;
-import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -226,7 +223,6 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
                 PollerConfigFactory.getInstance(),
                 this.databasePopulator.getMonitoredServiceDao(),
                 locationAwarePollerClient,
-                this.databasePopulator.getLocationSpecificStatusDao(),
                 this.databasePopulator.getApplicationDao(),
                 this.collectionAgentFactory,
                 this.persisterFactory,
@@ -586,7 +582,6 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
 
         final RemotePolledService remotePolledService = findRemotePolledService(this.node1icmp, "RDU");
-        Assert.assertEquals(0, this.databasePopulator.getLocationSpecificStatusDao().findAll().size());
 
         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "RemotePollerd")
                                                                            .setNodeid(this.node1icmp.getNodeId())
