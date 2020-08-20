@@ -465,32 +465,6 @@ public class DefaultResourceDaoTest {
     }
 
     @Test
-    public void testGetResourceForIpInterfaceWithLocationMonitor() throws Exception {
-        OnmsIpInterface ip = createIpInterfaceOnNode();
-
-        OnmsMonitoringLocation locMon = new OnmsMonitoringLocation("remote", "remote");
-
-        // Create distributed/9850/209.61.128.9
-        File response = m_fileAnticipator.tempDir("response");
-        File distributed = m_fileAnticipator.tempDir(response, "distributed");
-        File locMonDir = m_fileAnticipator.tempDir(distributed, locMon.getLocationName());
-        File ipDir = m_fileAnticipator.tempDir(locMonDir, InetAddressUtils.str(ip.getIpAddress()));
-        m_fileAnticipator.tempFile(ipDir, "http" + m_rrdFileExtension);
-
-        ArrayList<LocationIpInterface> locationMonitorInterfaces = new ArrayList<>();
-        locationMonitorInterfaces.add(new LocationIpInterface(locMon, ip));
-
-        expect(m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(ip.getNode().getId())).andReturn(locationMonitorInterfaces);
-        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
-
-        m_easyMockUtils.replayAll();
-        OnmsResource resource = m_resourceDao.getResourceForIpInterface(ip, locMon);
-        m_easyMockUtils.verifyAll();
-
-        assertNotNull("Resource should not be null", resource);
-    }
-
-    @Test
     public void testGetResourceForNodeWithData() throws Exception {
         OnmsNode node = createNode();
 

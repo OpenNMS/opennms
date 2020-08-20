@@ -362,7 +362,6 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsOutage.class, "ifRegainedService", "Regained Service Time", TIMESTAMP),
 		new SearchProperty(OnmsOutage.class, "suppressedBy", "Suppressed By User", STRING),
 		new SearchProperty(OnmsOutage.class, "suppressTime", "Suppressed Time", TIMESTAMP),
-		new SearchProperty(OnmsOutage.class, "perspective", "Perspective", STRING)
 	}));
 
 	static final SortedSet<SearchProperty> SERVICE_TYPE_PROPERTIES = new TreeSet<>(Arrays.asList(new SearchProperty[] {
@@ -559,5 +558,6 @@ public abstract class SearchProperties {
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("serviceRegainedEvent", "Service Regained Event", EVENT_PROPERTIES));
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.serviceType, "Service", SERVICE_TYPE_PROPERTIES));
 		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix(Aliases.snmpInterface, "SNMP Interface", SNMP_INTERFACE_PROPERTIES));
+		OUTAGE_SERVICE_PROPERTIES.addAll(withAliasPrefix("perspective", "Perspective", LOCATION_PROPERTIES));
 	}
 }

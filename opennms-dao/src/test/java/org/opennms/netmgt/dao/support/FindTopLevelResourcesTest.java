@@ -52,7 +52,6 @@ import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
-import org.opennms.netmgt.model.LocationIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
@@ -150,9 +149,6 @@ public class FindTopLevelResourcesTest {
         expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
-        expect(m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationIpInterface>(0));
-        expect(m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n2.getId())).andReturn(new ArrayList<LocationIpInterface>(0));
-
         // Common directories
         File snmpDir = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);
         File responseDir = m_fileAnticipator.tempDir(ResourceTypeUtils.RESPONSE_DIRECTORY);
@@ -216,10 +212,6 @@ public class FindTopLevelResourcesTest {
         expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
         expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
-
-        expect(m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationIpInterface>(0));
-        expect(m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n2.getId())).andReturn(new ArrayList<LocationIpInterface>(0));
-        expect(m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n3.getId())).andReturn(new ArrayList<LocationIpInterface>(0));
 
         // Common directories
         File snmpDir = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);
@@ -316,11 +308,6 @@ public class FindTopLevelResourcesTest {
         expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
         expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
-
-        expect(m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationIpInterface>(0));
-        expect(m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n2.getId())).andReturn(new ArrayList<LocationIpInterface>(0));
-        expect(m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n3.getId())).andReturn(new ArrayList<LocationIpInterface>(0));
-        expect(m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n4.getId())).andReturn(new ArrayList<LocationIpInterface>(0));
 
         // Common directories
         File snmpDir = m_fileAnticipator.tempDir(ResourceTypeUtils.SNMP_DIRECTORY);
