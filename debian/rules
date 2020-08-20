@@ -6,7 +6,7 @@
 export DH_VERBOSE=1
 export SHELL=/bin/bash
 
-export JAVA_HOME=$(shell opennms-base-assembly/src/main/filtered/bin/find-java.sh 1.8 11.9999)
+export JAVA_HOME=$(shell core/cli/src/main/resources/bin/find-java.sh 1.8 1.9)
 
 export OPTS_ASSEMBLIES=-Passemblies
 export OPTS_PROFILES=-Prun-expensive-tasks
@@ -15,7 +15,7 @@ export BUILDDEFINES=\
 	-Dopennms.home=/usr/share/opennms \
 	-Ddist.dir=$(CURDIR)/debian -Ddist.name=temp \
 	-Dinstall.dir=/usr/share/opennms \
-	-Dinstall.init.dir=/etc/init.d \
+	-Dinstall.init.dir=/usr/share/opennms/bin \
 	-Dinstall.rrdtool.bin=/usr/bin/rrdtool \
 	-Dinstall.share.dir=/var/lib/opennms \
 	-Dinstall.servlet.dir=/usr/share/opennms/webapps \
@@ -231,6 +231,7 @@ install: build
 	mv debian/temp/share/xsds/* debian/opennms-common/var/lib/opennms/xsds/
 	find debian/opennms-common/etc/opennms -type f -execdir chmod 644 {} \;
 	chmod 640 debian/opennms-common/etc/opennms/users.xml
+	install -c -m 644 debian/opennms-common/etc/opennms/opennms.service debian/opennms-common.opennms.service
 	
 	# move karaf stuff to common
 	mv debian/temp/{data,deploy,system} debian/opennms-common/usr/share/opennms/
@@ -338,7 +339,7 @@ binary-indep: build install
 	dh_testdir
 	dh_testroot
 	dh_installdocs
-	dh_systemd_enable --name=opennms --no-enable debian/opennms-common/etc/opennms/opennms.service
+	dh_systemd_enable --name=opennms --no-enable
 	dh_installinit --package=opennms-server --name=opennms --no-start -u"defaults 21 19"
 	dh_installinit --package=opennms-remote-poller --no-start -u"defaults 21 19"
 	dh_systemd_start --name=opennms --no-restart-after-upgrade
