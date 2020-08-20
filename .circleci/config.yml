@@ -577,6 +577,7 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
+                - /^merge-foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
