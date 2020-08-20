@@ -10,7 +10,7 @@ cd "$TOPDIR"
 
 JAVA_HOME=`"$TOPDIR/bin/javahome.pl"`
 
-BINARIES="dch dpkg-sig dpkg-buildpackage expect"
+BINARIES="dch dh dh_systemd_enable dpkg-sig dpkg-buildpackage expect po2debconf"
 
 function exists() {
     which "$1" >/dev/null 2>&1
@@ -139,6 +139,7 @@ for BIN in $BINARIES; do
     EXECUTABLE=`which $BIN 2>/dev/null || :`
     if [ -z "$EXECUTABLE" ] || [ ! -x "$EXECUTABLE" ]; then
         echo "ERROR: $BIN not found"
+        echo "       try 'sudo apt install debhelper devscripts dh-systemd dpkg-dev dpkg-sig expect nsis po-debconf'"
         exit 1
     fi
 done
