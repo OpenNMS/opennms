@@ -530,15 +530,31 @@ workflows:
       - meridian-rpm-build:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - minion-rpm-build:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - sentinel-rpm-build:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - integration-test:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - smoke-test-full:
           requires:
             - meridian-rpm-build
@@ -566,12 +582,13 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
+                - /^merge-foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
-#      - meridian-publish-oci:
+#      - horizon-publish-oci:
 #          requires:
-#            - meridian-rpm-build
+#            - horizon-rpm-build
 #          filters:
 #            branches:
 #              only:
@@ -598,7 +615,7 @@ workflows:
 #                - /^release-.*/
 #      # These don't actually require `integration-test` but we shouldn't bother
 #      # spending cycles unless everything else passed
-#      - meridian-deb-build:
+#      - horizon-deb-build:
 #          requires:
 #            - integration-test
 #          filters:
@@ -609,7 +626,6 @@ workflows:
 #                - /^release-.*/
 #                - /^foundation.*/
 #                - /^features.*/
-#                - /^merge-foundation\/.*/
 #                - /.*smoke.*/
 #                - /.*debian.*/
 #      - minion-deb-build:
@@ -623,7 +639,6 @@ workflows:
 #                - /^release-.*/
 #                - /^foundation.*/
 #                - /^features.*/
-#                - /^merge-foundation\/.*/
 #                - /.*smoke.*/
 #                - /.*debian.*/
 #      - sentinel-deb-build:
@@ -637,14 +652,13 @@ workflows:
 #                - /^release-.*/
 #                - /^foundation.*/
 #                - /^features.*/
-#                - /^merge-foundation\/.*/
 #                - /.*smoke.*/
 #                - /.*debian.*/
 #      - create-merge-foundation-branch:
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - meridian-deb-build
+#            - horizon-deb-build
 #            - minion-deb-build
 #            - sentinel-deb-build
 #            - smoke-test-minimal
@@ -657,12 +671,7 @@ workflows:
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - meridian-deb-build
-#            - minion-deb-build
-#            - sentinel-deb-build
-#            - smoke-test-minimal
-#            - smoke-test-full
-#            - integration-test
+#            - tarball-assembly
 #          filters:
 #            branches:
 #              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
@@ -670,7 +679,7 @@ workflows:
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - meridian-deb-build
+#            - horizon-deb-build
 #            - smoke-test-minimal
 #            - smoke-test-full
 #            - integration-test
@@ -685,7 +694,7 @@ workflows:
 #          # technically only requires the RPM/deb builds, but only publish
 #          # if everything passes
 #          requires:
-#            - meridian-deb-build
+#            - horizon-deb-build
 #            - smoke-test-minimal
 #            - smoke-test-full
 #            - integration-test
