@@ -8,10 +8,10 @@ After=${install.postgresql.service}.service postgresql-10.service postgresql-11.
 User=root
 Environment="OPENNMS_HOME=${install.dir}"
 
-Type=simple
+Type=forking
 PIDFile=${install.pid.file}
 
-ExecStart=${install.init.dir}/opennms -f start
+ExecStart=${install.init.dir}/opennms -s start
 ExecStop=${install.init.dir}/opennms stop
 
 [Install]
