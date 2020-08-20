@@ -276,4 +276,13 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
             }
         });
     }
+
+    @Override
+    public Collection<OnmsOutage> getStatusChangesForApplicationIdBetween(final Date startDate, final Date endDate, final Integer applicationId) {
+        return find("SELECT DISTINCT o FROM OnmsOutage o " +
+                        "WHERE o.perspective IS NOT NULL AND " +
+                        "o.monitoredService.id IN (SELECT m.id FROM OnmsApplication a LEFT JOIN a.monitoredServices m WHERE a.id = ?) AND " +
+                        "o.perspective.id IN (SELECT p.id FROM OnmsApplication a LEFT JOIN a.perspectiveLocations p WHERE a.id = ?) AND " +
+                        "((o.ifRegainedService >= ? AND o.ifLostService <= ?) OR (o.ifLostService <= ? AND o.ifRegainedService IS NULL))", applicationId, applicationId, startDate, endDate, endDate);
+    }
 }

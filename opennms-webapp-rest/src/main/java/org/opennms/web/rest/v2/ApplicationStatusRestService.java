@@ -48,11 +48,11 @@ import javax.ws.rs.core.Response;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.support.builder.RemoteLatencyResource;
 import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.remotepolling.ApplicationServiceStatus;
 import org.opennms.netmgt.model.remotepolling.ApplicationStatus;
@@ -62,7 +62,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.Lists;
 
 @Component
 @Path("remotepoller")
@@ -70,7 +69,7 @@ import com.google.common.collect.Lists;
 public class ApplicationStatusRestService {
 
     @Autowired
-    private LocationSpecificStatusDao locationSpecificStatusDao;
+    private OutageDao outageDao;
 
     @Autowired
     private ApplicationDao applicationDao;
@@ -81,9 +80,18 @@ public class ApplicationStatusRestService {
     class DowntimeInterval {
         public long start, end;
 
-        public DowntimeInterval(final long start, final long end) {
-            this.start = start;
-            this.end = end;
+        public DowntimeInterval(final OnmsOutage onmsOutage, long start, long end) {
+            this.start = onmsOutage.getIfLostService().getTime();
+
+            if (this.start < start) {
+                this.start = start;
+            }
+
+            this.end = onmsOutage.getIfRegainedService() != null ? onmsOutage.getIfRegainedService().getTime() : end;
+
+            if (this.end > end) {
+                this.end = end;
+            }
         }
 
         @Override
@@ -133,38 +141,8 @@ public class ApplicationStatusRestService {
         return resultList;
     }
 
-    private boolean intervalsOverlap(final DowntimeInterval donwtimeInterval1, final DowntimeInterval donwtimeInterval2) {
-        return !(Math.max(donwtimeInterval1.start, donwtimeInterval2.start) > Math.min(donwtimeInterval1.end, donwtimeInterval2.end));
-    }
-
-    private double calculateServicePercentageUptime(final Collection<OnmsLocationSpecificStatus> statusChanges, final List<DowntimeInterval> downtimeIntervals, final long start, final long end) {
-        double totalTimeMillis = end - start;
-        double uptimeMillis = totalTimeMillis;
-
-        OnmsLocationSpecificStatus lastChange = null;
-
-        for(final OnmsLocationSpecificStatus status : statusChanges) {
-            long s = (lastChange == null ? 0 : lastChange.getPollResult().getTimestamp().getTime());
-            long e = status.getPollResult().getTimestamp().getTime();
-            if (lastChange != null && lastChange.getPollResult().isDown() ) {
-                if(s < e) {
-                    uptimeMillis -= (Math.min(e, end)-Math.max(s, start));
-                    downtimeIntervals.add(new DowntimeInterval(Math.max(s, start), Math.min(e, end)));
-                }
-            }
-            lastChange = status;
-        }
-
-        if (lastChange != null && lastChange.getPollResult().isDown() ) {
-            long s = lastChange.getPollResult().getTimestamp().getTime();
-            long e = end;
-            if(s < e) {
-                uptimeMillis -= (Math.min(e, end)-Math.max(s, start));
-                downtimeIntervals.add(new DowntimeInterval(Math.max(s, start), Math.min(e, end)));
-            }
-        }
-
-        return uptimeMillis / totalTimeMillis;
+    private boolean intervalsOverlap(final DowntimeInterval downtimeInterval1, final DowntimeInterval downtimeInterval2) {
+        return !(Math.max(downtimeInterval1.start, downtimeInterval2.start) > Math.min(downtimeInterval1.end, downtimeInterval2.end));
     }
 
     public double calculateApplicationPercentageUptime(final List<DowntimeInterval> intervals, final long start, final long end) {
@@ -176,13 +154,15 @@ public class ApplicationStatusRestService {
         return uptimeMillis / totalTimeMillis;
     }
 
-    private ApplicationStatus buildApplicationStatus(final OnmsApplication onmsApplication, final Collection<OnmsLocationSpecificStatus> statusChanges, final long start, final long end) {
-        final Map<OnmsMonitoringLocation, Map<OnmsMonitoredService, List<OnmsLocationSpecificStatus>>> m = new HashMap<>();
+    private ApplicationStatus buildApplicationStatus(final OnmsApplication onmsApplication, final Collection<OnmsOutage> onmsOutages, final long start, final long end) {
+        final Map<OnmsMonitoringLocation, List<DowntimeInterval>> m = new HashMap<>();
 
-        for(final OnmsLocationSpecificStatus onmsLocationSpecificStatus : statusChanges) {
-            m.computeIfAbsent(onmsLocationSpecificStatus.getLocation(), k -> new HashMap<>())
-                    .computeIfAbsent(onmsLocationSpecificStatus.getMonitoredService(), k -> new ArrayList<>())
-                    .add(onmsLocationSpecificStatus);
+        for (final OnmsMonitoringLocation onmsMonitoringLocation : onmsApplication.getPerspectiveLocations()) {
+            m.put(onmsMonitoringLocation, new ArrayList<>());
+        }
+
+        for(final OnmsOutage onmsOutage : onmsOutages) {
+            m.get(onmsOutage.getPerspective()).add(new DowntimeInterval(onmsOutage, start, end));
         }
 
         final ApplicationStatus applicationStatus = new ApplicationStatus();
@@ -190,17 +170,11 @@ public class ApplicationStatusRestService {
         applicationStatus.setEnd(end);
         applicationStatus.setApplicationId(onmsApplication.getId());
 
-        for (final OnmsMonitoringLocation onmsMonitoringLocation : m.keySet()) {
+        for (final OnmsMonitoringLocation onmsMonitoringLocation : onmsApplication.getPerspectiveLocations()) {
             final Location location = new Location();
             location.setName(onmsMonitoringLocation.getLocationName());
 
-            final List<DowntimeInterval> downtimeIntervals = Lists.newArrayList();
-            
-            for (final OnmsMonitoredService onmsMonitoredService : m.get(onmsMonitoringLocation).keySet()) {
-                calculateServicePercentageUptime(m.get(onmsMonitoringLocation).get(onmsMonitoredService), downtimeIntervals, start, end);
-            }
-
-            final List<DowntimeInterval> mergedDowntimeIntervals = mergeDowntimeIntervals(downtimeIntervals);
+            final List<DowntimeInterval> mergedDowntimeIntervals = mergeDowntimeIntervals(m.get(onmsMonitoringLocation));
 
             location.setAggregatedStatus(100.0 * calculateApplicationPercentageUptime(mergedDowntimeIntervals, start, end));
             applicationStatus.getLocations().add(location);
@@ -208,14 +182,18 @@ public class ApplicationStatusRestService {
         return applicationStatus;
     }
 
-    private ApplicationServiceStatus buildApplicationServiceStatus(final OnmsApplication onmsApplication, final Integer monitoredServiceId, final Collection<OnmsLocationSpecificStatus> statusChanges, final long start, final long end) {
-        final Map<OnmsMonitoringLocation, List<OnmsLocationSpecificStatus>> m = new HashMap<>();
+    private ApplicationServiceStatus buildApplicationServiceStatus(final OnmsApplication onmsApplication, final Integer monitoredServiceId, final Collection<OnmsOutage> onmsOutages, final long start, final long end) {
         final OnmsMonitoredService onmsMonitoredService = monitoredServiceDao.get(monitoredServiceId);
 
-        for(final OnmsLocationSpecificStatus onmsLocationSpecificStatus : statusChanges) {
-            if (onmsLocationSpecificStatus.getMonitoredService().getId().equals(monitoredServiceId)) {
-                m.computeIfAbsent(onmsLocationSpecificStatus.getLocation(), k -> new ArrayList<>())
-                        .add(onmsLocationSpecificStatus);
+        final Map<OnmsMonitoringLocation, List<DowntimeInterval>> m = new HashMap<>();
+
+        for (final OnmsMonitoringLocation onmsMonitoringLocation : onmsApplication.getPerspectiveLocations()) {
+            m.put(onmsMonitoringLocation, new ArrayList<>());
+        }
+
+        for(final OnmsOutage onmsOutage : onmsOutages) {
+            if (monitoredServiceId.equals(onmsOutage.getMonitoredService().getId())) {
+                m.get(onmsOutage.getPerspective()).add(new DowntimeInterval(onmsOutage, start, end));
             }
         }
 
@@ -225,14 +203,18 @@ public class ApplicationStatusRestService {
         applicationServiceStatus.setApplicationId(onmsApplication.getId());
         applicationServiceStatus.setMonitoredServiceId(monitoredServiceId);
 
-        for (final OnmsMonitoringLocation onmsMonitoringLocation : m.keySet()) {
+        for (final OnmsMonitoringLocation onmsMonitoringLocation : onmsApplication.getPerspectiveLocations()) {
             final Location location = new Location();
             location.setName(onmsMonitoringLocation.getLocationName());
-            location.setAggregatedStatus(100.0 * calculateServicePercentageUptime(m.get(onmsMonitoringLocation), Lists.newArrayList(), start, end));
-            RemoteLatencyResource remoteLatencyResource = new RemoteLatencyResource(location.getName(), InetAddressUtils.toIpAddrString(onmsMonitoredService.getIpAddress()), onmsMonitoredService.getServiceType().getName());
+
+            final List<DowntimeInterval> mergedDowntimeIntervals = mergeDowntimeIntervals(m.get(onmsMonitoringLocation));
+
+            location.setAggregatedStatus(100.0 * calculateApplicationPercentageUptime(mergedDowntimeIntervals, start, end));
+            final RemoteLatencyResource remoteLatencyResource = new RemoteLatencyResource(location.getName(), InetAddressUtils.toIpAddrString(onmsMonitoredService.getIpAddress()), onmsMonitoredService.getServiceType().getName());
             location.setResponseResourceId(remoteLatencyResource.getInstance());
             applicationServiceStatus.getLocations().add(location);
         }
+
         return applicationServiceStatus;
     }
 
@@ -253,7 +235,7 @@ public class ApplicationStatusRestService {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        final Collection<OnmsLocationSpecificStatus> statusChanges = locationSpecificStatusDao.getStatusChangesForApplicationIdBetween(new Date(start), new Date(end), applicationId);
+        final Collection<OnmsOutage> statusChanges = outageDao.getStatusChangesForApplicationIdBetween(new Date(start), new Date(end), applicationId);
         return Response.ok(buildApplicationStatus(onmsApplication, statusChanges, start, end)).build();
     }
 
@@ -274,7 +256,7 @@ public class ApplicationStatusRestService {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        final Collection<OnmsLocationSpecificStatus> statusChanges = locationSpecificStatusDao.getStatusChangesForApplicationIdBetween(new Date(start), new Date(end), applicationId);
+        final Collection<OnmsOutage> statusChanges = outageDao.getStatusChangesForApplicationIdBetween(new Date(start), new Date(end), applicationId);
         return Response.ok(buildApplicationServiceStatus(onmsApplication, monitoredServiceId, statusChanges, start, end)).build();
     }
 }
