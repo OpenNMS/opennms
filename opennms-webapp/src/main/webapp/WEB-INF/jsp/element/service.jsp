@@ -321,20 +321,20 @@ function doDelete() {
             <!-- Recent outages box -->
             <jsp:include page="/outage/serviceOutages-box.htm" flush="false" />
 
-            <div class="card">
-              <div class="card-header"><span>Remote Monitoring Locations</span></div>
+          <div class="card">
+              <div class="card-header"><span>Application Perspective Monitoring</span></div>
               <table class="table table-sm">
                   <tr>
-                      <th>Perspective Location</th>
+                      <th>Perspective</th>
                       <th>Polling Status</th>
                       <th>Outage ID</th>
                   </tr>
                   <% ServiceJspUtil util = new ServiceJspUtil(service, outages);
-                     for(OnmsMonitoringLocation location : util.getAllPerspectives()) {
-                         Optional<OnmsOutage> outage = util.getOutageForPerspective(location);
+                      for(OnmsMonitoringLocation location : util.getAllPerspectives()) {
+                          Optional<OnmsOutage> outage = util.getOutageForPerspective(location);
                   %>
                   <tr>
-                      <td><%=location.getLocationName()%></td>
+                      <td><i class="fa fa-server" aria-hidden="true"></i> <%=location.getLocationName()%></td>
                       <td><%=outage.isPresent() ? "DOWN" : "UP"%></td>
                       <td><%=outage.isPresent() ? util.getOutageUrl(outage.get()) : ""%></td>
                   </tr>
