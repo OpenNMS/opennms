@@ -168,7 +168,7 @@ public class RemotePollerd implements SpringServiceDaemon {
                                                    new QueryManager(this.monitoredServiceDao),
                                                    this::filterService,
                                                    this::addService,
-                                                   this::delService);
+                                                   this::deleteService);
     }
 
     private Optional<Set<RemotePolledService>> filterService(final ServiceTracker.Service service) {
@@ -277,7 +277,7 @@ public class RemotePollerd implements SpringServiceDaemon {
         });
     }
 
-    private void delService(final ServiceTracker.ServiceEntry<Set<RemotePolledService>> entry) {
+    private void deleteService(final ServiceTracker.ServiceEntry<Set<RemotePolledService>> entry) {
         entry.getElement().forEach(remotePolledService -> {
             final JobKey key = buildJobKey(remotePolledService);
 
@@ -468,10 +468,15 @@ public class RemotePollerd implements SpringServiceDaemon {
 
         this.sessionUtils.withReadOnlyTransaction(() -> {
             final OnmsApplication application = this.applicationDao.get(applicationId);
-
-            for (final OnmsMonitoredService service : application.getMonitoredServices()) {
-                this.serviceTracker.rescheduleService(new ServiceTracker.Service(service.getNodeId(), service.getIpAddress(), service.getServiceName()));
+            if (application != null) {
+                for (final OnmsMonitoredService service : application.getMonitoredServices()) {
+                    this.serviceTracker.rescheduleService(new ServiceTracker.Service(service.getNodeId(), service.getIpAddress(), service.getServiceName()));
+                }
             }
+
+            // Reschedule everything in case it was removed from application
+            this.serviceTracker.rescheduleAllServices();
+
             return null;
         });
     }

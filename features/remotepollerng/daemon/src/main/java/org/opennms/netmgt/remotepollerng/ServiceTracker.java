@@ -66,19 +66,19 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
     private final Function<Service, Optional<E>> filterService;
 
     private final Consumer<ServiceEntry<E>> addService;
-    private final Consumer<ServiceEntry<E>> delService;
+    private final Consumer<ServiceEntry<E>> deleteService;
 
     public ServiceTracker(final PollerConfig config,
                           final QueryManager queryManager,
                           final Function<Service, Optional<E>> filterService,
                           final Consumer<ServiceEntry<E>> addService,
-                          final Consumer<ServiceEntry<E>> delService) {
+                          final Consumer<ServiceEntry<E>> deleteService) {
         this.config = Objects.requireNonNull(config);
         this.queryManager = Objects.requireNonNull(queryManager);
         this.network = new Network<>();
         this.filterService = Objects.requireNonNull(filterService);
         this.addService = Objects.requireNonNull(addService);
-        this.delService = Objects.requireNonNull(delService);
+        this.deleteService = Objects.requireNonNull(deleteService);
     }
 
     public void start() {
@@ -119,7 +119,7 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
 
     public void rescheduleService(final Service service) {
         this.network.remove(service)
-                    .ifPresent(this.delService);
+                    .ifPresent(this.deleteService);
 
         this.filterService.apply(service).ifPresent(element -> {
             if (this.network.add(service, element)) {
@@ -130,22 +130,20 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
 
     private void serviceReschedule(final Node node,
                                    final boolean rescheduleExisting) {
-//        Date closeDate = sourceEvent.getTime();
-
         final Set<Service> databaseServices = Sets.newHashSet(this.queryManager.findServicesByNode(node));
         final Set<Service> trackedServices = this.network.findByNode(node).map(ServiceEntry::getService).collect(Collectors.toSet());
 
         // Remove the services being tracked but not in database
         for (final Service service : Sets.difference(trackedServices, databaseServices)) {
             this.network.remove(service)
-                        .ifPresent(this.delService);
+                        .ifPresent(this.deleteService);
         }
 
         // Remove remaining services if existing services should be rescheduled
         if (rescheduleExisting) {
             for (final Service service : trackedServices) {
                 this.network.remove(service)
-                            .ifPresent(this.delService);
+                            .ifPresent(this.deleteService);
             }
         }
 
@@ -191,7 +189,7 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
         final Interface newInterface = newNode.iface(ipAddress);
 
         // Remove interface from old node and add to new one
-        this.network.remove(oldInterface).forEach(this.delService.andThen(oldEntry -> {
+        this.network.remove(oldInterface).forEach(this.deleteService.andThen(oldEntry -> {
             final Service newService = newInterface.service(oldEntry.service.serviceName);
 
             final Optional<E> newElement = this.filterService.apply(newService);
@@ -218,7 +216,7 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
             return;
         }
 
-        entry.ifPresent(this.delService);
+        entry.ifPresent(this.deleteService);
 
     }
 
@@ -228,7 +226,7 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
         final Node node = Node.fromEvent(event);
 
         this.network.remove(node)
-                    .forEach(this.delService);
+                    .forEach(this.deleteService);
     }
 
     @EventHandler(uei = EventConstants.INTERFACE_DELETED_EVENT_UEI)
@@ -236,7 +234,7 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
         final Interface iface = Interface.fromEvent(event);
 
         this.network.remove(iface)
-                    .forEach(this.delService);
+                    .forEach(this.deleteService);
     }
 
     @EventHandler(uei = EventConstants.SERVICE_DELETED_EVENT_UEI)
@@ -249,7 +247,7 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
             return;
         }
 
-        entry.ifPresent(this.delService);
+        entry.ifPresent(this.deleteService);
     }
 
     // TODO fooker: do we care about scheduled outages?

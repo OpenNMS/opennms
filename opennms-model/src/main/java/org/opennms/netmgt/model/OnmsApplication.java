@@ -115,6 +115,10 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
         getMonitoredServices().add(service);
     }
 
+    public void removeMonitoredService(OnmsMonitoredService service) {
+        getMonitoredServices().remove(service);
+    }
+
 
     @ManyToMany( cascade={CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name="application_perspective_location_map",

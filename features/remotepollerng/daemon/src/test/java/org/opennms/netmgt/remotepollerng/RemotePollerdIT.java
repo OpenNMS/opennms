@@ -33,6 +33,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.opennms.core.utils.InetAddressUtils.addr;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
+import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,6 +50,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.rpc.mock.MockEntityScopeProvider;
 import org.opennms.core.rpc.mock.MockRpcClientFactory;
+import org.opennms.core.rpc.utils.RpcTargetHelper;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
@@ -214,6 +217,8 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
 
         final LocationAwarePollerClientImpl locationAwarePollerClient = new LocationAwarePollerClientImpl(new MockRpcClientFactory());
         locationAwarePollerClient.setEntityScopeProvider(new MockEntityScopeProvider());
+        locationAwarePollerClient.setRpcTargetHelper(new RpcTargetHelper());
+        locationAwarePollerClient.afterPropertiesSet();
 
         this.remotePollerd = new RemotePollerd(
                 this.sessionUtils,
@@ -427,6 +432,101 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         assertThat(findRemotePolledService(this.node1snmp, "RDU"), is(nullValue()));
         assertThat(findRemotePolledService(this.node1http, "RDU"), is(nullValue()));
         assertThat(findRemotePolledService(this.node1http, "Fulda"), is(nullValue()));
+    }
+
+    @Test
+    public void testApplicationAdded() throws Exception {
+        final OnmsMonitoredService node3icmp = this.databasePopulator.getNode3().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
+        final OnmsMonitoredService node4icmp = this.databasePopulator.getNode4().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
+
+        assertThat(findRemotePolledService(node3icmp, "RDU"), is(nullValue()));
+        assertThat(findRemotePolledService(node4icmp, "RDU"), is(nullValue()));
+
+        final OnmsApplication app = new OnmsApplication();
+        app.setName("App Test");
+        app.addPerspectiveLocation(this.databasePopulator.getLocRDU());
+        app.addMonitoredService(node3icmp);
+        app.addMonitoredService(node4icmp);
+
+        node3icmp.addApplication(app);
+        node4icmp.addApplication(app);
+
+        this.databasePopulator.getTransactionTemplate().execute(tx -> {
+            this.applicationDao.save(app);
+            this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(node3icmp);
+            this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(node4icmp);
+
+            this.applicationDao.flush();
+            this.databasePopulator.getMonitoredServiceDao().flush();
+            return null;
+        });
+
+        this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.APPLICATION_CREATED_EVENT_UEI, "test")
+                                                 .addParam(PARM_APPLICATION_ID, app.getId())
+                                                 .addParam(PARM_APPLICATION_NAME, app.getName())
+                                                 .getEvent());
+
+        assertThat(findRemotePolledService(node3icmp, "RDU"), is(notNullValue()));
+        assertThat(findRemotePolledService(node4icmp, "RDU"), is(notNullValue()));
+    }
+
+    @Test
+    public void testApplicationChanged() throws Exception {
+        final OnmsMonitoredService node3icmp = this.databasePopulator.getNode3().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
+        final OnmsMonitoredService node4icmp = this.databasePopulator.getNode4().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
+
+        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
+        assertThat(findRemotePolledService(this.node2icmp, "RDU"), is(notNullValue()));
+        assertThat(findRemotePolledService(node3icmp, "RDU"), is(nullValue()));
+        assertThat(findRemotePolledService(node4icmp, "RDU"), is(nullValue()));
+
+        this.app1.addMonitoredService(node3icmp);
+        node3icmp.addApplication(this.app1);
+
+        this.app1.removeMonitoredService(this.node1icmp);
+        this.node1icmp.removeApplication(this.app1);
+
+        this.databasePopulator.getTransactionTemplate().execute(tx -> {
+            this.applicationDao.saveOrUpdate(this.app1);
+            this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(this.node1icmp);
+            this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(this.node2icmp);
+            this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(node3icmp);
+            this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(node4icmp);
+
+            this.applicationDao.flush();
+            this.databasePopulator.getMonitoredServiceDao().flush();
+            return null;
+        });
+
+        this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.APPLICATION_CHANGED_EVENT_UEI, "test")
+                                                 .addParam(PARM_APPLICATION_ID, this.app1.getId())
+                                                 .addParam(PARM_APPLICATION_NAME, this.app1.getName())
+                                                 .getEvent());
+
+        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(nullValue()));
+        assertThat(findRemotePolledService(this.node2icmp, "RDU"), is(notNullValue()));
+        assertThat(findRemotePolledService(node3icmp, "RDU"), is(notNullValue()));
+        assertThat(findRemotePolledService(node4icmp, "RDU"), is(nullValue()));
+    }
+
+    @Test
+    public void testApplicationRemoved() throws Exception {
+        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
+        assertThat(findRemotePolledService(this.node2icmp, "RDU"), is(notNullValue()));
+
+        this.databasePopulator.getTransactionTemplate().execute(tx -> {
+            this.applicationDao.delete(this.app1);
+            this.applicationDao.flush();
+            return null;
+        });
+
+        this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.APPLICATION_DELETED_EVENT_UEI, "test")
+                                                 .addParam(PARM_APPLICATION_ID, this.app1.getId())
+                                                 .addParam(PARM_APPLICATION_NAME, this.app1.getName())
+                                                 .getEvent());
+
+        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(nullValue()));
+        assertThat(findRemotePolledService(this.node2icmp, "RDU"), is(nullValue()));
     }
 
     @Test
