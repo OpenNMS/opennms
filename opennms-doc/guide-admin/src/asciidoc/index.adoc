@@ -388,6 +388,7 @@ include::text/telemetryd/protocols/netflow9.adoc[]
 include::text/telemetryd/protocols/nxos.adoc[]
 include::text/telemetryd/protocols/sflow.adoc[]
 include::text/telemetryd/protocols/graphite.adoc[]
+include::text/telemetryd/protocols/openconfig.adoc[]
 
 [[ga-elasticsearch-integration]]
 == Elasticsearch Integration

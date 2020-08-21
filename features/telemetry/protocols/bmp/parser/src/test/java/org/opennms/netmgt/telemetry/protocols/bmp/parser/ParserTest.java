@@ -42,14 +42,6 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerHeader;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.InitiationPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.PeerDownPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.PeerUpPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.RouteMirroringPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.RouteMonitoringPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.StatisticsReportPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.TerminationPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.UnknownPacket;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.transform.ResultTransformer;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -192,4 +193,24 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
             return retval;
         }
     }
+
+    @Override
+    public List<OnmsIpInterface> findInterfacesWithMetadata(String context, String key, String value) {  return getHibernateTemplate().execute(session -> (List<OnmsIpInterface>) session.createSQLQuery("SELECT ip.id FROM ipInterface ip, ipInterface_metadata m WHERE m.id = ip.id AND context = :context AND key = :key AND value = :value ORDER BY ip.id")
+            .setString("context", context)
+            .setString("key", key)
+            .setString("value", value)
+            .setResultTransformer(new ResultTransformer() {
+                @Override
+                public Object transformTuple(Object[] tuple, String[] aliases) {
+                    return get((Integer) tuple[0]);
+                }
+
+                @SuppressWarnings("rawtypes")
+                @Override
+                public List transformList(List collection) {
+                    return collection;
+                }
+            }).list());
+    }
+
 }
