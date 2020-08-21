@@ -62,7 +62,6 @@ import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThreshdDao;
 import org.opennms.netmgt.config.dao.thresholding.api.OverrideableThresholdingDao;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -135,9 +134,6 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
     private OverrideableThreshdDao threshdDao;
 
     @Autowired
-    private ApplicationDao applicationDao;
-
-    @Autowired
     private OverrideableThresholdingDao thresholdingDao;
 
     @Autowired
@@ -188,7 +184,7 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
             this.app1.addMonitoredService(this.node1icmp);
             this.app1.addMonitoredService(this.node2icmp);
             this.app1.addMonitoredService(this.node1http);
-            this.applicationDao.save(this.app1);
+            this.databasePopulator.getApplicationDao().save(this.app1);
 
             this.node1icmp.addApplication(this.app1);
             this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(this.node1icmp);
@@ -202,7 +198,7 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
             this.app2.addPerspectiveLocation(this.databasePopulator.getLocRDU());
             this.app2.addMonitoredService(this.node1snmp);
             this.app2.addMonitoredService(this.node2snmp);
-            this.applicationDao.save(this.app2);
+            this.databasePopulator.getApplicationDao().save(this.app2);
 
             this.node1snmp.addApplication(this.app2);
             this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(this.node1snmp);
@@ -353,10 +349,10 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
             this.databasePopulator.getIpInterfaceDao().saveOrUpdate(iface1);
             this.databasePopulator.getServiceTypeDao().saveOrUpdate(service1.getServiceType());
             this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(service1);
-            this.applicationDao.saveOrUpdate(this.app1);
+            this.databasePopulator.getApplicationDao().saveOrUpdate(this.app1);
 
             this.databasePopulator.getMonitoredServiceDao().flush();
-            this.applicationDao.flush();
+            this.databasePopulator.getApplicationDao().flush();
 
             return null;
         });
@@ -448,11 +444,11 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         node4icmp.addApplication(app);
 
         this.databasePopulator.getTransactionTemplate().execute(tx -> {
-            this.applicationDao.save(app);
+            this.databasePopulator.getApplicationDao().save(app);
             this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(node3icmp);
             this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(node4icmp);
 
-            this.applicationDao.flush();
+            this.databasePopulator.getApplicationDao().flush();
             this.databasePopulator.getMonitoredServiceDao().flush();
             return null;
         });
@@ -483,13 +479,13 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         this.node1icmp.removeApplication(this.app1);
 
         this.databasePopulator.getTransactionTemplate().execute(tx -> {
-            this.applicationDao.saveOrUpdate(this.app1);
+            this.databasePopulator.getApplicationDao().saveOrUpdate(this.app1);
             this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(this.node1icmp);
             this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(this.node2icmp);
             this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(node3icmp);
             this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(node4icmp);
 
-            this.applicationDao.flush();
+            this.databasePopulator.getApplicationDao().flush();
             this.databasePopulator.getMonitoredServiceDao().flush();
             return null;
         });
@@ -511,8 +507,8 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         assertThat(findRemotePolledService(this.node2icmp, "RDU"), is(notNullValue()));
 
         this.databasePopulator.getTransactionTemplate().execute(tx -> {
-            this.applicationDao.delete(this.app1);
-            this.applicationDao.flush();
+            this.databasePopulator.getApplicationDao().delete(this.app1);
+            this.databasePopulator.getApplicationDao().flush();
             return null;
         });
 
