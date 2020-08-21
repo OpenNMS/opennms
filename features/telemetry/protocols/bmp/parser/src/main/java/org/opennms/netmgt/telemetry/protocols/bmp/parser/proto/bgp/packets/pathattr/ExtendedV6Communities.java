@@ -29,10 +29,8 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.skip;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.util.List;

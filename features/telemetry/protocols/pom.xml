@@ -20,5 +20,6 @@
     <module>nxos</module>
     <module>sflow</module>
     <module>netflow</module>
+    <module>openconfig</module>
   </modules>
 </project>

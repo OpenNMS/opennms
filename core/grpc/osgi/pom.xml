@@ -3,14 +3,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>org.opennms.core.ipc.grpc</artifactId>
-    <groupId>org.opennms.core.ipc</groupId>
+    <artifactId>org.opennms.core.grpc</artifactId>
+    <groupId>org.opennms.core</groupId>
     <version>26.1.4-SNAPSHOT</version>
+
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.opennms.core.ipc.grpc</groupId>
-  <artifactId>org.opennms.core.ipc.grpc.osgi</artifactId>
+  <groupId>org.opennms.core.grpc</groupId>
+  <artifactId>org.opennms.core.grpc.osgi</artifactId>
   <packaging>bundle</packaging>
   <name>OpenNMS :: GRPC :: OSGI :: Shaded </name>
   <build>

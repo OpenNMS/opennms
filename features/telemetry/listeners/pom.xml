@@ -37,5 +37,6 @@
       <artifactId>org.opennms.features.telemetry.common</artifactId>
       <version>${project.version}</version>
     </dependency>
+
   </dependencies>
 </project>

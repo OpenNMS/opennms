@@ -65,7 +65,6 @@
                                 <feature>opennms-core-tracing-jaeger</feature>
                                 <feature>opennms-dnsresolver-shell</feature>
                                 <feature>opennms-dnsresolver-netty</feature>
-                                <feature>opennms-core-ipc-grpc-osgi</feature>
                                 <feature>opennms-core-ipc-grpc-client</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
@@ -381,8 +380,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core.ipc.grpc</groupId>
-            <artifactId>org.opennms.core.ipc.grpc.osgi</artifactId>
+            <groupId>org.opennms.core.grpc</groupId>
+            <artifactId>org.opennms.core.grpc.osgi</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

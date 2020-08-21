@@ -180,5 +180,6 @@
     <module>jest</module>
     <module>dnsresolver</module>
     <module>karaf-health</module>
+    <module>openconfig</module>
   </modules>
 </project>

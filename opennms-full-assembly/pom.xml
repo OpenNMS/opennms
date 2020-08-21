@@ -574,6 +574,8 @@
                 <feature>opennms-telemetry-jti</feature>
                 <feature>opennms-telemetry-nxos</feature>
                 <feature>opennms-telemetry-graphite</feature>
+                <feature>opennms-telemetry-openconfig</feature>
+                <feature>opennms-telemetry-openconfig-client</feature>
                 <feature>org.opennms.features.enlinkd.service.api</feature>
                 <feature>org.opennms.features.bsm.service.api</feature>
                 <feature>org.opennms.features.bsm.shell-commands</feature>
@@ -1047,6 +1049,11 @@
     <dependency>
       <groupId>org.opennms.core.ipc.grpc</groupId>
       <artifactId>org.opennms.core.ipc.grpc.server</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.openconfig</groupId>
+      <artifactId>org.opennms.features.openconfig.telemetry-client</artifactId>
       <version>${project.version}</version>
     </dependency>
 
