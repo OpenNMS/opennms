@@ -117,6 +117,12 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
         }
     }
 
+    public void shutdown() {
+        if(getStartupExecutor() != null) {
+            getStartupExecutor().shutdown();
+        }
+    }
+
     private static final class DynamicIpcRouteBuilder extends RouteBuilder {
         private final CamelMessageConsumerManager consumerManager;
         private final SinkModule<?, Message> module;

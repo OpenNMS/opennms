@@ -89,7 +89,7 @@ When enabled, the following options can be used to configure the Redis-based cac
 
 You will likely want to change the values of `cache.max_entries` and the `ring_buffer_size` to suit your installation.
 
-Meta-data related to resources are cached in order to avoid writing redundant records in _Cassandra_.
+Metadata related to resources are cached in order to avoid writing redundant records in _Cassandra_.
 If you are collecting data from a large number of resources, you should increase the `cache.max_entries` to reflect the number of resources you are collecting from, with a suitable buffer.
 
 The samples gathered by the collectors are temporarily stored in a ring buffer before they are persisted to _Cassandra_ using _Newts_.

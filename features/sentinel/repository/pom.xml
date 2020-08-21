@@ -57,6 +57,10 @@
                                 <feature>opennms-spring-extender</feature>
                                 <feature>opennms-blobstore-shell</feature>
                                 <feature>opennms-jsonstore-shell</feature>
+                                <feature>opennms-distributed-core-impl</feature>
+                                <feature>scv-api</feature>
+                                <feature>scv-shell</feature>
+                                <feature>scv-jceks-impl</feature>
 
                                 <!-- Sentinel specific features -->
                                 <feature>sentinel-core</feature>
@@ -64,6 +68,7 @@
                                 <feature>sentinel-jms</feature>
                                 <feature>sentinel-telemetry</feature>
                                 <feature>sentinel-telemetry-bmp</feature>
+                                <feature>sentinel-telemetry-graphite</feature>
                                 <feature>sentinel-telemetry-jti</feature>
                                 <feature>sentinel-telemetry-nxos</feature>
                                 <feature>sentinel-flows</feature>
@@ -114,6 +119,8 @@
                     <descriptors>
                         <descriptor>src/assembly/repo.xml</descriptor>
                     </descriptors>
+                    <overrideUid>0</overrideUid>
+                    <overrideGid>0</overrideGid>
                     <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
                 <executions>
@@ -364,6 +371,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.telemetry.protocols.graphite</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.graphite.adapter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.telemetry.protocols.jti</groupId>
             <artifactId>org.opennms.features.telemetry.protocols.jti.adapter</artifactId>
             <version>${project.version}</version>
@@ -516,6 +528,16 @@
         <dependency>
             <groupId>org.opennms.features.collection</groupId>
             <artifactId>org.opennms.features.collection.thresholding.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.shell</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

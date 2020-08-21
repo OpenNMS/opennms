@@ -10,7 +10,7 @@ The `provision.pl` script doesn't supply this feature but you can get it via the
 
 [source, bash]
 ----
-#!/bin/bash
+#!/usr/bin/env bash
 REQ=$1
 curl -X GET -H "Content-Type: application/xml" -u admin:admin http://localhost:8980/opennms/rest/requisitions/$REQ 2>/dev/null | xmllint --format -
 ----

@@ -1,0 +1,9 @@
+# HELP one_counter_total This is the first
+# TYPE one_counter_total counter
+one_counter_total 111
+# HELP two_counter_total This is the second
+# TYPE two_counter_total counter
+two_counter_total 222
+# TYPE three_counter_total counter
+# HELP three_counter_total This is the third with type specified first
+three_counter_total 333

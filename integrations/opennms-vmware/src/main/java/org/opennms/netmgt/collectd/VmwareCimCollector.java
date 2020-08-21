@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,7 +70,9 @@ import org.opennms.netmgt.config.vmware.cim.VmwareCimGroup;
 import org.opennms.netmgt.dao.VmwareCimDatacollectionConfigDao;
 import org.opennms.netmgt.dao.VmwareConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.sblim.wbem.cim.CIMObject;
@@ -180,14 +183,9 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
      */
     private static final Logger logger = LoggerFactory.getLogger(VmwareCimCollector.class);
 
-    private static final String VMWARE_COLLECTION_KEY = "vmwareCollection";
-    private static final String VMWARE_MGMT_SERVER_KEY = "vmwareManagementServer";
-    private static final String VMWARE_MGED_OBJECT_ID_KEY = "vmwareManagedObjectId";
-    private static final String VMWARE_SERVER_KEY = "vmwareServer";
-
     private static final Map<String, Class<?>> TYPE_MAP = Collections.unmodifiableMap(Stream.of(
-            new SimpleEntry<>(VMWARE_COLLECTION_KEY, VmwareCimCollection.class),
-            new SimpleEntry<>(VMWARE_SERVER_KEY, VmwareServer.class))
+            new SimpleEntry<>(VmwareImporter.VMWARE_COLLECTION_KEY, VmwareCimCollection.class),
+            new SimpleEntry<>(VmwareImporter.VMWARE_SERVER_KEY, VmwareServer.class))
             .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
 
     /**
@@ -366,18 +364,19 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
             throw new IllegalArgumentException(String.format("VmwareCollector: No node found with id: %d", agent.getNodeId()));
         }
 
-        // retrieve the assets
-        final String vmwareManagementServer = onmsNode.getAssetRecord().getVmwareManagementServer();
+        // retrieve the metadata
+        final String vmwareManagementServer = VmwareImporter.getManagementServer(onmsNode);
+
         if (Strings.isNullOrEmpty(vmwareManagementServer)) {
             throw new IllegalArgumentException(String.format("VmwareCollector: No management server is set on node with id %d.",  onmsNode.getId()));
         }
-        runtimeAttributes.put(VMWARE_MGMT_SERVER_KEY, vmwareManagementServer);
+        runtimeAttributes.put(VmwareImporter.METADATA_MANAGEMENT_SERVER, vmwareManagementServer);
 
         final String vmwareManagedObjectId = onmsNode.getForeignId();
         if (Strings.isNullOrEmpty(vmwareManagedObjectId)) {
             throw new IllegalArgumentException(String.format("VmwareCollector: No foreign id is set on node with id %d.",  onmsNode.getId()));
         }
-        runtimeAttributes.put(VMWARE_MGED_OBJECT_ID_KEY, vmwareManagedObjectId);
+        runtimeAttributes.put(VmwareImporter.METADATA_MANAGED_OBJECT_ID, vmwareManagedObjectId);
 
         // retrieve the collection
         final String collectionName = ParameterMap.getKeyedString(parameters, "collection", ParameterMap.getKeyedString(parameters, "vmware-collection", null));
@@ -385,7 +384,7 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
         if (collection == null) {
             throw new IllegalArgumentException(String.format("VmwareCollector: No collection found with name '%s'.",  collectionName));
         }
-        runtimeAttributes.put(VMWARE_COLLECTION_KEY, collection);
+        runtimeAttributes.put(VmwareImporter.VMWARE_COLLECTION_KEY, collection);
 
         // retrieve the server configuration
         final Map<String, VmwareServer> serverMap = m_vmwareConfigDao.getServerMap();
@@ -396,7 +395,7 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
         if (vmwareServer == null) {
             throw new IllegalStateException(String.format("VmwareCollector: Error getting credentials for VMware management server: %s", vmwareManagementServer));
         }
-        runtimeAttributes.put(VMWARE_SERVER_KEY, vmwareServer);
+        runtimeAttributes.put(VmwareImporter.VMWARE_SERVER_KEY, vmwareServer);
         return runtimeAttributes;
     }
 
@@ -410,10 +409,10 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
      */
     @Override
     public CollectionSet collect(CollectionAgent agent, Map<String, Object> parameters) throws CollectionException {
-        final VmwareCimCollection collection = (VmwareCimCollection) parameters.get(VMWARE_COLLECTION_KEY);
-        final String vmwareManagementServer = (String) parameters.get(VMWARE_MGMT_SERVER_KEY);
-        final String vmwareManagedObjectId = (String) parameters.get(VMWARE_MGED_OBJECT_ID_KEY);
-        final VmwareServer vmwareServer = (VmwareServer) parameters.get(VMWARE_SERVER_KEY);
+        final VmwareCimCollection collection = (VmwareCimCollection) parameters.get(VmwareImporter.VMWARE_COLLECTION_KEY);
+        final String vmwareManagementServer = (String) parameters.get(VmwareImporter.METADATA_MANAGEMENT_SERVER);
+        final String vmwareManagedObjectId = (String) parameters.get(VmwareImporter.METADATA_MANAGED_OBJECT_ID);
+        final VmwareServer vmwareServer = (VmwareServer) parameters.get(VmwareImporter.VMWARE_SERVER_KEY);
 
         CollectionSetBuilder builder = new CollectionSetBuilder(agent);
         builder.withStatus(CollectionStatus.FAILED);

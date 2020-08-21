@@ -460,8 +460,13 @@
     <bean id="headerProvider" name="/navBar.htm" class="org.opennms.web.controller.NavBarController">
         <property name="navBarItems" ref="navBarEntries" />
     </bean>
-    
-  <onmsgi:service interface="org.opennms.web.api.OnmsHeaderProvider" ref="headerProvider"/>
+
+  <onmsgi:service ref="headerProvider">
+      <onmsgi:interfaces>
+          <value>org.opennms.web.api.OnmsHeaderProvider</value>
+          <value>org.opennms.web.api.MenuProvider</value>
+      </onmsgi:interfaces>
+  </onmsgi:service>
 
     <bean name="/includes/nodeCategory-box.htm" class="org.opennms.web.controller.NodeCategoryBoxController">
         <property name="adminCategoryService" ref="adminCategoryService"/>

@@ -28,17 +28,17 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.transform.Transformers;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecord, Integer> implements AssetRecordDao {
 
@@ -144,11 +144,6 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecor
         projList.add(Projections.alias(Projections.property("vendorFax"), "vendorFax"));
         projList.add(Projections.alias(Projections.property("vendorPhone"), "vendorPhone"));
         projList.add(Projections.alias(Projections.property("geolocation.zip"), "zip"));
-        projList.add(Projections.alias(Projections.property("vmwareManagedObjectId"), "vmwareManagedObjectId"));
-        projList.add(Projections.alias(Projections.property("vmwareManagedEntityType"), "vmwareManagedEntityType"));
-        projList.add(Projections.alias(Projections.property("vmwareManagementServer"), "vmwareManagementServer"));
-        projList.add(Projections.alias(Projections.property("vmwareTopologyInfo"), "vmwareTopologyInfo"));
-        projList.add(Projections.alias(Projections.property("vmwareState"), "vmwareState"));
 
         criteria.setProjection(Projections.distinct(projList));
         criteria.setResultTransformer(Transformers.aliasToBean(OnmsAssetRecord.class));

@@ -34,6 +34,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
+  <jsp:param name="ngapp" value="onms-ksc-wizard" />
   <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="headTitle" value="Choose Resource" />
   <jsp:param name="headTitle" value="KSC" />
@@ -43,7 +44,7 @@
   <jsp:param name="breadcrumb" value="Custom Graph" />
 </jsp:include>
 
-<div class="container-fluid" ng-app="onms-ksc-wizard" ng-controller="KSCResourceCtrl">
+<div class="container-fluid" ng-controller="KSCResourceCtrl">
 
   <%-- Title --%>
 

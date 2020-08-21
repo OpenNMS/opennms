@@ -42,14 +42,6 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerHeader;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.InitiationPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.PeerDownPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.PeerUpPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.RouteMirroringPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.RouteMonitoringPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.StatisticsReportPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.TerminationPacket;
-import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.UnknownPacket;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -57,6 +49,7 @@ import io.netty.buffer.Unpooled;
 public class ParserTest {
     private final static Path FILE_NMS_12643 = Paths.get("src/test/resources/NMS-12643.raw");
     private final static Path FILE_NMS_12649 = Paths.get("src/test/resources/NMS-12649.raw");
+    private final static Path FILE_NMS_12671 = Paths.get("src/test/resources/NMS-12671.raw");
 
     private void checkFile(final Path file) throws Exception {
         try (final FileChannel channel = FileChannel.open(file)) {
@@ -84,5 +77,10 @@ public class ParserTest {
     @Test
     public void testNMS12649() throws Exception {
         checkFile(FILE_NMS_12649);
+    }
+
+    @Test
+    public void testNMS12671() throws Exception {
+        checkFile(FILE_NMS_12671);
     }
 }

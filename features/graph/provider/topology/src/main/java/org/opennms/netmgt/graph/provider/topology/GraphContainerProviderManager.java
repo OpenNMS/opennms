@@ -38,8 +38,10 @@ import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.integration.api.v1.graph.Properties;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.graph.api.enrichment.EnrichmentService;
 import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.opennms.netmgt.graph.api.service.GraphService;
@@ -55,12 +57,15 @@ public class GraphContainerProviderManager {
     private final BundleContext bundleContext;
     private final Map<GraphContainerProvider, List<ServiceRegistration<?>>> serviceRegistrations = Maps.newHashMap();
     private final GraphService graphService;
+    private final EnrichmentService enrichmentService;
     private final NodeDao nodeDao;
     private final AlarmDao alarmDao ;
 
-    public GraphContainerProviderManager(final BundleContext bundlecontext, final GraphService graphService, final NodeDao nodeDao, final AlarmDao alarmDao) {
+    public GraphContainerProviderManager(final BundleContext bundlecontext, final GraphService graphService, final EnrichmentService enrichmentService,
+                                         final NodeDao nodeDao, final AlarmDao alarmDao) {
         this.bundleContext = Objects.requireNonNull(bundlecontext);
         this.graphService = Objects.requireNonNull(graphService);
+        this.enrichmentService = Objects.requireNonNull(enrichmentService);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.alarmDao = Objects.requireNonNull(alarmDao);
     }
@@ -77,7 +82,7 @@ public class GraphContainerProviderManager {
             final Hashtable<String, String> serviceProperties = new Hashtable<>();
             serviceProperties.put("label", containerInfo.getLabel());
 
-            final MetaTopologyProvider metaTopologyProvider = new LegacyMetaTopologyProvider(configuration, nodeDao, graphService, containerId);
+            final MetaTopologyProvider metaTopologyProvider = new LegacyMetaTopologyProvider(configuration, nodeDao, graphService, enrichmentService, containerId);
             final ServiceRegistration<MetaTopologyProvider> metaTopologyProviderServiceRegistration = bundleContext.registerService(MetaTopologyProvider.class, metaTopologyProvider, serviceProperties);
 
             // Register Search provider
@@ -139,7 +144,11 @@ public class GraphContainerProviderManager {
 
         @Override
         public boolean isResolveNodeIds() {
-            return Boolean.valueOf(properties.get("resolve-node-ids"));
+            if(properties.get(Properties.Enrichment.RESOLVE_NODES) != null) {
+                return Boolean.parseBoolean(properties.get(Properties.Enrichment.RESOLVE_NODES));
+            }
+            // Fallback: legacy property - this is deprecated and will be removed in future versions
+            return Boolean.parseBoolean(properties.get("resolve-node-ids"));
         }
     }
 }

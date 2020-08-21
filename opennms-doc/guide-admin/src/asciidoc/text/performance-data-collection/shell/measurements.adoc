@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[ga-performance-mgmt-measurements-shell]]
-==== Measurements & Resources
+===== Measurements & Resources
 
 The following _Karaf Shell_ commands are made available to help enumerate, view and manage measurement related resources.
 
@@ -35,7 +35,7 @@ The `opennms:delete-measurement-resources` command can be used to delete resourc
 [source]
 ----
 admin@opennms> opennms:delete-measurement-resources "node[NODES:node].responseTime[127.0.0.1]"
-Deleting measurements and meta-data associated with resource ID 'node[NODES:node].responseTime[127.0.0.1]'...
+Deleting measurements and metadata associated with resource ID 'node[NODES:node].responseTime[127.0.0.1]'...
 Done.
 ----
 

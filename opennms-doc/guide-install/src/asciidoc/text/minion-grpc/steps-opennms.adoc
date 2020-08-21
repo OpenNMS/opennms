@@ -8,7 +8,7 @@
 [source, shell]
 ----
 cat <<EOF >${OPENNMS_HOME}/etc/opennms.properties.d/grpc.properties
-org.opennms.core.ipc.ipc.strategy=osgi
+org.opennms.core.ipc.strategy=osgi
 EOF
 ----
 

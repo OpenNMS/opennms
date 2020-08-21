@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # copy this file and link_quality in /opt/opennms/contrib/alvarion, then schedule from crontab every 5m:
 # */5 * * * *     root  /opt/opennms/contrib/alvarion/run_link_quality >/dev/null 2>&1

@@ -29,21 +29,54 @@
 package org.opennms.web.navigate;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 import javax.servlet.http.HttpServletRequest;
+
 public interface NavBarEntry {
-    public String getName();
-    public String getDisplayString();
-    public String getUrl();
+
+    class NavBarContext implements MenuContext {
+        private final String location;
+        private final Function<String, Boolean> userInRoleFunction;
+
+        public NavBarContext(String location, Function<String, Boolean> userInRoleFunction) {
+            this.userInRoleFunction = Objects.requireNonNull(userInRoleFunction);
+            this.location = location;
+        }
+
+        @Override
+        public String getLocation() {
+            return location;
+        }
+
+        @Override
+        public boolean isUserInRole(String role) {
+            return userInRoleFunction.apply(role);
+        }
+    }
+
+    String getName();
+    String getDisplayString();
+    String getUrl();
 
     /**
      * If this navbar entry has sub-entries, return them.  May return null if there are no sub-entries.
      */
-    public List<NavBarEntry> getEntries();
-    public boolean hasEntries();
+    List<NavBarEntry> getEntries();
+    boolean hasEntries();
+
+    DisplayStatus evaluate(MenuContext context);
 
     /**
      * Return an object that represents whether or not the entry should be displayed and/or linked.
+     *
+     * @deprecated use {@link #evaluate(MenuContext)} instead.
      */
-    public abstract DisplayStatus evaluate(HttpServletRequest request);
+    @Deprecated
+    default DisplayStatus evaluate(HttpServletRequest request) {
+        final String location = request.getParameter("location");
+        final Function<String, Boolean> userInRoleFunction = s -> request.isUserInRole(s);
+        return evaluate(new NavBarContext(location, userInRoleFunction));
+    }
 }

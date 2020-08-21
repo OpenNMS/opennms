@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BAMBOO_HOST="https://bamboo.opennms.org"
 

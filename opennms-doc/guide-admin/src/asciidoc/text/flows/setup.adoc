@@ -110,7 +110,7 @@ parsers.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.Netfl
 NOTE: The associated protocol, in this case `Netflow-5` must also be enabled on _{opennms-product-name}_ for the messages to be processed.
 
 In some scenarios the exporters address is altered due to network address translation.
-In this case you can use node meta-data to identify the exporter.
+In this case you can use node metadata to identify the exporter.
 Use the `metaDataNodeLookup` parameter to specify a context-key pair in the form of `context:key` for the lookup.
 
 This value used for the lookup corresponds to the following fields from the various protocols:

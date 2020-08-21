@@ -2,6 +2,7 @@ const angular = require('vendor/angular-js');
 const elementList = require('../onms-elementList/lib/elementList');
 require('../../lib/onms-pagination');
 require('../../lib/onms-http');
+require('../onms-default-apps');
 require('angular-bootstrap-confirm');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle.css');
@@ -43,7 +44,8 @@ const handleErrorResponse = function(response, $scope) {
             'onms.http',
             'onms.elementList',
             'mwl.confirm',
-            'onms.pagination'
+            'onms.pagination',
+            'onms.default.apps',
         ])
         .run(function(confirmationPopoverDefaults) {
             confirmationPopoverDefaults.templateUrl = confirmTopoverTemplate;
@@ -300,6 +302,11 @@ const handleErrorResponse = function(response, $scope) {
                 groups: [$stateParams.id],
                 search: undefined
             };
+
+            $scope.splitRule = (entry) => {
+                return entry ? entry.replaceAll(',', '\n') : entry;
+            };
+
             $scope.findGroup = function(groupId) {
                 return ClassificationGroupService.get({id: groupId}, function(response) {
                     $scope.group = response;

@@ -63,4 +63,8 @@ public class DetectRequestImpl implements DetectRequest {
         return runtimeAttributes;
     }
 
+    @Override
+    public void preDetect() {
+        // pass
+    }
 }

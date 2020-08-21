@@ -142,7 +142,7 @@
                   </div>
               </div>
           </form>
-              
+
         <%-- Search by location --%>
           <form role="form" class="form-group" action="element/nodeList.htm" method="get">
               <input type="hidden" name="listInterfaces" value="false"/>
@@ -272,7 +272,7 @@
       </div>
       <div class="card-body">
           <p>Searching by name is a case-insensitive, inclusive search. For example,
-            searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>, 
+            searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>,
             <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc. The underscore
             character acts as a single character wildcard. The percent character acts as a multiple
             character wildcard.

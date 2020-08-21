@@ -94,22 +94,22 @@ public class CollectionSetMapper {
                         interfaceResourceBuilder.setNode(nodeResourceBuilder);
                         interfaceResourceBuilder.setInstance(resource.getInterfaceLabel());
                         collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
-                    } else {
-                        // it is likely to be response time resource.
-                        CollectionSetProtos.ResponseTimeResource.Builder responseTimeResource = buildResponseTimeResource(
-                                resource);
-                        if (responseTimeResource != null) {
-                            collectionSetResourceBuilder.setResponse(responseTimeResource);
-                        }
                     }
-
+                } else if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY)) {
+                    CollectionSetProtos.ResponseTimeResource.Builder responseTimeResource = buildResponseTimeResource(
+                            resource);
+                    if (responseTimeResource != null) {
+                        collectionSetResourceBuilder.setResponse(responseTimeResource);
+                    }
                 } else {
                     CollectionSetProtos.GenericTypeResource.Builder genericResourceBuilder = CollectionSetProtos.GenericTypeResource
                             .newBuilder();
                     String nodeCriteria = getNodeCriteriaFromResource(resource);
-                    CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
-                            nodeCriteria);
-                    genericResourceBuilder.setNode(nodeResourceBuilder);
+                    if (!Strings.isNullOrEmpty(nodeCriteria)) {
+                        CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
+                                nodeCriteria);
+                        genericResourceBuilder.setNode(nodeResourceBuilder);
+                    }
                     genericResourceBuilder.setType(resource.getResourceTypeName());
                     genericResourceBuilder.setInstance(resource.getInstance());
                     collectionSetResourceBuilder.setGeneric(genericResourceBuilder);

@@ -161,3 +161,43 @@ system:
 ```
 Config specified will be written to `etc/confd.system.properties` which gets automatically appended to `etc/system.properties`. Additionally, provided the
 `jaeger-agent-host` key is specified, `etc/featuresBoot.d/jaeger.boot` will also be updated.
+
+### Karaf Properties
+```
+---
+karaf:
+    shell:
+        ssh:
+            host: "0.0.0.0"
+            port: 8201
+    management:
+        rmi:
+            registry:
+                host: "127.0.0.1"
+                port: 1299
+            server:
+                host: "127.0.0.1"
+                port: 45444
+```
+Config specified will be written to:
+- `etc/org.apache.karaf.shell.cfg` for content under `shell`.
+- `etc/org.apache.karaf.management.cfg` for content under `management`.
+
+### Jetty Properties
+```
+---
+jetty:
+    web:
+        host: "0.0.0.0"
+        port: 8181
+```
+Config specified will be written to `etc/org.ops4j.pax.web.cfg`
+
+### Secure Credentials Vault Provider
+```
+--- 
+scv:
+    provider: "dominion"
+```
+Can be used to override the default SCV provider from the JCEKS implementation (which uses the file system) to a gRPC
+based implementation which requests credentials from Dominion. If not specified the default JCEKS will be used.

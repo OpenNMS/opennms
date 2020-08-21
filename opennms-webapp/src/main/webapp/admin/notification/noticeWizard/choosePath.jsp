@@ -222,6 +222,11 @@
 			    <td>%interfaceresolve% = Reverse DNS name of interface IP address</td>
                <td>%operinstruct% = Operator instructions from event definition</td>		     
 			  </tr>
+              <tr>
+                  <td>\${context:key|…} = node / interface / service meta-data</td>
+                  <td></td>
+                  <td></td>
+              </tr>
             </table>
           </td>
          </tr>

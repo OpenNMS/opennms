@@ -9,11 +9,13 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
     <reference id="graphService" interface="org.opennms.netmgt.graph.api.service.GraphService" />
+    <reference id="enrichmentService" interface="org.opennms.netmgt.graph.api.enrichment.EnrichmentService" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
     <bean id="graphContainerProviderManager" class="org.opennms.netmgt.graph.provider.topology.GraphContainerProviderManager">
         <argument ref="blueprintBundleContext" />
         <argument ref="graphService" />
+        <argument ref="enrichmentService" />
         <argument ref="nodeDao" />
         <argument ref="alarmDao" />
     </bean>

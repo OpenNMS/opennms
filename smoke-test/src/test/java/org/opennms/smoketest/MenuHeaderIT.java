@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,9 @@
 
 package org.opennms.smoketest;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,6 +38,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.opennms.smoketest.ui.framework.search.CentralSearch;
+import org.opennms.smoketest.ui.framework.search.result.ContextSearchResult;
+import org.opennms.smoketest.ui.framework.search.result.SearchContext;
+import org.opennms.smoketest.ui.framework.search.result.SearchResult;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -135,10 +141,14 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItemWithIcon(helpMenuName, "About", "opennms/about/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Version Details']");
 
-        frontPage();
-        final String userMenuName = "nav-user-top";
-        clickMenuItemWithIcon(userMenuName, "Log Out", "opennms/j_spring_security_logout");
-        findElementById("input_j_username");
+        Unreliables.retryUntilSuccess(60, TimeUnit.SECONDS, () -> {
+            frontPage();
+            Thread.sleep(200);
+            final String userMenuName = "nav-user-top";
+            clickMenuItemWithIcon(userMenuName, "Log Out", "opennms/j_spring_security_logout");
+            findElementById("input_j_username");
+            return null;
+        });
     }
 
     @Test
@@ -174,6 +184,27 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         reportsPage();
         findElementByLink("Statistics Reports").click();
         findElementByXpath("//div[@class='card-header']/span[text()='Statistics Report List']");
+    }
+
+    @Test
+    public void verifyCentralSearch() {
+        // Kick off search
+        final SearchResult searchResult = new CentralSearch(getDriver()).search("Configure");
+        assertThat(searchResult.size(), is(10L));
+
+        // Load more elements
+        final ContextSearchResult contextSearchResult = searchResult.forContext(SearchContext.Action);
+        assertThat(contextSearchResult.hasMore(), is(true));
+        contextSearchResult.loadMore();
+        assertThat(contextSearchResult.size(), is(13L));
+
+        // Select last element from the now loaded elements
+        contextSearchResult.getItem("Configure Users").click();
+        getDriver().getCurrentUrl().endsWith("/opennms/admin/userGroupView/users/list.jsp");
+
+        // Go back to start page
+        new CentralSearch(getDriver()).search("Home").getSingleItem().click();
+        getDriver().getCurrentUrl().endsWith("/opennms/index.jsp");
     }
 
     // We need this helper method, as with the icon used in some menus the contains(text(),...) method does not work anymore

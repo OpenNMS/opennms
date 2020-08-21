@@ -30,6 +30,7 @@ package org.opennms.features.jest.client.template;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -58,12 +59,18 @@ public class TemplateMerger {
 
             // Prepend the index prefix to the template pattern
             if (!Strings.isNullOrEmpty(indexSettings.getIndexPrefix())) {
-                final JsonPrimitive templateName = template.getAsJsonPrimitive("template");
-                if (templateName == null) {
-                    template.addProperty("template", indexSettings.getIndexPrefix());
+                JsonArray indexPatterns = template.getAsJsonArray("index_patterns");
+                if (indexPatterns == null) {
+                    indexPatterns = new JsonArray();
+                    indexPatterns.add(indexSettings.getIndexPrefix()+ "*");
+                    template.add("index_patterns", indexPatterns);
                 } else {
-                    template.addProperty("template", indexSettings.getIndexPrefix() + templateName.getAsString());
+                    for (int i = 0; i < indexPatterns.size(); i++) {
+                        final String newPattern = indexSettings.getIndexPrefix() + indexPatterns.get(i).getAsString();
+                        indexPatterns.set(i, new JsonPrimitive(newPattern));
+                    }
                 }
+                template.add("index_patterns", indexPatterns);
             }
 
             final JsonObject indexObject = template.get(SETTINGS_KEY).getAsJsonObject().get(INDEX_KEY).getAsJsonObject();

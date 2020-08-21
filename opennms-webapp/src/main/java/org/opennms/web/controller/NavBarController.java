@@ -34,10 +34,12 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,8 +47,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.web.api.Authentication;
+import org.opennms.web.navigate.MenuContext;
+import org.opennms.web.api.MenuProvider;
 import org.opennms.web.api.OnmsHeaderProvider;
+import org.opennms.web.navigate.DefaultMenuEntry;
 import org.opennms.web.navigate.DisplayStatus;
+import org.opennms.web.navigate.MenuEntry;
 import org.opennms.web.navigate.NavBarEntry;
 import org.opennms.web.navigate.NavBarModel;
 import org.springframework.beans.factory.InitializingBean;
@@ -68,7 +74,7 @@ import freemarker.template.TemplateModelException;
  *
  * @author jwhite
  */
-public class NavBarController extends AbstractController implements InitializingBean, OnmsHeaderProvider {
+public class NavBarController extends AbstractController implements InitializingBean, OnmsHeaderProvider, MenuProvider {
     private List<NavBarEntry> m_navBarItems;
     private CentralizedDateTimeFormat dateTimeFormat;
     private Configuration cfg;
@@ -94,6 +100,22 @@ public class NavBarController extends AbstractController implements Initializing
     @Override
     protected ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         return new ModelAndView(createView(), createModel(request));
+    }
+
+    @Override
+    public List<MenuEntry> getMenu(final MenuContext context) {
+        final List<MenuEntry> menu = new ArrayList<>();
+        for (final NavBarEntry entry : getNavBarItems()) {
+            final DefaultMenuEntry defaultMenuEntry = new DefaultMenuEntry(entry.getName(), entry.getUrl(), entry.evaluate(context));
+            if (entry.getEntries() != null) {
+                final List<MenuEntry> entries = entry.getEntries().stream()
+                        .map(e -> new DefaultMenuEntry(e.getName(), e.getUrl(), e.evaluate(context)))
+                        .collect(Collectors.toList());
+                defaultMenuEntry.addEntries(entries);
+            }
+            menu.add(defaultMenuEntry);
+        }
+        return menu;
     }
 
     private Map<String, Object> createModel(final HttpServletRequest request) {
@@ -162,7 +184,7 @@ public class NavBarController extends AbstractController implements Initializing
 
     @Override
     public String getHeaderHtml(HttpServletRequest request) throws Exception {
-        return createView().renderMergedOutputModel(createModel(request), request);
+        return createView().renderMergedOutputModel(createModel(request));
     }
 
     /**
@@ -178,23 +200,19 @@ public class NavBarController extends AbstractController implements Initializing
             this.template = template;
         }
 
-        public String renderMergedOutputModel(Map<String, Object> model,
-                HttpServletRequest request) throws Exception {
+        public String renderMergedOutputModel(Map<String, Object> model) throws Exception {
             StringWriter writer = new StringWriter();
-            renderMergedOutputModel(model, request, writer);
+            renderMergedOutputModel(model,  writer);
             return writer.toString();
         }
 
-        public void renderMergedOutputModel(Map<String, Object> model,
-                HttpServletRequest request, Writer writer) throws Exception {
+        public void renderMergedOutputModel(Map<String, Object> model, Writer writer) throws Exception {
             template.process(model, writer);
         }
 
         @Override
-        protected void renderMergedOutputModel(Map<String, Object> model,
-                HttpServletRequest request, HttpServletResponse response)
-                throws Exception {
-            renderMergedOutputModel(model, request, response.getWriter());
+        protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+            renderMergedOutputModel(model, response.getWriter());
         }
     }
 

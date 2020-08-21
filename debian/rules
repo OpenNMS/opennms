@@ -29,6 +29,8 @@ export BUILDDEFINES=\
 	-Dproduct.snapshot=true \
 	-Daether.connector.basic.threads=1 \
 	-Daether.connector.resumeDownloads=false \
+	--builder smart \
+	--threads $${CCI_MAXCPU:-2} \
 	$(OPTS_PROFILES)
 
 configure:

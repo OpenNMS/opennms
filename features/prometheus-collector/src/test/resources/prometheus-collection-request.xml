@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<prometheus-collection-request xmlns="http://xmlns.opennms.org/xsd/config/prometheus-datacollection">
+    <group name="node_exporter_loadavg" resource-type="node" filter-exp="name matches 'node_load.*'">
+        <numeric-attribute alias-exp="name.substring('node_'.length())"/>
+    </group>
+</prometheus-collection-request>

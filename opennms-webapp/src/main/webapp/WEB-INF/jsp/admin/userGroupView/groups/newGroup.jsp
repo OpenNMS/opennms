@@ -51,14 +51,11 @@
         alert("The group ID '" + document.newGroupForm.groupName.value + "' cannot be used. It may be confused with the administration group ID 'Admin'.");
         return false;
     }
-    
-    document.newGroupForm.action="admin/userGroupView/groups/modifyGroup";
     document.newGroupForm.operation.value="addGroup";
     return true;
   }    
   function cancelGroup()
   {
-      document.newGroupForm.action="admin/userGroupView/groups/modifyGroup";
       document.newGroupForm.operation.value="cancel";
       document.newGroupForm.submit();
   }
@@ -74,7 +71,7 @@
     <%}%>
   </div>
   <div class="card-body">
-    <form role="form" class="form" id="newGroupForm" method="post" name="newGroupForm" onsubmit="return validateFormInput();">
+    <form role="form" class="form" id="newGroupForm" method="post" name="newGroupForm" onsubmit="return validateFormInput();" action="admin/userGroupView/groups/modifyGroup">
       <input type="hidden" name="operation" />
 
       <div class="form-group">

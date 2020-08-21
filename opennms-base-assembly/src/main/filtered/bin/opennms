@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # chkconfig:   345 99 01
 # description: Starts and stops the ${install.package.description} network management \
@@ -985,6 +985,7 @@ case "$COMMAND" in
 					echo "Unknown return code from doStatus: $__ret" >&2
 			esac
 		fi
+                exit "$__ret"
 		;;
 
 	configtest)

@@ -1,0 +1,10 @@
+{{$grpcPath := "/dominion/grpc/" -}}
+{{if exists (print $grpcPath "host") -}}
+host = {{getv (print $grpcPath "host")}}
+{{end -}}
+{{if exists (print $grpcPath "port") -}}
+port = {{getv (print $grpcPath "port")}}
+{{end -}}
+{{if exists (print $grpcPath "client-secret") -}}
+clientSecret = {{getv (print $grpcPath "client-secret")}}
+{{end -}}

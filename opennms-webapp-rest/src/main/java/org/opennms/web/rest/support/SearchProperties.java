@@ -189,11 +189,6 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAssetRecord.class, "vendorAssetNumber", "Vendor Asset Number", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "vendorFax", "Vendor Fax", STRING),
 		new SearchProperty(OnmsAssetRecord.class, "vendorPhone", "Vendor Phone", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareManagedEntityType", "VMware Managed Entity Type", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareManagedObjectId", "VMware Managed Object ID", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareManagementServer", "VMware Management Server", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareState", "VMware State", STRING),
-		new SearchProperty(OnmsAssetRecord.class, "vmwareTopologyInfo", "VMware Topology Information", STRING)
 		//new SearchProperty(OnmsAssetRecord.class, "zip", "ZIP or Postal Code", STRING)
 	}));
 

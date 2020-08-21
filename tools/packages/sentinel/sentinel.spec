@@ -82,8 +82,12 @@ http://www.opennms.org/wiki/Sentinel
 
 
 %prep
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
 
-tar zxf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+$TAR -xzf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -105,9 +109,14 @@ fi
 
 tools/packages/sentinel/create-sentinel-assembly.sh $EXTRA_ARGS
 
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+
 # Extract the sentinel assembly
 mkdir -p %{buildroot}%{sentinelinstprefix}
-tar zxf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz -C %{buildroot}%{sentinelinstprefix} --strip-components=1
+$TAR -xzf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz -C %{buildroot}%{sentinelinstprefix} --strip-components=1
 
 # Remove extraneous directories that start with "d"
 rm -rf %{buildroot}%{sentinelinstprefix}/{data,debian,demos}

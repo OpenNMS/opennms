@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ "`id -u -n`" "!=" "root" ]; then
 	echo "You must run this utility as root!"

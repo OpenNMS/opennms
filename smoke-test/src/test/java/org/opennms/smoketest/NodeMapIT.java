@@ -63,7 +63,7 @@ public class NodeMapIT extends OpenNMSSeleniumIT {
             this.driver.get(this.getBaseUrlInternal() + "opennms/node-maps");
 
             // check whether the node will appear even if it has no associated interface
-            with().pollInterval(1, SECONDS).await().atMost(10, SECONDS).until(() -> (findElementByXpath("//*[contains(@class, 'leaflet-marker-icon')]") != null));
+            with().pollInterval(1, SECONDS).await().atMost(20, SECONDS).until(() -> (findElementByXpath("//*[contains(@class, 'leaflet-marker-icon')]") != null));
         } finally {
             deleteTestRequisition();
         }

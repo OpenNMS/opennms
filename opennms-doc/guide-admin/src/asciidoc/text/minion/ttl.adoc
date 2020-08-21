@@ -7,7 +7,7 @@
 
 Remote procedure calls (RPCs) between _{opennms-product-name}_ and _Minion_ include a time limit which, if exceeded, aborts the requests and discards any subsequent responses.
 We call this limit the time-to-live or TTL.
-We make an effort to use logical values where possible and provide means to configure the TTLs for circumstances where the default values are not suitable (i.e. for interacting with devices or locations with high latency).
+We make an effort to use logical values where possible and provide means to configure the TTLs for circumstances where the default values are not suitable (i.e., for interacting with devices or locations with high latency).
 
 Our modules and services have different rules for determining the TTL.
 
@@ -52,11 +52,12 @@ This value can be configured.
 When using the JMS-based RPC implementation, set value of the `org.opennms.jms.timeout` system property to the desired number of milliseconds.
 When using the Kafka-based RPC implementation, set the value of the `org.opennms.core.ipc.rpc.kafka.ttl` system property to the desired number of milliseconds.
 
-==== Using meta-data for TTLs
+[[ga-metadata-ttl]]
+==== Using metadata for TTLs
 
-For RPCs that derive TTLs from service parameters, the link:#ga-meta-data[meta-data] feature can be used to customize these values on a node/interface/service basis.
+For RPCs that derive TTLs from service parameters, the link:#ga-meta-data[metadata] feature can be used to customize these values on a node/interface/service basis.
 
-For example, the ICMP detector could be configured to use the value of the `ttl` associated with the node meta-data, or default to 30 seconds if none is setup as follows:
+For example, the ICMP detector could be configured to use the value of the `ttl` associated with the node metadata, or default to 30 seconds if none is setup as follows:
 
 ```
 <detector name="ICMP" class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector">

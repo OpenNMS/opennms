@@ -478,7 +478,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         private List<OpennmsModelProtos.Node> nodes = new ArrayList<>();
         private List<OpennmsModelProtos.Alarm> alarms = new ArrayList<>();
         private List<OpennmsModelProtos.AlarmFeedback> alarmFeedback = new ArrayList<>();
-        private CollectionSetProtos.CollectionSet collectionSet = null;
+        private List<CollectionSetProtos.CollectionSet> collectionSetValues = new ArrayList<>();
         private Map<String, OpennmsModelProtos.Alarm> alarmsByReductionKey = new LinkedHashMap<>();
         private AtomicInteger numRecordsConsumed = new AtomicInteger(0);
 
@@ -520,7 +520,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                                 alarmsByReductionKey.put(record.key(), alarm);
                                 break;
                             case METRIC_TOPIC_NAME :
-                                collectionSet = CollectionSetProtos.CollectionSet.parseFrom(record.value());
+                                collectionSetValues.add(CollectionSetProtos.CollectionSet.parseFrom(record.value()));
                                 break;
                             case ALARM_FEEDBACK_TOPIC_NAME:
                                 final OpennmsModelProtos.AlarmFeedback alarmFeedbackRecord = record.value() != null ?
@@ -569,8 +569,8 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
             closed.set(true);
         }
 
-        public CollectionSetProtos.CollectionSet getCollectionSet() {
-            return collectionSet;
+        public List<CollectionSetProtos.CollectionSet> getCollectionSetValues() {
+            return collectionSetValues;
         }
 
     }

@@ -50,6 +50,8 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.tasks.TaskCoordinator;
+import org.opennms.core.tracing.api.TracerRegistry;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.core.utils.url.GenericURLFactory;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -82,6 +84,8 @@ import org.springframework.core.io.UrlResource;
 
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+import io.opentracing.Tracer;
 
 /**
  * Massively Parallel Java Provisioning <code>ServiceDaemon</code> for OpenNMS.
@@ -122,6 +126,10 @@ public class Provisioner implements SpringServiceDaemon {
     private MonitoringSystemDao monitoringSystemDao;
     
     private ImportScheduler m_importSchedule;
+
+    @Autowired
+    private TracerRegistry m_tracerRegistry;
+
 
     /**
      * <p>setProvisionService</p>
@@ -214,6 +222,10 @@ public class Provisioner implements SpringServiceDaemon {
         this.monitoringSystemDao = monitoringSystemDao;
     }
 
+    public void setTracerRegistry(TracerRegistry tracerRegistry) {
+        m_tracerRegistry = tracerRegistry;
+    }
+
     /**
      * <p>start</p>
      *
@@ -229,6 +241,9 @@ public class Provisioner implements SpringServiceDaemon {
             LOG.warn("The schedule rescan for existing nodes is disabled.");
         }
         m_importSchedule.start();
+        m_tracerRegistry.init(SystemInfoUtils.getInstanceId());
+        Tracer tracer = m_tracerRegistry.getTracer();
+        m_provisionService.setTracer(tracer);
     }
 
     /**
@@ -286,7 +301,7 @@ public class Provisioner implements SpringServiceDaemon {
      */
     public NodeScan createNodeScan(Integer nodeId, String foreignSource, String foreignId, OnmsMonitoringLocation location) {
         LOG.info("createNodeScan called");
-        return new NodeScan(nodeId, foreignSource, foreignId, location, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator);
+        return new NodeScan(nodeId, foreignSource, foreignId, location, m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, null);
     }
 
     /**

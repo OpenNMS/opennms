@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.flows.elastic.template;
 
-import static org.opennms.netmgt.flows.elastic.ElasticFlowRepositoryInitializer.TEMPLATE_RESOURCE;
+import static org.opennms.netmgt.flows.elastic.RawIndexInitializer.TEMPLATE_RESOURCE;
 
 import java.io.IOException;
 
