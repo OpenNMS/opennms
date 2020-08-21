@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -176,4 +177,10 @@ public class MockMonitoredServiceDao extends AbstractMockDao<OnmsMonitoredServic
         return null;
     }
 
+    @Override
+    public List<OnmsMonitoredService> findByNode(final int nodeId) {
+        return findAll().stream()
+                 .filter(svc -> svc.getNodeId() == nodeId)
+                 .collect(Collectors.toList());
+    }
 }

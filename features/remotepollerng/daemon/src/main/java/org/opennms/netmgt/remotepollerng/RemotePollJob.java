@@ -47,96 +47,68 @@ import org.slf4j.LoggerFactory;
 public class RemotePollJob implements Job {
     private static final Logger LOG = LoggerFactory.getLogger(RemotePollJob.class);
 
-    protected static final String LOCATION_NAME = "locationName";
-    protected static final String POLLED_SERVICE = "polledService";
-    protected static final String REMOTE_POLLER_BACKEND = "remotePollerBackend";
+    public static final String POLLED_SERVICE = "polledService";
+    public static final String REMOTE_POLLER_BACKEND = "remotePollerBackend";
 
     @Override
     public void execute(JobExecutionContext context) {
         final JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
-        final String locationName = Objects.requireNonNull((String) dataMap.get(LOCATION_NAME), "location name required");
         final RemotePolledService svc = Objects.requireNonNull((RemotePolledService) dataMap.get(POLLED_SERVICE), "svc required");
         final RemotePollerd backend = Objects.requireNonNull((RemotePollerd) dataMap.get(REMOTE_POLLER_BACKEND), "backend required");
 
-        LOG.debug("Poll triggered for {} at {}", svc, locationName);
+        LOG.debug("Poll triggered for {}", svc);
 
         // TODO: Use distributed tracing here to add more context around span
 
         // Issue the call and process the results asynchronously
         backend.getLocationAwarePollerClient().poll()
-                .withService(toMonitoredService(locationName, svc.getMonitoredService()))
-                .withTimeToLive(svc.getService().getInterval())
-                // HACK to override location
+                .withService(svc.getMonitoredService())
+                .withTimeToLive(svc.getServiceConfig().getInterval())
                 .withMonitor(svc.getServiceMonitor())
-                .withAttributes(createParameterMap(svc.getService()))
+                .withAttributes(createParameterMap(svc.getServiceConfig()))
+                .withPatternVariables(svc.getPatternVariables())
                 .execute()
-                .whenComplete((res,ex) -> {
+                .whenComplete((res, ex) -> {
                     if (ex == null) {
-                        LOG.debug("Poll for {} at {} completed successfully: {}", svc, locationName, res);
-                        backend.reportResult(locationName, svc, res.getPollStatus());
+                        LOG.debug("Poll for {} completed successfully: {}", svc, res);
+
+                        // Report the result to the backend
+                        backend.reportResult(svc, res.getPollStatus());
+
+                        // Persist the response times from the result
+                        backend.persistResponseTimeData(svc, res.getPollStatus());
+
+                        // TODO fooker: apply thresholding here?
+
                     } else {
                         RpcExceptionUtils.handleException(ex, new RpcExceptionHandler<Void>() {
                             @Override
-                            public Void onInterrupted(Throwable t) {
+                            public Void onInterrupted(final Throwable t) {
                                 LOG.warn("Interrupted.");
                                 return null;
                             }
 
                             @Override
-                            public Void onTimedOut(Throwable t) {
+                            public Void onTimedOut(final Throwable t) {
                                 LOG.warn("RPC timed out.", t);
                                 return null;
                             }
 
                             @Override
-                            public Void onRejected(Throwable t) {
+                            public Void onRejected(final Throwable t) {
                                 LOG.warn("Rejected call.", t);
                                 return null;
                             }
 
                             @Override
-                            public Void onUnknown(Throwable t) {
+                            public Void onUnknown(final Throwable t) {
                                 LOG.warn("Unknown exception.", t);
                                 return null;
                             }
                         });
                     }
                 });
-    }
-
-    private static MonitoredService toMonitoredService(String locationName, MonitoredService svc) {
-        return new MonitoredService() {
-            @Override
-            public String getSvcName() {
-                return svc.getSvcName();
-            }
-
-            @Override
-            public String getIpAddr() {
-                return svc.getIpAddr();
-            }
-
-            @Override
-            public int getNodeId() {
-                return svc.getNodeId();
-            }
-
-            @Override
-            public String getNodeLabel() {
-                return svc.getNodeLabel();
-            }
-
-            @Override
-            public String getNodeLocation() {
-                return locationName;
-            }
-
-            @Override
-            public InetAddress getAddress() {
-                return svc.getAddress();
-            }
-        };
     }
 
     private static Map<String,Object> createParameterMap(final Service svc) {

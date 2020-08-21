@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.net.InetAddress;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,6 +37,7 @@ import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.ApplicationStatus;
 import org.opennms.netmgt.dao.api.MonitoredServiceStatusEntity;
 import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public class MockApplicationDao extends AbstractMockDao<OnmsApplication, Integer> implements ApplicationDao {
     private AtomicInteger m_id = new AtomicInteger(0);
@@ -77,6 +80,11 @@ public class MockApplicationDao extends AbstractMockDao<OnmsApplication, Integer
 
     @Override
     public List<MonitoredServiceStatusEntity> getAlarmStatus(List<OnmsApplication> applications) {
+        return null;
+    }
+
+    @Override
+    public List<OnmsMonitoringLocation> getPerspectiveLocationsForService(final int nodeId, final InetAddress ipAddress, final String serviceName) {
         return null;
     }
 

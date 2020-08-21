@@ -35,6 +35,7 @@ import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 
@@ -63,6 +64,8 @@ public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
      * is up and has no open outage, return null.
      */
     OnmsOutage currentOutageForService(OnmsMonitoredService service);
+
+    OnmsOutage currentOutageForServiceFromPerspective(final OnmsMonitoredService service, final OnmsMonitoringLocation perspective);
 
     /**
      * Finds the latest (unresolved) outages that match the given services.

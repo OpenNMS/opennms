@@ -296,7 +296,7 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     }
 
     @Override
-    public Package getFirstPackageMatch(String ipaddr) {
+    public Package getFirstRemotePackageMatch(String ipaddr) {
         return null;
     }
 

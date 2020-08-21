@@ -47,6 +47,7 @@ import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +87,11 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     @Override
     public OnmsOutage currentOutageForService(OnmsMonitoredService service) {
         return findUnique("from OnmsOutage as o where o.perspective is null and o.monitoredService = ? and o.ifRegainedService is null", service);
+    }
+
+    @Override
+    public OnmsOutage currentOutageForServiceFromPerspective(final OnmsMonitoredService service, final OnmsMonitoringLocation perspective) {
+        return findUnique("from OnmsOutage as o where o.monitoredService = ? and o.perspective = ? and o.ifRegainedService is null", service, perspective);
     }
 
     /** {@inheritDoc} */

@@ -164,7 +164,7 @@ public interface PollerConfig extends PathOutageConfig {
     boolean isServiceMonitored(String svcName);
 
     /**
-     * Returns the first package that the ip belongs to, null if none.
+     * Returns the first package that the ip belongs to that is marked as remote, null if none.
      *
      * <strong>Note: </strong>Evaluation of the interface against a package
      * filter will only work if the IP is already in the database.
@@ -173,7 +173,7 @@ public interface PollerConfig extends PathOutageConfig {
      *            the interface to check
      * @return the first package that the ip belongs to, null if none
      */
-    Package getFirstPackageMatch(String ipaddr);
+    Package getFirstRemotePackageMatch(String ipaddr);
 
     /**
      * Returns the first package that the ip belongs to that is not marked as remote, null if none.
