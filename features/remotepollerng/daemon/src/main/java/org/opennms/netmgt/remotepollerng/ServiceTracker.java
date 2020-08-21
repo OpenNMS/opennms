@@ -395,7 +395,7 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
         public String toString() {
             return MoreObjects.toStringHelper(this)
                               .add("nodeId", this.nodeId)
-                              .add("address", this.ipAddress)
+                              .add("ipAaddress", this.ipAddress)
                               .toString();
         }
     }
@@ -453,7 +453,7 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
         public String toString() {
             return MoreObjects.toStringHelper(this)
                               .add("nodeId", this.nodeId)
-                              .add("address", this.ipAddress)
+                              .add("ipAddress", this.ipAddress)
                               .add("serviceName", this.serviceName)
                               .toString();
         }
