@@ -530,44 +530,6 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
     }
 
     @Test
-    @Ignore // TODO fooker: rewrite vor new events
-    public void testDaemonReloadForLocation() throws Exception {
-        final OnmsMonitoringLocation onmsMonitoringLocation = new OnmsMonitoringLocation();
-        onmsMonitoringLocation.setLocationName("Fulda");
-        onmsMonitoringLocation.setMonitoringArea("Fulda");
-        onmsMonitoringLocation.setPriority(100L);
-        // TODO: Patrick onmsMonitoringLocation.setPollingPackageNames(Lists.newArrayList("foo1", "foo2"));
-        this.databasePopulator.getMonitoringLocationDao().save(onmsMonitoringLocation);
-        this.databasePopulator.getMonitoringLocationDao().flush();
-
-        PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_2);
-//        changePollingPackages("RDU", "foo1", "foo2");
-//        changePollingPackages("Fulda", "foo1", "foo2");
-        sendReloadRemotePollerdEvent();
-
-        // both locations have foo1 and foo2 assigned
-        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
-        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
-
-        // now remove foo1 from location Fulda and send event for location Fulda
-//        changePollingPackages("Fulda", "foo2");
-//        sendPollingPackageAssociationChanged("Fulda");
-        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
-        Assert.assertEquals(2, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
-
-        // now remove foo2 from location RDU but send an event for Fulda, so nothing will change
-//        changePollingPackages("RDU", "foo1");
-//        sendPollingPackageAssociationChanged("Fulda");
-        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
-        Assert.assertEquals(2, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
-
-        // now send event for RDU, changes will be applied
-//        sendPollingPackageAssociationChanged("RDU");
-        Assert.assertEquals(6, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("RDU")).size());
-        Assert.assertEquals(2, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("Fulda")).size());
-    }
-
-    @Test
     public void testRemotePollerThresholding() throws Exception {
         // this will return 192.168.1.1 for each call for active IPs
         final FilterDao filterDao = EasyMock.createMock(FilterDao.class);

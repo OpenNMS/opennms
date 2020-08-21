@@ -173,7 +173,7 @@ public class RemotePollerd implements SpringServiceDaemon {
 
     private Optional<Set<RemotePolledService>> filterService(final ServiceTracker.Service service) {
         return this.sessionUtils.withReadOnlyTransaction(() -> {
-            // Get the monitored service entitiy
+            // Get the monitored service entity
             final OnmsMonitoredService monitoredService = this.monitoredServiceDao.get(service.nodeId, service.ipAddress, service.serviceName);
             if (monitoredService == null) {
                 return Optional.empty();
