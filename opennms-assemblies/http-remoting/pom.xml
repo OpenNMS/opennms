@@ -184,6 +184,15 @@
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
+    <!-- Make sure that remote-poller-jnlp.tar.gz builds before this assembly -->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
+      <version>${project.version}</version>
+      <classifier>jnlp</classifier>
+      <type>tar.gz</type>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- dependencies that should exist in $OPENNMS_HOME/lib -->
     <dependency>
