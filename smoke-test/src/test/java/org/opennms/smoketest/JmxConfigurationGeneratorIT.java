@@ -38,9 +38,9 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumIT {
     public void before() throws InterruptedException {
         driver.get(getBaseUrlInternal() + "opennms/admin/jmxConfigGenerator.jsp");
 
-        // give the Vaadin webapp time to settle down
-        Thread.sleep(2000);
         selectVaadinFrame();
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.className("jmxconfiggeneratorui")));
     }
 
     @Test
@@ -211,7 +211,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumIT {
 
     // switches to the embedded vaadin iframe
     protected void selectVaadinFrame() {
-        driver.switchTo().frame(0);
+        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.id("vaadin-content")));
     }
 
     private void selectNodeByName(final String name, boolean select) throws InterruptedException {
