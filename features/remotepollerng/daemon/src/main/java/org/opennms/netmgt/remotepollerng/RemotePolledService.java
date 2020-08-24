@@ -113,8 +113,7 @@ public class RemotePolledService {
 
             @Override
             public String getNodeLabel() {
-                // TODO fooker: do we need this label?
-                return null;
+                return nodeLabel;
             }
 
             @Override

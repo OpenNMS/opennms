@@ -100,7 +100,6 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
 
     @Override
     public int getNumThreads() {
-        // TODO fooker: Make this configurable as in Alarmd?
         return 1;
     }
 
