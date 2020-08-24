@@ -268,7 +268,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         MockLogAppender.setupLogging(p);
         Package pkg = new Package();
         pkg.setName("SFO");
-        pkg.setRemote(true);
+        pkg.setRemoteOnly(true);
         Poller poller = new Poller();
         poller.setPollerConfig(new MockPollerConfig(m_network));
         assertFalse(poller.pollableServiceInPackage(null, null, pkg));

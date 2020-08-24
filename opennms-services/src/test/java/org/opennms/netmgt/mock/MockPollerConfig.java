@@ -281,6 +281,11 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
         return m_pkgs.elements();
     }
 
+    @Override
+    public List<Package> getPackages() {
+        return m_pkgs;
+    }
+
     private Service findService(Package pkg, String svcName) {
         for (Service svc : pkg.getServices()) {
             if (svcName.equals(svc.getName())) {
@@ -293,11 +298,6 @@ public class MockPollerConfig extends OverrideablePollOutagesDaoImpl implements 
     @Override
     public String getCriticalService() {
         return m_criticalSvcName;
-    }
-
-    @Override
-    public Package getFirstRemotePackageMatch(String ipaddr) {
-        return null;
     }
 
     @Override

@@ -680,28 +680,11 @@ abstract public class PollerConfigManager implements PollerConfig {
 
     /** {@inheritDoc} */
     @Override
-    public Package getFirstRemotePackageMatch(final String ipaddr) {
-        try {
-            getReadLock().lock();
-            for(final Package pkg : packages()) {
-                // TODO fooker: Should this be remote only?
-                if (isInterfaceInPackage(ipaddr, pkg)) {
-                    return pkg;
-                }
-            }
-        } finally {
-            getReadLock().unlock();
-        }
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Package getFirstLocalPackageMatch(final String ipaddr) {
         try {
             getReadLock().lock();
             for(final Package pkg : packages()) {
-                if (!pkg.getRemote() && isInterfaceInPackage(ipaddr, pkg)) {
+                if (!pkg.getRemoteOnly() && isInterfaceInPackage(ipaddr, pkg)) {
                     return pkg;
                 }
             }
@@ -764,7 +747,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         try {
             getReadLock().lock();
             for(final Package pkg : packages()) {
-                if (!pkg.getRemote() && isInterfaceInPackage(ipaddr, pkg)) {
+                if (!pkg.getRemoteOnly() && isInterfaceInPackage(ipaddr, pkg)) {
                     return true;
                 }
             }
@@ -887,7 +870,17 @@ abstract public class PollerConfigManager implements PollerConfig {
             getReadLock().unlock();
         }
     }
-    
+
+    @Override
+    public List<Package> getPackages() {
+        try {
+            getReadLock().lock();
+            return getConfiguration().getPackages();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
     /**
      * <p>services</p>
      *

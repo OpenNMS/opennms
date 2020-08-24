@@ -66,12 +66,17 @@ public class Package implements Serializable {
     private String m_name;
 
     /**
-     * Boolean representing whether this is a package for a remote location
-     * monitor. If true, this package will be ignored by the OpenNMS daemon
-     * poller.
+     * @deprecated Use {@link #m_remoteOnly} instead
      */
+    @Deprecated
     @XmlAttribute(name="remote")
     private Boolean m_remote;
+
+    /**
+     * Flag representing whether this package is considered only for remote polling or should be used for native polling, too,
+     */
+    @XmlAttribute(name="remote-only")
+    private Boolean m_remoteOnly;
 
     /**
      * A rule which addresses belonging to this package must pass. This
@@ -153,17 +158,23 @@ public class Package implements Serializable {
         m_name = name;
     }
 
-    /**
-     * Boolean representing whether this is a package for a remote location
-     * monitor. If true, this package will be ignored by the OpenNMS daemon
-     * poller.
-     */
+    @Deprecated
     public Boolean getRemote() {
         return m_remote == null? false : m_remote;
     }
 
+    @Deprecated
     public void setRemote(final Boolean remote) {
         m_remote = remote;
+    }
+
+    public boolean getRemoteOnly() {
+        // Fallback to 'remote' attribute for backwards compatibility
+        return this.getRemote() || (this.m_remoteOnly != null && this.m_remoteOnly);
+    }
+
+    public void setRemoteOnly(Boolean remoteOnly) {
+        this.m_remoteOnly = remoteOnly;
     }
 
     /**

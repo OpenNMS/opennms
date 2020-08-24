@@ -186,7 +186,12 @@ public class RemotePollerd implements SpringServiceDaemon {
 
             // Get the polling package for the service
             this.pollerConfig.rebuildPackageIpListMap();
-            final Package pkg = this.pollerConfig.getFirstRemotePackageMatch(InetAddressUtils.str(service.ipAddress));
+
+            final Package pkg = this.pollerConfig.getPackages().stream()
+                                                 .filter(p -> this.pollerConfig.isInterfaceInPackage(InetAddressUtils.str(service.ipAddress), p) &&
+                                                              this.pollerConfig.isServiceInPackageAndEnabled(service.serviceName, p))
+                                                 .reduce((prev, curr) -> curr)
+                                                 .orElse(null);
             if (pkg == null) {
                 return Optional.empty();
             }
