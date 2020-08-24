@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.api;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.model.HeatMapElement;
@@ -117,4 +118,6 @@ public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
      * @return the heatmap elements for this query
      */
     List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, String restrictionColumn, String restrictionValue, String... groupByColumns);
+
+    Collection<OnmsOutage> getStatusChangesForApplicationIdBetween(final Date startDate, final Date endDate, final Integer applicationId);
 }

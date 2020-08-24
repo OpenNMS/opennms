@@ -58,7 +58,6 @@ import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -121,7 +120,6 @@ public class RemotePollerd implements SpringServiceDaemon {
     private final PollerConfig pollerConfig;
     private final MonitoredServiceDao monitoredServiceDao;
     private final LocationAwarePollerClient locationAwarePollerClient;
-    private final LocationSpecificStatusDao locationSpecificStatusDao;
     private final ApplicationDao applicationDao;
     private final CollectionAgentFactory collectionAgentFactory;
     private final PersisterFactory persisterFactory;
@@ -140,7 +138,6 @@ public class RemotePollerd implements SpringServiceDaemon {
                          final PollerConfig pollerConfig,
                          final MonitoredServiceDao monitoredServiceDao,
                          final LocationAwarePollerClient locationAwarePollerClient,
-                         final LocationSpecificStatusDao locationSpecificStatusDao,
                          final ApplicationDao applicationDao,
                          final CollectionAgentFactory collectionAgentFactory,
                          final PersisterFactory persisterFactory,
@@ -153,7 +150,6 @@ public class RemotePollerd implements SpringServiceDaemon {
         this.pollerConfig = Objects.requireNonNull(pollerConfig);
         this.monitoredServiceDao = Objects.requireNonNull(monitoredServiceDao);
         this.locationAwarePollerClient = Objects.requireNonNull(locationAwarePollerClient);
-        this.locationSpecificStatusDao = Objects.requireNonNull(locationSpecificStatusDao);
         this.applicationDao = Objects.requireNonNull(applicationDao);
         this.collectionAgentFactory = Objects.requireNonNull(collectionAgentFactory);
         this.persisterFactory = Objects.requireNonNull(persisterFactory);
@@ -288,7 +284,7 @@ public class RemotePollerd implements SpringServiceDaemon {
             }
         });
     }
-    
+
     @Override
     public void start() throws Exception {
         this.serviceTracker.start();
@@ -309,7 +305,7 @@ public class RemotePollerd implements SpringServiceDaemon {
             this.scheduler.shutdown();
         }
     }
-    
+
     public static JobKey buildJobKey(RemotePolledService remotePolledService) {
         return buildJobKey(remotePolledService.getNodeId(),
                            remotePolledService.getIpAddress(),

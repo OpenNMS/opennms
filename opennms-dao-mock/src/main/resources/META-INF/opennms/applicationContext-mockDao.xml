@@ -93,9 +93,6 @@
     <bean id="javamailConfigDao" class="org.opennms.netmgt.dao.mock.MockJavaMailConfigurationDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.JavaMailConfigurationDao" ref="javamailConfigDao" />
 
-    <bean id="locationSpecificStatusDao" class="org.opennms.netmgt.dao.mock.MockLocationSpecificStatusDao" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.LocationSpecificStatusDao" ref="locationSpecificStatusDao" />
-
     <bean id="monitoredServiceDao" class="org.opennms.netmgt.dao.mock.MockMonitoredServiceDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" ref="monitoredServiceDao" />
 
@@ -173,7 +170,6 @@
     <!-- 
     <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
         <property name="nodeDao" ref="nodeDao" />
-        <property name="locationSpecificStatusDao" ref="locationSpecificStatusDao" />
         <property name="collectdConfig" ref="collectdConfig" />
         <property name="dataCollectionConfigDao" ref="dataCollectionConfig" />
         <property name="rrdDirectory" value="${rrd.base.dir}" />
@@ -223,7 +219,6 @@
         <property name="notificationDao" ref="notificationDao" />
         <property name="userNotificationDao" ref="userNotificationDao" />
         <property name="monitoringLocationDao" ref="monitoringLocationDao" />
-        <property name="locationSpecificStatusDao" ref="locationSpecificStatusDao" />
         <property name="applicationDao" ref="applicationDao" />
         <property name="acknowledgmentDao" ref="acknowledgmentDao" />
         <property name="serviceTypeDao" ref="serviceTypeDao" />

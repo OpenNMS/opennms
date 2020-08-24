@@ -45,10 +45,9 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -103,11 +102,9 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
         MockLogAppender.setupLogging(true, "DEBUG");
         databasePopulator.populateDatabase();
 
-        final OnmsMonitoringLocation onmsMonitoringLocation = new OnmsMonitoringLocation();
-        onmsMonitoringLocation.setLocationName("Fulda");
-        onmsMonitoringLocation.setMonitoringArea("Hessen");
-        onmsMonitoringLocation.setPriority(100L);
-        this.databasePopulator.getMonitoringLocationDao().save(onmsMonitoringLocation);
+        for (final OnmsOutage outage : this.databasePopulator.getOutageDao().findAll()) {
+            this.databasePopulator.getOutageDao().delete(outage);
+        }
 
         rdu = this.databasePopulator.getMonitoringLocationDao().get("RDU");
         fulda = this.databasePopulator.getMonitoringLocationDao().get("Fulda");
@@ -120,10 +117,14 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
 
         final OnmsApplication app1 = new OnmsApplication();
         app1.setName("APP1");
+        app1.getPerspectiveLocations().add(rdu);
+        app1.getPerspectiveLocations().add(fulda);
         app1Id = this.applicationDao.save(app1);
 
         final OnmsApplication app2 = new OnmsApplication();
         app2.setName("APP2");
+        app2.getPerspectiveLocations().add(rdu);
+        app2.getPerspectiveLocations().add(fulda);
         app2Id = this.applicationDao.save(app2);
 
         app1Service1.setApplications(Sets.newHashSet(app1));
@@ -137,53 +138,43 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
         this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(app2Service2);
 
         // this should be 50% for the period of 10000-19999
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_AVAILABLE, 1500);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_UNAVAILABLE, 2000);
-        addLocationSpecificStatus(rdu, app1Service2, PollStatus.SERVICE_AVAILABLE, 2500);
-        addLocationSpecificStatus(rdu, app1Service2, PollStatus.SERVICE_UNAVAILABLE, 3000);
 
-        addLocationSpecificStatus(rdu, app1Service2, PollStatus.SERVICE_AVAILABLE, 9000);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_AVAILABLE, 9500);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_UNAVAILABLE, 10500);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_AVAILABLE, 11500);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_UNAVAILABLE, 12500);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_AVAILABLE, 13500);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_UNAVAILABLE, 14500);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_AVAILABLE, 15500);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_UNAVAILABLE, 16500);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_AVAILABLE, 17500);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_UNAVAILABLE, 18500);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_AVAILABLE, 19500);
-
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_AVAILABLE, 21500);
-        addLocationSpecificStatus(rdu, app1Service1, PollStatus.SERVICE_UNAVAILABLE, 22000);
-        addLocationSpecificStatus(rdu, app1Service2, PollStatus.SERVICE_AVAILABLE, 22500);
-        addLocationSpecificStatus(rdu, app1Service2, PollStatus.SERVICE_UNAVAILABLE, 23000);
+        addOutage(rdu, app1Service1, 2000L, 9500L);
+        addOutage(rdu, app1Service2, 3000L, 9000L);
+        addOutage(rdu, app1Service1, 10500L, 11500L);
+        addOutage(rdu, app1Service1, 12500L, 13500L);
+        addOutage(rdu, app1Service1, 14500L, 15500L);
+        addOutage(rdu, app1Service1, 16500L, 17500L);
+        addOutage(rdu, app1Service1, 18500L, 19500L);
+        addOutage(rdu, app1Service1, 22000L, null);
+        addOutage(rdu, app1Service2, 23000L, null);
 
         // this should be 25% for the period of 10000-19999
-        addLocationSpecificStatus(fulda, app1Service2, PollStatus.SERVICE_AVAILABLE, 9000);
-        addLocationSpecificStatus(fulda, app1Service1, PollStatus.SERVICE_AVAILABLE, 9500);
-        addLocationSpecificStatus(fulda, app1Service1, PollStatus.SERVICE_UNAVAILABLE, 10500);
-        addLocationSpecificStatus(fulda, app1Service1, PollStatus.SERVICE_AVAILABLE, 11500);
-        addLocationSpecificStatus(fulda, app1Service1, PollStatus.SERVICE_UNAVAILABLE, 12500);
-        addLocationSpecificStatus(fulda, app1Service1, PollStatus.SERVICE_AVAILABLE, 13500);
-        addLocationSpecificStatus(fulda, app1Service1, PollStatus.SERVICE_UNAVAILABLE, 14500);
-        addLocationSpecificStatus(fulda, app1Service1, PollStatus.SERVICE_AVAILABLE, 15500);
-        addLocationSpecificStatus(fulda, app1Service1, PollStatus.SERVICE_UNAVAILABLE, 16500);
-        addLocationSpecificStatus(fulda, app1Service1, PollStatus.SERVICE_AVAILABLE, 17500);
-        addLocationSpecificStatus(fulda, app1Service1, PollStatus.SERVICE_UNAVAILABLE, 18500);
-        addLocationSpecificStatus(fulda, app1Service1, PollStatus.SERVICE_AVAILABLE, 19500);
-        addLocationSpecificStatus(fulda, app1Service2, PollStatus.SERVICE_UNAVAILABLE, 15000);
+
+        addOutage(fulda, app1Service1, 10500L, 11500L);
+        addOutage(fulda, app1Service1, 12500L, 13500L);
+        addOutage(fulda, app1Service1, 14500L, 15500L);
+        addOutage(fulda, app1Service1, 16500L, 17500L);
+        addOutage(fulda, app1Service1, 18500L, 19500L);
+        addOutage(fulda, app1Service2, 15000L, null);
     }
 
-    private void addLocationSpecificStatus(final OnmsMonitoringLocation location, final OnmsMonitoredService monitoredService, final int result, final long timestamp) {
-        final OnmsLocationSpecificStatus onmsLocationSpecificStatus = new OnmsLocationSpecificStatus();
-        final PollStatus pollStatus = PollStatus.get(result, String.valueOf(result));
-        pollStatus.setTimestamp(new Date(timestamp));
-        onmsLocationSpecificStatus.setPollResult(pollStatus);
-        onmsLocationSpecificStatus.setMonitoredService(monitoredService);
-        onmsLocationSpecificStatus.setLocation(location);
-        this.databasePopulator.getLocationSpecificStatusDao().save(onmsLocationSpecificStatus);
+    private void addOutage(final OnmsMonitoringLocation location, final OnmsMonitoredService monitoredService, final Long start, final Long end) {
+        final OnmsOutage onmsOutage = new OnmsOutage();
+
+        if (start != null) {
+            onmsOutage.setIfLostService(new Date(start));
+        }
+
+        if (end!= null) {
+            onmsOutage.setIfRegainedService(new Date(end));
+        }
+
+        onmsOutage.setMonitoredService(monitoredService);
+        onmsOutage.setPerspective(location);
+
+        this.databasePopulator.getOutageDao().save(onmsOutage);
+        this.databasePopulator.getOutageDao().flush();
     }
 
     @Test

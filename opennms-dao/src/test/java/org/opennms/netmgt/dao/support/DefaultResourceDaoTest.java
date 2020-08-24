@@ -39,7 +39,6 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -56,7 +55,6 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.LocationSpecificStatusDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -79,7 +77,6 @@ public class DefaultResourceDaoTest {
     private EasyMockUtils m_easyMockUtils;
 
     private NodeDao m_nodeDao;
-    private LocationSpecificStatusDao m_locationSpecificStatusDao;
     private CollectdConfigFactory m_collectdConfig;
     private ResourceTypesDao m_resourceTypesDao;
     private DefaultResourceDao m_resourceDao;
@@ -101,7 +98,6 @@ public class DefaultResourceDaoTest {
         
         m_easyMockUtils = new EasyMockUtils();
         m_nodeDao = m_easyMockUtils.createMock(NodeDao.class);
-        m_locationSpecificStatusDao = m_easyMockUtils.createMock(LocationSpecificStatusDao.class);
         m_resourceTypesDao = m_easyMockUtils.createMock(ResourceTypesDao.class);
         m_filterDao = m_easyMockUtils.createMock(FilterDao.class);
         m_ipInterfaceDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
@@ -122,7 +118,6 @@ public class DefaultResourceDaoTest {
 
         m_resourceDao = new DefaultResourceDao();
         m_resourceDao.setNodeDao(m_nodeDao);
-        m_resourceDao.setLocationSpecificStatusDao(m_locationSpecificStatusDao);
         m_resourceDao.setIpInterfaceDao(m_ipInterfaceDao);
         m_resourceDao.setCollectdConfig(m_collectdConfig);
         m_resourceDao.setResourceTypesDao(m_resourceTypesDao);
@@ -374,8 +369,6 @@ public class DefaultResourceDaoTest {
         OnmsIpInterface ipIntf = new OnmsIpInterface();
         ipIntf.setIpAddress(InetAddress.getByName("192.168.1.1"));
         LocationIpInterface locMonIpIntf = new LocationIpInterface(locMon, ipIntf);
-
-        expect(m_locationSpecificStatusDao.findStatusChangesForNodeForUniqueMonitorAndInterface(node.getId())).andReturn(Collections.singleton(locMonIpIntf)).anyTimes();
 
         m_easyMockUtils.replayAll();
         List<OnmsResource> resources = m_resourceDao.findTopLevelResources();
