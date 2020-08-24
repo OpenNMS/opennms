@@ -15,7 +15,7 @@
 
 Since Meridian 2019, we have refined a number of the features introduced relating to telemetry, correlation, and other underlying APIs.
 
-Meridian 2020 roughly matches the feature set available in Horizon 26.
+Meridian 2020 roughly matches the feature set available in Horizon 26.1.
 
 ==== Documentation Updates
 
@@ -211,9 +211,9 @@ They are converted to mutable versions in places where they are often manipulate
 
 === Other Improvements
 
-Since Meridian 2020 is based on Horizon 26, it contains all the fixes and updates that have occurred since Meridian 2019 was created from the Horizon 25 codebase.
+Since Meridian 2020 is based on Horizon 26.1, it contains all the fixes and updates that have occurred since Meridian 2019 was created from the Horizon 25 codebase.
 
-For a more complete list of changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.
+For a more complete list of major changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.1.3.
 
 [[releasenotes-changelog-Meridian-2020.1.0]]
 
