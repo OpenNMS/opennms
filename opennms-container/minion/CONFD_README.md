@@ -1,4 +1,5 @@
 # Configuring Minion via confd
+(instructions for testing/developing confd templates are given at the end of this document)
 ## Mounting
 When starting the Minion container, mount a yaml file to the following path `/opt/minion/minion-config.yaml`.
 
@@ -201,3 +202,39 @@ scv:
 ```
 Can be used to override the default SCV provider from the JCEKS implementation (which uses the file system) to a gRPC
 based implementation which requests credentials from Dominion. If not specified the default JCEKS will be used.
+
+### Java Options
+```
+---
+process-env:
+    java-opts:
+        - -Xmx4096m
+        - -Xdebug
+        - -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=7896
+```
+
+Can be used to specify an arbitrary list of Java options. Config specified is written to file `/opt/minion/etc/minion-process.env` that contains `key=value` pairs that are set in the environment of the Minion process..
+
+## Test/Develop confd templates
+`confd` template changes can locally be tested by running a Minion container and mapping the corresponding files into the container. The following procedure might be useful:
+
+1. A Minion Docker image is required. It can be downloaded from a build in CircleCI.
+1. Load the image into Docker: `docker load minion.oci`
+1. Create a `docker-compose.yaml` file in the parent folder of the checked out `opennms` repo. An example compose file is given below
+1. Start the image: `docker-compose up -d`
+1. Open a shell in the container using `docker exec -ti minion bash` or look at the logs `docker logs minion`
+1. If the result is not yet satisfactory then remove the container by `docker rm -f minion`, edit the files in your IDE, and start the image again
+
+
+```
+version: '3'
+services:
+  minion:
+    image: minion
+    container_name: minion
+    volumes:
+      - ${PWD}/minion-config.yaml:/opt/minion/minion-config.yaml
+      - ${PWD}/opennms/opennms-container/minion/container-fs/confd/conf.d/org.opennms.minion.process-env.toml:/opt/minion/confd/conf.d/org.opennms.minion.process-env.toml
+      - ${PWD}/opennms/opennms-container/minion/container-fs/confd/templates/org.opennms.minion.process-env.tmpl:/opt/minion/confd/templates/org.opennms.minion.process-env.tmpl
+      - ${PWD}/opennms/opennms-container/minion/container-fs/entrypoint.sh:/entrypoint.sh
+```
