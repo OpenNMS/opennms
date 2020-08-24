@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
@@ -164,18 +163,6 @@ public interface PollerConfig extends PathOutageConfig {
     boolean isServiceMonitored(String svcName);
 
     /**
-     * Returns the first package that the ip belongs to that is marked as remote, null if none.
-     *
-     * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is already in the database.
-     *
-     * @param ipaddr
-     *            the interface to check
-     * @return the first package that the ip belongs to, null if none
-     */
-    Package getFirstRemotePackageMatch(String ipaddr);
-
-    /**
      * Returns the first package that the ip belongs to that is not marked as remote, null if none.
      *
      * <strong>Note: </strong>Evaluation of the interface against a package
@@ -303,6 +290,8 @@ public interface PollerConfig extends PathOutageConfig {
      * @return a {@link java.util.Enumeration} object.
      */
     public Enumeration<Package> enumeratePackage();
+
+    public List<Package> getPackages();
     
     /**
      * <p>getPackage</p>
