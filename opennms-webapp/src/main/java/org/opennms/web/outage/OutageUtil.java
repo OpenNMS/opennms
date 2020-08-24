@@ -448,9 +448,9 @@ public abstract class OutageUtil extends Object {
     public static String getPerspectiveLabel(final String perspective) {
         String html;
         if (perspective == null) {
-            html = "<i class=\"fa fa-home\" aria-hidden=\"true\"></i> ";
+            html = "<i>none</i>";
         } else {
-            html = "<i class=\"fa fa-server\" aria-hidden=\"true\"></i> " + WebSecurityUtils.sanitizeString(perspective);
+            html = WebSecurityUtils.sanitizeString(perspective);
         }
         return html;
     }

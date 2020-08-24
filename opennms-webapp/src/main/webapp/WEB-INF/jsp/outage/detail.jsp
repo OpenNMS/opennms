@@ -164,7 +164,7 @@
           </td>
         </tr>
         <tr class="d-flex">
-          <th class="col-2">Perspective</th>
+          <th class="col-2">Polling Perspective</th>
           <td class="col-2"><%= OutageUtil.getPerspectiveLabel(outage.getPerspectiveLocation()) %></td>
           <th class="col-2">&nbsp;</th>
           <td class="col-2">&nbsp;</td>
