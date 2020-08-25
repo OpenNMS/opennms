@@ -60,7 +60,7 @@
 
 <%
     OnmsMonitoredService service = (OnmsMonitoredService)request.getAttribute("service");
-    Collection<OnmsOutage> outages = NetworkElementFactory.getInstance(getServletContext()).currentOutagesForService(service);
+    Collection<OnmsOutage> outages = NetworkElementFactory.getInstance(getServletContext()).currentOutagesForServiceFromPerspectivePoller(service);
 
     String ipAddr = service.getIpAddress().getHostAddress();
     String serviceName = service.getServiceName();

@@ -89,7 +89,7 @@ public class MockOutageDao extends AbstractMockDao<OnmsOutage, Integer> implemen
     }
 
     @Override
-    public Collection<OnmsOutage> currentOutagesForService(OnmsMonitoredService service) {
+    public Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

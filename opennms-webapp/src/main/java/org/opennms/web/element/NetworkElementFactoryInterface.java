@@ -464,5 +464,5 @@ public interface NetworkElementFactoryInterface {
 	/**
 	 * Return all current open outages for the given service be it detected from local or from remote (perspective).
 	 */
-	Collection<OnmsOutage> currentOutagesForService(OnmsMonitoredService service);
+	Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service);
 }

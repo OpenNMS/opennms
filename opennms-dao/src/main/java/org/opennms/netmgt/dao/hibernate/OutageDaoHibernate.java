@@ -95,8 +95,8 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     }
 
     @Override
-    public Collection<OnmsOutage> currentOutagesForService(OnmsMonitoredService service) {
-        return find("from OnmsOutage as o where o.monitoredService = ?  and o.ifRegainedService is null", service);
+    public Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service) {
+        return find("from OnmsOutage as o where o.monitoredService = ?  and o.perspective is not null and o.ifRegainedService is null", service);
     }
 
     /** {@inheritDoc} */

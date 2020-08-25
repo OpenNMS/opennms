@@ -69,9 +69,9 @@ public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
     OnmsOutage currentOutageForServiceFromPerspective(final OnmsMonitoredService service, final OnmsMonitoringLocation perspective);
 
     /**
-     * Return all current open outages for the given service be it detected from local or from remote (perspective).
+     * Return all current open outages for the given service be it detected from Perspective Poller.
      */
-    Collection<OnmsOutage> currentOutagesForService(OnmsMonitoredService service);
+    Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service);
 
     /**
      * Finds the latest (unresolved) outages that match the given services.

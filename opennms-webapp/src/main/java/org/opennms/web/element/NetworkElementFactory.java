@@ -1006,7 +1006,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     @Override
-    public Collection<OnmsOutage> currentOutagesForService(OnmsMonitoredService service){
-        return m_outageDao.currentOutagesForService(service);
+    public Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service){
+        return m_outageDao.currentOutagesForServiceFromPerspectivePoller(service);
     }
 }
