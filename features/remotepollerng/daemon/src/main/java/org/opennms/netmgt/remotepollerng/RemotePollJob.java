@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
+import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
 import org.quartz.Job;
@@ -42,11 +43,15 @@ import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+
 public class RemotePollJob implements Job {
     private static final Logger LOG = LoggerFactory.getLogger(RemotePollJob.class);
 
     public static final String POLLED_SERVICE = "polledService";
     public static final String REMOTE_POLLER_BACKEND = "remotePollerBackend";
+    public static final String TRACER = "tracer";
 
     @Override
     public void execute(JobExecutionContext context) {
@@ -54,10 +59,13 @@ public class RemotePollJob implements Job {
 
         final RemotePolledService svc = Objects.requireNonNull((RemotePolledService) dataMap.get(POLLED_SERVICE), "svc required");
         final RemotePollerd backend = Objects.requireNonNull((RemotePollerd) dataMap.get(REMOTE_POLLER_BACKEND), "backend required");
+        final Tracer tracer = Objects.requireNonNull((Tracer) dataMap.get(TRACER), "tracer required");
 
         LOG.debug("Poll triggered for {}", svc);
 
-        // TODO: Use distributed tracing here to add more context around span (See #12869)
+        final Span span = tracer.buildSpan(RemotePollerd.NAME).start();
+        span.setTag(TracerConstants.TAG_LOCATION, svc.getPerspectiveLocation());
+        span.setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
 
         // Issue the call and process the results asynchronously
         backend.getLocationAwarePollerClient().poll()
@@ -78,6 +86,9 @@ public class RemotePollJob implements Job {
                         backend.persistResponseTimeData(svc, res.getPollStatus());
 
                     } else {
+                        span.setTag(TracerConstants.TAG_THREAD, "true");
+                        span.log(ex.getMessage());
+
                         RpcExceptionUtils.handleException(ex, new RpcExceptionHandler<Void>() {
                             @Override
                             public Void onInterrupted(final Throwable t) {
@@ -104,6 +115,8 @@ public class RemotePollJob implements Job {
                             }
                         });
                     }
+
+                    span.finish();
                 });
     }
 

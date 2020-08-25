@@ -45,7 +45,6 @@ import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.rpc.mock.MockEntityScopeProvider;
@@ -55,6 +54,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
@@ -76,7 +76,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl;
@@ -88,6 +87,9 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -225,7 +227,8 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
                 this.eventIpcManager,
                 this.thresholdingService,
                 this.eventDao,
-                this.outageDao
+                this.outageDao,
+                new MockTracerRegistry()
         );
 
         new AnnotationBasedEventListenerAdapter(this.remotePollerd, eventIpcManager);
@@ -309,11 +312,13 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         // New config, package ICMP and SNMP bound to two different packages
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_2);
         sendReloadRemotePollerdEvent();
-        Assert.assertEquals(6, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
+        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
         assertThat(findRemotePolledService(this.node1icmp, "RDU").getPkg().getName(), is("foo1"));
         assertThat(findRemotePolledService(this.node1icmp, "Fulda").getPkg().getName(), is("foo1"));
         assertThat(findRemotePolledService(this.node2icmp, "RDU").getPkg().getName(), is("foo1"));
         assertThat(findRemotePolledService(this.node2icmp, "Fulda").getPkg().getName(), is("foo1"));
+        assertThat(findRemotePolledService(this.node1snmp, "RDU").getPkg().getName(), is("foo2"));
+        assertThat(findRemotePolledService(this.node2snmp, "RDU").getPkg().getName(), is("foo2"));
     }
 
     @Test
@@ -572,5 +577,16 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
 
     @Override
     public void afterPropertiesSet() {
+    }
+
+    private static class MockTracerRegistry implements TracerRegistry {
+        @Override
+        public Tracer getTracer() {
+            return GlobalTracer.get();
+        }
+
+        @Override
+        public void init(String serviceName) {
+        }
     }
 }
