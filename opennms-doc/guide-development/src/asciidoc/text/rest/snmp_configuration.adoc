@@ -168,7 +168,7 @@ It also shows the version limitations, default values and the restrictions - if 
 | securityName            | security-name             | opennmsUser  | v3                    |
 | securityLevel           | security-level            | noAuthNoPriv | v3                    | Integer value, which can be null, 1, 2, or 3. <ul><li>1 means noAuthNoPriv</li><li>2 means authNoPriv</li><li>3 means authPriv</li></ul> If you do not set the security level manually it is determined automatically: <ul><li>if no authPassPhrase set the securityLevel is 1</li><li>if a authPassPhrase and no privPassPhrase is set the security level is 2.</li><li>if a authPassPhrase and a privPassPhrase is set the security level is 3.</li></ul>
 | authPassPhrase          | auth-passphrase           | 0p3nNMSv3    | v3                    |
-| authProtocol            | auth-protocol             | MD5          | v3                    | only MD5 or SHA are valid arguments
+| authProtocol            | auth-protocol             | MD5          | v3                    | only MD5, SHA, SHA-224, SHA-256, SHA-512 are valid arguments
 | privPassPhrase          | privacy-passphrase        | 0p3nNMSv3    | v3                    |
 | privProtocol            | privacy-protocol          | DES          | v3                    | only DES, AES, AES192 or AES256 are valid arguments.
 | engineId                | engine-id                 |              | v3                    |
