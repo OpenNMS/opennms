@@ -334,7 +334,7 @@ function doDelete() {
                           Optional<OnmsOutage> outage = util.getOutageForPerspective(location);
                   %>
                   <tr>
-                      <td><i class="fa fa-server" aria-hidden="true"></i> <%=location.getLocationName()%></td>
+                      <td><%=location.getLocationName()%></td>
                       <td><%=outage.isPresent() ? "DOWN" : "UP"%></td>
                       <td><%=outage.isPresent() ? util.getOutageUrl(outage.get()) : ""%></td>
                   </tr>
