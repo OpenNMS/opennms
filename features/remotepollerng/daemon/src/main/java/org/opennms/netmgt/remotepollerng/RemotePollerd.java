@@ -51,7 +51,7 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 import org.opennms.netmgt.collection.dto.CollectionSetDTO;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
-import org.opennms.netmgt.collection.support.builder.RemoteLatencyResource;
+import org.opennms.netmgt.collection.support.builder.PerspectiveResponseTimeResource;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
@@ -392,7 +392,7 @@ public class RemotePollerd implements SpringServiceDaemon {
 
         // Create collection set from response times as gauges and persist
         final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
-        final RemoteLatencyResource resource = new RemoteLatencyResource(polledService.getPerspectiveLocation(), InetAddressUtils.str(polledService.getIpAddress()), polledService.getServiceName());
+        final PerspectiveResponseTimeResource resource = new PerspectiveResponseTimeResource(polledService.getPerspectiveLocation(), InetAddressUtils.str(polledService.getIpAddress()), polledService.getServiceName());
         for (final Map.Entry<String, Number> e: properties.entrySet()) {
             final String key = PollStatus.PROPERTY_RESPONSE_TIME.equals(e.getKey())
                                ? dsName

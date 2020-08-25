@@ -42,7 +42,6 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
     public static final String RESOURCE_TYPE_NODE = "node";
     public static final String RESOURCE_TYPE_IF = "if";
     public static final String RESOURCE_TYPE_LATENCY = "latency";
-    public static final String RESOURCE_TYPE_REMOTE = "remote";
 
     /**
      * <p>rescanNeeded</p>
