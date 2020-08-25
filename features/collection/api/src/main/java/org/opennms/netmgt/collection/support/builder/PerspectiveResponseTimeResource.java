@@ -33,15 +33,15 @@ import java.util.Objects;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.model.ResourcePath;
 
-public class RemoteLatencyResource extends AbstractResource {
+public class PerspectiveResponseTimeResource extends AbstractResource {
 
     private final String location;
     private final String address;
     private final String service;
 
-    public RemoteLatencyResource(final String location,
-                                 final String address,
-                                 final String service) {
+    public PerspectiveResponseTimeResource(final String location,
+                                           final String address,
+                                           final String service) {
         this.location = Objects.requireNonNull(location);
         this.address = Objects.requireNonNull(address);
         this.service = Objects.requireNonNull(service);
@@ -54,7 +54,7 @@ public class RemoteLatencyResource extends AbstractResource {
 
     @Override
     public String getTypeName() {
-        return CollectionResource.RESOURCE_TYPE_IF;
+        return CollectionResource.RESOURCE_TYPE_LATENCY;
     }
 
     @Override
@@ -74,6 +74,6 @@ public class RemoteLatencyResource extends AbstractResource {
 
     @Override
     public ResourcePath getPath(final CollectionResource resource) {
-        return ResourcePath.get("remote", this.location);
+        return ResourcePath.get("perspective", this.location);
     }
 }
