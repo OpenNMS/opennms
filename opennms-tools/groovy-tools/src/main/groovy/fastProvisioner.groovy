@@ -669,7 +669,7 @@ class ResponseGraphProperties extends PropertiesConfigurationFile {
         
         put("report.${svc.reportName}.name", "${svc.serviceName} Latency")
      	put("report.${svc.reportName}.columns", "${svc.dsName}")
-     	put("report.${svc.reportName}.type", "responseTime, distributedStatus")
+     	put("report.${svc.reportName}.type", "responseTime, perspectiveResponseTime")
      	def prop = put("report.${svc.reportName}.command")
      	prop << "--title=\"${svc.serviceName} Response Time\" " 
      	prop << " --vertical-label=\"Seconds\" "
