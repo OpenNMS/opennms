@@ -309,11 +309,13 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         // New config, package ICMP and SNMP bound to two different packages
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_2);
         sendReloadRemotePollerdEvent();
-        Assert.assertEquals(6, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
+        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
         assertThat(findRemotePolledService(this.node1icmp, "RDU").getPkg().getName(), is("foo1"));
         assertThat(findRemotePolledService(this.node1icmp, "Fulda").getPkg().getName(), is("foo1"));
         assertThat(findRemotePolledService(this.node2icmp, "RDU").getPkg().getName(), is("foo1"));
         assertThat(findRemotePolledService(this.node2icmp, "Fulda").getPkg().getName(), is("foo1"));
+        assertThat(findRemotePolledService(this.node1snmp, "RDU").getPkg().getName(), is("foo2"));
+        assertThat(findRemotePolledService(this.node2snmp, "RDU").getPkg().getName(), is("foo2"));
     }
 
     @Test
