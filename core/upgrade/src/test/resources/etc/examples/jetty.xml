@@ -32,7 +32,7 @@
 		<Arg>
 			<New class="org.eclipse.jetty.server.ssl.SslSelectChannelConnector">
 				<Arg>
-					<New class="org.eclipse.jetty.http.ssl.SslContextFactory">
+					<New class="org.eclipse.jetty.http.ssl.SslContextFactory$Server">
 						<Set name="keyStore"><SystemProperty name="org.opennms.netmgt.jetty.https-keystore" /></Set>
 						<Set name="keyStorePassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keystorepassword" default="changeit" /></Set>
 						<Set name="keyManagerPassword"><SystemProperty name="org.opennms.netmgt.jetty.https-keypassword" default="changeit" /></Set>
