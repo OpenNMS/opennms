@@ -41,8 +41,10 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -127,6 +129,7 @@ public class RemotePollerd implements SpringServiceDaemon {
     private final ThresholdingService thresholdingService;
     private final EventDao eventDao;
     private final OutageDao outageDao;
+    private final TracerRegistry tracerRegistry;
 
     private final ServiceTracker<Set<RemotePolledService>> serviceTracker;
 
@@ -144,7 +147,8 @@ public class RemotePollerd implements SpringServiceDaemon {
                          final EventForwarder eventForwarder,
                          final ThresholdingService thresholdingService,
                          final EventDao eventDao,
-                         final OutageDao outageDao) throws SchedulerException {
+                         final OutageDao outageDao,
+                         final TracerRegistry tracerRegistry) throws SchedulerException {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.monitoringLocationDao = Objects.requireNonNull(monitoringLocationDao);
         this.pollerConfig = Objects.requireNonNull(pollerConfig);
@@ -157,6 +161,9 @@ public class RemotePollerd implements SpringServiceDaemon {
         this.thresholdingService = Objects.requireNonNull(thresholdingService);
         this.eventDao = Objects.requireNonNull(eventDao);
         this.outageDao = Objects.requireNonNull(outageDao);
+
+        this.tracerRegistry = Objects.requireNonNull(tracerRegistry);
+        this.tracerRegistry.init(SystemInfoUtils.getInstanceId());
 
         this.scheduler = new StdSchedulerFactory().getScheduler();
 
@@ -257,6 +264,7 @@ public class RemotePollerd implements SpringServiceDaemon {
                     .setJobData(new JobDataMap(ImmutableMap.builder()
                                                            .put(RemotePollJob.POLLED_SERVICE, remotePolledService)
                                                            .put(RemotePollJob.REMOTE_POLLER_BACKEND, this)
+                                                           .put(RemotePollJob.TRACER, this.tracerRegistry.getTracer())
                                                            .build()))
                     .build();
 
