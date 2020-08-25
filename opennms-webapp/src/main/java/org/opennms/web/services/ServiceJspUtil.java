@@ -52,6 +52,7 @@ public class ServiceJspUtil {
     public List<OnmsMonitoringLocation> getAllPerspectives () {
         return service.getApplications().stream()
                 .flatMap(app -> app.getPerspectiveLocations().stream())
+                .distinct()
                 .sorted(Comparator.comparing(OnmsMonitoringLocation::getLocationName))
                 .collect(Collectors.toList());
     }
