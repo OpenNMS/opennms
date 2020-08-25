@@ -57,7 +57,7 @@ public class RemotePollJob implements Job {
 
         LOG.debug("Poll triggered for {}", svc);
 
-        // TODO: Use distributed tracing here to add more context around span
+        // TODO: Use distributed tracing here to add more context around span (See #12869)
 
         // Issue the call and process the results asynchronously
         backend.getLocationAwarePollerClient().poll()
