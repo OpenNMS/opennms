@@ -43,6 +43,7 @@ import org.opennms.web.outage.WebOutageRepository;
 import org.opennms.web.outage.filter.InterfaceFilter;
 import org.opennms.web.outage.filter.NodeFilter;
 import org.opennms.web.outage.filter.OutageCriteria;
+import org.opennms.web.outage.filter.PerspectiveLocationFilter;
 import org.opennms.web.outage.filter.RecentOutagesFilter;
 import org.opennms.web.outage.filter.ServiceFilter;
 import org.springframework.beans.factory.InitializingBean;
@@ -77,7 +78,7 @@ public class ServiceOutagesController extends AbstractController implements Init
             filters.add(new ServiceFilter(service.getServiceId(), getServletContext()));
             filters.add(new RecentOutagesFilter());
 
-            OutageCriteria criteria = new OutageCriteria(filters.toArray(new Filter[0]), SortStyle.ID, null, -1, -1);
+            OutageCriteria criteria = new OutageCriteria(filters.toArray(new Filter[] { new PerspectiveLocationFilter(null) }), SortStyle.ID, null, -1, -1);
             outages = m_webOutageRepository.getMatchingOutages(criteria);
         }
 
