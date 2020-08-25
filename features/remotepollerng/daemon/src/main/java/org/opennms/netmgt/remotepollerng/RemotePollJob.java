@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.remotepollerng;
 
-import static org.opennms.core.tracing.api.TracerConstants.TAG_RPC_FAILED;
-
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -87,10 +85,8 @@ public class RemotePollJob implements Job {
                         // Persist the response times from the result
                         backend.persistResponseTimeData(svc, res.getPollStatus());
 
-                        // TODO fooker: apply thresholding here?
-
                     } else {
-                        span.setTag(TAG_RPC_FAILED, "true");
+                        span.setTag(TracerConstants.TAG_THREAD, "true");
                         span.log(ex.getMessage());
 
                         RpcExceptionUtils.handleException(ex, new RpcExceptionHandler<Void>() {

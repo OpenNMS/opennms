@@ -760,7 +760,6 @@ jobs:
             find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
-            find ./opennms-assemblies/remote-poller-standalone -name "*.tar.gz" -type f -exec cp {} "./target/artifacts/remote-poller-client-${OPENNMS_VERSION}.tar.gz" \;
             pushd target/site/apidocs
               tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
             popd

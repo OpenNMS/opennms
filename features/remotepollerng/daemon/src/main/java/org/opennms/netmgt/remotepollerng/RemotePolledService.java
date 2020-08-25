@@ -29,12 +29,10 @@
 package org.opennms.netmgt.remotepollerng;
 
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -42,8 +40,6 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
 
@@ -113,8 +109,7 @@ public class RemotePolledService {
 
             @Override
             public String getNodeLabel() {
-                // TODO fooker: do we need this label?
-                return null;
+                return nodeLabel;
             }
 
             @Override
