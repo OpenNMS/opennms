@@ -85,7 +85,7 @@ opennms-core-ipc-grpc-client                │ 2020.1.0.SNAPSHOT  │ x        
 .Test connectivity to Kafka
 [source, shell]
 ----
-opennms-health:check
+opennms:health-check
 Verifying the health of the container
 
 Connecting to OpenNMS ReST API   [ Success  ]
