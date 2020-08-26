@@ -46,7 +46,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.support.builder.RemoteLatencyResource;
+import org.opennms.netmgt.collection.support.builder.PerspectiveResponseTimeResource;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OutageDao;
@@ -210,7 +210,7 @@ public class ApplicationStatusRestService {
             final List<DowntimeInterval> mergedDowntimeIntervals = mergeDowntimeIntervals(m.get(onmsMonitoringLocation));
 
             location.setAggregatedStatus(100.0 * calculateApplicationPercentageUptime(mergedDowntimeIntervals, start, end));
-            final RemoteLatencyResource remoteLatencyResource = new RemoteLatencyResource(location.getName(), InetAddressUtils.toIpAddrString(onmsMonitoredService.getIpAddress()), onmsMonitoredService.getServiceType().getName());
+            final PerspectiveResponseTimeResource remoteLatencyResource = new PerspectiveResponseTimeResource(location.getName(), InetAddressUtils.toIpAddrString(onmsMonitoredService.getIpAddress()), onmsMonitoredService.getServiceType().getName());
             location.setResponseResourceId(remoteLatencyResource.getInstance());
             applicationServiceStatus.getLocations().add(location);
         }

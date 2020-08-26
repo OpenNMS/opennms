@@ -129,9 +129,7 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         // add polling package
-        // TODO: Patrick this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
         sendData(PUT, MediaType.APPLICATION_XML,"/monitoringLocations/location1", JaxbUtils.marshal(location), 204);
-        // TODO: Patrick this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         sendRequest(DELETE, "/monitoringLocations/location1", 204);
     }
@@ -156,17 +154,13 @@ public class MonitoringLocationRestServiceIT extends AbstractSpringJerseyRestTes
         location2.setPriority(100L);
 
         // create location with associated polling packages
-        // TODO: Patrick  this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
         sendData(POST, MediaType.APPLICATION_XML,"/monitoringLocations", JaxbUtils.marshal(location2), 201);
-        // TODO: Patrick  this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         // delete the one without polling packages
         sendRequest(DELETE, "/monitoringLocations/location1", 204);
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         // delete the one with polling packages
-        // TODO: Patrick  this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.POLLER_PACKAGE_LOCATION_ASSOCIATION_CHANGED_EVENT_UEI, "ReST").addParam(EventConstants.PARM_DAEMON_NAME, "RemotePollerNG").getEvent());
         sendRequest(DELETE, "/monitoringLocations/location2", 204);
-        // TODO: Patrick  this.eventIpcManager.getEventAnticipator().verifyAnticipated();
     }
 }

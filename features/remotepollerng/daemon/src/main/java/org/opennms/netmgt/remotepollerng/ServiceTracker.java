@@ -100,7 +100,6 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
 
     @Override
     public int getNumThreads() {
-        // TODO fooker: Make this configurable as in Alarmd?
         return 1;
     }
 
@@ -249,18 +248,6 @@ public final class ServiceTracker<E> implements ThreadAwareEventListener {
 
         entry.ifPresent(this.deleteService);
     }
-
-    // TODO fooker: do we care about scheduled outages?
-//    @EventHandler(uei = EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)
-//    public void scheduledOutagesChangeHandler(final IEvent event) {
-//        try {
-//            this.config.update();
-//            getPoller().getPollOutagesDao().reload();
-//        } catch (Throwable e) {
-//            LOG.error("Failed to reload PollerConfigFactory", e);
-//        }
-//        getPoller().refreshServicePackages();
-//    }
 
     @EventHandler(uei = EventConstants.NODE_CATEGORY_MEMBERSHIP_CHANGED_EVENT_UEI)
     public void nodeCategoryMembershipChangedHandler(final IEvent event) {
