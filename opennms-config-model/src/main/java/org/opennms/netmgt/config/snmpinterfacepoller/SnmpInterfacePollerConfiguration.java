@@ -74,9 +74,7 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
     private String m_service;
 
     /**
-     * Flag which indicates to suppress Admin Status events at all.
-     *  This is deprecated and will be ignored in the code!
-     *  
+     * Flag which toggles suppression of all Admin Status events
      */
     @XmlAttribute(name = "suppressAdminDownEvent")
     private Boolean m_suppressAdminDownEvent;
@@ -129,7 +127,7 @@ public class SnmpInterfacePollerConfiguration implements Serializable {
     }
 
     public Boolean getSuppressAdminDownEvent() {
-        return m_suppressAdminDownEvent != null ? m_suppressAdminDownEvent : Boolean.TRUE;
+        return m_suppressAdminDownEvent != null ? m_suppressAdminDownEvent : Boolean.FALSE;
     }
 
     public void setSuppressAdminDownEvent(final Boolean suppressAdminDownEvent) {

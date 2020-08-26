@@ -1,4 +1,4 @@
-<snmp-interface-poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/snmpinterfacepoller" threads="30" service="SNMP">
+<snmp-interface-poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/snmpinterfacepoller" threads="30" service="SNMP" suppressAdminDownEvent="false">
    <node-outage>
       <critical-service name="ICMP"/>
       <critical-service name="SNMP"/>

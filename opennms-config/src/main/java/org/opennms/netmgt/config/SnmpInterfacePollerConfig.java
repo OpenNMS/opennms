@@ -59,6 +59,12 @@ public interface SnmpInterfacePollerConfig {
      */
     boolean useCriteriaFilters();
     /**
+     * <p>getSuppressAdminDownEvent</p>
+     *
+     * @return a boolean.
+     */
+    boolean getSuppressAdminDownEvent();
+    /**
      * <p>getService</p>
      *
      * @return a {@link java.lang.String} object.
