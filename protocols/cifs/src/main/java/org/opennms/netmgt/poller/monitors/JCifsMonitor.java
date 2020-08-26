@@ -32,6 +32,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.util.Map;
+import java.util.Properties;
 
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -40,7 +41,14 @@ import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.CIFSContext;
+import jcifs.CIFSException;
+import jcifs.Configuration;
+import jcifs.NameServiceClient;
+import jcifs.config.PropertyConfiguration;
+import jcifs.context.BaseContext;
+import jcifs.context.SingletonContext;
+import jcifs.smb.NtlmPasswordAuthenticator;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFilenameFilter;
@@ -148,18 +156,33 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         // Initializing TimeoutTracker with default values
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 
-        setJCifsTimeouts(tracker.getConnectionTimeout());
+        BaseContext baseCtx = null;
+        Properties jcifsProps = new Properties();
+        String connectionTimeoutAsStr = Integer.toString(tracker.getConnectionTimeout());
+        jcifsProps.setProperty("jcifs.smb.client.soTimeout", connectionTimeoutAsStr);
+        jcifsProps.setProperty("jcifs.smb.client.connTimeout", connectionTimeoutAsStr);
+        jcifsProps.setProperty("jcifs.smb.client.responseTimeout", connectionTimeoutAsStr);
+        jcifsProps.setProperty("jcifs.smb.client.sessionTimeout", connectionTimeoutAsStr);
+        Configuration jcifsConfig = null;
+        try {
+            jcifsConfig = new PropertyConfiguration(jcifsProps);
+            baseCtx = new BaseContext(jcifsConfig);
+        } catch (CIFSException cifse) {
+            logger.warn("Unable to configure CIFS timeout properties due to {}. Using defaults.", cifse.getMessage());
+            baseCtx = SingletonContext.getInstance();
+        }
+        CIFSContext authedCtx = baseCtx.withCredentials(new NtlmPasswordAuthenticator(domain, username, password));
 
         // Setting default PollStatus
         PollStatus serviceStatus = PollStatus.unknown();
 
+
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
 
-            NtlmPasswordAuthentication ntlmPasswordAuthentication = new NtlmPasswordAuthentication(authString);
 
             try {
                 // Creating SmbFile object
-                SmbFile smbFile = new SmbFile(fullUrl, ntlmPasswordAuthentication);
+                SmbFile smbFile = new SmbFile(fullUrl, authedCtx);
                 // Setting the defined timeout
                 smbFile.setConnectTimeout(tracker.getConnectionTimeout());
                 // Does the file exists?
@@ -227,23 +250,6 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         modifiersField.setInt(finalStaticField, finalStaticField.getModifiers() & ~Modifier.FINAL);
 
         finalStaticField.set(null, value);
-    }
-
-    /**
-     * Due to limitations of the JCifs library we must use this hack to modify the timeouts. Since the timeouts are set
-     * in a static fields only global timeouts will work reliably.
-     *
-     * @param timeoutInMilliseconds the timeout to be set
-     */
-    private void setJCifsTimeouts(final int timeoutInMilliseconds) {
-        try {
-            final Class<?> clazz = Class.forName("jcifs.smb.SmbConstants");
-            setFieldValue(clazz.getField("SO_TIMEOUT"), timeoutInMilliseconds);
-            setFieldValue(clazz.getField("CONN_TIMEOUT"), timeoutInMilliseconds);
-            setFieldValue(clazz.getField("DEFAULT_RESPONSE_TIMEOUT"), timeoutInMilliseconds);
-        } catch (NoSuchFieldException | ClassNotFoundException | IllegalAccessException e) {
-            logger.error("Error setting JCifs timeouts ", e);
-        }
     }
 
     /**
