@@ -95,7 +95,7 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
         final Health health = new Health();
         for (Bundle b : bundleContext.getBundles()) {
             if (ignoreBundles.contains(b.getSymbolicName())) {
-                LOG.debug("Bundle {} with symbolic name {} is ignored while performing health:check", b.getBundleId(), b.getSymbolicName());
+                LOG.debug("Bundle {} with symbolic name {} is ignored while performing opennms:health-check", b.getBundleId(), b.getSymbolicName());
                 continue;
             }
             final BundleInfo info = bundleService.getInfo(b);
