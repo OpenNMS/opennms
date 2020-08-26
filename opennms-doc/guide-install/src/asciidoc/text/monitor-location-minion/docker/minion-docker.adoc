@@ -65,7 +65,7 @@ services:
 <7> Authentication for ActiveMQ broker
 <8> _REST_ endpoint to connect to the _{opennms-product-name}_ instance
 <9> Authentication for the _REST_ endpoint
-<10> Run our health check to indicate the Minion is ready. It uses internally the `opennms:health-check` running in Karaf.
+<10> Run our health check to indicate the Minion is ready. It uses the `opennms:health-check` internally running in Karaf.
 
 NOTE: In this example we haven't set credentials to connect the _Minion_ via _REST_ and the _ActiveMQ Message Broker_.
       The _Minion_ will fall back and uses the default admin/admin credentials for communication.
