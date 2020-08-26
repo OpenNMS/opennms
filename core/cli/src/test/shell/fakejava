@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 FAKE_JAVA_VERSION="@fake_java_version@";
 FAKE_JAVA_BUILD="@fake_java_build@";

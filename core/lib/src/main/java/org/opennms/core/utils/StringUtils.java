@@ -453,4 +453,13 @@ public abstract class StringUtils {
             return Optional.empty();
         }
     }
+
+    public static Integer parseInt(String value, Integer defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
 }
