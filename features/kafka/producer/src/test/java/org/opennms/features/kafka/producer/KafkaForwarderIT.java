@@ -226,6 +226,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         streamsConfig.put(StreamsConfig.STATE_DIR_CONFIG, data.getAbsolutePath());
         streamsConfig.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000);
         streamsConfig.put(StreamsConfig.METADATA_MAX_AGE_CONFIG, 1000);
+        streamsConfig.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 0);
         when(configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties()).thenReturn(producerConfig);
         when(configAdmin.getConfiguration(KafkaAlarmDataSync.KAFKA_STREAMS_PID).getProperties()).thenReturn(streamsConfig);
 
