@@ -462,6 +462,18 @@ Could not find an outage to edit because no outage name parameter was specified 
 				String newNode = request.getParameter("newNode");
 				if (newNode == null || "".equals(newNode.trim())) {
 					// No node was specified
+				} else if (newNode.startsWith("@")) {
+					String category = newNode.substring(1);
+					for (OnmsNode node : NetworkElementFactory.getInstance(getServletContext()).getNodesWithCategories(new String[] { category }, false)) {
+						addNode(theOutage, node.getId());
+					}
+				} else if (newNode.startsWith("$")) {
+					String foreignSource = newNode.substring(1);
+					for (OnmsNode node : NetworkElementFactory.getInstance(getServletContext()).getAllNodes()) {
+						if (node.getForeignSource() != null && node.getForeignSource().equals(foreignSource)) {
+							addNode(theOutage, node.getId());
+						}
+					}
 				} else {
 					int newNodeId = WebSecurityUtils.safeParseInt(newNode);
 					addNode(theOutage, newNodeId);
@@ -763,7 +775,7 @@ function updateOutageTypeDisplay(selectElement) {
 					<td valign="top">
 						<form id="addNode" action="admin/sched-outages/editoutage.jsp" method="post">
 							<input type="hidden" name="formSubmission" value="true" />
-							<p style="font-weight: bold; margin-bottom: 2px;">Search (max 200 results):</p>
+							<p style="font-weight: bold; margin-bottom: 2px;">Search (max 200 results, Prefix search string with '@' to search for categories,<br /> '#' to search for nodes in a category, '$' for requisitions,<br />and '%' for nodes in a requisition):</p>
 							<div class="ui-widget">
 								<select id="newNodeSelect" name="newNodeSelect" style="display: none"></select>
 								<input type="radio"  value="addPathOutageDependency" name="addPathOutageNodeRadio"/> Add with path outage dependency
