@@ -59,6 +59,12 @@ public interface SnmpInterfacePollerConfig {
      */
     boolean useCriteriaFilters();
     /**
+     * <p>getSuppressInitializationEvent</p>
+     *
+     * @return a boolean.
+     */
+    boolean getSuppressInitializationEvent();
+    /**
      * <p>getService</p>
      *
      * @return a {@link java.lang.String} object.

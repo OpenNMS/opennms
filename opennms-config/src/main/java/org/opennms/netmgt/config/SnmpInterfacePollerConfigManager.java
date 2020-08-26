@@ -589,4 +589,14 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         return getConfiguration().getUseCriteriaFilters();
     }
 
+    /**
+     * <p>getSuppressInitializationEvent</p>
+     *
+     * @return a boolean.
+     */
+    @Override
+    public boolean getSuppressInitializationEvent() {
+        return getConfiguration().getSuppressInitializationEvent();
+    }
+
 }
