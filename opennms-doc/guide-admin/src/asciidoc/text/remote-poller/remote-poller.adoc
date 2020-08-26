@@ -1,0 +1,37 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+The _{opennms-product-name} Remote Poller_ allows an user to monitor the availability of a set of services from several remote locations.
+These remote locations are called perspective locations in this context.
+In order to configure remote polling an user has to define an application by associating a set of services and a set of perspectives from which these services should be monitored.
+
+.Remote Poller operation
+image::remote-poller/rp-operation.png[]
+
+The _Remote Poller_ utilizes the minion infrastructure to monitor a service's availability from these different perspectives.
+The service monitor configuration is looked up in the `poller-configuration.xml`.
+
+NOTE: The `remote-only` flag in the package definition can be used to define packages that will be used *only* for remote polling.
+
+When a service is not responsive an outage will be generated with the corresponding perspective.
+In order to configure remote polling first an application has to be created.
+
+.Create a new application
+image::remote-poller/create-app.png[]
+
+Next step is to configure the application.
+In the upper section services that should be monitored from remote perspective locations can be associated with this application.
+In the lower section the perspective locations from which the given services should be monitored can be defined.
+
+.Configuration of an application
+image::remote-poller/configure-app.png[]
+
+After configuring the application, the minions at the remote perspective locations start to monitor the services associated with this application.
+The next screenshot show an HTTP outage noticed from all perspective locations and the _{opennms-product-name}_ instance itself.
+
+.Remote outages
+image::remote-poller/remote-outages.png[]
+
+The column _Perspective_ shows the remote location from which a minion has detected this outage.
+If no _Perspective_ is shown, the outage was detected by the normal process: the _{opennms-product-name}_ instance detected it in the _Default_ location or a minion detected it in the corresponding node's location.

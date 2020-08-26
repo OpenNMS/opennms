@@ -147,6 +147,10 @@ include::text/service-assurance/monitors/Win32ServiceMonitor.adoc[]
 include::text/service-assurance/monitors/WsManMonitor.adoc[]
 include::text/service-assurance/monitors/XmpMonitor.adoc[]
 
+[[ga-remote-polle]]
+=== Remote Poller
+include::text/remote-poller/remote-poller.adoc[]
+
 [[ga-performance-mgmt]]
 == Performance Management
 include::text/performance-data-collection/introduction.adoc[]
