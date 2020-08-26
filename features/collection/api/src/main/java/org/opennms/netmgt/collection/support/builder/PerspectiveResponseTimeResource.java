@@ -54,7 +54,7 @@ public class PerspectiveResponseTimeResource extends AbstractResource {
 
     @Override
     public String getTypeName() {
-        return CollectionResource.RESOURCE_TYPE_LATENCY;
+        return CollectionResource.RESOURCE_TYPE_IF;
     }
 
     @Override

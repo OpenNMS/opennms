@@ -1158,11 +1158,6 @@
     <!-- Remote Poller NG -->
     <dependency>
       <groupId>org.opennms.features.remotepollerng</groupId>
-      <artifactId>org.opennms.features.remotepollerng.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.remotepollerng</groupId>
       <artifactId>org.opennms.features.remotepollerng.daemon</artifactId>
       <version>${project.version}</version>
     </dependency>

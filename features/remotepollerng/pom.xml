@@ -11,7 +11,6 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: Remote Poller NG</name>
   <modules>
-    <module>api</module>
     <module>daemon</module>
   </modules>
 </project>

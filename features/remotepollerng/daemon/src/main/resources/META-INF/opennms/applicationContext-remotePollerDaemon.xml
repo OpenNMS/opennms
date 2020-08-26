@@ -28,23 +28,8 @@
   <onmsgi:reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService"/>
   <onmsgi:reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao"/>
   <onmsgi:reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao"/>
-  <onmsgi:reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry"/>
-
 
   <bean id="daemon" class="org.opennms.netmgt.remotepollerng.RemotePollerd">
-    <constructor-arg ref="sessionUtils"/>
-    <constructor-arg ref="monitoringLocationDao"/>
-    <constructor-arg ref="pollerConfig"/>
-    <constructor-arg ref="monitoredServiceDao"/>
-    <constructor-arg ref="locationAwarePollerClient"/>
-    <constructor-arg ref="applicationDao"/>
-    <constructor-arg ref="collectionAgentFactory" />
-    <constructor-arg ref="persisterFactory"/>
-    <constructor-arg ref="eventForwarder"/>
-    <constructor-arg ref="thresholdingService"/>
-    <constructor-arg ref="eventDao"/>
-    <constructor-arg ref="outageDao"/>
-    <constructor-arg ref="tracerRegistry" />
   </bean>
 
   <bean id="serviceTrackerListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">

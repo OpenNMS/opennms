@@ -57,8 +57,8 @@ public final class PerspectiveResponseTimeResourceType implements OnmsResourceTy
     private final IpInterfaceDao ipInterfaceDao;
 
     public PerspectiveResponseTimeResourceType(final ResourceStorageDao resourceStorageDao, final IpInterfaceDao ipInterfaceDao) {
-        this.resourceStorageDao = Objects.requireNonNull(resourceStorageDao);
-        this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
+        this.resourceStorageDao = resourceStorageDao;
+        this.ipInterfaceDao = ipInterfaceDao;
     }
 
     @Override
@@ -82,7 +82,7 @@ public final class PerspectiveResponseTimeResourceType implements OnmsResourceTy
             return false;
         }
 
-        return true;
+        return !this.getResourcesForParent(parent).isEmpty();
     }
 
     @Override
