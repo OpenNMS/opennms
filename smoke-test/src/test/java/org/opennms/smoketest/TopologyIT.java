@@ -709,6 +709,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 testCase.findElementById("defaultFocusBtn").click();
                 waitForTransition();
+                testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
             } finally {
                 testCase.setImplicitWait();
             }
