@@ -76,8 +76,8 @@ public class DatabaseReportIT extends OpenNMSSeleniumIT {
                 {"local_AssetMangementMaintExpired", "PDF", "Maintenance contracts expired"},
                 {"local_AssetMangementMaintStrategy", "PDF", "Maintenance contracts strategy"},
                 {"local_Event-Analysis", "PDF", "Event Analysis report"},
-                {"local_defaultCalendarReport", "HTML", "Default Calendar Report"},
-                {"local_defaultClassicReport", "HTML", "Default Classic Report"},
+                {"local_defaultCalendarReport", "HTML", "Default calendar report"},
+                {"local_defaultClassicReport", "HTML", "Default classic report"},
         };
     }
 
