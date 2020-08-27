@@ -253,8 +253,8 @@ public class RemotePollerd implements SpringServiceDaemon {
                                                                                                        serviceMonitor,
                                                                                                        perspectiveLocation,
                                                                                                        node.getLocation().getLocationName(),
-                                                                                                       rrdRepository,
-                                                                                                       thresholdingSession))
+                                                                                                       rrdRepository.orElse(null),
+                                                                                                       thresholdingSession.orElse(null)))
                                                    .collect(Collectors.toSet()));
         });
     }
@@ -364,9 +364,10 @@ public class RemotePollerd implements SpringServiceDaemon {
     }
 
     public void persistResponseTimeData(final RemotePolledService polledService, final PollStatus pollStatus) {
-        if (!polledService.getRrdRepository().isPresent()) {
+        if (polledService.getRrdRepository() == null) {
             return;
         }
+
         String dsName = getServiceParameter(polledService.getServiceConfig(), "ds-name");
         if (dsName == null) {
             dsName = PollStatus.PROPERTY_RESPONSE_TIME;
@@ -412,14 +413,14 @@ public class RemotePollerd implements SpringServiceDaemon {
         final CollectionSetDTO collectionSetDTO = collectionSetBuilder.build();
 
         collectionSetDTO.visit(this.persisterFactory.createPersister(new ServiceParameters(Collections.emptyMap()),
-                                                                         polledService.getRrdRepository().get(),
+                                                                         polledService.getRrdRepository(),
                                                                          false,
                                                                          true,
                                                                          true));
 
         try {
-            if (polledService.getThresholdingSession().isPresent()) {
-                polledService.getThresholdingSession().get().accept(collectionSetDTO);
+            if (polledService.getThresholdingSession() != null) {
+                polledService.getThresholdingSession().accept(collectionSetDTO);
             }
         } catch (final Throwable e) {
             LOG.error("Failed to threshold on {} for {} because of an exception", polledService, dsName, e);

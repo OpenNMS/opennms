@@ -31,7 +31,6 @@ package org.opennms.netmgt.remotepollerng;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.poller.Package;
@@ -61,9 +60,9 @@ public class RemotePolledService {
     private final String perspectiveLocation;
     private final String residentLocation;
 
-    private final Optional<RrdRepository> rrdRepository;
+    private final RrdRepository rrdRepository;
 
-    private final Optional<ThresholdingSession> thresholdingSession;
+    private final ThresholdingSession thresholdingSession;
 
     private final MonitoredService monitoredService;
 
@@ -78,8 +77,8 @@ public class RemotePolledService {
                                final ServiceMonitor serviceMonitor,
                                final String perspectiveLocation,
                                final String residentLocation,
-                               final Optional<RrdRepository> rrdRepository,
-                               final Optional<ThresholdingSession> thresholdingSession) {
+                               final RrdRepository rrdRepository,
+                               final ThresholdingSession thresholdingSession) {
         this.service = Objects.requireNonNull(service);
         this.foreignSource = Objects.requireNonNull(foreignSource);
         this.foreignId = Objects.requireNonNull(foreignId);
@@ -89,8 +88,8 @@ public class RemotePolledService {
         this.serviceMonitor = Objects.requireNonNull(serviceMonitor);
         this.perspectiveLocation = Objects.requireNonNull(perspectiveLocation);
         this.residentLocation = Objects.requireNonNull(residentLocation);
-        this.rrdRepository = Objects.requireNonNull(rrdRepository);
-        this.thresholdingSession = Objects.requireNonNull(thresholdingSession);
+        this.rrdRepository = rrdRepository;
+        this.thresholdingSession = thresholdingSession;
 
         this.monitoredService = new MonitoredService() {
             @Override
@@ -180,7 +179,7 @@ public class RemotePolledService {
         return this.residentLocation;
     }
 
-    public Optional<RrdRepository> getRrdRepository() {
+    public RrdRepository getRrdRepository() {
         return this.rrdRepository;
     }
 
@@ -196,7 +195,7 @@ public class RemotePolledService {
         return this.service.serviceName;
     }
 
-    public Optional<ThresholdingSession> getThresholdingSession() {
+    public ThresholdingSession getThresholdingSession() {
         return this.thresholdingSession;
     }
 
