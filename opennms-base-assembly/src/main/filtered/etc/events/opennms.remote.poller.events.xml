@@ -2,42 +2,22 @@
     <event>
         <uei>uei.opennms.org/remote/nodes/nodeLostService</uei>
         <event-label>OpenNMS-defined remote poller event: A remote poller detected a node lost service</event-label>
-        <descr>&lt;p>A %service% outage was identified on interface
-            %interface% from remote poller %parm[locationMonitorId]% from location: %parm[location]%.
-            &lt;/p></descr>
+        <descr>&lt;p>A %service% outage was identified on interface %interface% from location: %parm[perspective]%.&lt;/p></descr>
         <logmsg dest="logndisplay">
-            %service% outage identified on interface %interface% from the remote poller %parm[locationMonitorId]%
-            in location %parm[location]% with reason code: %parm[eventReason]%.
+            %service% outage identified on interface %interface% from location %parm[perspective]% with reason code: %parm[eventReason]%.
         </logmsg>
         <severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+        <alarm-data reduction-key="%uei%:%parm[perspective]%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
     </event>
     <event>
         <uei>uei.opennms.org/remote/nodes/nodeRegainedService</uei>
         <event-label>OpenNMS-defined remote poller event: A remote poller detected a node regained service</event-label>
-        <descr>&lt;p>The %service% service on interface %interface% was
-            previously down as viewed by remote poller
-            %parm[locationMonitorId]% and has been restored.&lt;/p>
-            &lt;p>This event is generated when a service which had
-            previously failed polling attempts is again responding to
-            polls by OpenNMS. &lt;/p></descr>
+        <descr>&lt;p>The %service% service on interface %interface% was previously down from %parm[perspective]%.&lt;/p>
+               &lt;p>This event is generated when a service which had previously failed polling attempts is again responding to polls by OpenNMS. &lt;/p></descr>
         <logmsg dest="logndisplay">
-            %service% outage identified on interface %interface% from the remote poller %parm[locationMonitorId]%
-            in location %parm[location]% has cleared.
+            %service% outage identified on interface %interface% from location %parm[perspective]% has cleared.
         </logmsg>
         <severity>Normal</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/remote/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
-    </event>
-
-    <event>
-        <!-- TODO: Renmove me -->
-        <uei>uei.opennms.org/internal/poller/pollingPackageAssociationsChanged</uei>
-        <event-label>OpenNMS-defined remote poller event: Poller package association changed for location %parm[location]%</event-label>
-        <descr>&lt;p>The poller association for remote location %parm[location]% changed.&lt;/p>
-            &lt;p>This event is generated when the list of polling package names is modified for a monitoring location.&lt;/p></descr>
-        <logmsg dest="logndisplay">
-            The set of associated polling package names changed for monitoring location %parm[location]%.
-        </logmsg>
-        <severity>Normal</severity>
+        <alarm-data reduction-key="%uei%:%parm[perspective]%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/remote/nodes/nodeLostService:%parm[perspective]%:%nodeid%:%interface%:%service%" auto-clean="false"/>
     </event>
 </events>

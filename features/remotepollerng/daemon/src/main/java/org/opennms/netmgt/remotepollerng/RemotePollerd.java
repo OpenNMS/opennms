@@ -102,6 +102,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.listeners.SchedulerListenerSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
@@ -136,6 +137,7 @@ public class RemotePollerd implements SpringServiceDaemon {
     @VisibleForTesting
     final Scheduler scheduler;
 
+    @Autowired
     public RemotePollerd(final SessionUtils sessionUtils,
                          final MonitoringLocationDao monitoringLocationDao,
                          final PollerConfig pollerConfig,
