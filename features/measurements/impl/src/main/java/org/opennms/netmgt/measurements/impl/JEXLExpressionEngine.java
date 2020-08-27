@@ -110,7 +110,7 @@ public class JEXLExpressionEngine implements ExpressionEngine {
             try {
                 expressions.put(e.getLabel(), jexl.createExpression(e.getExpression()));
             } catch (JexlException ex) {
-                throw new ExpressionException(ex, "Failed to parse expression label '{}'.", e.getLabel());
+                throw new ExpressionException(ex, "Failed to parse expression. Label = '{}', Expression'{}'. Please check also the Jexl documentation for details: https://commons.apache.org/proper/commons-jexl/reference/syntax.html", e.getLabel(), e.getExpression());
             }
         }
 

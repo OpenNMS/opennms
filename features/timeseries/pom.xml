@@ -80,11 +80,6 @@
       <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.googlecode.concurrent-trees</groupId>
-      <artifactId>concurrent-trees</artifactId>
-      <version>${concurrentTreesVersion}</version>
-    </dependency>
-    <dependency>
       <groupId>com.lmax</groupId>
       <artifactId>disruptor</artifactId>
       <version>${lmaxDisruptorVersion}</version>
@@ -112,7 +107,7 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

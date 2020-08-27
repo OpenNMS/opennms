@@ -22,7 +22,8 @@ find_tests()
 # prime Docker to already contain the images we need in parallel, since
 # testcontainers downloads them serially
 echo "#### Priming Docker container cache"
-CONTAINER_COUNT=12
+CONTAINER_COUNT=10
+touch /tmp/finished-containers.txt
 for CONTAINER in \
   "alpine:3.5" \
   "testcontainersofficial/ryuk:0.3.0" \
@@ -31,9 +32,7 @@ for CONTAINER in \
   "confluentinc/cp-kafka:5.2.1" \
   "confluentinc/cp-kafka:latest" \
   "docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0" \
-  "docker.elastic.co/elasticsearch/elasticsearch-oss:latest" \
   "opennms/dummy-http-endpoint:0.0.2" \
-  "opennms/dummy-http-endpoint:latest" \
   "postgres:10.7-alpine" \
   "postgres:latest" \
 ; do

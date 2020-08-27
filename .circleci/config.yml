@@ -20,10 +20,10 @@ executors:
 # branches have slashes in them, that way the merge branch gets created properly
 defaults: &defaults
   parameters:
-    context_name:
-      description: the context to use for sensitive settings like GPG keys
-      type: string
-      default: "OpenNMS Build"
+    minimal:
+      description: whether to do a minimal (build-and-merge only) build
+      type: boolean
+      default: false
     previous_branch:
       description: the previous branch, if any
       type: string
@@ -62,7 +62,7 @@ commands:
       steps:
         - run:
             name: Extract Maven POM version
-            command: opennms-container/pom2version.py pom.xml > pom-version-cache.key
+            command: .circleci/scripts/pom2version.sh pom.xml > pom-version-cache.key
   cached-checkout:
       description: "Checkout with caching"
       steps:
@@ -259,6 +259,11 @@ commands:
     steps:
       - cached-checkout
       - extract-pom-version
+      - run:
+          name: Check for Releasability
+          command: |
+            export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            .circleci/scripts/release-lint.sh "${OPENNMS_VERSION}"
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
@@ -446,6 +451,8 @@ commands:
 workflows:
   weekly-coverage:
     <<: *defaults
+    when:
+      equal: [ false, << parameters.minimal >> ]
     triggers:
       - schedule:
           # Saturday at 12:00 AM
@@ -455,21 +462,52 @@ workflows:
               only:
                 - develop
     jobs:
-      - build:
-          context: << parameters.context_name >>
+      - build
       - integration-test-with-coverage:
-          context: << parameters.context_name >>
           requires:
             - build
       - code-coverage:
-          context: << parameters.context_name >>
           requires:
             - integration-test-with-coverage
+  build-minimal:
+    <<: *defaults
+    when:
+      equal: [ true, << parameters.minimal >> ]
+    jobs:
+      - build
+      - create-merge-foundation-branch:
+          requires:
+            - build
+          filters:
+            branches:
+              only: << parameters.main_branch >>
+      - merge-foundation-branch:
+          requires:
+            - build
+          filters:
+            branches:
+              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+      - create-merge-meridian-branch:
+          requires:
+            - build
+          filters:
+            branches:
+              only: /^foundation.*/
+      - merge-poweredby-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - /^foundation.*/
   build-deploy:
     <<: *defaults
+    when:
+      equal: [ false, << parameters.minimal >> ]
     jobs:
       - build:
-          context: << parameters.context_name >>
           filters:
             branches:
               ignore:
@@ -478,23 +516,18 @@ workflows:
           requires:
             - build
       - horizon-rpm-build:
-          context: << parameters.context_name >>
           requires:
             - build
       - minion-rpm-build:
-          context: << parameters.context_name >>
           requires:
             - build
       - sentinel-rpm-build:
-          context: << parameters.context_name >>
           requires:
             - build
       - integration-test:
-          context: << parameters.context_name >>
           requires:
             - build
       - smoke-test-full:
-          context: << parameters.context_name >>
           requires:
             - horizon-rpm-build
             - tarball-assembly
@@ -502,14 +535,14 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
+                - /^dependabot.*/
       - smoke-test-minimal:
-          context: << parameters.context_name >>
           requires:
             - horizon-rpm-build
             - tarball-assembly
@@ -517,78 +550,76 @@ workflows:
           filters:
             branches:
               ignore:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
+                - /^dependabot.*/
       - horizon-publish-oci:
-          context: << parameters.context_name >>
           requires:
             - horizon-rpm-build
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
       - sentinel-publish-oci:
-          context: << parameters.context_name >>
           requires:
             - sentinel-rpm-build
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
       # These don't actually require `integration-test` but we shouldn't bother
       # spending cycles unless everything else passed
       - horizon-deb-build:
-          context: << parameters.context_name >>
           requires:
             - integration-test
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - minion-deb-build:
-          context: << parameters.context_name >>
           requires:
             - integration-test
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - sentinel-deb-build:
-          context: << parameters.context_name >>
           requires:
             - integration-test
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - create-merge-foundation-branch:
-          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -602,7 +633,6 @@ workflows:
             branches:
               only: << parameters.main_branch >>
       - merge-foundation-branch:
-          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -616,7 +646,6 @@ workflows:
             branches:
               only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
       - create-merge-meridian-branch:
-          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -628,7 +657,6 @@ workflows:
             branches:
               only: /^foundation.*/
       - merge-poweredby-branch:
-          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -641,7 +669,6 @@ workflows:
               only:
                 - /^foundation.*/
       - publish-cloudsmith:
-          context: << parameters.context_name >>
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
@@ -654,8 +681,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - develop
+                - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
 
@@ -696,20 +723,50 @@ jobs:
             sudo systemctl restart docker
       - dockerhub-login
       - run:
-          name: Assemble tarballs
-          # Install fake makensis to satisfy the assemble dependency
+          name: Assemble tarballs and related artifacts
           command: |
+            # install fake makensis to satisfy the assemble dependency
             sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
-            ./assemble.pl -Dopennms.home=/opt/opennms \
-                          -DskipTests \
-                          -DupdatePolicy=never
+            export MAVEN_OPTS="-Xmx4g -Xms4g"
+            # general assembly
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+              -DupdatePolicy=never \
+              -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+              -DmaxCpus=<< parameters.number-vcpu >> \
+              -Pbuild-bamboo \
+              -Prun-expensive-tasks \
+              -Dopennms.home=/opt/opennms \
+              install --batch-mode
+            # javadoc
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+              -DupdatePolicy=never \
+              -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+              -DmaxCpus=<< parameters.number-vcpu >> \
+              -Pbuild-bamboo \
+              -Prun-expensive-tasks \
+              -Dopennms.home=/opt/opennms \
+              javadoc:aggregate --batch-mode
       - run:
-          name: Collect tarball artifacts
+          name: Collect Artifacts
           command: |
-            mkdir target/tarballs
-            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/opennms.tar.gz \;
-            find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/minion.tar.gz \;
-            find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} ./target/tarballs/sentinel.tar.gz \;
+            mkdir -p target/{artifacts,tarballs}
+            OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
+            find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
+            find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
+            find ./opennms-assemblies/remote-poller-standalone -name "*.tar.gz" -type f -exec cp {} "./target/artifacts/remote-poller-client-${OPENNMS_VERSION}.tar.gz" \;
+            pushd target/site/apidocs
+              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+            popd
+            cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
+            cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-docs.tar.gz"
+            cp target/*-source.tar.gz ./target/artifacts/
       - run:
           name: Build Minion OCI
           command: |
@@ -726,7 +783,7 @@ jobs:
             # Build for multiple architectures only in release branches and push images with manifest to a registry
             # For develop we set a floating tag "bleeding" instead the x.y.z-SNAPSHOT version number
             case "${CIRCLE_BRANCH}" in
-              "master")
+              "master-"*)
                 make DOCKER_ARCH="linux/amd64,linux/arm/v7,linux/arm64" \
                      DOCKER_FLAGS=--push \
                      VERSION="$(../pom2version.py ../../pom.xml)" \
@@ -755,6 +812,11 @@ jobs:
                 ;;
             esac
       - store_artifacts:
+          when: always
+          path: ~/project/target/artifacts
+          destination: artifacts
+      - store_artifacts:
+          when: always
           path: ~/project/target/tarballs
           destination: tarballs
       - store_artifacts:
@@ -763,10 +825,11 @@ jobs:
       - cache-oci:
           key: minion
           path: opennms-container/minion/images/
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/target/tarballs
+      # any idea why we persisted this? seems like nothing later uses it
+      #- persist_to_workspace:
+      #    root: ~/
+      #    paths:
+      #      - project/target/tarballs
 
   horizon-rpm-build:
     executor: centos-build-executor

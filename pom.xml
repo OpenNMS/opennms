@@ -1366,10 +1366,10 @@
     <fstVersion>2.47</fstVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.4.5</groovyVersion>
-    <grpcVersion>1.24.0</grpcVersion>
+    <grpcVersion>1.30.0</grpcVersion>
     <gsonVersion>2.8.5</gsonVersion>
     <guavaVersion>18.0</guavaVersion>
-    <guavagRPCVersion>23.0</guavagRPCVersion>
+    <guavagRPCVersion>28.2-jre</guavagRPCVersion>
     <guavaOldVersion>17.0</guavaOldVersion>
     <gwtVersion>2.8.2</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
@@ -1387,7 +1387,7 @@
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <jcifsVersion>2.1.4</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
-    <jettyVersion>9.4.29.v20200521</jettyVersion>
+    <jettyVersion>9.4.30.v20200611</jettyVersion>
     <jestVersion>5.3.3</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
@@ -1407,23 +1407,23 @@
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
-    <log4j2Version>2.8.2</log4j2Version>
+    <log4j2Version>2.13.2</log4j2Version>
     <mapstructVersion>1.3.0.Final</mapstructVersion>
     <minaVersion>2.0.16</minaVersion>
-    <mockitoVersion>1.10.19</mockitoVersion>
+    <mockitoVersion>3.4.6</mockitoVersion>
     <netty4Version>4.1.48.Final</netty4Version>
     <newtsVersion>1.5.2</newtsVersion>
     <paxExamVersion>4.13.1</paxExamVersion>
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>7.2.8</paxWebVersion>
-    <protobufVersion>3.11.4</protobufVersion>
+    <protobufVersion>3.12.0</protobufVersion>
     <protobuf2Version>2.6.1</protobuf2Version>
     <postgresqlVersion>42.2.5</postgresqlVersion>
-    <powermockVersion>1.6.4</powermockVersion>
+    <powermockVersion>2.0.7</powermockVersion>
     <okhttpVersion>3.10.0</okhttpVersion>
     <okioVersion>1.14.0</okioVersion>
-    <opennmsApiVersion>0.4.2-SNAPSHOT</opennmsApiVersion>
-    <opennmsApiVersionOsgi>0.4.2.SNAPSHOT</opennmsApiVersionOsgi>
+    <opennmsApiVersion>0.5.1-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersionOsgi>0.5.1</opennmsApiVersionOsgi>
     <osgiVersion>6.0.0</osgiVersion>
     <osgiCompendiumVersion>5.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
@@ -1615,7 +1615,7 @@
     <profile>
       <id>jdk7+</id>
       <activation>
-        <jdk>[1.7,)</jdk>
+        <jdk>[1.7,9)</jdk>
       </activation>
       <build>
         <plugins>
@@ -3626,6 +3626,24 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-module-junit4</artifactId>
+        <version>${powermockVersion}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-api-easymock</artifactId>
+        <version>${powermockVersion}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-api-mockito2</artifactId>
+        <version>${powermockVersion}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache</artifactId>
         <version>1.8.0</version>
@@ -3963,12 +3981,6 @@
         <groupId>com.jcraft</groupId>
         <artifactId>jsch</artifactId>
         <version>0.1.51</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>${mockitoVersion}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>

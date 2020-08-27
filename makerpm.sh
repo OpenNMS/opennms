@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+set -e
 
 MYDIR=`dirname $0`
 TOPDIR=`cd $MYDIR; pwd`

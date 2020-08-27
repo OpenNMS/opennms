@@ -2,6 +2,79 @@
 
 === Changelog
 
+[releasenotes-changelog-26.1.3]
+
+==== Release 26.1.3
+
+Release 26.1.3 is the sixth release in the Horizon 26 series.
+
+It contains a bunch of bug fixes and improvements, including big optimizations to the new time-series layer, some UI fixes, and more.
+
+The codename for 26.1.3 is _link:$$https://en.wikipedia.org/wiki/Bit_manipulation$$[Bit]_.
+
+===== Bug
+
+* Using Netflow aggregations results in NPE when no results returned from ES (Issue http://issues.opennms.org/browse/NMS-12761[NMS-12761])
+* Fix docs warnings for resource-types, time series config and thresholding (Issue http://issues.opennms.org/browse/NMS-12770[NMS-12770])
+* interfaceSnmpByIfIndex fails if SNMP interface has no physical address (Issue http://issues.opennms.org/browse/NMS-12775[NMS-12775])
+* Searching for alarms in the v2 API with a reductionKey that includes a comma or semicolon results in a 500 error (Issue http://issues.opennms.org/browse/NMS-12777[NMS-12777])
+* Update log4j2 to 2.13.2 (Issue http://issues.opennms.org/browse/NMS-12787[NMS-12787])
+* Support for optional snmpTrapAddress varbind needs documenting (Issue http://issues.opennms.org/browse/NMS-12795[NMS-12795])
+* Broken link to "Standalone HTTPS with Jetty" in documentation. (Issue http://issues.opennms.org/browse/NMS-12804[NMS-12804])
+* Rendering problems with complex custom Flow Classification Rules (Issue http://issues.opennms.org/browse/NMS-12806[NMS-12806])
+* RRD-to-Newts Converter doesn't handle fully-overlapping RRAs (Issue http://issues.opennms.org/browse/NMS-12835[NMS-12835])
+
+===== Enhancement
+
+* Encrypt the password in REST API POST endpoint /opennms/rest/users (Issue http://issues.opennms.org/browse/NMS-6470[NMS-6470])
+* Optimize Performance of Timeseries Integration Layer (Issue http://issues.opennms.org/browse/NMS-12731[NMS-12731])
+* Limit number of calls to find metrics (Issue http://issues.opennms.org/browse/NMS-12744[NMS-12744])
+* Limit calls to the timeseries_metatable (Issue http://issues.opennms.org/browse/NMS-12745[NMS-12745])
+* Remove (if possible) the conversion from Opennms -> Newts -> TS (Issue http://issues.opennms.org/browse/NMS-12746[NMS-12746])
+* Add JMX Meters to measure and export performance (Issue http://issues.opennms.org/browse/NMS-12747[NMS-12747])
+* Remove unnecessary writes to meta_data table (Issue http://issues.opennms.org/browse/NMS-12748[NMS-12748])
+* Remove conversion to Newts objects in read operation (Issue http://issues.opennms.org/browse/NMS-12749[NMS-12749])
+* Clean up package structure (Issue http://issues.opennms.org/browse/NMS-12751[NMS-12751])
+* Review documentation (Issue http://issues.opennms.org/browse/NMS-12758[NMS-12758])
+* Remove nececessity to retrieve Metric when reading Samples  (Issue http://issues.opennms.org/browse/NMS-12786[NMS-12786])
+* Update OpenNMS DB functions and tests to handle Postgres 12 (Issue http://issues.opennms.org/browse/NMS-12819[NMS-12819])
+
+[releasenotes-changelog-26.1.2]
+
+==== Release 26.1.2
+
+Release 26.1.2 is the fifth release in the Horizon 26 series.
+
+It contains a bunch of bug fixes and improvements, including docker container optimizations,
+Netflow changes, documentation updates, time-series enhancements, and more.
+
+The codename for 26.1.2 is _link:$$https://en.wikipedia.org/wiki/Plague_doctor$$[Plague]_.
+
+===== Bug
+
+* AbstractSnmpValue.allBytesDisplayable() IndexOutOfBound Exception (Issue http://issues.opennms.org/browse/NMS-7547[NMS-7547])
+* Unable to collect SNMP through minions on a large scale (Issue http://issues.opennms.org/browse/NMS-10389[NMS-10389])
+* Update examples/opennms.conf to be JDK11-compatible (Issue http://issues.opennms.org/browse/NMS-12468[NMS-12468])
+* RRD-to-Newts converter only handles AVERAGE RRAs (Issue http://issues.opennms.org/browse/NMS-12722[NMS-12722])
+* Parameters with dots handled incorrectly in BMP feature config (Issue http://issues.opennms.org/browse/NMS-12738[NMS-12738])
+* The ReST end-point for the Flow Exporter details is returning invalid content (Issue http://issues.opennms.org/browse/NMS-12740[NMS-12740])
+* Netflow 5 records in ES do not contain value for delta_switched (Issue http://issues.opennms.org/browse/NMS-12750[NMS-12750])
+* dependency commons-beanutils 1.8.3 vulnerability (Issue http://issues.opennms.org/browse/NMS-12757[NMS-12757])
+* Template field 'APPLICATION TAG' has illegal size (Issue http://issues.opennms.org/browse/NMS-12783[NMS-12783])
+* Kafka Producer puts all events on the same partition when using `donotpersist` (Issue http://issues.opennms.org/browse/NMS-12784[NMS-12784])
+
+===== Enhancement
+
+* Reduce Docker container image size (Issue http://issues.opennms.org/browse/NMS-12284[NMS-12284])
+* Document how to use meta-data with thresholding (Issue http://issues.opennms.org/browse/NMS-12735[NMS-12735])
+* Add documentation for TcpListener (Issue http://issues.opennms.org/browse/NMS-12736[NMS-12736])
+* upgrade to latest Jetty security/bug fixes (Issue http://issues.opennms.org/browse/NMS-12743[NMS-12743])
+* Run a comparison: implementation before changes and after (Issue http://issues.opennms.org/browse/NMS-12752[NMS-12752])
+* Optimize Performance of InfluxDb Plugin (Issue http://issues.opennms.org/browse/NMS-12759[NMS-12759])
+* Be able to ignore certificate validation on all Karaf features that push data to Elasticsearch (Issue http://issues.opennms.org/browse/NMS-12768[NMS-12768])
+* Evaluate and improve opennms-cortex-tss-plugin (Issue http://issues.opennms.org/browse/NMS-12771[NMS-12771])
+* Provide a test harness for time series plugins (Issue http://issues.opennms.org/browse/NMS-12772[NMS-12772])
+
 [releasenotes-changelog-26.1.1]
 
 ==== Release 26.1.1

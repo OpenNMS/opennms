@@ -989,6 +989,7 @@
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.adapters/${project.version}</bundle>
     </feature>
+
     <feature name="opennms-telemetry-daemon" version="${project.version}" description="OpenNMS :: Telemetry :: Daemon">
         <feature version="${netty4Version}">netty4</feature>
         <feature>camel-spring</feature>
@@ -1029,6 +1030,24 @@
     <feature name="opennms-telemetry-graphite" version="${project.version}" description="OpenNMS :: Telemetry :: Graphite">
         <feature>opennms-telemetry-collection</feature>
         <bundle>mvn:org.opennms.features.telemetry.protocols.graphite/org.opennms.features.telemetry.protocols.graphite.adapter/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-telemetry-openconfig"  description="OpenNMS :: Telemetry :: OpenConfig" version="${project.version}">
+        <feature>opennms-telemetry-collection</feature>
+        <feature>opennms-telemetry-openconfig-client</feature>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.openconfig/org.opennms.features.telemetry.protocols.openconfig.adapter/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.openconfig/org.opennms.features.telemetry.protocols.openconfig.connector/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-telemetry-openconfig-client" description="OpenNMS :: Telemetry :: OpenConfig :: Client" version="${project.version}">
+        <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.telemetry-client/${project.version}</bundle>
     </feature>
     <feature name="opennms-karaf-health" description="OpenNMS :: Karaf Health">
         <bundle start-level="100">mvn:org.opennms.features/org.opennms.features.karaf-health/${project.version}</bundle>
@@ -1612,18 +1631,13 @@
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.thresholding.shell/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-core-ipc-grpc-osgi" description="OpenNMS :: Core : IPC :: GRPC :: OSGI :: Shaded" version="${project.version}">
-        <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.osgi/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.common/${project.version}</bundle>
-    </feature>
-
     <feature name="opennms-core-ipc-grpc-server" description="OpenNMS :: Core :: IPC :: GRPC :: Server" version="${project.version}">
-        <feature>opennms-core-ipc-grpc-osgi</feature>
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>opennms-identity</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
+        <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.server/${project.version}</bundle>
-        <bundle>mvn:com.google.guava/guava/${guavagRPCVersion}</bundle>
     </feature>
 
     <feature name="opennms-graphml" description="OpenNMS :: Features :: GraphML :: API + Service + ReST" version="${project.version}">

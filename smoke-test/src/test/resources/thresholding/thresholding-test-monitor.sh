@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 DELAY_IN_MS=$1
 
 re='^[0-9]+$'
