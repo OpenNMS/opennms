@@ -31,6 +31,7 @@ package org.opennms.netmgt.remotepollerng;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.poller.Package;
@@ -60,9 +61,9 @@ public class RemotePolledService {
     private final String perspectiveLocation;
     private final String residentLocation;
 
-    private final RrdRepository rrdRepository;
+    private final Optional<RrdRepository> rrdRepository;
 
-    private final ThresholdingSession thresholdingSession;
+    private final Optional<ThresholdingSession> thresholdingSession;
 
     private final MonitoredService monitoredService;
 
@@ -77,8 +78,8 @@ public class RemotePolledService {
                                final ServiceMonitor serviceMonitor,
                                final String perspectiveLocation,
                                final String residentLocation,
-                               final RrdRepository rrdRepository,
-                               final ThresholdingSession thresholdingSession) {
+                               final Optional<RrdRepository> rrdRepository,
+                               final Optional<ThresholdingSession> thresholdingSession) {
         this.service = Objects.requireNonNull(service);
         this.foreignSource = Objects.requireNonNull(foreignSource);
         this.foreignId = Objects.requireNonNull(foreignId);
@@ -179,7 +180,7 @@ public class RemotePolledService {
         return this.residentLocation;
     }
 
-    public RrdRepository getRrdRepository() {
+    public Optional<RrdRepository> getRrdRepository() {
         return this.rrdRepository;
     }
 
@@ -195,7 +196,7 @@ public class RemotePolledService {
         return this.service.serviceName;
     }
 
-    public ThresholdingSession getThresholdingSession() {
+    public Optional<ThresholdingSession> getThresholdingSession() {
         return this.thresholdingSession;
     }
 
