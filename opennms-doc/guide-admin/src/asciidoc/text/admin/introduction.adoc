@@ -1,0 +1,5 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+This section describes administrative tasks, such as shutdown and restart, you may need to perform with your {opennms-product-name} instance.

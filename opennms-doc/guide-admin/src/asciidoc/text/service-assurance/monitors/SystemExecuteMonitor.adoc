@@ -33,6 +33,8 @@ If the banner is not available in the output the status is determined as down.
 
 The parameter `args` supports variable replacement for the following set of variables.
 
+TIP: Providing always a script output with a more detailed test error makes it easier to diagnose the problem when the nodeLostDown event occurs.
+
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Variables which can be used in the configuration
@@ -50,10 +52,70 @@ This monitor implements the <<ga-service-assurance-monitors-common-parameters, C
 
 ===== Examples
 
+
+====== Placeholder usage
+
 [source, xml]
 ----
 <parameter key="args" value="-i ${ipaddr} -t ${timeout}"/>
 <parameter key="args" value="http://${nodelabel}/${svcname}/static"/>
+----
+
+====== Exit status example
+
+[source, xml]
+----
+<service name="Script_Example" interval="300000" user-defined="true" status="on">
+  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/>
+  <parameter key="timeout" value="5000"/>
+</service>
+
+<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
+----
+
+[source, bash]
+----
+#!/usr/bin/env bash
+
+# ...some test logic
+
+RESULT="TEST OK"
+
+if [[ "TEST OK" == "${RESULT}" ]]; then
+  echo "This test passed"
+  exit 0
+else
+  echo "This test failed because of ..."
+  exit 1
+fi
+----
+
+====== Banner matching example
+
+[source, xml]
+----
+<service name="Script_Example" interval="300000" user-defined="true" status="on">
+  <parameter key="script" value="/opt/opennms/contrib/Script_Example.sh"/>
+  <parameter key="banner" value="PASSED"/>
+  <parameter key="timeout" value="5000"/>
+</service>
+
+<monitor service="Script_Example" class-name="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor"/>
+----
+
+[source, bash]
+----
+#!/usr/bin/env bash
+
+# ...some test logic
+
+RESULT="TEST OK"
+
+if [[ "TEST OK" == "${RESULT}" ]]; then
+  echo "PASSED"
+else
+  echo "FAILED"
+fi
 ----
 
 ===== SystemExecuteMonitor vs GpMonitor

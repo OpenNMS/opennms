@@ -37,6 +37,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
@@ -64,29 +65,38 @@ public class JSessionIdNoCacheFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-
         filterChain.doFilter(request, response);
-        if(response instanceof HttpServletResponse) {
-            addHeaderIfRequired((HttpServletResponse)response);
+
+        if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
+            addHeaderIfRequired((HttpServletRequest)request, (HttpServletResponse)response);
         }
     }
 
-    private void addHeaderIfRequired(HttpServletResponse response) {
+    private void addHeaderIfRequired(final HttpServletRequest request, final HttpServletResponse response) {
         boolean cacheControlHeaderNeeded = false;
-        Collection<String> cookies = response.getHeaders("Set-Cookie");
 
-        // check for session id in cookies
-        for( String cookie : cookies) {
-            if(cookie.contains(sessionIdName)){
-                cacheControlHeaderNeeded = true;
-                break;
+        if (request.getSession(false) != null) {
+            cacheControlHeaderNeeded = true;
+        }
+
+        if (!cacheControlHeaderNeeded) {
+            final Collection<String> cookies = response.getHeaders("Set-Cookie");
+
+            // check for session id in cookies
+            for(final String cookie : cookies) {
+                if(cookie.contains(sessionIdName)){
+                    cacheControlHeaderNeeded = true;
+                    break;
+                }
             }
         }
 
-        // check for session id in location url
-        String location = response.getHeader("Location");
-        if(location != null && location.contains(sessionIdName.toLowerCase())) {
-            cacheControlHeaderNeeded = true;
+        if (!cacheControlHeaderNeeded) {
+            // check for session id in location url
+            String location = response.getHeader("Location");
+            if(location != null && location.contains(sessionIdName.toLowerCase())) {
+                cacheControlHeaderNeeded = true;
+            }
         }
 
         if(cacheControlHeaderNeeded) {

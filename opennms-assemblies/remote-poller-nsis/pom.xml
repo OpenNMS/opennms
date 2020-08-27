@@ -10,7 +10,7 @@
     construct the names of registry keys that contain configuration
     data so do not change it unless you test the changes thoroughly.
   -->
-  <name>OpenNMS Remote Poller</name>
+  <name>OpenNMS Remote Poller (Windows, NSIS)</name>
   <build>
     <pluginManagement>
       <plugins>
@@ -34,6 +34,24 @@
     </pluginManagement>
   </build>
   <profiles>
+    <profile>
+      <id>makensis-usr-local-bin</id>
+      <activation>
+        <file><exists>/usr/local/bin/makensis</exists></file>
+      </activation>
+      <properties>
+        <nsis.makensis.bin>/usr/local/bin/makensis</nsis.makensis.bin>
+      </properties>
+    </profile>
+    <profile>
+      <id>makensis-usr-bin</id>
+      <activation>
+        <file><exists>/usr/bin/makensis</exists></file>
+      </activation>
+      <properties>
+        <nsis.makensis.bin>/usr/bin/makensis</nsis.makensis.bin>
+      </properties>
+    </profile>
     <profile>
       <id>linux</id>
       <activation>

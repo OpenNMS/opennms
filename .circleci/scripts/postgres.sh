@@ -7,7 +7,7 @@ echo "##### Waiting for Postgres to start..."
 WAIT=0
 while ! docker exec postgres-onms-itest psql -U postgres -c 'select 1;'; do
   sleep 1
-  WAIT=$(($WAIT + 1))
+  WAIT=$((WAIT + 1))
   if [ "$WAIT" -gt 15 ]; then
     echo "Error: Timeout waiting for Postgres to start"
     exit 1
@@ -19,7 +19,7 @@ sleep 5
 WAIT=0
 while ! docker exec postgres-onms-itest psql -U postgres -c 'select 1;'; do
   sleep 1
-  WAIT=$(($WAIT + 1))
+  WAIT=$((WAIT + 1))
   if [ "$WAIT" -gt 15 ]; then
     echo "Error: Timeout waiting for Postgres to start"
     exit 1

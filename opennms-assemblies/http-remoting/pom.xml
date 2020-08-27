@@ -113,7 +113,7 @@
             </goals>
             <configuration>
               <artifactItems>
-                <artifactItem>org.opennms.features:org.opennms.features.remote-poller-jnlp:tar.gz:jnlp
+                <artifactItem>
                   <groupId>org.opennms.features</groupId>
                   <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
                   <version>${project.version}</version>

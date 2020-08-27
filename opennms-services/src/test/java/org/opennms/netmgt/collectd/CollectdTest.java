@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.easymock.EasyMock;
+import org.easymock.IAnswer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,11 +55,14 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
+import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -207,8 +212,7 @@ public class CollectdTest {
 
     @After
     public void tearDown() throws Exception {
-        // FIXME: we get a Threshd warning still if we enable this  :(
-        // MockLogAppender.assertNoWarningsOrGreater();
+        MockLogAppender.assertNoWarningsOrGreater();
 
         EasyMock.verify(m_filterDao);
     }
@@ -319,6 +323,8 @@ public class CollectdTest {
         ThresholdingSession mockThresholdingSession = m_easyMockUtils.createMock(ThresholdingSession.class);
         EasyMock.expect(mockThresholdingService.createSession(EasyMock.anyInt(), EasyMock.anyString(), 
                                                               EasyMock.anyString(), EasyMock.anyObject(), EasyMock.anyObject())).andReturn(mockThresholdingSession);
+        mockThresholdingSession.accept(isA(CollectionSet.class));
+        expectLastCall().anyTimes();
 
         m_collectd.setThresholdingService(mockThresholdingService);
 
@@ -411,6 +417,18 @@ public class CollectdTest {
         svcCollector.initialize();
         svcCollector.validateAgent(isA(CollectionAgent.class), isA(Map.class));
         expectLastCall().anyTimes();
+
+        expect(svcCollector.getEffectiveLocation(anyObject())).andReturn(LocationUtils.DEFAULT_LOCATION_NAME).anyTimes();
+        expect(svcCollector.getRuntimeAttributes(isA(CollectionAgent.class),isA(Map.class))).andReturn(Collections.emptyMap()).anyTimes();
+        expect(svcCollector.collect(isA(CollectionAgent.class),isA(Map.class)))
+                .andAnswer(new IAnswer<CollectionSet>() {
+                    @Override
+                    public CollectionSet answer() throws Throwable {
+                        CollectionAgent agent = (CollectionAgent) EasyMock.getCurrentArguments()[0];
+                        return new CollectionSetBuilder(agent).build();
+                    }
+                })
+                .anyTimes();
         setupCollector(svcName, svcCollector);
     }
 

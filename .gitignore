@@ -35,12 +35,12 @@ yarn-error.log
 # Ignore Visual Studio Code
 .factorypath
 
-# Ignore Docker OCI image files
+# Ignore Docker/OCI temporary files
+.docker_temp*
 *.oci
-opennms-container/horizon/rpms/*.rpm
-opennms-container/horizon/tarball/*.tar.gz
-opennms-container/minion/rpms/*.rpm
-opennms-container/sentinel/rpms/*.rpm
+opennms-container/*/rpms/*.repo
+opennms-container/*/rpms/*.rpm
+opennms-container/*/tarball/*.tar.gz
 
 # Python
 *.pyc

@@ -84,18 +84,33 @@ Not all events will have values for all tokens, and some refer specifically to i
     The Universal Event Identifier for the event.
 `%source%`::
     The source of the event (which {opennms-product-name} service daemon created it).
+`%descr%`::
+    The event description.
+`%logmsg%`::
+    The event logmsg.
 `%time%`::
     The time of the event.
+`%shorttime%`::
+    The time of the event formatted using DateFormat.SHORT for a completely numeric date/time.
 `%dpname%`::
     The ID of the Minion (formerly distributed poller) that the event was received on.
 `%nodeid%`::
     The numeric node ID of the device that caused the event, if any.
 `%nodelabel%`::
     The node label for the node given in `%nodeid%` if available.
+`%nodelocation%`::
+    The node location for the node given in `%nodeid%` if available.
 `%host%`::
+    The host at which the event was generated.
 `%interface%`::
     The IP interface associated with the event, if any.
-`%interfaceresolve%`::
+`%foreignsource%`::
+    The Requisition name for the node given in `%nodeid` if available.
+`%foreignid%`::
+    The Requisition ID for the node given in `%nodeid` if available.
+`%ifindex%`::
+    The interface's SNMP ifIndex.
+`%interfaceresolv%`::
     Does a reverse lookup on the `%interface%` and returns its name if available.
 `%service%`::
     The service associated with the event, if any.
@@ -108,7 +123,7 @@ Not all events will have values for all tokens, and some refer specifically to i
 `%idtext%`::
     The decoded (human-readable) SNMP Enterprise OID for the event (?).
 `%ifalias%`::
-    The interface' SNMP ifAlias.
+    The interface's SNMP ifAlias.
 `%generic%`::
     The Generic trap-type number for the event.
 `%specific%`::
@@ -123,8 +138,24 @@ Not all events will have values for all tokens, and some refer specifically to i
     The operator instructions for the event.
 `%mouseovertext%`::
     The mouse over text for the event.
+`%tticketid%`::
+    The trouble ticket id associated with the event if available.
 `%primaryinterface%`::
 The primary interface IP address for the node given in `%nodeid%` if available.
+
+.Asset tokens
+A node may have additional asset records stored for it.
+You can access these records using the `asset` replacement token, which takes the form:
+
+`%asset[<token>]%`::
+    The asset field <token>'s value, or "Unknown" if it does not exist.
+
+.Hardware tokens
+A node may have additional hardware details stored for it.
+You can access these details using the `hardware` replacement token, which takes the form:
+
+`%hardware[<token>]%`::
+    The hardware field <token>'s value.
 
 .Parameter tokens
 Many events carry additional information in *parameters* (see <<ga-events-anatomy-of-an-event,Anatomy of an Event>>).

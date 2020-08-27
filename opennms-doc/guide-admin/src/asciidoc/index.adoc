@@ -151,7 +151,6 @@ include::text/performance-data-collection/collection-packages.adoc[]
 
 [[ga-performance-mgmt-collectors]]
 === Collectors
-include::text/performance-data-collection/collectors/jmx.adoc[]
 include::text/performance-data-collection/collectors/snmp/SnmpCollector.adoc[]
 include::text/performance-data-collection/collectors/http.adoc[]
 include::text/performance-data-collection/collectors/jdbc.adoc[]
@@ -337,10 +336,6 @@ include::text/minion/ttl.adoc[]
 == Sentinel
 include::text/sentinel/sentinel.adoc[]
 
-== Internal Plugins
-include::text/plugins/introduction.adoc[]
-include::text/plugins/opennms-es-rest.adoc[]
-
 [[ga-special-cases-and-workarounds]]
 == Special Cases and Workarounds
 include::text/workarounds/snmp.adoc[]
@@ -403,3 +398,8 @@ include::text/alarm-correlation/situation-feedback.adoc[]
 [[ga-meta-data]]
 == Meta-Data
 include::text/meta-data.adoc[]
+
+[[ga-admin]]
+== {opennms-product-name} Administration
+include::text/admin/introduction.adoc[]
+include::text/admin/restart.adoc[]

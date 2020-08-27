@@ -1,6 +1,6 @@
 const $ = require('vendor/jquery-js');
-const c3 = require('c3');
-const d3 = require('d3');
+const c3 = require('vendor/c3-js');
+const d3 = require('vendor/d3-js');
 require('./status-box.css');
 
 d3.document = window.document;

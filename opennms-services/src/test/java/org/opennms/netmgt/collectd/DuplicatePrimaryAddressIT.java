@@ -34,6 +34,7 @@ import static org.easymock.EasyMock.eq;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -253,6 +254,7 @@ public class DuplicatePrimaryAddressIT {
         EasyMock.expect(m_ifaceDao.load(2)).andReturn(ip1).anyTimes();
         EasyMock.expect(m_ifaceDao.load(4)).andReturn(ip2).anyTimes();
 
+        EasyMock.expect(m_filterDao.getActiveIPAddressList(anyObject())).andReturn(Arrays.asList(InetAddressUtils.addr("192.168.1.1"))).anyTimes();
         m_mockUtils.replayAll();
 
         final MockTransactionTemplate transTemplate = new MockTransactionTemplate();

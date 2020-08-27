@@ -67,7 +67,8 @@ setUp() {
   unset TEST_BAR
   unset TEST_BAZ
   unset TEST_ADDITIONAL_OPTIONS
-  cd "$TESTDIR" || exit 1
+  cd "${TESTDIR:?}" || exit 1
+  rm -rf "${TESTDIR:?}/${_shunit_test_:?}"
 }
 
 testShellcheck() {

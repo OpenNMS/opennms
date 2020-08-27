@@ -39,7 +39,7 @@
     protected static final int DEFAULT_MULTIPLE = 0;
 
     protected static final int LOWER_OFFSET = 5;
-    protected static final int UPPER_OFFSET = 4;    
+    protected static final int UPPER_OFFSET = 4;
 %>
 
 <%
@@ -65,12 +65,16 @@
     String limitName = request.getParameter("limitname");
     if(limitName == null) {
         limitName = DEFAULT_LIMIT_PARAM_NAME;
+    } else {
+        limitName = WebSecurityUtils.sanitizeString(limitName);
     }
 
     //optional parameter, multiplename
     String multipleName = request.getParameter("multiplename");
     if(multipleName == null) {
         multipleName = DEFAULT_MULTIPLE_PARAM_NAME;
+    } else {
+        multipleName = WebSecurityUtils.sanitizeString(multipleName);
     }
 
     //get the count    

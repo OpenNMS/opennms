@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,11 +28,14 @@
 
 package org.opennms.smoketest;
 
+import java.util.concurrent.TimeUnit;
+
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.rnorth.ducttape.unreliables.Unreliables;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MenuHeaderIT extends OpenNMSSeleniumIT {
@@ -128,9 +131,13 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem(adminMenuName, "About", "opennms/about/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Version Details']");
 
-        frontPage();
-        clickMenuItem(adminMenuName, "Log Out", "opennms/j_spring_security_logout");
-        findElementById("input_j_username");
+        Unreliables.retryUntilSuccess(60, TimeUnit.SECONDS, () -> {
+            frontPage();
+            Thread.sleep(200);
+            clickMenuItem(adminMenuName, "Log Out", "opennms/j_spring_security_logout", 10);
+            findElementById("input_j_username");
+            return null;
+        });
     }
 
     @Test

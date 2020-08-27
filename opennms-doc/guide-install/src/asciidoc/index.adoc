@@ -62,10 +62,15 @@ include::text/basic-setup-opennms/windows/step-2-graphical-installer.adoc[]
 include::text/basic-setup-opennms/windows/step-3-configure-postgres-opennms.adoc[]
 include::text/basic-setup-opennms/windows/step-4-change-admin-password.adoc[]
 include::text/_general/nextsteps.adoc[]
-endif::opennms-prime[]
 
 // Enable section numbers
 :sectnums:
+
+// Run OpenNMS in Docker
+include::text/basic-setup-opennms/docker/opennms-docker.adoc[]
+include::text/basic-setup-opennms/docker/opennms-config.adoc[]
+
+endif::opennms-prime[]
 
 // Basic Setup Minion
 include::text/monitor-location-minion/setting-up-minion.adoc[]
@@ -97,23 +102,22 @@ include::text/monitor-location-minion/debian/step-2-install-minion.adoc[]
 include::text/monitor-location-minion/debian/step-3-starting-minion.adoc[]
 include::text/monitor-location-minion/debian/step-4-configure-minion.adoc[]
 include::text/monitor-location-minion/debian/step-5-verify-connectivity.adoc[]
-endif::opennms-prime[]
 
 // Enable section numbers
 :sectnums:
+
+// Run Minion in Docker
+include::text/monitor-location-minion/docker/minion-docker.adoc[]
+include::text/monitor-location-minion/docker/minion-config.adoc[]
+
+endif::opennms-prime[]
 
 // Sentinel
 include::text/sentinel/setting-up-sentinel.adoc[]
 include::text/sentinel/rhel/rhel.adoc[]
 ifndef::opennms-prime[]
 include::text/sentinel/debian/debian.adoc[]
-endif::opennms-prime[]
 
-ifndef::opennms-prime[]
-include::text/run-with-docker/introduction.adoc[]
-include::text/run-with-docker/opennms-config.adoc[]
-include::text/run-with-docker/minion-config.adoc[]
-include::text/run-with-docker/sentinel-config.adoc[]
 endif::opennms-prime[]
 
 // Alternate ways of doing it
