@@ -9,7 +9,7 @@ In order to configure _Application Perspective Monitoring_ an user has to define
 .Application Perspective Monitoring operation
 image::application-perspective-monitoring/apm-operation.png[]
 
-_Application Perspective Monitoring_ utilizes the minion infrastructure to monitor a service's availability from these different perspectives.
+_Application Perspective Monitoring_ uses the Minion infrastructure to monitor a service's availability from these different perspectives.
 The service monitor configuration is looked up in the `poller-configuration.xml`.
 
 NOTE: The `remote-only` flag in the package definition can be used to define packages that will be used *only* for _Application Perspective Monitoring_.
