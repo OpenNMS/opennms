@@ -34,4 +34,4 @@ The next screenshot shows an HTTP outage noticed from all perspective locations 
 image::application-perspective-monitoring/remote-outages.png[]
 
 The column _Perspective_ shows the remote location from which a minion has detected this outage.
-If no _Perspective_ is shown, the outage was detected by the normal process: the _{opennms-product-name}_ instance detected it in the _Default_ location or a minion detected it in the corresponding node's location.
+An empty *Perspective* column indicates that the normal process detected the outage: either the _{opennms-product-name}_ instance detected it in the default location or a Minion detected it in the corresponding node's location.
