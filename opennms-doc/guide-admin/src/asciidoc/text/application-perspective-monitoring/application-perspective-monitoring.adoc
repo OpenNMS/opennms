@@ -22,7 +22,7 @@ image::application-perspective-monitoring/create-app.png[]
 
 Next step is to configure the application.
 In the upper section services that should be monitored from remote perspective locations can be associated with this application.
-In the lower section the perspective locations from which the given services should be monitored can be defined.
+In the lower section, users can define the perspective locations from which the given services should be monitored.
 
 .Configuration of an application
 image::application-perspective-monitoring/configure-app.png[]
