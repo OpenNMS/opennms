@@ -94,8 +94,8 @@ public class RemotePolledService {
         this.serviceMonitor = Objects.requireNonNull(serviceMonitor);
         this.perspectiveLocation = Objects.requireNonNull(perspectiveLocation);
         this.residentLocation = Objects.requireNonNull(residentLocation);
-        this.rrdRepository = Objects.requireNonNull(rrdRepository);
-        this.thresholdingSession = Objects.requireNonNull(thresholdingSession);
+        this.rrdRepository = rrdRepository;
+        this.thresholdingSession = thresholdingSession;
 
         this.monitoredService = new MonitoredService() {
             @Override
