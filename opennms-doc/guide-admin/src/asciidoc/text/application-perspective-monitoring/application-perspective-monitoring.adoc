@@ -15,7 +15,7 @@ The service monitor configuration is looked up in the `poller-configuration.xml`
 NOTE: Use the `remote-only` flag in the package definition to define packages that will be used *only* for _Application Perspective Monitoring_.
 
 When a service is not responsive an outage will be generated with the corresponding perspective.
-In order to configure _Application Perspective Monitoring_ first an application has to be created.
+To configure _Application Perspective Monitoring_ you must first create an application.
 
 .Create a new application
 image::application-perspective-monitoring/create-app.png[]
