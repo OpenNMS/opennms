@@ -28,7 +28,7 @@ In the lower section the perspective locations from which the given services sho
 image::application-perspective-monitoring/configure-app.png[]
 
 After configuring the application, the minions at the remote perspective locations start to monitor the services associated with this application.
-The next screenshot show an HTTP outage noticed from all perspective locations and the _{opennms-product-name}_ poller daemon itself.
+The next screenshot shows an HTTP outage noticed from all perspective locations and the _{opennms-product-name}_ poller daemon itself.
 
 .Remote outages
 image::application-perspective-monitoring/remote-outages.png[]
