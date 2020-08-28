@@ -4,7 +4,7 @@
 
 _{opennms-product-name}_ _Application Perspective Monitoring_ allows a user to monitor the availability of a set of services from several remote locations.
 These remote locations are called perspective locations in this context.
-In order to configure _Application Perspective Monitoring_ an user has to define an application by associating a set of services and a set of perspectives from which these services should be monitored.
+To configure _Application Perspective Monitoring_ a user has to define an application by associating a set of services and a set of perspectives from which to monitor these services with the application.
 
 .Application Perspective Monitoring operation
 image::application-perspective-monitoring/apm-operation.png[]
