@@ -54,9 +54,9 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.model.remotepolling.ApplicationServiceStatus;
-import org.opennms.netmgt.model.remotepolling.ApplicationStatus;
-import org.opennms.netmgt.model.remotepolling.Location;
+import org.opennms.netmgt.model.perspectivepolling.ApplicationServiceStatus;
+import org.opennms.netmgt.model.perspectivepolling.ApplicationStatus;
+import org.opennms.netmgt.model.perspectivepolling.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +64,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.MoreObjects;
 
 @Component
-@Path("remotepoller")
+@Path("perspectivepoller")
 @Transactional
 public class ApplicationStatusRestService {
 
@@ -210,8 +210,8 @@ public class ApplicationStatusRestService {
             final List<DowntimeInterval> mergedDowntimeIntervals = mergeDowntimeIntervals(m.get(onmsMonitoringLocation));
 
             location.setAggregatedStatus(100.0 * calculateApplicationPercentageUptime(mergedDowntimeIntervals, start, end));
-            final PerspectiveResponseTimeResource remoteLatencyResource = new PerspectiveResponseTimeResource(location.getName(), InetAddressUtils.toIpAddrString(onmsMonitoredService.getIpAddress()), onmsMonitoredService.getServiceType().getName());
-            location.setResponseResourceId(remoteLatencyResource.getInstance());
+            final PerspectiveResponseTimeResource perspectiveResponseTimeResource = new PerspectiveResponseTimeResource(location.getName(), InetAddressUtils.toIpAddrString(onmsMonitoredService.getIpAddress()), onmsMonitoredService.getServiceType().getName());
+            location.setResponseResourceId(perspectiveResponseTimeResource.getInstance());
             applicationServiceStatus.getLocations().add(location);
         }
 

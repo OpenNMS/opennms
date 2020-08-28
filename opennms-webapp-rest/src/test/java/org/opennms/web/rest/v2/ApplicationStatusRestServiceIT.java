@@ -184,7 +184,7 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
         params.put("start", String.valueOf(10000));
         params.put("end", String.valueOf(20000));
 
-        final JSONObject object = new JSONObject(sendRequest(GET, "/remotepoller/" + app1Id, params, 200));
+        final JSONObject object = new JSONObject(sendRequest(GET, "/perspectivepoller/" + app1Id, params, 200));
 
         Assert.assertEquals(app1Id, object.getInt("applicationId"));
 
@@ -222,7 +222,7 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
         params.put("start", String.valueOf(10000));
         params.put("end", String.valueOf(20000));
 
-        final JSONObject object = new JSONObject(sendRequest(GET, "/remotepoller/" + applicationId + "/" + monitoredServiceId, params, 200));
+        final JSONObject object = new JSONObject(sendRequest(GET, "/perspectivepoller/" + applicationId + "/" + monitoredServiceId, params, 200));
 
         final Map<String, Integer> locationMap = new TreeMap();
         locationMap.put(object.getJSONArray("location").getJSONObject(0).getString("name"), 0);
@@ -278,8 +278,8 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
         long currentTimeMs = new Date().getTime();
         long oneDayMs = 60*60*24*1000;
         final Map<String, String> params = new HashMap<>();
-        final JSONObject object1 = new JSONObject(sendRequest(GET, "/remotepoller/" + app1Id, params, 200));
-        final JSONObject object2 = new JSONObject(sendRequest(GET, "/remotepoller/" + app1Id + "/" + app1Service1.getId(), params, 200));
+        final JSONObject object1 = new JSONObject(sendRequest(GET, "/perspectivepoller/" + app1Id, params, 200));
+        final JSONObject object2 = new JSONObject(sendRequest(GET, "/perspectivepoller/" + app1Id + "/" + app1Service1.getId(), params, 200));
 
         Assert.assertTrue(object1.getLong("start")>=currentTimeMs-oneDayMs && object1.getLong("start")<=currentTimeMs-oneDayMs+2000);
         Assert.assertTrue(object1.getLong("end")>=currentTimeMs && object1.getLong("end")<=currentTimeMs+2000 );
@@ -290,8 +290,8 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
         long end = 10000000000L;
         params.put("end", String.valueOf(end));
 
-        final JSONObject object3 = new JSONObject(sendRequest(GET, "/remotepoller/" + app1Id, params, 200));
-        final JSONObject object4 = new JSONObject(sendRequest(GET, "/remotepoller/" + app1Id + "/" + app1Service1.getId(), params, 200));
+        final JSONObject object3 = new JSONObject(sendRequest(GET, "/perspectivepoller/" + app1Id, params, 200));
+        final JSONObject object4 = new JSONObject(sendRequest(GET, "/perspectivepoller/" + app1Id + "/" + app1Service1.getId(), params, 200));
 
         Assert.assertEquals(end-oneDayMs, object3.getLong("start"));
         Assert.assertEquals(end, object3.getLong("end"));

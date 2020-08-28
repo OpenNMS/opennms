@@ -67,10 +67,10 @@ public class RemotePollerServiceConfigMigratorOfflineTest {
         final Set<String> services = newCfg.getServices().stream().map(s -> s.getName()).collect(Collectors.toSet());
 
         Assert.assertEquals(false, services.contains(RemotePollerServiceConfigMigratorOffline.DEPRECATED_REMOTE_POLLER_SERVICENAME));
-        Assert.assertEquals(true, services.contains(RemotePollerServiceConfigMigratorOffline.REMOTE_POLLER_NG_SERVICENAME));
+        Assert.assertEquals(true, services.contains(RemotePollerServiceConfigMigratorOffline.PERSPECTIVE_POLLER_SERVICENAME));
 
         final List<Service> matchingEntries = newCfg.getServices().stream()
-                .filter(s -> RemotePollerServiceConfigMigratorOffline.REMOTE_POLLER_NG_SERVICENAME.equals(s.getName()))
+                .filter(s -> RemotePollerServiceConfigMigratorOffline.PERSPECTIVE_POLLER_SERVICENAME.equals(s.getName()))
                 .collect(Collectors.toList());
 
         Assert.assertEquals(1, matchingEntries.size());
@@ -97,10 +97,10 @@ public class RemotePollerServiceConfigMigratorOfflineTest {
         final Set<String> services = newCfg.getServices().stream().map(s -> s.getName()).collect(Collectors.toSet());
 
         Assert.assertEquals(false, services.contains(RemotePollerServiceConfigMigratorOffline.DEPRECATED_REMOTE_POLLER_SERVICENAME));
-        Assert.assertEquals(true, services.contains(RemotePollerServiceConfigMigratorOffline.REMOTE_POLLER_NG_SERVICENAME));
+        Assert.assertEquals(true, services.contains(RemotePollerServiceConfigMigratorOffline.PERSPECTIVE_POLLER_SERVICENAME));
 
         final List<Service> matchingEntries = newCfg.getServices().stream()
-                .filter(s -> RemotePollerServiceConfigMigratorOffline.REMOTE_POLLER_NG_SERVICENAME.equals(s.getName()))
+                .filter(s -> RemotePollerServiceConfigMigratorOffline.PERSPECTIVE_POLLER_SERVICENAME.equals(s.getName()))
                 .collect(Collectors.toList());
 
         Assert.assertEquals(1, matchingEntries.size());
@@ -127,10 +127,10 @@ public class RemotePollerServiceConfigMigratorOfflineTest {
         final Set<String> services = newCfg.getServices().stream().map(s -> s.getName()).collect(Collectors.toSet());
 
         Assert.assertEquals(false, services.contains(RemotePollerServiceConfigMigratorOffline.DEPRECATED_REMOTE_POLLER_SERVICENAME));
-        Assert.assertEquals(true, services.contains(RemotePollerServiceConfigMigratorOffline.REMOTE_POLLER_NG_SERVICENAME));
+        Assert.assertEquals(true, services.contains(RemotePollerServiceConfigMigratorOffline.PERSPECTIVE_POLLER_SERVICENAME));
 
         final List<Service> matchingEntries = newCfg.getServices().stream()
-                .filter(s -> RemotePollerServiceConfigMigratorOffline.REMOTE_POLLER_NG_SERVICENAME.equals(s.getName()))
+                .filter(s -> RemotePollerServiceConfigMigratorOffline.PERSPECTIVE_POLLER_SERVICENAME.equals(s.getName()))
                 .collect(Collectors.toList());
 
         Assert.assertEquals(1, matchingEntries.size());

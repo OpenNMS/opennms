@@ -1155,10 +1155,10 @@
       <artifactId>org.opennms.features.karaf-health</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- Remote Poller NG -->
+    <!-- Perspective Poller -->
     <dependency>
-      <groupId>org.opennms.features.remotepollerng</groupId>
-      <artifactId>org.opennms.features.remotepollerng.daemon</artifactId>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.perspectivepoller</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

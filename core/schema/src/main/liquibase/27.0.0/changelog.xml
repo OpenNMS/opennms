@@ -5,7 +5,7 @@
         xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
-    <changeSet runOnChange="false" author="cpape" id="27.0.0-remove-old-remote-poller">
+    <changeSet runOnChange="false" author="cpape" id="27.0.0-remove-remote-poller">
         <sql>
             DELETE FROM monitoringsystems WHERE type='Remote Poller';
         </sql>
@@ -102,7 +102,7 @@
         </createView>
     </changeSet>
 
-    <changeSet author="patrick.schweizer" id="27.0.0-remote-poller-tables">
+    <changeSet author="patrick.schweizer" id="27.0.0-perspective-poller-tables">
         <createTable tableName="application_perspective_location_map" remarks="locations from where an application should be monitored">
             <column name="appid" type="integer">
                 <constraints nullable="false" />

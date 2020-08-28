@@ -399,15 +399,15 @@ public class DatabasePopulator {
         locFD.setTags(Collections.singletonList("blub"));
         m_monitoringLocationDao.save(locFD);
 
-        // added this to assure that the old behaviour before RemotePollerNG is still the same, see NMS-12792
-        final OnmsOutage remoteResolved = new OnmsOutage(new Date(1436881448292L), new Date(1436881448292L), event, event, svc, null, null);
-        remoteResolved.setPerspective(locFD);
-        getOutageDao().save(remoteResolved);
+        // added this to assure that the old behaviour before PerspectivePoller is still the same, see NMS-12792
+        final OnmsOutage perspectiveResolved = new OnmsOutage(new Date(1436881448292L), new Date(1436881448292L), event, event, svc, null, null);
+        perspectiveResolved.setPerspective(locFD);
+        getOutageDao().save(perspectiveResolved);
         getOutageDao().flush();
 
-        final OnmsOutage remoteUnresolved = new OnmsOutage(new Date(1436881448292L), event, svc);
-        remoteUnresolved.setPerspective(locRDU);
-        getOutageDao().save(remoteUnresolved);
+        final OnmsOutage perspectiveUnresolved = new OnmsOutage(new Date(1436881448292L), event, svc);
+        perspectiveUnresolved.setPerspective(locRDU);
+        getOutageDao().save(perspectiveUnresolved);
         getOutageDao().flush();
 
         LOG.debug("= DatabasePopulatorExtension Populate Starting =");
