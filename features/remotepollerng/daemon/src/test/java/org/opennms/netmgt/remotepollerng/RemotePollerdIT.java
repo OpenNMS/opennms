@@ -215,7 +215,7 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         locationAwarePollerClient.setRpcTargetHelper(new RpcTargetHelper());
         locationAwarePollerClient.afterPropertiesSet();
 
-        System.setProperty("org.opennms.netmgt.remotepollerng.trackerRefreshRateLimit", "5");
+        System.setProperty(PerspectiveServiceTracker.REFRESH_RATE_LIMIT_PROPERTY, "5");
 
         final PerspectiveServiceTracker tracker = new PerspectiveServiceTracker(this.sessionUtils, this.databasePopulator.getApplicationDao());
         new AnnotationBasedEventListenerAdapter(tracker, eventIpcManager);

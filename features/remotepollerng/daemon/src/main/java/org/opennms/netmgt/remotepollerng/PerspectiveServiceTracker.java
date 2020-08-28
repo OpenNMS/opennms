@@ -59,7 +59,8 @@ public class PerspectiveServiceTracker implements DisposableBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(PerspectiveServiceTracker.class);
 
-    private static final long REFRESH_RATE_LIMIT_MS = SystemProperties.getLong("org.opennms.netmgt.remotepollerng.trackerRefreshRateLimit", TimeUnit.SECONDS.toMillis(30));
+    public static final String REFRESH_RATE_LIMIT_PROPERTY = "org.opennms.netmgt.remotepollerng.trackerRefreshRateLimit";
+    private static final long REFRESH_RATE_LIMIT_MS = SystemProperties.getLong(REFRESH_RATE_LIMIT_PROPERTY, TimeUnit.SECONDS.toMillis(30));
 
     public interface Listener {
         void onServicePerspectiveAdded(final ServicePerspectiveRef servicePerspective, final ServicePerspective entity);
@@ -140,13 +141,13 @@ public class PerspectiveServiceTracker implements DisposableBean {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.applicationDao = Objects.requireNonNull(applicationDao);
 
-        final long timerIntevalMs = Math.min(REFRESH_RATE_LIMIT_MS, TimeUnit.SECONDS.toMillis(5));
+        final long timerIntervalMs = Math.min(REFRESH_RATE_LIMIT_MS, TimeUnit.SECONDS.toMillis(5));
         this.timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 PerspectiveServiceTracker.this.update(false);
             }
-        }, timerIntevalMs, timerIntevalMs);
+        }, timerIntervalMs, timerIntervalMs);
     }
 
     public AutoCloseable track(final Listener listener) {
