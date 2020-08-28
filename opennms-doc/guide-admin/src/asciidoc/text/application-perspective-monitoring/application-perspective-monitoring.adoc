@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-The _{opennms-product-name}_ feature _Application Perspective Monitoring_ allows an user to monitor the availability of a set of services from several remote locations.
+_{opennms-product-name}_ _Application Perspective Monitoring_ allows a user to monitor the availability of a set of services from several remote locations.
 These remote locations are called perspective locations in this context.
 In order to configure _Application Perspective Monitoring_ an user has to define an application by associating a set of services and a set of perspectives from which these services should be monitored.
 
