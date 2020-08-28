@@ -29,9 +29,6 @@
             <parameter key="timeout" value="3000" />
             <parameter key="port" value="80" />
             <parameter key="url" value="/" />
-            <parameter key="rrd-repository" value="target/rrd/response" />
-            <parameter key="rrd-base-name" value="http" />
-            <parameter key="ds-name" value="http" />
         </service>
         <service name="SNMP" interval="300000" user-defined="false" status="on">
             <parameter key="retry" value="1" />
