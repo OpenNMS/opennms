@@ -29,19 +29,19 @@
   <onmsgi:reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao"/>
   <onmsgi:reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao"/>
 
-  <bean id="daemon" class="org.opennms.netmgt.remotepollerng.RemotePollerd">
+  <bean id="tracker" class="org.opennms.netmgt.remotepollerng.PerspectiveServiceTracker">
   </bean>
 
   <bean id="serviceTrackerListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
-    <property name="annotatedListener">
-      <bean id="daemon.serviceTracker" class="org.springframework.beans.factory.config.PropertyPathFactoryBean"/>
-    </property>
+    <property name="annotatedListener" ref="tracker" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
+  <bean id="daemon" class="org.opennms.netmgt.remotepollerng.RemotePollerd">
   </bean>
 
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
-
 </beans>

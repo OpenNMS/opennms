@@ -215,6 +215,11 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         locationAwarePollerClient.setRpcTargetHelper(new RpcTargetHelper());
         locationAwarePollerClient.afterPropertiesSet();
 
+        System.setProperty(PerspectiveServiceTracker.REFRESH_RATE_LIMIT_PROPERTY, "5");
+
+        final PerspectiveServiceTracker tracker = new PerspectiveServiceTracker(this.sessionUtils, this.databasePopulator.getApplicationDao());
+        new AnnotationBasedEventListenerAdapter(tracker, eventIpcManager);
+
         this.remotePollerd = new RemotePollerd(
                 this.sessionUtils,
                 this.databasePopulator.getMonitoringLocationDao(),
@@ -228,11 +233,10 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
                 this.thresholdingService,
                 this.eventDao,
                 this.outageDao,
-                new MockTracerRegistry()
+                new MockTracerRegistry(),
+                tracker
         );
-
         new AnnotationBasedEventListenerAdapter(this.remotePollerd, eventIpcManager);
-        new AnnotationBasedEventListenerAdapter(this.remotePollerd.getServiceTracker(), eventIpcManager);
 
         this.remotePollerd.start();
     }
@@ -380,6 +384,9 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
         assertThat(findRemotePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
 
+        this.databasePopulator.getMonitoredServiceDao().delete(this.node1icmp);
+        this.databasePopulator.getMonitoredServiceDao().flush();
+
         this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.SERVICE_DELETED_EVENT_UEI, "test")
                                                  .setNodeid(this.node1icmp.getNodeId())
                                                  .setInterface(this.node1icmp.getIpAddress())
@@ -398,6 +405,9 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
         assertThat(findRemotePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
         assertThat(findRemotePolledService(this.node1snmp, "RDU"), is(notNullValue()));
+
+        this.databasePopulator.getIpInterfaceDao().delete(this.node1icmp.getIpInterface());
+        this.databasePopulator.getIpInterfaceDao().flush();
 
         this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, "test")
                                                  .setNodeid(this.node1icmp.getNodeId())
@@ -419,6 +429,9 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         assertThat(findRemotePolledService(this.node1snmp, "RDU"), is(notNullValue()));
         assertThat(findRemotePolledService(this.node1http, "RDU"), is(notNullValue()));
         assertThat(findRemotePolledService(this.node1http, "Fulda"), is(notNullValue()));
+
+        this.databasePopulator.getNodeDao().delete(this.node1icmp.getIpInterface().getNode());
+        this.databasePopulator.getNodeDao().flush();
 
         this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "test")
                                                  .setNodeid(this.node1icmp.getNodeId())

@@ -29,15 +29,12 @@
 package org.opennms.netmgt.remotepollerng;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -63,13 +60,13 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.dao.api.ServicePerspective;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
-import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -77,7 +74,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
@@ -109,7 +105,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 @EventListener(name=RemotePollerd.NAME, logPrefix=RemotePollerd.LOG_PREFIX)
-public class RemotePollerd implements SpringServiceDaemon {
+public class RemotePollerd implements SpringServiceDaemon, PerspectiveServiceTracker.Listener {
     private static final Logger LOG = LoggerFactory.getLogger(RemotePollerd.class);
 
     public static final String NAME = "RemotePollerNG";
@@ -132,10 +128,12 @@ public class RemotePollerd implements SpringServiceDaemon {
     private final OutageDao outageDao;
     private final TracerRegistry tracerRegistry;
 
-    private final ServiceTracker<Set<RemotePolledService>> serviceTracker;
+    private final PerspectiveServiceTracker tracker;
 
     @VisibleForTesting
-    final Scheduler scheduler;
+    Scheduler scheduler;
+
+    private AutoCloseable trackerSession;
 
     @Autowired
     public RemotePollerd(final SessionUtils sessionUtils,
@@ -150,7 +148,8 @@ public class RemotePollerd implements SpringServiceDaemon {
                          final ThresholdingService thresholdingService,
                          final EventDao eventDao,
                          final OutageDao outageDao,
-                         final TracerRegistry tracerRegistry) throws SchedulerException {
+                         final TracerRegistry tracerRegistry,
+                         final PerspectiveServiceTracker tracker) throws SchedulerException {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.monitoringLocationDao = Objects.requireNonNull(monitoringLocationDao);
         this.pollerConfig = Objects.requireNonNull(pollerConfig);
@@ -167,146 +166,12 @@ public class RemotePollerd implements SpringServiceDaemon {
         this.tracerRegistry = Objects.requireNonNull(tracerRegistry);
         this.tracerRegistry.init(SystemInfoUtils.getInstanceId());
 
-        this.scheduler = new StdSchedulerFactory().getScheduler();
-
-        this.serviceTracker = new ServiceTracker<>(pollerConfig,
-                                                   new QueryManager(this.monitoredServiceDao),
-                                                   this::filterService,
-                                                   this::addService,
-                                                   this::deleteService);
-    }
-
-    private Optional<Set<RemotePolledService>> filterService(final ServiceTracker.Service service) {
-        return this.sessionUtils.withReadOnlyTransaction(() -> {
-            // Get the monitored service entity
-            final OnmsMonitoredService monitoredService = this.monitoredServiceDao.get(service.nodeId, service.ipAddress, service.serviceName);
-            if (monitoredService == null) {
-                return Optional.empty();
-            }
-
-            final OnmsIpInterface ipInterface = monitoredService.getIpInterface();
-            final OnmsNode node = ipInterface.getNode();
-
-            // Get all perspective locations from which the service is monitored via its assigned applications
-            final List<OnmsMonitoringLocation> perspectiveLocations = this.applicationDao.getPerspectiveLocationsForService(service.nodeId, service.ipAddress, service.serviceName);
-            if (perspectiveLocations.isEmpty()) {
-                return Optional.empty();
-            }
-
-            // Get the polling package for the service
-            this.pollerConfig.rebuildPackageIpListMap();
-
-            final Package pkg = this.pollerConfig.getPackages().stream()
-                                                 .filter(p -> this.pollerConfig.isInterfaceInPackage(InetAddressUtils.str(service.ipAddress), p) &&
-                                                              this.pollerConfig.isServiceInPackageAndEnabled(service.serviceName, p))
-                                                 .reduce((prev, curr) -> curr) // Take the last filtered element
-                                                 .orElse(null);
-            if (pkg == null) {
-                return Optional.empty();
-            }
-
-            // Find the service (and the pattern parameters) for the service name
-            final Optional<Package.ServiceMatch> serviceMatch = pkg.findService(service.serviceName);
-            if (!serviceMatch.isPresent()) {
-                return Optional.empty();
-            }
-
-            // Find the monitor implementation for the service name
-            final ServiceMonitor serviceMonitor = this.pollerConfig.getServiceMonitor(serviceMatch.get().service.getName());
-            if (serviceMonitor == null) {
-                return Optional.empty();
-            }
-
-            final Optional<String> rrdRepositoryDir = Optional.ofNullable(getServiceParameter(serviceMatch.get().service, "rrd-repository"));
-            final Optional<RrdRepository> rrdRepository = rrdRepositoryDir.map(directory -> {
-                final RrdRepository rrdRepositoryInstance = new RrdRepository();
-                rrdRepositoryInstance.setStep(this.pollerConfig.getStep(pkg));
-                rrdRepositoryInstance.setHeartBeat(rrdRepositoryInstance.getStep() * 2);
-                rrdRepositoryInstance.setRraList(this.pollerConfig.getRRAList(pkg));
-                rrdRepositoryInstance.setRrdBaseDir(new File(directory));
-                return rrdRepositoryInstance;
-            });
-
-            // Create the thresholding session for this poller
-            final Optional<ThresholdingSession> thresholdingSession = rrdRepository.flatMap(repository -> {
-                try {
-                    return Optional.of(this.thresholdingService.createSession(service.nodeId,
-                            InetAddressUtils.str(service.ipAddress),
-                            service.serviceName,
-                            repository,
-                            new ServiceParameters(Collections.emptyMap())));
-                } catch (final ThresholdInitializationException ex) {
-                    LOG.error("Failed to create thresholding session", ex);
-                    return Optional.empty();
-                }
-            });
-
-            // Build remote polled services for each location
-            return Optional.of(perspectiveLocations.stream()
-                                                   .map(OnmsMonitoringLocation::getLocationName)
-                                                   .map(perspectiveLocation -> new RemotePolledService(service,
-                                                                                                       node.getForeignSource(),
-                                                                                                       node.getForeignId(),
-                                                                                                       node.getLabel(),
-                                                                                                       pkg,
-                                                                                                       serviceMatch.get(),
-                                                                                                       serviceMonitor,
-                                                                                                       perspectiveLocation,
-                                                                                                       node.getLocation().getLocationName(),
-                                                                                                       rrdRepository.orElse(null),
-                                                                                                       thresholdingSession.orElse(null)))
-                                                   .collect(Collectors.toSet()));
-        });
-    }
-
-    private void addService(final ServiceTracker.ServiceEntry<Set<RemotePolledService>> entry) {
-        entry.getElement().forEach(remotePolledService -> {
-            final JobKey key = buildJobKey(remotePolledService);
-
-            final JobDetail job = JobBuilder
-                    .newJob(RemotePollJob.class)
-                    .withIdentity(key)
-                    .setJobData(new JobDataMap(ImmutableMap.builder()
-                                                           .put(RemotePollJob.POLLED_SERVICE, remotePolledService)
-                                                           .put(RemotePollJob.REMOTE_POLLER_BACKEND, this)
-                                                           .put(RemotePollJob.TRACER, this.tracerRegistry.getTracer())
-                                                           .build()))
-                    .build();
-
-            final Trigger trigger = TriggerBuilder
-                    .newTrigger()
-                    .withSchedule(SimpleScheduleBuilder.simpleSchedule()
-                                                       .withIntervalInMilliseconds(remotePolledService.getServiceConfig().getInterval())
-                                                       .repeatForever())
-                    .build();
-
-            LOG.debug("Scheduling service named {} at location {} with interval {}ms", remotePolledService.getServiceName(),
-                      remotePolledService.getPerspectiveLocation(), remotePolledService.getServiceConfig().getInterval());
-
-            try {
-                this.scheduler.scheduleJob(job, trigger);
-            } catch (final SchedulerException e) {
-                LOG.error("Failed to schedule {} ({}).", remotePolledService, key, e);
-            }
-        });
-    }
-
-    private void deleteService(final ServiceTracker.ServiceEntry<Set<RemotePolledService>> entry) {
-        entry.getElement().forEach(remotePolledService -> {
-            final JobKey key = buildJobKey(remotePolledService);
-
-            try {
-                this.scheduler.deleteJob(key);
-            } catch (final SchedulerException e) {
-                LOG.error("Failed to un-schedule {} ({}).", remotePolledService, key, e);
-            }
-        });
+        this.tracker = Objects.requireNonNull(tracker);
     }
 
     @Override
     public void start() throws Exception {
-        this.serviceTracker.start();
-
+        this.scheduler = new StdSchedulerFactory().getScheduler();
         this.scheduler.start();
         this.scheduler.getListenerManager().addSchedulerListener(new SchedulerListenerSupport() {
             @Override
@@ -315,20 +180,133 @@ public class RemotePollerd implements SpringServiceDaemon {
             }
         });
 
+        this.trackerSession = this.tracker.track(this);
     }
 
     @Override
     public void destroy() throws Exception {
-        if (this.scheduler != null) {
-            this.scheduler.shutdown();
+        this.trackerSession.close();
+        this.trackerSession = null;
+
+        this.scheduler.shutdown();
+        this.scheduler = null;
+    }
+
+    @Override
+    public void onServicePerspectiveAdded(final PerspectiveServiceTracker.ServicePerspectiveRef servicePerspective, final ServicePerspective entity) {
+        final JobKey key = buildJobKey(servicePerspective);
+
+        final OnmsMonitoredService service = entity.getService();
+        final OnmsIpInterface ipInterface = service.getIpInterface();
+        final OnmsNode node = ipInterface.getNode();
+
+        // Get the polling package for the service
+        this.pollerConfig.rebuildPackageIpListMap();
+
+        final Package pkg = this.pollerConfig.getPackages().stream()
+                                             .filter(p -> this.pollerConfig.isInterfaceInPackage(InetAddressUtils.str(service.getIpAddress()), p) &&
+                                                          this.pollerConfig.isServiceInPackageAndEnabled(service.getServiceName(), p))
+                                             .reduce((prev, curr) -> curr) // Take the last filtered element
+                                             .orElse(null);
+        if (pkg == null) {
+            return;
+        }
+
+        // Find the service (and the pattern parameters) for the service name
+        final Optional<Package.ServiceMatch> serviceMatch = pkg.findService(service.getServiceName());
+        if (!serviceMatch.isPresent()) {
+            return;
+        }
+
+        // Find the monitor implementation for the service name
+        final ServiceMonitor serviceMonitor = this.pollerConfig.getServiceMonitor(serviceMatch.get().service.getName());
+        if (serviceMonitor == null) {
+            return;
+        }
+
+        final Optional<String> rrdRepositoryDir = Optional.ofNullable(getServiceParameter(serviceMatch.get().service, "rrd-repository"));
+        final Optional<RrdRepository> rrdRepository = rrdRepositoryDir.map(directory -> {
+            final RrdRepository rrdRepositoryInstance = new RrdRepository();
+            rrdRepositoryInstance.setStep(this.pollerConfig.getStep(pkg));
+            rrdRepositoryInstance.setHeartBeat(rrdRepositoryInstance.getStep() * 2);
+            rrdRepositoryInstance.setRraList(this.pollerConfig.getRRAList(pkg));
+            rrdRepositoryInstance.setRrdBaseDir(new File(directory));
+            return rrdRepositoryInstance;
+        });
+
+        // Create the thresholding session for this poller
+        final Optional<ThresholdingSession> thresholdingSession = rrdRepository.flatMap(repository -> {
+            try {
+                return Optional.of(this.thresholdingService.createSession(service.getNodeId(),
+                        InetAddressUtils.str(service.getIpAddress()),
+                        service.getServiceName(),
+                        repository,
+                        new ServiceParameters(Collections.emptyMap())));
+            } catch (final ThresholdInitializationException ex) {
+                LOG.error("Failed to create thresholding session", ex);
+                return Optional.empty();
+            }
+        });
+
+        // Build remote polled services
+        final RemotePolledService remotePolledService = new RemotePolledService(service.getNodeId(),
+                                                                                service.getIpAddress(),
+                                                                                service.getServiceName(),
+                                                                                node.getForeignSource(),
+                                                                                node.getForeignId(),
+                                                                                node.getLabel(),
+                                                                                pkg,
+                                                                                serviceMatch.get(),
+                                                                                serviceMonitor,
+                                                                                servicePerspective.getPerspectiveLocation(),
+                                                                                node.getLocation().getLocationName(),
+                                                                                rrdRepository.orElse(null),
+                                                                                thresholdingSession.orElse(null));
+
+        // Build job for scheduler
+        final JobDetail job = JobBuilder
+                .newJob(RemotePollJob.class)
+                .withIdentity(key)
+                .setJobData(new JobDataMap(ImmutableMap.builder()
+                                                       .put(RemotePollJob.POLLED_SERVICE, remotePolledService)
+                                                       .put(RemotePollJob.REMOTE_POLLER_BACKEND, this)
+                                                       .put(RemotePollJob.TRACER, this.tracerRegistry.getTracer())
+                                                       .build()))
+                .build();
+
+        final Trigger trigger = TriggerBuilder
+                .newTrigger()
+                .withSchedule(SimpleScheduleBuilder.simpleSchedule()
+                                                   .withIntervalInMilliseconds(remotePolledService.getServiceConfig().getInterval())
+                                                   .repeatForever())
+                .build();
+
+        LOG.debug("Scheduling service named {} at location {} with interval {}ms", remotePolledService.getServiceName(),
+                  remotePolledService.getPerspectiveLocation(), remotePolledService.getServiceConfig().getInterval());
+
+        try {
+            this.scheduler.scheduleJob(job, trigger);
+        } catch (final SchedulerException e) {
+            LOG.error("Failed to schedule {} ({}).", remotePolledService, key, e);
         }
     }
 
-    public static JobKey buildJobKey(RemotePolledService remotePolledService) {
-        return buildJobKey(remotePolledService.getNodeId(),
-                           remotePolledService.getIpAddress(),
-                           remotePolledService.getServiceName(),
-                           remotePolledService.getPerspectiveLocation());
+    @Override
+    public void onServicePerspectiveRemoved(final PerspectiveServiceTracker.ServicePerspectiveRef servicePerspective) {
+        final JobKey key = buildJobKey(servicePerspective);
+
+        try {
+            this.scheduler.deleteJob(key);
+        } catch (final SchedulerException e) {
+            LOG.error("Failed to un-schedule {} ({}).", servicePerspective, key, e);
+        }
+    }
+
+    public static JobKey buildJobKey(final PerspectiveServiceTracker.ServicePerspectiveRef servicePerspective) {
+        return buildJobKey(servicePerspective.getNodeId(),
+                           servicePerspective.getIpAddress(),
+                           servicePerspective.getServiceName(),
+                           servicePerspective.getPerspectiveLocation());
     }
 
     public static JobKey buildJobKey(final int nodeId, final InetAddress ipAddress, final String serviceName, final String perspectiveLocation) {
@@ -444,73 +422,17 @@ public class RemotePollerd implements SpringServiceDaemon {
     public void afterPropertiesSet() throws Exception {
     }
 
-    public ServiceTracker<?> getServiceTracker() {
-        return this.serviceTracker;
-    }
-
-    private static class QueryManager implements ServiceTracker.QueryManager {
-        private final MonitoredServiceDao monitoredServiceDao;
-
-        private QueryManager(final MonitoredServiceDao monitoredServiceDao) {
-            this.monitoredServiceDao = Objects.requireNonNull(monitoredServiceDao);
-        }
-
-        @Override
-        public List<ServiceTracker.Service> findServices() {
-            return this.monitoredServiceDao.findAllServices().stream()
-                                           .map(QueryManager::asService)
-                                           .collect(Collectors.toList());
-        }
-
-        @Override
-        public List<ServiceTracker.Service> findServicesByNode(final ServiceTracker.Node node) {
-            return this.monitoredServiceDao.findByNode(node.nodeId).stream()
-                                           .map(QueryManager::asService)
-                                           .collect(Collectors.toList());
-        }
-
-        private static ServiceTracker.Service asService(final OnmsMonitoredService service) {
-            return new ServiceTracker.Service(service.getNodeId(),
-                                              service.getIpAddress(),
-                                              service.getServiceName());
-        }
-    }
-
-    @EventHandler(ueis = { EventConstants.APPLICATION_CREATED_EVENT_UEI,
-                           EventConstants.APPLICATION_CHANGED_EVENT_UEI,
-                           EventConstants.APPLICATION_DELETED_EVENT_UEI })
-    public void applicationEventHandler(final IEvent event) {
-        final int applicationId = EventUtils.getIntParm(event, EventConstants.PARM_APPLICATION_ID, -1);
-        if (applicationId == -1) {
-            LOG.error("application ID missing in event: {}", event);
-            return;
-        }
-
-        this.sessionUtils.withReadOnlyTransaction(() -> {
-            final OnmsApplication application = this.applicationDao.get(applicationId);
-            if (application != null) {
-                for (final OnmsMonitoredService service : application.getMonitoredServices()) {
-                    this.serviceTracker.rescheduleService(new ServiceTracker.Service(service.getNodeId(), service.getIpAddress(), service.getServiceName()));
-                }
-            }
-
-            // Reschedule everything in case it was removed from application
-            this.serviceTracker.rescheduleAllServices();
-
-            return null;
-        });
-    }
-
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void reloadConfigHandler(final IEvent event) {
+    public void handleReloadDaemonConfig(final IEvent event) {
         DaemonTools.handleReloadEvent(event, RemotePollerd.NAME, (ev) ->  {
             try {
                 this.pollerConfig.update();
-            } catch (final IOException e) {
-                LOG.error("Failed to load poller configuration", e);
-            }
 
-            this.serviceTracker.rescheduleAllServices();
+                this.destroy();
+                this.start();
+            } catch (final Exception e) {
+                LOG.error("Failed to reload poller configuration", e);
+            }
         });
     }
 

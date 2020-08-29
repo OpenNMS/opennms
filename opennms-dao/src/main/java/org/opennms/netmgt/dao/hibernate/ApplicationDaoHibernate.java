@@ -42,6 +42,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.ApplicationStatus;
 import org.opennms.netmgt.dao.api.MonitoredServiceStatusEntity;
+import org.opennms.netmgt.dao.api.ServicePerspective;
 import org.opennms.netmgt.dao.util.ReductionKeyHelper;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -157,5 +158,14 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 																		  "      service.ipInterface.ipAddress = ? and " +
 																		  "      service.serviceType.name = ?",
 																		  nodeId, ipAddress, serviceName);
+	}
+
+	@Override
+	public List<ServicePerspective> getServicePerspectives() {
+		return this.findObjects(ServicePerspective.class,
+						 "select distinct new org.opennms.netmgt.dao.api.ServicePerspective(application, service, perspectiveLocation) " +
+						 "from OnmsApplication as application " +
+						 "left join application.monitoredServices as service " +
+						 "left join application.perspectiveLocations as perspectiveLocation");
 	}
 }
