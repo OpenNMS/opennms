@@ -85,7 +85,7 @@ public class ApplicationOutageSelectionLinkGenerator extends AbstractSelectionLi
 				// outage still exists, show details
 				final URI currentLocation = Page.getCurrent().getLocation();
 				final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
-				final String redirectFragment = contextRoot + "/outage/detail.htm?id=" + outageId;
+				final String redirectFragment = contextRoot + "/outage/detail.htm?quiet=true&id=" + outageId;
 				LOG.debug("outage {} clicked, current location = {}, uri = {}", outageId, currentLocation, redirectFragment);
 
 				try {
