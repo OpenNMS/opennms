@@ -303,6 +303,31 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
     }
 
     @Test
+    public void testCloseOutageOnUnschedule() throws Exception {
+        final Package pkg = PollerConfigFactory.getInstance().getPackage("foo1");
+        final Package.ServiceMatch serviceMatch = pkg.findService("ICMP").get();
+        final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
+
+        final int nodeId = this.node1icmp.getNodeId();
+        final InetAddress ipAddress = this.node1icmp.getIpAddress();
+        final String location = this.node1icmp.getIpInterface().getNode().getLocation().getLocationName();
+
+        final RemotePolledService remotePolledService = findRemotePolledService(this.node1icmp, "RDU");
+        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+
+        this.remotePollerd.reportResult(remotePolledService, PollStatus.unavailable("old reason"));
+        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
+
+        this.databasePopulator.getApplicationDao().delete(this.app1);
+        this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.APPLICATION_DELETED_EVENT_UEI, "test")
+                                                 .addParam(PARM_APPLICATION_ID, this.app1.getId())
+                                                 .addParam(PARM_APPLICATION_NAME, this.app1.getName())
+                                                 .getEvent());
+
+        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+    }
+
+    @Test
     public void testDaemonReload() throws Exception {
         // Initial config, ICMP and SNMP bound to single package
         Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());

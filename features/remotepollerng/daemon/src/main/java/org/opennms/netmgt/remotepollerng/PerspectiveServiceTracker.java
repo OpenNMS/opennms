@@ -231,7 +231,7 @@ public class PerspectiveServiceTracker implements DisposableBean {
             }
 
             // Refresh the service list
-            PerspectiveServiceTracker.this.sessionUtils.withReadOnlyTransaction(() -> {
+            PerspectiveServiceTracker.this.sessionUtils.withTransaction(() -> {
                 final Map<ServicePerspectiveRef, ServicePerspective> candidates = PerspectiveServiceTracker.this.applicationDao.getServicePerspectives().stream()
                                                                                                                                .collect(Collectors.toMap(ServicePerspectiveRef::from, Function.identity()));
 
