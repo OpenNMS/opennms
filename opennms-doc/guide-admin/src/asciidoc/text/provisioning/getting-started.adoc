@@ -4,25 +4,30 @@
 
 === Getting Started
 
-An NMS is of no use until it is setup for monitoring and entities are added to the system.
-{opennms-product-name} installs with a base configuration with a configuration that is sufficient get service level monitoring and performance management quickly up and running.
-As soon as managed entities are provisioned, the base configuration will automatically begin monitoring and reporting.
+{opennms-product-name} installs with a base configuration that automatically begins  service-level monitoring and reporting as soon as you provision managed entities.
 
-Generally speaking, there are two methods of provisioning in {opennms-product-name}: _Auto Discovery_ and _Directed Discovery_.
-We'll start with _Auto Discovery_, but first, we should quickly review the configuration of SNMP so that newly discovered devices can be immediately scanned for entities as well as have reporting and thresholding available.
+{opennms-product-name} has two methods of provisioining:
+
+* xref:discovery-auto[Auto discovery]
+* xref:directed-discovery[Directed discovery]
+
+Before using auto or directed discovery, you must xref:provision-snmp-configuration [provision your SNMP configuration]. 
+This ensures that newly discovered devices can be immediately scanned for entities as well as have reporting and thresholding available.
 
 [[provision-snmp-configuration]]
 ==== Provisioning the SNMP Configuration
 
-{opennms-product-name} requires SNMP configuration to be properly setup for your network in order to properly understand Network and Node topology as well as to automatically enable performance data collection.
-Network topology is updated as nodes (a.k.a. devices or hosts) are provisioned.
-Navigate to the _Admin/Configure SNMP Community Names by IP address_ as shown below.
+Proper SNMP configuration allows {opennms-product-name} to understand network and node topology as well as to automatically enable performance data collection.
+{opennms-product-name} updates network topology as it provisions nodes.
+
+. In the web UI, click the gear icon in the top right. 
+. In the *Provisioning* area, choose *Configure SNMP Community Names by IP Address*: 
 
 .Configuring SNMP community names
 image:../images/provisioning/00029.png[]
 
 NOTE: Provisiond includes an option to add community information in the _Single Node_ provisioning interface.
-This, is equivalent of entering a single IP address in the screen with the convenience of setting the community string at the same time a node is provisioned.
+This is equivalent of entering a single IP address in the screen with the convenience of setting the community string at the same time a node is provisioned.
 See the _Quick Node Add_ feature below for more details about this capability.
 
 This screen sets up SNMP within {opennms-product-name} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
@@ -90,6 +95,7 @@ We will then give an example of how to be more _directed_ and deliberate about y
 Automatically discovered entities are analyzed, persisted to the relational data store, and then managed based on the policies defined in the default foreign source definition.
 This is very similar to the way that entities were previously handled by the (now obsolete) Capsd daemon but with finer grained sense of control.
 
+[[discovery-auto]]
 ==== Automatic Discovery
 
 Currently in {opennms-product-name}, the ICMP is used to automatically provision node entities into {opennms-product-name}.
@@ -108,6 +114,7 @@ Merging will only occur when 2 automatically discovered nodes appear to be the s
 
 NOTE: the use case and redesign of node merging is still an outstanding issue with the 1.8.0 release
 
+[[discovery-directed]]
 ==== Enhanced Directed Discovery
 
 This new form of provisioning first appears in OpenNMS with version 1.8 and the new Provisiond service.
