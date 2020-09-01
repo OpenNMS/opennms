@@ -31,6 +31,7 @@ package org.opennms.netmgt.remotepollerng;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -300,6 +301,25 @@ public class RemotePollerd implements SpringServiceDaemon, PerspectiveServiceTra
         } catch (final SchedulerException e) {
             LOG.error("Failed to un-schedule {} ({}).", servicePerspective, key, e);
         }
+
+        // Clear all perspective outages for that service
+        final OnmsMonitoredService service = this.monitoredServiceDao.get(servicePerspective.getNodeId(), servicePerspective.getIpAddress(), servicePerspective.getServiceName());
+        if (service == null) {
+            return;
+        }
+
+        final OnmsMonitoringLocation perspectiveLocation = this.monitoringLocationDao.get(servicePerspective.getPerspectiveLocation());
+        if (perspectiveLocation == null) {
+            return;
+        }
+
+        final OnmsOutage outage = this.outageDao.currentOutageForServiceFromPerspective(service, perspectiveLocation);
+        if (outage == null) {
+            return;
+        }
+
+        outage.setIfRegainedService(new Date());
+        this.outageDao.update(outage);
     }
 
     public static JobKey buildJobKey(final PerspectiveServiceTracker.ServicePerspectiveRef servicePerspective) {

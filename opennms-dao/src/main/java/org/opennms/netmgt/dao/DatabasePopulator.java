@@ -302,6 +302,7 @@ public class DatabasePopulator {
         m_ipInterfaceDao.flush();
         m_nodeDao.flush();
         m_serviceTypeDao.flush();
+        m_monitoringLocationDao.flush();
         
         LOG.debug("==== DatabasePopulator Reset Finished ====");
     }
