@@ -19,7 +19,7 @@ For more details on how provisioning works in {opennms-product-name}, see the #p
 
 Provisiond receives requests to add managed entities via two basic mechanisms: the {opennms-product-name} traditional "New Suspect" event, typically via the Discovery daemon, and the import requisition, typically via the Provisioning UI.
 
-IMPORTANT: An import requisition is an XML definition of node entities. to be provisioned from a foreign source into {opennms-product-name}.
-View the http://xmlns.opennms.org/xsd/config/model-import[requisition schema] (XSD).
+IMPORTANT: An import requisition is an XML definition of node entities to be provisioned from a foreign source into {opennms-product-name}.
+See the http://xmlns.opennms.org/xsd/config/model-import[requisition schema] (XSD) for more information. 
 
 

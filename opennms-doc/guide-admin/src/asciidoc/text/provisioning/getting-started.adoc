@@ -11,100 +11,45 @@
 * xref:discovery-auto[Auto discovery]
 * xref:directed-discovery[Directed discovery]
 
-Before using auto or directed discovery, you must xref:provision-snmp-configuration [provision your SNMP configuration]. 
-This ensures that newly discovered devices can be immediately scanned for entities as well as have reporting and thresholding available.
+Before using auto or directed discovery, you must xref:provision-snmp-configuration [configure SNMP for provisioning]. 
+This ensures that {opennms-product-name} can immediately scan newly discovered devices for entities.
+It also makes reporting and thresholding available for these devices.
 
 [[provision-snmp-configuration]]
-==== Provisioning the SNMP Configuration
+==== Configuring SNMP for Provisioning
 
 Proper SNMP configuration allows {opennms-product-name} to understand network and node topology as well as to automatically enable performance data collection.
 {opennms-product-name} updates network topology as it provisions nodes.
 
 . In the web UI, click the gear icon in the top right. 
-. In the *Provisioning* area, choose *Configure SNMP Community Names by IP Address*: 
+. In the *Provisioning* area, choose *Configure SNMP Community Names by IP Address*, and fill in the fields as desired: 
 
 .Configuring SNMP community names
-image:../images/provisioning/00029.png[]
-
-NOTE: Provisiond includes an option to add community information in the _Single Node_ provisioning interface.
-This is equivalent of entering a single IP address in the screen with the convenience of setting the community string at the same time a node is provisioned.
-See the _Quick Node Add_ feature below for more details about this capability.
+image:../images/provisioning/SNMP_Config.png[]
 
 This screen sets up SNMP within {opennms-product-name} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
 These settings are optimized into the `snmp-configuration.xml` file.
 Optimization means that the minimal configuration possible will be written.
 Any IP addresses already configured that are eclipsed by this range will be removed.
-Here is the resulting configuration.
 
-[source, xml]
-.Sample snmp-config.xml
-----
-<?xml version="1.0" encoding="UTF-8"?>
+For an example of the resulting XML configuration, see xref:xml-samples.adoc#SNMP-commmunity-xml[Configuring SNMP community names].
 
-<snmp-config
-xmlns="http://xmlns.opennms.org/xsd/config/snmp[http://xmlns.opennms.org/xsd/config/snmp]"
-port="161" retry="3" timeout="800" read-community="public"
-
-version="v1" max-vars-per-pdu="10">
-
-<definition retry="1" timeout="2000"
-
-read-community="public" version="v2c">
-
-<specific>10.12.23.32</specific>
-
-</definition>
-
-</snmp-config>
-----
-
-However, If an IP address is then configured that is within the range,
-the range will be split into two separate ranges and a specific entry will
-be added. For example, if a configuration was added through the same UI for
-the IP: 10.12.23.32 having the community name `public`, then the
-resulting configuration will be:
-
-[source,xml]
-----
-<?xml version="1.0" encoding="UTF-8"?>
-<snmp-config xmlns="http://xmlns.opennms.org/xsd/config/snmp"
-             port="161"
-             retry="3"
-             timeout="800"
-             read-community="public"
-             version="v1"
-             max-vars-per-pdu="10">
-
-    <definition retry="1" timeout="2000" read-community="YrusoNoz" version="v2c">
-        <range begin="10.1.1.1" end="10.12.23.31"/>
-        <range begin="10.12.23.33" end="10.254.254.254"/>
-    </definition>
-
-    <definition retry="1" timeout="2000" read-community="public" version="v2c">
-        <specific>10.12.23.32</specific>
-    </definition>
-</snmp-config>
-----
-
-NOTE: the bold IP addresses show where the range was split and the specific with community name "public" was added.
+NOTE: Provisiond includes an option to add community information to a single IP address thorugh the xref:single-node.adoc#quick-add-node[Quick-Add Node] feature. 
 
 Now, with SNMP configuration provisioned for our 10 networks, we are ready to begin adding nodes.
-Our first example will be to automatically discover and add all managed entities (nodes, IP interfaces, SNMP Interfaces, and Monitored IP based Services).
+Our first example will be to automatically discover and add all managed entities (nodes, IP interfaces, SNMP interfaces, and monitored IP-based services).
 We will then give an example of how to be more _directed_ and deliberate about your discovery by using _Provisioning Groups_.
-
-Automatically discovered entities are analyzed, persisted to the relational data store, and then managed based on the policies defined in the default foreign source definition.
-This is very similar to the way that entities were previously handled by the (now obsolete) Capsd daemon but with finer grained sense of control.
 
 [[discovery-auto]]
 ==== Automatic Discovery
 
-Currently in {opennms-product-name}, the ICMP is used to automatically provision node entities into {opennms-product-name}.
-This functionality has been in OpenNMS since its 1.0 release, however, in 1.8, a few of the use cases have been updated with _Provisiond’s_ replacement of _Capsd_.
+{opennms-product-name}, uses the ICMP to automatically provision node entities.
+Automatically discovered entities are analyzed, persisted to the relational data store, and managed based on the policies defined in the default foreign source definition.
 
 ===== Separation of Concerns
 
-Version 1.8 _Provisiond_ separates what was called _Capsd_ scanning in to 3 distinct phases: entity scanning, service detection, and node merging.
-These phases are now managed separately by Provisiond.
+Provisiond manages three separate phases: entity scanning, service detection, and node merging.
+
 Immediately following the import of a node entity, tasks are created for scanning a node to discover the node entity’s interfaces (SNMP and IP).
 As interfaces are found, they are persisted and tasks are scheduled for service detection of each IP interface.
 
@@ -112,13 +57,9 @@ For auto discovered nodes, a node merging phase is scheduled;
 Nodes that have been directly provisioned will not be included in the node merging process.
 Merging will only occur when 2 automatically discovered nodes appear to be the same node.
 
-NOTE: the use case and redesign of node merging is still an outstanding issue with the 1.8.0 release
-
 [[discovery-directed]]
 ==== Enhanced Directed Discovery
 
-This new form of provisioning first appears in OpenNMS with version 1.8 and the new Provisiond service.
-It combines the benefits of the Importer’s strictly controlled methodology of directed provisioning (from version 1.6) with OpenNMS’ robustly flexible auto discovery.
 _Enhanced Directed discovery_ begins with an enhanced version of the same import requisition used in directed provisioning and completes with a policy influenced persistence phase that sorts though the details of all the entities and services found during the entity and service scanning phase.
 
 If you are planning to use this form of provisioning, it important to understand the conceptual details of how _Provisiond_ manages entities it is _directed_ to provision.
