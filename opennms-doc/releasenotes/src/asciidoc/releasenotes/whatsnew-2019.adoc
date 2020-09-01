@@ -309,6 +309,36 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.11]
+
+==== Release Meridian-2019.1.11
+
+Release 2019.1.11 contains a bunch of bug fixes and a few handy enhancements.
+
+The codename for 2019.1.11 is _link:$$https://en.wikipedia.org/wiki/Haumea$$[Haumea]_
+
+===== Bug
+
+* Slack-compatible notification strategies expect "url" for switch name, should be "-url" (Issue http://issues.opennms.org/browse/NMS-10552[NMS-10552])
+* Can't install Horizon on Ubuntu 20.04 LTS (Issue http://issues.opennms.org/browse/NMS-12693[NMS-12693])
+* opennms.pid missing when started by Systemd (Issue http://issues.opennms.org/browse/NMS-12769[NMS-12769])
+* Resource Graph properties throws exception if label starts with a number (Issue http://issues.opennms.org/browse/NMS-12793[NMS-12793])
+* Wildcard certificate rejected after upgrade (Issue http://issues.opennms.org/browse/NMS-12805[NMS-12805])
+* Syslogd is sending new suspect events with null IP Address (Issue http://issues.opennms.org/browse/NMS-12824[NMS-12824])
+* NPE while running AlarmLifecycleListenerManager (Issue http://issues.opennms.org/browse/NMS-12825[NMS-12825])
+* Fix CollectdTest mock'ing errors (Issue http://issues.opennms.org/browse/NMS-12828[NMS-12828])
+* Fix JMX datacollection config generator test (Issue http://issues.opennms.org/browse/NMS-12829[NMS-12829])
+* Response Time Summary database report missing latency caluculation (Issue http://issues.opennms.org/browse/NMS-12837[NMS-12837])
+* SslContextFactory needs to be changed to SslContextFactory.Server in jetty.xml (Issue http://issues.opennms.org/browse/NMS-12847[NMS-12847])
+* Custom Resource Performance Reports is broken (Issue http://issues.opennms.org/browse/NMS-12870[NMS-12870])
+
+===== Enhancement
+
+* Support encryption for SNMP V3 credentials (Issue http://issues.opennms.org/browse/NMS-12753[NMS-12753])
+* AbstractXmlCollectionHandler.parseString() doesn't handle json content (Issue http://issues.opennms.org/browse/NMS-12812[NMS-12812])
+* Syslog should fallback on source address if hostname is not DNS resolvable. (Issue http://issues.opennms.org/browse/NMS-12846[NMS-12846])
+
+
 [releasenotes-changelog-Meridian-2019.1.10]
 
 ==== Release Meridian-2019.1.10
