@@ -266,7 +266,7 @@ commands:
           name: Check for Releasability
           command: |
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
-            .circleci/scripts/release-lint.sh "${OPENNMS_VERSION}"
+            .circleci/scripts/release-lint.sh "${OPENNMS_VERSION}" "meridian"
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
