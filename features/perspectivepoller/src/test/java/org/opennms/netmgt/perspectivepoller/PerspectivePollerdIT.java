@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.perspectivepoller;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import org.easymock.EasyMock;
 import org.junit.After;
@@ -87,6 +88,7 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
@@ -170,7 +172,6 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_1);
         PollerConfigFactory.setInstance(new PollerConfigFactory(-1L, new FileInputStream(POLLER_CONFIG_1)));
-//        changePollingPackages("RDU", "foo1");
 
         this.databasePopulator.getTransactionTemplate().execute(transactionStatus -> {
             this.node1icmp = this.databasePopulator.getNode1().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
@@ -244,7 +245,6 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
     @After
     public void teardown() throws Exception {
         this.perspectivePollerd.destroy();
-        this.databasePopulator.resetDatabase();
     }
 
     private void sendReloadPerspectivePollerdEvent() {
@@ -264,65 +264,90 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         final String location = this.node1icmp.getIpInterface().getNode().getLocation().getLocationName();
 
         final PerspectivePolledService perspectivePolledService = findPerspectivePolledService(this.node1icmp, "RDU");
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
 
         this.eventIpcManager.getEventAnticipator().reset();
         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI, "PerspectivePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(serviceMatch.service.getName()).setParam("location", location).getEvent());
         this.perspectivePollerd.reportResult(perspectivePolledService, PollStatus.available());
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         this.eventIpcManager.getEventAnticipator().reset();
         this.perspectivePollerd.reportResult(perspectivePolledService, PollStatus.available());
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         this.eventIpcManager.getEventAnticipator().reset();
         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, "PerspectivePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(serviceMatch.service.getName()).setParam("location", location).getEvent());
         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.OUTAGE_CREATED_EVENT_UEI, "PerspectivePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(serviceMatch.service.getName()).setParam("location", location).getEvent());
         this.perspectivePollerd.reportResult(perspectivePolledService, PollStatus.unavailable("old reason"));
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         this.eventIpcManager.getEventAnticipator().reset();
         this.perspectivePollerd.reportResult(perspectivePolledService, PollStatus.unavailable("old reason"));
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         this.eventIpcManager.getEventAnticipator().reset();
         this.perspectivePollerd.reportResult(perspectivePolledService, PollStatus.unavailable("new reason"));
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         this.eventIpcManager.getEventAnticipator().reset();
         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI, "PerspectivePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(serviceMatch.service.getName()).setParam("location", location).getEvent());
         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, "PerspectivePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(serviceMatch.service.getName()).setParam("location", location).getEvent());
         this.perspectivePollerd.reportResult(perspectivePolledService, PollStatus.available());
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
+    }
+
+    @Test
+    public void testCloseOutageOnUnschedule() throws Exception {
+        final Package pkg = PollerConfigFactory.getInstance().getPackage("foo1");
+        final Package.ServiceMatch serviceMatch = pkg.findService("ICMP").get();
+        final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
+
+        final int nodeId = this.node1icmp.getNodeId();
+        final InetAddress ipAddress = this.node1icmp.getIpAddress();
+        final String location = this.node1icmp.getIpInterface().getNode().getLocation().getLocationName();
+
+        final PerspectivePolledService perspectivePolledService = findPerspectivePolledService(this.node1icmp, "RDU");
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+
+        this.perspectivePollerd.reportResult(perspectivePolledService, PollStatus.unavailable("old reason"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
+
+        this.databasePopulator.getApplicationDao().delete(this.app1);
+        this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.APPLICATION_DELETED_EVENT_UEI, "test")
+                                                 .addParam(PARM_APPLICATION_ID, this.app1.getId())
+                                                 .addParam(PARM_APPLICATION_NAME, this.app1.getName())
+                                                 .getEvent());
+
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
     }
 
     @Test
     public void testDaemonReload() throws Exception {
         // Initial config, ICMP and SNMP bound to single package
         Assert.assertEquals(8, this.perspectivePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
-        assertThat(findPerspectivePolledService(this.node1icmp, "RDU").getPkg().getName(), is("foo1"));
-        assertThat(findPerspectivePolledService(this.node1icmp, "Fulda").getPkg().getName(), is("foo1"));
-        assertThat(findPerspectivePolledService(this.node2icmp, "RDU").getPkg().getName(), is("foo1"));
-        assertThat(findPerspectivePolledService(this.node2icmp, "Fulda").getPkg().getName(), is("foo1"));
-        assertThat(findPerspectivePolledService(this.node1snmp, "RDU").getPkg().getName(), is("foo1"));
-        assertThat(findPerspectivePolledService(this.node2snmp, "RDU").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node2icmp, "RDU").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node2icmp, "Fulda").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1snmp, "RDU").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node2snmp, "RDU").getPkg().getName(), is("foo1"));
 
         // New config, package ICMP and SNMP bound to two different packages
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_2);
         sendReloadPerspectivePollerdEvent();
-        Assert.assertEquals(8, this.perspectivePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
-        assertThat(findPerspectivePolledService(this.node1icmp, "RDU").getPkg().getName(), is("foo1"));
-        assertThat(findPerspectivePolledService(this.node1icmp, "Fulda").getPkg().getName(), is("foo1"));
-        assertThat(findPerspectivePolledService(this.node2icmp, "RDU").getPkg().getName(), is("foo1"));
-        assertThat(findPerspectivePolledService(this.node2icmp, "Fulda").getPkg().getName(), is("foo1"));
-        assertThat(findPerspectivePolledService(this.node1snmp, "RDU").getPkg().getName(), is("foo2"));
-        assertThat(findPerspectivePolledService(this.node2snmp, "RDU").getPkg().getName(), is("foo2"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.perspectivePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size(), is(8));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node2icmp, "RDU").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node2icmp, "Fulda").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1snmp, "RDU").getPkg().getName(), is("foo2"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node2snmp, "RDU").getPkg().getName(), is("foo2"));
     }
 
     @Test
@@ -366,8 +391,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
             return null;
         });
 
-        assertThat(findPerspectivePolledService(service1, "RDU"), is(nullValue()));
-        assertThat(findPerspectivePolledService(service1, "Fulda"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(service1, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(service1, "Fulda"), is(nullValue()));
 
         this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "test")
                                                  .setNodeid(node1.getId())
@@ -375,14 +400,14 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
                                                  .setService(service1.getServiceName())
                                                  .getEvent());
 
-        assertThat(findPerspectivePolledService(service1, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(service1, "Fulda"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(service1, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(service1, "Fulda"), is(notNullValue()));
     }
 
     @Test
     public void testRemoveService() throws Exception {
-        assertThat(findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
 
         this.databasePopulator.getMonitoredServiceDao().delete(this.node1icmp);
         this.databasePopulator.getMonitoredServiceDao().flush();
@@ -393,18 +418,18 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
                                                  .setService(this.node1icmp.getServiceName())
                                                  .getEvent());
 
-        assertThat(findPerspectivePolledService(this.node1icmp, "RDU"), is(nullValue()));
-        assertThat(findPerspectivePolledService(this.node1icmp, "Fulda"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda"), is(nullValue()));
 
-        assertThat(findPerspectivePolledService(this.node1snmp, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(this.node1http, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1snmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1http, "RDU"), is(notNullValue()));
     }
 
     @Test
     public void testRemoveInterface() throws Exception {
-        assertThat(findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(this.node1snmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1snmp, "RDU"), is(notNullValue()));
 
         this.databasePopulator.getIpInterfaceDao().delete(this.node1icmp.getIpInterface());
         this.databasePopulator.getIpInterfaceDao().flush();
@@ -414,21 +439,21 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
                                                  .setInterface(this.node1icmp.getIpAddress())
                                                  .getEvent());
 
-        assertThat(findPerspectivePolledService(this.node1icmp, "RDU"), is(nullValue()));
-        assertThat(findPerspectivePolledService(this.node1icmp, "Fulda"), is(nullValue()));
-        assertThat(findPerspectivePolledService(this.node1snmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1snmp, "RDU"), is(nullValue()));
 
-        assertThat(findPerspectivePolledService(this.node1http, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(this.node1http, "Fulda"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1http, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1http, "Fulda"), is(notNullValue()));
     }
 
     @Test
     public void testRemoveNode() throws Exception {
-        assertThat(findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(this.node1snmp, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(this.node1http, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(this.node1http, "Fulda"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1snmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1http, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1http, "Fulda"), is(notNullValue()));
 
         this.databasePopulator.getNodeDao().delete(this.node1icmp.getIpInterface().getNode());
         this.databasePopulator.getNodeDao().flush();
@@ -437,11 +462,11 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
                                                  .setNodeid(this.node1icmp.getNodeId())
                                                  .getEvent());
 
-        assertThat(findPerspectivePolledService(this.node1icmp, "RDU"), is(nullValue()));
-        assertThat(findPerspectivePolledService(this.node1icmp, "Fulda"), is(nullValue()));
-        assertThat(findPerspectivePolledService(this.node1snmp, "RDU"), is(nullValue()));
-        assertThat(findPerspectivePolledService(this.node1http, "RDU"), is(nullValue()));
-        assertThat(findPerspectivePolledService(this.node1http, "Fulda"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1snmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1http, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1http, "Fulda"), is(nullValue()));
     }
 
     @Test
@@ -449,8 +474,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         final OnmsMonitoredService node3icmp = this.databasePopulator.getNode3().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
         final OnmsMonitoredService node4icmp = this.databasePopulator.getNode4().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
 
-        assertThat(findPerspectivePolledService(node3icmp, "RDU"), is(nullValue()));
-        assertThat(findPerspectivePolledService(node4icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(node3icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(node4icmp, "RDU"), is(nullValue()));
 
         final OnmsApplication app = new OnmsApplication();
         app.setName("App Test");
@@ -476,8 +501,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
                                                  .addParam(PARM_APPLICATION_NAME, app.getName())
                                                  .getEvent());
 
-        assertThat(findPerspectivePolledService(node3icmp, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(node4icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(node3icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(node4icmp, "RDU"), is(notNullValue()));
     }
 
     @Test
@@ -485,10 +510,10 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         final OnmsMonitoredService node3icmp = this.databasePopulator.getNode3().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
         final OnmsMonitoredService node4icmp = this.databasePopulator.getNode4().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
 
-        assertThat(findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(this.node2icmp, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(node3icmp, "RDU"), is(nullValue()));
-        assertThat(findPerspectivePolledService(node4icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node2icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(node3icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(node4icmp, "RDU"), is(nullValue()));
 
         this.app1.addMonitoredService(node3icmp);
         node3icmp.addApplication(this.app1);
@@ -513,16 +538,16 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
                                                  .addParam(PARM_APPLICATION_NAME, this.app1.getName())
                                                  .getEvent());
 
-        assertThat(findPerspectivePolledService(this.node1icmp, "RDU"), is(nullValue()));
-        assertThat(findPerspectivePolledService(this.node2icmp, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(node3icmp, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(node4icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node2icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(node3icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(node4icmp, "RDU"), is(nullValue()));
     }
 
     @Test
     public void testApplicationRemoved() throws Exception {
-        assertThat(findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
-        assertThat(findPerspectivePolledService(this.node2icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node2icmp, "RDU"), is(notNullValue()));
 
         this.databasePopulator.getTransactionTemplate().execute(tx -> {
             this.databasePopulator.getApplicationDao().delete(this.app1);
@@ -535,8 +560,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
                                                  .addParam(PARM_APPLICATION_NAME, this.app1.getName())
                                                  .getEvent());
 
-        assertThat(findPerspectivePolledService(this.node1icmp, "RDU"), is(nullValue()));
-        assertThat(findPerspectivePolledService(this.node2icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node2icmp, "RDU"), is(nullValue()));
     }
 
     @Test
