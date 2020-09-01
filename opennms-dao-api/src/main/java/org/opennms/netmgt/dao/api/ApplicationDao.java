@@ -30,7 +30,6 @@ package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
 import java.util.List;
-import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -75,4 +74,7 @@ public interface ApplicationDao extends OnmsDao<OnmsApplication, Integer> {
     List<MonitoredServiceStatusEntity> getAlarmStatus(List<OnmsApplication> applications);
 
     List<OnmsMonitoringLocation> getPerspectiveLocationsForService(final int nodeId, final InetAddress ipAddress, final String serviceName);
+
+    List<ServicePerspective> getServicePerspectives();
+
 }

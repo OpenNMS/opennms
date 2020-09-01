@@ -44,7 +44,9 @@ import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import com.google.common.base.MoreObjects;
 
 public class RemotePolledService {
-    private final ServiceTracker.Service service;
+    private final int nodeId;
+    private final InetAddress ipAddress;
+    private final String serviceName;
 
     private final String foreignSource;
     private final String foreignId;
@@ -68,7 +70,9 @@ public class RemotePolledService {
 
     private PollStatus lastStatus;
 
-    public RemotePolledService(final ServiceTracker.Service service,
+    public RemotePolledService(final int nodeId,
+                               final InetAddress ipAddress,
+                               final String serviceName,
                                final String foreignSource,
                                final String foreignId,
                                final String nodeLabel,
@@ -79,7 +83,9 @@ public class RemotePolledService {
                                final String residentLocation,
                                final RrdRepository rrdRepository,
                                final ThresholdingSession thresholdingSession) {
-        this.service = Objects.requireNonNull(service);
+        this.nodeId = Objects.requireNonNull(nodeId);
+        this.ipAddress = Objects.requireNonNull(ipAddress);
+        this.serviceName = Objects.requireNonNull(serviceName);
         this.foreignSource = Objects.requireNonNull(foreignSource);
         this.foreignId = Objects.requireNonNull(foreignId);
         this.nodeLabel = Objects.requireNonNull(nodeLabel);
@@ -88,23 +94,23 @@ public class RemotePolledService {
         this.serviceMonitor = Objects.requireNonNull(serviceMonitor);
         this.perspectiveLocation = Objects.requireNonNull(perspectiveLocation);
         this.residentLocation = Objects.requireNonNull(residentLocation);
-        this.rrdRepository = Objects.requireNonNull(rrdRepository);
-        this.thresholdingSession = Objects.requireNonNull(thresholdingSession);
+        this.rrdRepository = rrdRepository;
+        this.thresholdingSession = thresholdingSession;
 
         this.monitoredService = new MonitoredService() {
             @Override
             public String getSvcName() {
-                return service.serviceName;
+                return serviceName;
             }
 
             @Override
             public String getIpAddr() {
-                return InetAddressUtils.str(service.ipAddress);
+                return InetAddressUtils.str(ipAddress);
             }
 
             @Override
             public int getNodeId() {
-                return service.nodeId;
+                return nodeId;
             }
 
             @Override
@@ -121,7 +127,7 @@ public class RemotePolledService {
 
             @Override
             public InetAddress getAddress() {
-                return service.ipAddress;
+                return ipAddress;
             }
         };
     }
@@ -135,8 +141,16 @@ public class RemotePolledService {
         }
     }
 
-    public ServiceTracker.Service getService() {
-        return this.service;
+    public int getNodeId() {
+        return this.nodeId;
+    }
+
+    public InetAddress getIpAddress() {
+        return this.ipAddress;
+    }
+
+    public String getServiceName() {
+        return this.serviceName;
     }
 
     public String getForeignSource() {
@@ -183,18 +197,6 @@ public class RemotePolledService {
         return this.rrdRepository;
     }
 
-    public int getNodeId() {
-        return this.service.nodeId;
-    }
-
-    public InetAddress getIpAddress() {
-        return this.service.ipAddress;
-    }
-
-    public String getServiceName() {
-        return this.service.serviceName;
-    }
-
     public ThresholdingSession getThresholdingSession() {
         return this.thresholdingSession;
     }
@@ -202,7 +204,9 @@ public class RemotePolledService {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                          .add("service", this.service)
+                          .add("nodeId", this.nodeId)
+                          .add("ipAddress", this.ipAddress)
+                          .add("serviceName", this.serviceName)
                           .add("pkg", this.pkg)
                           .add("serviceMatch", this.serviceMatch)
                           .add("serviceMonitor", this.serviceMonitor)
@@ -220,7 +224,9 @@ public class RemotePolledService {
             return false;
         }
         final RemotePolledService that = (RemotePolledService) o;
-        return Objects.equals(this.service, that.service) &&
+        return Objects.equals(this.nodeId, that.nodeId) &&
+               Objects.equals(this.ipAddress, that.ipAddress) &&
+               Objects.equals(this.serviceName, that.serviceName) &&
                Objects.equals(this.pkg, that.pkg) &&
                Objects.equals(this.serviceMatch, that.serviceMatch) &&
                Objects.equals(this.serviceMonitor, that.serviceMonitor) &&
@@ -230,6 +236,6 @@ public class RemotePolledService {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.service, this.pkg, this.serviceMatch, this.serviceMonitor, this.monitoredService, this.perspectiveLocation);
+        return Objects.hash(this.nodeId, this.ipAddress, this.serviceName, this.pkg, this.serviceMatch, this.serviceMonitor, this.monitoredService, this.perspectiveLocation);
     }
 }
