@@ -192,6 +192,11 @@ angular.module('onms-resources', [
   };
 
   $scope.doGraph = function (selected) {
+    // Custom report graphs doesn't support generatedId
+    if(($scope.url === "graph/adhoc2.jsp")) {
+       $scope.setResourceIds(selected);
+       return;
+    }
     // Save resources with an ID and form url with generatedId.
     if (selected.length > 0) {
       $http.post('rest/resources/generateId', selected)
