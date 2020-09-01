@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.remotepollerng;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_ID;
 import static org.opennms.netmgt.events.api.EventConstants.PARM_APPLICATION_NAME;
@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import org.easymock.EasyMock;
 import org.junit.After;
@@ -87,6 +88,7 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
@@ -170,7 +172,6 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
 
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_1);
         PollerConfigFactory.setInstance(new PollerConfigFactory(-1L, new FileInputStream(POLLER_CONFIG_1)));
-//        changePollingPackages("RDU", "foo1");
 
         this.databasePopulator.getTransactionTemplate().execute(transactionStatus -> {
             this.node1icmp = this.databasePopulator.getNode1().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
@@ -244,7 +245,7 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
     @After
     public void teardown() throws Exception {
         this.remotePollerd.destroy();
-        this.databasePopulator.resetDatabase();
+//        this.databasePopulator.resetDatabase();
     }
 
     private void sendReloadRemotePollerdEvent() {
@@ -264,41 +265,41 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         final String location = this.node1icmp.getIpInterface().getNode().getLocation().getLocationName();
 
         final RemotePolledService remotePolledService = findRemotePolledService(this.node1icmp, "RDU");
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
 
         this.eventIpcManager.getEventAnticipator().reset();
         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(serviceMatch.service.getName()).setParam("location", location).getEvent());
         this.remotePollerd.reportResult(remotePolledService, PollStatus.available());
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         this.eventIpcManager.getEventAnticipator().reset();
         this.remotePollerd.reportResult(remotePolledService, PollStatus.available());
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         this.eventIpcManager.getEventAnticipator().reset();
         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(serviceMatch.service.getName()).setParam("location", location).getEvent());
         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.OUTAGE_CREATED_EVENT_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(serviceMatch.service.getName()).setParam("location", location).getEvent());
         this.remotePollerd.reportResult(remotePolledService, PollStatus.unavailable("old reason"));
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         this.eventIpcManager.getEventAnticipator().reset();
         this.remotePollerd.reportResult(remotePolledService, PollStatus.unavailable("old reason"));
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         this.eventIpcManager.getEventAnticipator().reset();
         this.remotePollerd.reportResult(remotePolledService, PollStatus.unavailable("new reason"));
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
 
         this.eventIpcManager.getEventAnticipator().reset();
         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(serviceMatch.service.getName()).setParam("location", location).getEvent());
         this.eventIpcManager.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, "RemotePollerd").setNodeid(nodeId).setInterface(ipAddress).setService(serviceMatch.service.getName()).setParam("location", location).getEvent());
         this.remotePollerd.reportResult(remotePolledService, PollStatus.available());
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
     }
 
@@ -313,10 +314,10 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         final String location = this.node1icmp.getIpInterface().getNode().getLocation().getLocationName();
 
         final RemotePolledService remotePolledService = findRemotePolledService(this.node1icmp, "RDU");
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
 
         this.remotePollerd.reportResult(remotePolledService, PollStatus.unavailable("old reason"));
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(notNullValue()));
 
         this.databasePopulator.getApplicationDao().delete(this.app1);
         this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.APPLICATION_DELETED_EVENT_UEI, "test")
@@ -324,30 +325,30 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
                                                  .addParam(PARM_APPLICATION_NAME, this.app1.getName())
                                                  .getEvent());
 
-        assertThat(this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.databasePopulator.getOutageDao().currentOutageForServiceFromPerspective(this.node1icmp, this.databasePopulator.getLocRDU()), is(nullValue()));
     }
 
     @Test
     public void testDaemonReload() throws Exception {
         // Initial config, ICMP and SNMP bound to single package
         Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
-        assertThat(findRemotePolledService(this.node1icmp, "RDU").getPkg().getName(), is("foo1"));
-        assertThat(findRemotePolledService(this.node1icmp, "Fulda").getPkg().getName(), is("foo1"));
-        assertThat(findRemotePolledService(this.node2icmp, "RDU").getPkg().getName(), is("foo1"));
-        assertThat(findRemotePolledService(this.node2icmp, "Fulda").getPkg().getName(), is("foo1"));
-        assertThat(findRemotePolledService(this.node1snmp, "RDU").getPkg().getName(), is("foo1"));
-        assertThat(findRemotePolledService(this.node2snmp, "RDU").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "RDU").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "Fulda").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node2icmp, "RDU").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node2icmp, "Fulda").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1snmp, "RDU").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node2snmp, "RDU").getPkg().getName(), is("foo1"));
 
         // New config, package ICMP and SNMP bound to two different packages
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_2);
         sendReloadRemotePollerdEvent();
-        Assert.assertEquals(8, this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
-        assertThat(findRemotePolledService(this.node1icmp, "RDU").getPkg().getName(), is("foo1"));
-        assertThat(findRemotePolledService(this.node1icmp, "Fulda").getPkg().getName(), is("foo1"));
-        assertThat(findRemotePolledService(this.node2icmp, "RDU").getPkg().getName(), is("foo1"));
-        assertThat(findRemotePolledService(this.node2icmp, "Fulda").getPkg().getName(), is("foo1"));
-        assertThat(findRemotePolledService(this.node1snmp, "RDU").getPkg().getName(), is("foo2"));
-        assertThat(findRemotePolledService(this.node2snmp, "RDU").getPkg().getName(), is("foo2"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> this.remotePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size(), is(8));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "RDU").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "Fulda").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node2icmp, "RDU").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node2icmp, "Fulda").getPkg().getName(), is("foo1"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1snmp, "RDU").getPkg().getName(), is("foo2"));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node2snmp, "RDU").getPkg().getName(), is("foo2"));
     }
 
     @Test
@@ -391,8 +392,8 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
             return null;
         });
 
-        assertThat(findRemotePolledService(service1, "RDU"), is(nullValue()));
-        assertThat(findRemotePolledService(service1, "Fulda"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(service1, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(service1, "Fulda"), is(nullValue()));
 
         this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, "test")
                                                  .setNodeid(node1.getId())
@@ -400,14 +401,14 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
                                                  .setService(service1.getServiceName())
                                                  .getEvent());
 
-        assertThat(findRemotePolledService(service1, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(service1, "Fulda"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(service1, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(service1, "Fulda"), is(notNullValue()));
     }
 
     @Test
     public void testRemoveService() throws Exception {
-        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
 
         this.databasePopulator.getMonitoredServiceDao().delete(this.node1icmp);
         this.databasePopulator.getMonitoredServiceDao().flush();
@@ -418,18 +419,18 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
                                                  .setService(this.node1icmp.getServiceName())
                                                  .getEvent());
 
-        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(nullValue()));
-        assertThat(findRemotePolledService(this.node1icmp, "Fulda"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "Fulda"), is(nullValue()));
 
-        assertThat(findRemotePolledService(this.node1snmp, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(this.node1http, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1snmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1http, "RDU"), is(notNullValue()));
     }
 
     @Test
     public void testRemoveInterface() throws Exception {
-        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
-        assertThat(findRemotePolledService(this.node1snmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1snmp, "RDU"), is(notNullValue()));
 
         this.databasePopulator.getIpInterfaceDao().delete(this.node1icmp.getIpInterface());
         this.databasePopulator.getIpInterfaceDao().flush();
@@ -439,21 +440,21 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
                                                  .setInterface(this.node1icmp.getIpAddress())
                                                  .getEvent());
 
-        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(nullValue()));
-        assertThat(findRemotePolledService(this.node1icmp, "Fulda"), is(nullValue()));
-        assertThat(findRemotePolledService(this.node1snmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "Fulda"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1snmp, "RDU"), is(nullValue()));
 
-        assertThat(findRemotePolledService(this.node1http, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(this.node1http, "Fulda"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1http, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1http, "Fulda"), is(notNullValue()));
     }
 
     @Test
     public void testRemoveNode() throws Exception {
-        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
-        assertThat(findRemotePolledService(this.node1snmp, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(this.node1http, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(this.node1http, "Fulda"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1snmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1http, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1http, "Fulda"), is(notNullValue()));
 
         this.databasePopulator.getNodeDao().delete(this.node1icmp.getIpInterface().getNode());
         this.databasePopulator.getNodeDao().flush();
@@ -462,11 +463,11 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
                                                  .setNodeid(this.node1icmp.getNodeId())
                                                  .getEvent());
 
-        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(nullValue()));
-        assertThat(findRemotePolledService(this.node1icmp, "Fulda"), is(nullValue()));
-        assertThat(findRemotePolledService(this.node1snmp, "RDU"), is(nullValue()));
-        assertThat(findRemotePolledService(this.node1http, "RDU"), is(nullValue()));
-        assertThat(findRemotePolledService(this.node1http, "Fulda"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "Fulda"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1snmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1http, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1http, "Fulda"), is(nullValue()));
     }
 
     @Test
@@ -474,8 +475,8 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         final OnmsMonitoredService node3icmp = this.databasePopulator.getNode3().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
         final OnmsMonitoredService node4icmp = this.databasePopulator.getNode4().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
 
-        assertThat(findRemotePolledService(node3icmp, "RDU"), is(nullValue()));
-        assertThat(findRemotePolledService(node4icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(node3icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(node4icmp, "RDU"), is(nullValue()));
 
         final OnmsApplication app = new OnmsApplication();
         app.setName("App Test");
@@ -501,8 +502,8 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
                                                  .addParam(PARM_APPLICATION_NAME, app.getName())
                                                  .getEvent());
 
-        assertThat(findRemotePolledService(node3icmp, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(node4icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(node3icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(node4icmp, "RDU"), is(notNullValue()));
     }
 
     @Test
@@ -510,10 +511,10 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
         final OnmsMonitoredService node3icmp = this.databasePopulator.getNode3().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
         final OnmsMonitoredService node4icmp = this.databasePopulator.getNode4().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
 
-        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(this.node2icmp, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(node3icmp, "RDU"), is(nullValue()));
-        assertThat(findRemotePolledService(node4icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node2icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(node3icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(node4icmp, "RDU"), is(nullValue()));
 
         this.app1.addMonitoredService(node3icmp);
         node3icmp.addApplication(this.app1);
@@ -538,16 +539,16 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
                                                  .addParam(PARM_APPLICATION_NAME, this.app1.getName())
                                                  .getEvent());
 
-        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(nullValue()));
-        assertThat(findRemotePolledService(this.node2icmp, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(node3icmp, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(node4icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node2icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(node3icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(node4icmp, "RDU"), is(nullValue()));
     }
 
     @Test
     public void testApplicationRemoved() throws Exception {
-        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
-        assertThat(findRemotePolledService(this.node2icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "RDU"), is(notNullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node2icmp, "RDU"), is(notNullValue()));
 
         this.databasePopulator.getTransactionTemplate().execute(tx -> {
             this.databasePopulator.getApplicationDao().delete(this.app1);
@@ -560,8 +561,8 @@ public class RemotePollerdIT implements InitializingBean, TemporaryDatabaseAware
                                                  .addParam(PARM_APPLICATION_NAME, this.app1.getName())
                                                  .getEvent());
 
-        assertThat(findRemotePolledService(this.node1icmp, "RDU"), is(nullValue()));
-        assertThat(findRemotePolledService(this.node2icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node1icmp, "RDU"), is(nullValue()));
+        await().atMost(5, TimeUnit.SECONDS).until(() -> findRemotePolledService(this.node2icmp, "RDU"), is(nullValue()));
     }
 
     @Test

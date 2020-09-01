@@ -216,7 +216,7 @@ public class PerspectiveServiceTracker implements DisposableBean {
             }
         }
 
-        public void update(final boolean dirty) {
+        public synchronized void update(final boolean dirty) {
             // Mark as dirty if requested
             this.dirty |= dirty;
 
@@ -226,7 +226,8 @@ public class PerspectiveServiceTracker implements DisposableBean {
             }
 
             // Check if it's time to refresh
-            if (this.lastRefresh.isAfter(Instant.now().minusMillis(PerspectiveServiceTracker.REFRESH_RATE_LIMIT_MS))) {
+            final Instant now = Instant.now();
+            if (this.lastRefresh.isAfter(now.minusMillis(PerspectiveServiceTracker.REFRESH_RATE_LIMIT_MS))) {
                 return;
             }
 
@@ -248,12 +249,10 @@ public class PerspectiveServiceTracker implements DisposableBean {
                     this.active.remove(servicePerspective);
                     this.listener.onServicePerspectiveRemoved(servicePerspective);
                 }
-
-                return null;
             });
 
             // Not dirty anymore after a successful refresh
-            this.lastRefresh = Instant.now();
+            this.lastRefresh = now;
             this.dirty = false;
         }
     }
