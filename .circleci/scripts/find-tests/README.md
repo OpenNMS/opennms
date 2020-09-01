@@ -49,21 +49,21 @@ No module match for ./.circleci/scripts/find-tests/git.py
 No module match for ./.gitignore
 No module match for ./.circleci/scripts/find-tests/sample.json
 Modules with changes:
-org.opennms.features.telemetry:org.opennms.features.telemetry.daemon:2019.1.11-SNAPSHOT
+org.opennms.features.telemetry:org.opennms.features.telemetry.daemon:2019.1.11
 Modules to consider:
-org.opennms.features.minion:core-repository:2019.1.11-SNAPSHOT
-org.opennms.features.container:minion:2019.1.11-SNAPSHOT
-org.opennms.karaf:opennms:2019.1.11-SNAPSHOT
-org.opennms.features.container:sentinel:2019.1.11-SNAPSHOT
-org.opennms.features.telemetry:org.opennms.features.telemetry.daemon:2019.1.11-SNAPSHOT
-org.opennms.features.telemetry.distributed:org.opennms.features.telemetry.distributed.sentinel:2019.1.11-SNAPSHOT
-org.opennms.container:org.opennms.container.shared:2019.1.11-SNAPSHOT
-org.opennms.features.minion:repository:2019.1.11-SNAPSHOT
-org.opennms.features.sentinel:repository:2019.1.11-SNAPSHOT
-org.opennms.features.telemetry:org.opennms.features.telemetry.itests:2019.1.11-SNAPSHOT
-org.opennms.container:org.opennms.container.karaf:2019.1.11-SNAPSHOT
+org.opennms.features.minion:core-repository:2019.1.11
+org.opennms.features.container:minion:2019.1.11
+org.opennms.karaf:opennms:2019.1.11
+org.opennms.features.container:sentinel:2019.1.11
+org.opennms.features.telemetry:org.opennms.features.telemetry.daemon:2019.1.11
+org.opennms.features.telemetry.distributed:org.opennms.features.telemetry.distributed.sentinel:2019.1.11
+org.opennms.container:org.opennms.container.shared:2019.1.11
+org.opennms.features.minion:repository:2019.1.11
+org.opennms.features.sentinel:repository:2019.1.11
+org.opennms.features.telemetry:org.opennms.features.telemetry.itests:2019.1.11
+org.opennms.container:org.opennms.container.karaf:2019.1.11
 Modules with tests:
-org.opennms.features.telemetry:org.opennms.features.telemetry.itests:2019.1.11-SNAPSHOT
+org.opennms.features.telemetry:org.opennms.features.telemetry.itests:2019.1.11
         /home/jesse/git/opennms/features/telemetry/itests/src/test/java/org/opennms/netmgt/telemetry/itests/ThresholdingIT.java - org.opennms.netmgt.telemetry.itests.ThresholdingIT (Failsafe)
         /home/jesse/git/opennms/features/telemetry/itests/src/test/java/org/opennms/netmgt/telemetry/itests/ListenerParserThreadingIT.java - org.opennms.netmgt.telemetry.itests.ListenerParserThreadingIT (Failsafe)
         /home/jesse/git/opennms/features/telemetry/itests/src/test/java/org/opennms/netmgt/telemetry/itests/JtiIT.java - org.opennms.netmgt.telemetry.itests.JtiIT (Failsafe)
