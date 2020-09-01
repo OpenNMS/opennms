@@ -178,6 +178,10 @@ This reduces the complexity of the UI code and will make it easier for developer
 
 ==== Release Meridian-2017.1.26
 
+Release 2017.1.26 is a small update to 2017.1.25 that fixes a few bugs.
+
+The codename for 2017.1.26 is _Philadelphia meridian_.
+
 ===== Bug
 
 * Slack-compatible notification strategies expect "url" for switch name, should be "-url" (Issue http://issues.opennms.org/browse/NMS-10552[NMS-10552])
