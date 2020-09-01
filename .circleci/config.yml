@@ -20,6 +20,10 @@ executors:
 # branches have slashes in them, that way the merge branch gets created properly
 defaults: &defaults
   parameters:
+    minimal:
+      description: whether to do a minimal (build-and-merge only) build
+      type: boolean
+      default: false
     previous_branch:
       description: the previous branch, if any
       type: string
@@ -31,11 +35,11 @@ defaults: &defaults
     main_branch:
       description: the auto-merge main branch
       type: string
-      default: release-26.x
+      default: foundation-2020
     main_branch_label:
       description: the auto-merge main branch (escaped, no slashes)
       type: string
-      default: release-26.x
+      default: foundation-2020
     next_branch:
       description: the auto-merge target branch
       type: string
@@ -58,7 +62,7 @@ commands:
       steps:
         - run:
             name: Extract Maven POM version
-            command: opennms-container/pom2version.py pom.xml > pom-version-cache.key
+            command: .circleci/scripts/pom2version.sh pom.xml > pom-version-cache.key
   cached-checkout:
       description: "Checkout with caching"
       steps:
@@ -255,6 +259,11 @@ commands:
     steps:
       - cached-checkout
       - extract-pom-version
+      - run:
+          name: Check for Releasability
+          command: |
+            export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            .circleci/scripts/release-lint.sh "${OPENNMS_VERSION}"
       - restore-maven-cache
       - restore-nodejs-cache
       - run:
@@ -442,6 +451,8 @@ commands:
 workflows:
   weekly-coverage:
     <<: *defaults
+    when:
+      equal: [ false, << parameters.minimal >> ]
     triggers:
       - schedule:
           # Saturday at 12:00 AM
@@ -458,8 +469,43 @@ workflows:
       - code-coverage:
           requires:
             - integration-test-with-coverage
+  build-minimal:
+    <<: *defaults
+    when:
+      equal: [ true, << parameters.minimal >> ]
+    jobs:
+      - build
+      - create-merge-foundation-branch:
+          requires:
+            - build
+          filters:
+            branches:
+              only: << parameters.main_branch >>
+      - merge-foundation-branch:
+          requires:
+            - build
+          filters:
+            branches:
+              only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
+      - create-merge-meridian-branch:
+          requires:
+            - build
+          filters:
+            branches:
+              only: /^foundation.*/
+      - merge-poweredby-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - /^foundation.*/
   build-deploy:
     <<: *defaults
+    when:
+      equal: [ false, << parameters.minimal >> ]
     jobs:
       - build:
           filters:
@@ -544,6 +590,7 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - minion-deb-build:
           requires:
             - integration-test
@@ -557,6 +604,7 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - sentinel-deb-build:
           requires:
             - integration-test
@@ -570,6 +618,7 @@ workflows:
                 - /^features.*/
                 - /^merge-foundation\/.*/
                 - /.*smoke.*/
+                - /.*debian.*/
       - create-merge-foundation-branch:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
@@ -706,7 +755,7 @@ jobs:
           name: Collect Artifacts
           command: |
             mkdir -p target/{artifacts,tarballs}
-            OPENNMS_VERSION="$(python opennms-container/pom2version.py pom.xml)"
+            OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             find ./target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/opennms-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;

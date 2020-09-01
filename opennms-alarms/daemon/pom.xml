@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-alarms</artifactId>
-    <version>26.1.3</version>
+    <version>26.1.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarmd</artifactId>
@@ -135,7 +135,7 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

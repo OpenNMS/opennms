@@ -47,7 +47,7 @@ This file can be invoked by:
 
 [source, shell]
 ----
-java -jar target/jmxconfiggenerator-26.1.3-onejar.jar
+java -jar target/jmxconfiggenerator-26.1.4-SNAPSHOT-onejar.jar
 ----
 
 ===== Usage

@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.core.ipc</artifactId>
     <groupId>org.opennms.core</groupId>
-    <version>26.1.3</version>
+    <version>26.1.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <name>OpenNMS :: Core :: IPC :: GRPC :: Parent</name>
@@ -16,7 +16,6 @@
     <module>server</module>
     <module>client</module>
     <module>common</module>
-    <module>osgi</module>
     <module>itests</module>
   </modules>
 
