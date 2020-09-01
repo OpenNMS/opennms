@@ -41,6 +41,7 @@
 %>
 <%@ page import="org.opennms.netmgt.model.remotepolling.Location" %>
 <%@ page import="org.opennms.web.category.CategoryUtil" %>
+<%@ page import="org.opennms.netmgt.model.OnmsMonitoredService" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
@@ -50,58 +51,139 @@
     <jsp:param name="breadcrumb" value="Application Status" />
 </jsp:include>
 
+<style>
+    .scrollable {
+        overflow-x: scroll;
+        overflow-y: visible;
+        display: block;
+    }
+
+    th, td {
+        height: 1.2em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+
 <%
     final NetworkElementFactoryInterface networkElementFactory = NetworkElementFactory.getInstance(getServletContext());
 
-    final List<OnmsApplication> applications = networkElementFactory.getAllApplications();
+    final Map<String, OnmsApplication> applications = new TreeMap<>();
 
-    long end = new Date().getTime();
-    long start = end - (24 * 60 * 60);
-
-    TreeMap<String, ApplicationStatus> statusMap = new TreeMap<>();
-    for(final OnmsApplication a : applications) {
-        statusMap.put(a.getName(), networkElementFactory.getApplicationStatus(a, start, end));
+    for(final OnmsApplication onmsApplication : networkElementFactory.getAllApplications()) {
+        applications.put(onmsApplication.getName(), onmsApplication);
     }
+
+    final long end = new Date().getTime();
+    final long start = end - (24 * 60 * 60);
+
+    for(final Map.Entry<String, OnmsApplication> entry : applications.entrySet()) {
+
+        final Map<OnmsMonitoredService, Map<String, Double>> statuses = networkElementFactory.getApplicationServiceStatus(entry.getValue(), start, end);
+
+        if (statuses.size() == 0) {
+            continue;
+        }
+
+        final Set<String> locations = new TreeSet(statuses.entrySet().iterator().next().getValue().keySet());
+
+        if (locations.size() == 0) {
+            continue;
+        }
 %>
 
-<%
-    for(Map.Entry<String, ApplicationStatus> entry : statusMap.entrySet()) {
-%>
-    <div class="card">
-        <div class="card-header">
-            <span><%= WebSecurityUtils.sanitizeString(entry.getKey()) %></span>
-        </div>
-        <table class="table table-sm severity">
-            <thead>
-                <th>Location</th>
-                <th>Availability (24h)</th>
-            </thead>
-
-            <%
-                for(Location location : entry.getValue().getLocations()) {
-                    String availClass = "normal";
-
-                    if (location.getAggregatedStatus() < 100.0) {
-                        availClass = "warning";
-                    }
-
-                    if (location.getAggregatedStatus() < 90.0) {
-                        availClass = "critical";
-                    }
-                %>
-                <tbody>
-                    <tr>
-                        <td class="bright"><%= location.getName() %></td>
-                        <td width="30%" class="bright severity-<%=availClass%> divider" align="right"><%= CategoryUtil.formatValue(location.getAggregatedStatus()) %>%</td>
-                    </tr>
-                </tbody>
-                <%
-                }
-                %>
-        </table>
+<div class="card">
+    <div class="card-header">
+        <span><%= WebSecurityUtils.sanitizeString(entry.getKey()) %></span>
     </div>
+    <div class="container-fluid">
+        <div class="row flex-nowrap">
+            <div class="col-sm-4">
+                <table class="table table-sm severity">
+                    <tr>
+                        <th>Node</th>
+                        <th>Interface</th>
+                        <th>Service</th>
+                    </tr>
+                    <%
+                        for(final Map.Entry<OnmsMonitoredService, Map<String, Double>> serviceEntry : statuses.entrySet()) {
+                    %>
+                    <tr>
+                        <td><%= WebSecurityUtils.sanitizeString(serviceEntry.getKey().getIpInterface().getNode().getLabel()) %></td>
+                        <td><%= WebSecurityUtils.sanitizeString(serviceEntry.getKey().getIpAddressAsString()) %></td>
+                        <td><%= WebSecurityUtils.sanitizeString(serviceEntry.getKey().getServiceName()) %></td>
+                    </tr>
+                    <%
+                        }
+                    %>
+                    <tr>
+                        <th colspan="3">Overall availability</th>
+                    </tr>
+                </table>
+            </div>
 
-        <%
+            <div class="col-sm-8 scrollable">
+                <table class="table table-sm severity">
+                    <tr>
+                        <%
+                            for(final String location : locations) {
+                        %>
+                        <th><%= WebSecurityUtils.sanitizeString(location) %></th>
+                        <%
+                            }
+                        %>
+                    </tr>
+                    <%
+                        for(final Map.Entry<OnmsMonitoredService, Map<String, Double>> serviceEntry : statuses.entrySet()) {
+                    %>
+                    <tr>
+                        <%
+                            for(final Map.Entry<String, Double> status : serviceEntry.getValue().entrySet()) {
+                                final Double value = status.getValue();
+                                String availClass = "normal";
+                                if (value < 100.0) {
+                                    availClass = "warning";
+                                }
+                                if (value < 90.0) {
+                                    availClass = "critical";
+                                }
+                        %>
+                        <td class="bright severity-<%= availClass %> divider" align="right"><%= CategoryUtil.formatValue(value) %>%</td>
+                        <%
+                            }
+                        %>
+                    </tr>
+                    <%
+                        }
+                    %>
+                    <tr>
+                        <%
+                            final ApplicationStatus applicationStatus = networkElementFactory.getApplicationStatus(entry.getValue(), start, end);
+                            for(final String locationName : locations) {
+                                final Location location = applicationStatus.getLocation(locationName);
+                                final Double value = location.getAggregatedStatus();
+
+                                String availClass = "normal";
+
+                                if (value < 100.0) {
+                                    availClass = "warning";
+                                }
+
+                                if (value < 90.0) {
+                                    availClass = "critical";
+                                }
+                        %>
+                        <td class="bright severity-<%= availClass %> divider" align="right"><%= CategoryUtil.formatValue(value) %>%</td>
+                        <%
+                            }
+                        %>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<%
     }
 %>
 

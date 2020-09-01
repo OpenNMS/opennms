@@ -83,6 +83,13 @@ public class ApplicationStatus {
         return locations;
     }
 
+    public Location getLocation(final String location) {
+        return locations.stream()
+                .filter(e -> location.equals(e.getName()))
+                .findFirst()
+                .orElse(null);
+    }
+
     public void setLocations(List<Location> locations) {
         this.locations = locations;
     }

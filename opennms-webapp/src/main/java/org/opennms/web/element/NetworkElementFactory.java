@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
@@ -80,7 +81,9 @@ import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.remotepolling.ApplicationServiceStatus;
 import org.opennms.netmgt.model.remotepolling.ApplicationStatus;
+import org.opennms.netmgt.model.remotepolling.Location;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
@@ -1031,5 +1034,36 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                 start,
                 end
         );
+    }
+
+    @Override
+    public Map<OnmsMonitoredService, Map<String, Double>> getApplicationServiceStatus(final OnmsApplication onmsApplication, final long start, final long end) {
+        final Map<String, OnmsMonitoredService> serviceMap = new TreeMap<>();
+        for(final OnmsMonitoredService svc : onmsApplication.getMonitoredServices()) {
+            serviceMap.put(svc.getIpAddressAsString() + " / " + svc.getServiceName(), svc);
+        }
+
+        final Map<OnmsMonitoredService, Map<String, Double>> status = new TreeMap<>();
+
+        for(final Map.Entry<String, OnmsMonitoredService> serviceMapEntry : serviceMap.entrySet()) {
+            final Map<String, Double> serviceStatus = new TreeMap<>();
+
+            ApplicationServiceStatus applicationServiceStatus = ApplicationStatusUtil.buildApplicationServiceStatus(
+                    m_monSvcDao,
+                    onmsApplication,
+                    serviceMapEntry.getValue().getId(),
+                    m_outageDao.getStatusChangesForApplicationIdBetween(new Date(start), new Date(end), onmsApplication.getId()),
+                    start,
+                    end
+            );
+
+            for(final Location location : applicationServiceStatus.getLocations()) {
+                serviceStatus.put(location.getName(), location.getAggregatedStatus());
+            }
+
+            status.put(serviceMapEntry.getValue(), serviceStatus);
+        }
+
+        return status;
     }
 }
