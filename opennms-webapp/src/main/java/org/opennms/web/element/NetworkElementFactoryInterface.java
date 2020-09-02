@@ -462,7 +462,7 @@ public interface NetworkElementFactoryInterface {
 	List<String> getCategories();
 
 	/**
-	 * Return all current open outages for the given service be it detected from local or from remote (perspective).
+	 * Return all current open outages for the given service be it detected from local or from perspective.
 	 */
 	Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service);
 }

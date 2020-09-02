@@ -82,7 +82,7 @@ public class DroolsCorrelationEngineBuilderIT implements InitializingBean {
         assertTrue(m_mockCorrelator.findEngineByName("locationMonitorRules") instanceof DroolsCorrelationEngine);
         DroolsCorrelationEngine engine = (DroolsCorrelationEngine) m_mockCorrelator.findEngineByName("locationMonitorRules");
         assertEquals(2, engine.getInterestingEvents().size());
-        assertTrue(engine.getInterestingEvents().contains(EventConstants.REMOTE_NODE_LOST_SERVICE_UEI));
-        assertTrue(engine.getInterestingEvents().contains(EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI));
+        assertTrue(engine.getInterestingEvents().contains(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI));
+        assertTrue(engine.getInterestingEvents().contains(EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI));
     }
 }

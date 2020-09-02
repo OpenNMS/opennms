@@ -177,7 +177,7 @@
     <module>jest</module>
     <module>dnsresolver</module>
     <module>karaf-health</module>
-    <module>remotepollerng</module>
+    <module>perspectivepoller</module>
     <module>openconfig</module>
   </modules>
 </project>

@@ -559,7 +559,7 @@ public class Poller extends AbstractServiceDaemon {
     }
 
     public boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
-        if (pkg.getRemoteOnly()) {
+        if (pkg.getPerspectiveOnly()) {
             return false;
         }
 
