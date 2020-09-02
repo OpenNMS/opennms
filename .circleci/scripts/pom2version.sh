@@ -22,7 +22,7 @@ fi
 
 # fall back to python XML parsing
 if [ -n "${PYTHON}" ] && [ -x "${PYTHON}" ]; then
-  "${PYTHON}" "${MYDIR}/../../opennms-container/pom2version.py" "${POMFILE}"
+  "${PYTHON}" "${MYDIR}/../../opennms-container/pom2version.py" "${POMFILE}" 2>/dev/null && exit 0
 fi
 
 # last resort, parse with shell
