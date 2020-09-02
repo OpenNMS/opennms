@@ -96,11 +96,11 @@ public abstract class CorrelationRulesTestCase {
     	return createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, nodeId, ipAddr, svcName, locationMonitor);
     }
 
-    protected Event createRemoteNodeLostServiceEvent(int nodeId, String ipAddr, String svcName, int locationMonitor) {
+    protected Event createPerspectiveNodeLostServiceEvent(int nodeId, String ipAddr, String svcName, int locationMonitor) {
     	return createEvent(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, nodeId, ipAddr, svcName, locationMonitor);
     }
 
-    protected Event createRemoteNodeRegainedServiceEvent(int nodeId, String ipAddr, String svcName, int locationMonitor) {
+    protected Event createPerspectiveNodeRegainedServiceEvent(int nodeId, String ipAddr, String svcName, int locationMonitor) {
     	return createEvent(EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI, nodeId, ipAddr, svcName, locationMonitor);
     }
 
