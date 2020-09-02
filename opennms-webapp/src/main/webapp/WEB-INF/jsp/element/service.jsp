@@ -256,6 +256,46 @@ function doDelete() {
               </c:choose>
             </table>
             </div>
+
+            <!-- Availability box -->
+            <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
+
+            <!-- Perspective status Box -->
+            <%
+              ServiceJspUtil util = new ServiceJspUtil(service, outages);
+              if (!util.getAllPerspectives().isEmpty()) {
+            %>
+            <div class="card">
+              <div class="card-header"><span>Application Perspective Monitoring</span></div>
+              <table class="table table-sm severity">
+                <tr>
+                  <th>Perspective</th>
+                  <th>Polling Status</th>
+                  <th>Outage ID</th>
+                </tr>
+                <%
+                  for(OnmsMonitoringLocation location : util.getAllPerspectives()) {
+                      Optional<OnmsOutage> outage = util.getOutageForPerspective(location);
+                %>
+                <% if(outage.isPresent()) { %>
+                <tr class="severity-Critical">
+                <% } else { %>
+                <tr class="severity-Cleared">
+                <% } %>
+                  <td class="divider"><%=location.getLocationName()%></td>
+                  <td class="divider bright"><%=outage.isPresent() ? "<b>DOWN</b>" : "UP"%></td>
+                  <td class="divider"><%=outage.isPresent() ? util.getOutageUrl(outage.get()) : ""%></td>
+                </tr>
+                <% } %>
+              </table>
+            </div>
+            <% } %>
+
+            <jsp:include page="/includes/serviceApplication-box.htm" flush="false" />
+
+      </div> <!-- content-left" -->
+
+      <div class="col-md-6">
             <!-- patterns variables box -->
             <c:if test="${patternVariables != null}">
               <div class="card">
@@ -300,14 +340,6 @@ function doDelete() {
               </c:forEach>
             </c:if>
 
-            <!-- Availability box -->
-            <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
-            
-            <jsp:include page="/includes/serviceApplication-box.htm" flush="false" />
-            
-      </div> <!-- content-left" -->
-
-      <div class="col-md-6">
             <!-- events list box -->
             <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="${service.ipInterface.node.id}" />
@@ -320,29 +352,7 @@ function doDelete() {
       
             <!-- Recent outages box -->
             <jsp:include page="/outage/serviceOutages-box.htm" flush="false" />
-
-          <div class="card">
-              <div class="card-header"><span>Application Perspective Monitoring</span></div>
-              <table class="table table-sm">
-                  <tr>
-                      <th>Perspective</th>
-                      <th>Polling Status</th>
-                      <th>Outage ID</th>
-                  </tr>
-                  <% ServiceJspUtil util = new ServiceJspUtil(service, outages);
-                      for(OnmsMonitoringLocation location : util.getAllPerspectives()) {
-                          Optional<OnmsOutage> outage = util.getOutageForPerspective(location);
-                  %>
-                  <tr>
-                      <td><%=location.getLocationName()%></td>
-                      <td><%=outage.isPresent() ? "DOWN" : "UP"%></td>
-                      <td><%=outage.isPresent() ? util.getOutageUrl(outage.get()) : ""%></td>
-                  </tr>
-                  <% } %>
-              </table>
-
-
-          </div> <!-- content-right -->
+      </div> <!-- content-right -->
 </div>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
