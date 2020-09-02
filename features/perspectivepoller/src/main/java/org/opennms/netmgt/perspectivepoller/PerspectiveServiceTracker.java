@@ -241,13 +241,21 @@ public class PerspectiveServiceTracker implements DisposableBean {
                 final Set<ServicePerspectiveRef> removals = Sets.difference(current, candidates.keySet());
 
                 for (final ServicePerspectiveRef servicePerspective : additions) {
-                    this.active.add(servicePerspective);
-                    this.listener.onServicePerspectiveAdded(servicePerspective, candidates.get(servicePerspective));
+                    try {
+                        this.listener.onServicePerspectiveAdded(servicePerspective, candidates.get(servicePerspective));
+                        this.active.add(servicePerspective);
+                    } catch (final Exception e) {
+                        LOG.error("Adding service failed", e);
+                    }
                 }
 
                 for (final ServicePerspectiveRef servicePerspective : removals) {
-                    this.active.remove(servicePerspective);
-                    this.listener.onServicePerspectiveRemoved(servicePerspective);
+                    try {
+                        this.listener.onServicePerspectiveRemoved(servicePerspective);
+                        this.active.remove(servicePerspective);
+                    } catch (final Exception e) {
+                        LOG.error("Adding service failed", e);
+                    }
                 }
             });
 
