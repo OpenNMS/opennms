@@ -35,24 +35,13 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public class ServicePerspective {
-    private OnmsApplication application;
     private OnmsMonitoredService service;
     private OnmsMonitoringLocation perspectiveLocation;
 
-    public ServicePerspective(final OnmsApplication application,
-                              final OnmsMonitoredService service,
+    public ServicePerspective(final OnmsMonitoredService service,
                               final OnmsMonitoringLocation perspectiveLocation) {
-        this.application = Objects.requireNonNull(application);
         this.service = Objects.requireNonNull(service);
         this.perspectiveLocation = Objects.requireNonNull(perspectiveLocation);
-    }
-
-    public OnmsApplication getApplication() {
-        return this.application;
-    }
-
-    public void setApplication(final OnmsApplication application) {
-        this.application = Objects.requireNonNull(application);
     }
 
     public OnmsMonitoredService getService() {
@@ -80,13 +69,12 @@ public class ServicePerspective {
             return false;
         }
         final ServicePerspective that = (ServicePerspective) o;
-        return Objects.equals(this.application, that.application) &&
-               Objects.equals(this.service, that.service) &&
+        return Objects.equals(this.service, that.service) &&
                Objects.equals(this.perspectiveLocation, that.perspectiveLocation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.application, this.service, this.perspectiveLocation);
+        return Objects.hash(this.service, this.perspectiveLocation);
     }
 }

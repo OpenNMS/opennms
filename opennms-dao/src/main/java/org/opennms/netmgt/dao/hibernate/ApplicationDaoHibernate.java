@@ -163,7 +163,7 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 	@Override
 	public List<ServicePerspective> getServicePerspectives() {
 		return this.findObjects(ServicePerspective.class,
-						 "select distinct new org.opennms.netmgt.dao.api.ServicePerspective(application, service, perspectiveLocation) " +
+						 "select distinct new org.opennms.netmgt.dao.api.ServicePerspective(service, perspectiveLocation) " +
 						 "from OnmsApplication as application " +
 						 "inner join application.monitoredServices as service " +
 						 "inner join application.perspectiveLocations as perspectiveLocation");

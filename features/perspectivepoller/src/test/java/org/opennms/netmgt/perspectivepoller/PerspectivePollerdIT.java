@@ -238,8 +238,6 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
                 tracker
         );
         new AnnotationBasedEventListenerAdapter(this.perspectivePollerd, eventIpcManager);
-
-        this.perspectivePollerd.start();
     }
 
     @After
@@ -247,14 +245,10 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         this.perspectivePollerd.destroy();
     }
 
-    private void sendReloadPerspectivePollerdEvent() {
-        this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test")
-                                                 .addParam(EventConstants.PARM_DAEMON_NAME, PerspectivePollerd.NAME)
-                                                 .getEvent());
-    }
-
     @Test
     public void reportResultTest() throws Exception {
+        this.perspectivePollerd.start();
+
         final Package pkg = PollerConfigFactory.getInstance().getPackage("foo1");
         final Package.ServiceMatch serviceMatch = pkg.findService("ICMP").get();
         final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
@@ -304,6 +298,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
     @Test
     public void testCloseOutageOnUnschedule() throws Exception {
+        this.perspectivePollerd.start();
+
         final Package pkg = PollerConfigFactory.getInstance().getPackage("foo1");
         final Package.ServiceMatch serviceMatch = pkg.findService("ICMP").get();
         final ServiceMonitor svcMon = PollerConfigFactory.getInstance().getServiceMonitor("ICMP");
@@ -329,6 +325,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
     @Test
     public void testDaemonReload() throws Exception {
+        this.perspectivePollerd.start();
+
         // Initial config, ICMP and SNMP bound to single package
         Assert.assertEquals(8, this.perspectivePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size());
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU").getPkg().getName(), is("foo1"));
@@ -340,7 +338,10 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
         // New config, package ICMP and SNMP bound to two different packages
         PollerConfigFactory.setPollerConfigFile(POLLER_CONFIG_2);
-        sendReloadPerspectivePollerdEvent();
+        this.eventIpcManager.sendNowSync(new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test")
+                                                 .addParam(EventConstants.PARM_DAEMON_NAME, PerspectivePollerd.NAME)
+                                                 .getEvent());
+
         await().atMost(5, TimeUnit.SECONDS).until(() -> this.perspectivePollerd.scheduler.getJobKeys(GroupMatcher.anyGroup()).size(), is(8));
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU").getPkg().getName(), is("foo1"));
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda").getPkg().getName(), is("foo1"));
@@ -352,6 +353,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
     @Test
     public void testAddService() throws Exception {
+        this.perspectivePollerd.start();
+
         final NetworkBuilder builder = new NetworkBuilder();
 
         // Add service with application
@@ -406,6 +409,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
     @Test
     public void testRemoveService() throws Exception {
+        this.perspectivePollerd.start();
+
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
 
@@ -427,6 +432,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
     @Test
     public void testRemoveInterface() throws Exception {
+        this.perspectivePollerd.start();
+
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1snmp, "RDU"), is(notNullValue()));
@@ -449,6 +456,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
     @Test
     public void testRemoveNode() throws Exception {
+        this.perspectivePollerd.start();
+
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "Fulda"), is(notNullValue()));
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1snmp, "RDU"), is(notNullValue()));
@@ -471,6 +480,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
     @Test
     public void testApplicationAdded() throws Exception {
+        this.perspectivePollerd.start();
+
         final OnmsMonitoredService node3icmp = this.databasePopulator.getNode3().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
         final OnmsMonitoredService node4icmp = this.databasePopulator.getNode4().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
 
@@ -507,6 +518,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
     @Test
     public void testApplicationChanged() throws Exception {
+        this.perspectivePollerd.start();
+
         final OnmsMonitoredService node3icmp = this.databasePopulator.getNode3().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
         final OnmsMonitoredService node4icmp = this.databasePopulator.getNode4().getPrimaryInterface().getMonitoredServiceByServiceType("ICMP");
 
@@ -546,6 +559,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
     @Test
     public void testApplicationRemoved() throws Exception {
+        this.perspectivePollerd.start();
+
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node1icmp, "RDU"), is(notNullValue()));
         await().atMost(5, TimeUnit.SECONDS).until(() -> findPerspectivePolledService(this.node2icmp, "RDU"), is(notNullValue()));
 
@@ -566,6 +581,8 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
 
     @Test
     public void testPerspectivePollerThresholding() throws Exception {
+        this.perspectivePollerd.start();
+
         // this will return 192.168.1.1 for each call for active IPs
         final FilterDao filterDao = EasyMock.createMock(FilterDao.class);
         EasyMock.expect(filterDao.getActiveIPAddressList((String) EasyMock.anyObject())).andReturn(Collections.singletonList(addr("192.168.1.1"))).anyTimes();
@@ -596,6 +613,77 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
         this.perspectivePollerd.persistResponseTimeData(perspectivePolledService, pollStatus);
 
         this.eventIpcManager.getEventAnticipator().verifyAnticipated();
+    }
+
+    @Test
+    public void testStartWithEmptyApp() throws Exception {
+        this.databasePopulator.getTransactionTemplate().execute(tx -> {
+            final OnmsApplication app = new OnmsApplication();
+            app.setName("App Empty");
+            this.databasePopulator.getApplicationDao().save(app);
+
+            return null;
+        });
+
+        this.perspectivePollerd.start();
+    }
+
+    @Test
+    public void testStartWithLocationOnlyApp() throws Exception {
+        this.databasePopulator.getTransactionTemplate().execute(tx -> {
+            final OnmsApplication app = new OnmsApplication();
+            app.setName("App Empty");
+            app.addPerspectiveLocation(this.databasePopulator.getLocRDU());
+            this.databasePopulator.getApplicationDao().save(app);
+
+            return null;
+        });
+
+        this.perspectivePollerd.start();
+    }
+
+    @Test
+    public void testStartWithServiceOnlyApp() throws Exception {
+        this.databasePopulator.getTransactionTemplate().execute(tx -> {
+            final OnmsApplication app = new OnmsApplication();
+            app.setName("App Empty");
+            app.addMonitoredService(this.node1icmp);
+            this.databasePopulator.getApplicationDao().save(app);
+
+            this.node1icmp.addApplication(app);
+            this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(this.node1icmp);
+
+            return null;
+        });
+
+        this.perspectivePollerd.start();
+    }
+
+    @Test
+    public void testStartWithDuplicatedService() throws Exception {
+        this.databasePopulator.getTransactionTemplate().execute(tx -> {
+            final OnmsApplication appA = new OnmsApplication();
+            appA.setName("App A");
+            appA.addPerspectiveLocation(this.databasePopulator.getLocRDU());
+            appA.addMonitoredService(this.node1icmp);
+            this.databasePopulator.getApplicationDao().saveOrUpdate(appA);
+
+            this.node1icmp.addApplication(appA);
+            this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(this.node1icmp);
+
+            final OnmsApplication appB = new OnmsApplication();
+            appB.setName("App B");
+            appB.addPerspectiveLocation(this.databasePopulator.getLocRDU());
+            appB.addMonitoredService(this.node1icmp);
+            this.databasePopulator.getApplicationDao().saveOrUpdate(appB);
+
+            this.node1icmp.addApplication(appB);
+            this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(this.node1icmp);
+
+            return null;
+        });
+
+        this.perspectivePollerd.start();
     }
 
     private PerspectivePolledService findPerspectivePolledService(final OnmsMonitoredService monSvc, final String locationName) throws Exception {
