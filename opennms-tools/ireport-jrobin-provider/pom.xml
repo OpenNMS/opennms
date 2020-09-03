@@ -4,7 +4,7 @@
   <groupId>org.opennms.jasper</groupId>
   <artifactId>jrobin-provider</artifactId>
   <packaging>jar</packaging>
-  <version>26.2.1-SNAPSHOT</version>
+  <version>26.2.1</version>
   <name>JRobin iReport Fields Provider</name>
   <build>
     <pluginManagement>
