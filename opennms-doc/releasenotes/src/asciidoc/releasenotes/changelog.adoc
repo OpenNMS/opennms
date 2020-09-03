@@ -2,6 +2,17 @@
 
 === Changelog
 
+[releasenotes-changelog-26.2.1]
+
+==== Release 26.2.1
+
+Release 26.2.1 is the eighth release in the Horizon 26 series.
+
+It is a re-roll of 26.2.0 with some missing merges fixed.
+The bugs and enhancements that were reported as part of 26.2.0 are now actually all there.  ;)
+
+The codename for 26.2.1 is _link:$$https://www.cnn.com/2020/06/25/health/maskne-acne-covid-masks-wellness/index.html$$[Maskne]_.
+
 [releasenotes-changelog-26.2.0]
 
 ==== Release 26.2.0

@@ -1,3 +1,13 @@
+opennms-minion (26.2.1-1) stable; urgency=low
+
+  * New minor release.  It contains all of the fixes reportedly in 26.2.0,
+    some of which were missing because of a bugfix branch merge error.
+    
+    For details on what has changed, see:
+    https://docs.opennms.org/opennms/releases/26.2.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 03 Sep 2020 10:51:00 -0400
+
 opennms-minion (26.2.0-1) stable; urgency=low
 
   * New release.  It contains a bunch of bug fixes and improvements, including
@@ -7,7 +17,7 @@ opennms-minion (26.2.0-1) stable; urgency=low
     For details on what has changed, see:
     https://docs.opennms.org/opennms/releases/26.2.0/releasenotes/releasenotes.html
 
- -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 04 Aug 2020 20:14:00 -0400
+ -- OpenNMS Release Manager <opennms@opennms.org>  Wed, 02 Sep 2020 10:23:00 -0400
 
 opennms-minion (26.1.3-2) stable; urgency=low
 
