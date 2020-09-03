@@ -629,6 +629,37 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
     }
 
     @Test
+    public void testStartWithLocationOnlyApp() throws Exception {
+        this.databasePopulator.getTransactionTemplate().execute(tx -> {
+            final OnmsApplication app = new OnmsApplication();
+            app.setName("App Empty");
+            app.addPerspectiveLocation(this.databasePopulator.getLocRDU());
+            this.databasePopulator.getApplicationDao().save(app);
+
+            return null;
+        });
+
+        this.perspectivePollerd.start();
+    }
+
+    @Test
+    public void testStartWithServiceOnlyApp() throws Exception {
+        this.databasePopulator.getTransactionTemplate().execute(tx -> {
+            final OnmsApplication app = new OnmsApplication();
+            app.setName("App Empty");
+            app.addMonitoredService(this.node1icmp);
+            this.databasePopulator.getApplicationDao().save(app);
+
+            this.node1icmp.addApplication(app);
+            this.databasePopulator.getMonitoredServiceDao().saveOrUpdate(this.node1icmp);
+
+            return null;
+        });
+
+        this.perspectivePollerd.start();
+    }
+
+    @Test
     public void testStartWithDuplicatedService() throws Exception {
         this.databasePopulator.getTransactionTemplate().execute(tx -> {
             final OnmsApplication appA = new OnmsApplication();
