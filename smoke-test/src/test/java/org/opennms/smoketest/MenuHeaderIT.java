@@ -80,7 +80,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         findElementByXpath("//div[@class='card-header']/span[text()='Outage Menu']");
 
         clickMenuItem("Status", "Application", "application/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Application Status']");
+        findElementByXpath("//li[text()='Application Status']");
 
         clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
         // switchTo() by xpath is much faster than by ID

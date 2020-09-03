@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.support.builder.PerspectiveResponseTimeResource;
@@ -142,6 +143,11 @@ public class ApplicationStatusUtil {
         applicationStatus.setStart(start);
         applicationStatus.setEnd(end);
         applicationStatus.setApplicationId(onmsApplication.getId());
+        applicationStatus.setOverallStatus(100.0 * calculateApplicationPercentageUptime(
+                m.values().stream()
+                    .flatMap(e -> e.stream())
+                    .collect(Collectors.toList()), start, end)
+        );
 
         for (final OnmsMonitoringLocation onmsMonitoringLocation : onmsApplication.getPerspectiveLocations()) {
             final Location location = new Location();

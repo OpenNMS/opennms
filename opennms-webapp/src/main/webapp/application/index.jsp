@@ -91,6 +91,8 @@
         if (locations.size() == 0) {
             continue;
         }
+
+        final ApplicationStatus applicationStatus = networkElementFactory.getApplicationStatus(entry.getValue(), start, end);
 %>
 
 <div class="card">
@@ -100,7 +102,18 @@
                 <td width="100%">
                     <h4 style="margin-bottom: 0"><%= WebSecurityUtils.sanitizeString(entry.getKey()) %></h4>
                 </td>
-                <td class="bright severity-Critical divider" align="right">9000%</td>
+                <%
+                    final Double overallValue = applicationStatus.getOverallStatus();
+
+                    String overallAvailClass = "normal";
+                    if (overallValue < 100.0) {
+                        overallAvailClass = "warning";
+                    }
+                    if (overallValue < 90.0) {
+                        overallAvailClass = "critical";
+                    }
+                %>
+                <td class="bright severity-<%= overallAvailClass %> divider" align="right"><%= CategoryUtil.formatValue(overallValue)  %></td>
             </tr>
         </table>
     </div>
@@ -167,7 +180,6 @@
             %>
             <tr>
                 <%
-                    final ApplicationStatus applicationStatus = networkElementFactory.getApplicationStatus(entry.getValue(), start, end);
                     for(final String locationName : locations) {
                         final Location location = applicationStatus.getLocation(locationName);
                         final Double value = location.getAggregatedStatus();
