@@ -49,7 +49,7 @@ COPY ./container-fs/confd/ /opt/minion/confd/
 RUN chmod +x /opt/minion/confd/scripts/*
 
 # Create SSH Key-Pair to use with the Karaf Shell
-# This is a workaround to be able to use our health:check which does not work with the karaf/bin/client command
+# This is a workaround to be able to use our opennms:health-check which does not work with the karaf/bin/client command
 RUN mkdir /opt/minion/.ssh && \
     ssh-keygen -t rsa -f /opt/minion/.ssh/id_rsa -q -N "" && \
     chmod 700 /opt/minion/.ssh && \

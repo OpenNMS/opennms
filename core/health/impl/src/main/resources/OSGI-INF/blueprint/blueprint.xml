@@ -16,7 +16,7 @@
     <cm:property-placeholder persistent-id="org.opennms.core.health.cfg">
         <cm:default-properties>
             <!--
-                A list of symbolic names which should be ignored while performing the health:check.
+                A list of symbolic names which should be ignored while performing the opennms:health-check.
                 A common candidate i.e. is the nominatim geocoder plugin
             -->
             <cm:property name="ignoreBundleList" value="org.opennms.features.geocoder.nominatim,org.apache.karaf.diagnostic.boot,io.hawt.hawtio-karaf-terminal"/>
