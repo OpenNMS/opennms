@@ -518,15 +518,31 @@ workflows:
       - horizon-rpm-build:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - minion-rpm-build:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - sentinel-rpm-build:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - integration-test:
           requires:
             - build
+          filters:
+            branches:
+              ignore:
+                - /^merge-foundation.*/
       - smoke-test-full:
           requires:
             - horizon-rpm-build
@@ -554,6 +570,7 @@ workflows:
                 - /^master-.*/
                 - /^release-.*/
                 - /^foundation.*/
+                - /^merge-foundation.*/
                 - /^features.*/
                 - /.*smoke.*/
                 - /^dependabot.*/
@@ -588,7 +605,6 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
-                - /^merge-foundation\/.*/
                 - /.*smoke.*/
                 - /.*debian.*/
       - minion-deb-build:
@@ -602,7 +618,6 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
-                - /^merge-foundation\/.*/
                 - /.*smoke.*/
                 - /.*debian.*/
       - sentinel-deb-build:
@@ -616,7 +631,6 @@ workflows:
                 - /^release-.*/
                 - /^foundation.*/
                 - /^features.*/
-                - /^merge-foundation\/.*/
                 - /.*smoke.*/
                 - /.*debian.*/
       - create-merge-foundation-branch:
@@ -636,12 +650,7 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - horizon-deb-build
-            - minion-deb-build
-            - sentinel-deb-build
-            - smoke-test-minimal
-            - smoke-test-full
-            - integration-test
+            - tarball-assembly
           filters:
             branches:
               only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
