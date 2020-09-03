@@ -50,7 +50,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Path("remotepoller")
+@Path("perspectivepoller")
 @Transactional
 public class ApplicationStatusRestService {
 

@@ -354,8 +354,8 @@
         <p><b>Configure thresholds</b>: Allows you to add, remove, or modify thresholds.</p>
 
 
-        <p><b>Manage Applications</b> and <b>Manage Remote Pollers</b>: Configure and administer 
-        the operation of remote pollers that report back to this OpenNMS server to provide distributed
+        <p><b>Manage Applications</b>: Configure and administer 
+        the operation of perspective pollers that report back to this OpenNMS server to provide distributed
         status information.
         </p>
 

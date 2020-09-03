@@ -684,7 +684,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         try {
             getReadLock().lock();
             for(final Package pkg : packages()) {
-                if (!pkg.getRemoteOnly() && isInterfaceInPackage(ipaddr, pkg)) {
+                if (!pkg.getPerspectiveOnly() && isInterfaceInPackage(ipaddr, pkg)) {
                     return pkg;
                 }
             }
@@ -747,7 +747,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         try {
             getReadLock().lock();
             for(final Package pkg : packages()) {
-                if (!pkg.getRemoteOnly() && isInterfaceInPackage(ipaddr, pkg)) {
+                if (!pkg.getPerspectiveOnly() && isInterfaceInPackage(ipaddr, pkg)) {
                     return true;
                 }
             }

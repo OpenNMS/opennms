@@ -52,7 +52,7 @@ public class RemotePollerServiceConfigMigratorOffline extends AbstractOnmsUpgrad
     private File configFile;
 
     public static final String DEPRECATED_REMOTE_POLLER_SERVICENAME = "OpenNMS:Name=PollerBackEnd";
-    public static final String REMOTE_POLLER_NG_SERVICENAME = "OpenNMS:Name=RemotePollerNG";
+    public static final String PERSPECTIVE_POLLER_SERVICENAME = "OpenNMS:Name=PerspectivePoller";
 
     public RemotePollerServiceConfigMigratorOffline() throws OnmsUpgradeException {
         super();
@@ -115,31 +115,31 @@ public class RemotePollerServiceConfigMigratorOffline extends AbstractOnmsUpgrad
                 final String name = localSvc.getName();
 
                 if (DEPRECATED_REMOTE_POLLER_SERVICENAME.equals(name)) {
-                    // Perhaps the administrator has intentionally disabled it, so RemotePollerNg should only be
+                    // Perhaps the administrator has intentionally disabled it, so PerspectivePoller should only be
                     // enabled if deprecated RemotePoller was enabled. If no entry was found this value defaults to true.
                     deprecatedServiceEnabled = localSvc.isEnabled();
 
-                    // remote the entry from the configuration
+                    // remove the entry from the configuration
                     currentCfg.getServices().remove(i);
                     log("Removing deprecated '%s' entry\n", DEPRECATED_REMOTE_POLLER_SERVICENAME);
                 }
 
 
-                if (REMOTE_POLLER_NG_SERVICENAME.equals(name)) {
-                    // if a existing RemotePollerNg entry exists, do not touch it's configuration
+                if (PERSPECTIVE_POLLER_SERVICENAME.equals(name)) {
+                    // if a existing PerspectivePoller entry exists, do not touch it's configuration
                     skipRemovePollerNgEntryCreation = true;
                 }
             }
 
             if (skipRemovePollerNgEntryCreation) {
-                log("A service entry named '%s' already exists.\n", REMOTE_POLLER_NG_SERVICENAME);
+                log("A service entry named '%s' already exists.\n", PERSPECTIVE_POLLER_SERVICENAME);
             } else {
                 final Service service = new Service();
                 service.setEnabled(deprecatedServiceEnabled);
-                service.setName(REMOTE_POLLER_NG_SERVICENAME);
+                service.setName(PERSPECTIVE_POLLER_SERVICENAME);
                 service.setClassName("org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon");
-                service.getAttributes().add(new Attribute("LoggingPrefix", "java.lang.String", "remotepollerd"));
-                service.getAttributes().add(new Attribute("SpringContext", "java.lang.String", "remotepollerdContext"));
+                service.getAttributes().add(new Attribute("LoggingPrefix", "java.lang.String", "perspectivepollerd"));
+                service.getAttributes().add(new Attribute("SpringContext", "java.lang.String", "perspectivepollerdContext"));
                 service.setInvokes(Lists.newArrayList(
                         new Invoke(InvokeAtType.START, 0, "init", Collections.emptyList()),
                         new Invoke(InvokeAtType.START, 1, "start", Collections.emptyList()),
@@ -147,7 +147,7 @@ public class RemotePollerServiceConfigMigratorOffline extends AbstractOnmsUpgrad
                         new Invoke(InvokeAtType.STOP, 0, "stop", Collections.emptyList())
                 ));
 
-                log("Adding new 'OpenNMS:Name=RemotePollerNG' entry\n");
+                log("Adding new 'OpenNMS:Name=PerspectivePoller' entry\n");
                 currentCfg.addService(service);
             }
 

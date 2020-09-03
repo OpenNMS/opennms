@@ -36,10 +36,10 @@
             java.util.*,
             org.opennms.web.element.*,
             org.opennms.core.utils.WebSecurityUtils,
-            org.opennms.netmgt.model.remotepolling.ApplicationStatus,
+            org.opennms.netmgt.model.perspectivepolling.ApplicationStatus,
             org.opennms.netmgt.model.OnmsApplication"
 %>
-<%@ page import="org.opennms.netmgt.model.remotepolling.Location" %>
+<%@ page import="org.opennms.netmgt.model.perspectivepolling.Location" %>
 <%@ page import="org.opennms.web.category.CategoryUtil" %>
 <%@ page import="org.opennms.netmgt.model.OnmsMonitoredService" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>

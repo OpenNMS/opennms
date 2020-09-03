@@ -43,9 +43,9 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.model.remotepolling.ApplicationServiceStatus;
-import org.opennms.netmgt.model.remotepolling.ApplicationStatus;
-import org.opennms.netmgt.model.remotepolling.Location;
+import org.opennms.netmgt.model.perspectivepolling.ApplicationServiceStatus;
+import org.opennms.netmgt.model.perspectivepolling.ApplicationStatus;
+import org.opennms.netmgt.model.perspectivepolling.Location;
 
 import com.google.common.base.MoreObjects;
 

@@ -66,17 +66,17 @@ public class Package implements Serializable {
     private String m_name;
 
     /**
-     * @deprecated Use {@link #m_remoteOnly} instead
+     * @deprecated Use {@link #m_PerspectiveOnly} instead
      */
     @Deprecated
     @XmlAttribute(name="remote")
     private Boolean m_remote;
 
     /**
-     * Flag representing whether this package is considered only for remote polling or should be used for native polling, too,
+     * Flag representing whether this package is considered only for perspective polling or should be used for native polling, too,
      */
-    @XmlAttribute(name="remote-only")
-    private Boolean m_remoteOnly;
+    @XmlAttribute(name="perspective-only")
+    private Boolean m_PerspectiveOnly;
 
     /**
      * A rule which addresses belonging to this package must pass. This
@@ -168,13 +168,13 @@ public class Package implements Serializable {
         m_remote = remote;
     }
 
-    public boolean getRemoteOnly() {
+    public boolean getPerspectiveOnly() {
         // Fallback to 'remote' attribute for backwards compatibility
-        return this.getRemote() || (this.m_remoteOnly != null && this.m_remoteOnly);
+        return this.getRemote() || (this.m_PerspectiveOnly != null && this.m_PerspectiveOnly);
     }
 
-    public void setRemoteOnly(Boolean remoteOnly) {
-        this.m_remoteOnly = remoteOnly;
+    public void setPerspectiveOnly(Boolean perspectiveOnly) {
+        this.m_PerspectiveOnly = perspectiveOnly;
     }
 
     /**

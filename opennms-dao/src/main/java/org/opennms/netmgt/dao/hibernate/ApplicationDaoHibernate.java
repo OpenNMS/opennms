@@ -165,7 +165,7 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 		return this.findObjects(ServicePerspective.class,
 						 "select distinct new org.opennms.netmgt.dao.api.ServicePerspective(application, service, perspectiveLocation) " +
 						 "from OnmsApplication as application " +
-						 "left join application.monitoredServices as service " +
-						 "left join application.perspectiveLocations as perspectiveLocation");
+						 "inner join application.monitoredServices as service " +
+						 "inner join application.perspectiveLocations as perspectiveLocation");
 	}
 }

@@ -2,8 +2,8 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-_{opennms-product-name}_ _Application Perspective Monitoring_ allows a user to monitor the availability of a set of services from several remote locations.
-These remote locations are called perspective locations in this context.
+_{opennms-product-name}_ _Application Perspective Monitoring_ allows a user to monitor the availability of a set of services from several locations.
+These locations are called perspective locations in this context.
 To configure _Application Perspective Monitoring_ a user has to define an application by associating a set of services and a set of perspectives from which to monitor these services with the application.
 
 .Application Perspective Monitoring operation
@@ -12,7 +12,7 @@ image::application-perspective-monitoring/apm-operation.png[]
 _Application Perspective Monitoring_ uses the Minion infrastructure to monitor a service's availability from these different perspectives.
 The service monitor configuration is looked up in the `poller-configuration.xml`.
 
-NOTE: Use the `remote-only` flag in the package definition to define packages that will be used *only* for _Application Perspective Monitoring_.
+NOTE: Use the `perspective-only` flag in the package definition to define packages that will be used *only* for _Application Perspective Monitoring_.
 
 When a service is not responsive an outage will be generated with the corresponding perspective.
 To configure _Application Perspective Monitoring_ you must first create an application.
@@ -28,11 +28,11 @@ In the lower section, users can define the perspective locations from which the 
 image::application-perspective-monitoring/configure-app.png[]
 
 After configuring the application, Minions at the perspective locations start to monitor the services associated with this application.
-The next link:#apm-remote-outages[figure] shows an HTTP outage noticed from all perspective locations and the _{opennms-product-name}_ poller daemon itself.
+The next link:#apm-perspective-outages[figure] shows an HTTP outage noticed from all perspective locations and the _{opennms-product-name}_ poller daemon itself.
 
-[[apm-remote-outages]]
-.Remote outages
-image::application-perspective-monitoring/remote-outages.png[]
+[[apm-perspective-outages]]
+.Perspective outages
+image::application-perspective-monitoring/perspective-outages.png[]
 
 The  *Perspective* column shows the perspective location from which a Minion has detected this outage.
 An empty *Perspective* column indicates that the normal process detected the outage: either the _{opennms-product-name}_ instance detected it in the default location or a Minion detected it in the corresponding node's location.

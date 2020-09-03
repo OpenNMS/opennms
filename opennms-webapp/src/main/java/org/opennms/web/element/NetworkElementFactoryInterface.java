@@ -38,7 +38,7 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.model.remotepolling.ApplicationStatus;
+import org.opennms.netmgt.model.perspectivepolling.ApplicationStatus;
 
 public interface NetworkElementFactoryInterface {
 
@@ -464,7 +464,7 @@ public interface NetworkElementFactoryInterface {
 	List<String> getCategories();
 
 	/**
-	 * Return all current open outages for the given service be it detected from local or from remote (perspective).
+	 * Return all current open outages for the given service be it detected from local or from perspective.
 	 */
 	Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service);
 

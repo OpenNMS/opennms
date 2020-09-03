@@ -73,7 +73,7 @@
     Enumeration<Package> en = pollerCfgFactory.enumeratePackage();
     while (en.hasMoreElements()) {
         Package pkg = en.nextElement();
-        if (!pkg.getRemoteOnly() &&
+        if (!pkg.getPerspectiveOnly() &&
             pollerCfgFactory.isServiceInPackageAndEnabled(serviceName, pkg) &&
             pollerCfgFactory.isInterfaceInPackage(ipAddr, pkg)) {
     lastPkg = pkg;
