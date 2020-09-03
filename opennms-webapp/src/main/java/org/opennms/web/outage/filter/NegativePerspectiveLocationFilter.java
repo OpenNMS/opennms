@@ -30,6 +30,7 @@ package org.opennms.web.outage.filter;
 
 import java.util.Objects;
 
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.filter.NotEqualsFilterNullAware;
 import org.opennms.web.filter.SQLType;
 import org.opennms.web.outage.OutageUtil;
@@ -43,13 +44,20 @@ public class NegativePerspectiveLocationFilter extends NotEqualsFilterNullAware 
 
     @Override
     public String getTextDescription() {
-        return ("perspective is not " + getValue());
+        if (getValue() != null) {
+            return String.format("polling perspective is not %s", getValue());
+        } else {
+            return ("from non-perspective polling");
+        }
     }
 
     @Override
     public String getTextDescriptionAsSanitizedHtml() {
-        String perspectiveString = OutageUtil.getPerspectiveLabel(getValue());
-        return ("perspective is not " + perspectiveString);
+        if (getValue() != null) {
+            return String.format("polling perspective is not %s", WebSecurityUtils.sanitizeString(getValue()));
+        } else {
+            return ("from perspective polling");
+        }
     }
 
     @Override
