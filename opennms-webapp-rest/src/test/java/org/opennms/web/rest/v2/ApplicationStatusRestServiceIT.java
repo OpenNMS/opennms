@@ -215,6 +215,9 @@ public class ApplicationStatusRestServiceIT extends AbstractSpringJerseyRestTest
                 object.getJSONArray("location")
                         .getJSONObject(locationMap.get("Fulda"))
                         .getDouble("aggregated-status"), 0.00001);
+
+        Assert.assertEquals(25.0,
+                object.getDouble("overallStatus"), 0.00001);
     }
 
     private void checkApplicationService(int applicationId, int monitoredServiceId, double rduStatus, double fuldaStatus, String rduResourceId, String fuldaResourceId) throws Exception {

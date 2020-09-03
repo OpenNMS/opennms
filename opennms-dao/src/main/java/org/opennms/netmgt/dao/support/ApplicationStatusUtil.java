@@ -144,9 +144,11 @@ public class ApplicationStatusUtil {
         applicationStatus.setEnd(end);
         applicationStatus.setApplicationId(onmsApplication.getId());
         applicationStatus.setOverallStatus(100.0 * calculateApplicationPercentageUptime(
-                m.values().stream()
-                    .flatMap(e -> e.stream())
-                    .collect(Collectors.toList()), start, end)
+                mergeDowntimeIntervals(
+                        m.values().stream()
+                                .flatMap(e -> e.stream())
+                                .collect(Collectors.toList())
+                ), start, end)
         );
 
         for (final OnmsMonitoringLocation onmsMonitoringLocation : onmsApplication.getPerspectiveLocations()) {
