@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>vaadin-components</artifactId>
-        <version>26.1.4-SNAPSHOT</version>
+        <version>26.2.1-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features.vaadin-components</groupId>
     <artifactId>extender-service</artifactId>
