@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.application;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +44,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.search.GraphSearchService;
 import org.opennms.netmgt.graph.api.search.SearchCriteria;
+import org.opennms.netmgt.graph.api.search.SearchSuggestion;
 import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
 import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
 import org.slf4j.Logger;
@@ -81,17 +83,23 @@ public class LegacyApplicationSearchProvider extends AbstractSearchProvider impl
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer container) {
         LOG.info("ApplicationServiceSearchProvider->query: called with search query: '{}'", searchQuery);
 
-        // we skip the suggest phase since the old search doesn't distinguish between suggesting and searching.
+        // we combine the suggest and search phase since the old search doesn't distinguish between suggesting and searching.
+        // This is some ugly mapping here to marry the old and new world...
 
-        SearchCriteria searchCriteria = new SearchCriteria();
-        searchCriteria.setNamespace(ApplicationGraph.NAMESPACE);
-        // context shouldn't matter: searchCriteria.setContext();
-        searchCriteria.setCriteria(searchQuery.getQueryString());
-        List<GenericVertex> vertices = graphSearchService.search(searchCriteria);
+        List<SearchSuggestion> suggestions = graphSearchService.getSuggestions(ApplicationGraph.NAMESPACE, searchQuery.getQueryString());
+        List<GenericVertex> suggestedVertices = new ArrayList<>();
+
+        for (SearchSuggestion suggestion : suggestions) {
+            SearchCriteria searchCriteria = new SearchCriteria();
+            searchCriteria.setNamespace(ApplicationGraph.NAMESPACE);
+            // context shouldn't matter: searchCriteria.setContext();
+            searchCriteria.setCriteria(suggestion.getId());
+            searchCriteria.setProviderId(suggestion.getProvider());
+            suggestedVertices.addAll(graphSearchService.search(searchCriteria));
+        }
 
         List<SearchResult> results = Lists.newArrayList();
-
-        for (GenericVertex genericVertex : vertices) {
+        for (GenericVertex genericVertex : suggestedVertices) {
             ApplicationVertex applicationVertex = new ApplicationVertex(genericVertex);
             final LegacyApplicationVertex legacyApplicationVertex = new LegacyApplicationVertex(applicationVertex);
             SearchResult searchResult = new SearchResult(legacyApplicationVertex, true, false);
