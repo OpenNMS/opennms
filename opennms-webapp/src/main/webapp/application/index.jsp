@@ -76,7 +76,7 @@
     }
 
     final long end = new Date().getTime();
-    final long start = end - (24 * 60 * 60);
+    final long start = end - (24 * 60 * 60 * 1000);
 
     for(final Map.Entry<String, OnmsApplication> entry : applications.entrySet()) {
 
@@ -99,9 +99,6 @@
     <div class="card-header" style="padding: 0;">
         <table class="table table-sm severity">
             <tr>
-                <td width="100%">
-                    <h4 style="margin-bottom: 0"><%= WebSecurityUtils.sanitizeString(entry.getKey()) %></h4>
-                </td>
                 <%
                     final Double overallValue = applicationStatus.getOverallStatus();
 
@@ -113,7 +110,11 @@
                         overallAvailClass = "critical";
                     }
                 %>
-                <td class="bright severity-<%= overallAvailClass %> divider" align="right"><%= CategoryUtil.formatValue(overallValue)  %></td>
+                <td class="bright severity-<%= overallAvailClass %> divider" width="100%">
+                    <h4 style="margin-bottom: 0"><%= WebSecurityUtils.sanitizeString(entry.getKey()) %></h4>
+                </td>
+
+                <td class="severity-<%= overallAvailClass %>" align="right"><h4 style="margin-bottom: 0"><%= CategoryUtil.formatValue(overallValue)  %>%</h4></td>
             </tr>
         </table>
     </div>
