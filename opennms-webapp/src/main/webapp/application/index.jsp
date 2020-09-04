@@ -110,11 +110,9 @@
                         overallAvailClass = "critical";
                     }
                 %>
-                <td class="bright severity-<%= overallAvailClass %>" align="right"><h4 style="margin-bottom: 0"><%= CategoryUtil.formatValue(overallValue) %>%&nbsp;</h4></td>
+                <td class="bright severity-<%= overallAvailClass %>" align="right"><%= CategoryUtil.formatValue(overallValue) %>%&nbsp</td>
 
-                <td width="100%">
-                    <h4 style="margin-bottom: 0"><%= WebSecurityUtils.sanitizeString(entry.getKey()) %></h4>
-                </td>
+                <td width="100%"><%= WebSecurityUtils.sanitizeString(entry.getKey()) %></td>
             </tr>
         </table>
     </div>
