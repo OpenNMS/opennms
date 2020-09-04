@@ -13,7 +13,7 @@ It also includes an adapter API for interfacing with other management systems su
 
 #add very high-level provisioning information#
 
-For more details on how provisioning works in {opennms-product-name}, see the #provisioning white paper#.
+For more details on how provisioning works in {opennms-product-name}, see the provisioning white paper on the https://www.opennms.com/[Opennms website]. 
 
 ==== How It Works
 
@@ -21,5 +21,7 @@ Provisiond receives requests to add managed entities via two basic mechanisms: t
 
 IMPORTANT: An import requisition is an XML definition of node entities to be provisioned from a foreign source into {opennms-product-name}.
 See the http://xmlns.opennms.org/xsd/config/model-import[requisition schema] (XSD) for more information. 
+
+
 
 
