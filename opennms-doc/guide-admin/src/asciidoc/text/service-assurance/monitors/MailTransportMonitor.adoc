@@ -4,8 +4,8 @@
 
 ==== MailTransportMonitor
 
-MailTransportMonitor is used to run a synthetic test of a complete email transaction, including sending a mail and determining that it has been delivered.  It can also use both sendmail-test and readmail-test 
-independently to determine whether an email can be sent or a mailbox can be read.
+MailTransportMonitor is used to run a synthetic test of a complete email transaction, including sending a mail and determining that it has been delivered.
+It can also use both sendmail-test and readmail-test independently to determine whether an email can be sent or a mailbox can be read.
 
 ===== Monitor facts
 
@@ -20,10 +20,10 @@ independently to determine whether an email can be sent or a mailbox can be read
 .Monitor specific parameters for the MailTransportMonitor
 [options="header, autowidth"]
 |===
-| Parameter        | Description                                                                                       | Required | Default value
+| Parameter        | Description                                                                                        | Required | Default value
 | `sendmail-test` | Defines the test for sending mail. Contains sendmail-host, sendmail-protocol, sendmail-message,
-                     and user-auth                                                                                     | optional | `debug="true" use-authentication="false" use-jmta="true" attempt-interval="3000"`
-| `readmail-test` | Defines the test for reading mail. Contains readmail-host, readmail-protocol, and user-auth.       | optional | `debug="true" mail-folder="INBOX" attempt-interval="1000" delete-all-mail="false"`
+                     and user-auth                                                                                      | optional | `debug="true" use-authentication="false" use-jmta="true" attempt-interval="3000"`
+| `readmail-test` | Defines the test for reading mail. Contains readmail-host, readmail-protocol, and user-auth.        | optional | `debug="true" mail-folder="INBOX" attempt-interval="1000" delete-all-mail="false"`
 |===
 
 .Options for sendmail-test
@@ -49,7 +49,7 @@ independently to determine whether an email can be sent or a mailbox can be read
 |===
 | Attribute              | Description                                                                                  | Required | Default value
 | `char-set`             | Set the character set                                                                        | optional | `us-ascii`
-| `mailer`               | Use smtpsend or an alternate mailer                                                        | optional | `smtpsend`
+| `mailer`               | Use smtpsend or an alternate mailer                                                          | optional | `smtpsend`
 | `message-content-type` | Set the message content-type                                                                 | optional | `text/plain`
 | `message-encoding`     | Set the message encoding                                                                     | optional | `7-bit`
 | `quit-wait`            | If set to false, the QUIT command is sent and the connection is immediately closed. If set 
@@ -92,18 +92,18 @@ independently to determine whether an email can be sent or a mailbox can be read
 .Options for readmail-protocol
 [options="header, autowidth"]
 |===
-| Attribute    | Description                                                                                             | Required | Default value
-| `transport`  | The transport ptotocol to use.  One of:  pop3 pop3s imap imaps                                          | optional | `pop3`
-| `ssl-enable` | Whether to enable SSL for the connection                                                                | optional | `false`
+| Attribute    | Description                                                                                            | Required | Default value
+| `transport`  | The transport ptotocol to use. One of: pop3 pop3s imap imaps                                           | optional | `pop3`
+| `ssl-enable` | Whether to enable SSL for the connection                                                               | optional | `false`
 | `start-tls`  | Use the STARTTLS command (if supported or required by the server) to switch the connection to a 
-                  TLS-protected connection before issuing any login commands                                             | optional | `false`
+                  TLS-protected connection before issuing any login commands                                            | optional | `false`
 |===
 
 .Options for user-auth
 [options="header, autowidth"]
 |===
 | Attribute   | Description                                                                                             | Required | Default value
-| `user-name` | The user name for SMTP, POP, or IMAP authentication                                                      | optional | `opennms`
+| `user-name` | The user name for SMTP, POP, or IMAP authentication                                                     | optional | `opennms`
 | `password`  | The password for SMTP, POP, or IMAP authentication                                                      | optional | `opennms`
 |===
 
@@ -170,12 +170,18 @@ Test that we can connect via IMAPS and open the OPENNMS folder.
 ----
 
 ===== Tests
-There are five basic tests that can be performed by this monitor.
+There are five basic tests that this monitor can perform.
 
-Sending Mail: The most basic test, the sendmail-test is highly configurable. An Exception thrown during the sending of the configured email message will cause the poll to fail.
+Sending Mail: The most basic test, the sendmail-test is highly configurable.
+An Exception thrown during the sending of the configured email message will cause the poll to fail.
 
-Access of Mail Store and Folder: Configure a readmail-test and don't configure a subject-match attribute. This will test only the ability to open the default mail store and the configured mail folder ("INBOX") by default. Folders are given by "INBOX<seperator>Foldername"; seperator character might vary between IMAP implementations. Exchange uses "/" as seperator, for example.
+Access of Mail Store and Folder: Configure a readmail-test and don't configure a subject-match attribute. 
+This will test only the ability to open the default mail store and the configured mail folder ("INBOX") by default. 
+Folders are given by "INBOX<separator>Foldername"; separator character might vary between IMAP implementations. Exchange uses "/" as separator, for example.
 
-Specific Message in Folder: Configure a readmail-test and a matching subject. Optionally configure the test to delete all read mail. Probably not something you want to do unless this is a mail folder that you are sending email to from another system that you can't do in the end-to-end test behavior.
+Specific Message in Folder: Configure a readmail-test and a matching subject. 
+Optionally configure the test to delete all read mail. 
+Probably not something you want to do unless this is a mail folder that you are sending email to from another system that you can't do in the end-to-end test behavior.
 
-Sending and Receipt (end-to-end test) of a Message:Test your infrastructure's ability to send and receive email. It tests sending and receiving of an mail message via one or two separate mail servers. For example, you can send email via SMTPS to one server outside of your organization addressed to a recipient on your internal mail server and verify delivery.
+Sending and Receipt (end-to-end test) of a Message: Test your infrastructure's ability to send and receive email. It tests sending and receiving of an mail message via one or two separate mail servers. 
+For example, you can send email via SMTPS to one server outside of your organization addressed to a recipient on your internal mail server and verify delivery.
