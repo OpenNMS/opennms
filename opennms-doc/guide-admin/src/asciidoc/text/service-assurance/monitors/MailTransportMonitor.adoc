@@ -23,7 +23,7 @@ independently to determine whether an email can be sent or a mailbox can be read
 | Parameter        | Description                                                                                       | Required | Default value
 | `sendmail-test` | Defines the test for sending mail. Contains sendmail-host, sendmail-protocol, sendmail-message,
                      and user-auth                                                                                     | optional | `debug="true" use-authentication="false" use-jmta="true" attempt-interval="3000"`
-| `readmail-test` | Defines the test for reading mail, contains readmail-host, readmail-protocol, and user-auth.       | optional | `debug="true" mail-folder="INBOX" attempt-interval="1000" delete-all-mail="false"`
+| `readmail-test` | Defines the test for reading mail. Contains readmail-host, readmail-protocol, and user-auth.       | optional | `debug="true" mail-folder="INBOX" attempt-interval="1000" delete-all-mail="false"`
 |===
 
 .Options for sendmail-test
