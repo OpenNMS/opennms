@@ -103,7 +103,7 @@ independently to determine whether an email can be sent or a mailbox can be read
 [options="header, autowidth"]
 |===
 | Attribute   | Description                                                                                             | Required | Default value
-| `user-name` | The username for smtp, pop, or imap authentication                                                      | optional | `opennms`
+| `user-name` | The user name for SMTP, POP, or IMAP authentication                                                      | optional | `opennms`
 | `password`  | The password for SMTP, POP, or IMAP authentication                                                      | optional | `opennms`
 |===
 
