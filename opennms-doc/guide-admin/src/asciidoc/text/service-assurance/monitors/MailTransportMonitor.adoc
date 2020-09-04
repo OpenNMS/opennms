@@ -86,7 +86,7 @@ independently to determine whether an email can be sent or a mailbox can be read
 |===
 | Attribute   | Description                                                                                             | Required | Default value
 | `host`      | The target host for reading mail                                                                        | optional | `${ipaddr}`
-| `port`      | the appropriate port for the protocol                                                                   | optional | `110`
+| `port`      | The appropriate port for the protocol                                                                   | optional | `110`
 |===
 
 .Options for readmail-protocol
