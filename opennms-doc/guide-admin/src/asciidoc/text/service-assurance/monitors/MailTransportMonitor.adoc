@@ -21,7 +21,7 @@ independently to determine whether an email can be sent or a mailbox can be read
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                                                       | Required | Default value
-| `sendmail-test` | Defines the test for sending mail, contains sendmail-host, sendmail-protocol, sendmail-message,
+| `sendmail-test` | Defines the test for sending mail. Contains sendmail-host, sendmail-protocol, sendmail-message,
                      and user-auth                                                                                     | optional | `debug="true" use-authentication="false" use-jmta="true" attempt-interval="3000"`
 | `readmail-test` | Defines the test for reading mail, contains readmail-host, readmail-protocol, and user-auth.       | optional | `debug="true" mail-folder="INBOX" attempt-interval="1000" delete-all-mail="false"`
 |===
@@ -179,4 +179,3 @@ Access of Mail Store and Folder: Configure a readmail-test and don't configure a
 Specific Message in Folder: Configure a readmail-test and a matching subject. Optionally configure the test to delete all read mail. Probably not something you want to do unless this is a mail folder that you are sending email to from another system that you can't do in the end-to-end test behavior.
 
 Sending and Receipt (end-to-end test) of a Message:Test your infrastructure's ability to send and receive email. It tests sending and receiving of an mail message via one or two separate mail servers. For example, you can send email via SMTPS to one server outside of your organization addressed to a recipient on your internal mail server and verify delivery.
-
