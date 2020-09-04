@@ -104,7 +104,7 @@ independently to determine whether an email can be sent or a mailbox can be read
 |===
 | Attribute   | Description                                                                                             | Required | Default value
 | `user-name` | The username for smtp, pop, or imap authentication                                                      | optional | `opennms`
-| `password`  | The password for smtp, pop, or imap authentication                                                      | optional | `opennms`
+| `password`  | The password for SMTP, POP, or IMAP authentication                                                      | optional | `opennms`
 |===
 
 .Variables which can be used in the configuration
