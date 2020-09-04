@@ -49,7 +49,7 @@ independently to determine whether an email can be sent or a mailbox can be read
 |===
 | Attribute              | Description                                                                                  | Required | Default value
 | `char-set`             | Set the character set                                                                        | optional | `us-ascii`
-| `mailer`               | use smtpsend or some alternate mailer                                                        | optional | `smtpsend`
+| `mailer`               | Use smtpsend or an alternate mailer                                                        | optional | `smtpsend`
 | `message-content-type` | Set the message content-type                                                                 | optional | `text/plain`
 | `message-encoding`     | Set the message encoding                                                                     | optional | `7-bit`
 | `quit-wait`            | If set to false, the QUIT command is sent and the connection is immediately closed. If set 
