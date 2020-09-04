@@ -117,7 +117,7 @@ independently to determine whether an email can be sent or a mailbox can be read
 
 ===== Examples
 
-Test for an end to end email transaction.
+Test for an end-to-end email transaction.
 
 [source, xml]
 ----
