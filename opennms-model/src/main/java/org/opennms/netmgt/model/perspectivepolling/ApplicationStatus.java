@@ -48,6 +48,8 @@ public class ApplicationStatus {
 
     private List<Location> locations = new ArrayList<>();
 
+    private Double overallStatus;
+
     public ApplicationStatus() {
     }
 
@@ -83,6 +85,13 @@ public class ApplicationStatus {
         return locations;
     }
 
+    public Location getLocation(final String location) {
+        return locations.stream()
+                .filter(e -> location.equals(e.getName()))
+                .findFirst()
+                .orElse(null);
+    }
+
     public void setLocations(List<Location> locations) {
         this.locations = locations;
     }
@@ -98,15 +107,25 @@ public class ApplicationStatus {
                 Objects.equals(locations, that.locations);
     }
 
+    @XmlElement(name = "overallStatus")
+    public Double getOverallStatus() {
+        return overallStatus;
+    }
+
+    public void setOverallStatus(final Double overallStatus) {
+        this.overallStatus = overallStatus;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(applicationId, start, end, locations);
+        return Objects.hash(applicationId, start, end, locations, overallStatus);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("applicationId", applicationId)
+                .add("overallStatus", overallStatus)
                 .add("start", start)
                 .add("end", end)
                 .add("locations", locations)

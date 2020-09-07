@@ -32,11 +32,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.perspectivepolling.ApplicationStatus;
 
 public interface NetworkElementFactoryInterface {
 
@@ -465,4 +467,10 @@ public interface NetworkElementFactoryInterface {
 	 * Return all current open outages for the given service be it detected from local or from perspective.
 	 */
 	Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service);
+
+	List<OnmsApplication> getAllApplications();
+	
+	ApplicationStatus getApplicationStatus(final OnmsApplication onmsApplication, final long start, final long end);
+	
+	Map<OnmsMonitoredService, Map<String, Double>> getApplicationServiceStatus(final OnmsApplication onmsApplication, final long start, final long end);
 }
