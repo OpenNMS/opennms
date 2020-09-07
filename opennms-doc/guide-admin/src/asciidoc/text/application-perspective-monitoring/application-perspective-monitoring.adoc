@@ -20,7 +20,7 @@ NOTE: Use the `perspective-only` flag in the package definition to define packag
 Application Perspective Monitoring requires at least one {opennms-product-name} Minion on your network.
 Refer to the xref:https://docs.opennms.org/opennms/releases/latest/guide-install/guide-install.html#_monitor_isolated_location_with_minion[Installation Guide] for more information. 
 
-To configure Application Perspective Monitoring, create an  application and then associate a set of services and perspectives from which to monitor those services with the application.
+To configure Application Perspective Monitoring, create an application and then associate a set of services and perspectives from which to monitor those services with the application.
 
 . Login to the web UI.
 . Click the gear icon and select *Manage Applications*. 
@@ -44,5 +44,5 @@ The next link:#apm-perspective-outages[figure] shows an HTTP outage noticed from
 .Perspective outages
 image::application-perspective-monitoring/perspective-outages.png[]
 
-The  *Perspective* column shows the perspective location from which a Minion has detected this outage.
+The *Perspective* column shows the perspective location from which a Minion has detected this outage.
 An empty *Perspective* column indicates that the normal process detected the outage: either the _{opennms-product-name}_ instance detected it in the default location or a Minion detected it in the corresponding node's location.
