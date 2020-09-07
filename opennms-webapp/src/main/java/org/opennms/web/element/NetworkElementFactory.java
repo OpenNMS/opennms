@@ -1038,21 +1038,17 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     @Override
     public Map<OnmsMonitoredService, Map<String, Double>> getApplicationServiceStatus(final OnmsApplication onmsApplication, final long start, final long end) {
-        final Map<String, OnmsMonitoredService> serviceMap = new TreeMap<>();
-        for(final OnmsMonitoredService svc : onmsApplication.getMonitoredServices()) {
-            serviceMap.put(svc.getIpAddressAsString() + " / " + svc.getServiceName(), svc);
-        }
-
         final Map<OnmsMonitoredService, Map<String, Double>> status = new TreeMap<>();
+        final Collection<OnmsOutage> outages = m_outageDao.getStatusChangesForApplicationIdBetween(new Date(start), new Date(end), onmsApplication.getId());
 
-        for(final Map.Entry<String, OnmsMonitoredService> serviceMapEntry : serviceMap.entrySet()) {
+        for(final OnmsMonitoredService onmsMonitoredService : onmsApplication.getMonitoredServices()) {
             final Map<String, Double> serviceStatus = new TreeMap<>();
 
-            ApplicationServiceStatus applicationServiceStatus = ApplicationStatusUtil.buildApplicationServiceStatus(
+            final ApplicationServiceStatus applicationServiceStatus = ApplicationStatusUtil.buildApplicationServiceStatus(
                     m_monSvcDao,
                     onmsApplication,
-                    serviceMapEntry.getValue().getId(),
-                    m_outageDao.getStatusChangesForApplicationIdBetween(new Date(start), new Date(end), onmsApplication.getId()),
+                    onmsMonitoredService.getId(),
+                    outages,
                     start,
                     end
             );
@@ -1061,7 +1057,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
                 serviceStatus.put(location.getName(), location.getAggregatedStatus());
             }
 
-            status.put(serviceMapEntry.getValue(), serviceStatus);
+            status.put(onmsMonitoredService, serviceStatus);
         }
 
         return status;
