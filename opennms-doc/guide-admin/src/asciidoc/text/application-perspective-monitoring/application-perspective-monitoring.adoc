@@ -2,29 +2,39 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-_{opennms-product-name}_ _Application Perspective Monitoring_ allows a user to monitor the availability of a set of services from several locations.
-These locations are called perspective locations in this context.
-To configure _Application Perspective Monitoring_ a user has to define an application by associating a set of services and a set of perspectives from which to monitor these services with the application.
+With {opennms-product-name} _Application Perspective Monitoring_ you can see the availability of a service hosted in Houston that is accessed in Seattle from your central location in New York.
+If a service outage occurs, understanding the _perspective_ from which that outage was monitored makes it easier to troubleshoot the problem. 
+
+Application Perspective Monitoring uses the Minion infrastructure to monitor a service's availability from these different perspectives.
+When a service is not responsive an outage will be generated with the corresponding perspective.
 
 .Application Perspective Monitoring operation
 image::application-perspective-monitoring/apm-operation.png[]
 
-_Application Perspective Monitoring_ uses the Minion infrastructure to monitor a service's availability from these different perspectives.
 The service monitor configuration is looked up in the `poller-configuration.xml`.
 
-NOTE: Use the `perspective-only` flag in the package definition to define packages that will be used *only* for _Application Perspective Monitoring_.
+NOTE: Use the `perspective-only` flag in the package definition to define packages that will be used *only* for Application Perspective Monitoring.
 
-When a service is not responsive an outage will be generated with the corresponding perspective.
-To configure _Application Perspective Monitoring_ you must first create an application.
+==== Configuring Application Perspective Monitoring
 
+Application Perspective Monitoring requires at least one {opennms-product-name} Minion on your network.
+Refer to the xref:https://docs.opennms.org/opennms/releases/latest/guide-install/guide-install.html#_monitor_isolated_location_with_minion[Installation Guide] for more information. 
+
+To configure Application Perspective Monitoring, create an application and then associate a set of services and perspectives from which to monitor those services with the application.
+
+. Login to the web UI.
+. Click the gear icon and select *Manage Applications*. 
+. Specify a name for the application and click *Add New Application*.
+
++
 .Create a new application
 image::application-perspective-monitoring/create-app.png[]
 
-Next step is to configure the application.
-In the upper section, users can associate services that should be monitored from perspective locations with this application.
-In the lower section, users can define the perspective locations from which the given services should be monitored.
+. Click the edit icon. 
+. In the upper section, select the services you want to monitor from perspective locations with this application.
+. In the lower section, select the perspective locations from which to monitor the specified services.
 
-.Configuration of an application
+.Application configuration
 image::application-perspective-monitoring/configure-app.png[]
 
 After configuring the application, Minions at the perspective locations start to monitor the services associated with this application.
@@ -34,5 +44,5 @@ The next link:#apm-perspective-outages[figure] shows an HTTP outage noticed from
 .Perspective outages
 image::application-perspective-monitoring/perspective-outages.png[]
 
-The  *Perspective* column shows the perspective location from which a Minion has detected this outage.
+The *Perspective* column shows the perspective location from which a Minion has detected this outage.
 An empty *Perspective* column indicates that the normal process detected the outage: either the _{opennms-product-name}_ instance detected it in the default location or a Minion detected it in the corresponding node's location.
