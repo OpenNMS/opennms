@@ -21,7 +21,7 @@ global java.lang.Integer FLAP_COUNT;
 rule "first service lost event received"
 	salience 100
 	when
-		$e : Event( uei == EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
+		$e : Event( uei == EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
 		not( Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName ) )
 	then
 		Affliction $aff = new Affliction( $nodeid, $ipAddr, $svcName, findLocationMonitor( $e ) );
@@ -34,7 +34,7 @@ end
 rule "service lost detected by additional monitor"
 	salience 100
 	when
-		$e : Event( uei == EventConstants.REMOTE_NODE_LOST_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
+		$e : Event( uei == EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
 		$aff: Affliction(nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, $reporters : reporters, reporters not contains findLocationMonitor($e) )
                 
 	then
@@ -57,7 +57,7 @@ end
 
 rule "affliction resolved for one monitor"
 	when
-		$e : Event( uei == EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
+		$e : Event( uei == EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI, $nodeid : nodeid, $ipAddr : interface, $svcName : service )
 		$aff: Affliction( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, $reporters : reporters, reporters contains findLocationMonitor($e) )
                 $flap: Flap( nodeid == $nodeid, ipAddr == $ipAddr, svcName == $svcName, endTime == null, locationMonitor == findLocationMonitor( $e ) )
 	then
@@ -132,7 +132,7 @@ end
 
 
 function void sendWideSpreadOutageEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
-	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/remote/wideSpreadOutage", "Drools")
+	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/perspective/wideSpreadOutage", "Drools")
 		.setNodeid(nodeId.intValue())
 		.setInterface(InetAddressUtils.addr(ipAddr))
 		.setService(svcName);
@@ -140,7 +140,7 @@ function void sendWideSpreadOutageEvent(DroolsCorrelationEngine engine, Long nod
 }
 
 function void sendWideSpreadOutageResolvedEvent(DroolsCorrelationEngine engine, Long nodeId, String ipAddr, String svcName) {
-	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/remote/wideSpreadOutageResolved", "Drools")
+	EventBuilder bldr = new EventBuilder("uei.opennms.org/correlation/perspective/wideSpreadOutageResolved", "Drools")
 		.setNodeid(nodeId.intValue())
 		.setInterface(InetAddressUtils.addr(ipAddr))
 		.setService(svcName);

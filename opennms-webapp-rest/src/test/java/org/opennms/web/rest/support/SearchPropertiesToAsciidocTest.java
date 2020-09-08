@@ -42,7 +42,6 @@ import static org.opennms.web.rest.support.SearchProperties.MINION_PROPERTIES;
 import static org.opennms.web.rest.support.SearchProperties.NODE_PROPERTIES;
 import static org.opennms.web.rest.support.SearchProperties.NOTIFICATION_PROPERTIES;
 import static org.opennms.web.rest.support.SearchProperties.OUTAGE_PROPERTIES;
-import static org.opennms.web.rest.support.SearchProperties.SCAN_REPORT_PROPERTIES;
 import static org.opennms.web.rest.support.SearchProperties.SERVICE_TYPE_PROPERTIES;
 import static org.opennms.web.rest.support.SearchProperties.SNMP_INTERFACE_PROPERTIES;
 
@@ -157,13 +156,7 @@ public class SearchPropertiesToAsciidocTest {
 			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
 		}
 		System.out.println(FOOTER_FORMAT);
-
-		System.out.println(String.format(HEADER_FORMAT, "scanReport", "Scan Report"));
-		for (SearchProperty prop : SCAN_REPORT_PROPERTIES) {
-			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));
-		}
-		System.out.println(FOOTER_FORMAT);
-
+		
 		System.out.println(String.format(HEADER_FORMAT, "serviceType", "Service Type"));
 		for (SearchProperty prop : SearchProperties.withAliasPrefix(Aliases.serviceType, null, SERVICE_TYPE_PROPERTIES)) {
 			System.out.println(String.format(ROW_FORMAT, prop.getId(), toPrettyType(prop.type), nameAndValues(prop)));

@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
@@ -43,7 +42,6 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
@@ -163,18 +161,6 @@ public interface PollerConfig extends PathOutageConfig {
      * @return a boolean.
      */
     boolean isServiceMonitored(String svcName);
-
-    /**
-     * Returns the first package that the ip belongs to, null if none.
-     *
-     * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is already in the database.
-     *
-     * @param ipaddr
-     *            the interface to check
-     * @return the first package that the ip belongs to, null if none
-     */
-    Package getFirstPackageMatch(String ipaddr);
 
     /**
      * Returns the first package that the ip belongs to that is not marked as remote, null if none.
@@ -304,6 +290,8 @@ public interface PollerConfig extends PathOutageConfig {
      * @return a {@link java.util.Enumeration} object.
      */
     public Enumeration<Package> enumeratePackage();
+
+    public List<Package> getPackages();
     
     /**
      * <p>getPackage</p>
@@ -378,10 +366,9 @@ public interface PollerConfig extends PathOutageConfig {
     /**
      * <p>getServiceMonitorLocators</p>
      *
-     * @param context a {@link org.opennms.netmgt.poller.DistributionContext} object.
      * @return a {@link java.util.Collection} object.
      */
-    Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context);
+    Collection<ServiceMonitorLocator> getServiceMonitorLocators();
 
     ServiceMonitorRegistry getServiceMonitorRegistry();
 

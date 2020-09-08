@@ -51,9 +51,11 @@ import org.opennms.web.outage.filter.LostServiceDateBeforeFilter;
 import org.opennms.web.outage.filter.NegativeForeignSourceFilter;
 import org.opennms.web.outage.filter.NegativeInterfaceFilter;
 import org.opennms.web.outage.filter.NegativeNodeFilter;
+import org.opennms.web.outage.filter.NegativePerspectiveLocationFilter;
 import org.opennms.web.outage.filter.NegativeServiceFilter;
 import org.opennms.web.outage.filter.NodeFilter;
 import org.opennms.web.outage.filter.OutageIdFilter;
+import org.opennms.web.outage.filter.PerspectiveLocationFilter;
 import org.opennms.web.outage.filter.RegainedServiceDateAfterFilter;
 import org.opennms.web.outage.filter.RegainedServiceDateBeforeFilter;
 import org.opennms.web.outage.filter.ServiceFilter;
@@ -127,6 +129,10 @@ public abstract class OutageUtil extends Object {
             filter = new LocationFilter(value);
         } else if (type.startsWith(NegativeLocationFilter.TYPE)) {
             filter = new NegativeLocationFilter(value);
+        } else if (type.startsWith(PerspectiveLocationFilter.TYPE)) {
+            filter = new PerspectiveLocationFilter(value);
+        } else if (type.startsWith(NegativePerspectiveLocationFilter.TYPE)) {
+            filter = new NegativePerspectiveLocationFilter(value);
         }
 
         return filter;
@@ -437,6 +443,16 @@ public abstract class OutageUtil extends Object {
         }
 
         return makeHiddenTags(request, parms.sortStyle, parms.outageType, newList, parms.limit);
+    }
+
+    public static String getPerspectiveLabel(final String perspective) {
+        String html;
+        if (perspective == null) {
+            html = "<i>none</i>";
+        } else {
+            html = WebSecurityUtils.sanitizeString(perspective);
+        }
+        return html;
     }
 
 }

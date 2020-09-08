@@ -82,7 +82,6 @@ clean:
 	dh_testdir
 	dh_testroot
 	./compile.pl $(OPTS_PROFILES) $(OPTS_ASSEMBLIES) -Duser.home=$(HOME) -Ddist.dir=$(CURDIR)/debian -Ddist.name=temp clean
-	rm -f opennms-remote-poller.{init,default}
 	dh_clean
 	rm -f $(STAMP_BUILD)
 
@@ -268,16 +267,6 @@ install: build
 	##
 
 	##
-	## Setup the opennms-remote-poller package
-	##
-	install -d -m 755 debian/opennms-remote-poller/usr/share/opennms/bin debian/opennms-remote-poller/usr/sbin
-	install -m 755 debian/opennms-remote-poller.bin debian/opennms-remote-poller/usr/sbin/opennms-remote-poller
-	mv debian/opennms-common/usr/share/opennms/bin/remote-poller.* debian/opennms-remote-poller/usr/share/opennms/bin/
-	install -m 755 debian/temp/contrib/remote-poller/remote-poller.init debian/opennms-remote-poller.init
-	install -m 640 debian/temp/contrib/remote-poller/remote-poller.sysconfig debian/opennms-remote-poller.default
-	rm -rf debian/temp/contrib/remote-poller
-
-	##
 	## Setup the opennms-source package
 	##
 	install -d -m 755 debian/opennms-source/usr/share/opennms/jetty-webapps/opennms
@@ -292,14 +281,6 @@ install: build
 	mv debian/temp/jetty-webapps/opennms/*          debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms/
 	mv debian/temp/jetty-webapps/ROOT/*             debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/ROOT/
 	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
-
-	##
-	## Setup the opennms-webapp-remoting package
-	##
-	install -m 644 debian/opennms-webapp-remoting.overrides debian/opennms-webapp-remoting/usr/share/lintian/overrides/opennms-webapp-remoting
-	install -d -m 755 debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms-remoting
-	mv debian/temp/jetty-webapps/opennms-remoting/* debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms-remoting/
-	find debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
 
 	##
 	## Setup the opennms-webapp-hawtio package
@@ -341,7 +322,6 @@ binary-indep: build install
 	dh_installdocs
 	dh_systemd_enable --name=opennms --no-enable
 	dh_installinit --package=opennms-server --name=opennms --no-start -u"defaults 21 19"
-	dh_installinit --package=opennms-remote-poller --no-start -u"defaults 21 19"
 	dh_systemd_start --name=opennms --no-restart-after-upgrade
 	dh_installman
 	dh_installdebconf

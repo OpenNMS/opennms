@@ -52,9 +52,12 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 import com.google.common.base.MoreObjects;
 
@@ -99,7 +102,10 @@ public class OnmsOutage implements Serializable {
     
     /** persistent field */
     private String m_suppressedBy;
-    
+
+    /** persistent field */
+    private OnmsMonitoringLocation m_perspective;
+
     /**
      * full constructor
      *
@@ -470,6 +476,26 @@ public class OnmsOutage implements Serializable {
     }
 
     /**
+     * Monitoring perspective that this outage is associated with.
+     */
+    @JsonSerialize(using=MonitoringLocationJsonSerializer.class)
+    @JsonDeserialize(using=MonitoringLocationJsonDeserializer.class)
+    @XmlElement(name="perspective")
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
+    @JoinColumn(name="perspective")
+    @XmlJavaTypeAdapter(MonitoringLocationIdAdapter.class)
+    public OnmsMonitoringLocation getPerspective() {
+        return m_perspective;
+    }
+
+    /**
+     * Set the monitoring perspective for this outage.
+     */
+    public void setPerspective(OnmsMonitoringLocation perspective) {
+        m_perspective = perspective;
+    }
+
+    /**
      * <p>toString</p>
      *
      * @return a {@link java.lang.String} object.
@@ -484,6 +510,7 @@ public class OnmsOutage implements Serializable {
             .add("service", m_monitoredService)
             .add("suppressedBy", m_suppressedBy)
             .add("suppressTime", m_suppressTime)
+            .add("perspective", m_perspective)
             .toString();
     }
 

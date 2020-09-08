@@ -53,10 +53,7 @@ drop table memos cascade;
 drop table node_metadata cascade;
 drop table node cascade;
 drop table service cascade;
-drop table scanreports cascade;
 drop table monitoringlocations cascade;
-drop table monitoringlocationspollingpackages cascade;
-drop table monitoringlocationscollectionpackages cascade;
 drop table monitoringlocationstags cascade;
 drop table monitoringsystems cascade;
 drop table events cascade;
@@ -237,28 +234,6 @@ CREATE TABLE monitoringlocations (
 );
 
 
-CREATE TABLE monitoringlocationspollingpackages (
-    monitoringlocationid TEXT NOT NULL,
-    packagename TEXT NOT NULL,
-
-    CONSTRAINT monitoringlocationspollingpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE INDEX monitoringlocationspollingpackages_id_idx on monitoringlocationspollingpackages(monitoringlocationid);
-CREATE UNIQUE INDEX monitoringlocationspollingpackages_id_pkg_idx on monitoringlocationspollingpackages(monitoringlocationid, packagename);
-
-
-CREATE TABLE monitoringlocationscollectionpackages (
-    monitoringlocationid TEXT NOT NULL,
-    packagename TEXT NOT NULL,
-
-    CONSTRAINT monitoringlocationscollectionpackages_fkey FOREIGN KEY (monitoringlocationid) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE INDEX monitoringlocationscollectionpackages_id_idx on monitoringlocationscollectionpackages(monitoringlocationid);
-CREATE UNIQUE INDEX monitoringlocationscollectionpackages_id_pkg_idx on monitoringlocationscollectionpackages(monitoringlocationid, packagename);
-
-
 CREATE TABLE monitoringlocationstags (
     monitoringlocationid TEXT NOT NULL,
     tag TEXT NOT NULL,
@@ -319,112 +294,6 @@ CREATE UNIQUE INDEX monitoringsystemsproperties_id_property_idx on monitoringsys
 --# the 'monitoringsystems' table.
 --##################################################################
 INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'Default', 'OpenNMS');
-
-
---#####################################################
---# scanreports Table - Contains a list of OpenNMS remote poller scan reports
---#
---# This table contains the following information:
---#
---# id               : The UUID of the report
---# location         : The monitoring location name
---# locale           : The locale the scan was run from
---# timestamp        : The start time of the scan
---#
---#####################################################
-
-CREATE TABLE scanreports (
-    id TEXT NOT NULL,
-    location TEXT NOT NULL,
-    locale TEXT,
-    timestamp TIMESTAMP WITH TIME ZONE,
-
-    CONSTRAINT scanreports_pkey PRIMARY KEY (id),
-    CONSTRAINT scanreports_monitoringlocations_fkey FOREIGN KEY (location) REFERENCES monitoringlocations (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE UNIQUE INDEX scanreports_id_idx on scanreport(id);
-
---#####################################################
---# scanreportproperties Table - Contains an arbitrary collection of properties associated with a scan report
---#
---# This table contains the following information:
---#
---# scanReportId     : The ID of the scan report
---# property         : The property name/key
---# propertyValue    : The property value
---#
---#####################################################
-
-CREATE TABLE scanreportproperties (
-    scanReportId TEXT NOT NULL,
-    property TEXT NOT NULL,
-    propertyValue TEXT,
-
-    CONSTRAINT scanreportproperties_fkey FOREIGN KEY (scanReportId) REFERENCES scanreports (id) ON DELETE CASCADE
-);
-
-CREATE INDEX scanreportproperties_id_idx on scanreportproperties(scanreportid);
-CREATE UNIQUE INDEX scanreportproperties_id_property_idx on scanreportproperties(scanreportid, property);
-
---#####################################################
---# scanreportpollresults Table - Contains the set of poll results (service up/down) associated with a scan report
---#
---# This table contains the following information:
---#
---# id               : The UUID of the result
---# scanReportId     : The ID of the scan report
---# serviceName      : The name of the monitored service
---# serviceId        : The ID of the monitored service
---# nodeLabel        : The node label for display
---# nodeId           : The ID of the node
---# ipaddress        : The IP address of the monitored service
---# statusReason     : A user-displayable description of the response
---# responseTime     : The response time of the poll
---# statusCode       : The response code associated with the poll
---# statusTime       : The timestamp of the poll
---#
---#####################################################
-
-CREATE TABLE scanreportpollresults (
-    id TEXT NOT NULL,
-    scanReportId TEXT NOT NULL,
-    serviceName TEXT NOT NULL,
-    serviceId INTEGER NOT NULL,
-    nodeLabel TEXT NOT NULL,
-    nodeId INTEGER NOT NULL,
-    ipaddress TEXT,
-    statusReason TEXT,
-    responseTime DOUBLE PRECISION,
-    statusCode INTEGER NOT NULL,
-    statusTime TIMESTAMP WITH TIME ZONE,
-
-    CONSTRAINT scanreportpollresults_pkey PRIMARY KEY (id),
-    CONSTRAINT scanreportpollresults_fkey FOREIGN KEY (scanReportId) REFERENCES scanreports (id) ON DELETE CASCADE
-);
-
-CREATE UNIQUE INDEX scanreportpollresults_id_idx on scanreportpollresults(id);
-CREATE UNIQUE INDEX scanreportpollresults_id_scanreportid_idx on scanreportpollresults(id, scanreportid);
-
---#####################################################
---# scanreportlogs Table - Contains poll logs associated with a scan report
---#
---# This table contains the following information:
---#
---# scanReportId     : The ID of the scan report
---# logText          : The contents of the scan log
---#
---#####################################################
-
-CREATE TABLE scanreportlogs (
-    scanReportId TEXT NOT NULL,
-    logText TEXT,
-
-    CONSTRAINT scanreportlogs_pkey PRIMARY KEY (scanReportId),
-    CONSTRAINT scanreportlogs_fkey FOREIGN KEY (scanReportId) REFERENCES scanreports (id) ON DELETE CASCADE
-);
-
-CREATE UNIQUE INDEX scanreportlogs_scanReportId_idx on scanreportlogs(scanReportId);
 
 --########################################################################
 --# node Table - Contains information on nodes discovered and potentially
@@ -895,19 +764,22 @@ create table outages (
 	ifRegainedService	timestamp with time zone,
 	suppressTime    	timestamp with time zone,
 	suppressedBy		varchar(256),
-	ifServiceId		INTEGER not null,
+	ifServiceId         integer not null,
+	perspective         text,
 
 	constraint pk_outageID primary key (outageID),
 	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
 	constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE,
-	CONSTRAINT ifServices_fkey2 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE
+	CONSTRAINT ifServices_fkey2 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE,
+	constraint fk_outages_perspective foreign key (perspective) references monitoringlocations (id) on delete cascade on update cascade
 );
 
 create index outages_svclostid_idx on outages(svcLostEventID);
 create index outages_svcregainedid_idx on outages(svcRegainedEventID);
 create index outages_regainedservice_idx on outages(ifRegainedService);
 create index outages_ifServiceId_idx on outages(ifServiceId);
-create unique index one_outstanding_outage_per_service_idx on outages (ifserviceid) where ifregainedservice is null;
+create unique index one_outstanding_outage_per_service_and_location_idx1 on outages (ifserviceid) where perspective is null and ifregainedservice is null;
+create unique index one_outstanding_outage_per_service_and_location_idx2 on outages (ifserviceid, perspective) where not perspective is null and ifregainedservice is null;
 
 --########################################################################
 --# notification table - Contains information on acknowleged and outstanding
@@ -1404,44 +1276,6 @@ create table pathOutage (
 create unique index pathoutage_nodeid on pathOutage(nodeID);
 create index pathoutage_criticalpathip on pathOutage(criticalPathIp);
 create index pathoutage_criticalpathservicename_idx on pathOutage(criticalPathServiceName);
-	
---#############################################################################
---# location_specific_status_changes Table - contains a list status
---#      changed reported for a service by a monitor in a remote
---#      location.
---#
---# This table contains the following information:
---#
---#  id                : surrogate key generated by a sequence
---#  locationMonitorId : foreign key referencing a specific
---#                      monitor in a remote location
---#  serviceId         : foreign key referencing a specific monitored services
---#  statusTime        : time of reported status from remote location monitor 
---#  reason            : description of status change
---#  responseTime      : data for latency reporting
---#
---#############################################################################
-CREATE TABLE location_specific_status_changes (
-    id INTEGER,
-    systemId TEXT NOT NULL,
-    ifServiceId INTEGER NOT NULL,
-    statusCode INTEGER NOT NULL,
-    statusTime timestamp with time zone NOT NULL,
-    statusReason TEXT,
-    responseTime DOUBLE PRECISION,
-
-    CONSTRAINT location_specific_status_changes_pkey PRIMARY KEY (id),
-    CONSTRAINT location_specific_status_changes_systemid_fkey FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE,
-    CONSTRAINT ifservices_fkey4 FOREIGN KEY (ifServiceId) REFERENCES ifservices (id) ON DELETE CASCADE
-);
-
-create index location_specific_status_changes_ifserviceid on location_specific_status_changes(ifserviceid);
-CREATE INDEX location_specific_status_changes_systemid ON location_specific_status_changes(systemId);
-CREATE INDEX location_specific_status_changes_systemid_ifserviceid ON location_specific_status_changes(systemId, ifserviceid);
-CREATE INDEX location_specific_status_changes_systemid_if_time ON location_specific_status_changes(systemId, ifserviceid, statustime);
-create index location_specific_status_changes_statustime on location_specific_status_changes(statustime);
-
-
 
 --########################################################################
 --# applications table - Contains list of applications for services
@@ -1454,9 +1288,9 @@ create index location_specific_status_changes_statustime on location_specific_st
 
 create table applications (
 	id			integer,
-	name			varchar(32) not null,
+	name		varchar(32) not null,
 
-	constraint applications_pkey primary key (id)
+    constraint applications_pkey primary key (id)
 );
 
 CREATE UNIQUE INDEX applications_name_idx ON applications(name);
@@ -1483,6 +1317,26 @@ CREATE INDEX appid_idx on application_service_map(appid);
 CREATE INDEX ifserviceid_idx on application_service_map(ifserviceid);
 CREATE UNIQUE INDEX appid_ifserviceid_idex on application_service_map(appid,ifserviceid);
 
+--########################################################################
+--# application_perspective_location_map table - Many-to-Many mapping table of
+--# applications to monitoringLocations
+--#
+--# This table contains the following fields:
+--#
+--# appId                : The application id from applications table
+--# monitoringLocationId : The id from the monitoringLocations table.
+--########################################################################
+
+create table application_perspective_location_map (
+                                         appid		integer NOT NULL,
+                                         monitoringlocationid	text NOT NULL,
+                                         constraint appId_fkey foreign key (appid) references applications (id) ON DELETE CASCADE,
+                                         constraint monitoringlocationid_fkey foreign key (monitoringlocationid) references monitoringlocations (id) ON DELETE CASCADE
+);
+
+CREATE INDEX application_perspective_location_map_appid_idx on application_perspective_location_map(appid);
+CREATE INDEX monitoringlocationid_idx on application_perspective_location_map(monitoringlocationid);
+CREATE UNIQUE INDEX appid_monitoringlocationid_idx on application_perspective_location_map(appid, monitoringlocationid);
 
 --########################################################################
 --#
@@ -2491,7 +2345,7 @@ CREATE VIEW node_outage_status AS
           max(events.eventseverity) AS severity
          FROM events
            JOIN outages ON outages.svclosteventid = events.eventid
-        WHERE outages.ifregainedservice IS NULL
+        WHERE outages.ifregainedservice IS NULL AND outages.perspective IS NULL
         GROUP BY events.nodeid) tmp
  RIGHT JOIN node ON tmp.nodeid = node.nodeid;
 
@@ -2644,6 +2498,8 @@ CREATE VIEW node_outages AS (
         node_outage_status nos
     ON
         nc.nodeid = nos.nodeid
+    WHERE
+        outages.perspective IS NULL
 );
 
 CREATE VIEW node_ip_services AS (

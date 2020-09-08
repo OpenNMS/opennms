@@ -1196,7 +1196,7 @@
       Add target/endorsed as an endorsed API directory in case projects require it.
     -->
     <argLineMemory>-Xmx1g</argLineMemory>
-    <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed -Dpoller.logfile=/tmp/remote-poller.log</argLine>
+    <argLine>${argLineMemory} -Djava.security.egd=/dev/./urandom -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
     <skipITs>true</skipITs>
 
     <!--
@@ -1290,8 +1290,7 @@
     <install.perl.bin>/usr/bin/perl</install.perl.bin>
 
     <runMailTests>true</runMailTests>
-    <poller.logfile>/tmp/remote-poller.log</poller.logfile>
-
+  
     <!-- rpm specific -->
     <rpm.install.dir>/opt/opennms</rpm.install.dir>
     <rpm.build.executable>rpmbuild</rpm.build.executable>
@@ -1305,7 +1304,6 @@
 
 
     <!-- code signing properties - used in opennms-webstart -->
-    <!-- NOTE: because of maven property initialization, webstart.keystore must match the hardcoded activation in features/remote-poller/pom.xml -->
     <webstart.keystore>${project.build.directory}/build-generated-keystore.ks</webstart.keystore>
     <webstart.keypass>opennms</webstart.keypass>
     <webstart.storepass>opennms</webstart.storepass>
@@ -2143,17 +2141,6 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.assemblies</groupId>
-        <artifactId>org.opennms.assemblies.http-remoting</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.assemblies</groupId>
-        <artifactId>opennms-remote-poller-windows</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.system-report</artifactId>
         <version>${project.version}</version>
@@ -2246,11 +2233,6 @@
       <dependency>
         <groupId>org.opennms.features.poller</groupId>
         <artifactId>org.opennms.features.poller.shell</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.poller</groupId>
-        <artifactId>org.opennms.features.poller.remote</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -2873,21 +2855,6 @@
         <groupId>org.opennms.features</groupId>
         <artifactId>jmxconfiggenerator</artifactId>
         <classifier>onejar</classifier>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.assemblies</groupId>
-        <artifactId>org.opennms.assemblies.remote-poller-onejar</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.remote-poller</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.remote-poller-jnlp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -4248,11 +4215,6 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
         <version>99.99.99-exclude-and-use-opennms-spring-instead</version>
-      </dependency>
-      <dependency>
-        <groupId>org.tuckey</groupId>
-        <artifactId>urlrewritefilter</artifactId>
-        <version>4.0.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>

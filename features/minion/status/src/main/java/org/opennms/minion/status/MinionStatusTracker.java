@@ -238,8 +238,9 @@ public class MinionStatusTracker implements InitializingBean {
     public void onOutageEvent(final IEvent e) {
         final boolean isHeartbeat = MINION_HEARTBEAT.equals(e.getService());
         final boolean isRpc = MINION_RPC.equals(e.getService());
+        final boolean isPerspectiveNull = e.getParm("perspective") == null ? true : e.getParm("perspective").getValue() == null;
 
-        if (!isHeartbeat && !isRpc) {
+        if (!isHeartbeat && !isRpc || !isPerspectiveNull) {
             return;
         }
 

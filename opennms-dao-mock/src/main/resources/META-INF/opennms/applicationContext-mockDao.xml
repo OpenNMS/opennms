@@ -93,9 +93,6 @@
     <bean id="javamailConfigDao" class="org.opennms.netmgt.dao.mock.MockJavaMailConfigurationDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.JavaMailConfigurationDao" ref="javamailConfigDao" />
 
-    <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.mock.MockLocationMonitorDao" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.LocationMonitorDao" ref="locationMonitorDao" />
-
     <bean id="monitoredServiceDao" class="org.opennms.netmgt.dao.mock.MockMonitoredServiceDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" ref="monitoredServiceDao" />
 
@@ -128,9 +125,6 @@
     
     <bean id="rrdDao" class="org.opennms.netmgt.dao.mock.MockRrdDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.RrdDao" ref="rrdDao"/>
-    
-    <bean id="scanReportDao" class="org.opennms.netmgt.dao.mock.MockScanReportDao" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.ScanReportDao" ref="scanReportDao" />
 
     <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.mock.MockServiceTypeDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.ServiceTypeDao" ref="serviceTypeDao" />
@@ -176,7 +170,6 @@
     <!-- 
     <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
         <property name="nodeDao" ref="nodeDao" />
-        <property name="locationMonitorDao" ref="locationMonitorDao" />
         <property name="collectdConfig" ref="collectdConfig" />
         <property name="dataCollectionConfigDao" ref="dataCollectionConfig" />
         <property name="rrdDirectory" value="${rrd.base.dir}" />
@@ -226,7 +219,7 @@
         <property name="notificationDao" ref="notificationDao" />
         <property name="userNotificationDao" ref="userNotificationDao" />
         <property name="monitoringLocationDao" ref="monitoringLocationDao" />
-        <property name="locationMonitorDao" ref="locationMonitorDao" />
+        <property name="applicationDao" ref="applicationDao" />
         <property name="acknowledgmentDao" ref="acknowledgmentDao" />
         <property name="serviceTypeDao" ref="serviceTypeDao" />
     </bean>

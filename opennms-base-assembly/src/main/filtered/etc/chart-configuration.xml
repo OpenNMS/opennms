@@ -81,7 +81,7 @@
          </rgb>
       </grid-lines>
       <series-def number="1" series-name="Current" use-labels="true">
-         <jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service, ifservices where service.serviceid = ifservices.serviceid and outages.ifserviceid = ifservices.id and outages.ifregainedservice is NULL and outages.iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;"/>
+         <jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service, ifservices where outages.perspective is null and service.serviceid = ifservices.serviceid and outages.ifserviceid = ifservices.id and outages.ifregainedservice is NULL and outages.iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;"/>
          <rgb>
             <red>
                <rgb-color>255</rgb-color>
@@ -95,7 +95,7 @@
          </rgb>
       </series-def>
       <series-def number="2" series-name="Resolved" use-labels="true">
-         <jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service, ifservices where service.serviceid = ifservices.serviceid and outages.ifserviceid = ifservices.id and outages.ifregainedservice is NOT NULL and outages.iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;"/>
+         <jdbc-data-set db-name="opennms" sql="select service.servicename, count(*) as Count from outages, service, ifservices where outages.perspective is null and service.serviceid = ifservices.serviceid and outages.ifserviceid = ifservices.id and outages.ifregainedservice is NOT NULL and outages.iflostservice > now() - interval '7 days' group by service.servicename order by Count desc;"/>
          <rgb>
             <red>
                <rgb-color>0</rgb-color>
