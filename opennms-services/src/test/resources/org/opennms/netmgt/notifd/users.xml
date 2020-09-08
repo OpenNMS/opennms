@@ -10,28 +10,28 @@
            <user-id>trapd</user-id>
            <full-name>SNMP Trapd</full-name>
            <user-comments>User that receives trap notifications</user-comments>
-           <password>21232F297A57A5A743894A0E4A801FC3</password>
+           <password salt="true">gU2wmSW7k9v1xg4/MrAsaI+VyddBAhJJt4zPX5SGG0BK+qiASGnJsqM8JOug/aEL</password>
            <contact type="snmpTrap" info="Destination for SNMP Trap/Notifications"/>
        </user>
        <user>
            <user-id>brozow</user-id>
            <full-name>Mathew Brozowski</full-name>
            <user-comments>Test User</user-comments>
-           <password>21232F297A57A5A743894A0E4A801FC3</password>
+           <password salt="true">gU2wmSW7k9v1xg4/MrAsaI+VyddBAhJJt4zPX5SGG0BK+qiASGnJsqM8JOug/aEL</password>
            <contact type="email" info="brozow@opennms.org"/>
        </user>
        <user>
            <user-id>admin</user-id>
            <full-name>Administrator</full-name>
            <user-comments>Default administrator, do not delete</user-comments>
-           <password>21232F297A57A5A743894A0E4A801FC3</password>
+           <password salt="true">gU2wmSW7k9v1xg4/MrAsaI+VyddBAhJJt4zPX5SGG0BK+qiASGnJsqM8JOug/aEL</password>
            <contact type="email" info="admin@opennms.org"/>
        </user>
        <user>
            <user-id>upUser</user-id>
            <full-name>User that receives up notifications</full-name>
            <user-comments>Default administrator, do not delete</user-comments>
-           <password>21232F297A57A5A743894A0E4A801FC3</password>
+           <password salt="true">gU2wmSW7k9v1xg4/MrAsaI+VyddBAhJJt4zPX5SGG0BK+qiASGnJsqM8JOug/aEL</password>
            <contact type="email" info="up@opennms.org"/>
        </user>
        <user>
