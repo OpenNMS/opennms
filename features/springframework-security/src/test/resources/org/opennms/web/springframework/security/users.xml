@@ -12,7 +12,7 @@
       <user-comments>
         Default administrator, do not delete
       </user-comments>
-      <password>21232F297A57A5A743894A0E4A801FC3</password>
+      <password salt="true">gU2wmSW7k9v1xg4/MrAsaI+VyddBAhJJt4zPX5SGG0BK+qiASGnJsqM8JOug/aEL</password>
       <role>ROLE_ADMIN</role>
     </user>
     <user>
