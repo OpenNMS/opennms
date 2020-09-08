@@ -101,7 +101,7 @@ public class SpringSecurityUserDaoImplIT implements InitializingBean {
         assertEquals("OnmsUser name", "admin", user.getUsername());
         assertEquals("Full name", "Administrator", user.getFullName());
         assertEquals("Comments", "Default administrator, do not delete", user.getComments());
-        assertEquals("Password", "21232F297A57A5A743894A0E4A801FC3", user.getPassword());
+        assertEquals("Password", "gU2wmSW7k9v1xg4/MrAsaI+VyddBAhJJt4zPX5SGG0BK+qiASGnJsqM8JOug/aEL", user.getPassword());
 
         Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
         assertNotNull("authorities should not be null", authorities);
