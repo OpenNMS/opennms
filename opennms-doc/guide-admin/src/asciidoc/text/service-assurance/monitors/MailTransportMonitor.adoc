@@ -54,7 +54,7 @@ It can also use both sendmail-test and readmail-test independently to determine 
 | `message-encoding`     | Set the message encoding                                                                     | optional | `7-bit`
 | `quit-wait`            | If set to false, the QUIT command is sent and the connection is immediately closed. If set 
                             to true (the default), causes the transport to wait for the response to the QUIT command.   | optional | `true`
-| `transport`            | smtp  or smtps                                                                               | optional | `smtp`
+| `transport`            | The transport protocol to use. One of: `smtp`  or `smtps`                                    | optional | `smtp`
 | `ssl-enable`           | Use SSL or not                                                                               | optional | `"false`
 | `start-tls`            | Use the STARTTLS command (if supported or required by the server) to switch the connection 
                             to a TLS-protected connection before issuing any login commands                             | optional | `"false`
@@ -93,7 +93,7 @@ It can also use both sendmail-test and readmail-test independently to determine 
 [options="header, autowidth"]
 |===
 | Attribute    | Description                                                                                            | Required | Default value
-| `transport`  | The transport ptotocol to use. One of: pop3 pop3s imap imaps                                           | optional | `pop3`
+| `transport`  | The transport protocol to use. One of: `pop3` `pop3s` `imap` `imaps`                                   | optional | `pop3`
 | `ssl-enable` | Whether to enable SSL for the connection                                                               | optional | `false`
 | `start-tls`  | Use the STARTTLS command (if supported or required by the server) to switch the connection to a 
                   TLS-protected connection before issuing any login commands                                            | optional | `false`
