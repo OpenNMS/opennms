@@ -31,6 +31,7 @@ package org.opennms.features.apilayer.utils;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -43,6 +44,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -68,12 +70,15 @@ import org.opennms.integration.api.v1.model.TopologySegment;
 import org.opennms.integration.api.v1.model.immutables.ImmutableEventParameter;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyEdge;
@@ -273,6 +278,9 @@ public class ModelMappersTest {
         String locationName = "test.location";
         onmsNode.setLocation(new OnmsMonitoringLocation(locationName, null));
 
+        onmsNode.addCategory(new OnmsCategory("foo"));
+        onmsNode.addCategory(new OnmsCategory("bar"));
+
         OnmsAssetRecord onmsAssetRecord = new OnmsAssetRecord();
         onmsAssetRecord.setVendor("test.vendor");
         onmsAssetRecord.setModelNumber("test.model");
@@ -365,6 +373,10 @@ public class ModelMappersTest {
         assertThat(snmpInterface.getIfIndex(), equalTo(onmsNode.getSnmpInterfaces().iterator().next().getIfIndex()));
 
         assertThat(node.getMetaData().size(), equalTo(onmsNode.getMetaData().size()));
+
+
+        assertThat(node.getCategories(), containsInAnyOrder(Arrays.asList(equalTo("bar"), equalTo("foo"))));
+
     }
 
     @Test
@@ -387,6 +399,19 @@ public class ModelMappersTest {
         assertThat(apiAlarmFeedback.getReason(), equalTo(alarmFeedback.getReason()));
         assertThat(apiAlarmFeedback.getUser(), equalTo(alarmFeedback.getUser()));
         assertThat(apiAlarmFeedback.getTimestamp(), equalTo(alarmFeedback.getTimestamp()));
+    }
+
+    @Test
+    public void canMapAlarm() {
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setManagedObjectType("mo");
+        alarm.setManagedObjectInstance("mi");
+        alarm.setAlarmAckUser("IAteTooManyNerdsAtDevJam2020");
+
+        Alarm apiAlarm = ModelMappers.toAlarm(alarm);
+        assertThat(apiAlarm.getManagedObjectType(), equalTo("mo"));
+        assertThat(apiAlarm.getManagedObjectInstance(), equalTo("mi"));
+        assertThat(apiAlarm.isAcknowledged(), equalTo(true));
     }
 
     @Test
