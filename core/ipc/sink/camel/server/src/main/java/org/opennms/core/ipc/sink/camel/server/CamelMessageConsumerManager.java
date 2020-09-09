@@ -28,6 +28,8 @@
 
 package org.opennms.core.ipc.sink.camel.server;
 
+import static org.opennms.core.ipc.sink.api.Message.SINK_METRIC_CONSUMER_DOMAIN;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.MetricRegistry;
 
 /**
@@ -68,6 +71,8 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
 
     @Autowired
     private Identity identity;
+
+    private JmxReporter jmxReporter = null;
 
     public CamelMessageConsumerManager(CamelContext context, MetricRegistry metricRegistry) throws Exception {
         this.context = Objects.requireNonNull(context);
@@ -115,12 +120,17 @@ public class CamelMessageConsumerManager extends AbstractMessageConsumerManager 
         if (tracerRegistry != null && identity != null) {
             tracerRegistry.init(identity.getId());
         }
+
+        jmxReporter = JmxReporter.forRegistry(metricRegistry).inDomain(SINK_METRIC_CONSUMER_DOMAIN).build();
+        jmxReporter.start();
     }
 
     public void shutdown() {
         if(getStartupExecutor() != null) {
             getStartupExecutor().shutdown();
         }
+
+        jmxReporter.stop();
     }
 
     private static final class DynamicIpcRouteBuilder extends RouteBuilder {
