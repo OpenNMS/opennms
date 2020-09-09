@@ -38,8 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Ignore
-public class OnmsRestEventsToEsTest {
-	private static final Logger LOG = LoggerFactory.getLogger(OnmsRestEventsToEsTest.class);
+public class OnmsRestEventsToEsIT {
+	private static final Logger LOG = LoggerFactory.getLogger(OnmsRestEventsToEsIT.class);
 
 	private String opennmsUrl = "http://localhost:8980";
 	private String userName = "admin";

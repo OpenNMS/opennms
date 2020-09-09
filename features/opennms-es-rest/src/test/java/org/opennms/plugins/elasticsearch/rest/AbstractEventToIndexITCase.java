@@ -36,7 +36,7 @@ import org.opennms.features.jest.client.RestClientFactory;
 
 import io.searchbox.client.JestClient;
 
-public abstract class AbstractEventToIndexTest {
+public abstract class AbstractEventToIndexITCase {
 
     protected JestClient jestClient;
     protected EventToIndex eventToIndex;

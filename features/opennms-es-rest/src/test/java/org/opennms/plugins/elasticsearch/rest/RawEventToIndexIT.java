@@ -51,8 +51,8 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
 
-public class RawEventToIndexTest extends AbstractEventToIndexTest {
-	private static final Logger LOG = LoggerFactory.getLogger(RawEventToIndexTest.class);
+public class RawEventToIndexIT extends AbstractEventToIndexITCase {
+	private static final Logger LOG = LoggerFactory.getLogger(RawEventToIndexIT.class);
 
 	private static final String EVENT_INDEX_TYPE = "eventdata";
 

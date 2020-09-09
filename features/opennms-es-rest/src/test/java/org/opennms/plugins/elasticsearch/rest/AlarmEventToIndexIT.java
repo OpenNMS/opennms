@@ -53,7 +53,7 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
 
-public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
+public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 	public static final int INDEX_WAIT_SECONDS=10; // time to wait for index to catch up
 
 	// See NMS-9831 for more information
