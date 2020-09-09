@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.opennms.core.rpc.utils.mate.Interpolator;
+import org.opennms.core.rpc.utils.mate.Scope;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.config.threshd.Basethresholddef;
 import org.opennms.netmgt.config.threshd.Expression;
 import org.opennms.netmgt.config.threshd.ResourceFilter;
@@ -124,7 +127,11 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a double.
      */
-    public double getRearm() {
+    public Double getRearm() {
+        return StringUtils.parseDouble(m_baseDef.getRearm(), null);
+    }
+
+    public String getRearmString() {
         return m_baseDef.getRearm();
     }
     
@@ -133,7 +140,11 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a int.
      */
-    public int getTrigger() {
+    public Integer getTrigger() {
+        return StringUtils.parseInt(m_baseDef.getTrigger(), null);
+    }
+
+    public String getTriggerString() {
         return m_baseDef.getTrigger();
     }
     
@@ -151,9 +162,15 @@ public abstract class BaseThresholdDefConfigWrapper {
      *
      * @return a double.
      */
-    public double getValue() {
+    public Double getValue() {
+        return StringUtils.parseDouble(m_baseDef.getValue(), null);
+    }
+
+
+    public String getValueString() {
         return m_baseDef.getValue();
     }
+
     
     /**
      * <p>hasRearm</p>
@@ -250,5 +267,29 @@ public abstract class BaseThresholdDefConfigWrapper {
     }
     
     public abstract void accept(ThresholdDefVisitor thresholdDefVisitor);
+
+    public ThresholdEvaluatorState.ThresholdValues interpolateThresholdValues(Scope scope) {
+        Double thresholdValue = interpolateDoubleValue(getValueString(), scope).orElse(getValue());
+        Double rearm = interpolateDoubleValue(getRearmString(), scope).orElse(getRearm());
+        Integer trigger = interpolateIntegerValue(getTriggerString(), scope).orElse(getTrigger());
+        return new ThresholdEvaluatorState.ThresholdValues(thresholdValue, rearm, trigger);
+    }
+
+    private Optional<Double> interpolateDoubleValue(String value, Scope scope) {
+        if (Interpolator.containsMateData(value)) {
+            String interpolatedValue = Interpolator.interpolate(value, scope);
+            return Optional.ofNullable(StringUtils.parseDouble(interpolatedValue, null));
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Integer> interpolateIntegerValue(String value, Scope scope) {
+        if (Interpolator.containsMateData(value)) {
+            String interpolatedValue = Interpolator.interpolate(value, scope);
+            return Optional.ofNullable(StringUtils.parseInt(interpolatedValue, null));
+        }
+        return Optional.empty();
+    }
+
 }
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,17 +30,9 @@ package org.opennms.netmgt.threshd;
 
 import java.util.function.Consumer;
 
-public interface ExpressionThresholdValue {
-    /**
-     * @param expressionConsumer a consumer for accepting the interpolated expression and threshold values for caching purposes
-     * @return the expression value
-     */
-    ExpressionConfigWrapper.ExpressionValue get(Consumer<ExpressionConfigWrapper.ExpressionValue> expressionConsumer) throws ThresholdExpressionException;
+public interface ThresholdValuesConsumer {
 
-    /**
-     * @param evaluatedExpression the already interpolated expression which will be used rather than interpolating the
-     *                            expression
-     * @return the expression value
-     */
-    double get(String evaluatedExpression) throws ThresholdExpressionException;
+    ThresholdEvaluatorState.ThresholdValues get(Consumer<ThresholdEvaluatorState.ThresholdValues> thresholdsConsumer);
+
+    Double getDsValue();
 }

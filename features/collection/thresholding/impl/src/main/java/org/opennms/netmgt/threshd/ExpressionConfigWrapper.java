@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import org.apache.commons.jexl2.ExpressionImpl;
 import org.apache.commons.jexl2.JexlEngine;
@@ -175,7 +174,10 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
     public ExpressionValue interpolateAndEvaluate(Map<String, Double> values, Scope scope)
             throws ThresholdExpressionException {
         String interpolatedExpression = interpolateExpression(m_expression.getExpression(), scope);
-        return new ExpressionValue(interpolatedExpression, evaluate(interpolatedExpression, values));
+        ExpressionValue expressionValue = new ExpressionValue(interpolatedExpression, evaluate(interpolatedExpression, values));
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = interpolateThresholdValues(scope);
+        expressionValue.setThresholdValues(thresholdValues);
+        return expressionValue;
     }
 
     @Override
@@ -197,10 +199,19 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
     public static class ExpressionValue {
         public final String expression;
         public final double value;
+        private ThresholdEvaluatorState.ThresholdValues thresholdValues;
 
         public ExpressionValue(String expression, double value) {
             this.expression = Objects.requireNonNull(expression);
             this.value = value;
+        }
+
+        public ThresholdEvaluatorState.ThresholdValues getThresholdValues() {
+            return thresholdValues;
+        }
+
+        public void setThresholdValues(ThresholdEvaluatorState.ThresholdValues thresholdValues) {
+            this.thresholdValues = thresholdValues;
         }
 
         @Override
