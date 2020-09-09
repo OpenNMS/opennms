@@ -630,8 +630,8 @@ public class PollablesIT {
         pDot1Icmp.doPoll();
         m_network.processStatusChange(new Date());
 
-        final String ifOutageOnNode1 = "select * from outages, ifServices, ipInterface where outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 1 and ipInterface.ipAddr = '192.168.1.1'";
-        final String ifOutageOnNode2 = "select * from outages, ifServices, ipInterface where outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 2 and ipInterface.ipAddr = '192.168.1.1'";
+        final String ifOutageOnNode1 = "select * from outages, ifServices, ipInterface where outages.perspective is null and outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 1 and ipInterface.ipAddr = '192.168.1.1'";
+        final String ifOutageOnNode2 = "select * from outages, ifServices, ipInterface where outages.perspective is null and outages.ifServiceId = ifServices.id and ifServices.ipInterfaceId = ipInterface.id and ipInterface.nodeId = 2 and ipInterface.ipAddr = '192.168.1.1'";
 
         m_eventMgr.finishProcessingEvents();
 

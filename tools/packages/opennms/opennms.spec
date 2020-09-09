@@ -150,18 +150,6 @@ This package contains the API and user documentation.
 %{extrainfo2}
 
 
-%package remote-poller
-Summary:	Remote (Distributed) Poller for %{_descr}
-Group:		Applications/System
-
-%description remote-poller
-The distributed monitor.  For details, see:
-  http://www.opennms.org/index.php/Distributed_Monitoring
-
-%{extrainfo}
-%{extrainfo2}
-
-
 %package jmx-config-generator
 Summary:	Generate JMX Configuration
 Group:		Applications/System
@@ -186,19 +174,6 @@ Obsoletes:	opennms-webapp < 1.3.11
 %description webapp-jetty
 The web UI.  This is the Jetty version, which runs
 embedded in the main core process.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package webapp-remoting
-Summary:	Remote Poller webapp
-Group:		Applications/System
-Requires:	%{name}-webapp-jetty = %{version}-%{release}
-Conflicts:	%{name}-webapp-jetty < 19.0.0-0
-
-%description webapp-remoting
-The JNLP application that provides the Remote Poller.
 
 %{extrainfo}
 %{extrainfo2}
@@ -654,17 +629,11 @@ chmod -R go-w %{buildroot}%{sharedir}/etc-pristine/
 
 install -d -m 755 "%{buildroot}%{_initrddir}" "%{buildroot}%{_sysconfdir}/sysconfig" "%{buildroot}%{_unitdir}"
 install -m 644 %{buildroot}%{instprefix}/etc/opennms.service %{buildroot}%{_unitdir}
-install -m 755 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.init      %{buildroot}%{_initrddir}/opennms-remote-poller
-install -m 640 %{buildroot}%{instprefix}/contrib/remote-poller/remote-poller.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/opennms-remote-poller
-rm -rf %{buildroot}%{instprefix}/contrib/remote-poller
 
 rm -rf %{buildroot}%{instprefix}/lib/*.tar.gz
 
 # Remove all duplicate JARs from /system and symlink them to the JARs in /lib to save disk space
 for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find %{buildroot}%{instprefix}/system -name $BASENAME`; do rm -f $SYSFILE; ln -s /opt/opennms/lib/$BASENAME $SYSFILE; done; done
-# Remove all duplicate JARs from /jetty-webapps/opennms-remoting/webstart and symlink them to the JARs in /lib to save disk space
-# NOTE: We can't do this because the JARs in webstart are signed
-#for FILE in %{buildroot}%{instprefix}/lib/*.jar; do BASENAME=`basename $FILE`; for SYSFILE in `find %{buildroot}%{instprefix}/jetty-webapps/opennms-remoting/webstart -name $BASENAME`; do rm -f $SYSFILE; ln -s %{instprefix}/lib/$BASENAME $SYSFILE; done; done
 
 cd %{buildroot}
 
@@ -673,8 +642,6 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	sed -e "s,^%{buildroot},%config(noreplace) ," | \
 	grep -v -E 'etc/.*.cfg$' | \
 	grep -v 'etc/custom.properties' | \
-	grep -v '%{_initrddir}/opennms-remote-poller' | \
-	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'jira.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
 	grep -v 'juniper-tca' | \
@@ -701,8 +668,6 @@ find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^%{buildroot},," | \
-	grep -v '%{_initrddir}/opennms-remote-poller' | \
-	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'jira.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
 	grep -v 'juniper-tca' | \
@@ -721,8 +686,6 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 find %{buildroot}%{instprefix}/bin ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v '/jmx-config-generator' | \
-	grep -v '/remote-poller.sh' | \
-	grep -v '/remote-poller.jar' | \
 	sort >> %{_tmppath}/files.main
 find %{buildroot}%{sharedir} ! -type d | \
 	sed -e "s,^%{buildroot},," | \
@@ -766,7 +729,6 @@ find %{buildroot}%{instprefix}/etc %{buildroot}%{instprefix}/lib %{buildroot}%{i
 # jetty
 find %{buildroot}%{jettydir} ! -type d | \
 	sed -e "s,^%{buildroot},," | \
-	grep -v '/opennms-remoting' | \
 	grep -v '/hawtio' | \
 	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
@@ -774,12 +736,10 @@ find %{buildroot}%{jettydir} ! -type d | \
 	sort >> %{_tmppath}/files.jetty
 find %{buildroot}%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^%{buildroot},%config ," | \
-	grep -v '/opennms-remoting' | \
 	grep -v '/hawtio' | \
 	sort >> %{_tmppath}/files.jetty
 find %{buildroot}%{jettydir} -type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
-	grep -v '/opennms-remoting' | \
 	grep -v '/hawtio' | \
 	sort >> %{_tmppath}/files.jetty
 
@@ -809,12 +769,6 @@ rm -rf %{buildroot}
 %defattr(644 root root 755)
 %{_docdir}/%{name}-%{version}
 
-%files remote-poller
-%attr(755,root,root) %{_initrddir}/opennms-remote-poller
-%attr(755,root,root) %config(noreplace) %{_sysconfdir}/sysconfig/opennms-remote-poller
-%attr(755,root,root) %{bindir}/remote-poller.sh
-%{instprefix}/bin/remote-poller.jar
-
 %files jmx-config-generator
 %attr(755,root,root) %{bindir}/jmx-config-generator
 %{instprefix}/lib/opennms_jmx_config_generator.jar
@@ -826,11 +780,6 @@ rm -rf %{buildroot}
 %files webapp-jetty -f %{_tmppath}/files.jetty
 %defattr(644 root root 755)
 %config %{jettydir}/%{servletdir}/WEB-INF/*.properties
-
-%files webapp-remoting
-%defattr(644 root root 755)
-%config %{jettydir}/opennms-remoting/WEB-INF/*.xml
-%{jettydir}/opennms-remoting
 
 %files webapp-hawtio
 %defattr(644 root root 755)

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<thresholding-config>
+    <group name="ICMP" rrdRepository="target/rrd/response/">
+        <threshold type="high" ds-name="icmp" ds-type="if" value="50" rearm="25" trigger="1" />
+    </group>
+</thresholding-config>

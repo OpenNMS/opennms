@@ -218,8 +218,14 @@ final class DataUpdater implements Runnable {
     private void processEvent() {
 
         if (m_event == null) {
-
             LOG.debug("Event is null, nothing to process");
+            return;
+        }
+
+        final boolean isPerspectiveNull = m_event.getParm("perspective") == null ? true : m_event.getParm("perspective").getValue() == null;
+
+        if (!isPerspectiveNull) {
+            LOG.trace("Event's perspective is not null, nothing to process");
             return;
         }
 

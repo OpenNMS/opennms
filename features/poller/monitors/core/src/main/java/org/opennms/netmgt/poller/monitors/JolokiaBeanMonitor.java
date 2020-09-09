@@ -45,8 +45,6 @@ import org.jolokia.client.request.J4pReadResponse;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
@@ -62,7 +60,6 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:cliles@capario.com">Chris Liles</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</a>
  */
-@Distributable(DistributionContext.DAEMON)
 final public class JolokiaBeanMonitor extends ParameterSubstitutingMonitor {
 
     /**

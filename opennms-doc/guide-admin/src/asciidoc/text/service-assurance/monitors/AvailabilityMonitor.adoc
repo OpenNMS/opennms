@@ -8,9 +8,6 @@ This monitor tests reachability of a node by using the _isReachable_ method of t
 The service is considered available if isReachable returns true.
 See link:http://docs.oracle.com/javase/7/docs/api/java/net/InetAddress.html#isReachable%28int%29[Oracle's documentation] for more details.
 
-IMPORTANT: This monitor is deprecated in favour of the <<poller-icmp-monitor,IcmpMonitor>> monitor. You should only use this monitor on remote pollers
-running on unusual configurations (See <<poller-availability-monitor-vs-icmp-monitor,below>> for more details).
-
 ===== Monitor facts
 
 [options="autowidth"]
@@ -37,5 +34,6 @@ This monitor implements the <<ga-service-assurance-monitors-common-parameters, C
 
 [[poller-availability-monitor-vs-icmp-monitor]]
 ===== IcmpMonitor vs AvailabilityMonitor
-This monitor has been developped in a time when the <<poller-icmp-monitor,IcmpMonitor>> monitor wasn't remote enabled, to circumvent this limitation.
-Now, with the JNA ICMP implementation, the IcmpMonitor monitor is remote enabled under most configurations and this monitor shouldn't be needed -unless you're running your remote poller on such an unusual configuration (See also link:http://issues.opennms.org/browse/NMS-6735[issue NMS-6735] for more information)-.
+This monitor has been developed in a time when the <<poller-icmp-monitor,IcmpMonitor>> monitor wasn't remote enabled, to circumvent this limitation.
+Now, with the JNA ICMP implementation, the IcmpMonitor monitor is remote enabled under most configurations and this monitor shouldn't be needed.
+

@@ -759,12 +759,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.assemblies</groupId>
-      <artifactId>org.opennms.assemblies.http-remoting</artifactId>
-      <type>war</type>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-base-assembly</artifactId>
       <type>tar.gz</type>

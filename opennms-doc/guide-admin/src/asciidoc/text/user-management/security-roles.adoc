@@ -17,7 +17,6 @@ Available security roles (those with an asterisk are the most commonly used):
 [options="header, autowidth"]
 |===
 | Security Role Name  | Description
-| anyone            | If the `opennms-webapp-remoting` package is installed, any user can download the Java Webstart installation package for the remote poller from http://opennms.server:8980/opennms-remoting/webstart/app.jnlp.
 | ROLE_ADMIN*        | Permissions to create, read, update, and delete in the web UI and the _ReST API_.
 | ROLE_ASSET_EDITOR | Permissions only to update the asset records from nodes.
 | ROLE_DASHBOARD    | Allow user access only to the dashboard. 
@@ -30,7 +29,6 @@ endif::opennms-prime[]
 | ROLE_MOBILE       | Allow user to use OpenNMS COMPASS mobile application to acknowledge alarms and notifications via the REST API.
 | ROLE_PROVISION    | Allow user to use the provisioning system and configure SNMP in {opennms-product-name} to access management information from devices.
 | ROLE_READONLY*     | User limited to reading information in the web UI; unable to change alarm states or notifications.
-| ROLE_REMOTING     | Permissions to allow access from a Remote Poller instance to exchange monitoring information.
 | ROLE_REPORT_DESIGNER| Permissions to manage reports in the web UI and REST API. 
 | ROLE_REST         | Allow users to interact with the entire {opennms-product-name} REST API.
 | ROLE_RTC*          | Exchange information with the {opennms-product-name} Real-Time Console for availability calculations.

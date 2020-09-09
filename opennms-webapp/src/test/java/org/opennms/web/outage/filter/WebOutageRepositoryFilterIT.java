@@ -128,7 +128,7 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         OutageCriteria criteria = new OutageCriteria(filter);
         
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(3, outages.length);
+        assertEquals(5, outages.length);
     }
     
     @Test
@@ -148,7 +148,7 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         OutageCriteria criteria = new OutageCriteria(filter);
         
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(1, outages.length);
+        assertEquals(2, outages.length);
     }
     
     @Test
@@ -184,7 +184,7 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         OutageCriteria criteria = new OutageCriteria(filter);
         
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(2, outages.length);
+        assertEquals(3, outages.length);
     }
 
     @Test
@@ -194,7 +194,7 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         OutageCriteria criteria = new OutageCriteria(filter);
         
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(2, outages.length);
+        assertEquals(4, outages.length);
     }
     
     @Test
@@ -251,7 +251,7 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         OutageCriteria criteria2 = new OutageCriteria(filter2);
         
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(2, outages.length);
+        assertEquals(4, outages.length);
         
         outages = m_daoOutageRepo.getMatchingOutages(criteria2);
         assertEquals(1, outages.length);
@@ -264,6 +264,6 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         OutageCriteria criteria = new OutageCriteria(filter);
         
         Outage[] outages = m_daoOutageRepo.getMatchingOutages(criteria);
-        assertEquals(2, outages.length);
+        assertEquals(4, outages.length);
     }
 }

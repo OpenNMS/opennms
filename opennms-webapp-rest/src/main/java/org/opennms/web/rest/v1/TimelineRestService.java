@@ -350,6 +350,7 @@ public class TimelineRestService extends OnmsRestService {
 
         builder.eq("serviceType.name", serviceName);
         builder.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress));
+        builder.isNull("perspective");
 
         builder.alias("monitoredService", "monitoredService");
         builder.alias("monitoredService.ipInterface", "ipInterface");
