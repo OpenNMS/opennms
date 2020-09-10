@@ -44,7 +44,7 @@ useEnvCredentials(){
 
 setCredentials() {
   # Directory to initialize a new keystore file which can be mounted to the local host
-  if [ -d /keystore ]; then
+  if [ ! -d /keystore ]; then
     mkdir /keystore
   fi
 
