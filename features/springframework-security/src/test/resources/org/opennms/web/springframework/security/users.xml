@@ -39,5 +39,42 @@
       <password>DC7161BE3DBF2250C8954E560CC35060</password>
       <role>ROLE_DASHBOARD</role>
     </user>
+    <user>
+      <user-id>asteriskPasswordUser</user-id>
+      <full-name>User with an asterisk in their password</full-name>
+      <user-comments></user-comments>
+      <password>DC7161BE3DBF2250C8954E560CC35060</password>
+      <role>ROLE_USER</role>
+    </user>
+      <user>
+         <user-id>with-asterisk-16</user-id>
+         <password salt="true">qPqNTXHJa4WTlF2308fhOR8AZIkodbVLKDELKbYOU+G87si+MyIPaba4Sz8NYYP5</password>
+         <role>ROLE_USER</role>
+      </user>
+      <user>
+         <user-id>with-asterisk-24</user-id>
+         <password salt="true">JCk6dh0GtmhDW9bt9EsI6FwE43RWd44q0c9x2dtpg2l3xVWYExWM7VO2juAYbPa9</password>
+         <role>ROLE_USER</role>
+      </user>
+      <user>
+         <user-id>with-asterisk-32</user-id>
+         <password salt="true">wZVf+vR8mb2v1FCG7zrgBnKZAOFm3r2jkmtNjTIRjP6bmOIjSOI3ozVTlpPnP0EO</password>
+         <role>ROLE_USER</role>
+      </user>
+      <user>
+         <user-id>no-asterisk-16</user-id>
+         <password salt="true">t87W7Br8INiK/cBdKUsLp3wxD/Jl2IoScrC+Q5Rv1aKH3WstVb3CcCNbtY9KplLa</password>
+         <role>ROLE_USER</role>
+      </user>
+      <user>
+         <user-id>no-asterisk-24</user-id>
+         <password salt="true">4dPC0aNorfqDlaE7ElgkyCKod9uwjPE/21NrWNA7V1voaPS6Zt2zVAZdjrH8NKvY</password>
+         <role>ROLE_USER</role>
+      </user>
+      <user>
+         <user-id>no-asterisk-32</user-id>
+         <password salt="true">65WHOZ9QIhxR8fgefhQxrJgpP3ezoxHhnf0skgDkrEhYyeqDqPLXfFZlprwm5ZbI</password>
+         <role>ROLE_USER</role>
+      </user>
   </users>
 </userinfo>
