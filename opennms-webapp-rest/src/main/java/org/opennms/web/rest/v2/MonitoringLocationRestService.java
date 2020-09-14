@@ -40,12 +40,16 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.support.SearchProperties;
 import org.opennms.web.rest.support.SearchProperty;
 import org.opennms.web.rest.v1.support.OnmsMonitoringLocationDefinitionList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,9 +62,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Path("monitoringLocations")
 @Transactional
 public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMonitoringLocation,OnmsMonitoringLocation,String,String> {
+    private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationRestService.class);
 
     @Autowired
     private MonitoringLocationDao m_dao;
+
+    @Autowired
+    @Qualifier("eventProxy")
+    private EventProxy m_eventProxy;
 
     @Override
     protected MonitoringLocationDao getDao() {
@@ -103,22 +112,29 @@ public class MonitoringLocationRestService extends AbstractDaoRestService<OnmsMo
     }
 
     @Override
-    public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsMonitoringLocation object) {
-        final String id = getDao().save(object);
+    public Response doCreate(final SecurityContext securityContext, final UriInfo uriInfo, final OnmsMonitoringLocation location) {
+
+        final String id = getDao().save(location);
+
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
     }
 
     @Override
     protected Response doUpdate(final SecurityContext securityContext, final UriInfo uriInfo, final String key, final OnmsMonitoringLocation targetObject) {
+
         if (!key.equals(targetObject.getLocationName())) {
             throw getException(Status.BAD_REQUEST, "The ID of the object doesn't match the ID of the path: {} != {}", targetObject.getLocationName(), key);
         }
+
+        m_dao.clear();
+
         getDao().saveOrUpdate(targetObject);
+
         return Response.noContent().build();
     }
 
     @Override
-    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoringLocation object) {
-        getDao().delete(object);
+    protected void doDelete(SecurityContext securityContext, UriInfo uriInfo, OnmsMonitoringLocation location) {
+        getDao().delete(location);
     }
 }

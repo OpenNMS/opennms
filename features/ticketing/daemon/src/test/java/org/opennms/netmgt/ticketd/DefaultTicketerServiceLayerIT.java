@@ -199,7 +199,6 @@ public class DefaultTicketerServiceLayerIT implements InitializingBean {
         List<RelatedAlarmSummary> relatedAlarms = ticketerPlugin.get("testId").getRelatedAlarms();
         assertFalse(relatedAlarms.isEmpty());
         assertEquals(relatedAlarms.get(0).getNodeId(), testNode.getId());
-
     }
 
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,7 +37,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +45,6 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.link.Layout;
 import org.opennms.features.topology.link.TopologyProvider;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -55,7 +53,6 @@ import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -65,8 +62,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
 /**
@@ -420,9 +415,10 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public TopologyUIPage open() {
             testCase.getDriver().get(topologyUiUrl);
-            // Wait for the "View" menu to be clickable before returning control to the test in order
-            // to make sure that the page is fully loaded
+            // Wait for the "View" menu to be clickable and the loading indicator to be gone before
+            // returning control to the test in order to make sure that the page is fully loaded
             testCase.wait.until(ExpectedConditions.elementToBeClickable(getCriteriaForMenubarElement("View")));
+            testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
             return this;
         }
  
@@ -713,6 +709,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 testCase.findElementById("defaultFocusBtn").click();
                 waitForTransition();
+                testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
             } finally {
                 testCase.setImplicitWait();
             }
@@ -890,18 +887,11 @@ public class TopologyIT extends OpenNMSSeleniumIT {
     }
 
     public static class TopologyReloadEvent {
-
-        private final OpenNMSSeleniumIT testCase;
-
-        public TopologyReloadEvent(OpenNMSSeleniumIT testCase) {
-            this.testCase = Objects.requireNonNull(testCase);
-        }
-
         // Send an event to force reload of topology
         public void send() throws InterruptedException, IOException {
             final EventBuilder builder = new EventBuilder(EventConstants.RELOAD_TOPOLOGY_UEI, getClass().getSimpleName());
             builder.setParam(EventConstants.PARAM_TOPOLOGY_NAMESPACE, "all");
-            testCase.stack.opennms().getRestClient().sendEvent(builder.getEvent());
+            OpenNMSSeleniumIT.stack.opennms().getRestClient().sendEvent(builder.getEvent());
             Thread.sleep(5000); // Wait to allow the event to be processed
         }
     }
@@ -927,8 +917,8 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             try {
                 TopologyProvider topologyProvider = (TopologyProvider) eachField.get(null);
                 topologyUiPage.selectTopologyProvider(topologyProvider);
-            } catch (IllegalAccessException e) {
-                throw Throwables.propagate(e);
+            } catch (final IllegalAccessException e) {
+                throw new IllegalStateException(e);
             }
         }
     }
@@ -1039,7 +1029,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                 "   </node>" +
                 "</model-import>";
         createRequisition(REQUISITION_NAME, requisitionXML, 5);
-        new TopologyReloadEvent(this).send();
+        new TopologyReloadEvent().send();
 
         topologyUiPage.selectTopologyProvider(TopologyProvider.PATH_OUTAGE);
         topologyUiPage.clearFocus();
@@ -1097,8 +1087,8 @@ public class TopologyIT extends OpenNMSSeleniumIT {
         try {
             // TODO: Find a better way that does not require an explicit sleep
             Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            throw Throwables.propagate(e);
+        } catch (final InterruptedException e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -1119,6 +1109,6 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                 "   </node>" +
                 "</model-import>";
         createRequisition(REQUISITION_NAME, requisitionXML, 1);
-        new TopologyReloadEvent(this).send();
+        new TopologyReloadEvent().send();
     }
 }

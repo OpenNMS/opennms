@@ -47,6 +47,7 @@ import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
      */
     @Override
     public Integer currentOutageCount() {
-        return queryInt("select count(*) from OnmsOutage as o where o.ifRegainedService is null");
+        return queryInt("select count(*) from OnmsOutage as o where o.perspective is null and o.ifRegainedService is null");
     }
 
     /**
@@ -80,12 +81,22 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
      */
     @Override
     public Collection<OnmsOutage> currentOutages() {
-        return find("from OnmsOutage as o where o.ifRegainedService is null");
+        return find("from OnmsOutage as o where o.perspective is null and o.ifRegainedService is null");
     }
 
     @Override
     public OnmsOutage currentOutageForService(OnmsMonitoredService service) {
-        return findUnique("from OnmsOutage as o where o.monitoredService = ? and o.ifRegainedService is null", service);
+        return findUnique("from OnmsOutage as o where o.perspective is null and o.monitoredService = ? and o.ifRegainedService is null", service);
+    }
+
+    @Override
+    public OnmsOutage currentOutageForServiceFromPerspective(final OnmsMonitoredService service, final OnmsMonitoringLocation perspective) {
+        return findUnique("from OnmsOutage as o where o.monitoredService = ? and o.perspective = ? and o.ifRegainedService is null", service, perspective);
+    }
+
+    @Override
+    public Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service) {
+        return find("from OnmsOutage as o where o.monitoredService = ?  and o.perspective is not null and o.ifRegainedService is null", service);
     }
 
     /** {@inheritDoc} */
@@ -128,7 +139,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                         .append("        LEFT JOIN ipInterface ON ifServices.ipInterfaceId = ipInterface.id\n")
                         .append("        LEFT JOIN node ON ipInterface.nodeId = node.nodeId\n")
                         .append("WHERE\n")
-                        .append("        outages.ifRegainedService IS NULL\n");
+                        .append("        outages.ifRegainedService IS NULL AND outages.perspective IS NULL\n");
                 if (serviceNames.size() > 0) {
                     query.append("        AND service.serviceName IN ( :serviceNames )\n");
                 }
@@ -204,6 +215,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                         "LEFT JOIN monitoredService.ipInterface AS ipInterface " +
                         "LEFT JOIN ipInterface.node AS node " +
                         "WHERE outage.ifRegainedService IS NULL " +
+                        "AND outage.perspective IS NULL " +
                         "GROUP BY node.id, node.label " +
                         "ORDER BY max(outage.ifLostService) DESC, node.label ASC, node.id ASC"
         );
@@ -248,7 +260,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                                 "left outer join ipinterface using (nodeid) " +
                                 "left outer join ifservices on (ifservices.ipinterfaceid = ipinterface.id) " +
                                 "left outer join service on (ifservices.serviceid = service.serviceid) " +
-                                "left outer join outages on (outages.ifserviceid = ifservices.id and outages.ifregainedservice is null) " +
+                                "left outer join outages on (outages.ifserviceid = ifservices.id and outages.perspective is null and outages.ifregainedservice is null) " +
                                 "where nodeType <> 'D' " +
                                 (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')='" + restrictionValue + "' " : "") +
                                 "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0")
@@ -268,5 +280,14 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                         }).list();
             }
         });
+    }
+
+    @Override
+    public Collection<OnmsOutage> getStatusChangesForApplicationIdBetween(final Date startDate, final Date endDate, final Integer applicationId) {
+        return find("SELECT DISTINCT o FROM OnmsOutage o " +
+                        "WHERE o.perspective IS NOT NULL AND " +
+                        "o.monitoredService.id IN (SELECT m.id FROM OnmsApplication a LEFT JOIN a.monitoredServices m WHERE a.id = ?) AND " +
+                        "o.perspective.id IN (SELECT p.id FROM OnmsApplication a LEFT JOIN a.perspectiveLocations p WHERE a.id = ?) AND " +
+                        "((o.ifRegainedService >= ? AND o.ifLostService <= ?) OR (o.ifLostService <= ? AND o.ifRegainedService IS NULL))", applicationId, applicationId, startDate, endDate, endDate);
     }
 }

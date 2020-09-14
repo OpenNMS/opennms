@@ -43,8 +43,6 @@ import org.opennms.netmgt.measurements.impl.AbstractRrdBasedFetchStrategy;
 import org.opennms.netmgt.measurements.model.QueryMetadata;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsAttribute;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
@@ -107,11 +105,6 @@ public class CustomSpringConfiguration {
 
             @Override
             public OnmsResource getResourceForNode(OnmsNode node) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public OnmsResource getResourceForIpInterface(OnmsIpInterface ipInterface, OnmsLocationMonitor locationMonitor) {
                 throw new UnsupportedOperationException();
             }
 

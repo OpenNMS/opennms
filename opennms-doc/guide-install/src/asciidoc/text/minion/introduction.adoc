@@ -17,9 +17,6 @@ The network area where access to managed network devices and applications is all
 Monitored _Nodes_ and _IP Services_ are associated to _Locations_ and are defined during _Provisioning_.
 Each _Minion_ is configured with a _Location_ and all _Nodes_ and _IP Services_ in the same _Location_ are monitored through this _Minion_.
 
-NOTE: The _Minion_ is currently not designed to be a replacement for the _Remote Poller_.
-      By using the _Remote Poller_ a service can be tested from several remote sites, whereas a _Minion_ extends network reachability for a central _{opennms-product-name}_ instance.
-
 [[gi-install-minion-location]]
 ._Nodes_ with _Minions_ in _Locations_
 image::minion/01_minion-location.png[]

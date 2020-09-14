@@ -198,6 +198,7 @@ public class QueryManagerDaoImpl implements QueryManager {
     public void closeOutagesForUnmanagedServices() {
         Date closeDate = new java.util.Date();
         Criteria criteria = new Criteria(OnmsOutage.class);
+        criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {
             new Alias("monitoredService", "monitoredService", JoinType.LEFT_JOIN)
         }));
@@ -215,6 +216,7 @@ public class QueryManagerDaoImpl implements QueryManager {
         }
 
         criteria = new Criteria(OnmsOutage.class);
+        criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {
             new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN)
         }));
@@ -241,6 +243,7 @@ public class QueryManagerDaoImpl implements QueryManager {
     @Override
     public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
         Criteria criteria = new Criteria(OnmsOutage.class);
+        criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {
             new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
             new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN)
@@ -267,6 +270,7 @@ public class QueryManagerDaoImpl implements QueryManager {
     @Override
     public void closeOutagesForInterface(Date closeDate, int eventId, int nodeId, String ipAddr) {
         Criteria criteria = new Criteria(OnmsOutage.class);
+        criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {
             new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
             new Alias("ipInterface.node", "node", JoinType.LEFT_JOIN)
@@ -295,6 +299,7 @@ public class QueryManagerDaoImpl implements QueryManager {
     @Override
     public void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName) {
         Criteria criteria = new Criteria(OnmsOutage.class);
+        criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {
             new Alias("monitoredService.ipInterface", "ipInterface", JoinType.LEFT_JOIN),
             new Alias("monitoredService.serviceType", "serviceType", JoinType.LEFT_JOIN),

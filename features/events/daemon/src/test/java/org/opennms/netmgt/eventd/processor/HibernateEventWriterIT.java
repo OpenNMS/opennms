@@ -290,7 +290,7 @@ public class HibernateEventWriterIT {
     
     @Test
     public void testGetEventHostWithNullHost() throws Exception {
-        jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now())");
+        jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeLabel) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now(), 'test')");
         int nodeId = jdbcTemplate.queryForObject("SELECT nodeId FROM node LIMIT 1", Integer.class);
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
         
@@ -302,7 +302,7 @@ public class HibernateEventWriterIT {
 
     @Test
     public void testGetEventHostWithHostNoNodeId() throws Exception {
-        jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now())");
+        jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeLabel) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now(), 'test')");
         int nodeId = jdbcTemplate.queryForObject("SELECT nodeId FROM node LIMIT 1", Integer.class);
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
         
@@ -315,7 +315,7 @@ public class HibernateEventWriterIT {
     
     @Test
     public void testGetEventHostWithOneMatch() throws Exception {
-        jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now())");
+        jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeLabel) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now(), 'test')");
         long nodeId = jdbcTemplate.queryForObject("SELECT nodeId FROM node LIMIT 1", Long.class);
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
 
@@ -329,7 +329,7 @@ public class HibernateEventWriterIT {
     
     @Test
     public void testGetHostNameWithOneMatch() throws Exception {
-        jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now())");
+        jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeLabel) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now(), 'test')");
         int nodeId = jdbcTemplate.queryForObject("SELECT nodeId FROM node LIMIT 1", Integer.class);
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr, ipHostname) VALUES (?, ?, ?)", nodeId, "192.168.1.1", "First Interface");
         
@@ -338,7 +338,7 @@ public class HibernateEventWriterIT {
     
     @Test
     public void testGetHostNameWithOneMatchNullHostname() throws Exception {
-        jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now())");
+        jdbcTemplate.update("INSERT INTO node (location, nodeId, nodeCreateTime, nodeLabel) VALUES ('" + MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID + "', nextVal('nodeNxtId'), now(), 'test')");
         int nodeId = jdbcTemplate.queryForObject("SELECT nodeId FROM node LIMIT 1", Integer.class);
         jdbcTemplate.update("INSERT into ipInterface (nodeId, ipAddr) VALUES (?, ?)", nodeId, "192.168.1.1");
     

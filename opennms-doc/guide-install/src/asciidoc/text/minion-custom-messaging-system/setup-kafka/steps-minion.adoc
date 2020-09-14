@@ -74,7 +74,7 @@ opennms-core-ipc-sink-kafka | 25.0.0           | x        | Started
 .Test connectivity to Kafka
 [source, shell]
 ----
-health:check 
+opennms:health-check 
 Verifying the health of the container
 
 Connecting to OpenNMS ReST API   [ Success  ]

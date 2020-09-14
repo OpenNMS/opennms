@@ -351,6 +351,18 @@ runCmd(){
 	fi
 }
 
+clearPids(){
+	for PIDFILE in \
+		"${OPENNMS_PIDFILE}" \
+		"/karaf.pid" \
+		"${LOG_DIRECTORY}/karaf.pid" \
+	; do
+		if [ -n "${PIDFILE}" ] && [ -r "${PIDFILE}" ]; then
+			rm -f "${PIDFILE}"
+		fi
+	done
+}
+
 doStart(){
 	checkConfigured || return 1
 	checkXmlFiles   || return 1
@@ -428,32 +440,34 @@ doStart(){
 		APP_VM_PARMS=("-Dorg.apache.jasper.compiler.disablejsr199=true" "${APP_VM_PARMS[@]}")
 	fi
 
-	CMD=("${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}")
-	if [ "$BACKGROUND" = 1 ]; then
-		# shellcheck disable=SC2129
-		{
-			echo "------------------------------------------------------------------------------"
-			date
-			echo "begin ulimit settings:"
-			ulimit -a
-			echo "end ulimit settings"
-			echo "Executing command:" "${CMD[@]}"
-		} >> "$REDIRECT"
-
-		# NMS-12226 runCmd & spawns a subshell process for the function runCmd which is not the PID of the java process.
-		# To avoid this spawn the command directly so the $! is the PID of java.
-		if [[ "$NOEXECUTE" == "0" ]]; then
-			"${CMD[@]}" >>"$REDIRECT" 2>&1 &
-		else
-			echo "Skipping execution: ${CMD[*]}"
+	CMD=("${JAVA_CMD[@]}" "-Dopennms.pidfile=${OPENNMS_PIDFILE}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}")
+	if [ "$SYSTEMD" = 1 ]; then
+		if [ "$BACKGROUND" = 0 ]; then
+			echo "WARNING: -s (systemd) was passed, -f (foreground) is ignored" >&2
 		fi
-		OPENNMS_PID="$!"
-		echo "$OPENNMS_PID" > "$OPENNMS_PIDFILE"
-	else
 		echo "running ulimit -a"
 		ulimit -a
-		runCmd "${CMD[@]}"
-		exit $?
+		runCmd "${CMD[@]}" &
+		exit 0
+	else
+		if [ "$BACKGROUND" = 1 ]; then
+			# shellcheck disable=SC2129
+			{
+				echo "------------------------------------------------------------------------------"
+				date
+				echo "begin ulimit settings:"
+				ulimit -a
+				echo "end ulimit settings"
+				echo "Executing command:" "${CMD[@]}"
+			} >> "$REDIRECT"
+
+			runCmd "${CMD[@]}" >> "$REDIRECT" 2>&1 &
+		else
+			echo "running ulimit -a"
+			ulimit -a
+			runCmd "${CMD[@]}"
+			exit $?
+		fi
 	fi
 
 	if [ "$START_TIMEOUT" -eq 0 ]; then
@@ -555,7 +569,7 @@ doStop() {
 	while [ "$STATUS_ATTEMPTS" -lt "$STOP_TIMEOUT" ]; do
 		doStatus "$@"
 		if [ "$?" -eq 3 ]; then
-			echo "" > "$OPENNMS_PIDFILE"
+			clearPids
 			return 0
 		fi
 
@@ -604,7 +618,7 @@ doKill(){
 		fi
 	fi
 
-	echo "" > "$OPENNMS_PIDFILE"
+	clearPids
 	return 0
 }
 
@@ -804,16 +818,20 @@ OPROFILE=0
 NOEXECUTE=0
 VERBOSE=0
 BACKGROUND=1
+SYSTEMD=0
 
 NAME="opennms"
 
-while getopts c:fntvpoQ c; do
+while getopts c:fsntvpoQ c; do
 	case $c in
 		c)
 			APP_PARMS_CONTROLLER+=("-t" "$OPTARG")
 			;;
 		f)
 			BACKGROUND=0
+			;;
+		s)
+			SYSTEMD=1
 			;;
 		n)
 			NOEXECUTE=1
@@ -877,6 +895,11 @@ else
 	exit 4	# According to LSB: 4 - user had insufficient privileges
 fi
 
+if [ -e "${OPENNMS_PIDFILE}" ]; then
+	# if the file already exists, make sure it's writable in the future
+	chown "${RUNAS}" "${OPENNMS_PIDFILE}"
+fi
+
 case "$COMMAND" in
 	start|spawn)
 		$opennms_echo "Starting ${install.package.description}: \c"
@@ -938,6 +961,11 @@ case "$COMMAND" in
 				echo "failed"
 			fi
 		fi
+
+		if [ "$__ret" -eq 0 ]; then
+			clearPids
+		fi
+
 		exit "$__ret"
 		;;
 

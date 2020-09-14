@@ -54,6 +54,18 @@
           </excludes>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+
+        <configuration>
+          <skip>${skipSurefire}</skip>
+          <excludes>
+            <!-- prevent tests running in this package. These are manual one off development tests -->
+            <exclude>**/manual/*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 

@@ -64,10 +64,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-jetty</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.features.poller</groupId>
-      <artifactId>org.opennms.features.poller.remote</artifactId>
-    </dependency>
 
     <!-- Contains model code for the normalizer work -->
     <dependency>

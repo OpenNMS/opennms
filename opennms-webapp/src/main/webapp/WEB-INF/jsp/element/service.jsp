@@ -47,6 +47,11 @@
 	"
 %>
 <%@ page import="java.util.Optional" %>
+<%@ page import="org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation" %>
+<%@ page import="org.opennms.web.element.NetworkElementFactory" %>
+<%@ page import="org.opennms.netmgt.model.OnmsOutage" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="org.opennms.web.services.ServiceJspUtil" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -55,6 +60,7 @@
 
 <%
     OnmsMonitoredService service = (OnmsMonitoredService)request.getAttribute("service");
+    Collection<OnmsOutage> outages = NetworkElementFactory.getInstance(getServletContext()).currentOutagesForServiceFromPerspectivePoller(service);
 
     String ipAddr = service.getIpAddress().getHostAddress();
     String serviceName = service.getServiceName();
@@ -67,9 +73,9 @@
     Enumeration<Package> en = pollerCfgFactory.enumeratePackage();
     while (en.hasMoreElements()) {
         Package pkg = en.nextElement();
-        if (!pkg.getRemote() &&
-    pollerCfgFactory.isServiceInPackageAndEnabled(serviceName, pkg) &&
-    pollerCfgFactory.isInterfaceInPackage(ipAddr, pkg)) {
+        if (!pkg.getPerspectiveOnly() &&
+            pollerCfgFactory.isServiceInPackageAndEnabled(serviceName, pkg) &&
+            pollerCfgFactory.isInterfaceInPackage(ipAddr, pkg)) {
     lastPkg = pkg;
         }
     }
@@ -250,6 +256,46 @@ function doDelete() {
               </c:choose>
             </table>
             </div>
+
+            <!-- Availability box -->
+            <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
+
+            <!-- Perspective status Box -->
+            <%
+              ServiceJspUtil util = new ServiceJspUtil(service, outages);
+              if (!util.getAllPerspectives().isEmpty()) {
+            %>
+            <div class="card">
+              <div class="card-header"><span>Application Perspective Monitoring</span></div>
+              <table class="table table-sm severity">
+                <tr>
+                  <th>Perspective</th>
+                  <th>Polling Status</th>
+                  <th>Outage ID</th>
+                </tr>
+                <%
+                  for(OnmsMonitoringLocation location : util.getAllPerspectives()) {
+                      Optional<OnmsOutage> outage = util.getOutageForPerspective(location);
+                %>
+                <% if(outage.isPresent()) { %>
+                <tr class="severity-Critical">
+                <% } else { %>
+                <tr class="severity-Cleared">
+                <% } %>
+                  <td class="divider"><%=location.getLocationName()%></td>
+                  <td class="divider bright"><%=outage.isPresent() ? "<b>DOWN</b>" : "UP"%></td>
+                  <td class="divider"><%=outage.isPresent() ? util.getOutageUrl(outage.get()) : ""%></td>
+                </tr>
+                <% } %>
+              </table>
+            </div>
+            <% } %>
+
+            <jsp:include page="/includes/serviceApplication-box.htm" flush="false" />
+
+      </div> <!-- content-left" -->
+
+      <div class="col-md-6">
             <!-- patterns variables box -->
             <c:if test="${patternVariables != null}">
               <div class="card">
@@ -294,14 +340,6 @@ function doDelete() {
               </c:forEach>
             </c:if>
 
-            <!-- Availability box -->
-            <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
-            
-            <jsp:include page="/includes/serviceApplication-box.htm" flush="false" />
-            
-      </div> <!-- content-left" -->
-
-      <div class="col-md-6">
             <!-- events list box -->
             <jsp:include page="/includes/eventlist.jsp" flush="false" >
               <jsp:param name="node" value="${service.ipInterface.node.id}" />

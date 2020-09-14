@@ -36,8 +36,8 @@ import org.opennms.netmgt.xml.event.Event;
 
 public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
 
-    private static final String WS_OUTAGE_UEI = "uei.opennms.org/correlation/remote/wideSpreadOutage";
-    private static final String WS_RESOLVED_UEI = "uei.opennms.org/correlation/remote/wideSpreadOutageResolved";
+    private static final String WS_OUTAGE_UEI = "uei.opennms.org/correlation/perspective/wideSpreadOutage";
+    private static final String WS_RESOLVED_UEI = "uei.opennms.org/correlation/perspective/wideSpreadOutageResolved";
     private static final String SERVICE_FLAPPING_UEI = "uei.opennms.org/correlation/serviceFlapping";
 
     @Test
@@ -50,9 +50,9 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         anticipateWideSpreadOutageEvent();
 
         // received outage events for all monitors
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 8));
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 9));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 8));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 9));
 
         // expect memory to contain only the single 'affliction' for this service
         // and the flap tracker for each monitor
@@ -63,9 +63,9 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         anticipateWideSpreadOutageResolvedEvent();
 
         // received outage events for all monitors
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 9));
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 8));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 9));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 8));
 
         // expect the flap tracker to remain
         m_anticipatedMemorySize = 6;
@@ -89,14 +89,14 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
 
         // receive outage event for only a single monitor
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
         // expect memory to contain only the single 'application' for this service
         m_anticipatedMemorySize = 2;
 
         verify(engine);
 
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
         m_anticipatedMemorySize = 2;
 
@@ -118,16 +118,16 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
 
         // receive outage event for only a single monitor
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 8));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 8));
 
         // expect memory to contain only the single 'application' for this service
         m_anticipatedMemorySize = 3;
 
         verify(engine);
 
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 8));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 8));
 
         m_anticipatedMemorySize = 4;
 
@@ -154,18 +154,18 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         anticipateServiceFlappingEvent();
 
         // receive outage event for only a single monitor
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
         Thread.sleep(100);
 
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
         Thread.sleep(100);
 
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
         // expect an affliction and a flap for each outage
         m_anticipatedMemorySize = 4;
@@ -191,14 +191,14 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
         anticipateServiceFlappingEvent();
 
         // cause another very fast flapping situtation
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
         m_anticipatedMemorySize = 4;
 
@@ -221,35 +221,35 @@ public class LocationMonitorRulesTest extends CorrelationRulesTestCase {
 
         DroolsCorrelationEngine engine = findEngineByName("locationMonitorRules");
 
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "AVAIL", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "AVAIL", 7));
 
         Thread.sleep(50);
 
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
         Thread.sleep(50);
 
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "AVAIL", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "AVAIL", 7));
 
         Thread.sleep(50);
 
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
         Thread.sleep(50);
 
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "AVAIL", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "AVAIL", 7));
 
         Thread.sleep(50);
 
-        engine.correlate(createRemoteNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeLostServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
         Thread.sleep(50);
 
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "AVAIL", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "AVAIL", 7));
 
         Thread.sleep(50);
 
-        engine.correlate(createRemoteNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
+        engine.correlate(createPerspectiveNodeRegainedServiceEvent(1, "192.168.1.1", "HTTP", 7));
 
         m_anticipatedMemorySize = 6;
 

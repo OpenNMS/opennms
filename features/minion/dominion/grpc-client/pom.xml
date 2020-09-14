@@ -56,11 +56,6 @@
             <artifactId>grpc-protobuf</artifactId>
             <version>${grpcVersion}</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guavagRPCVersion}</version>
-        </dependency>
     </dependencies>
 
 </project>

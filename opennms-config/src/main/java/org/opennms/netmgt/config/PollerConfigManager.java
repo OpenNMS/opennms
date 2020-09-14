@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -67,8 +66,6 @@ import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
@@ -681,36 +678,13 @@ abstract public class PollerConfigManager implements PollerConfig {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Returns the first package that the ip belongs to, null if none.
-     *
-     * <strong>Note: </strong>Evaluation of the interface against a package
-     * filter will only work if the IP is alrady in the database.
-     */
-    @Override
-    public Package getFirstPackageMatch(final String ipaddr) {
-        try {
-            getReadLock().lock();
-            for(final Package pkg : packages()) {
-                if (isInterfaceInPackage(ipaddr, pkg)) {
-                    return pkg;
-                }
-            }
-        } finally {
-            getReadLock().unlock();
-        }
-        return null;
-    }
-
     /** {@inheritDoc} */
     @Override
     public Package getFirstLocalPackageMatch(final String ipaddr) {
         try {
             getReadLock().lock();
             for(final Package pkg : packages()) {
-                if (!pkg.getRemote() && isInterfaceInPackage(ipaddr, pkg)) {
+                if (!pkg.getPerspectiveOnly() && isInterfaceInPackage(ipaddr, pkg)) {
                     return pkg;
                 }
             }
@@ -773,7 +747,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         try {
             getReadLock().lock();
             for(final Package pkg : packages()) {
-                if (!pkg.getRemote() && isInterfaceInPackage(ipaddr, pkg)) {
+                if (!pkg.getPerspectiveOnly() && isInterfaceInPackage(ipaddr, pkg)) {
                     return true;
                 }
             }
@@ -896,7 +870,17 @@ abstract public class PollerConfigManager implements PollerConfig {
             getReadLock().unlock();
         }
     }
-    
+
+    @Override
+    public List<Package> getPackages() {
+        try {
+            getReadLock().lock();
+            return getConfiguration().getPackages();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
     /**
      * <p>services</p>
      *
@@ -994,7 +978,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         //
         LOG.debug("start: Loading monitors");
 
-        final Collection<ServiceMonitorLocator> locators = getServiceMonitorLocators(DistributionContext.DAEMON);
+        final Collection<ServiceMonitorLocator> locators = getServiceMonitorLocators();
         
         for (final ServiceMonitorLocator locator : locators) {
             try {
@@ -1042,7 +1026,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     
     /** {@inheritDoc} */
     @Override
-    public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
+    public Collection<ServiceMonitorLocator> getServiceMonitorLocators() {
         List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
 
         try {
@@ -1050,10 +1034,8 @@ abstract public class PollerConfigManager implements PollerConfig {
             for(final Monitor monitor : monitors()) {
                 try {
                     final Class<? extends ServiceMonitor> mc = findServiceMonitorClass(monitor);
-                    if (isDistributableToContext(mc, context)) {
-                        final ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(monitor.getService(), mc);
-                        locators.add(locator);
-                    }
+                    final ServiceMonitorLocator locator = new DefaultServiceMonitorLocator(monitor.getService(), mc);
+                    locators.add(locator);
                     LOG.debug("Loaded monitor for service: {}, class-name: {}", monitor.getService(), monitor.getClassName());
                 } catch (final ClassNotFoundException e) {
                     LOG.warn("Unable to load monitor for service: {}, class-name: {}: {}", monitor.getService(), monitor.getClassName(), e.getMessage());
@@ -1067,23 +1049,6 @@ abstract public class PollerConfigManager implements PollerConfig {
 
         return locators;
         
-    }
-
-    private boolean isDistributableToContext(final Class<? extends ServiceMonitor> mc, final DistributionContext context) {
-        final List<DistributionContext> supportedContexts = getSupportedDistributionContexts(mc);
-        if (supportedContexts.contains(context) || supportedContexts.contains(DistributionContext.ALL)) {
-            return true;
-        }
-        return false;
-    }
-
-    private List<DistributionContext> getSupportedDistributionContexts(final Class<? extends ServiceMonitor> mc) {
-        final Distributable distributable = mc.getAnnotation(Distributable.class);
-        final List<DistributionContext> declaredContexts = 
-            distributable == null 
-                ? Collections.singletonList(DistributionContext.DAEMON) 
-                : Arrays.asList(distributable.value());
-       return declaredContexts;
     }
 
     private Class<? extends ServiceMonitor> findServiceMonitorClass(final Monitor monitor) throws ClassNotFoundException {

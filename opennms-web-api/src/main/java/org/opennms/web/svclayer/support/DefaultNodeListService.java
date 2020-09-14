@@ -233,7 +233,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         */
         
         // This SQL restriction does work fine, however 
-        criteria.add(Restrictions.sqlRestriction("{alias}.nodeId in (select ip.nodeId from outages o, ifservices if, ipinterface ip where if.id = o.ifserviceid and ip.id = if.ipinterfaceid and o.ifregainedservice is null and o.suppresstime is null or o.suppresstime < now())"));
+        criteria.add(Restrictions.sqlRestriction("{alias}.nodeId in (select ip.nodeId from outages o, ifservices if, ipinterface ip where o.perspective is null and if.id = o.ifserviceid and ip.id = if.ipinterfaceid and o.ifregainedservice is null and o.suppresstime is null or o.suppresstime < now())"));
     }
 
     private static void addCriteriaForNodename(OnmsCriteria criteria, String nodeName) {

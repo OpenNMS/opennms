@@ -1735,4 +1735,7 @@
         <feature>opennms-graph-domain</feature>
         <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.persistence-test/${project.version}</bundle>
     </feature>
+    <feature name="opennms-perspective-poller" description="OpenNMS :: Features :: Perspective Poller" version="${project.version}">
+        <bundle>mvn:org.opennms.features/org.opennms.features.perspectivepoller/${project.version}</bundle>
+    </feature>
 </features>

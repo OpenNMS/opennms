@@ -147,6 +147,10 @@ include::text/service-assurance/monitors/Win32ServiceMonitor.adoc[]
 include::text/service-assurance/monitors/WsManMonitor.adoc[]
 include::text/service-assurance/monitors/XmpMonitor.adoc[]
 
+[[ga-application-perspective-monitoring]]
+=== Application Perspective Monitoring
+include::text/application-perspective-monitoring/application-perspective-monitoring.adoc[]
+
 [[ga-performance-mgmt]]
 == Performance Management
 include::text/performance-data-collection/introduction.adoc[]

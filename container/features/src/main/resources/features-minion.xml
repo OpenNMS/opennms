@@ -161,7 +161,6 @@
     
     <feature name="dominion-grpc-client" description="Dominion :: GRPC :: Client" version="${project.version}">
         <feature>minion-core-api</feature>
-        <bundle dependency="true">mvn:com.google.guava/guava/${guavagRPCVersion}</bundle>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.minion/dominion-grpc-client/${project.version}</bundle>
     </feature>
