@@ -100,7 +100,7 @@ final public class SmbMonitor extends AbstractServiceMonitor {
         final boolean doNodeStatus = ParameterMap.getKeyedBoolean(parameters, DO_NODE_STATUS, DO_NODE_STATUS_DEFAULT);
 
         try {
-            nbtAddr = (NbtAddress) nsc.getByName(hostAddress);
+            nbtAddr = (NbtAddress) nsc.getNbtByName(hostAddress);
             
             if (doNodeStatus) {
                 nbtAddr.getNodeType(base);
