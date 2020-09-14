@@ -14,6 +14,6 @@ The  _Time Series Integration Layer_ allows users to integrate a new time series
 
 Examples of time series plugins:
 
-* https://github.com/opennms-forge/timeseries-integration-inmemory[In Memory]
+* https://github.com/opennms-forge/opennms-tss-plugin-inmemory[In Memory]
 * https://github.com/opennms-forge/timeseries-integration-influxdb[InfluxDB]
 * https://github.com/opennms-forge/timeseries-integration-timescale[TimescaleDB]
