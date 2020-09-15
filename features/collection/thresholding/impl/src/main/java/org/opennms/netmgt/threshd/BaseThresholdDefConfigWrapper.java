@@ -125,7 +125,7 @@ public abstract class BaseThresholdDefConfigWrapper {
     /**
      * <p>getRearm</p>
      *
-     * @return a double.
+     * @return a Double.
      */
     public Double getRearm() {
         return StringUtils.parseDouble(m_baseDef.getRearm(), null);
@@ -138,7 +138,7 @@ public abstract class BaseThresholdDefConfigWrapper {
     /**
      * <p>getTrigger</p>
      *
-     * @return a int.
+     * @return a Integer.
      */
     public Integer getTrigger() {
         return StringUtils.parseInt(m_baseDef.getTrigger(), null);
@@ -160,7 +160,7 @@ public abstract class BaseThresholdDefConfigWrapper {
     /**
      * <p>getValue</p>
      *
-     * @return a double.
+     * @return a Double.
      */
     public Double getValue() {
         return StringUtils.parseDouble(m_baseDef.getValue(), null);
@@ -241,9 +241,9 @@ public abstract class BaseThresholdDefConfigWrapper {
                     && Objects.equals(this.getDsLabel(), that.getDsLabel())
                     && Objects.equals(this.getTriggeredUEI(), that.getTriggeredUEI())
                     && Objects.equals(this.getRearmedUEI(), that.getRearmedUEI())
-                    && Objects.equals(this.getValue(), that.getValue())
-                    && Objects.equals(this.getRearm(), that.getRearm())
-                    && Objects.equals(this.getTrigger(), that.getTrigger())
+                    && Objects.equals(this.getValueString(), that.getValueString())
+                    && Objects.equals(this.getRearmString(), that.getRearmString())
+                    && Objects.equals(this.getTriggerString(), that.getTriggerString())
                     && Objects.equals(this.getBasethresholddef().getFilterOperator(), that.getBasethresholddef().getFilterOperator())
                     && Objects.equals(this.getBasethresholddef().getRelaxed(), that.getBasethresholddef().getRelaxed())
                     && Objects.equals(this.getBasethresholddef().getResourceFilters(), that.getBasethresholddef().getResourceFilters());

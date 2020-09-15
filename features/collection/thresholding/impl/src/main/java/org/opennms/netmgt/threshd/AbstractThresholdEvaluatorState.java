@@ -285,53 +285,53 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     }
 
     @Override
-    public ValueStatus evaluate(ExpressionThresholdValue valueSupplier, Long sequenceNumber)
+    public ValueStatus evaluate(ExpressionThresholdValueSupplier valueSupplier, Long sequenceNumber)
             throws ThresholdExpressionException {
-        ExpressionConfigWrapper.ExpressionValue expressionValue = getValueForExpressionThreshold(valueSupplier);
-        Status status = evaluate(expressionValue.value, expressionValue.getThresholdValues(), sequenceNumber);
+        ExpressionConfigWrapper.ExpressionThresholdValues expressionThresholdValues = getValueForExpressionThreshold(valueSupplier);
+        Status status = evaluate(expressionThresholdValues.value, expressionThresholdValues.getThresholdValues(), sequenceNumber);
 
-        return new ValueStatus(expressionValue.value, status, expressionValue.getThresholdValues());
+        return new ValueStatus(expressionThresholdValues.value, status, expressionThresholdValues.getThresholdValues());
     }
 
     @Override
-    public ValueStatus evaluate(ThresholdValuesConsumer thresholdValuesConsumer, Long sequenceNumber)
+    public ValueStatus evaluate(ThresholdValuesSupplier thresholdValuesSupplier, Long sequenceNumber)
             throws ThresholdExpressionException {
-        ThresholdValues thresholdValues = getThresholdValues(thresholdValuesConsumer);
+        ThresholdValues thresholdValues = getThresholdValues(thresholdValuesSupplier);
         Status status = evaluate(thresholdValues.getDsValue(), thresholdValues, sequenceNumber);
         return new ValueStatus(thresholdValues.getDsValue(), status, thresholdValues);
     }
 
-    private ThresholdValues getThresholdValues(ThresholdValuesConsumer thresholdValuesConsumer) {
+    private ThresholdValues getThresholdValues(ThresholdValuesSupplier thresholdValuesSupplier) {
 
         if (!state.isCached()) {
-            return thresholdValuesConsumer.get(thresholdValues -> {
-                state.setThresholdValues(thresholdValues);
-                state.setCached(true);
-            });
+            ThresholdValues thresholdValues = thresholdValuesSupplier.get();
+            state.setThresholdValues(thresholdValues);
+            state.setCached(true);
+            return thresholdValues;
         } else {
-            Double dsvalue = thresholdValuesConsumer.getDsValue();
+            Double dsvalue = thresholdValuesSupplier.getDsValue();
             ThresholdValues thresholdValues = state.getThresholdValues();
             thresholdValues.setDsValue(dsvalue);
             return thresholdValues;
         }
     }
 
-    private ExpressionConfigWrapper.ExpressionValue getValueForExpressionThreshold(ExpressionThresholdValue valueSupplier)
+    private ExpressionConfigWrapper.ExpressionThresholdValues getValueForExpressionThreshold(ExpressionThresholdValueSupplier valueSupplier)
             throws ThresholdExpressionException {
         if (!state.isCached()) {
             LOG.debug("Interpolating the expression for state {} for the first time", state);
-            return valueSupplier.get(expr -> {
-                state.setInterpolatedExpression(expr.expression);
-                state.setThresholdValues(expr.getThresholdValues());
-                state.setCached(true);
-            });
+            ExpressionConfigWrapper.ExpressionThresholdValues expressionThresholdValues = valueSupplier.get();
+            state.setInterpolatedExpression(expressionThresholdValues.expression);
+            state.setThresholdValues(expressionThresholdValues.getThresholdValues());
+            state.setCached(true);
+            return expressionThresholdValues;
         } else {
             String interpolatedExpression = state.getInterpolatedExpression().get();
             LOG.debug("Using already cached expression {}", interpolatedExpression);
-            ExpressionConfigWrapper.ExpressionValue expressionValue =
-                    new ExpressionConfigWrapper.ExpressionValue(interpolatedExpression, valueSupplier.get(interpolatedExpression));
-            expressionValue.setThresholdValues(state.getThresholdValues());
-            return expressionValue;
+            ExpressionConfigWrapper.ExpressionThresholdValues expressionThresholdValues =
+                    new ExpressionConfigWrapper.ExpressionThresholdValues(interpolatedExpression, valueSupplier.get(interpolatedExpression));
+            expressionThresholdValues.setThresholdValues(state.getThresholdValues());
+            return expressionThresholdValues;
         }
     }
 

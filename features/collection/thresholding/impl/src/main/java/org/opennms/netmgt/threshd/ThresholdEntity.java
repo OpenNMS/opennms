@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 import org.opennms.core.rpc.utils.mate.EmptyScope;
 import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
@@ -203,9 +202,9 @@ public final class ThresholdEntity implements Cloneable {
         buffer.append(", evaluators=[");
         for (ThresholdEvaluatorState item : getThresholdEvaluatorStates(null)) {
             buffer.append("{ds=").append(item.getThresholdConfig().getDatasourceExpression());
-            buffer.append(", value=").append(item.getThresholdConfig().getValue());
-            buffer.append(", rearm=").append(item.getThresholdConfig().getRearm());
-            buffer.append(", trigger=").append(item.getThresholdConfig().getTrigger());
+            buffer.append(", value=").append(item.getThresholdConfig().getValueString());
+            buffer.append(", rearm=").append(item.getThresholdConfig().getRearmString());
+            buffer.append(", trigger=").append(item.getThresholdConfig().getTriggerString());
             buffer.append("}");
         }
         buffer.append("]}");
@@ -263,20 +262,19 @@ public final class ThresholdEntity implements Cloneable {
         AtomicReference<EvaluateFunction> evaluateFunctionRef = new AtomicReference<>(null);
 
         // Depending on the type of threshold, we want to evaluate it differently
-        // Specifically expression based thresholds are treated special because their behavior must change depending on
-        // whether or not a given expression has been cached already
+        // Threshold Values like value, rearm, trigger and expression are interpolated and cached in state so that
+        // subsequent evaluations don't need to do any interpolation.
         getThresholdConfig().accept(new ThresholdDefVisitor() {
             @Override
             public void visit(ThresholdConfigWrapper thresholdConfigWrapper) {
 
                 double computedValue = thresholdConfigWrapper.evaluate(values);
-                ThresholdValuesConsumer thresholdValuesConsumer = new ThresholdValuesConsumer() {
+                ThresholdValuesSupplier thresholdValuesSupplier = new ThresholdValuesSupplier() {
                     @Override
-                    public ThresholdEvaluatorState.ThresholdValues get(Consumer<ThresholdEvaluatorState.ThresholdValues> thresholdsConsumer) {
+                    public ThresholdEvaluatorState.ThresholdValues get() {
                         Scope scope = getScopeForResource(resource);
                         ThresholdEvaluatorState.ThresholdValues thresholdValues = thresholdConfigWrapper.interpolateThresholdValues(scope);
                         thresholdValues.setDsValue(computedValue);
-                        thresholdsConsumer.accept(thresholdValues);
                         return thresholdValues;
                     }
 
@@ -285,27 +283,22 @@ public final class ThresholdEntity implements Cloneable {
                         return computedValue;
                     }
                 };
-                evaluateFunctionRef.set(item -> item.evaluate(thresholdValuesConsumer, resource == null ? null :
+                evaluateFunctionRef.set(item -> item.evaluate(thresholdValuesSupplier, resource == null ? null :
                         resource.getSequenceNumber()));
             }
 
             @Override
             public void visit(ExpressionConfigWrapper expressionConfigWrapper) {
-                ExpressionThresholdValue expressionThresholdValue = new ExpressionThresholdValue() {
+                ExpressionThresholdValueSupplier expressionThresholdValueSupplier = new ExpressionThresholdValueSupplier() {
                     // This covers the case where an expression has not yet been cached, we want to evaluate and
                     // also retrieve the interpolated expression so we can persist it in our state going forward
                     @Override
-                    public ExpressionConfigWrapper.ExpressionValue get(Consumer<ExpressionConfigWrapper.ExpressionValue> expressionConsumer) throws ThresholdExpressionException {
+                    public ExpressionConfigWrapper.ExpressionThresholdValues get() throws ThresholdExpressionException {
 
                         Scope scope = getScopeForResource(resource);
-
-                        ExpressionConfigWrapper.ExpressionValue expressionValue = expressionConfigWrapper
+                        return expressionConfigWrapper
                                 .interpolateAndEvaluate(values, scope);
-                        expressionConsumer.accept(expressionValue);
-
-                        return expressionValue;
                     }
-
                     // This covers the case where an expression has already been interpolated and the evaluator is
                     // providing us that expression that it has persisted along with its state so that we do not need to
                     // perform interpolation again
@@ -315,7 +308,7 @@ public final class ThresholdEntity implements Cloneable {
                     }
                 };
 
-                evaluateFunctionRef.set(item -> item.evaluate(expressionThresholdValue, resource == null ? null :
+                evaluateFunctionRef.set(item -> item.evaluate(expressionThresholdValueSupplier, resource == null ? null :
                         resource.getSequenceNumber()));
             }
         });

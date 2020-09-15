@@ -40,6 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /**
  * <p>ThresholdEvaluatorHighLow class.</p>
  *
@@ -221,12 +223,10 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             }
         }
 
+        @VisibleForTesting
         protected boolean isThresholdExceeded(double dsValue) {
             Double thresholdValue = state.getThresholdValues() != null && state.getThresholdValues().getThresholdValue() != null ?
                     state.getThresholdValues().getThresholdValue() : getThresholdConfig().getValue();
-            if(thresholdValue == null) {
-                thresholdValue = getThresholdConfig().getValue();
-            }
             return isThresholdExceeded(dsValue, thresholdValue);
         }
 
@@ -240,6 +240,7 @@ public class ThresholdEvaluatorHighLow implements ThresholdEvaluator {
             }
         }
 
+        @VisibleForTesting
         protected boolean isRearmExceeded(double dsValue) {
             Double rearm = state.getThresholdValues() != null && state.getThresholdValues().getRearm() != null ?
                     state.getThresholdValues().getRearm() : getThresholdConfig().getRearm();

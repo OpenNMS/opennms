@@ -83,5 +83,4 @@ public class ThresholdConfigWrapper extends BaseThresholdDefConfigWrapper {
     public void accept(ThresholdDefVisitor thresholdDefVisitor) {
         thresholdDefVisitor.visit(this);
     }
-
 }

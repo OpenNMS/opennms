@@ -70,13 +70,13 @@ public interface ThresholdEvaluatorState extends ReinitializableState {
     /**
      * @return the value that was evaluated along with the resulting status
      */
-    ValueStatus evaluate(ExpressionThresholdValue valueSupplier, Long sequenceNumber)
+    ValueStatus evaluate(ExpressionThresholdValueSupplier valueSupplier, Long sequenceNumber)
             throws ThresholdExpressionException;
 
     /**
      * @return the value that was evaluated along with the resulting status
      */
-    ValueStatus evaluate(ThresholdValuesConsumer thresholdValuesConsumer, Long sequenceNumber)
+    ValueStatus evaluate(ThresholdValuesSupplier thresholdValuesSupplier, Long sequenceNumber)
             throws ThresholdExpressionException;
     
     /**

@@ -171,13 +171,13 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
      * Evaluate with un-interpolated expression that may contain mate data, meaning we need to interpolate it first. The
      * interpolation should happen once here and future calls to evaluate should use the resulting interpolated value.
      */
-    public ExpressionValue interpolateAndEvaluate(Map<String, Double> values, Scope scope)
+    public ExpressionThresholdValues interpolateAndEvaluate(Map<String, Double> values, Scope scope)
             throws ThresholdExpressionException {
         String interpolatedExpression = interpolateExpression(m_expression.getExpression(), scope);
-        ExpressionValue expressionValue = new ExpressionValue(interpolatedExpression, evaluate(interpolatedExpression, values));
+        ExpressionThresholdValues expressionThresholdValues = new ExpressionThresholdValues(interpolatedExpression, evaluate(interpolatedExpression, values));
         ThresholdEvaluatorState.ThresholdValues thresholdValues = interpolateThresholdValues(scope);
-        expressionValue.setThresholdValues(thresholdValues);
-        return expressionValue;
+        expressionThresholdValues.setThresholdValues(thresholdValues);
+        return expressionThresholdValues;
     }
 
     @Override
@@ -196,12 +196,12 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
         return expression;
     }
     
-    public static class ExpressionValue {
+    public static class ExpressionThresholdValues {
         public final String expression;
         public final double value;
         private ThresholdEvaluatorState.ThresholdValues thresholdValues;
 
-        public ExpressionValue(String expression, double value) {
+        public ExpressionThresholdValues(String expression, double value) {
             this.expression = Objects.requireNonNull(expression);
             this.value = value;
         }
@@ -218,7 +218,7 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            ExpressionValue that = (ExpressionValue) o;
+            ExpressionThresholdValues that = (ExpressionThresholdValues) o;
             return Double.compare(that.value, value) == 0 &&
                     Objects.equals(expression, that.expression);
         }

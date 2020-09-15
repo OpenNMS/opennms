@@ -28,11 +28,16 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.util.function.Consumer;
+public interface ThresholdValuesSupplier {
 
-public interface ThresholdValuesConsumer {
+    /**
+     * @return the ThresholdValues which consists of interpolated values of value, rearm, trigger and data source value.
+     */
+    ThresholdEvaluatorState.ThresholdValues get();
 
-    ThresholdEvaluatorState.ThresholdValues get(Consumer<ThresholdEvaluatorState.ThresholdValues> thresholdsConsumer);
 
+    /**
+     * @return the data source value.
+     */
     Double getDsValue();
 }
