@@ -37,15 +37,12 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.File;
-import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -110,9 +107,9 @@ import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.OnmsAssetRequisition;
 import org.opennms.netmgt.provision.persist.OnmsInterfaceMetaDataRequisition;
 import org.opennms.netmgt.provision.persist.OnmsIpInterfaceRequisition;
-import org.opennms.netmgt.provision.persist.OnmsNodeMetaDataRequisition;
 import org.opennms.netmgt.provision.persist.OnmsMonitoredServiceRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeCategoryRequisition;
+import org.opennms.netmgt.provision.persist.OnmsNodeMetaDataRequisition;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
 import org.opennms.netmgt.provision.persist.OnmsServiceCategoryRequisition;
 import org.opennms.netmgt.provision.persist.OnmsServiceMetaDataRequisition;
@@ -132,10 +129,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.UrlResource;
-import com.google.common.base.MoreObjects;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.base.MoreObjects;
 
 /**
  * Unit test for ModelImport application.
@@ -1057,6 +1055,20 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         // this only waits until all the anticipated events are received so it is fast unless there is a bug
         m_eventAnticipator.waitForAnticipated(10000);
         m_eventAnticipator.verifyAnticipated();
+
+        // check for correct event parameters, see NMS-10554
+        final Event nodeDeletedEvent = m_eventAnticipator.getAnticipatedEventsReceived().stream()
+                .filter(e -> EventConstants.NODE_DELETED_EVENT_UEI.equals(e.getUei()))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(nodeDeletedEvent);
+
+        assertEquals("4243", nodeDeletedEvent.getParm(EventConstants.PARM_FOREIGN_ID).getValue().getContent());
+        assertEquals("deleteService", nodeDeletedEvent.getParm(EventConstants.PARM_FOREIGN_SOURCE).getValue().getContent());
+        assertEquals("10.136.160.1", nodeDeletedEvent.getParm(EventConstants.PARM_INTERFACE).getValue().getContent());
+        assertEquals("apknd", nodeDeletedEvent.getParm(EventConstants.PARM_NODE_LABEL).getValue().getContent());
+        assertEquals("Default", nodeDeletedEvent.getParm(EventConstants.PARM_LOCATION).getValue().getContent());
     }
 
     @Test
