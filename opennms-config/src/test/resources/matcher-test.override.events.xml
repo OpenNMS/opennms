@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<events>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.6889.2.2.1.2</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>48</mevalue>
+            </maskelement>
+            <varbind>
+                <vbnumber>1</vbnumber>
+                <vbvalue>3</vbvalue>
+            </varbind>
+            <varbind>
+                <vbnumber>5</vbnumber>
+                <vbvalue>8</vbvalue>
+            </varbind>
+        </mask>
+        <uei>uei.opennms.org/vendor/ipo/traps/ipoGenServiceErrorSvcEventCRITICAL</uei>
+        <event-label>IPO-MIB defined trap event: ipoGenServiceErrorSvcEventCRITICAL</event-label>
+        <descr>ipoGenServiceErrorSvcEventCRITICAL</descr>
+        <logmsg dest="logndisplay">ipoGenServiceErrorSvcEventCRITICAL</logmsg>
+        <severity>Critical</severity>
+    </event>
+</events>
