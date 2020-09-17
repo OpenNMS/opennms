@@ -100,7 +100,7 @@
         <table class="table table-sm">
             <tr>
                 <th>Value</th>
-                <th>Rearm</th>
+                <th>Re-arm</th>
                 <th>Trigger</th>
             </tr>
             <tr>
