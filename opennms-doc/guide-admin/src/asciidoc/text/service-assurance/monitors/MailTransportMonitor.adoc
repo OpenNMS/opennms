@@ -173,7 +173,7 @@ Test that we can connect via IMAPS and open the OPENNMS folder.
 There are five basic tests that this monitor can perform.
 
 Sending Mail: The most basic test, the sendmail-test is highly configurable.
-An Exception thrown during the sending of the configured email message will cause the poll to fail.
+An exception thrown during the sending of the configured email message will cause the poll to fail.
 
 Access of Mail Store and Folder: Configure a readmail-test and don't configure a subject-match attribute. 
 This will test only the ability to open the default mail store and the configured mail folder ("INBOX") by default. 
