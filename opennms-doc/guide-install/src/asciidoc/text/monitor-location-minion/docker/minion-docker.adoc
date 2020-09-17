@@ -2,11 +2,11 @@
 === Run with Docker
 
 Modern infrastructure allows you to deploy and run workloads in containers.
-_{opennms-product-name}_ provides and publishes container images on link:https://hub.docker.com/u/opennms[DockerHub].
+{opennms-product-name} provides and publishes container images on link:https://hub.docker.com/u/opennms[DockerHub].
 
 ==== Objectives
 
-* Run and configure a _Minion_ in, and connect it to, the _{opennms-product-name}_ instance using environment variables
+* Run and configure a Minion in, and connect it to the {opennms-product-name} instance using environment variables
 * Introduce a reference with all available configuration and mount conventions for more advanced setups
 
 ==== Before you begin
@@ -15,9 +15,12 @@ You must have at least the following components installed:
 
 * Current stable _Docker_ release installed, e.g., installed from link:https://docs.docker.com/[Docker Documentation]
 * Current stable _Docker Compose_ installed, e.g., installed from link:https://docs.docker.com/compose/install/[Docker Compose instructions]
-You should have a basic knowledge of _Docker_, _Docker Compose_ with networking, persisting files and mounting directories
-_{opennms-product-name}_ is configured to accept connections via _ActiveMQ_ and a Minion user with _ROLE_MINION_ 
-The _Minion_ can connect to _{opennms-product-name}_ with port `61616/TCP` for _ActiveMQ_ and _REST_ on port `8980/TCP`
+
+You should have the following:
+
+* a basic knowledge of _Docker_, _Docker Compose_ with networking, persisting files and mounting directories
+* {opennms-product-name} configured to accept connections via _ActiveMQ_ and a Minion user with _ROLE_MINION_ (see <<gi-minion-setup-communication, Minion communication>>)
+* Minion can connect to {opennms-product-name} with port `61616/TCP` for _ActiveMQ_ and _REST_ on port `8980/TCP` (see <<gi-minion-setup-communication, Minion communication>>)
 
 ==== Quickstart service stack
 

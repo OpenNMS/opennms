@@ -75,36 +75,16 @@ endif::opennms-prime[]
 // Basic Setup Minion
 include::text/monitor-location-minion/setting-up-minion.adoc[]
 
-// Basic Setup Minion - RHEL
-include::text/monitor-location-minion/rhel/installing-on-rhel.adoc[]
-
-// No section numbers for step-by-step guide
-:!sectnums:
-
-include::text/monitor-location-minion/rhel/step-1-setup-opennms.adoc[]
-include::text/monitor-location-minion/rhel/step-2-install-minion.adoc[]
-include::text/monitor-location-minion/rhel/step-3-starting-minion.adoc[]
-include::text/monitor-location-minion/rhel/step-4-configure-minion.adoc[]
-include::text/monitor-location-minion/rhel/step-5-verify-connectivity.adoc[]
+// Basic Setup Minion - Setup OpenNMS
+include::text/monitor-location-minion/setup-opennms.adoc[]
 
 ifndef::opennms-prime[]
-// Enable section numbers
-:sectnums:
 
-// Basic Setup Minion - Debian
-include::text/monitor-location-minion/debian/installing-on-debian.adoc[]
+// Basic Setup Minion - Installation
+include::text/monitor-location-minion/installing-minion.adoc[]
 
-// No section numbers for step-by-step guide
-:!sectnums:
-
-include::text/monitor-location-minion/debian/step-1-setup-opennms.adoc[]
-include::text/monitor-location-minion/debian/step-2-install-minion.adoc[]
-include::text/monitor-location-minion/debian/step-3-starting-minion.adoc[]
-include::text/monitor-location-minion/debian/step-4-configure-minion.adoc[]
-include::text/monitor-location-minion/debian/step-5-verify-connectivity.adoc[]
-
-// Enable section numbers
-:sectnums:
+// Basic Setup Minion - Miscellaneous Configuration
+include::text/monitor-location-minion/misc-config.adoc[]
 
 // Run Minion in Docker
 include::text/monitor-location-minion/docker/minion-docker.adoc[]

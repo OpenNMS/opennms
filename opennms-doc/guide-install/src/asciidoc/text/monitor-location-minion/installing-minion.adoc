@@ -1,0 +1,93 @@
+
+=== Installing Minion
+
+Use the following commands to install the Minion package, start the Minion, test access to the Karaf shell, configure Minion to communicate with {opennms-product-name}, and verify connectivity. 
+
+You must run all commands on the command line interface with _root_ permissions.
+Most of the installation and configuration process is identical on RHEL and Debian; where they differ, we include both sets of commands. 
+
+For miscellaneous installation information including Minion directory structure, start up configuration, and an alternate way to configure credentials, see <<minion-communication, Information about Minion Packages and Configuration>>.
+
+.On RHEL
+
+Connect with SSH to your remote RHEL system where you want to install Minion.
+
+[source, shell]
+----
+dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm<1>
+rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+
+dnf -y install opennms-minion<2>
+
+----
+
+.On Debian
+
+Connect with SSH to your remote Debian system where you want to install Minion.
+
+[source, shell]
+----
+echo 'deb https://debian.opennms.org stable main \
+      deb-src https://debian.opennms.org stable main' > /etc/apt/sources.list.d/opennms.list <1>
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+apt update
+
+apt -y install opennms-minion <2>
+----
+.Install and configure startup option (RHEL and Debian)
+
+[source, shell]
+----
+systemctl enable minion<3>
+systemctl start minion<4>
+----
+
+.Test access to Karaf shell with user `admin` and password `admin`, and configure the Minion:
+[source, shell]
+----
+ssh -p 8201 admin@localhost<5>
+
+config:edit org.opennms.minion.controller<6>
+config:property-set location #Office-Pittsboro
+config:property-set http-url #http://opennms-fqdn:8980/opennms
+config:property-set broker-url #failover:tcp://opennms-fqdn:61616
+config:update
+
+opennms:scv-set opennms.http #minion username minion password<7>
+opennms:scv-set opennms.broker #minion username minion password
+<ctrl-d><8>
+
+systemctl restart minion<9>
+----
+
+.Connect to Karaf shell of the Minion to verify connectivity with {opennms-product-name}
+Use `admin` for both user name and password. 
+[source]
+----
+ssh -p 8201 admin@localhost
+
+opennms:health-check
+
+Connecting to OpenNMS ReST API   [ Success  ]
+Verifying installed bundles      [ Success  ]
+Connecting to JMS Broker         [ Success  ]
+
+=> Everything is awesome
+admin@minion()>
+----
+
+<1> Install Yum repository. 
+<2> Install Minion package.
+<3> Configure systemd to start Minion on system boot.
+<4> Start up Minion.
+<5> Test access to Karaf shell with default user name and password.
+<6> Configure Minion location and endpoint URLs for communication with {opennms-product-name}.
+(Replace red text with your own information.)
++
+TIP: Include the `failover:` portion of the broker URL to allow the Minion_to re-establish connectivity on failure.
+     For a reference on the different URL formats, see http://activemq.apache.org/uri-protocols.html[ActiveMQ URI Protocols].
+
+<7> Configure credentials to use when communicating with {opennms-product-name}. 
+The credentials are configured separately since they are encrypted on disk.
+<8> Exit Karaf shell.
+<9> Restart Minion. 
