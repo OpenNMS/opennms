@@ -10,7 +10,7 @@ dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarc
 rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
-RHEL 7:
+.RHEL 7:
 
 [source, shell]
 ----
@@ -24,7 +24,7 @@ rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 dnf -y install opennms-minion
 ----
 
-RHEL 7:
+.RHEL 7:
 [source, bash]
 ----
 yum -y install opennms-minion
