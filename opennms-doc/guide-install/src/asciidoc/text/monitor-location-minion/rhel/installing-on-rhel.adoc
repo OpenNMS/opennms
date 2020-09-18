@@ -8,3 +8,7 @@
 . Verify the connectivity between _Minion_ and _{opennms-product-name}_
 
 All commands on the command line interface need to be executed with _root_ permissions.
+
+IMPORTANT: Commands and instructions are specific to RHEL 8. 
+We provide RHEL 7 alternatives where applicable. 
+
