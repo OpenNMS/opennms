@@ -10,10 +10,24 @@ dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarc
 rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
+RHEL 7:
+
+[source, shell]
+----
+yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
+rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+
 .Install the Minion package
 [source, bash]
 ----
 dnf -y install opennms-minion
+----
+
+RHEL 7:
+[source, bash]
+----
+yum -y install opennms-minion
 ----
 
 With the successful installed packages the _Minion_ is installed in the following directory structure:

@@ -9,10 +9,23 @@ dnf install -y https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarc
 rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
+On RHEL 7:
+[source, shell]
+----
+yum install -y https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
+rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+
 .Install the Sentinel package
 [source, bash]
 ----
 dnf -y install opennms-sentinel
+----
+
+On RHEL 7:
+[source, bash]
+----
+yum -y install opennms-sentinel
 ----
 
 With the successful installed packages the _Sentinel_ is installed in the following directory structure:

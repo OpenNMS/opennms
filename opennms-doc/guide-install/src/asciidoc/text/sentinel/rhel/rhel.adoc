@@ -2,6 +2,9 @@
 
 === Installing on RHEL
 
+IMPORTANT: Commands and instructions are specific to RHEL 8. 
+We provide RHEL 7 alternatives where applicable. 
+
 include::../generic/setup-overview.adoc[]
 
 :!sectnums:
