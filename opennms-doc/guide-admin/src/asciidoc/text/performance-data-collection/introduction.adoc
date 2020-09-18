@@ -1,9 +1,31 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../../images
+:imagesdir: ../../images
 
-In _{opennms-product-name}_ collection of performance data is done by the _Collectd_ daemon.
-_Management Agents_ and protocols to access performance data is implemented in _Collectors_.
-These _Collectors_ are scheduled and run in parallel in a global defined _Thread Pool_ in _Collectd_.
+_{opennms-product-name}_ collects performance data using the _Collectd_ daemon, which is enabled by default. 
+_Collectd_ schedules data collection on _{opennms-product-name}_ entities (currently nodes and interfaces), using _management agents_ and protocol-specific _collectors_ (SNMP, HTTPS, JMX, JDBC, etc.) to collect performance metrics. 
+Each collector has its own associated configuration that defines parameters for the collector.
 
-This section describes how to configure _Collectd_ for performance data collection with all available _Collectors_ coming with _{opennms-product-name}_.
+[[ga-performance-management-collectd-overview]]
+.Collectd overview for associated files and configuration
+image::performance-management/01_collectd-overview.png[]
+
+By default, data collection is enabled for SNMP and for OpenNMS-JVM (to monitor itself through JMX). 
+Data collection works out of the box with SNMP, provided you have your SNMP community string configured properly. 
+The default value of the community string is `public`. 
+If your community string is different, you need to change the value: 
+
+. Login to the web UI.
+. Go to *admin>Configure OpenNMS*.
+. In the *Provisioning* section, select *Configure SNMP Community Names by IP Address*.
+. Under *v1/v2c specific parameters* change the `Read Community String` value and click *Save Config*.
+
+Performance data collection on other protocols (HTTPS, JMX, JDBC, etc.), requires additional configuration. 
+You may also want to change how _collectd_ works: when, how, and what data it collects. 
+
+Learn how to manage performance data collection:
+
+* xref:configuration.adoc#ga-collectd-configuration[_collectd_ configuration]
+* <<collectors.adoc,collection for specific protocols>>
+* <<resource-types.adoc, resource type management>>
+* <<collect-admin.adoc, _collectd_ administration>> (logging, graphing, and event properties)

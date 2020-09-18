@@ -4,7 +4,7 @@
 
 ==== JmxCollector
 
-The _JmxCollector_ is used to collect performance data via _JMX_.
+The _JmxCollector_ collects performance data via _JMX_.
 Attributes are extracted from the available _MBeans_.
 
 ===== Collector Facts
@@ -18,20 +18,23 @@ Attributes are extracted from the available _MBeans_.
 
 ===== Collector Parameters
 
-.Collector specific parameters for the Jsr160Collector
+
+Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+
+.Collector-specific parameters for the Jsr160Collector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                                                     | Required | Default value
-| `collection`           | The name of the _JMX Collection_ to use                                         | required | (none)
-| `thresholding-enabled` | Whether collected performance data shall be tested against thresholds           | optional | `true`
+| `collection`           | The name of the _JMX Collection_ to use.                                         | required | (none)
+| `thresholding-enabled` | Whether collected performance data should be tested against thresholds           | optional | `true`
 | `retry`                | Number of retries                                                               | optional | `3`
 | `friendlyName`         | Name of the path in which the metrics should be stored                          | optional | Value of the port, or 'jsr160' if no port is set.
 | `factory`              | The password strategy to use.
                            Supported values are: `STANDARD` (for authentication),
-                           `PASSWORD_CLEAR` (same as `STANDARD`) and `SASL` (if secure connection is required)
+                           `PASSWORD_CLEAR` (same as `STANDARD`) and `SASL` (if secure connection is required).
                                                                                                            | optional | `STANDARD`
-| `url`                  | The connection url, e.g. `service:jmx:rmi:localhost:18980`.
-                           The ip address can be substituted. Use `${ipaddr}` in that case, e.g.:
+| `url`                  | The connection url, e.g., `service:jmx:rmi:localhost:18980`.
+                           The IP address can be substituted. Use `${ipaddr}` in that case, e.g.,
                             `service:jmx:rmi:${ipaddr}:18980`                                              | optional | (none)
 | `username`             | The username if authentication is required.                                     | optional | (none)
 | `password`             | The password if authentication is required.                                     | optional | (none)
@@ -42,16 +45,18 @@ Attributes are extracted from the available _MBeans_.
 | `remoteJMX`            | *Deprecated*. Use an alternative `JMX` URL scheme.                               | optional | `false`
 |===
 
-NOTE: The parameters `port`, `protocol`, `urlPath`, `rmiServerPort` and `remoteJMX` are deprecated and should be replaced with the `url` parameter.
-If `url` is not defined the collector falls back to _Legacy Mode_ and the deprecated parameters are used instead to build the connection url.
+NOTE: The deprecated parameters `port`, `protocol`, `urlPath`, `rmiServerPort` and `remoteJMX` should be replaced with the `url` parameter.
+If `url` is not defined the collector falls back to legacy mode and the deprecated parameters are used instead to build the connection url.
 
-NOTE: If a service requires different configuration it can be overwritten with an entry in `$OPENNMS_HOME/etc/jmx-config.xml`.
+NOTE: If a service requires different configuration, an entry in `$OPENNMS_HOME/etc/jmx-config.xml` can overwrite it.
 
 ===== JMX Collection Configuration
 
-_JMX Collections_ are defined in the `etc/jmx-datacollection-config.xml` and `etc/jmx-datacollection-config.d/`.
+NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
 
-Here is a snippet providing a collection definition named `opennms-poller`:
+Define _JMX Collections_ in `etc/jmx-datacollection-config.xml` and `etc/jmx-datacollection-config.d/`.
+
+This snippet provides a collection definition named `opennms-poller`:
 
 [source, xml]
 ----
@@ -79,11 +84,10 @@ opennms:collect org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 collection
 
 ===== Generic Resource Type
 
-In order to support wildcard (*) in objectname, JMX collector supports generic resource types.
-Two changes needed to jmx configuration for this to work.
+To support wildcard (*) in objectname, JMX collector supports generic resource types.
+JMX configuration requires two changes for this to work:
 
-* Create a custom resource type in `etc/resource-types.d/`
-for ex: there is already a definition in `jmx-resource.xml` which defines a custom resource for kafka lag
+* Create a custom resource type in `etc/resource-types.d/`. For example, there is already a definition in `jmx-resource.xml` that defines a custom resource for Kafka lag
 
 [source, xml]
 ----
@@ -97,7 +101,7 @@ for ex: there is already a definition in `jmx-resource.xml` which defines a cust
     </resourceType>
 </resource-types>
 ----
-* Match the resourceType name as `resource-type` in mbean definition
+* Match the resourceType name as `resource-type` in MBean definition:
 
 [source, xml]
 ----
@@ -107,11 +111,11 @@ for ex: there is already a definition in `jmx-resource.xml` which defines a cust
 ----
 ====== Resource definition
 
-JMX objectname is the full name of Mbean in form of `( domain:key=value, key=value, ..)`.
+JMX objectname is the full name of MBean in form of `( domain:key=value, key=value, ..)`.
 Wildcard `(*)` can exist anywhere in the objectname.
 
 Depending on wildcard definition, use `SiblingColumnStorageStrategy` to extract resource label.
-If wildcard exists in the value ( usual case), use corresponding `key` as the `sibling-column-name` parameter. for ex:
+If wildcard exists in the value (usual case), use corresponding `key` as the `sibling-column-name` parameter. For example:
 `org.apache.activemq:BrokerName=*,Type=Queue,Destination=com.mycompany.myqueue`
 
 Here `BrokerName` can be defined as parameter for SiblingColumnStorageStrategy
@@ -120,22 +124,22 @@ Here `BrokerName` can be defined as parameter for SiblingColumnStorageStrategy
 ----
 The extracted BrokerNames from the wildcard will be the resource folders in the form of `nodeId/resourceTypeName/{resource-label}`
 
-Wildcard may exist in domain as well, for ex: `org.apache.*:BrokerName=trap, Type=Queue`.
+Wildcard may exist in domain as well. For example: `org.apache.*:BrokerName=trap, Type=Queue`.
 Then `domain` can be defined as the `sibling-column-name` parameter.
 ----
   <parameter key="sibling-column-name" value="domain" />
 ----
-The `objectname` itself can be used as resource label, simply use `IndexStorageStrategy` as storageStrategy in `resource-type` definition.
+To use the `objectname` itself as a resource label, use `IndexStorageStrategy` as storageStrategy in `resource-type` definition.
 
-===== 3rd Party JMX Services
+===== Third-Party JMX Services
 
-Some java applications provide their own JMX implementation and require certain libraries to be present on the classpath, e.g. the java application server Wildfly.
-In order to successfully collect data the following steps may be required:
+Some Java applications provide their own JMX implementation and require certain libraries to be present on the classpath, e.g., the Java application server Wildfly.
+To successfully collect data, you may need to do the following:
 
-  * Place the jmx client lib to the $OPENNMS_HOME/lib folder (e.g. jboss-cli-client.jar)
-  * Configure the JMX-Collector accordingly (see below)
+  * Place the jmx client lib to the $OPENNMS_HOME/lib folder (e.g., jboss-cli-client.jar)
   * Configure the collection accordingly (see above)
-
+  * Configure the JMX-Collector in _collectd-configuration.xml_ (see below)
+  
 .Example
 [source, xml]
 ----

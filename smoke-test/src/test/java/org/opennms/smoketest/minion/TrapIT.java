@@ -50,9 +50,11 @@ import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.NetworkProtocol;
 import org.opennms.smoketest.utils.DaoUtils;
@@ -187,11 +189,12 @@ public class TrapIT {
 
     private void sendV3Trap(InetSocketAddress snmpAddress) throws Exception {
 
-        SnmpTrapBuilder pdu = SnmpUtils.getV3TrapBuilder();
+        SnmpV3TrapBuilder pdu = SnmpUtils.getV3TrapBuilder();
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
         pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"),
                 SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.6.3.1.1.5.4.0")));
-        pdu.send(InetAddressUtils.str(snmpAddress.getAddress()), snmpAddress.getPort(), "traptest");
+        pdu.send(InetAddressUtils.str(snmpAddress.getAddress()), snmpAddress.getPort(), SnmpConfiguration.AUTH_PRIV, "traptest",
+                "0p3nNMSv3", "SHA-256", "0p3nNMSv3", "DES");
         LOG.info("V3 trap sent successfully");
 
     }

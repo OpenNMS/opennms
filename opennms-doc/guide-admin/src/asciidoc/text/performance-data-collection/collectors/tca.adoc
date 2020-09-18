@@ -4,7 +4,7 @@
 
 ==== TcaCollector
 
-The _TcaCollector_ is used to collect special SNMP data from Juniper TCA Devices.
+The _TcaCollector_ collects special SNMP data from Juniper TCA Devices.
 
 ===== Collector Facts
 
@@ -17,9 +17,12 @@ The _TcaCollector_ is used to collect special SNMP data from Juniper TCA Devices
 
 ===== Collector Parameters
 
-.Collector specific parameters for the TcaCollector
+
+Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+
+.Collector-specific parameters for the TcaCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                              | Required | Default value
-| `collection`           | The name of the _TCA Collection_ to use  | required |
+| `collection`           | The name of the _TCA Collection_ to use.  | required |
 |===
