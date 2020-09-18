@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[ga-performance-mgmt-stress-testing]]
-==== Stress Testing
+===== Stress Testing
 
 The `opennms:stress-metrics` _Karaf Shell_ command can be used to simulate load on the active persistence strategy, whether it be `RRDtool`, `JRobin`, or `Newts`.
 
@@ -29,7 +29,7 @@ A complete list of options is available using:
 opennms:stress-metrics --help
 ----
 
-==== Interpreting the output
+===== Interpreting the output
 
 The statistics output by the tool can be be interpreted as follows:
 

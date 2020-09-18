@@ -1,53 +1,11 @@
-
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-[[ga-collectd-configuration]]
-=== Collectd Configuration
-
-.Configuration and log files related to Collectd
-[options="header, autowidth"]
-|===
-| File                                           | Description
-| `$OPENNMS_HOME/etc/collectd-configuration.xml` | Configuration file for global _Collectd_ daemon and _Collectors_ configuration
-| `$OPENNMS_HOME/logs/collectd.log`              | Log file for all _Collectors_ and the global _Collectd_ daemon
-| `$OPENNMS_HOME/etc/snmp-graph.properties`      | _RRD_ graph definitions to render performance data measurements in the _Web UI_
-| `$OPENNMS_HOME/etc/snmp-graph.properties.d`    | Directory with _RRD_ graph definitions for devices and applications to render performance data measurements in the _Web UI_
-| `$OPENNMS_HOME/etc/events/opennms.events.xml`  | Event definitions for _Collectd_, i.e. _dataCollectionSucceeded_, and _dataCollectionFailed_
-| `$OPENNMS_HOME/etc/resource-types.d`           | Directory to store generic resource type definitions.
-|===
-
-To change the behavior for performance data collection, the `collectd-configuration.xml` file can be modified.
-The configuration file is structured in the following parts:
-
-* _Global daemon config_: Define the size of the used _Thread Pool_ to run _Collectors_ in parallel.
-* _Collection packages_: Packages to allow the grouping of configuration parameters for _Collectors_.
-* _Collection service association_: Based on the name of the collection service, the implementation for application or network management protocols are assigned.
-
-[[ga-performance-management-collectd-overview]]
-.Collectd overview for associated files and configuration
-image::performance-management/01_collectd-overview.png[]
-
-The global behavior, especially the size of the _Thread Pool_ for _Collectd_, is configured in the `collectd-configuration.xml`.
-
-.Global configuration parameters for Collectd
-[source, xml]
-----
-<collectd-configuration
-        threads="50"> <1>
-----
-
-<1> Size of the _Thread Pool_ to run _Collectors_ in parallel
-
-[[ga-performance-management-collectd-resource-types]]
-==== Resource Types
-.Resource Types
-
-Resource Types are used to group sets of performance data measurements for persisting, indexing, and display in the _Web UI_.
-Each resource type has a unique name, label definitions for display in the _Web UI_, and strategy definitions for archiving the measurements for long term analysis.
+Resource types group sets of performance data measurements for persisting, indexing, and display in the web UI.
+Each resource type has a unique name, label definitions for display in the UI, and strategy definitions for archiving the measurements for long-term analysis.
 
 There are two labels for a resource type.
-The first, `label`, defines a string to display in the _Web UI_.
+The first, `label`, defines a string to display in the UI.
 The second, `resourceLabel`, defines the template used when displaying each unique group of measurements name for the resource type.
 
 There are two types of strategy definitions for resource types, persistence selector and storage strategies.
@@ -56,8 +14,7 @@ The storage strategy is used to convert an index into a resource path label for 
 There are two special resource types that do not have a resource-type definition.
 They are `node` and `ifIndex`.
 
-Resource Types can be defined inside files in either `$OPENNMS_HOME/etc/resource-types.d` or `$OPENNMS_HOME/etc/datacollection`, with the latter being specific for SNMP.
-
+Resource types can be defined inside files in either `$OPENNMS_HOME/etc/resource-types.d` or `$OPENNMS_HOME/etc/datacollection`, with the latter being specific for SNMP.
 
 Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacollection/netsnmp.xml`:
 
@@ -76,7 +33,7 @@ Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacol
 </resourceType>
 ----
 
-==== Persistence Selector Strategies
+===== Persistence Selector Strategies
 .Persistence Selector Strategies
 [options="header, autowidth"]
 |===
@@ -85,13 +42,13 @@ Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacol
 | org.opennms.netmgt.collection.support.PersistRegexSelectorStrategy | Persist indexes based on JEXL evaluation
 |===
 
-===== PersistRegexSelectorStrategy
+====== PersistRegexSelectorStrategy
 
 The PersistRegexSelectorStrategy class takes a single parameter, `match-expression`, which defines a JEXL expressions.
-On evaluation, this expression should return either true, persist index to storage, or false, discard data.
+On evaulation, this expression should return either true, persist index to storage, or false, discard data.
 
 
-==== Storage Strategies
+===== Storage Strategies
 .Storage Strategies
 [options="header, autowidth"]
 |===
@@ -105,11 +62,11 @@ On evaluation, this expression should return either true, persist index to stora
 | org.opennms.protocols.xml.collector.XmlStorageStrategy          | Index, but cleaned up for unix filesystems.
 |===
 
-===== IndexStorageStrategy
+====== IndexStorageStrategy
 
 The IndexStorageStrategy takes no parameters.
 
-===== JexlIndexStorageStrategy
+====== JexlIndexStorageStrategy
 
 The JexlIndexStorageStrategy takes two parameters, `index-format` which is required, and `clean-output` which is optional.
 
@@ -139,7 +96,7 @@ public class ExampleStorageStrategy extends JexlIndexStorageStrategy {
 }
 ----
 
-===== ObjectNameStorageStrategy
+====== ObjectNameStorageStrategy
 
 The ObjectNameStorageStrategy extends the JexlIndexStorageStrategy, so its requirements are the same. Extra key/values pairs are added to the JexlContext which can then be used in the `index-format` template.
 The original index string is converted to an ObjectName and can be referenced as `${ObjectName}`. The _domain_ from the ObjectName can be referenced as `${domain}`. All _key properties_
@@ -157,11 +114,11 @@ Given an MBean like `java.lang:type=MemoryPool,name=Survivor Space`, and a stora
 ----
 Then the index value would be `java_lang_MemoryPool_Survivor_Space`.
 
-===== FrameRelayStorageStrategy
+====== FrameRelayStorageStrategy
 
 The FrameRelayStorageStrategy takes no parameters.
 
-===== HostFileSystemStorageStrategy
+====== HostFileSystemStorageStrategy
 
 The HostFileSystemStorageStrategy takes no parameters.
 This class is marked as deprecated, and can be replaced with:
@@ -177,7 +134,7 @@ This class is marked as deprecated, and can be replaced with:
 </storageStrategy>
 ----
 
-===== SiblingColumnStorageStrategy
+====== SiblingColumnStorageStrategy
 
 [options="header, autowidth"]
 |===
@@ -189,7 +146,7 @@ This class is marked as deprecated, and can be replaced with:
 
 Values for `replace-first`, and `replace-all` must match the pattern _s/regex/replacement/_ or an error will be thrown.
 
-===== XmlStorageStrategy
+====== XmlStorageStrategy
 
 This XmlStorageStrategy takes no parameters.
 The index value will have all whitespace, colons, forward and back slashes, and vertical bars replaced with underscores.

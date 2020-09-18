@@ -11,6 +11,7 @@ As soon as managed entities are provisioned, the base configuration will automat
 Generally speaking, there are two methods of provisioning in {opennms-product-name}: _Auto Discovery_ and _Directed Discovery_.
 We'll start with _Auto Discovery_, but first, we should quickly review the configuration of SNMP so that newly discovered devices can be immediately scanned for entities as well as have reporting and thresholding available.
 
+[[provision-snmp-configuration]]
 ==== Provisioning the SNMP Configuration
 
 {opennms-product-name} requires SNMP configuration to be properly setup for your network in order to properly understand Network and Node topology as well as to automatically enable performance data collection.

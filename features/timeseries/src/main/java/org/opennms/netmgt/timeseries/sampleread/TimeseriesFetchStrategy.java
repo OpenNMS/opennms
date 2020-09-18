@@ -185,24 +185,23 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                         threadPool.submit(() -> getMeasurementsForResourceCallable(entry.getKey(), entry.getValue(), startTs, endTs, lag)));
             }
 
-            long[] timestamps = null;
-            Map<String, double[]> columns = Maps.newHashMap();
+            // Create timestamps
+            long[] timestamps;
+            if(measurementsByNewtsResourceId.entrySet().isEmpty()) {
+                timestamps = new long[0];
+            } else {
+                timestamps = toSampleList(measurementsByNewtsResourceId.entrySet().iterator().next())
+                        .values()
+                        .iterator().next().stream()
+                        .map(Sample::getTime)
+                        .mapToLong(Instant::toEpochMilli).toArray();
+            }
 
+            // Create columns
+            Map<String, double[]> columns = Maps.newHashMap();
             for (Entry<String, Future<Map<Source, List<Sample>>>> entry : measurementsByNewtsResourceId.entrySet()) {
                 Map<Source, List<Sample>> sampleList;
-                try {
-                    sampleList = entry.getValue().get();
-                } catch (InterruptedException | ExecutionException e) {
-                    throw Throwables.propagate(e);
-                }
-
-                if (timestamps == null) {
-                    timestamps = sampleList
-                            .values()
-                            .iterator().next().stream()
-                            .map(Sample::getTime)
-                            .mapToLong(Instant::toEpochMilli).toArray();
-                }
+                sampleList = toSampleList(entry);
 
                 for (Entry<Source, List<Sample>> column : sampleList.entrySet()) {
                     double[] values = column.getValue().stream().mapToDouble(Sample::getValue).toArray();
@@ -210,12 +209,21 @@ public class TimeseriesFetchStrategy implements MeasurementFetchStrategy {
                 }
             }
 
+            // Create FetchResults
             FetchResults fetchResults = new FetchResults(timestamps, columns, lag.getStep(), constants, new QueryMetadata(resources));
             if (relaxed) {
                 Utils.fillMissingValues(fetchResults, sources);
             }
             LOG.trace("Fetch results: {}", fetchResults);
             return fetchResults;
+        }
+    }
+
+    private Map<Source, List<Sample>> toSampleList(Entry<String, Future<Map<Source, List<Sample>>>> entry) {
+        try {
+            return entry.getValue().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw Throwables.propagate(e);
         }
     }
 
