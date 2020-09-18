@@ -184,6 +184,16 @@ public class TimeseriesFetchStrategyTest {
     }
 
     @Test
+    public void testFetchWithNoResults() throws Exception {
+        List<Source> sources = Lists.newArrayList();
+        replay();
+
+        FetchResults fetchResults = fetchStrategy.fetch(START_TIME, END_TIME, STEP, 0, null, null, sources, false);
+        assertEquals(0, fetchResults.getColumns().keySet().size());
+        assertEquals(0, fetchResults.getTimestamps().length);
+    }
+
+    @Test
     public void testFetchWithDuplicateResources() throws Exception {
         List<Source> sources = Lists.newArrayList(
             createMockResource("icmp", "icmp", "127.0.0.1"),
