@@ -10,7 +10,10 @@ Note that installing _R_ is optional, and not required by any of the core compon
 
 === Install R on RHEL
 
-.Ensure the dnf plugin config-manager is installed
+IMPORTANT: Commands and instructions are specific to RHEL 8. 
+For RHEL 7, replace `dnf` with `yum`. 
+
+.Ensure the dnf (yum on RHEL 7) plugin config-manager is installed
 [source, bash]
 ----
 dnf -y install dnf-plugins-core
