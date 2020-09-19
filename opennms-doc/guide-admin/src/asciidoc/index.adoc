@@ -19,6 +19,10 @@
 == About This Guide
 include::text/about/about.adoc[]
 
+[[ga-admin-datachoices]]
+== Data Choices
+include::text/datachoices.adoc[]
+
 [[ga-role-user-management]]
 == User Management
 include::text/user-management/users.adoc[]
@@ -188,6 +192,8 @@ include::text/performance-data-collection/shell/introduction.adoc[]
 include::text/performance-data-collection/shell/adhoc-collection.adoc[]
 include::text/performance-data-collection/shell/measurements.adoc[]
 include::text/performance-data-collection/shell/stress-testing.adoc[]
+
+
 
 [[ga-performance-mgmt-thresholds]]
 == Thresholding
