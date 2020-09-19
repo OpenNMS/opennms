@@ -8,4 +8,8 @@ The following steps will be described:
 . Initialize _{opennms-product-name}_ database and start
 . Log in to the Web User Interface and change default admin password
 
-All commands on the command line interface need to be executed with _root_ permissions.
+You must use _root_ permissions to run all commands on the command line interface.
+
+IMPORTANT: Commands and instructions are specific to RHEL 8. 
+We provide RHEL 7 alternatives where applicable. 
+
