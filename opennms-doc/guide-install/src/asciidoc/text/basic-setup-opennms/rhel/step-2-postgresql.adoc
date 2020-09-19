@@ -1,5 +1,5 @@
 
-==== Step 2: Initialize and setup PostgreSQL
+==== Step 2: Initialize and set up PostgreSQL
 
 .Initialization of the PostgreSQL database
 [source, shell]
