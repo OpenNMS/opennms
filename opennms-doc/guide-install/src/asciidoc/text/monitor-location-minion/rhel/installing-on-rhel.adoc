@@ -1,13 +1,13 @@
 
 === Installing on RHEL
 
-. Setup _{opennms-product-name}_ to allow _Minion_ communication
-. Installation of the `opennms-minion` meta package which handles all dependencies
-. Starting _Minion_ and access the _Karaf_ console over _SSH_
-. Configure _Minion_ to communicate with _{opennms-product-name}_
-. Verify the connectivity between _Minion_ and _{opennms-product-name}_
+Use the following commands to install the Minion package, start the Minion, test access to the Karaf shell, configure Minion to communicate with {opennms-product-name}, and verify connectivity. 
 
-All commands on the command line interface need to be executed with _root_ permissions.
+You must run all commands on the command line interface with _root_ permissions.
+
+IMPORTANT: Make sure you have xref:gi-minion-setup-communication[set up {opennms-product-name}] to allow communication with the Minion before completing the steps in this section.
+
+For miscellaneous installation information including Minion directory structure, start up configuration, and an alternate way to configure credentials, see <<minion-communication, Information about Minion Packages and Configuration>>.
 
 IMPORTANT: Commands and instructions are specific to RHEL 8. 
 We provide RHEL 7 alternatives where applicable. 
