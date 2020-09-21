@@ -31,6 +31,8 @@ package org.opennms.netmgt.threshd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Date;
 
@@ -51,9 +53,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(0.9);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(0.9);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
        new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
     }
@@ -77,9 +79,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(0.9);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(0.9);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
        ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
         
@@ -92,9 +94,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(0.9);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(0.9);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
         
@@ -108,9 +110,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(0.9);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(0.9);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
         
@@ -124,9 +126,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(0.9);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(0.9);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
         
@@ -140,9 +142,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(0.9);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(0.9);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
         
@@ -156,9 +158,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(1.1);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(1.1);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
         
@@ -172,9 +174,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(1.1);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(1.1);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
         
@@ -188,9 +190,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(1.1);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(1.1);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
         
@@ -204,9 +206,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(1.1);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(1.1);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
         
@@ -220,9 +222,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(1.1);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(1.1);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
         
@@ -237,13 +239,13 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(1.1);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(1.1);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
 
-        assertNull("should not have created an event", evaluator.getEventForState(Status.NO_CHANGE, new Date(), 10.0, null));
+        assertNull("should not have created an event", evaluator.getEventForState(Status.NO_CHANGE, new Date(), 10.0, null, null));
     }
     
     @Test
@@ -252,9 +254,14 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(1.1);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(1.1);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = mock(ThresholdEvaluatorState.ThresholdValues.class);
+        when(thresholdValues.getThresholdValue()).thenReturn(1.1);
+        when(thresholdValues.getRearm()).thenReturn(0.5);
+        when(thresholdValues.getTrigger()).thenReturn(3);
+
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
 
@@ -262,7 +269,7 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         assertEquals("should trigger", Status.TRIGGERED, evaluator.evaluate(10.0));
         
         // Do it once with a null instance
-        Event event = evaluator.getEventForState(Status.TRIGGERED, new Date(), 10.0, null);
+        Event event = evaluator.getEventForState(Status.TRIGGERED, new Date(), 10.0, thresholdValues, null);
         assertNotNull("should have created an event", event);
         assertEquals("UEIs should be the same", EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
         assertNotNull("event should have parms", event.getParmCollection());
@@ -272,7 +279,7 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         parmPresentWithValue(event, "multiplier", "1.1");
         
         // And again with a non-null instance
-        event = evaluator.getEventForState(Status.TRIGGERED, new Date(), 10.0, new MockCollectionResourceWrapper("testInstance"));
+        event = evaluator.getEventForState(Status.TRIGGERED, new Date(), 10.0, thresholdValues, new MockCollectionResourceWrapper("testInstance"));
         assertNotNull("should have created an event", event);
         assertEquals("UEIs should be the same", EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
         assertNotNull("event should have parms", event.getParmCollection());
@@ -288,13 +295,17 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(99.0);
-        threshold.setRearm(95.0);
-        threshold.setTrigger(1);
+        threshold.setDoubleValue(99.0);
+        threshold.setRearmValue(95.0);
+        threshold.setTriggerValue(1);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = mock(ThresholdEvaluatorState.ThresholdValues.class);
+        when(thresholdValues.getThresholdValue()).thenReturn(99.0);
+        when(thresholdValues.getRearm()).thenReturn(95.0);
+        when(thresholdValues.getTrigger()).thenReturn(1);
 
         ThresholdEvaluatorStateRelativeChange item = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
-        Event event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0, null);
+        Event event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0, thresholdValues, null);
         assertEquals("UEI should be the relativeChangeThresholdTriggerd", EventConstants.RELATIVE_CHANGE_THRESHOLD_EVENT_UEI, event.getUei());
     }
 
@@ -305,15 +316,19 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(99.0);
-        threshold.setRearm(95.0);
-        threshold.setTrigger(1);
+        threshold.setDoubleValue(99.0);
+        threshold.setRearmValue(95.0);
+        threshold.setTriggerValue(1);
         threshold.setTriggeredUEI(triggeredUEI);
+        ThresholdEvaluatorState.ThresholdValues thresholdValues = mock(ThresholdEvaluatorState.ThresholdValues.class);
+        when(thresholdValues.getThresholdValue()).thenReturn(99.0);
+        when(thresholdValues.getRearm()).thenReturn(95.0);
+        when(thresholdValues.getTrigger()).thenReturn(1);
         
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
 
         ThresholdEvaluatorStateRelativeChange item = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
-        Event event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0, null);
+        Event event=item.getEventForState(Status.TRIGGERED, new Date(), 100.0, thresholdValues, null);
         assertEquals("UEI should be the uei.opennms.org/custom/relativeChangeThresholdTriggered", triggeredUEI, event.getUei());
        
     }
@@ -324,9 +339,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(1.1);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(1.1);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
         
@@ -340,9 +355,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
         threshold.setType(ThresholdType.RELATIVE_CHANGE);
         threshold.setDsName("ds-name");
         threshold.setDsType("node");
-        threshold.setValue(1.1);
-        threshold.setRearm(0.5);
-        threshold.setTrigger(3);
+        threshold.setDoubleValue(1.1);
+        threshold.setRearmValue(0.5);
+        threshold.setTriggerValue(3);
         ThresholdConfigWrapper wrapper=new ThresholdConfigWrapper(threshold);
         ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(wrapper, MockSession.getSession());
         
@@ -356,9 +371,9 @@ public class ThresholdEvaluatorRelativeChangeTest extends AbstractThresholdEvalu
 		threshold.setType(ThresholdType.RELATIVE_CHANGE);
 		threshold.setDsName("ds-name");
 		threshold.setDsType("node");
-		threshold.setValue(0.9);
-		threshold.setRearm(0.5);
-		threshold.setTrigger(1);
+		threshold.setDoubleValue(0.9);
+		threshold.setRearmValue(0.5);
+		threshold.setTriggerValue(1);
 		ThresholdConfigWrapper wrapper = new ThresholdConfigWrapper(threshold);
 		ThresholdEvaluatorStateRelativeChange evaluator = new ThresholdEvaluatorStateRelativeChange(
 				wrapper, MockSession.getSession());

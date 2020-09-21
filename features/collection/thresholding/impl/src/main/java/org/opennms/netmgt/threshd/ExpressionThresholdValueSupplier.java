@@ -28,14 +28,11 @@
 
 package org.opennms.netmgt.threshd;
 
-import java.util.function.Consumer;
-
-public interface ExpressionThresholdValue {
+public interface ExpressionThresholdValueSupplier {
     /**
-     * @param expressionConsumer a consumer for accepting the interpolated expression for caching purposes
-     * @return the expression value
+     * @return the expression and threshold values.
      */
-    double get(Consumer<String> expressionConsumer) throws ThresholdExpressionException;
+    ExpressionConfigWrapper.ExpressionThresholdValues get() throws ThresholdExpressionException;
 
     /**
      * @param evaluatedExpression the already interpolated expression which will be used rather than interpolating the
