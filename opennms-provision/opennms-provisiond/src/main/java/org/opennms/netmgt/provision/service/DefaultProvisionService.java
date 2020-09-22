@@ -67,6 +67,7 @@ import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
@@ -1048,6 +1049,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 final EventAccumulator accumulator = new EventAccumulator(m_eventForwarder);
 
                 final boolean changed = handleCategoryChanges(dbNode);
+
+                // handle metadata that was added using policies
+                for (final OnmsMetaData onmsMetaData : node.getRequisitionedMetaData()) {
+                    dbNode.addMetaData(onmsMetaData.getContext(), onmsMetaData.getKey(), onmsMetaData.getValue());
+                }
 
                 dbNode.mergeNodeAttributes(node, accumulator);
                 node.getAssetRecord().setId(dbNode.getAssetRecord().getId());
