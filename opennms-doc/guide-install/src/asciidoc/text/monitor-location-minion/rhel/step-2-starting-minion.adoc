@@ -26,7 +26,7 @@ config:update
 ----
 
 TIP: Include the `failover:` portion of the broker URL to allow the Minion to re-establish connectivity on failure.
-     For a reference on the different URL formats, see http://activemq.apache.org/uri-protocols.html[ActiveMQ URI Protocols]
+     For a reference on the different URL formats, see http://activemq.apache.org/uri-protocols.html[ActiveMQ URI Protocols].
 
 
 .Configure the credentials to use when communicating with {opennms-product-name} and exit Karaf shell
@@ -37,7 +37,7 @@ opennms:scv-set opennms.broker #minion username minion password
 <ctrl-d>
 ----
 
-TIP: Another way to configure credentials is to use the `scvcli` utility in your Minion `bin` directory (see xref:credentials-alternate[Alternate way to configure credentials] )
+TIP: Another way to configure credentials is to use the `scvcli` utility in your Minion `bin` directory (see xref:credentials-alternate[Alternate way to configure credentials]).
 
 .Restart the Minion after updating the credentials
 [source]

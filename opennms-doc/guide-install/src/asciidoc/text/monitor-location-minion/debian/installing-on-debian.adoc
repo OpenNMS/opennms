@@ -7,5 +7,5 @@ You must run all commands on the command line interface with _root_ permissions.
 
 IMPORTANT: Make sure you have xref:gi-minion-setup-communication[set up {opennms-product-name}] to allow communication with the Minion before completing the steps in this section. 
 
-For miscellaneous installation information including Minion directory structure, start up configuration, and an alternate way to configure credentials, see <<minion-communication, Information about Minion Packages and Configuration>>.
+For miscellaneous installation information including Minion directory structure, startup configuration, and an alternate way to configure credentials, see <<minion-communication, Information about Minion Packages and Configuration>>.
 
