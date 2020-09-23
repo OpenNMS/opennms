@@ -53,5 +53,13 @@ public class GnmiPathTest {
         path = "/";
         gnmiPath = OpenConfigClientImpl.buildGnmiPath(path);
         Assert.assertEquals(gnmiPath.getElemCount(), 0);
+
+        // Path where there are inner /
+        path = "/interfaces/interface[name=Ethernet1/2/3][ifIndex=25]/state/counters";
+        gnmiPath = OpenConfigClientImpl.buildGnmiPath(path);
+        Assert.assertEquals(gnmiPath.getElemCount(), 4);
+        Assert.assertEquals("interface", gnmiPath.getElemList().get(1).getName());
+        Assert.assertEquals("Ethernet1/2/3", gnmiPath.getElemList().get(1).getKeyOrDefault("name", "nothing"));
+        Assert.assertEquals("25", gnmiPath.getElemList().get(1).getKeyOrDefault("ifIndex", "nothing"));
     }
 }

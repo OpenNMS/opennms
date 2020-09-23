@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -153,10 +154,9 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     }
 
     // Builds gnmi path based on https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-path-conventions.md
-    // TODO: This doesn't support "/" in []
     static Gnmi.Path buildGnmiPath(String path) {
         Gnmi.Path.Builder gnmiPathBuilder = Gnmi.Path.newBuilder();
-        List<String> elemList = Splitter.on("/").omitEmptyStrings().splitToList(path);
+        List<String> elemList = getElements(path);
         elemList.forEach(elem -> {
             if (elem.contains("[")) {
                 String name = elem.substring(0, elem.indexOf("["));
@@ -187,6 +187,45 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             }
         });
         return params;
+    }
+
+    // Splits the paths by / and handles inner separator in [] for ex : /interfaces/interface[name=Ethernet1/2/3]
+    private static List<String> getElements(String path) {
+        if (!path.contains("[")) {
+            return Splitter.on("/").omitEmptyStrings().splitToList(path);
+        } else {
+            // Are there inner separator `/` ?
+            List<String> matches = new ArrayList<String>();
+            Pattern regex = Pattern.compile("\\[(.*?)\\]");
+            Matcher matcher = regex.matcher(path);
+            while (matcher.find()) {
+                matches.add(matcher.group(1));
+            }
+            boolean innerSeparator = matches.stream().anyMatch(match -> match.contains("/"));
+            if (!innerSeparator) {
+                // No inner separator `/`.
+                return Splitter.on("/").omitEmptyStrings().splitToList(path);
+            } else {
+                String randomString = UUID.randomUUID().toString();
+                List<String> matchesWithSeparator =
+                        matches.stream().filter(match -> match.contains("/"))
+                                .collect(Collectors.toList());
+                // Replace inner separator `/` with random string in original path
+                for (String match : matchesWithSeparator) {
+                    String replacement = match.replace("/", randomString);
+                    path = path.replace(match, replacement);
+                }
+                // Split original path with separator
+                List<String> paths = Splitter.on("/").omitEmptyStrings().splitToList(path);
+                List<String> elements = new ArrayList<>();
+                // Re-generate elements with inner separator.
+                for (String element : paths) {
+                    String replacement = element.replace(randomString, "/");
+                    elements.add(replacement);
+                }
+                return elements;
+            }
+        }
     }
 
     private void scheduleSubscription(OpenConfigClient.Handler handler) {
