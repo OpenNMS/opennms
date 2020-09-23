@@ -1,34 +1,36 @@
 
-== Monitor isolated location with Minion
+== Installing and Configuring a Minion
 
-This section describes how to install the _Minion_ to monitor devices and services in a location which can't be reached from an _{opennms-product-name}_ instance.
+A Minion is an instance of the Karaf OSGi service that enables OpenNMS to monitor devices and services in locations that an OpenNMS instance cannot reach. Minions communicate with these remote devices while OpenNMS performs coordination and task delegation.
 
-=== Objectives
+Minions can operate behind a firewall and/or network address translation (NAT) as long as they can communicate with OpenNMS via ActiveMQ, Apache Kafka, or gRPC. 
 
-* Install a _Minion_ to monitor devices and services unreachable from an _{opennms-product-name}_ instance
-* Configure an authenticated unencrypted communication between _Minion_ and _{opennms-product-name}_ using _ActiveMQ_ and _REST_
+This chapter describes how to install a Minion and configure an authenticated unencrypted communication between Minion and {opennms-product-name} using ActiveMQ and REST.
 
-=== Before you begin
+=== Requirements
 
-Setting up a _{opennms-product-name}_ with _Minions_ requires:
+* Identical version numbers for {opennms-product-name} instance and Minion package
+* {opennms-product-name} installed and communication to the REST (8980/tcp) and ActiveMQ (616161/tcp) endpoints is possible 
 
-* Instance of _{opennms-product-name}_ needs to be exact same version as _Minion_ packages
+NOTE: For communication between {opennms-product-name} and Kafka, see <<kafka-setup, Setup using Apache Kafka>>. For gRPC, see <<minion-grpc, Minion with gRPC strategy>>.   
+
 ifdef::opennms-prime[]
-* Packages are available as _RPMs_ for _RHEL_-based systems alongside OpenNMS in the yum repository
+
+Packages are available as RPMs for RHEL-based systems alongside OpenNMS in the yum repository
 endif::opennms-prime[]
 ifndef::opennms-prime[]
-* Packages are available as _RPMs_ for _RHEL_-based systems and _DEBs_ for _Debian_-based systems
-endif::opennms-prime[]
-* _{opennms-product-name}_ needs to be installed and communication to the _REST (8980/tcp)_ and _ActiveMQ (616161/tcp)_ endpoints is possible
 
-Depending on the installed operating system, the path for _Minion_ is different.
-If the instruction refers to `${MINION_HOME}`, the path is resolved to the following directories:
+Packages are available as RPMs for RHEL-based systems and DEBs for Debian-based systems
+endif::opennms-prime[]
+
+If the instruction refers to `${MINION_HOME}`, the path for Minion resolves to the following directory, depending on the operating system:
 
 .Directory Structure
 [width="100%", cols="1,4"]
 |===
-| _RHEL_              | `/opt/minion`
+| RHEL              | `/opt/minion`
 ifndef::opennms-prime[]
-| _Debian_            | `/usr/share/minion`
+| Debian            | `/usr/share/minion`
 endif::opennms-prime[]
 |===
+
