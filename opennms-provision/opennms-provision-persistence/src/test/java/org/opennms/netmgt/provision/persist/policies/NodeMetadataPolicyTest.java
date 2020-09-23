@@ -91,6 +91,26 @@ public class NodeMetadataPolicyTest implements InitializingBean {
 
     @Test
     @Transactional
+    public void testMatchingLabelWithCustomContext() {
+        final NodeMetadataSettingPolicy p = new NodeMetadataSettingPolicy();
+        p.setLabel("~.*mach.*");
+        p.setKey("theKey");
+        p.setValue("theValue");
+        p.setContext("customContext");
+        final List<OnmsNode> modifiedNodes = applyPolicy(p);
+
+        final OnmsNode node1 = modifiedNodes.stream().filter(n->n.getId() == 1).findFirst().get();
+        final OnmsNode node2 = modifiedNodes.stream().filter(n->n.getId() == 2).findFirst().get();
+
+        assertEquals(1, node1.getRequisitionedMetaData().size());
+        assertEquals("customContext", node1.getRequisitionedMetaData().get(0).getContext());
+        assertEquals("theKey", node1.getRequisitionedMetaData().get(0).getKey());
+        assertEquals("theValue", node1.getRequisitionedMetaData().get(0).getValue());
+        assertEquals(0, node2.getRequisitionedMetaData().size());
+    }
+
+    @Test
+    @Transactional
     public void testMatchingNothing() {
         final NodeMetadataSettingPolicy p = new NodeMetadataSettingPolicy();
         p.setLabel("~^foobar$");

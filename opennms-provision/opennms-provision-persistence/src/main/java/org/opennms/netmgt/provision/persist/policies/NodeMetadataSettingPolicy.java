@@ -44,18 +44,17 @@ import com.google.common.base.Strings;
 @Scope("prototype")
 @Policy("Set Node Metadata")
 public class NodeMetadataSettingPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
-    private final String CONTEXT = "requisition";
+    private String context = "requisition";
     private String key;
     private String value = "";
 
-
     @Override
-    public OnmsNode act(final OnmsNode node, Map<String, Object> attributes) {
-        if (Strings.isNullOrEmpty(this.key)) {
+    public OnmsNode act(final OnmsNode node, final Map<String, Object> attributes) {
+        if (Strings.isNullOrEmpty(this.key) || Strings.isNullOrEmpty(this.context)) {
             return node;
         }
 
-        node.addRequisionedMetaData(new OnmsMetaData(CONTEXT, this.key, this.value != null ? this.value : ""));
+        node.addRequisionedMetaData(new OnmsMetaData(this.context, this.key, this.value != null ? this.value : ""));
         return node;
     }
 
@@ -73,6 +72,14 @@ public class NodeMetadataSettingPolicy extends BasePolicy<OnmsNode> implements N
 
     public String getValue() {
         return this.value;
+    }
+
+    public void setContext(final String context) {
+        this.context = context;
+    }
+
+    public String getContext() {
+        return this.context;
     }
 
     public String getType() {
