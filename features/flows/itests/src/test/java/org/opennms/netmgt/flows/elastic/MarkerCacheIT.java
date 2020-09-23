@@ -306,6 +306,7 @@ public class MarkerCacheIT {
                     .sorted()
                     .collect(Collectors.toList());
             assertEquals(Arrays.stream(expectedInterfaces).sorted().collect(Collectors.toList()), interfaces);
+            return null;
         });
     }
 }
