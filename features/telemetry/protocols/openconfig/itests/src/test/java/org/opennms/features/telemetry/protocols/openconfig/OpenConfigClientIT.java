@@ -44,6 +44,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.openconfig.api.OpenConfigClient;
+import org.opennms.features.openconfig.proto.gnmi.Gnmi;
 import org.opennms.features.openconfig.proto.jti.Telemetry;
 import org.opennms.features.openconfig.telemetry.OpenConfigClientImpl;
 
@@ -51,7 +52,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 public class OpenConfigClientIT {
 
-    private final List<Telemetry.OpenConfigData> openConfigData = new ArrayList<>();
+    private final List<Telemetry.OpenConfigData> jtiData = new ArrayList<>();
+    private final List<Gnmi.SubscribeResponse> gnmiData = new ArrayList<>();
     private OpenConfigTestServer server;
 
     @Before
@@ -63,35 +65,50 @@ public class OpenConfigClientIT {
     @Test
     public void testOpenConfigJti() throws Exception {
 
-        Map<String, String> params = getParams();
+        Map<String, String> params = getParams(true);
         InetAddress host = InetAddress.getLocalHost();
         OpenConfigClientImpl openConfigClient = new OpenConfigClientImpl(host, params);
-        openConfigClient.subscribe(new DataHandler());
+        openConfigClient.subscribe(new DataHandler(true));
         // Wait till at least 2 data streams received.
-        await().atMost(15, TimeUnit.SECONDS).until(openConfigData::size, is(greaterThan(1)));
+        await().atMost(15, TimeUnit.SECONDS).until(jtiData::size, is(greaterThan(1)));
+
+    }
+
+    @Test
+    public void testOpenConfigGnmi() throws Exception {
+
+        Map<String, String> params = getParams(false);
+        InetAddress host = InetAddress.getLocalHost();
+        OpenConfigClientImpl openConfigClient = new OpenConfigClientImpl(host, params);
+        openConfigClient.subscribe(new DataHandler(false));
+        // Wait till at least 2 data streams received.
+        await().atMost(15, TimeUnit.SECONDS).until(gnmiData::size, is(greaterThan(1)));
 
     }
 
     @Test
     public void testOpenConfigScheduling() throws Exception {
-        openConfigData.clear();
-        Map<String, String> params = getParams();
+        jtiData.clear();
+        Map<String, String> params = getParams(true);
         InetAddress host = InetAddress.getLocalHost();
         server.setErrorStream();
         OpenConfigClientImpl openConfigClient = new OpenConfigClientImpl(host, params);
-        openConfigClient.subscribe(new DataHandler());
+        openConfigClient.subscribe(new DataHandler(true));
         // Wait till at least 2 data streams received.
-        await().atMost(15, TimeUnit.SECONDS).until(openConfigData::size, is(greaterThan(1)));
+        await().atMost(15, TimeUnit.SECONDS).until(jtiData::size, is(greaterThan(1)));
         // Stop the server and see if client can make a connection
         server.stop();
-        openConfigData.clear();
+        jtiData.clear();
         server.start();
         // Wait till at least 2 data streams received.
-        await().atMost(15, TimeUnit.SECONDS).until(openConfigData::size, is(greaterThan(1)));
+        await().atMost(15, TimeUnit.SECONDS).until(jtiData::size, is(greaterThan(1)));
     }
 
-    private Map<String, String> getParams() {
+    private Map<String, String> getParams(boolean jti) {
         Map<String, String> params = new HashMap<>();
+        if(jti) {
+            params.put("mode", "jti");
+        }
         params.put("port", "50052");
         params.put("paths", "/interfaces," +
                 "/network-instances/network-instance[instance-name='master']," +
@@ -103,11 +120,22 @@ public class OpenConfigClientIT {
 
     private class DataHandler implements OpenConfigClient.Handler {
 
+        private boolean jti;
+
+        public DataHandler(boolean jti) {
+            this.jti = jti;
+        }
+
         @Override
         public void accept(InetAddress host, Integer port, byte[] data) {
             try {
-                Telemetry.OpenConfigData ocData = Telemetry.OpenConfigData.parseFrom(data);
-                openConfigData.add(ocData);
+                if(jti) {
+                    Telemetry.OpenConfigData ocData = Telemetry.OpenConfigData.parseFrom(data);
+                    jtiData.add(ocData);
+                } else {
+                    Gnmi.SubscribeResponse subscribeResponse = Gnmi.SubscribeResponse.parseFrom(data);
+                    gnmiData.add(subscribeResponse);
+                }
             } catch (InvalidProtocolBufferException e) {
 
             }

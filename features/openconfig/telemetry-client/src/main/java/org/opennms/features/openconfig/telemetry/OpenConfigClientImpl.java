@@ -45,17 +45,23 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.opennms.core.grpc.common.GrpcClientBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.features.openconfig.api.OpenConfigClient;
+import org.opennms.features.openconfig.proto.gnmi.Gnmi;
+import org.opennms.features.openconfig.proto.gnmi.gNMIGrpc;
 import org.opennms.features.openconfig.proto.jti.OpenConfigTelemetryGrpc;
 import org.opennms.features.openconfig.proto.jti.Telemetry;
 import org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Splitter;
 
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
@@ -119,12 +125,68 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private void subscribeToTelemetry(OpenConfigClient.Handler handler) {
         Integer frequency = StringUtils.parseInt(parameters.get("frequency"), DEFAULT_FREQUENCY);
         String pathString = parameters.get("paths");
+        String mode = parameters.get("mode");
         List<String> paths = pathString != null ? Arrays.asList(pathString.split(",", -1)) : new ArrayList<>();
-        OpenConfigTelemetryGrpc.OpenConfigTelemetryStub asyncStub = OpenConfigTelemetryGrpc.newStub(channel);
-        Telemetry.SubscriptionRequest.Builder requestBuilder = Telemetry.SubscriptionRequest.newBuilder();
-        paths.forEach(path -> requestBuilder.addPathList(Telemetry.Path.newBuilder().setPath(path).setSampleFrequency(frequency).build()));
-        asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(host, port, handler));
-        LOG.info("Subscribed to OpenConfig telemetry stream at {}", InetAddressUtils.str(host));
+        // Defaults to gnmi
+        if ("jti".equals(mode)) {
+            OpenConfigTelemetryGrpc.OpenConfigTelemetryStub asyncStub = OpenConfigTelemetryGrpc.newStub(channel);
+            Telemetry.SubscriptionRequest.Builder requestBuilder = Telemetry.SubscriptionRequest.newBuilder();
+            paths.forEach(path -> requestBuilder.addPathList(Telemetry.Path.newBuilder().setPath(path).setSampleFrequency(frequency).build()));
+            asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(host, port, handler));
+            LOG.info("Subscribed to OpenConfig telemetry stream at {}", InetAddressUtils.str(host));
+        } else {
+            gNMIGrpc.gNMIStub gNMIStub = gNMIGrpc.newStub(channel);
+            Gnmi.SubscribeRequest.Builder requestBuilder = Gnmi.SubscribeRequest.newBuilder();
+            Gnmi.SubscriptionList.Builder subscriptionListBuilder = Gnmi.SubscriptionList.newBuilder();
+            paths.forEach(path -> {
+                Gnmi.Path gnmiPath = buildGnmiPath(path);
+                Gnmi.Subscription subscription = Gnmi.Subscription.newBuilder()
+                        .setPath(gnmiPath)
+                        .setSampleInterval(frequency).build();
+                subscriptionListBuilder.addSubscription(subscription);
+            });
+            requestBuilder.setSubscribe(subscriptionListBuilder.build());
+            StreamObserver<Gnmi.SubscribeRequest> requestStreamObserver = gNMIStub.subscribe(new GnmiDataHandler(handler, host, port));
+            requestStreamObserver.onNext(requestBuilder.build());
+            LOG.info("Subscribed to OpenConfig telemetry stream at {}", InetAddressUtils.str(host));
+        }
+    }
+
+    // Builds gnmi path based on https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-path-conventions.md
+    // TODO: This doesn't support "/" in []
+    static Gnmi.Path buildGnmiPath(String path) {
+        Gnmi.Path.Builder gnmiPathBuilder = Gnmi.Path.newBuilder();
+        List<String> elemList = Splitter.on("/").omitEmptyStrings().splitToList(path);
+        elemList.forEach(elem -> {
+            if (elem.contains("[")) {
+                String name = elem.substring(0, elem.indexOf("["));
+                Map<String, String> keyValues = getPathElemParam(elem);
+                Gnmi.PathElem.Builder builder = Gnmi.PathElem.newBuilder();
+                builder.setName(name);
+                keyValues.forEach(builder::putKey);
+                gnmiPathBuilder.addElem(builder.build());
+            } else {
+                gnmiPathBuilder.addElem(Gnmi.PathElem.newBuilder().setName(elem).build());
+            }
+        });
+        return gnmiPathBuilder.build();
+    }
+
+    private static Map<String, String> getPathElemParam(String element) {
+        Map<String, String> params = new HashMap<>();
+        List<String> matches = new ArrayList<String>();
+        Pattern regex = Pattern.compile("\\[(.*?)\\]");
+        Matcher matcher = regex.matcher(element);
+        while (matcher.find()) {
+            matches.add(matcher.group(1));
+        }
+        matches.forEach(match -> {
+            String[] keyValues = match.split("=");
+            if (keyValues[0] != null && keyValues[1] != null) {
+                params.put(keyValues[0], keyValues[1]);
+            }
+        });
+        return params;
     }
 
     private void scheduleSubscription(OpenConfigClient.Handler handler) {
@@ -182,7 +244,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             channel.shutdown();
         }
     }
-
+    // Handles JTI Telemetry data
     private class TelemetryDataHandler implements StreamObserver<OpenConfigData> {
 
         private final OpenConfigClient.Handler handler;
@@ -198,6 +260,43 @@ public class OpenConfigClientImpl implements OpenConfigClient {
         @Override
         public void onNext(OpenConfigData value) {
             handler.accept(host, port, value.toByteArray());
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            LOG.error("Received error on stream for host {}", InetAddressUtils.str(host), t);
+            handler.onError(t.getMessage());
+            close();
+            executor.execute(() -> scheduleSubscription(handler));
+        }
+
+        @Override
+        public void onCompleted() {
+            LOG.info("Response stream closed for host {}", InetAddressUtils.str(host));
+            handler.onError("OpenConfig Server closed connection for host " + InetAddressUtils.str(host));
+            close();
+            executor.execute(() -> scheduleSubscription(handler));
+        }
+    }
+
+    // Handles Gnmi Telemetry data
+    private class GnmiDataHandler implements StreamObserver<Gnmi.SubscribeResponse> {
+
+        private final OpenConfigClient.Handler handler;
+        private final InetAddress host;
+        private final Integer port;
+
+        public GnmiDataHandler(Handler handler, InetAddress host, Integer port) {
+            this.handler = handler;
+            this.host = host;
+            this.port = port;
+        }
+
+        @Override
+        public void onNext(Gnmi.SubscribeResponse subscribeResponse) {
+            if(subscribeResponse != null) {
+                handler.accept(host, port, subscribeResponse.toByteArray());
+            }
         }
 
         @Override
