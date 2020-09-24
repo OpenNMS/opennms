@@ -1,0 +1,21 @@
+
+==== Step 3: Starting the Sentinel and test access to Karaf Shell
+
+.Configure systemd to start _Sentinel_ on system boot
+[source, shell]
+----
+systemctl enable sentinel
+----
+
+.Startup _Sentinel_
+[source, shell]
+----
+systemctl start sentinel
+----
+
+.Test access to Karaf shell with user admin and password admin and exit with <ctrl-d>
+[source, shell]
+----
+ssh -p 8301 admin@localhost
+----
+

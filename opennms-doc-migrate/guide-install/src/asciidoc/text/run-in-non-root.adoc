@@ -1,0 +1,64 @@
+
+== Running in non-root environments
+
+This section provides information running _{opennms-product-name}_ and _Minions_ processes in non-root environments.
+Running with a system user have restricted possibilites.
+This section describes how to configure your _Linux_ system related to:
+
+* sending _ICMP_ packages as an unprivileged user
+* receiving _Syslog_ on ports < 1023, e.g. 514/udp
+* receiving _SNMP Trap_ on ports < 1023,e.g. 162/udp
+
+[[gi-install-minion-rhel-ping]]
+=== Send ICMP as non-root
+
+By default, _Linux_ does not allow regular users to perform `ping` operations from arbitrary programs (including _Java_).
+To enable the _Minion_ or _{opennms-product-name}_ to ping properly, you must set a `sysctl` option.
+
+.Enable User Ping (Running System)d
+[source, shell]
+----
+# run this command as root to allow ping by any user (does not survive reboots)
+sysctl net.ipv4.ping_group_range='0 429496729'
+----
+
+If you wish to restrict the range further, use the _GID_ for the user the _Minion_ or _{opennms-product-name}_ will run as, rather than `429496729`.
+
+To enable this permanently, create a file in `/etc/sysctl.d/` to set the range:
+
+./etc/sysctl.d/99-zzz-non-root-icmp.conf
+[source, shell]
+----
+# we start this filename with "99-zzz-" to make sure it's last, after anything else that might have set it
+net.ipv4.ping_group_range=0 429496729
+----
+
+[[gi-install-minion-rhel-trapd]]
+=== Trap reception as non-root
+
+If you wish your _Minion_ or _{opennms-product-name}_ to listen to _SNMP Traps_, you will need to configure your firewall to port forward from the privileged trap port (162) to the Minion's default trap listener on port 1162.
+
+.Forward 162 to 1162 with Firewalld
+[source, shell]
+----
+# enable masquerade to allow port-forwards
+firewall-cmd --add-masquerade
+# forward port 162 TCP and UDP to port 1162 on localhost
+firewall-cmd --add-forward-port=port=162:proto=udp:toport=1162:toaddr=127.0.0.1
+firewall-cmd --add-forward-port=port=162:proto=tcp:toport=1162:toaddr=127.0.0.1
+----
+
+[[gi-install-minion-rhel-syslogd]]
+=== Syslog reception as non-root
+
+If you wish your _Minion_ or _{opennms-product-name}_ to listen to syslog messages, you will need to configure your firewall to port forward from the privileged _Syslog_ port (514) to the Minion's default syslog listener on port 1514.
+
+.Forward 514 to 1514 with Firewalld
+[source, shell]
+----
+# enable masquerade to allow port-forwards
+firewall-cmd --add-masquerade
+# forward port 514 TCP and UDP to port 1514 on localhost
+firewall-cmd --add-forward-port=port=514:proto=udp:toport=1514:toaddr=127.0.0.1
+firewall-cmd --add-forward-port=port=514:proto=tcp:toport=1514:toaddr=127.0.0.1
+----
