@@ -4,7 +4,7 @@ version: 2.1
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:1.8.0.252.b09-3.6.3-b4168
+      - image: opennms/build-env:1.8.0.252.b09-3.6.3-b5524
   debian-build-executor:
     docker:
       - image: opennms/build-env:debian-jdk8-b5084
@@ -734,8 +734,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - sign-packages/install-rpm-dependencies:
-          skip_if_forked_pr: true
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
