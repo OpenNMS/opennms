@@ -2,6 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
+[[kafka-setup]]
 === Setup using Apache Kafka
 
 This section describes how to use _Apache Kafka_ as a messaging system between _{opennms-product-name}_ and _Minions_ in a remote location.
