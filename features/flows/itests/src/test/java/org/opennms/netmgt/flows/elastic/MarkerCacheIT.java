@@ -32,14 +32,18 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -178,9 +182,8 @@ public class MarkerCacheIT {
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)), getMockFlowSource());
 
             Assert.assertThat(nodeDao.findAllHavingFlows(), contains(hasProperty("id", is(1))));
-            Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), containsInAnyOrder(
-                    hasProperty("ifIndex", is(2)),
-                    hasProperty("ifIndex", is(3))));
+            Assert.assertThat(snmpInterfaceDao.findAllHavingFlows(1), contains(
+                    hasProperty("ifIndex", is(2))));
         }
     }
 
@@ -221,11 +224,89 @@ public class MarkerCacheIT {
 
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)), getMockFlowSource());
 
-            Assert.assertEquals(0,snmpInterfaceDao.findAllHavingIngressFlows(2).size());
-            Assert.assertEquals(0, snmpInterfaceDao.findAllHavingEgressFlows(2).size());
+            assertEquals(0, snmpInterfaceDao.findAllHavingIngressFlows(2).size());
+            assertEquals(0, snmpInterfaceDao.findAllHavingEgressFlows(2).size());
 
             // the following call resulted to two wrong entries before, since the wrong query returned entries from other nodes with egress flows
-            Assert.assertEquals(0, snmpInterfaceDao.findAllHavingFlows(2).size());
+            assertEquals(0, snmpInterfaceDao.findAllHavingFlows(2).size());
         }
+    }
+
+    @Test
+    public void shouldDistinguishBetweenIngressAndEgressWhenDeterminingIfFlowsAreAvailable() throws Exception {
+        Assert.assertFalse(OnmsSnmpInterface.INGRESS_AND_EGRESS_REQUIRED);
+
+        stubFor(post("/_bulk")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")));
+
+        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
+                new RuleBuilder().withName("http").withDstPort("80").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build()
+        ), FilterService.NOOP);
+
+        final DocumentEnricher documentEnricher = new DocumentEnricher(
+                new MetricRegistry(), nodeDao, interfaceToNodeCache, sessionUtils, classificationEngine,
+                new CacheConfigBuilder()
+                        .withName("flows.node")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .build());
+
+        final JestClientFactory factory = new JestClientFactory();
+        factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
+
+        try (JestClient client = factory.getObject()) {
+            final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
+                    client, IndexStrategy.MONTHLY, documentEnricher,
+                    sessionUtils, nodeDao, snmpInterfaceDao,
+                    new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
+                    mock(SmartQueryService.class));
+
+            final int ingress = 2;
+            final int egress = 3;
+
+            // no flows persisted -> we shouldn't have any interfaces
+            expectAllInterfaces();
+            expectIngressInterfaces();
+            expectEgressInterfaces();
+
+            // persist ingress flow
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.INGRESS)), getMockFlowSource());
+            expectAllInterfaces(ingress);
+            expectIngressInterfaces(ingress);
+            expectEgressInterfaces();
+
+            // persist egress flow
+            elasticFlowRepository.persist(Lists.newArrayList(getMockFlow(Flow.Direction.EGRESS)), getMockFlowSource());
+            expectAllInterfaces(ingress, egress);
+            expectEgressInterfaces(egress);
+            expectIngressInterfaces(ingress);
+        }
+    }
+
+    private void expectAllInterfaces(final Integer... expectedInterfaces) {
+        expectInterfaces((n) -> snmpInterfaceDao.findAllHavingFlows(n), expectedInterfaces);
+    }
+
+    private void expectEgressInterfaces(final Integer... expectedInterfaces) {
+        expectInterfaces((n) -> snmpInterfaceDao.findAllHavingEgressFlows(n), expectedInterfaces);
+    }
+
+    private void expectIngressInterfaces(final Integer... expectedInterfaces) {
+        expectInterfaces((n) -> snmpInterfaceDao.findAllHavingIngressFlows(n), expectedInterfaces);
+    }
+
+    private void expectInterfaces(final Function<Integer,List<OnmsSnmpInterface>> flowFinder, final Integer... expectedInterfaces) {
+        final Integer nodeId = 1;
+        sessionUtils.withTransaction(() -> {
+            List<Integer> interfaces = flowFinder.apply(nodeId).stream()
+                    .map(OnmsSnmpInterface::getIfIndex)
+                    .sorted()
+                    .collect(Collectors.toList());
+            assertEquals(Arrays.stream(expectedInterfaces).sorted().collect(Collectors.toList()), interfaces);
+            return null;
+        });
     }
 }
