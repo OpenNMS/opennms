@@ -4,7 +4,7 @@ version: 2.1
 executors:
   centos-build-executor:
     docker:
-      - image: opennms/build-env:1.8.0.252.b09-3.6.3-b5524
+      - image: opennms/build-env:1.8.0.252.b09-3.6.3-b5554
   debian-build-executor:
     docker:
       - image: opennms/build-env:debian-jdk8-b5084
