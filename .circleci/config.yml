@@ -270,7 +270,7 @@ commands:
           name: Compile OpenNMS
           command: |
             .circleci/scripts/configure-signing.sh
-            mvn clean -DskipTests=true
+            ./clean.pl
             << parameters.node-memory >>
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \

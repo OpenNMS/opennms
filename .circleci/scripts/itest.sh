@@ -26,7 +26,7 @@ echo "#### Making sure git is up-to-date"
 git fetch --all
 
 echo "#### Generate project structure .json"
-mvn --batch-mode --fail-at-end --legacy-local-repository --offline -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+./compile.pl --batch-mode --fail-at-end --legacy-local-repository --offline -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
 
 echo "#### Determining tests to run"
 cd ~/project
@@ -59,7 +59,7 @@ sudo killall -9 apt-get || true && \
             sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f nsis R-base rrdtool
 
 echo "#### Building Assembly Dependencies"
-mvn install -P'!checkstyle' \
+./compile.pl install -P'!checkstyle' \
            -Pbuild-bamboo \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
@@ -74,7 +74,7 @@ mvn install -P'!checkstyle' \
            -pl "$(< /tmp/this_node_projects paste -s -d, -)"
 
 echo "#### Executing tests"
-mvn install -P'!checkstyle' \
+./compile.pl install -P'!checkstyle' \
            -Pbuild-bamboo \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
