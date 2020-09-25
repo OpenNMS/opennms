@@ -321,10 +321,15 @@ node.setLocation(new OnmsMonitoringLocation("Minneapolis", ""));
 return node;
 ----
 
-.Metadata Policy
+.Node Metadata Policy
 
 The Metadata Policy allows you to set node-level metadata in the context `requisition` for provisioned nodes.
 It uses the same matching mechanism as the Node Categorization Policy.
+
+.Interface Metadata Policy
+
+The Metadata Policy allows you to set interface-level metadata in the context `requisition` for provisioned nodes.
+It uses the same matching mechanism as the Matching IP Interface Policy.
 
 ===== New Import Capabilities
 

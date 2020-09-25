@@ -449,6 +449,12 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
                 dbIface.updateSnmpInterface(scannedIface);
                 dbIface.mergeInterfaceAttributes(scannedIface);
+
+                // handle metadata that was added using policies
+                for(final OnmsMetaData onmsMetaData : scannedIface.getRequisitionedMetaData()) {
+                    dbIface.addMetaData(onmsMetaData.getContext(), onmsMetaData.getKey(), onmsMetaData.getValue());
+                }
+
                 LOG.info("Updating IpInterface {}", dbIface);
                 m_ipInterfaceDao.update(dbIface);
                 m_ipInterfaceDao.flush();
