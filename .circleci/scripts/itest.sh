@@ -68,10 +68,10 @@ echo "#### Building Assembly Dependencies"
            -DskipITs=true \
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
            -Dnsis.makensis.bin="$(which makensis)" \
-           -B \
+           --batch-mode \
            "${CCI_FAILURE_OPTION:--fae}" \
-           -am \
-           -pl "$(< /tmp/this_node_projects paste -s -d, -)"
+           --also-make \
+           --projects "$(< /tmp/this_node_projects paste -s -d, -)"
 
 echo "#### Executing tests"
 ./compile.pl install -P'!checkstyle' \
@@ -84,12 +84,12 @@ echo "#### Executing tests"
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            -Dcode.coverage="${CCI_CODE_COVERAGE:-false}" \
            -Dnsis.makensis.bin="$(which makensis)" \
-           -B \
+           --batch-mode \
            "${CCI_FAILURE_OPTION:--fae}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
            -Djava.security.egd=file:/dev/./urandom \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
-           -pl "$(< /tmp/this_node_projects paste -s -d, -)"
+           --projects "$(< /tmp/this_node_projects paste -s -d, -)"
 
