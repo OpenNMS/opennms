@@ -35,6 +35,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.BasePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.annotations.Policy;
+import org.opennms.netmgt.provision.annotations.Require;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -44,42 +45,44 @@ import com.google.common.base.Strings;
 @Scope("prototype")
 @Policy("Set Node Metadata")
 public class NodeMetadataSettingPolicy extends BasePolicy<OnmsNode> implements NodePolicy {
-    private String context = "requisition";
-    private String key;
-    private String value = "";
+    private String metadataContext = "requisition";
+    private String metadataKey;
+    private String metadataValue = "";
 
     @Override
     public OnmsNode act(final OnmsNode node, final Map<String, Object> attributes) {
-        if (Strings.isNullOrEmpty(this.key) || Strings.isNullOrEmpty(this.context)) {
+        if (Strings.isNullOrEmpty(this.metadataKey) || Strings.isNullOrEmpty(this.metadataContext)) {
             return node;
         }
 
-        node.addRequisionedMetaData(new OnmsMetaData(this.context, this.key, this.value != null ? this.value : ""));
+        node.addRequisionedMetaData(new OnmsMetaData(this.metadataContext, this.metadataKey, this.metadataValue != null ? this.metadataValue : ""));
         return node;
     }
 
-    public void setKey(final String key) {
-        this.key = key;
+    public void setMetadataKey(final String metadataKey) {
+        this.metadataKey = metadataKey;
     }
 
-    public String getKey() {
-        return this.key;
+    @Require(value = { })
+    public String getMetadataKey() {
+        return this.metadataKey;
     }
 
-    public void setValue(final String value) {
-        this.value = value;
+    public void setMetadataValue(final String metadataValue) {
+        this.metadataValue = metadataValue;
     }
 
-    public String getValue() {
-        return this.value;
+    @Require(value = { })
+    public String getMetadataValue() {
+        return this.metadataValue;
     }
 
-    public void setContext(final String context) {
-        this.context = context;
+    public void setMetadataContext(final String metadataContext) {
+        this.metadataContext = metadataContext;
     }
 
-    public String getContext() {
-        return this.context;
+    public String getMetadataContext() {
+        return this.metadataContext;
     }
 
     public String getType() {

@@ -75,8 +75,8 @@ public class NodeMetadataPolicyTest implements InitializingBean {
     public void testMatchingLabel() {
         final NodeMetadataSettingPolicy p = new NodeMetadataSettingPolicy();
         p.setLabel("~.*mach.*");
-        p.setKey("theKey");
-        p.setValue("theValue");
+        p.setMetadataKey("theKey");
+        p.setMetadataValue("theValue");
         final List<OnmsNode> modifiedNodes = applyPolicy(p);
 
         final OnmsNode node1 = modifiedNodes.stream().filter(n->n.getId() == 1).findFirst().get();
@@ -94,9 +94,9 @@ public class NodeMetadataPolicyTest implements InitializingBean {
     public void testMatchingLabelWithCustomContext() {
         final NodeMetadataSettingPolicy p = new NodeMetadataSettingPolicy();
         p.setLabel("~.*mach.*");
-        p.setKey("theKey");
-        p.setValue("theValue");
-        p.setContext("customContext");
+        p.setMetadataKey("theKey");
+        p.setMetadataValue("theValue");
+        p.setMetadataContext("customContext");
         final List<OnmsNode> modifiedNodes = applyPolicy(p);
 
         final OnmsNode node1 = modifiedNodes.stream().filter(n->n.getId() == 1).findFirst().get();
@@ -114,8 +114,8 @@ public class NodeMetadataPolicyTest implements InitializingBean {
     public void testMatchingNothing() {
         final NodeMetadataSettingPolicy p = new NodeMetadataSettingPolicy();
         p.setLabel("~^foobar$");
-        p.setKey("theKey");
-        p.setValue("theValue");
+        p.setMetadataKey("theKey");
+        p.setMetadataValue("theValue");
 
         final List<OnmsNode> modifiedNodes = applyPolicy(p);
 
