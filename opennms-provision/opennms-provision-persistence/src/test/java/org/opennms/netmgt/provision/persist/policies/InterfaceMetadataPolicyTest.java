@@ -74,7 +74,7 @@ public class InterfaceMetadataPolicyTest implements InitializingBean {
         node2.setLabel("CRM system");
         final OnmsIpInterface if2 = new OnmsIpInterface();
         if2.setIpAddress(InetAddressUtils.addr("172.16.2.2"));
-        node1.addIpInterface(if2);
+        node2.addIpInterface(if2);
         m_nodes.add(node2);
     }
 
@@ -82,7 +82,7 @@ public class InterfaceMetadataPolicyTest implements InitializingBean {
     @Transactional
     public void testMatchingLabel() {
         final InterfaceMetadataSettingPolicy p = new InterfaceMetadataSettingPolicy();
-        p.setIpAddress("~.*\\.16\\..*");
+        p.setIpAddress("~.*\\.168\\..*");
         p.setMetadataKey("theKey");
         p.setMetadataValue("theValue");
         final List<OnmsNode> modifiedNodes = applyPolicy(p);
@@ -90,30 +90,31 @@ public class InterfaceMetadataPolicyTest implements InitializingBean {
         final OnmsNode node1 = modifiedNodes.stream().filter(n->n.getId() == 1).findFirst().get();
         final OnmsNode node2 = modifiedNodes.stream().filter(n->n.getId() == 2).findFirst().get();
 
-        assertEquals(1, node2.getRequisitionedMetaData().size());
-        assertEquals("requisition", node2.getIpInterfaces().iterator().next().getRequisitionedMetaData().get(0).getContext());
-        assertEquals("theKey", node2.getIpInterfaces().iterator().next().getRequisitionedMetaData().get(0).getKey());
-        assertEquals("theValue", node2.getIpInterfaces().iterator().next().getRequisitionedMetaData().get(0).getValue());
-        assertEquals(0, node1.getRequisitionedMetaData().size());
+        assertEquals(1, node1.getIpInterfaces().iterator().next().getRequisitionedMetaData().size());
+        assertEquals("requisition", node1.getIpInterfaces().iterator().next().getRequisitionedMetaData().get(0).getContext());
+        assertEquals("theKey", node1.getIpInterfaces().iterator().next().getRequisitionedMetaData().get(0).getKey());
+        assertEquals("theValue", node1.getIpInterfaces().iterator().next().getRequisitionedMetaData().get(0).getValue());
+        assertEquals(0, node2.getIpInterfaces().iterator().next().getRequisitionedMetaData().size());
     }
 
     @Test
     @Transactional
     public void testMatchingLabelWithCustomContext() {
         final InterfaceMetadataSettingPolicy p = new InterfaceMetadataSettingPolicy();
-        p.setIpAddress("~.*\\.16\\..*");
+        p.setIpAddress("~.*\\.168\\..*");
         p.setMetadataKey("theKey");
         p.setMetadataValue("theValue");
+        p.setMetadataContext("customContext");
         final List<OnmsNode> modifiedNodes = applyPolicy(p);
 
         final OnmsNode node1 = modifiedNodes.stream().filter(n->n.getId() == 1).findFirst().get();
         final OnmsNode node2 = modifiedNodes.stream().filter(n->n.getId() == 2).findFirst().get();
 
-        assertEquals(1, node2.getRequisitionedMetaData().size());
-        assertEquals("customContext", node2.getIpInterfaces().iterator().next().getRequisitionedMetaData().get(0).getContext());
-        assertEquals("theKey", node2.getIpInterfaces().iterator().next().getRequisitionedMetaData().get(0).getKey());
-        assertEquals("theValue", node2.getIpInterfaces().iterator().next().getRequisitionedMetaData().get(0).getValue());
-        assertEquals(0, node1.getRequisitionedMetaData().size());
+        assertEquals(1, node1.getIpInterfaces().iterator().next().getRequisitionedMetaData().size());
+        assertEquals("customContext", node1.getIpInterfaces().iterator().next().getRequisitionedMetaData().get(0).getContext());
+        assertEquals("theKey", node1.getIpInterfaces().iterator().next().getRequisitionedMetaData().get(0).getKey());
+        assertEquals("theValue", node1.getIpInterfaces().iterator().next().getRequisitionedMetaData().get(0).getValue());
+        assertEquals(0, node2.getIpInterfaces().iterator().next().getRequisitionedMetaData().size());
     }
 
     @Test
