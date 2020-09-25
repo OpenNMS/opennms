@@ -196,8 +196,8 @@ public class OpenConfigIT {
             connectorPackage.getParameters().add(new Parameter("mode", "jti"));
         }
         connectorPackage.getParameters().add(new Parameter("port", "50052"));
-        connectorPackage.getParameters().add(new Parameter("paths", "/interfaces"));
-        connectorPackage.getParameters().add(new Parameter("frequency", "5000"));
+        connectorPackage.getParameters().add(new Parameter("group1","paths", "/interfaces"));
+        connectorPackage.getParameters().add(new Parameter("group1", "frequency", "5000"));
         connectorConfig.getPackages().add(connectorPackage);
 
         if(jti) {

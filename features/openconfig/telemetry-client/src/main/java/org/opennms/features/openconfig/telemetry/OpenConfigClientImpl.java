@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -77,6 +76,9 @@ import io.grpc.stub.StreamObserver;
 public class OpenConfigClientImpl implements OpenConfigClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenConfigClientImpl.class);
+    private static final Pattern STRINGS_IN_SQUARE_BRACKETS = Pattern.compile("\\[(.+?=.+?)\\]");
+    // Path separator but exclude in square brackets.
+    private static final Pattern PATH_SEPARATOR = Pattern.compile("\\/(?![^\\[]*])");
     // Internal retries and timeout are used to make a connection and wait till channel is active.
     private static final int DEFAULT_INTERNAL_RETRIES = 5;
     private static final int DEFAULT_INTERNAL_TIMEOUT = 1000;
@@ -85,16 +87,24 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private ManagedChannel channel;
     private final InetAddress host;
     private Integer port;
-    private Map<String, String> parameters = new HashMap<>();
+    private String mode;
+    private Integer interval;
+    private Integer retries;
+    private List<Map<String,String>> paramList = new ArrayList<>();
     private AtomicBoolean closed = new AtomicBoolean(false);
     private AtomicBoolean scheduled = new AtomicBoolean(false);
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
-    public OpenConfigClientImpl(InetAddress host, Map<String, String> params) {
+    public OpenConfigClientImpl(InetAddress host, List<Map<String, String>> paramList) {
         this.host = Objects.requireNonNull(host);
-        this.port = Objects.requireNonNull(StringUtils.parseInt(params.get("port"), null));
-        parameters.putAll(params);
+        this.paramList.addAll(paramList);
+        // Extract port and mode which are global.
+        this.paramList.stream().filter(entry -> entry.get("port") != null)
+                .findFirst().ifPresent(entry ->
+                this.port = Objects.requireNonNull(StringUtils.parseInt(entry.get("port"), null)));
+        this.paramList.stream().filter(entry -> entry.get("mode") != null)
+                .findFirst().ifPresent(entry -> this.mode = entry.get("mode"));
     }
 
     @Override
@@ -108,9 +118,12 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
     private boolean trySubscribing(OpenConfigClient.Handler handler) {
         try {
-            Map<String, String> tlsFilePaths = parameters.entrySet().stream()
-                    .filter(configuration -> configuration.getKey().contains("tls"))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            Map<String, String> tlsFilePaths = new HashMap<>();
+            paramList.forEach(entry -> {
+                tlsFilePaths.putAll(entry.entrySet().stream()
+                        .filter(configuration -> configuration.getKey().contains("tls"))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+            });
             this.channel = GrpcClientBuilder.getChannel(host.getHostAddress(), port, tlsFilePaths);
             if (READY.equals(retrieveChannelState())) {
                 subscribeToTelemetry(handler);
@@ -124,27 +137,35 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
 
     private void subscribeToTelemetry(OpenConfigClient.Handler handler) {
-        Integer frequency = StringUtils.parseInt(parameters.get("frequency"), DEFAULT_FREQUENCY);
-        String pathString = parameters.get("paths");
-        String mode = parameters.get("mode");
-        List<String> paths = pathString != null ? Arrays.asList(pathString.split(",", -1)) : new ArrayList<>();
+
         // Defaults to gnmi
         if ("jti".equals(mode)) {
             OpenConfigTelemetryGrpc.OpenConfigTelemetryStub asyncStub = OpenConfigTelemetryGrpc.newStub(channel);
             Telemetry.SubscriptionRequest.Builder requestBuilder = Telemetry.SubscriptionRequest.newBuilder();
-            paths.forEach(path -> requestBuilder.addPathList(Telemetry.Path.newBuilder().setPath(path).setSampleFrequency(frequency).build()));
+            paramList.forEach(entry -> {
+                Integer frequency = StringUtils.parseInt(entry.get("frequency"), DEFAULT_FREQUENCY);
+                String pathString = entry.get("paths");
+                List<String> paths = pathString != null ? Arrays.asList(pathString.split(",", -1)) : new ArrayList<>();
+                paths.forEach(path -> requestBuilder.addPathList(Telemetry.Path.newBuilder().setPath(path).setSampleFrequency(frequency).build()));
+            });
             asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(host, port, handler));
             LOG.info("Subscribed to OpenConfig telemetry stream at {}", InetAddressUtils.str(host));
         } else {
             gNMIGrpc.gNMIStub gNMIStub = gNMIGrpc.newStub(channel);
             Gnmi.SubscribeRequest.Builder requestBuilder = Gnmi.SubscribeRequest.newBuilder();
             Gnmi.SubscriptionList.Builder subscriptionListBuilder = Gnmi.SubscriptionList.newBuilder();
-            paths.forEach(path -> {
-                Gnmi.Path gnmiPath = buildGnmiPath(path);
-                Gnmi.Subscription subscription = Gnmi.Subscription.newBuilder()
-                        .setPath(gnmiPath)
-                        .setSampleInterval(frequency).build();
-                subscriptionListBuilder.addSubscription(subscription);
+            paramList.forEach(entry -> {
+                Integer frequency = StringUtils.parseInt(entry.get("frequency"), DEFAULT_FREQUENCY);
+                String pathString = entry.get("paths");
+                List<String> paths = pathString != null ? Arrays.asList(pathString.split(",", -1)) : new ArrayList<>();
+                paths.forEach(path -> {
+                    Gnmi.Path gnmiPath = buildGnmiPath(path);
+                    Gnmi.Subscription subscription = Gnmi.Subscription.newBuilder()
+                            .setPath(gnmiPath)
+                            .setSampleInterval(frequency)
+                            .setMode(Gnmi.SubscriptionMode.SAMPLE).build();
+                    subscriptionListBuilder.addSubscription(subscription);
+                });
             });
             requestBuilder.setSubscribe(subscriptionListBuilder.build());
             StreamObserver<Gnmi.SubscribeRequest> requestStreamObserver = gNMIStub.subscribe(new GnmiDataHandler(handler, host, port));
@@ -156,7 +177,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     // Builds gnmi path based on https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-path-conventions.md
     static Gnmi.Path buildGnmiPath(String path) {
         Gnmi.Path.Builder gnmiPathBuilder = Gnmi.Path.newBuilder();
-        List<String> elemList = getElements(path);
+        List<String> elemList =  Splitter.on(PATH_SEPARATOR).omitEmptyStrings().splitToList(path);
         elemList.forEach(elem -> {
             if (elem.contains("[")) {
                 String name = elem.substring(0, elem.indexOf("["));
@@ -175,58 +196,17 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private static Map<String, String> getPathElemParam(String element) {
         Map<String, String> params = new HashMap<>();
         List<String> matches = new ArrayList<String>();
-        Pattern regex = Pattern.compile("\\[(.*?)\\]");
-        Matcher matcher = regex.matcher(element);
+        Matcher matcher = STRINGS_IN_SQUARE_BRACKETS.matcher(element);
         while (matcher.find()) {
             matches.add(matcher.group(1));
         }
         matches.forEach(match -> {
-            String[] keyValues = match.split("=");
-            if (keyValues[0] != null && keyValues[1] != null) {
+            String[] keyValues = match.split("=", 2);
                 params.put(keyValues[0], keyValues[1]);
-            }
         });
         return params;
     }
 
-    // Splits the paths by / and handles inner separator in [] for ex : /interfaces/interface[name=Ethernet1/2/3]
-    private static List<String> getElements(String path) {
-        if (!path.contains("[")) {
-            return Splitter.on("/").omitEmptyStrings().splitToList(path);
-        } else {
-            // Are there inner separator `/` ?
-            List<String> matches = new ArrayList<String>();
-            Pattern regex = Pattern.compile("\\[(.*?)\\]");
-            Matcher matcher = regex.matcher(path);
-            while (matcher.find()) {
-                matches.add(matcher.group(1));
-            }
-            boolean innerSeparator = matches.stream().anyMatch(match -> match.contains("/"));
-            if (!innerSeparator) {
-                // No inner separator `/`.
-                return Splitter.on("/").omitEmptyStrings().splitToList(path);
-            } else {
-                String randomString = UUID.randomUUID().toString();
-                List<String> matchesWithSeparator =
-                        matches.stream().filter(match -> match.contains("/"))
-                                .collect(Collectors.toList());
-                // Replace inner separator `/` with random string in original path
-                for (String match : matchesWithSeparator) {
-                    String replacement = match.replace("/", randomString);
-                    path = path.replace(match, replacement);
-                }
-                // Split original path with separator
-                List<String> paths = Splitter.on("/").omitEmptyStrings().splitToList(path);
-                List<String> elements = new ArrayList<>();
-                // Re-generate elements with inner separator.
-                for (String element : paths) {
-                    String replacement = element.replace(randomString, "/");
-                    elements.add(replacement);
-                }
-                return elements;
-            }
-        }
-    }
 
     private void scheduleSubscription(OpenConfigClient.Handler handler) {
         if (scheduled.get()) {
@@ -240,12 +220,19 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             scheduled.set(false);
             return;
         }
+
         // If it's not subscribed, schedule this to run after configured timeout
-        Integer timeout = StringUtils.parseInt(parameters.get("interval"), DEFAULT_INTERVAL_IN_SEC);
+        this.paramList.stream().filter(entry -> entry.get("interval") != null)
+                .findFirst().ifPresent(entry ->
+                this.interval = StringUtils.parseInt(entry.get("interval"), DEFAULT_INTERVAL_IN_SEC));
         // When retries is null or <= 0, scheduling will happen indefinitely until it succeeds.
-        Integer retries = StringUtils.parseInt(parameters.get("retries"), null);
+        this.paramList.stream().filter(entry -> entry.get("retries") != null)
+                .findFirst().ifPresent(entry ->
+                this.retries = StringUtils.parseInt(entry.get("retries"), null));
+
+        Integer retries = this.retries;
         while (!closed.get()) {
-            ScheduledFuture<Boolean> future = scheduledExecutor.schedule(() -> trySubscribing(handler), timeout, TimeUnit.SECONDS);
+            ScheduledFuture<Boolean> future = scheduledExecutor.schedule(() -> trySubscribing(handler), this.interval, TimeUnit.SECONDS);
             try {
                 succeeded = future.get();
                 if (succeeded) {

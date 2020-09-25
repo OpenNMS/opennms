@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.daemon;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,6 +54,8 @@ import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.base.Strings;
 
 /**
  * The ConnectorManager is responsible for starting/stopping connectors that connect to the target agents.
@@ -88,26 +91,41 @@ public class ConnectorManager {
             if (connectorsByKey.containsKey(key)) {
                 LOG.debug("Connector already exists. Ignoring.");
             }
-
+            List<Map<String, String>> interpolatedMapList = new ArrayList<>();
             // Flatten the parameters to a map
             Map<String,String> parmMap = packageConfig.getParameters().stream()
+                    .filter(parameter -> Strings.isNullOrEmpty(parameter.getGroup()))
                     .collect(Collectors.toMap(
                             Parameter::getKey,
                             Parameter::getValue
                     ));
             // Interpolate meta-data in parameter values
-            parmMap = Interpolator.interpolateStrings(parmMap, new FallbackScope(
-                    entityScopeProvider.getScopeForNode(serviceRef.getNodeId()),
-                    entityScopeProvider.getScopeForInterface(serviceRef.getNodeId(), InetAddressUtils.str(serviceRef.getIpAddress())),
-                    entityScopeProvider.getScopeForService(serviceRef.getNodeId(), serviceRef.getIpAddress(), serviceRef.getServiceName())
-            ));
+            parmMap = getInterpolated(parmMap, serviceRef);
+            interpolatedMapList.add(parmMap);
+
+            // Interpolate grouped parameters
+            Map<String, Map<String, String>> parmMapByGroup = packageConfig.getParameters().stream()
+                    .filter(parameter -> !Strings.isNullOrEmpty(parameter.getGroup()))
+                    .collect(Collectors.groupingBy(Parameter::getGroup, Collectors.toMap(Parameter::getKey, Parameter::getValue)));
+
+            parmMapByGroup.forEach((group, parmeterMap) -> {
+                interpolatedMapList.add(getInterpolated(parmeterMap, serviceRef));
+            });
 
             // Create a new connector
             LOG.debug("Starting connector for: {}", key);
             final Connector connector = telemetryRegistry.getConnector(connectorConfig);
             connectorsByKey.put(key, connector);
-            connector.stream(serviceRef.getNodeId(), serviceRef.getIpAddress(), parmMap);
+            connector.stream(serviceRef.getNodeId(), serviceRef.getIpAddress(), interpolatedMapList);
         }
+    }
+
+    private Map<String, String> getInterpolated(Map<String, String> parameterMap, ServiceRef serviceRef) {
+        return Interpolator.interpolateStrings(parameterMap, new FallbackScope(
+                entityScopeProvider.getScopeForNode(serviceRef.getNodeId()),
+                entityScopeProvider.getScopeForInterface(serviceRef.getNodeId(), InetAddressUtils.str(serviceRef.getIpAddress())),
+                entityScopeProvider.getScopeForService(serviceRef.getNodeId(), serviceRef.getIpAddress(), serviceRef.getServiceName())
+        ));
     }
 
     private void stopStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {

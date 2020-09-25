@@ -40,7 +40,7 @@
 
     <queue name="OpenConfig">
         <adapter name="OpenConfig-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter" enabled="false">
-            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/openconfig-jti-telemetry.groovy.groovy"/>
+            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/openconfig-jti-telemetry.groovy"/>
             <parameter key="mode" value="jti"/>
             <package name="OpenConfig-Default">
                 <rrd step="300">
