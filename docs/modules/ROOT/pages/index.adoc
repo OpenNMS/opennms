@@ -1,0 +1,12 @@
+
+= Welcome to the Documentation for {page-component-title}
+
+[options="autowidth"]
+|===
+|Version: |{page-component-display-version}
+|Source:  |{page-origin-url}
+|===
+
+**Enterprise Class Open Source Network Management**
+
+OpenNMS: built for scalability, integration, and high levels of configuration since 2000.

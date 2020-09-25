@@ -1,0 +1,21 @@
+site: 
+  title: Horizon
+  url: https://docs.opennms.com
+  start_page: horizon::index.adoc
+content: 
+  sources: 
+  - url: .
+    branches: HEAD
+    start_path: docs
+ui:
+  bundle:
+    url: https://github.com/opennms-forge/antora-ui-opennms/releases/download/v1.2.0/ui-bundle.zip
+asciidoc:
+  attributes:
+    stem: latexmath
+output: 
+  clean: true
+  dir: ./public 
+  destinations: 
+  - provider: fs
+  - provider: archive

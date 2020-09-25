@@ -45,3 +45,7 @@ opennms-container/*/tarball/*.tar.gz
 # Python
 *.pyc
 __pycache__
+
+# Antora artificats
+build/
+public/

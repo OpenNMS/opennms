@@ -1,0 +1,8 @@
+name: horizon
+version: '27.0.0-SNAPSHOT'
+title: Horizon
+prerelease: true
+asciidoc:
+  attributes:
+    source-language: asciidoc@
+    xrefstyle: short@
