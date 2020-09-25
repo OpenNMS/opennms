@@ -60,7 +60,6 @@ import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
-import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -292,12 +291,14 @@ public class ElasticFlowRepository implements FlowRepository {
 
                 if (flow.getInputSnmp() != null &&
                     flow.getInputSnmp() != 0 &&
+                    flow.getDirection() == Direction.INGRESS &&
                     !ifaceMarkerCache.contains(flow.getInputSnmp())) {
                     ifaceMarkerCache.add(flow.getInputSnmp());
                     interfacesToUpdate.get(flow.getDirection()).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getInputSnmp());
                 }
                 if (flow.getOutputSnmp() != null &&
                     flow.getOutputSnmp() != 0 &&
+                    flow.getDirection() == Direction.EGRESS &&
                     !ifaceMarkerCache.contains(flow.getOutputSnmp())) {
                     ifaceMarkerCache.add(flow.getOutputSnmp());
                     interfacesToUpdate.get(flow.getDirection()).computeIfAbsent(nodeId, k -> Lists.newArrayList()).add(flow.getOutputSnmp());
