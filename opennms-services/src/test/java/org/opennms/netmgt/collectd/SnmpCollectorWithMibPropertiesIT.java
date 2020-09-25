@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -241,6 +241,32 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         assertEquals("OUTBOUND-LLQ", map.get("cbQosClassMapPolicy"));
         assertEquals("GESTION-ROUTING", map.get("cbQosClassMapName"));
         assertEquals("Conexion Valencia", map.get("ifAlias"));
+    }
+    
+    /**
+     * Test collection for Cisco memory-pool entry with indirectly-referenced property
+     * pulled over from entPhysicalTable
+     * 
+     * @throwsException the exception
+     */
+    @Test
+    @JUnitCollector(datacollectionType = "snmp", datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-cisco-mempool.xml")
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/cisco-mempool-snmpwalk.properties")
+    public void testCollectionCiscoMemPoolVsEntPhysical() throws Exception {
+        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
+        
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
+        assertEquals("collection status", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
+        
+        Map<String, String> map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "cempMemoryPool", "1.1"));
+        assertEquals("Processor", map.get("cempMemoryPoolName"));
+        assertEquals("CISCO2911/K9", map.get("cempMemoryPoolPhysName"));
+        assertEquals("CISCO2911/K9 chassis, Hw Serial#: FCZ161870SC, Hw Revision: 1.0", map.get("cempMemoryPoolPhysDescr"));
+        
+        map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "cempMemoryPool", "1.2"));
+        assertEquals("CISCO2911/K9", map.get("cempMemoryPoolPhysName"));
+        assertEquals("CISCO2911/K9 chassis, Hw Serial#: FCZ161870SC, Hw Revision: 1.0", map.get("cempMemoryPoolPhysDescr"));
     }
 
     /* (non-Javadoc)

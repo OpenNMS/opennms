@@ -1,0 +1,59 @@
+<datacollection-config xmlns="http://xmlns.opennms.org/xsd/config/datacollection" rrdRepository="%rrdRepository%">
+  <snmp-collection name="default" snmpStorageFlag="all">
+      <rrd step="300">
+         <rra>RRA:AVERAGE:0.5:1:2016</rra>
+         <rra>RRA:AVERAGE:0.5:12:1488</rra>
+         <rra>RRA:AVERAGE:0.5:288:366</rra>
+         <rra>RRA:MAX:0.5:288:366</rra>
+         <rra>RRA:MIN:0.5:288:366</rra>
+      </rrd>
+
+   <resourceType name="entPhysicalEntry" label="Physical Entity" resourceLabel="${entPhysicalName} (${entPhysicalDescr}))">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+
+   <resourceType name="cempMemoryPool" label="Cisco Enhanced Memory Pool" resourceLabel="${cempMemoryPoolName} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+
+   <groups>
+     <group name="entity-physical-table" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.2" instance="entPhysicalEntry" alias="entPhysicalDescr" type="string"/>
+        <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="entPhysicalEntry" alias="entPhysicalName" type="string"/>
+     </group>
+
+     <group name="cisco-enhanced-memory-pool" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.221.1.1.1.1.3"  instance="cempMemoryPool" alias="cempMemoryPoolName" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.221.1.1.1.1.7"  instance="cempMemoryPool" alias="cempMemoryPoolUsed" type="gauge"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.221.1.1.1.1.8"  instance="cempMemoryPool" alias="cempMemoryPoolFree" type="gauge"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.221.1.1.1.1.9"  instance="cempMemoryPool" alias="cempMemoryPoolMax" type="gauge"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.221.1.1.1.1.18" instance="cempMemoryPool" alias="cempMemoryPoolHCUsed" type="gauge"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.221.1.1.1.1.19" instance="cempMemoryPool" alias="cempMemoryPoolHCFree" type="gauge"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.221.1.1.1.1.22" instance="cempMemoryPool" alias="cempMemoryPoolHCMax" type="gauge"/>
+        <property instance="cempMemoryPool" alias="cempMemoryPoolPhysName" class-name="org.opennms.netmgt.collectd.RegExPropertyExtender">
+          <parameter key="source-type"  value="entPhysicalEntry"/>
+          <parameter key="source-alias" value="entPhysicalName"/>
+          <parameter key="index-pattern" value="^(\d+)\..*"/>
+        </property>
+        <property instance="cempMemoryPool" alias="cempMemoryPoolPhysDescr" class-name="org.opennms.netmgt.collectd.RegExPropertyExtender">
+          <parameter key="source-type"   value="entPhysicalEntry"/>
+          <parameter key="source-alias"  value="entPhysicalDescr"/>
+          <parameter key="index-pattern" value="^(\d+)\..*"/>
+        </property>
+     </group>
+   </groups>
+
+   <systems>
+     <systemDef name="Cisco 2900 or Whatever">
+        <sysoidMask>.1.3.6.1.4.1.9.</sysoidMask>
+        <collect>
+           <includeGroup>entity-physical-table</includeGroup>
+           <includeGroup>cisco-enhanced-memory-pool</includeGroup>
+        </collect>
+     </systemDef>
+   </systems>
+
+  </snmp-collection>
+</datacollection-config>
