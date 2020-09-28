@@ -32,11 +32,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.HashSet;
+import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.core.utils.PropertiesCache;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -72,8 +74,7 @@ public abstract class RrdResourceAttributeUtils {
      * @return a {@link java.util.Set} object.
      */
     protected static Set<OnmsAttribute> getAttributesAtRelativePath(File rrdDirectory, String relativePath, String rrdFileSuffix) {
-        
-        Set<OnmsAttribute> attributes =  new HashSet<>();
+        final Set<OnmsAttribute> attributes =  new TreeSet<>(new AlphaNumericOnmsAttributeComparator());
 
         loadRrdAttributes(rrdDirectory, relativePath, attributes, rrdFileSuffix);
         loadStringAttributes(rrdDirectory, relativePath, attributes);
@@ -254,5 +255,80 @@ public abstract class RrdResourceAttributeUtils {
             LOG.warn(message, e);
             throw new DataAccessResourceFailureException(message, e);
         }
+    }
+
+    /**
+     * Alphanumeric sort that handles substrings with numeric components
+     */
+    public static class AlphaNumericOnmsAttributeComparator implements Serializable, Comparator<OnmsAttribute> {
+        private static final long serialVersionUID = 1;
+
+        public int compare(final OnmsAttribute firstAtt, final OnmsAttribute secondAtt) {
+            // Sorting algorithm found here: http://blog.icodejava.com/261/how-to-sort-alpha-numeric-strings-in-java/
+            final String firstString  = firstAtt.getName();
+            final String secondString = secondAtt.getName();
+
+            if (secondString == null || firstString == null) {
+                return 0;
+            }
+
+            int lengthFirstStr = firstString.length();
+            int lengthSecondStr = secondString.length();
+
+            int index1 = 0;
+            int index2 = 0;
+
+            while (index1 < lengthFirstStr && index2 < lengthSecondStr) {
+                char ch1 = firstString.charAt(index1);
+                char ch2 = secondString.charAt(index2);
+
+                final char[] space1 = new char[lengthFirstStr];
+                final char[] space2 = new char[lengthSecondStr];
+
+                int loc1 = 0;
+                int loc2 = 0;
+
+                do {
+                    space1[loc1++] = ch1;
+                    index1++;
+
+                    if (index1 < lengthFirstStr) {
+                        ch1 = firstString.charAt(index1);
+                    } else {
+                        break;
+                    }
+                } while (Character.isDigit(ch1) == Character.isDigit(space1[0]));
+
+                do {
+                    space2[loc2++] = ch2;
+                    index2++;
+
+                    if (index2 < lengthSecondStr) {
+                        ch2 = secondString.charAt(index2);
+                    } else {
+                        break;
+                    }
+                } while (Character.isDigit(ch2) == Character.isDigit(space2[0]));
+
+                final String str1 = new String(space1);
+                final String str2 = new String(space2);
+
+                int result;
+
+                if (Character.isDigit(space1[0]) && Character.isDigit(space2[0])) {
+                    final Long firstNumberToCompare = Long.parseLong(str1.trim());
+                    final Long secondNumberToCompare = Long.parseLong(str2.trim());
+                    result = firstNumberToCompare.compareTo(secondNumberToCompare);
+                } else {
+                    result = str1.compareToIgnoreCase(str2);
+                }
+
+                if (result != 0) {
+                    return result;
+                }
+            }
+            return lengthFirstStr - lengthSecondStr;
+        }
+
     }
 }
