@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MultilineHttpResponse extends MultilineOrientedResponse {
     private static final Logger LOG = LoggerFactory.getLogger(MultilineHttpResponse.class);
-    private static final Pattern HTTP_RESPONSE_REGEX = Pattern.compile("([H][T][T][P+]/[1].[0-1]) ([0-9][0-9][0-9]) ([a-zA-Z ]+)\r?\n");
+    private static final Pattern HTTP_RESPONSE_REGEX = Pattern.compile("([H][T][T][P+]/[1].[0-1]) ([0-9][0-9][0-9])(?: ([\\p{Alnum} ]*))?\r?\n");
 
     /**
      * <p>Constructor for MultilineHttpResponse.</p>
