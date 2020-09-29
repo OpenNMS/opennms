@@ -28,15 +28,27 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.opennms.features.jest.client.index.IndexSelector;
+import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowQueryService;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Table;
 
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
@@ -54,6 +66,42 @@ public abstract class ElasticFlowQueryService implements FlowQueryService {
     public ElasticFlowQueryService(JestClient client, IndexSelector indexSelector) {
         this.client = Objects.requireNonNull(client);
         this.indexSelector = Objects.requireNonNull(indexSelector);
+    }
+
+    /**
+     * Rebuilds the table, mapping the row keys using the given function and fills
+     * in missing cells with NaN values.
+     */
+    protected static <T> CompletableFuture<Table<Directional<T>, Long, Double>> mapTable(final Table<Directional<String>, Long, Double> source,
+                                                                                         final Function<String, CompletableFuture<T>> fn) {
+        final Set<Long> columnKeys = source.columnKeySet();
+
+        final List<CompletableFuture<Map.Entry<Directional<T>, Map<Long, Double>>>> rowKeys = source.rowKeySet().stream()
+                                                                                                    .map(rk -> fn.apply(rk.getValue()).thenApply(t -> Maps.immutableEntry(new Directional<>(t, rk.isIngress()), source.row(rk))))
+                                                                                                    .collect(Collectors.toList());
+
+        return ElasticFlowQueryService.transpose(rowKeys, Collectors.toList())
+                                      .thenApply(rows -> {
+                    final ImmutableTable.Builder<Directional<T>, Long, Double> target = ImmutableTable.builder();
+                    for (final Map.Entry<Directional<T>, Map<Long, Double>> row : rows) {
+                        for (final Long columnKey : columnKeys) {
+                            Double value = row.getValue().get(columnKey);
+                            if (value == null) {
+                                value = Double.NaN;
+                            }
+                            target.put(row.getKey(), columnKey, value);
+                        }
+                    }
+                    return target.build();
+                });
+    }
+
+    protected static <T, A, R> CompletableFuture<R> transpose(final Collection<CompletableFuture<T>> futures,
+                                                              final Collector<? super T, A, R> collector) {
+        return CompletableFuture.allOf(Iterables.toArray(futures, CompletableFuture.class))
+                .thenApply(v -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .collect(collector));
     }
 
     public CompletableFuture<SearchResult> searchAsync(String query, TimeRangeFilter timeRangeFilter) {
