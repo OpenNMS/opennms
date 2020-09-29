@@ -272,8 +272,8 @@ public abstract class RrdResourceAttributeUtils {
                 return 0;
             }
 
-            int lengthFirstStr = firstString.length();
-            int lengthSecondStr = secondString.length();
+            final int lengthFirstStr = firstString.length();
+            final int lengthSecondStr = secondString.length();
 
             int index1 = 0;
             int index2 = 0;
@@ -313,7 +313,7 @@ public abstract class RrdResourceAttributeUtils {
                 final String str1 = new String(space1);
                 final String str2 = new String(space2);
 
-                int result;
+                final int result;
 
                 if (Character.isDigit(space1[0]) && Character.isDigit(space2[0])) {
                     final Long firstNumberToCompare = Long.parseLong(str1.trim());
