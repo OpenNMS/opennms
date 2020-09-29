@@ -38,8 +38,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.opennms.features.jest.client.SearchResultUtils;
@@ -53,8 +51,6 @@ import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 
 import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -542,34 +538,6 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Rebuilds the table, mapping the row keys using the given function and fills
-     * in missing cells with NaN values.
-     */
-    private static <T> CompletableFuture<Table<Directional<T>, Long, Double>> mapTable(final Table<Directional<String>, Long, Double> source,
-                                                                                       final Function<String, CompletableFuture<T>> fn) {
-        final Set<Long> columnKeys = source.columnKeySet();
-
-        final List<CompletableFuture<Map.Entry<Directional<T>, Map<Long, Double>>>> rowKeys = source.rowKeySet().stream()
-                .map(rk -> fn.apply(rk.getValue()).thenApply(t -> Maps.immutableEntry(new Directional<>(t, rk.isIngress()), source.row(rk))))
-                .collect(Collectors.toList());
-
-        return transpose(rowKeys, Collectors.toList())
-                .thenApply(rows -> {
-                    final ImmutableTable.Builder<Directional<T>, Long, Double> target = ImmutableTable.builder();
-                    for (final Map.Entry<Directional<T>, Map<Long, Double>> row : rows) {
-                        for (final Long columnKey : columnKeys) {
-                            Double value = row.getValue().get(columnKey);
-                            if (value == null) {
-                                value = Double.NaN;
-                            }
-                            target.put(row.getKey(), columnKey, value);
-                        }
-                    }
-                    return target.build();
-                });
-    }
-
     private static TimeRangeFilter getRequiredTimeRangeFilter(Collection<Filter> filters) {
         final TimeRangeFilter filter = extractTimeRangeFilter(filters);
         if (filter == null) {
@@ -603,11 +571,4 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 .collect(Collectors.toSet());
     }
 
-    private static <T, A, R> CompletableFuture<R> transpose(final Collection<CompletableFuture<T>> futures,
-                                                            final Collector<? super T, A, R> collector) {
-        return CompletableFuture.allOf(Iterables.toArray(futures, CompletableFuture.class))
-                .thenApply(v -> futures.stream()
-                        .map(CompletableFuture::join)
-                        .collect(collector));
-    }
 }
