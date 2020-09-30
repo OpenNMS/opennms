@@ -1,0 +1,47 @@
+#add intro text#
+
+[[compatibility]]
+== Compatibility
+
+{page-component-title} {opennms-version} requires the following component versions:
+
+[options="header, autowidth"]
+|===
+| Component               | Version Compatibility
+| OpenNMS Helm            | 3+
+| OpenNMS Integration API | 0.2.x
+| Cassandra               | 3.11.+
+| Elasticsearch           | 7.x
+| Java Development Kit    | OpenJDK 8, OpenJDK 11
+| Kafka                   | 1.x - 2.x
+| PostgreSQL              | 10.x - 12.x
+| RRDTool                 | 1.7.x
+|===
+
+NOTE: RHEL 7 users must complete additional steps to install PostgreSQL 10+. 
+Refer to https://www.postgresql.org/download/linux/redhat/[PostgreSQL Yum Repository] for instructions. 
+
+== Audience
+This guide is suitable for administrative users and those who will use {page-component-title} to monitor their network.    
+
+[[conventions]]
+== Typographical Conventions
+
+This guide uses the following typographical conventions:
+
+[cols="25h,~"]
+|===
+
+|*Convention* |*Meaning*
+|*bold* | Indicates UI elements to click or select in a procedure, and the names of UI elements like dialogs or icons. 
+|_italics_| Introduces a defined or special word. Also used for the titles of publications.
+|`code` | Anything you must type or enter, and the names for code-related elements (classes, methods, commands). 
+
+|===
+
+[[ga-admin-help]]
+== Need Help?
+
+* join the https://chat.opennms.com/opennms/channels/opennms-discussion[OpenNMS Discussion] chat
+* join our community on https://opennms.discourse.group/latest[Discourse]
+* contact sales@opennms.com to purchase https://www.opennms.com/support/[customer support]

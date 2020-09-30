@@ -1,0 +1,69 @@
+
+==== Step 1: Install {page-component-title}
+
+.Add yum repository and import GPG key
+[source, shell]
+----
+dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
+rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+
+.RHEL 7: 
+[source, shell]
+----
+yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+
+.Installation of {page-component-title} with all built-in dependencies
+[source, shell]
+----
+dnf -y install opennms
+----
+
+.RHEL 7:
+[source, shell]
+----
+yum -y install opennms
+----
+
+The following packages will be automatically installed:
+
+* _jicmp6_ and _jicmp_: _Java_ bridge to allow sending _ICMP messages_ from _{page-component-title}_ repository.
+* _opennms-core_: _{page-component-title}_ core services, e.g. _Provisiond_, _Pollerd_ and _Collectd_ from _{page-component-title}_ repository.
+* _opennms-webapp-jetty_: _{page-component-title}_ web application from _{page-component-title}_ repository
+* _postgresql_: _PostgreSQL_ database server from distribution repository
+* _postgresql-libs_: _PostgreSQL_ database from distribution repository
+
+With the successful installed packages the _{page-component-title}_ is installed in the following directory structure:
+
+[source, shell]
+----
+[root@localhost /opt/opennms]# tree -L 1
+.
+└── opennms
+   ├── bin
+   ├── contrib
+   ├── data
+   ├── deploy
+   ├── etc
+   ├── jetty-webapps
+   ├── lib
+   ├── logs -> /var/log/opennms
+   ├── share -> /var/opennms
+   └── system
+----
+
+TIP: We recommend disabling the {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
+     _{page-component-title}_ requires some manual steps upon upgrade configuration files or migrate database schemas to a new version.
+     For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
+
+[source, shell]
+----
+dnf config-manager --disable opennms-repo-stable-*
+----
+
+.RHEL 7:
+[source, shell]
+----
+yum config-manager --disable opennms-repo-stable-*
+----

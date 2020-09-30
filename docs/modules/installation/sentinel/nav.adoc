@@ -1,0 +1,5 @@
+.Setting Up Sentinel
+* xref:setting-up-sentinel.adoc[]
+* xref:generic:setup-overview[]
+* xref:rhel:rhel.adoc[]
+* xref:debian:debian.adoc[]

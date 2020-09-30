@@ -1,0 +1,6 @@
+.Minion with Custom Messaging System
+
+* xref:introduction.adoc[]
+* xref:minion-grpc/grpc-introduction.adoc[]
+* xref:setup-kafka/introduction.adoc[]
+* xref:nextsteps.adoc[]

@@ -1,0 +1,11 @@
+
+=== Installing on Debian
+
+The following steps will be described:
+
+. Installation of the `opennms` meta package which handles all dependencies
+. Initialize PostgreSQL database and configure access
+. Initialize {page-component-title} database and start
+. Log in to the Web User Interface and change default admin password
+
+All commands on the command line interface need to be executed with _root_ permissions.

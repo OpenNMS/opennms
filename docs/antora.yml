@@ -6,3 +6,16 @@ asciidoc:
   attributes:
     source-language: asciidoc@
     xrefstyle: short@
+
+nav:
+- modules/about/nav.adoc[]
+- modules/ROOT/index.adoc[]
+- modules/installation/basic-setup-opennms/nav.adoc[]
+- modules/installation/monitor-location-minion/nav.adoc[]
+- modules/sentinel/nav.adoc[]
+- modules/minion-custom-messaging-system/nav.adoc[]
+- modules/ROOT/install-opennms-versions.adoc[]
+- modules/ROOT/minion-config-file.adoc[]
+- modules/ROOT/run-in-non-root.adoc[]
+- modules/ROOT/r-statistical-computing.adoc[]
+- modules/time-series-storage/nav.adoc[]

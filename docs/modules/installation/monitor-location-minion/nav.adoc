@@ -1,0 +1,6 @@
+.Installing and Configuring a Minion
+* xref:setting-up-minion.adoc[]
+* xref:setup-opennms.adoc[]
+* xref:rhel:installing-on-rhel.adoc[]
+* xref:debian:installing-on-debian.adoc[]
+* xref:docker:minion-docker.adoc[]
