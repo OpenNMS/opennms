@@ -199,6 +199,31 @@ public class HttpDetectorTest {
         assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
     }
 
+    @Test(timeout=20000)
+    public void testDetectorSuccessNoReasonPhrase() throws Exception {
+        String response = "HTTP/1.1 200\r\n"
+                + "Date: Tue, 28 Oct 2008 20:47:55 GMT\r\n"
+                + "Server: Apache/2.0.54\r\n"
+                + "Last-Modified: Fri, 16 Jun 2006 01:52:14 GMT\r\n"
+                + "ETag: \"778216aa-2f-aa66cf80\"\r\n"
+                + "Accept-Ranges: bytes\r\n"
+                + "Vary: Accept-Encoding,User-Agent\r\n"
+                + "Connection: close\r\n"
+                + "Content-Type: text/html\r\n";
+
+        response += String.format("Content-Length: %s\r\n", serverContent.length()) + "\r\n" + serverContent;
+
+        m_detector.setCheckRetCode(true);
+        m_detector.setUrl("/blog");
+        m_detector.setMaxRetCode(399);
+        m_detector.init();
+
+        m_server = createServer(response);
+        m_detector.setPort(m_server.getLocalPort());
+
+        assertTrue(doCheck(m_detector.isServiceDetected(m_server.getInetAddress())));
+    }
+
     public void setServerOKResponse(String serverOKResponse) {
         this.serverOKResponse = serverOKResponse;
     }
