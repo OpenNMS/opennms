@@ -190,7 +190,7 @@
     </feature>
     <feature name="jcifs" version="${jcifsVersion}" description="jcifs">
         <feature>bcprov</feature>
-        <bundle>wrap:mvn:eu.agno3.jcifs/jcifs-ng/${jcifsVersion}</bundle>
+        <bundle>mvn:eu.agno3.jcifs/jcifs-ng/${jcifsVersion}</bundle>
     </feature>
     <feature name="jfreechart" version="1.0.13" description="JFree :: JFreeChart">
         <bundle>wrap:mvn:jfree/jfreechart/1.0.13</bundle>
@@ -809,6 +809,7 @@
         <feature>commons-cli</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-provisioning-api</feature>
+        <feature>jcifs</feature>
         <bundle dependency="true">wrap:mvn:org.jinterop/j-interop/${jinteropVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.jinterop/j-interopdeps/${jinteropVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-wmi/${project.version}</bundle>
