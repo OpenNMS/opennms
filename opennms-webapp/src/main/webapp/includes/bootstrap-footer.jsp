@@ -57,10 +57,8 @@
     <!-- Not displaying footer -->
   </c:when>
 
-<<<<<<< HEAD
   <c:otherwise>
     <!-- Footer -->
-=======
         <footer id="footer" class="card-footer">
             <p>
                 OpenNMS <a href="about/index.jsp">Copyright</a> &copy; 2002-2020
@@ -74,7 +72,6 @@
                 %>
             </p>
         </footer>
->>>>>>> NMS-12933: Bump copyright date in bootstrap/footer.jsp
 
     <footer id="footer">
       <p>
