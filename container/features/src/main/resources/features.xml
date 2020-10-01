@@ -810,7 +810,7 @@
         <feature>opennms-collection-api</feature>
         <feature>opennms-provisioning-api</feature>
         <feature>jcifs</feature>
-        <bundle dependency="true">wrap:mvn:org.jinterop/j-interop/${jinteropVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:org.jinterop/j-interop/${jinteropVersion}$Import-Package=jcifs,jcifs.smb,jcifs.util,jcifs.netbios,ndr,rpc,rpc.core,rpc.ncacn_np,rpc.pdu,rpc.security.ntlm</bundle>
         <bundle dependency="true">wrap:mvn:org.jinterop/j-interopdeps/${jinteropVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-wmi/${project.version}</bundle>
     </feature>
