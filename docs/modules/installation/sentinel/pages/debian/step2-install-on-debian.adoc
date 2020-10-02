@@ -1,4 +1,4 @@
-==== Step 2: Install the repository and Sentinel package
+=== Step 2: Install the repository and Sentinel package
 
 .Add apt repository in /etc/apt/sources.list.d/opennms.list and add GPG key
 [source, shell]

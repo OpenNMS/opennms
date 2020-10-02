@@ -1,15 +1,15 @@
 
-=== Run with Docker
+== Run with Docker
 
 Modern infrastructure allows you to deploy and run workloads in containers.
 _{opennms-product-name}_ provides and publishes container images on link:https://hub.docker.com/u/opennms[DockerHub].
 
-==== Objectives
+=== Objectives
 
 * Run and configure a _Minion_ in, and connect it to, the _{opennms-product-name}_ instance using environment variables
 * Introduce a reference with all available configuration and mount conventions for more advanced setups
 
-==== Before you begin
+=== Before you begin
 
 You must have at least the following components installed:
 
@@ -19,12 +19,12 @@ You should have a basic knowledge of _Docker_, _Docker Compose_ with networking,
 _{opennms-product-name}_ is configured to accept connections via _ActiveMQ_ and a Minion user with _ROLE_MINION_ 
 The _Minion_ can connect to _{opennms-product-name}_ with port `61616/TCP` for _ActiveMQ_ and _REST_ on port `8980/TCP`
 
-==== Quickstart service stack
+=== Quickstart service stack
 
 // No section numbers for step-by-step guide
 :!sectnums:
 
-===== Step 1: Create service stack with a Minion
+==== Step 1: Create service stack with a Minion
 
 Create a project directory with `mkdir opennms-minion` and create a `docker-compose.yml` file in that directory with the following content:
 
@@ -77,7 +77,7 @@ WARNING: If you process UDP data and you don't use `network_mode: host`, the UDP
          You can use an isolated network and publish ports as usual if you don't receive UDP-based monitoring data.
          If you don't use `network_mode: host` you have to publish the listener ports manually.
 
-===== Step 2: Start the service stack and test the functionality
+==== Step 2: Start the service stack and test the functionality
 
 [source,shell]
 ----
@@ -85,7 +85,7 @@ cd opennms-minion
 docker-compose up -d
 ----
 
-===== Step 3: Run _Minion_ Health Check
+==== Step 3: Run _Minion_ Health Check
 
 .Log in to the _Minion Karaf Shell_ and run the health check
 [source, shell]
@@ -104,7 +104,7 @@ Connecting to JMS Broker         [ Success  ]
 
 NOTE: The default admin password for the _Minion Karaf Shell_ is _admin_.
 
-===== Step 4: Verify status in the web UI
+==== Step 4: Verify status in the web UI
 
 * Log in as admin in the _{opennms-product-name}_ web interface
 * _Configure OpenNMS -> Manage Minions_. The _Minion_ should be registered and the status should be _up_

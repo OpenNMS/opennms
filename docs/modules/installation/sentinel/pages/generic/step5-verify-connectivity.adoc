@@ -1,5 +1,5 @@
 
-==== Step 5: Verifying Connectivity
+=== Step 5: Verifying Connectivity
 
 .Connect to Karaf Shell of the Sentinel
 [source]

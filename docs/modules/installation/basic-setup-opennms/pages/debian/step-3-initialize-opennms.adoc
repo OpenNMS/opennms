@@ -1,5 +1,5 @@
 
-==== Step 3: Initialize and start {page-component-title}
+=== Step 3: Initialize and start {page-component-title}
 
 .Detect of _Java_ environment and persist in /usr/share/opennms/etc/java.conf
 [source, shell]

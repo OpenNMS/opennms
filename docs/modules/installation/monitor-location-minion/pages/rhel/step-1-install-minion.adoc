@@ -1,5 +1,5 @@
 
-==== Step 1: Install the repository and Minion package
+=== Step 1: Install the repository and Minion package
 
 Connect with SSH to your remote RHEL system where you want to install a Minion.
 

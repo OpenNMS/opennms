@@ -1,10 +1,10 @@
 
-==== Configure {opennms-product-name}
+=== Configure {opennms-product-name}
 
 // No section numbers for step-by-step guide
 :!sectnums:
 
-===== Step 1: Set Kafka as RPC strategy and add Kafka server
+==== Step 1: Set Kafka as RPC strategy and add Kafka server
 
 [source, shell]
 ----
@@ -14,7 +14,7 @@ org.opennms.core.ipc.rpc.kafka.bootstrap.servers=kafka-1:9092,kafka-2:9092,kafka
 EOF
 ----
 
-===== Step 2: Set Kafka as Sink strategy and add Kafka server
+==== Step 2: Set Kafka as Sink strategy and add Kafka server
 
 [source, shell]
 ----
@@ -26,7 +26,7 @@ org.opennms.core.ipc.sink.kafka.bootstrap.servers=kafka-1:9092,kafka-2:9092,kafk
 EOF
 ----
 
-===== Step 3: Restart {opennms-product-name}
+==== Step 3: Restart {opennms-product-name}
 
 [source, shell]
 ----

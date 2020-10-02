@@ -1,5 +1,5 @@
 
-=== Installing on Debian
+== Installing on Debian
 
 Use the following commands to install the Minion package, start the Minion, test access to the Karaf shell, configure Minion to communicate with {opennms-product-name}, and verify connectivity. 
 

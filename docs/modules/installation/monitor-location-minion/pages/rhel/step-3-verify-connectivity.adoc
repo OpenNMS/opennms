@@ -1,5 +1,5 @@
 
-==== Step 3: Verify Connectivity
+=== Step 3: Verify Connectivity
 
 .Connect to Karaf Shell of the Minion and verify connectivity
 [source]

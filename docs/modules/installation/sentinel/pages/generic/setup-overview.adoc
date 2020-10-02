@@ -1,3 +1,5 @@
+
+== Overview
 . Set up _{distribution}_ to allow _Sentinel_ communication
 . Installation of the `opennms-sentinel` meta package which handles all dependencies
 . Starting _Sentinel_ and access the _Karaf_ console over _SSH_

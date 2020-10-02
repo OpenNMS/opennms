@@ -1,5 +1,5 @@
 
-==== Step 2: Start the Minion and test access to Karaf Shell
+=== Step 2: Start the Minion and test access to Karaf Shell
 
 .Configure systemd to start Minion on system boot
 [source, shell]

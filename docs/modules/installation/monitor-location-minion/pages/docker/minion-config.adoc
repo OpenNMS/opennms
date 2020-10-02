@@ -1,7 +1,7 @@
 
 [[gi-docker-minion-config-reference]]
 
-==== Startup Arguments
+=== Startup Arguments
 
 [options="header, autowidth"]
 |===
@@ -12,7 +12,7 @@
 | `-f`     | Initialize and start _Minion_ in foreground.
 |===
 
-==== Environment Variables
+=== Environment Variables
 
 .Generic _Minion_ settings
 [options="header, autowidth"]
@@ -57,7 +57,7 @@ This will create the file `org.opennms.core.ipc.rpc.kafka.cfg` with the content:
 bootstrap.servers=192.168.1.1,192.168.1.2
 ----
 
-==== Directory Conventions
+=== Directory Conventions
 
 [options="header, autowidth"]
 |===

@@ -1,2 +1,2 @@
 .About
-* xref:introduction.adoc[]
+* xref:about.adoc[]

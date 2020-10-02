@@ -3,18 +3,18 @@
 :imagesdir: ../../../images
 
 [[kafka-setup]]
-=== Setup using Apache Kafka
+== Setup using Apache Kafka
 
 This section describes how to use _Apache Kafka_ as a messaging system between _{opennms-product-name}_ and _Minions_ in a remote location.
 
-==== Objectives
+=== Objectives
 
 * Configure _{opennms-product-name}_ to forward _RPC_ to a _Minion_
 * Configure _Minion_ to forward messages over the _Sink_ component to an _{opennms-product-name}_ instance
 * Disable the embedded _Active MQ_ message broker on the _Minion_.
 * Verify the functionality on the _Minion_ using the `opennms:health-check` command and ensure the _Minion_ is registered and monitored in the _{opennms-product-name}_ web interface
 
-==== Before you begin
+=== Before you begin
 
 The following requirements should be satisfied before you can start with this tutorial:
 

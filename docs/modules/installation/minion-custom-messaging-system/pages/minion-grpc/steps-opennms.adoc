@@ -1,10 +1,10 @@
 
-==== Configure {opennms-product-name}
+=== Configure {opennms-product-name}
 
 // No section numbers for step-by-step guide
 :!sectnums:
 
-===== Step 1: Set GRPC as IPC strategy.
+==== Step 1: Set GRPC as IPC strategy.
 [source, shell]
 ----
 cat <<EOF >${OPENNMS_HOME}/etc/opennms.properties.d/grpc.properties
@@ -12,7 +12,7 @@ org.opennms.core.ipc.strategy=osgi
 EOF
 ----
 
-===== Step 2: Add GRPC Server feature.
+==== Step 2: Add GRPC Server feature.
 
 [source, shell]
 ----
@@ -21,7 +21,7 @@ opennms-core-ipc-grpc-server
 EOF
 ----
 
-===== Step 3: Enable and configure TLS on gRPC server.
+==== Step 3: Enable and configure TLS on gRPC server.
 
 .Enable TLS and configure TLS certificates and private keys.
 [source, shell]
@@ -34,7 +34,7 @@ client.cert.filepath=/custom-path/client.crt
 EOF
 ----
 
-===== Step 4: Configure max. message size if default of 10MB is not sufficient.
+==== Step 4: Configure max. message size if default of 10MB is not sufficient.
 (needs to be configured on both server and client)
 
 .Configure max. message size
@@ -46,7 +46,7 @@ EOF
 ----
 
 
-===== Step 5: Restart {opennms-product-name}.
+==== Step 5: Restart {opennms-product-name}.
 
 [source, shell]
 ----

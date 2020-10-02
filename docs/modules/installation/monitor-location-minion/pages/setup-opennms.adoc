@@ -1,5 +1,5 @@
 [[gi-minion-setup-communication]]
-=== Set Up {opennms-product-name} to allow Minion communication
+== Set Up {opennms-product-name} to allow Minion communication
 
 Communication between a Minion and {opennms-product-name} uses the REST API and a messaging system, by default ActiveMQ.
 Before installing a Minion, you need to create an authenticated user with the _ROLE_MINION_ security role for these communication channels.

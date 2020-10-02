@@ -1,10 +1,10 @@
 
-==== Configure Minion
+=== Configure Minion
 
 // No section numbers for step-by-step guide
 :!sectnums:
 
-===== Step 1: Disable ActiveMQ for RPC and Sink.
+==== Step 1: Disable ActiveMQ for RPC and Sink.
 
 .Disable ActiveMQ on _Minion_ startup
 [source, shell]
@@ -16,7 +16,7 @@ cat <<EOF >${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
 EOF
 ----
 
-===== Step 2: Enable GRPC for RPC and Sink.
+==== Step 2: Enable GRPC for RPC and Sink.
 
 [source, shell]
 ----
@@ -25,7 +25,7 @@ opennms-core-ipc-grpc-client
 EOF
 ----
 
-===== Step 3: Configure gRPC server information.
+==== Step 3: Configure gRPC server information.
 
 .Add gRPC server for RPC/Sink communication.
 [source, shell]
@@ -36,7 +36,7 @@ port=8990
 EOF
 ----
 
-===== Step 4: Enable and configure TLS on gRPC client.
+==== Step 4: Enable and configure TLS on gRPC client.
 
 .Enable TLS and configure TLS certificates and private keys.
 [source, shell]
@@ -49,7 +49,7 @@ client.private.key.filepath=/custom-path/client.pem
 EOF
 ----
 
-===== Step 5: Configure max. message size if default of 10MB is not sufficient.
+==== Step 5: Configure max. message size if default of 10MB is not sufficient.
 (needs to be configured on both server and client)
 
 .Configure max. message size
@@ -60,14 +60,14 @@ max.message.size=10485760
 EOF
 ----
 
-===== Step 6: Restart Minion to apply changes.
+==== Step 6: Restart Minion to apply changes.
 
 [source, shell]
 ----
 systemctl restart minion
 ----
 
-===== Step 7: Verify GRPC configuration and connectivity.
+==== Step 7: Verify GRPC configuration and connectivity.
 
 .Login to Karaf shell
 [source, shell]
@@ -95,7 +95,7 @@ Connecting to gRPC IPC Server    [ Success  ]
 => Everything is awesome
 ----
 
-===== Step 8. Verify Minion functionality.
+==== Step 8. Verify Minion functionality.
 
 .Ensure the Minion is registered in the _{opennms-product-name}_ web interface
 1. Login as Administrator

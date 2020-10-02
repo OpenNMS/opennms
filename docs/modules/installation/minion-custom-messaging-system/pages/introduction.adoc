@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-== Minion with custom messaging system
+= Minion with custom messaging system
 
 _Minions_ and _{opennms-product-name}_  communicate via a messaging system.
 By default, an embedded _ActiveMQ_ broker is used.

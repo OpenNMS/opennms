@@ -1,4 +1,4 @@
-== Using a different Time Series Storage
+= Using a different Time Series Storage
  
 _{opennms-product-name}_ stores performance data in a time series storage which is by default link:https://wiki.opennms.org/wiki/JRobin[JRobin].
 For different scenarios it is useful to switch to a different time series storage.

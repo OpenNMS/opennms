@@ -1,5 +1,5 @@
 
-==== Step 4: Configure Sentinel to communicate with {opennms-product-name}
+=== Step 4: Configure Sentinel to communicate with {opennms-product-name}
 
 .Login to the Karaf Shell on the system where your _Sentinel_ is installed with SSH
 [source, shell]

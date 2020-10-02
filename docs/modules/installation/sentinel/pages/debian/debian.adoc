@@ -1,6 +1,6 @@
 :sentinel-home: /usr/share/sentinel
 
-=== Installing on Debian
+== Installing on Debian
 
 include::../generic/setup-overview.adoc[]
 

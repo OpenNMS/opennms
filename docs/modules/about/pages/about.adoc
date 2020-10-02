@@ -1,4 +1,7 @@
-#add intro text#
+= About Horizon
+
+OpenNMS {page-component-title} is a scalable and highly configurable network management platform with comprehensive fault, performance, and traffic monitoring. 
+It easily integrates with your core business applications and workflows to monitor and visualize everything in your network.
 
 [[compatibility]]
 == Compatibility

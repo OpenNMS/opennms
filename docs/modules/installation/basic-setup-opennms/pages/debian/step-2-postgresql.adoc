@@ -1,5 +1,5 @@
 
-==== Step 2: Initialize and setup PostgreSQL
+=== Step 2: Initialize and setup PostgreSQL
 
 The _Debian_ package installs the _PostgreSQL_ database and is already initialized.
 The _PostgreSQL_ service is already added in the runlevel configuration for system startup.

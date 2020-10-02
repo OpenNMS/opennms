@@ -1,8 +1,8 @@
 [[minion-communication]]
-=== Information about Minion Packages and Configuration
+== Information about Minion Packages and Configuration
 This section contains miscellaneous information about the Minion installation. 
 
-==== Directory structure
+=== Directory structure
 
 A successful installation means the Minion is installed in the following directory structure:
 
@@ -20,7 +20,7 @@ A successful installation means the Minion is installed in the following directo
 
 TIP: In Debian, symbolic links are set up pointing to `/etc/minion` and `/var/log/minion` to match Debian’s expected filesystem layout.
 
-==== Startup configuration
+=== Startup configuration
 
 Edit `/etc/sysconfig/minion` file (RHEL) or the `/etc/default/minion` file (Debian) to change the Minion's startup configuration, if you want to override the defaults used at start up including:
 
@@ -29,7 +29,7 @@ Edit `/etc/sysconfig/minion` file (RHEL) or the `/etc/default/minion` file (Debi
 * User to run as
 
 [[credentials-alternate]]
-==== Alternate way to configure credentials
+=== Alternate way to configure credentials
 
 You can also configure credentials by using the `scvcli` utility in your Minion `bin` directory:
 

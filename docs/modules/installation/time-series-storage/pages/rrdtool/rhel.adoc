@@ -1,5 +1,5 @@
 
-==== Install RRDTool on RHEL
+=== Install RRDTool on RHEL
 
 CAUTION: Following this guide does not cover data migration from _JRobin_ to _RRDTool_.
 
@@ -8,7 +8,7 @@ CAUTION: To install _jrrd2_ enable the OpenNMS YUM repository ensure the reposit
 
 :!sectnums:
 
-==== Step 1: Install RRDTool and the jrrd2 interface
+=== Step 1: Install RRDTool and the jrrd2 interface
 
 .Installation on RHEL
 [source, shell]
@@ -16,7 +16,7 @@ CAUTION: To install _jrrd2_ enable the OpenNMS YUM repository ensure the reposit
 dnf -y install rrdtool jrrd2
 ----
 
-==== Step 2: Configure {opennms-product-name} to use RRDTool
+=== Step 2: Configure {opennms-product-name} to use RRDTool
 
 [source, shell]
 ----
@@ -31,7 +31,7 @@ EOF
 TIP: The visualization with the graph engine is optional.
      You can still use the default graphing engine `backshift` by not setting the `org.opennms.web.graphs.engine` property and use the system default.
 
-==== Step 3: Restart {opennms-product-name} and verify setup
+=== Step 3: Restart {opennms-product-name} and verify setup
 
 [source, shell]
 ----
@@ -43,7 +43,7 @@ The _JRobin_ files with extension _.jrb_ are not used anymore and are not delete
 
 :sectnums:
 
-==== Reference
+=== Reference
 
 The following configuration files have references to the _RRDTool_ binary and may be changed if you have a customized _RRDTool_ setup.
 

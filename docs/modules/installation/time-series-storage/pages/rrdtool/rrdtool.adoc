@@ -1,5 +1,5 @@
 
-=== RRDtool
+== RRDtool
 
 In most _Open Source_ applications, link:http://oss.oetiker.ch/rrdtool[RRDtool] is often used and is the de-facto open standard for _Time Series Data_.
 The basic installation of _{opennms-product-name}_ comes with _JRobin_ but it is simple to switch the system to use _RRDtool_ to persist _Time Series Data_.

@@ -1,5 +1,5 @@
 
-==== Step 3: Starting the Sentinel and test access to Karaf Shell
+=== Step 3: Starting the Sentinel and test access to Karaf Shell
 
 .Configure systemd to start _Sentinel_ on system boot
 [source, shell]

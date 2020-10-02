@@ -1,5 +1,5 @@
 
-=== Installing on Debian
+== Installing on Debian
 
 The following steps will be described:
 

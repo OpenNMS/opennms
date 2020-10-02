@@ -1,5 +1,5 @@
 
-==== Step 1: Setup {opennms-product-name} to allow Sentinel communication
+=== Step 1: Setup {opennms-product-name} to allow Sentinel communication
 
 This step is exactly the same as for _Minion_.
 Even the role name `ROLE_MINION` can be used, as there does not exist a dedicated role `ROLE_SENTINEL` yet.

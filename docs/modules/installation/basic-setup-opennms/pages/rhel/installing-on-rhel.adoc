@@ -1,5 +1,5 @@
 
-=== Installing on RHEL
+== Installing on RHEL
 
 The following steps will be described:
 
