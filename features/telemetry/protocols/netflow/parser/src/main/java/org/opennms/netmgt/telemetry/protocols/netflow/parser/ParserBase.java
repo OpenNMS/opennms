@@ -285,10 +285,10 @@ public abstract class ParserBase implements Parser {
                                         .setParam("cause", e.getMessage())
                                         .setParam("illegalFlowEventRate", (int) getIllegalFlowEventRate())
                                         .getEvent());
+
+                                LOG.warn("Illegal flow detected from exporter {}", remoteAddress.getAddress(), e);
                             }
 
-                            LOG.warn("Illegal flow detected", e);
-                            
                             return;
                         }
 
