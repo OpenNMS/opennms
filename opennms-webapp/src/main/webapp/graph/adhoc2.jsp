@@ -72,13 +72,17 @@
 
     HttpServletRequest req = new XssRequestWrapper(request);
     for (String requiredParameter : requiredParameters) {
+        // Graph All might have nodeCriteria instead of resourceId.
+        if(req.getParameter("nodeCriteria") != null) {
+            break;
+        }
         if (req.getParameter(requiredParameter) == null) {
             throw new MissingParameterException(requiredParameter,
                                                 requiredParameters);
         }
     }
 
-    if (req.getParameterValues("resourceId").length > 1) {
+    if (req.getParameter("nodeCriteria") != null || req.getParameterValues("resourceId").length > 1) {
         pageContext.setAttribute("tooManyResourceIds", "true");
     } else {
         ResourceId resourceId = ResourceId.fromString(req.getParameter("resourceId"));
