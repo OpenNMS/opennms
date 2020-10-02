@@ -72,13 +72,17 @@
 
     HttpServletRequest req = new XssRequestWrapper(request);
     for (String requiredParameter : requiredParameters) {
+        // Graph All might have nodeCriteria instead of resourceId.
+        if(req.getParameter("nodeCriteria") != null) {
+            break;
+        }
         if (req.getParameter(requiredParameter) == null) {
             throw new MissingParameterException(requiredParameter,
                                                 requiredParameters);
         }
     }
 
-    if (req.getParameterValues("resourceId").length > 1) {
+    if (req.getParameter("nodeCriteria") != null || req.getParameterValues("resourceId").length > 1) {
         pageContext.setAttribute("tooManyResourceIds", "true");
     } else {
         ResourceId resourceId = ResourceId.fromString(req.getParameter("resourceId"));
@@ -110,7 +114,7 @@
     <h3>Only one resource supported</h3>
 
     <p>
-      At this time, only one resource at a time is supported in custom resource
+      Only one resource at a time is supported in custom resource
       graphs.  Please go back and choose a single resource.
     </p>
   </c:when>
