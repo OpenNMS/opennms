@@ -144,7 +144,12 @@ public class IpFixProtobufValidationTest {
                 final Packet packet = new Packet(session, header, slice(buffer, header.payloadLength()));
                 packet.getRecords().forEach(rec -> {
 
-                    byte[] message = Utils.buildAndSerialize(Protocol.IPFIX, rec);
+                    byte[] message = new byte[0];
+                    try {
+                        message = Utils.buildAndSerialize(Protocol.IPFIX, rec);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                     try {
                         FlowMessage flowMessage = FlowMessage.parseFrom(message);
                         flows.addAll(ipFixConverter.convert(flowMessage));

@@ -124,7 +124,12 @@ public class Netflow5ConverterTest {
                 final Packet packet = new Packet(header, buffer);
                 packet.getRecords().forEach(rec -> {
 
-                    byte[] message = buildAndSerialize(Protocol.NETFLOW5, rec);
+                    byte[] message = new byte[0];
+                    try {
+                        message = buildAndSerialize(Protocol.NETFLOW5, rec);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                     try {
                         FlowMessage flowMessage = FlowMessage.parseFrom(message);
                         flows.addAll(nf5Converter.convert(flowMessage));
