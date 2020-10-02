@@ -18,7 +18,10 @@ SHELL ["/bin/bash", "-c"]
 # Collect generic steps in a layer for caching
 RUN echo "### epel-release" && dnf -y install epel-release && echo "### epel-release (done)" && \
     echo "### curl jq" && dnf -y install curl jq && echo "### curl jq (done)" && \
-    echo "### cloudsmith repo" && dnf -y install "$(curl -fs "https://api.cloudsmith.io/packages/${CLOUDSMITH_REPO}/?query=${CLOUDSMITH_QUERY}" | jq -r '.[0].cdn_url')" && echo "### cloudsmith repo (done)" && \
+    echo "### cloudsmith repo" && \
+        (curl -1sLf 'https://packages.opennms.com/public/common/cfg/setup/bash.rpm.sh' | bash) && \
+        (curl -1sLf 'https://packages.opennms.com/public/stable/cfg/setup/bash.rpm.sh' | bash) && \
+        echo "### cloudsmith repo (done)" && \
     echo "### ${REQUIRED_RPMS}" && dnf -y install ${REQUIRED_RPMS} && echo "### ${REQUIRED_RPMS} (done)" && \
     echo "### clean" && dnf clean all && echo "### clean (done)" && \
     echo "### cache" && rm -rf /var/cache/{dnf,yum} && echo "### cache (done)" && \
