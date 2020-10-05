@@ -283,6 +283,7 @@ public abstract class ParserBase implements Parser {
                                         .addParam("monitoringSystemId", identity.getId())
                                         .addParam("monitoringSystemLocation", identity.getLocation())
                                         .setParam("cause", e.getMessage())
+                                        .setParam("protocol", protocol.name())
                                         .setParam("illegalFlowEventRate", (int) getIllegalFlowEventRate())
                                         .getEvent());
 
