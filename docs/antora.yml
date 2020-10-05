@@ -9,13 +9,10 @@ asciidoc:
 
 nav:
 - modules/about/nav.adoc
-- modules/installation/ROOT/index.adoc
-- modules/installation/basic-setup-opennms/nav.adoc
-- modules/installation/monitor-location-minion/nav.adoc
-- modules/installation/sentinel/nav.adoc
-- modules/installation/minion-custom-messaging-system/nav.adoc
-- modules/installation/ROOT/install-opennms-versions.adoc
-- modules/installation/ROOT/minion-config-file.adoc
-- modules/installation/ROOT/run-in-non-root.adoc
-- modules/installation/ROOT/r-statistical-computing.adoc
-- modules/installation/time-series-storage/nav.adoc
+- modules/ROOT/nav.adoc
+- modules/basic-setup-opennms/setting-up-opennms.adoc
+- modules/basic-setup-opennms/nav.adoc
+- modules/ROOT/install-opennms-versions.adoc
+- modules/ROOT/minion-config-file.adoc
+- modules/ROOT/run-in-non-root.adoc
+- modules/ROOT/r-statistical-computing.adoc
