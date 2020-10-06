@@ -85,13 +85,45 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.23]
+
+Release 2018.1.23 is a small update to 2018.1.22 that fixes an SNMP interface poller bug.
+
+The codename for 2018.1.23 is _Tornado_.
+
+==== Release Meridian-2018.1.23
+
+===== Bug
+
+* Snmp Interface Poller is not using location specific SNMP Config (Issue http://issues.opennms.org/browse/NMS-12902[NMS-12902])
+
+===== Enhancement
+
+* Update Copyright notice for 2020 (Issue http://issues.opennms.org/browse/NMS-12933[NMS-12933])
+
+
+[releasenotes-changelog-Meridian-2018.1.22]
+
+==== Release Meridian-2018.1.22
+
+Release 2018.1.22 is a small update to 2018.1.21 that fixes a few bugs.
+
+The codename for 2018.1.22 is _Firenado_.
+
+===== Bug
+
+* Slack-compatible notification strategies expect "url" for switch name, should be "-url" (Issue http://issues.opennms.org/browse/NMS-10552[NMS-10552])
+* Can't install Horizon on Ubuntu 20.04 LTS (Issue http://issues.opennms.org/browse/NMS-12693[NMS-12693])
+* Wildcard certificate rejected after upgrade (Issue http://issues.opennms.org/browse/NMS-12805[NMS-12805])
+* SslContextFactory needs to be changed to SslContextFactory.Server in jetty.xml (Issue http://issues.opennms.org/browse/NMS-12847[NMS-12847])
+
 [releasenotes-changelog-Meridian-2018.1.21]
 
 ==== Release Meridian-2018.1.21
 
 Release 2018.1.21 is a small update to 2018.1.20 that fixes a bug and updates some documentation.
 
-The codename for 2018.1.20 is _Blizzard_.
+The codename for 2018.1.21 is _Blizzard_.
 
 ===== Bug
 
