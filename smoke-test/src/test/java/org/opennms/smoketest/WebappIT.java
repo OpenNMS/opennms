@@ -83,7 +83,7 @@ public class WebappIT {
         .extract().response().body().print();
 
     // The expected payload looks like:
-    //  {"packageDescription":"OpenNMS","displayVersion":"2020.1.0-SNAPSHOT","packageName":"opennms","version":"26.1.3", "ticketerConfig":{"enabled":false, "plugin": null}}
+    //  {"packageDescription":"OpenNMS","displayVersion":"2020.1.0","packageName":"opennms","version":"2020.1.0", "ticketerConfig":{"enabled":false, "plugin": null}}
     final ObjectMapper mapper = new ObjectMapper();
     final JsonNode infoObject = mapper.readTree(json);
 
