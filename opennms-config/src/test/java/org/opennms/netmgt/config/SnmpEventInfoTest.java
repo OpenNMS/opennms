@@ -56,6 +56,7 @@ import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.core.io.AbstractResource;
@@ -417,6 +418,51 @@ public class SnmpEventInfoTest {
     }
 
     /**
+     * This tests the ability of a configureSNMP event to configure v3 settings.
+     */
+    @Test
+    public final void testConfiguringV3ThroughEventInDef() throws Exception {
+
+        String snmpConfigXml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                "<snmp-config timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+                "   <definition version=\"v2c\">\n" +
+                "      <specific>192.168.0.5</specific>\n" +
+                "   </definition>\n" +
+                "</snmp-config>\n" +
+                "";
+
+        String expectedConfig = "" +
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                "<snmp-config timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" +
+                "   <definition auth-passphrase=\"nant\" auth-protocol=\"SHA-256\" version=\"v3\">\n" +
+                "      <specific>192.168.0.5</specific>\n" +
+                "   </definition>\n" +
+                "</snmp-config>\n" +
+                "";
+
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(new StringResource(snmpConfigXml)));
+
+        assertXmlEquals(snmpConfigXml, SnmpPeerFactory.getInstance().getSnmpConfigAsString());
+
+        SnmpEventInfo info = new SnmpEventInfo();
+        info.setFirstIPAddress("192.168.0.5");
+        info.setVersion("v3");
+        info.setAuthProtocol("SHA-256");
+        info.setAuthPassPhrase("nant");
+
+        SnmpPeerFactory.getInstance().define(info);
+
+        String actualConfig = SnmpPeerFactory.getInstance().getSnmpConfigAsString();
+        assertXmlEquals(expectedConfig, actualConfig);
+
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("192.168.0.5"));
+        assertEquals(agentConfig.getVersion(), SnmpConfiguration.VERSION3);
+        assertEquals(agentConfig.getAuthProtocol(), "SHA-256");
+        assertEquals(agentConfig.getAuthPassPhrase(), "nant");
+
+    }
+
+    /**
      * This tests the ability of a configureSNMP event to change the community
      * string of a specific address.
      */
@@ -434,7 +480,7 @@ public class SnmpEventInfoTest {
         String expectedConfig = "" +
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
         "<snmp-config timeout=\"800\" read-community=\"public\" write-community=\"private\" xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\">\n" + 
-        "    <definition read-community=\"abc\">\n" + 
+        "    <definition read-community=\"abc\">\n" +
         "        <specific>2001:db8::10</specific>\n" + 
         "    </definition>\n" + 
         "</snmp-config>\n" +

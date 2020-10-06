@@ -192,6 +192,7 @@
         <KeyValuePair key="oss-qosd"             value="DEBUG" />
         <KeyValuePair key="oss-qosdrx"           value="DEBUG" />
         <KeyValuePair key="passive"              value="DEBUG" />
+        <KeyValuePair key="perspectivepollerd"   value="DEBUG" />
         <KeyValuePair key="poller"               value="DEBUG" />
         <KeyValuePair key="provisiond"           value="DEBUG" />
         <KeyValuePair key="queued"               value="DEBUG" />

@@ -12,7 +12,6 @@ The service is considered available if a successful connection is made.
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.ActiveMQMonitor`
-| Remote Enabled | true or false if the monitor can be used by the {opennms-product-name} remote poller
 |===
 
 ===== Configuration and Usage

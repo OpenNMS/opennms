@@ -38,6 +38,7 @@ import org.opennms.features.apilayer.model.mappers.DatabaseEventMapper;
 import org.opennms.features.apilayer.model.mappers.InMemoryEventMapper;
 import org.opennms.features.apilayer.model.mappers.NodeMapper;
 import org.opennms.features.apilayer.model.mappers.SnmpInterfaceMapper;
+import org.opennms.integration.api.v1.config.events.AlarmType;
 import org.opennms.integration.api.v1.model.Alarm;
 import org.opennms.integration.api.v1.model.AlarmFeedback;
 import org.opennms.integration.api.v1.model.DatabaseEvent;
@@ -96,6 +97,7 @@ public class ModelMappers {
                 .setId(alarm.getId())
                 .setManagedObjectInstance(alarm.getManagedObjectInstance())
                 .setManagedObjectType(alarm.getManagedObjectType())
+                .setType(AlarmType.fromId(alarm.getAlarmType()))
                 .setAttributes(alarm.getDetails())
                 .setSeverity(toSeverity(alarm.getSeverity()))
                 .setRelatedAlarms(alarm.getRelatedAlarms()
@@ -105,7 +107,8 @@ public class ModelMappers {
                 .setLogMessage(alarm.getLogMsg())
                 .setDescription(alarm.getDescription())
                 .setLastEventTime(alarm.getLastEventTime())
-                .setFirstEventTime(alarm.getFirstEventTime());
+                .setFirstEventTime(alarm.getFirstEventTime())
+                .setAcknowledged(alarm.isAcknowledged());
 
         try {
             if (alarm.getNode() != null) {

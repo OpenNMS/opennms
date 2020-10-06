@@ -30,10 +30,8 @@ package org.opennms.netmgt.flows.classification.persistence.impl;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml"})
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(reuseDatabase = false)
 @Transactional
 public class ClassificationRuleDaoIT {
 
@@ -76,21 +74,18 @@ public class ClassificationRuleDaoIT {
 
     @Before
     public void before() {
-        this.customGroup = new GroupBuilder().withName(Groups.USER_DEFINED).build();
-        this.staticGroup = new GroupBuilder().withName(Groups.SYSTEM_DEFINED).build();
-        groupDao.save(customGroup);
-        groupDao.save(staticGroup);
-    }
+        this.customGroup = groupDao.findByName(Groups.USER_DEFINED);
+        assertNotNull(Groups.USER_DEFINED + " classification group", this.customGroup);
 
-    @After
-    public void after() {
-        groupDao.findAll().forEach(group -> groupDao.delete(group));
+        this.staticGroup = groupDao.findByName(Groups.SYSTEM_DEFINED);
+        assertNotNull(Groups.SYSTEM_DEFINED + " classification group", this.staticGroup);
     }
 
     @Test
     public void verifyCRUD() {
-        // Nothing created yet
-        assertEquals(0, ruleDao.countAll());
+        // Nothing of ours created yet (only default database schema)
+        int initialCount = ruleDao.countAll();
+        assertTrue("initial classification rules populated (count should be non-zero)", initialCount > 0);
 
         // Create dummy
         final Rule rule = new RuleBuilder()
@@ -103,36 +98,40 @@ public class ClassificationRuleDaoIT {
 
         // create and verify creation
         ruleDao.saveOrUpdate(rule);
-        assertEquals(1, ruleDao.countAll());
+        assertEquals(initialCount + 1, ruleDao.countAll());
 
         // Update
         rule.setName("HTTP2");
         ruleDao.update(rule);
-        assertEquals(1, ruleDao.countAll());
+        assertEquals(initialCount + 1, ruleDao.countAll());
         assertEquals("HTTP2", ruleDao.get(rule.getId()).getName());
         assertEquals(Groups.USER_DEFINED, ruleDao.get(rule.getId()).getGroup().getName());
 
         // Delete
         rule.getGroup().removeRule(rule);
         ruleDao.delete(rule);
-        assertEquals(0, ruleDao.countAll());
+        assertEquals(initialCount, ruleDao.countAll());
     }
 
     @Test
     public void verifyFetchingOnlyEnabledRules() {
+        // Nothing of ours created yet (only default database schema)
+        int initialCount = ruleDao.findAllEnabledRules().size();
+        assertTrue("initial enabled classification rules should be populated (count should be non-zero)", initialCount > 0);
+
         // Create a bunch of rules
         ruleDao.save(new RuleBuilder().withName("Rule 1").withDstPort(1000).withGroup(staticGroup).build());
         ruleDao.save(new RuleBuilder().withName("Rule 2").withDstPort(1000).withGroup(customGroup).build());
 
-        // Verify creation
-        assertThat(ruleDao.findAllEnabledRules(), hasSize(2));
+        // Verify creation -- all default rules plus our two new ones
+        assertThat(ruleDao.findAllEnabledRules(), hasSize(initialCount + 2));
 
-        // Disable group
+        // Disable group -- no system-defined rules plus *one* of our new ones
         staticGroup.setEnabled(false);
         groupDao.saveOrUpdate(staticGroup);
         assertThat(ruleDao.findAllEnabledRules(), hasSize(1));
 
-        // Disable yet another group
+        // Disable other group -- no system-defined rules plus *none* of our new ones
         customGroup.setEnabled(false);
         groupDao.saveOrUpdate(customGroup);
         assertThat(ruleDao.findAllEnabledRules(), hasSize(0));

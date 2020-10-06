@@ -35,7 +35,6 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -56,7 +55,6 @@ import com.google.common.base.Suppliers;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
-@Distributable
 public class IcmpMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(IcmpMonitor.class);
 

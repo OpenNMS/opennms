@@ -82,25 +82,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>unpack-remote-poller</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.assemblies</groupId>
-                  <artifactId>org.opennms.assemblies.remote-poller-standalone</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>remote-poller</classifier>
-                  <type>tar.gz</type>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <execution>
             <id>copy-jmx-config-generator</id>
             <phase>process-resources</phase>
             <goals><goal>copy</goal></goals>
@@ -582,11 +563,6 @@
       <artifactId>opennms-services</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.poller</groupId>
-      <artifactId>org.opennms.features.poller.remote</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.ticketing</groupId>
       <artifactId>org.opennms.features.ticketing.api</artifactId>
       <version>${project.version}</version>
@@ -1059,12 +1035,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.assemblies</groupId>
-      <artifactId>org.opennms.assemblies.remote-poller-standalone</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.rest</groupId>
       <artifactId>org.opennms.features.rest.mapper</artifactId>
       <version>${project.version}</version>
@@ -1122,6 +1092,21 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.openconfig</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.openconfig.adapter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.openconfig</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.openconfig.connector</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.openconfig</groupId>
+      <artifactId>org.opennms.features.openconfig.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.telemetry</groupId>
       <artifactId>org.opennms.features.telemetry.listeners</artifactId>
       <version>${project.version}</version>
@@ -1168,6 +1153,12 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.karaf-health</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Perspective Poller -->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.perspectivepoller</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

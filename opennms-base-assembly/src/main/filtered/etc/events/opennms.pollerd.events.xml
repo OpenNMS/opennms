@@ -323,21 +323,18 @@
    <event>
       <uei>uei.opennms.org/nodes/nodeDeleted</uei>
       <event-label>OpenNMS-defined node event: nodeDeleted</event-label>
-      <descr>&lt;p>Node %nodeid% was deleted.&lt;/p>
-            &lt;p>OpenNMS will delete any node
-            that is down for seven (7) consecutive days, or via operator action.
-            Nodes are considered &quot;down&quot; if there are no interfaces that have
-            pollable services associated with them.&lt;/p>
-            &lt;p>If a node becomes active again
-            &lt;i>after&lt;/i> it has been deleted, it will be
-            rediscovered in the next, daily discovery cycle and will be
-            re-added to OpenNMS's database as a new node. It will be
-            disassociated with any historic outage
-            information.&lt;/p></descr>
+      <descr>&lt;p>%parm[nodelabel]% (%parm[foreignSource]%:%parm[foreignId]%) in location %parm[location]% was deleted from requisition %parm[foreignSource]%.&lt;/p>
+             &lt;p>This can have multiple reasons.
+             &lt;ul>
+             &lt;li>OpenNMS default config will delete any node that is down for seven consecutive days.&lt;/li>
+             &lt;li>It was removed from the corresponding requisition %parm[foreignSource]%. This can be done manually using the web UI or using provisiond import schedules.&lt;/li>
+             &lt;li>It was manually deleted using the "Delete nodes" entry in the Admin menu.&lt;/li>
+             &lt;li>It was removed using the ReST API&lt;/li>
+             &lt;/ul>
+             Operator Instructions:&lt;br/>
+             Please verify if the deletion was planned.&lt;/p></descr>
       <logmsg dest="logndisplay">
-            Node &lt;a
-            href=&quot;element/node.jsp?node=%nodeid%&quot;>%nodeid%&lt;/a>
-            was deleted.
+            Node %parm[nodelabel]% (%nodeid%) was deleted.
         </logmsg>
       <severity>Warning</severity>
    </event>

@@ -328,6 +328,16 @@ node.setLocation(new OnmsMonitoringLocation("Minneapolis", ""));
 return node;
 ----
 
+.Node Metadata Policy
+
+The Metadata Policy allows you to set node-level metadata in the context `requisition` for provisioned nodes.
+It uses the same matching mechanism as the Node Categorization Policy.
+
+.Interface Metadata Policy
+
+The Metadata Policy allows you to set interface-level metadata in the context `requisition` for provisioned nodes.
+It uses the same matching mechanism as the Matching IP Interface Policy.
+
 ===== New Import Capabilities
 
 Several new XML entities have been added to the import requisition since the introduction of the OpenNMS Importer service in version 1.6.

@@ -190,7 +190,7 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         jsonRequest = createRequest(m_context, GET, "/outages");
         jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
-        jsonRequest.setQueryString("comparator=ge&serviceLostEvent.eventSeverity=5"); // OnmsSeverity.MINOR
+        jsonRequest.setQueryString("perspective=null&comparator=ge&serviceLostEvent.eventSeverity=5"); // OnmsSeverity.MINOR
         json = sendRequest(jsonRequest, 200);
         LOG.debug(json);
         restObject = new JSONObject(json);
@@ -198,7 +198,7 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         jsonRequest = createRequest(m_context, GET, "/outages");
         jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
-        jsonRequest.setQueryString("comparator=lt&serviceLostEvent.eventSeverity=2"); // OnmsSeverity.CLEARED
+        jsonRequest.setQueryString("perspective=null&comparator=lt&serviceLostEvent.eventSeverity=2"); // OnmsSeverity.CLEARED
         json = sendRequest(jsonRequest, 200);
         LOG.debug(json);
         restObject = new JSONObject(json);
@@ -206,7 +206,7 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         jsonRequest = createRequest(m_context, GET, "/outages");
         jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
-        jsonRequest.setQueryString("comparator=like&serviceLostEvent.eventLogMsg=Test%25");
+        jsonRequest.setQueryString("perspective=null&comparator=like&serviceLostEvent.eventLogMsg=Test%25");
         json = sendRequest(jsonRequest, 200);
         LOG.debug(json);
         restObject = new JSONObject(json);
@@ -215,7 +215,7 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // Check serviceRegainedEvent filters
         jsonRequest = createRequest(m_context, GET, "/outages");
         jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
-        jsonRequest.setQueryString("comparator=lt&serviceRegainedEvent.eventSeverity=2"); // OnmsSeverity.CLEARED
+        jsonRequest.setQueryString("perspective=null&comparator=lt&serviceRegainedEvent.eventSeverity=2"); // OnmsSeverity.CLEARED
         json = sendRequest(jsonRequest, 200);
         LOG.debug(json);
         // There is one test outage that has been resolved
@@ -224,7 +224,7 @@ public class OutageRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         jsonRequest = createRequest(m_context, GET, "/outages");
         jsonRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
-        jsonRequest.setQueryString("comparator=like&serviceRegainedEvent.eventLogMsg=Test%25");
+        jsonRequest.setQueryString("perspective=null&comparator=like&serviceRegainedEvent.eventLogMsg=Test%25");
         json = sendRequest(jsonRequest, 200);
         LOG.debug(json);
         // There is one test outage that has been resolved

@@ -128,11 +128,6 @@ public class SearchPropertiesIT extends AbstractSpringJerseyRestTestCase {
         testAllSearchParameters("/outages", SearchProperties.OUTAGE_SERVICE_PROPERTIES);
     }
 
-    @Test
-    public void testScanReportSearchProperties() throws Exception {
-        testAllSearchParameters("/scanreports", SearchProperties.SCAN_REPORT_SERVICE_PROPERTIES);
-    }
-
     protected void testAllSearchParameters(String url, Set<SearchProperty> properties) throws Exception {
         for (SearchProperty prop : properties) {
             System.err.println("Testing " + prop.getId());

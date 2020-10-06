@@ -1,0 +1,62 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-user-config]]
+=== User Creation and Configuration
+
+Only a user with admin privileges can create users and assign security roles to them. 
+We recommend creating a new user with admin privileges instead of using the default `admin` (see link:#ga-admin-user-setup[Admin User Setup]).
+
+Ideally, each user account corresponds to a person, to help track who performs tasks in your {opennms-product-name} system.
+Assigning different link:#ga-role-user-management-roles[security roles] to each user helps restrict what tasks the user can perform. 
+
+In addition to local users, you can configure external authentication services including link:https://wiki.opennms.org/wiki/Spring_Security_and_LDAP[LDAP / LDAPS], link:https://wiki.opennms.org/wiki/Spring_Security_and_Radius[RADIUS], and link:https://wiki.opennms.org/wiki/Single_Sign_On[SSO].
+Configuration specifics for these services are outside the scope of this documentation.
+
+WARNING: Do not delete the default _admin_ and _rtc_ users.
+         The _rtc_ user is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
+
+[[ga-user-create]]
+==== Creating a User
+
+. Log in as a user with administrative permissions.
+. Click the gear icon in the top right. 
+. Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users*.
+. Click *Add new user* and specify a user ID, password, password confirmation and click *OK*. 
+. _Optional_: add user information in the appropriate fields.  
+. _Optional_: assign link:#ga-role-user-management-roles[user permissions].
++
+NOTE: By default a new user has the following permissions:
+     Acknowledge and work with alarms and noficiations.
+     Cannot access the *configure OpenNMS* administration menu.
+     Add the _ROLE_ADMIN_ role to create a new admin. 
+
+. _Optional_: specify where to send messages to the user in the notification information area.
+. _Optional_: link:#ga-user-schedule[set a schedule] for when a user should receive notifications.
+. Click *Finish* to save changes.
+
+[[ga-user-schedule]]
+==== Create User Duty Schedule
+
+A duty schedule specifies the days and times a user (or group) receives notifications, on a per-week basis. 
+This feature allows you to customize a schedule based on your team's hours of operation.  
+Schedules are additive: a user could have a regular work schedule, and a second schedule for days or weeks when they are on call.
+
+If {opennms-product-name} needs to notify an individual user, but that user is not on duty at the time, it will never send the notification to that user.
+
+Notifications sent to users in groups are different:
+
+* group on duty at time of notification – all users also on duty receive notification
+* group on duty, no member users on duty – notification is queued and sent to the next user who comes on duty
+* off-duty group – notification never sent
+
+To add a duty schedule for a user (or group), follow these steps:
+
+. Log in as a user with administrative permissions.
+. Click the gear icon in the top-right. 
+. Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users* (*Configure Groups*).
+. Choose the user (or group) you want to modify. 
+. In the *Duty Schedule* area, select the number of schedules you want to add from the drop-down and click *Add Schedule*. 
+. Specify the days and times during which you want the user (or group) to receive notifications. 
+. Click *Finish*.

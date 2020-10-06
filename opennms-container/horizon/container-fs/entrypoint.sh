@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 # =====================================================================
 # Build script running OpenNMS in Docker environment
 #
@@ -9,6 +9,8 @@
 
 # Cause false/positives
 # shellcheck disable=SC2086
+
+set -e
 
 umask 002
 OPENNMS_HOME="/opt/opennms"
@@ -134,6 +136,7 @@ start() {
   local OPENNMS_JAVA_OPTS="--add-modules=java.base,java.compiler,java.datatransfer,java.desktop,java.instrument,java.logging,java.management,java.management.rmi,java.naming,java.prefs,java.rmi,java.scripting,java.security.jgss,java.security.sasl,java.sql,java.sql.rowset,java.xml,jdk.attach,jdk.httpserver,jdk.jdi,jdk.sctp,jdk.security.auth,jdk.xml.dom \
   -Dorg.apache.jasper.compiler.disablejsr199=true
   -Dopennms.home=/opt/opennms
+  -Dopennms.pidfile=/opt/opennms/logs/opennms.pid
   -XX:+HeapDumpOnOutOfMemoryError
   -Dcom.sun.management.jmxremote.authenticate=true
   -Dcom.sun.management.jmxremote.login.config=opennms

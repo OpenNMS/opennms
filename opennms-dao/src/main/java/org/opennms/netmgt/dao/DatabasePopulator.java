@@ -37,13 +37,14 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmAssociationDao;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.UserNotificationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
+import org.opennms.netmgt.model.AlarmAssociation;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -109,8 +111,8 @@ import com.google.common.collect.Lists;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 public class DatabasePopulator {
-	
-	public static interface Extension<T extends OnmsDao<?,?>> {
+
+    public static interface Extension<T extends OnmsDao<?,?>> {
 		DaoSupport<T> getDaoSupport();
 		void onPopulate(DatabasePopulator populator, T dao);
 		void onShutdown(DatabasePopulator populator, T dao);
@@ -147,10 +149,11 @@ public class DatabasePopulator {
     private OutageDao m_outageDao;
     private EventDao m_eventDao;
     private AlarmDao m_alarmDao;
+    private AlarmAssociationDao m_alarmAssociationDao;
     private NotificationDao m_notificationDao;
     private UserNotificationDao m_userNotificationDao;
     private MonitoringLocationDao m_monitoringLocationDao;
-    private LocationMonitorDao m_locationMonitorDao;
+    private ApplicationDao applicationDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     private TransactionOperations m_transOperation;
 
@@ -160,6 +163,9 @@ public class DatabasePopulator {
     private OnmsNode m_node4;
     private OnmsNode m_node5;
     private OnmsNode m_node6;
+
+    private OnmsMonitoringLocation locRDU;
+    private OnmsMonitoringLocation locFD;
     
     private boolean m_populateInSeparateTransaction = true;
     private boolean m_resetInSeperateTransaction = true;
@@ -242,6 +248,11 @@ public class DatabasePopulator {
         for (final OnmsNotification not : m_notificationDao.findAll()) {
             m_notificationDao.delete(not);
         }
+        for (final AlarmAssociation ass : m_alarmAssociationDao.findAll()) {
+            ass.getRelatedAlarm().getAssociatedAlarms().clear();
+            ass.getSituationAlarm().getAssociatedAlarms().clear();
+            m_alarmAssociationDao.delete(ass);
+        }
         for (final OnmsAlarm alarm : m_alarmDao.findAll()) {
             m_alarmDao.delete(alarm);
         }
@@ -293,12 +304,14 @@ public class DatabasePopulator {
         m_outageDao.flush();
         m_userNotificationDao.flush();
         m_notificationDao.flush();
+        m_alarmAssociationDao.flush();
         m_alarmDao.flush();
         m_eventDao.flush();
         m_snmpInterfaceDao.flush();
         m_ipInterfaceDao.flush();
         m_nodeDao.flush();
         m_serviceTypeDao.flush();
+        m_monitoringLocationDao.flush();
         
         LOG.debug("==== DatabasePopulator Reset Finished ====");
     }
@@ -342,7 +355,7 @@ public class DatabasePopulator {
         event.setEventTime(new Date(1436881548292L));
         getEventDao().save(event);
         getEventDao().flush();
-        
+
         final OnmsNotification notif = buildTestNotification(builder, event);
         getNotificationDao().save(notif);
         getNotificationDao().flush();
@@ -363,7 +376,7 @@ public class DatabasePopulator {
         final OnmsOutage unresolved = new OnmsOutage(new Date(1436881548292L), event, svc);
         getOutageDao().save(unresolved);
         getOutageDao().flush();
-        
+
         final OnmsAlarm alarm = buildAlarm(event);
         getAlarmDao().save(alarm);
         getAlarmDao().flush();
@@ -376,17 +389,36 @@ public class DatabasePopulator {
         getAcknowledgmentDao().save(ack);
         getAcknowledgmentDao().flush();
         
-        final OnmsMonitoringLocation def = new OnmsMonitoringLocation();
-        def.setLocationName("RDU");
-        def.setMonitoringArea("East Coast");
-        def.setPollingPackageNames(Collections.singletonList("example1"));
-        def.setCollectionPackageNames(Collections.singletonList("example1"));
-        def.setGeolocation("Research Triangle Park, NC");
-        def.setLatitude(35.715751f);
-        def.setLongitude(-79.16262f);
-        def.setPriority(1L);
-        def.setTags(Collections.singletonList("blah"));
-        m_monitoringLocationDao.save(def);
+        locRDU = new OnmsMonitoringLocation();
+        locRDU.setLocationName("RDU");
+        locRDU.setMonitoringArea("East Coast");
+        locRDU.setGeolocation("Research Triangle Park, NC");
+        locRDU.setLatitude(35.715751f);
+        locRDU.setLongitude(-79.16262f);
+        locRDU.setPriority(1L);
+        locRDU.setTags(Collections.singletonList("blah"));
+        m_monitoringLocationDao.save(locRDU);
+
+        locFD = new OnmsMonitoringLocation();
+        locFD.setLocationName("Fulda");
+        locFD.setMonitoringArea("Europe");
+        locFD.setGeolocation("Fulda, DE");
+        locFD.setLatitude(50.5558f);
+        locFD.setLongitude(9.6808f);
+        locFD.setPriority(1L);
+        locFD.setTags(Collections.singletonList("blub"));
+        m_monitoringLocationDao.save(locFD);
+
+        // added this to assure that the old behaviour before PerspectivePoller is still the same, see NMS-12792
+        final OnmsOutage perspectiveResolved = new OnmsOutage(new Date(1436881448292L), new Date(1436881448292L), event, event, svc, null, null);
+        perspectiveResolved.setPerspective(locFD);
+        getOutageDao().save(perspectiveResolved);
+        getOutageDao().flush();
+
+        final OnmsOutage perspectiveUnresolved = new OnmsOutage(new Date(1436881448292L), event, svc);
+        perspectiveUnresolved.setPerspective(locRDU);
+        getOutageDao().save(perspectiveUnresolved);
+        getOutageDao().flush();
 
         LOG.debug("= DatabasePopulatorExtension Populate Starting =");
         for (Extension eachExtension : extensions) {
@@ -416,7 +448,7 @@ public class DatabasePopulator {
         return cat;
     }
 
-    private OnmsServiceType getService(final String serviceName) {
+    public OnmsServiceType getService(final String serviceName) {
         OnmsServiceType service = m_serviceTypeDao.findByName(serviceName);
         if (service == null) {
             service = new OnmsServiceType(serviceName);
@@ -620,6 +652,13 @@ public class DatabasePopulator {
         m_alarmDao = alarmDao;
     }
 
+    public AlarmAssociationDao getAlarmAssociationDao() {
+        return m_alarmAssociationDao;
+    }
+
+    public void setAlarmAssociationDao(final AlarmAssociationDao dao) {
+        m_alarmAssociationDao = dao;
+    }
 
     public AssetRecordDao getAssetRecordDao() {
         return m_assetRecordDao;
@@ -783,6 +822,14 @@ public class DatabasePopulator {
         m_node5 = node5;
     }
 
+    public OnmsMonitoringLocation getLocRDU() {
+        return this.locRDU;
+    }
+
+    public OnmsMonitoringLocation getLocFD() {
+        return this.locFD;
+    }
+
     private void setNode6(final OnmsNode node6) {
         m_node6 = node6;
     }
@@ -795,12 +842,12 @@ public class DatabasePopulator {
         m_monitoringLocationDao = monitoringLocationDao;
     }
 
-    public LocationMonitorDao getLocationMonitorDao() {
-        return m_locationMonitorDao;
+    public ApplicationDao getApplicationDao() {
+        return this.applicationDao;
     }
 
-    public void setLocationMonitorDao(final LocationMonitorDao locationMonitorDao) {
-        m_locationMonitorDao = locationMonitorDao;
+    public void setApplicationDao(final ApplicationDao applicationDao) {
+        this.applicationDao = applicationDao;
     }
 
     public AcknowledgmentDao getAcknowledgmentDao() {

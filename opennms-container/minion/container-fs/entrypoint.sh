@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 # =====================================================================
 # Entrypoint for the Minion container image
 # =====================================================================
@@ -6,9 +6,12 @@
 # Cause false/positives
 # shellcheck disable=SC2086
 
+set -e
+
 umask 002
 MINION_HOME="/opt/minion"
 MINION_CONFIG="/opt/minion/etc/org.opennms.minion.controller.cfg"
+MINION_PROCESS_ENV_CFG="/opt/minion/etc/minion-process.env"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
 CONFD_KEY_STORE="/opt/minion/minion-config.yaml"
 CONFD_CONFIG_DIR="/opt/minion/confd"
@@ -44,7 +47,7 @@ useEnvCredentials(){
 
 setCredentials() {
   # Directory to initialize a new keystore file which can be mounted to the local host
-  if [ -d /keystore ]; then
+  if [ ! -d /keystore ]; then
     mkdir /keystore
   fi
 
@@ -183,6 +186,12 @@ configure() {
   initConfig
   applyConfd
   applyOverlayConfig
+  if [[ -f "$MINION_PROCESS_ENV_CFG" ]]; then
+    while read assignment; do
+      [[ $assignment =~ ^#.* ]] && continue
+      export "$assignment"
+    done < "$MINION_PROCESS_ENV_CFG"
+  fi
 }
 
 # Evaluate arguments for build script.

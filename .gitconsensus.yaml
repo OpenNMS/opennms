@@ -1,0 +1,44 @@
+# See https://github.com/gitconsensus/GitConsensusCLI for more information about this file.
+
+version: 3
+
+# Don't count any vote from a user who votes for multiple options
+prevent_doubles: true
+
+# Add extra labels for the vote counts and age when merging
+extra_labels: false
+
+
+pull_requests:
+
+  # Minimum number of votes for a pull request
+  quorum: 6
+
+  # Required percentage of "yes" votes (ignoring abstentions). It's a good idea to give "no" votes more power.
+  threshold: 0.74
+
+  # Number of hours after last action (commit or opening the pull request) before issue can be merged
+  merge_delay: 12
+
+  # Number of votes at which the merge_delay gets ignored, assuming no negative votes.
+  delay_override: 8
+
+  # Close pull requests that don't pass after 30 days without any activity (new commits).
+  timeout: 720
+
+  # Do not allow changes to the license.
+  license_lock: true
+
+  # Allow the consensus rules (this file) to be changed.
+  consensus_lock: false
+
+  # Wait for at least four days before merging any new consensus rules.
+  consensus_delay: 96
+
+  # Allow anyone to vote on this project, even if they've never contributed.
+  contributors_only: false
+
+  # Don't put any restrictions on who can vote.
+  collaborators_only: false
+
+

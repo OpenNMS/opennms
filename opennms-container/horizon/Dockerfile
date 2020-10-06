@@ -43,7 +43,7 @@ RUN groupadd -g 10001 opennms && \
 FROM horizon-base
 
 # A default which installs the required OpenNMS Horizon packages
-ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-remoting opennms-webapp-hawtio"
+ARG ONMS_PACKAGES="opennms-core opennms-webapp-jetty opennms-webapp-hawtio"
 
 # Allow to install optional packages via YUM
 ARG ADD_YUM_PACKAGES
@@ -69,7 +69,9 @@ ARG REVISION
 
 RUN echo "installing packages for build ${REVISION} (${BUILD_DATE})"; \
     if [[ "$(ls -1 /tmp/tarball/*.tar.gz 2>/dev/null | wc -l)" != 0 ]]; then \
-        mkdir -p /opt/opennms && tar --uid=0 --gid=0 -xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
+        mkdir -p /opt/opennms && \
+        tar -xzf /tmp/tarball/opennms-*.tar.gz -C /opt/opennms && \
+        chown -R 0:0 /opt/opennms && \
         cp -r /opt/opennms/etc /opt/opennms/share/etc-pristine; \
     elif [[ "$(ls -1 /tmp/rpms/*.rpm 2>/dev/null | wc -l)" != 0 ]]; then \
         echo "installing local RPMs from filesystem" && \

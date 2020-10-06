@@ -53,7 +53,7 @@
         <c:forEach items="${applications}" var="app">
         <tr>
           <td><a href="admin/applications.htm?removeApplicationId=${app.id}"><i class="fa fa-trash-o fa-2x"></i></a></td>
-          <td><a href="admin/applications.htm?applicationid=${app.id}&edit=edit"><i class="fa fa-edit fa-2x"></i></a></td>
+          <td><a href="admin/applications.htm?applicationid=${app.id}&edit=services"><i class="fa fa-edit fa-2x"></i></a></td>
           <td><a href="admin/applications.htm?applicationid=${app.id}">${fn:escapeXml(app.name)}</a></td>
         </tr>
         </c:forEach>

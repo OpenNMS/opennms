@@ -53,6 +53,8 @@ import javax.xml.transform.stream.StreamSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 public abstract class StringUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(StringUtils.class);
@@ -453,4 +455,27 @@ public abstract class StringUtils {
             return Optional.empty();
         }
     }
+
+    public static Integer parseInt(String value, Integer defaultValue) {
+        if(Strings.isNullOrEmpty(value)) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    public static Double parseDouble(String value, Double defaultValue) {
+        if(Strings.isNullOrEmpty(value)) {
+            return defaultValue;
+        }
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
 }

@@ -173,11 +173,10 @@ During evaluation of an expression, the following scopes are available:
 * Interface metadata
 * Service metadata
 
-For more information on metadata and how to define it, see link:metadata[Metadata].
+Metadata is also supported in Value, Re-arm, and Trigger fields for Single-DS and expression-based thresholds.
 
-IMPORTANT: Never attempt to use metatdata with basic thresholds. 
-Metadata works only with expression-based thresholds.
-Using metadata with a basic threshold will break the web UI, making it unusable.  
+For more information on metadata and how to define it, see link:#ga-meta-data[Metadata].
+
 
 This procedure uses metadata to trigger an event when the number of logged-in users exceeds 1.
 

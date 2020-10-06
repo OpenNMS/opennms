@@ -259,19 +259,20 @@ public class SnmpPoller extends AbstractServiceDaemon {
             netmask = iface.getNetMask().getHostAddress();
         }
         Integer nodeid = iface.getNode().getId();
+        String location = getNetwork().getContext().getLocation(nodeid);
         if (ipaddress != null && !ipaddress.equals("0.0.0.0")) {
             String pkgName = getPollerConfig().getPackageName(ipaddress);
             if (pkgName != null) {
                 LOG.debug("Scheduling snmppolling for node: {} ip address: {} - Found package interface with name: {}", nodeid, ipaddress, pkgName);
-                scheduleSnmpCollection(getNetwork().create(nodeid,ipaddress,netmask,pkgName), pkgName);
+                scheduleSnmpCollection(getNetwork().create(nodeid,ipaddress,netmask,pkgName), pkgName, location);
             } else if (!getPollerConfig().useCriteriaFilters()) {
                 LOG.debug("No SNMP Poll Package found for node: {} ip address: {}. - Scheduling according with default interval", nodeid, ipaddress);
-                scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress,netmask, "null"), "null");
+                scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress,netmask, "null"), "null", location);
             }
         }
     }
     
-    private void scheduleSnmpCollection(PollableInterface nodeGroup,String pkgName) {
+    private void scheduleSnmpCollection(PollableInterface nodeGroup, String pkgName, String location) {
     	
     	String excludingCriteria = new String(" snmpifindex > 0 ");
         for (String pkgInterfaceName: getPollerConfig().getInterfaceOnPackage(pkgName)) {
@@ -304,9 +305,9 @@ public class SnmpPoller extends AbstractServiceDaemon {
                 int[] downValues = statusValuesFromString(getPollerConfig().getDownValues(pkgName, pkgInterfaceName)
                         , new int[]{2});
 
-                PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(pkgInterfaceName, criteria,
-                   port != -1, port, timeout != -1, timeout, retries != -1, retries,
-                        hasMaxVarsPerPdu, maxVarsPerPdu, upValues, downValues);
+                PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(location, pkgInterfaceName, 
+                        criteria, port != -1, port, timeout != -1, timeout, retries != -1, retries, hasMaxVarsPerPdu, maxVarsPerPdu,
+                        upValues, downValues);
 
                 node.setSnmpinterfaces(getNetwork().getContext().get(node.getParent().getNodeid(), criteria));
 
@@ -317,8 +318,8 @@ public class SnmpPoller extends AbstractServiceDaemon {
         }
         if (!getPollerConfig().useCriteriaFilters()) {
             LOG.debug("excluding criteria used for default polling: {}", excludingCriteria);
-            PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface("null", excludingCriteria, 
-                false, -1, false, -1, false, -1, false, -1,
+            PollableSnmpInterface node = nodeGroup.createPollableSnmpInterface(location, "null",
+                    excludingCriteria, false, -1, false, -1, false, -1, false, -1,
                     statusValuesFromString(getPollerConfig().getUpValues(), new int[]{1}),
                     statusValuesFromString(getPollerConfig().getDownValues(), new int[]{2}));
 

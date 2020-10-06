@@ -80,7 +80,7 @@ public class AlarmDaoContainer extends OnmsVaadinContainer<OnmsAlarm,Integer> {
 
     @Override
     protected void addAdditionalCriteriaOptions(Criteria criteria, Page page, boolean doOrder) {
-        // we join table node, to be able eto sort by node.label
+        // we join table node, to be able to sort by node.label
         criteria.setAliases(Arrays.asList(new Alias[] {
                 new Alias("node", "node", JoinType.LEFT_JOIN)
         }));

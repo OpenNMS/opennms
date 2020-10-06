@@ -1,0 +1,17 @@
+
+==== Step 1: Install the repository and Minion package
+
+.Add apt repository in /etc/apt/sources.list.d/opennms.list and add GPG key
+[source, shell]
+----
+echo 'deb https://debian.opennms.org stable main \
+      deb-src https://debian.opennms.org stable main' > /etc/apt/sources.list.d/opennms.list
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+apt update
+----
+
+.Install the Minion package
+[source, bash]
+----
+apt -y install opennms-minion
+----

@@ -58,7 +58,7 @@ public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider 
 
     public static final String TOPOLOGY_NAMESPACE = "application";
 
-    private GraphService graphService;
+    private final GraphService graphService;
 
     public LegacyApplicationTopologyProvider(GraphService graphService) {
         super(TOPOLOGY_NAMESPACE);
@@ -145,6 +145,7 @@ public class LegacyApplicationTopologyProvider extends AbstractTopologyProvider 
                 final Set<Integer> applicationIds = filteredVertices.stream()
                         .filter(LegacyApplicationVertex::isRoot)
                         .map(LegacyApplicationVertex::getId)
+                        .map(s -> s.startsWith("Application:") ? s.substring("Application:".length()) : s)
                         .map(Integer::valueOf)
                         .collect(Collectors.toSet());
                 return new SelectionChangedListener.IdSelection<>(applicationIds);

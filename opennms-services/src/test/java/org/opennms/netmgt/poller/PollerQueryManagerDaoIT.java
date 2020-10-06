@@ -247,7 +247,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
     	MockLogAppender.setupLogging(p);
         Package pkg = new Package();
         pkg.setName("SFO");
-        pkg.setRemote(true);
+        pkg.setPerspectiveOnly(true);
         Poller poller = new Poller();
 		poller.setPollerConfig(new MockPollerConfig(m_network));
         assertFalse(poller.pollableServiceInPackage(null, null, pkg));
@@ -1309,7 +1309,7 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		OutageChecker(MockService svc, Event lostSvcEvent,
 				Event regainedSvcEvent) {
 			super(m_db,
-					"select * from outages where nodeid = ? and ipAddr = ? and serviceId = ?");
+					"select * from outages where perspective is null and nodeid = ? and ipAddr = ? and serviceId = ?");
 
 			m_svc = svc;
 			m_lostSvcEvent = lostSvcEvent;

@@ -49,6 +49,11 @@ public abstract class UnimplementedFilterDao implements FilterDao {
     }
 
     @Override
+    public Map<Integer, Map<InetAddress, Set<String>>> getNodeIPAddressServiceMap(String rule) throws FilterParseException {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
     public void flushActiveIpAddressListCache() {
         throw new UnsupportedOperationException("Not yet implemented!");
     }

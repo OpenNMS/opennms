@@ -149,4 +149,10 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
+    public String getHostname(final String host, List<Filter> filters) {
+        return render("hostname.ftl", ImmutableMap.builder()
+                                                  .put("filters", getFilterQueries(filters))
+                                                  .put("host", host)
+                                                  .build());
+    }
 }

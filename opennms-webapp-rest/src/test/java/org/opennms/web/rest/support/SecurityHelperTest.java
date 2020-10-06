@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,7 +40,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -93,7 +93,7 @@ public class SecurityHelperTest {
         SecurityContext securityContext = mock(SecurityContext.class, RETURNS_DEEP_STUBS);
         when(securityContext.getUserPrincipal().getName()).thenReturn(USER);
         when(securityContext.isUserInRole(anyString())).thenAnswer((Answer) invocation -> {
-            final String role = invocation.getArgumentAt(0, String.class);
+            final String role = invocation.getArgument(0);
             return userRoles.contains(role);
         });
 

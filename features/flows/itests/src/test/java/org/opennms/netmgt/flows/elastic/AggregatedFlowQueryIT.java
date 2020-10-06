@@ -355,7 +355,7 @@ public class AggregatedFlowQueryIT {
         // Expect all of the hosts, with the sum of all the bytes from all the flows
         assertThat(hostTrafficSummary, hasSize(6));
         TrafficSummary<Host> top = hostTrafficSummary.get(0);
-        assertThat(top.getEntity(), equalTo(new Host("10.1.1.12")));
+        assertThat(top.getEntity(), equalTo(new Host("10.1.1.12", "la.le.lu")));
         assertThat(top.getBytesIn(), equalTo(210L));
         assertThat(top.getBytesOut(), equalTo(2100L));
 
@@ -370,7 +370,7 @@ public class AggregatedFlowQueryIT {
         // Expect two summaries
         assertThat(hostTrafficSummary, hasSize(2));
         top = hostTrafficSummary.get(0);
-        assertThat(top.getEntity(), equalTo(new Host("10.1.1.12")));
+        assertThat(top.getEntity(), equalTo(new Host("10.1.1.12", "la.le.lu")));
         assertThat(top.getBytesIn(), equalTo(210L));
         assertThat(top.getBytesOut(), equalTo(2100L));
 
@@ -408,12 +408,12 @@ public class AggregatedFlowQueryIT {
 
         assertThat(hostTrafficSummary, hasSize(2));
         TrafficSummary<Host> first = hostTrafficSummary.get(0);
-        assertThat(first.getEntity().getIp(), equalTo("10.1.1.11"));
+        assertThat(first.getEntity(), equalTo(new Host("10.1.1.11")));
         assertThat(first.getBytesIn(), equalTo(10L));
         assertThat(first.getBytesOut(), equalTo(100L));
 
         TrafficSummary<Host> second = hostTrafficSummary.get(1);
-        assertThat(second.getEntity().getIp(), equalTo("10.1.1.12"));
+        assertThat(second.getEntity(), equalTo(new Host("10.1.1.12", "la.le.lu")));
         assertThat(second.getBytesIn(), equalTo(210L));
         assertThat(second.getBytesOut(), equalTo(2100L));
 
@@ -422,12 +422,12 @@ public class AggregatedFlowQueryIT {
                 flowRepository.getHostSummaries(ImmutableSet.of("10.1.1.11"), true, getFilters()).get();
         assertThat(hostTrafficSummary, hasSize(2));
         first = hostTrafficSummary.get(0);
-        assertThat(first.getEntity().getIp(), equalTo("10.1.1.11"));
+        assertThat(first.getEntity(), equalTo(new Host("10.1.1.11")));
         assertThat(first.getBytesIn(), equalTo(10L));
         assertThat(first.getBytesOut(), equalTo(100L));
 
         second = hostTrafficSummary.get(1);
-        assertThat(second.getEntity().getIp(), equalTo("Other"));
+        assertThat(second.getEntity(), equalTo(new Host("Other")));
         assertThat(second.getBytesIn(), equalTo(410L));
         assertThat(second.getBytesOut(), equalTo(2200L));
     }
@@ -450,9 +450,9 @@ public class AggregatedFlowQueryIT {
         // Top 1
         hostTraffic = flowRepository.getTopNHostSeries(1, step, false, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(2));
-        assertThat(hostTraffic.rowKeySet(), containsInAnyOrder(new Directional<>(new Host("10.1.1.12"), true),
-                new Directional<>(new Host("10.1.1.12"), false)));
-        verifyHttpsSeriesAggregated(hostTraffic, new Host("10.1.1.12"));
+        assertThat(hostTraffic.rowKeySet(), containsInAnyOrder(new Directional<>(new Host("10.1.1.12", "la.le.lu"), true),
+                new Directional<>(new Host("10.1.1.12", "la.le.lu"), false)));
+        verifyHttpsSeriesAggregated(hostTraffic, new Host("10.1.1.12", "la.le.lu"));
     }
 
     @Test
@@ -465,7 +465,7 @@ public class AggregatedFlowQueryIT {
                 flowRepository.getHostSeries(Collections.singleton("10.1.1.12"), 10,
                         false, getFilters()).get();
         assertThat(hostTraffic.rowKeySet(), hasSize(2));
-        verifyHttpsSeries(hostTraffic, new Host("10.1.1.12"));
+        verifyHttpsSeries(hostTraffic, new Host("10.1.1.12", "la.le.lu"));
 
         // Get just 10.1.1.12 and include others
         hostTraffic = flowRepository.getHostSeries(Collections.singleton("10.1.1.12"), 10,
@@ -523,8 +523,8 @@ public class AggregatedFlowQueryIT {
 
         // Expect the conversations, with the sum of all the bytes from all the flows
         TrafficSummary<Conversation> convo = convoTrafficSummary.get(0);
-        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
-        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.101"));
+        assertThat(convo.getEntity().getLowerHost(), equalTo(new Host("10.1.1.12", "la.le.lu")));
+        assertThat(convo.getEntity().getUpperHost(), equalTo(new Host("192.168.1.101", "ingress.only")));
         // Disabled for now - see https://issues.opennms.org/browse/NMS-12692
         // assertThat(convo.getEntity().getLowerHostname(), equalTo(Optional.of("la.le.lu")));
         // assertThat(convo.getEntity().getUpperHostname(), equalTo(Optional.of("ingress.only")));
@@ -533,8 +533,8 @@ public class AggregatedFlowQueryIT {
         assertThat(convo.getBytesOut(), equalTo(1100L));
 
         convo = convoTrafficSummary.get(1);
-        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
-        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.100"));
+        assertThat(convo.getEntity().getLowerHost(), equalTo(new Host("10.1.1.12", "la.le.lu")));
+        assertThat(convo.getEntity().getUpperHost(), equalTo(new Host("192.168.1.100")));
         // Disabled for now - see https://issues.opennms.org/browse/NMS-12692
         //assertThat(convo.getEntity().getLowerHostname(), equalTo(Optional.of("la.le.lu")));
         //assertThat(convo.getEntity().getUpperHostname(), equalTo(Optional.empty()));
@@ -547,8 +547,8 @@ public class AggregatedFlowQueryIT {
         assertThat(convoTrafficSummary, hasSize(2));
 
         convo = convoTrafficSummary.get(0);
-        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
-        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.101"));
+        assertThat(convo.getEntity().getLowerHost(), equalTo(new Host("10.1.1.12", "la.le.lu")));
+        assertThat(convo.getEntity().getUpperHost(), equalTo(new Host("192.168.1.101", "ingress.only")));
         assertThat(convo.getEntity().getApplication(), equalTo("https"));
         assertThat(convo.getBytesIn(), equalTo(110L));
         assertThat(convo.getBytesOut(), equalTo(1100L));
@@ -570,8 +570,8 @@ public class AggregatedFlowQueryIT {
                         false, getFilters()).get();
         assertThat(convoTrafficSummary, hasSize(1));
         TrafficSummary<Conversation> convo = convoTrafficSummary.get(0);
-        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.11"));
-        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.100"));
+        assertThat(convo.getEntity().getLowerHost(), equalTo(new Host("10.1.1.11")));
+        assertThat(convo.getEntity().getUpperHost(), equalTo(new Host("192.168.1.100")));
         assertThat(convo.getEntity().getApplication(), equalTo("http"));
         assertThat(convo.getBytesIn(), equalTo(10L));
         assertThat(convo.getBytesOut(), equalTo(100L));
@@ -582,15 +582,15 @@ public class AggregatedFlowQueryIT {
                 getFilters()).get();
         assertThat(convoTrafficSummary, hasSize(2));
         convo = convoTrafficSummary.get(0);
-        assertThat(convo.getEntity().getLowerIp(), equalTo("10.1.1.12"));
-        assertThat(convo.getEntity().getUpperIp(), equalTo("192.168.1.100"));
+        assertThat(convo.getEntity().getLowerHost(), equalTo(new Host("10.1.1.12", "la.le.lu")));
+        assertThat(convo.getEntity().getUpperHost(), equalTo(new Host("192.168.1.100")));
         assertThat(convo.getEntity().getApplication(), equalTo("https"));
         assertThat(convo.getBytesIn(), equalTo(100L));
         assertThat(convo.getBytesOut(), equalTo(1000L));
 
         convo = convoTrafficSummary.get(1);
-        assertThat(convo.getEntity().getLowerIp(), equalTo("Other"));
-        assertThat(convo.getEntity().getUpperIp(), equalTo("Other"));
+        assertThat(convo.getEntity().getLowerHost(), equalTo(Host.forOther().build()));
+        assertThat(convo.getEntity().getUpperHost(), equalTo(Host.forOther().build()));
         assertThat(convo.getEntity().getApplication(), equalTo("Other"));
         assertThat(convo.getBytesIn(), equalTo(320L));
         assertThat(convo.getBytesOut(), equalTo(1300L));

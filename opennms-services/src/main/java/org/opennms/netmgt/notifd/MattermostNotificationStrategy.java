@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -48,10 +48,10 @@ public class MattermostNotificationStrategy extends AbstractSlackCompatibleNotif
     private static final String MM_ICONURL_PROPERTY = "org.opennms.netmgt.notifd.mattermost.iconURL";
     private static final String MM_ICONEMOJI_PROPERTY = "org.opennms.netmgt.notifd.mattermost.iconEmoji";
     private static final String MM_CHANNEL_PROPERTY = "org.opennms.netmgt.notifd.mattermost.channel";
-	private static final String MM_USE_SYSTEM_PROXY = "org.opennms.netmgt.notifd.mattermost.useSystemProxy";
+    private static final String MM_USE_SYSTEM_PROXY = "org.opennms.netmgt.notifd.mattermost.useSystemProxy";
     
     @Override
-	protected String formatWebhookErrorResponse(int statusCode, String contents) {
+    protected String formatWebhookErrorResponse(int statusCode, String contents) {
     	final StringBuilder bldr = new StringBuilder("Response code: ");
     	bldr.append(statusCode);
     	

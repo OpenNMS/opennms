@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BAMBOO_HOST="https://bamboo.opennms.org"
 
@@ -27,7 +27,6 @@ RPM_VERSION=$(curl -s "${BAMBOO_HOST}/artifact/${PLAN_KEY}/shared/build-${BUILD_
 
 RPMS_HORIZON=("opennms-core-${RPM_VERSION}.noarch.rpm"
               "opennms-webapp-jetty-${RPM_VERSION}.noarch.rpm"
-              "opennms-webapp-remoting-${RPM_VERSION}.noarch.rpm"
               "opennms-webapp-hawtio-${RPM_VERSION}.noarch.rpm")
 
 RPMS_MINION=("opennms-minion-${RPM_VERSION}.noarch.rpm")

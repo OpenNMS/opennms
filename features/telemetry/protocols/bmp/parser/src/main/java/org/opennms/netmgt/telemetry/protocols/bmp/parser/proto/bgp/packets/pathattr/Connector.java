@@ -29,7 +29,6 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.pathattr;
 
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 
