@@ -170,7 +170,32 @@ public abstract class EventConstants {
      * The SNMP interface admin down event UEI.
      */
     public static final String SNMP_INTERFACE_ADMIN_DOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceAdminDown";
-    
+
+    /**
+     * The SNMP interface operStatus testing event UEI.
+     */
+    public static final String SNMP_INTERFACE_OPER_TESTING_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperTesting";
+
+    /**
+     * The SNMP interface operStatus unknown event UEI.
+     */
+    public static final String SNMP_INTERFACE_OPER_UNKNOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperUnknown";
+
+    /**
+     * The SNMP interface operStatus dormant event UEI.
+     */
+    public static final String SNMP_INTERFACE_OPER_DORMANT_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperDormant";
+
+    /**
+     * The SNMP interface operStatus notPresent event UEI.
+     */
+    public static final String SNMP_INTERFACE_OPER_NOT_PRESENT_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperNotPresent";
+
+    /**
+     * The SNMP interface operStatus lowerLayerDown event UEI.
+     */
+    public static final String SNMP_INTERFACE_OPER_LOWER_LAYER_DOWN_EVENT_UEI = "uei.opennms.org/nodes/snmp/interfaceOperLowerLayerDown";
+
     /**
      * The node down event UEI.
      */

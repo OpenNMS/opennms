@@ -64,7 +64,28 @@ After retrieving these values the service will:
 
 * Update the values of `ifAdminStatus` and `ifOperStatus` of the polled interfaces in the database.
 This column is normally only updated when an import of a <<ga-provisioning, Provisiond>> requisition takes place.
-* Send events when the state of a polled interface changes state.
+* Send events when the state of a polled interface changes state. The UEIs of these events are:
+** `uei.opennms.org/nodes/snmp/interfaceAdminDown`
+** `uei.opennms.org/nodes/snmp/interfaceAdminUp`
+** `uei.opennms.org/nodes/snmp/interfaceOperDown`
+** `uei.opennms.org/nodes/snmp/interfaceOperUp`
+** `uei.opennms.org/nodes/snmp/interfaceOperTesting`
+** `uei.opennms.org/nodes/snmp/interfaceOperUnknown`
+** `uei.opennms.org/nodes/snmp/interfaceOperDormant`
+** `uei.opennms.org/nodes/snmp/interfaceOperNotPresent`
+** `uei.opennms.org/nodes/snmp/interfaceOperLowerLayerDown`
+
+The appropriate event will be sent whenever:
+
+* a polled interface's `ifAdminStatus` is up and `ifOperStatus` is in a down state at startup
+* `ifAdminStatus` is in an up state and `ifOperStatus` transitions to a down state from an up state
+* `ifAdminStatus` is in an up state and `ifOperStatus` transitions to an up state from a down state
+* `ifAdminStatus` transitions to a down state from an up state
+* `ifAdminStatus` transitions to an up state from a down state
+* `ifAdminStatus` and `ifOperStatus transition to an up state when `ifAdminStatus` was previously down
+
+NOTE: It is possible to configure the service to treat additional values of `ifOperStatus` as logically up or down.
+In the even that this configuration option is used and `ifOperStatus` transitions to one of the down values that is not literally `down(2)`, both the `uei.opennms.org/nodes/snmp/interfaceOperDown` event and the more specific event is sent.
 
 === Enabling the Service
 
@@ -148,22 +169,22 @@ include-url:: Behaves just like `include-url` in other pollerd <<ga-pollerd-pack
 
 NOTE: The `filter`, `specific`, `include-range`, `exclude-range`, and `include-url` elements apply to the node and interface on which the SNMP interface data resides, not the SNMP interfaces themselves.
 
-interface:: Controls how and when specific kinds of SNMP interfaces will be polled. Attributes include:
+interface:: Controls how, when, and (sometimes) which specific kinds of SNMP interfaces will be polled for status from management interfaces that match the package rules. Attributes include:
 * _name_: A name for this interface element.
 It is generally advisable to make the name representative of the criteria filter of the interface. Required.
 * _criteria_: Criteria added to the SQL query performed on the SNMP interfaces available for polling on an interface node.
 Can have more than one.
 Allows you to specify different settings for different types of interfaces.
-As noted above, if `useCriteriaFilters` is `true` on the top level element, interfaces that do not match the criteria filter on one of the interface elements in a package where the node interface passes the filter, that interface will not be polled.
+As noted above, if `useCriteriaFilters` is `true` on the top level element, any interface that does not match the criteria filter on one of the interface elements will not be polled.
 * _interval_: The polling interval for interfaces matching this element's criteria in milliseconds.
-Overrides the global setting in the top level element.
+Overrides the global setting in the top level element for interfaces that match this element's criteria filter.
 * _user-defined_: An unused boolean value that is reserved for use in the UI, should one ever exist for this service.
 Defaults to `false`.
 * _status_: When `off` polling will not be performed for SNMP interfaces that meet the criteria filter of this element.
 Defaults to `on`.
 * _port_: If set, overrides UDP port 161 as the port where SNMP GET/GETNEXT/GETBULK requests are sent.
 Valid values are between 1 and 65535.
-* _retry_: Number of retry attempts made when attempting to retrieve `ifAdminStatus` and `ifOperStatus` values for SNMP interfaces that match this element's criteria filter from the node interface.
+* _retry_: Number of retry attempts made when attempting to retrieve `ifAdminStatus` and `ifOperStatus` values from the management interface for SNMP interfaces that match this element's criteria filter.
 * _timeout_: Timeout in milliseconds to wait for a response to SNMP GET/GETNEXT/GETBULK requests sent to the node interface.
 * _max-vars-per-pdu_: Number of variables to send per SNMP request.
 Default is "10".

@@ -197,14 +197,20 @@ public class PollableSnmpInterface implements ReadyRunnable {
         	if (iface != null && iface.getIfIndex() != null && iface.getIfIndex() > 0) {
         		final Integer oldStatus = oldStatuses.get(iface.getIfIndex());
                         LOG.debug("setting snmpinterface (oldStatus={}):{}", oldStatus, iface.toString());
-                        // Note: If OpenNMS is restarted, the event is going to be sent no matter if it was sent before, if the current status of the interface is down.        
+                        // Note: If OpenNMS is restarted, the event is going to be sent no matter if it was sent before,
+                        // if the current status of the interface is not up.
                         m_snmpinterfaces.put(iface.getIfIndex(), iface);
         		if (iface.getIfAdminStatus() != null &&
         				m_upValues.contains(iface.getIfAdminStatus()) &&
-        				iface.getIfOperStatus() != null &&
-        				m_downValues.contains(iface.getIfOperStatus()) &&
-        				(oldStatus == null || (iface.getIfOperStatus().intValue() != oldStatus.intValue()))) {
-        			sendOperDownEvent(iface);
+        				iface.getIfOperStatus() != null) {
+        		    if (m_downValues.contains(iface.getIfOperStatus()) &&
+        				(oldStatus == null || (iface.getIfOperStatus() != oldStatus))) {
+                        sendOperDownEvent(iface);
+                    }
+        		    // if not literally down, also send the more detailed status event
+        		    if (iface.getIfOperStatus() != SnmpInterfaceStatus.DOWN.getMibValue()) {
+                        sendOperDownishEvent(SnmpInterfaceStatus.statusFromMibValue(iface.getIfOperStatus()), iface);
+                    }
         		}
         	}
         }
@@ -372,6 +378,9 @@ public class PollableSnmpInterface implements ReadyRunnable {
                          && m_downValues.contains(miface.getOperstatus())
                          && m_upValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfOperStatus()))) {
                         sendOperDownEvent(iface);
+                        if (miface.getOperstatus() != SnmpInterfaceStatus.DOWN) {
+                            sendOperDownishEvent(miface.getOperstatus(), iface);
+                        }
                         miface.setOperPollStatus(PollStatus.unavailable("ifOperStatus is " + miface.getOperstatus().getLabel()));
                         miface.setAdminPollStatus(PollStatus.available());
                     }
@@ -437,28 +446,47 @@ public class PollableSnmpInterface implements ReadyRunnable {
     private void update(OnmsSnmpInterface iface) {
         getContext().update(iface);
     }
-    
+
+    private void sendInterfaceEvent(final String uei, final OnmsSnmpInterface iface) {
+        getContext().sendEvent(getContext().createEvent(uei, getParent().getNodeid(),
+                getParent().getIpaddress(), getParent().getNetMask(), getDate(), iface));
+    }
+
     private void sendAdminUpEvent(OnmsSnmpInterface iface) {
-        getContext().sendEvent(getContext().createEvent(EventConstants.SNMP_INTERFACE_ADMIN_UP_EVENT_UEI, 
-                                                        getParent().getNodeid(), getParent().getIpaddress(), getParent().getNetMask(), getDate(), iface));
+        sendInterfaceEvent(EventConstants.SNMP_INTERFACE_ADMIN_UP_EVENT_UEI, iface);
     }
     
     private void sendAdminDownEvent(OnmsSnmpInterface iface) {
-        getContext().sendEvent(getContext().createEvent(EventConstants.SNMP_INTERFACE_ADMIN_DOWN_EVENT_UEI, 
-                                                        getParent().getNodeid(), getParent().getIpaddress(), getParent().getNetMask(), getDate(), iface));
+        sendInterfaceEvent(EventConstants.SNMP_INTERFACE_ADMIN_DOWN_EVENT_UEI, iface);
     }
-    
+
     private void sendOperUpEvent(OnmsSnmpInterface iface) {
-        getContext().sendEvent(getContext().createEvent(EventConstants.SNMP_INTERFACE_OPER_UP_EVENT_UEI, 
-                                                        getParent().getNodeid(), getParent().getIpaddress(), getParent().getNetMask(), getDate(), iface));
-        
+        sendInterfaceEvent(EventConstants.SNMP_INTERFACE_OPER_UP_EVENT_UEI, iface);
     }
     
     private void sendOperDownEvent(OnmsSnmpInterface iface) {
-        getContext().sendEvent(getContext().createEvent(EventConstants.SNMP_INTERFACE_OPER_DOWN_EVENT_UEI, 
-                                                        getParent().getNodeid(), getParent().getIpaddress(), getParent().getNetMask(), getDate(), iface));
+        sendInterfaceEvent(EventConstants.SNMP_INTERFACE_OPER_DOWN_EVENT_UEI, iface);
     }
-    
+
+    private void sendOperDownishEvent(SnmpInterfaceStatus downishStatus, OnmsSnmpInterface iface) {
+        switch (downishStatus) {
+            case TESTING:
+                sendInterfaceEvent(EventConstants.SNMP_INTERFACE_OPER_TESTING_EVENT_UEI, iface);
+                break;
+            case UNKNOWN:
+                sendInterfaceEvent(EventConstants.SNMP_INTERFACE_OPER_UNKNOWN_EVENT_UEI, iface);
+                break;
+            case DORMANT:
+                sendInterfaceEvent(EventConstants.SNMP_INTERFACE_OPER_DORMANT_EVENT_UEI, iface);
+                break;
+            case NOT_PRESENT:
+                sendInterfaceEvent(EventConstants.SNMP_INTERFACE_OPER_NOT_PRESENT_EVENT_UEI, iface);
+                break;
+            case LOWER_LAYER_DOWN:
+                sendInterfaceEvent(EventConstants.SNMP_INTERFACE_OPER_LOWER_LAYER_DOWN_EVENT_UEI, iface);
+        }
+    }
+
     private Date getDate() {
         return new Date();
     }
