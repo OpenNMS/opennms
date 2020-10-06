@@ -163,7 +163,7 @@ featuresBoot = \
       instance/4.2.2, \
       package/4.2.2, \
       log/4.2.2, \
-      scv/2020.1.0, \
+      scv/2020.1.1-SNAPSHOT, \
       ssh/4.2.2, \
       framework/4.2.2, \
       system/4.2.2, \
