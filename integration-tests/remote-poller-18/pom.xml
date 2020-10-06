@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>integration-tests</artifactId>
-    <version>2019.1.11</version>
+    <version>2019.1.12</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.integration-tests.remote-poller-18</artifactId>
