@@ -123,13 +123,13 @@ public class FlowTimeoutTest {
         values = ImmutableList.<Value<?>>builder()
                 .add(new DateTimeValue("systemInitTimeMilliseconds", Instant.ofEpochMilli(100000)))
                 .add(new UnsignedValue("flowStartSysUpTime", 2000000))
+                .add(new UnsignedValue("flowEndSysUpTime", 4000000))
                 .build();
-
         ipFixMessageBuilder = new IpFixMessageBuilder(values, (address -> Optional.empty()));
         flowMessage = FlowMessage.parseFrom(ipFixMessageBuilder.buildData());
 
         assertThat(flowMessage.getFirstSwitched().getValue(), is(2000000L + 100000L));
         assertThat(flowMessage.getDeltaSwitched().getValue(), is(2000000L + 100000L));
-        assertThat(flowMessage.getLastSwitched().getValue(), is(0L));
+        assertThat(flowMessage.getLastSwitched().getValue(), is(4100000L));
     }
 }
