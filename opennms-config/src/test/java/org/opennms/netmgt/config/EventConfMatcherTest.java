@@ -30,6 +30,7 @@ package org.opennms.netmgt.config;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -54,7 +55,7 @@ public class EventConfMatcherTest {
         eventConfDao = new DefaultEventConfDao();
         eventConfDao.setConfigResource(new FileSystemResource(new File("src/test/resources/matcher-test.events.xml")));
         eventConfDao.afterPropertiesSet();
-        Assert.assertEquals(7, eventConfDao.getAllEvents().size());
+        Assert.assertEquals(9, eventConfDao.getAllEvents().size());
     }
 
     @After
@@ -142,5 +143,21 @@ public class EventConfMatcherTest {
         event = eventConfDao.findByEvent(eb.getEvent());
         assertThat(event, is(not(nullValue())));
         assertThat(event.getSeverity(), is("Cleared"));
+    }
+
+    /**
+     * NMS-12755: Verify that event matching works as expected event when multiple event
+     * definitions with the same UEI reside in different files.
+     */
+    @Test
+    public void canDefineMultipleEventsWithSameUEIAcrossDifferentFiles() throws Exception {
+        EventBuilder eb = new EventBuilder("uei.opennms.org/vendor/ipo/traps/ipoGenServiceErrorSvcEventCRITICAL", "JUnit");
+        eb.setGeneric(6);
+        eb.setSpecific(48);
+        eb.setEnterpriseId(".1.3.6.1.4.1.6889.2.2.1.2");
+        eb.addParam(".1.3.6.1.4.1.6889.2.2.1.2.1.1",  3);
+
+        Event event = eventConfDao.findByEvent(eb.getEvent());
+        assertThat(event.getAlarmData(), notNullValue());
     }
 }

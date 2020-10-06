@@ -85,13 +85,30 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.23]
+
+Release 2018.1.23 is a small update to 2018.1.22 that fixes an SNMP interface poller bug.
+
+The codename for 2018.1.23 is _Tornado_.
+
+==== Release Meridian-2018.1.23
+
+===== Bug
+
+* Snmp Interface Poller is not using location specific SNMP Config (Issue http://issues.opennms.org/browse/NMS-12902[NMS-12902])
+
+===== Enhancement
+
+* Update Copyright notice for 2020 (Issue http://issues.opennms.org/browse/NMS-12933[NMS-12933])
+
+
 [releasenotes-changelog-Meridian-2018.1.22]
 
 ==== Release Meridian-2018.1.22
 
 Release 2018.1.22 is a small update to 2018.1.21 that fixes a few bugs.
 
-The codename for 2018.1.21 is _Firenado_.
+The codename for 2018.1.22 is _Firenado_.
 
 ===== Bug
 
@@ -106,7 +123,7 @@ The codename for 2018.1.21 is _Firenado_.
 
 Release 2018.1.21 is a small update to 2018.1.20 that fixes a bug and updates some documentation.
 
-The codename for 2018.1.20 is _Blizzard_.
+The codename for 2018.1.21 is _Blizzard_.
 
 ===== Bug
 

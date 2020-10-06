@@ -11,7 +11,10 @@
       </security>
    </global>
 
-   <event>
+    <event-file>matcher-test.override.events.xml</event-file>
+    <event-file>matcher-test.include.events.xml</event-file>
+
+    <event>
       <mask>
          <maskelement>
             <mename>uei</mename>
