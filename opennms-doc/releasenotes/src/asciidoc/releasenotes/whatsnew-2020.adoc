@@ -215,15 +215,34 @@ Since Meridian 2020 is based on Horizon 26.1, it contains all the fixes and upda
 
 For a more complete list of major changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.1.3.
 
-[[releasenotes-changelog-Meridian-2020.1.0]]
+[releasenotes-changelog-Meridian-2020.1.0]
 
 ==== Release Meridian-2020.1.0
 
-Release 2020.1.0 is the first release in the Meridian 2020 series.
+Release 2020.1.0 is the first release in the Meridian 2020 series, based on Horizon 26.1.x.
 
-The codename for 2020.1.0 is _link:$$https://en.wikipedia.org/wiki/Mercury_(planet)$$[Mercury]_.
+The codename for 2020.1.0 is _link:$$https://en.wikipedia.org/wiki/Archipelago$$[Archipelago]_.
 
 ===== Bug
 
+* HTTP Detector does not accept a response without a reason as valid (Issue http://issues.opennms.org/browse/NMS-10351[NMS-10351])
+* Slack-compatible notification strategies expect "url" for switch name, should be "-url" (Issue http://issues.opennms.org/browse/NMS-10552[NMS-10552])
+* opennms.pid missing when started by Systemd (Issue http://issues.opennms.org/browse/NMS-12769[NMS-12769])
+* Interfaces incorrectly marked as having flows resulting in no data via Helm (Issue http://issues.opennms.org/browse/NMS-12814[NMS-12814])
+* Response Time Summary database report missing latency caluculation (Issue http://issues.opennms.org/browse/NMS-12837[NMS-12837])
+* SslContextFactory needs to be changed to SslContextFactory.Server in jetty.xml (Issue http://issues.opennms.org/browse/NMS-12847[NMS-12847])
+* Wrong startup command for Minion running with Docker and health check issues (Issue http://issues.opennms.org/browse/NMS-12872[NMS-12872])
+* Install guide RHEL instructions are invalid on RHEL 7 (Issue http://issues.opennms.org/browse/NMS-12891[NMS-12891])
 
 ===== Enhancement
+
+* Update collectors chapter (Issue http://issues.opennms.org/browse/NMS-12682[NMS-12682])
+* Include XML schema for wsman-datacollection-config.xml in assemblies (Issue http://issues.opennms.org/browse/NMS-12813[NMS-12813])
+* Fix CollectdTest mock'ing errors (Issue http://issues.opennms.org/browse/NMS-12828[NMS-12828])
+* Fix JMX datacollection config generator test (Issue http://issues.opennms.org/browse/NMS-12829[NMS-12829])
+* Remove unused import in BsonUtils (Issue http://issues.opennms.org/browse/NMS-12830[NMS-12830])
+* Update mockito/powermock dependencies (Issue http://issues.opennms.org/browse/NMS-12831[NMS-12831])
+* Update Minion installation documentation (Issue http://issues.opennms.org/browse/NMS-12917[NMS-12917])
+* sort custom reports (Issue http://issues.opennms.org/browse/NMS-12931[NMS-12931])
+* Update Copyright notice for 2020 (Issue http://issues.opennms.org/browse/NMS-12933[NMS-12933])
+
