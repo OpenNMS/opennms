@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>nrtg</artifactId>
-    <version>2019.1.11</version>
+    <version>2019.1.13-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>protocol-collectors</artifactId>
