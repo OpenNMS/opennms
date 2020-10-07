@@ -28,20 +28,19 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.config.datacollection.MibObjProperty;
-import org.opennms.netmgt.config.datacollection.ResourceTypes;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * The Class PointerLikeIndexPropertyExtender.

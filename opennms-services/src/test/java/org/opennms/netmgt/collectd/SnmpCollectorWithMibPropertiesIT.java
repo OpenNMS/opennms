@@ -164,8 +164,8 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         if (testNodes == null || testNodes.size() < 1) {
             NetworkBuilder builder = new NetworkBuilder();
             builder.addNode(TEST_NODE_LABEL).setId(1).setSysObjectId(".1.3.6.1.4.1.9.1.9999"); // Fake Cisco SysOID
-            builder.addSnmpInterface(1).setIfName("Fa0/0").setPhysAddr("44:33:22:11:00").setIfType(6).setCollectionEnabled(true).addIpInterface(m_testHostName).setIsSnmpPrimary("P");
-            builder.addSnmpInterface(18).setIfName("Se1/0.102").setIfAlias("Conexion Valencia").setIfType(32).setCollectionEnabled(true).addIpInterface("10.0.0.1").setIsSnmpPrimary("N");
+            builder.addSnmpInterface(1).setIfName("Fa0/0").setPhysAddr("44:33:22:11:00").setIfType(6).setCollectionEnabled(true).setIfOperStatus(1).addIpInterface(m_testHostName).setIsSnmpPrimary("P");
+            builder.addSnmpInterface(18).setIfName("Se1/0.102").setIfAlias("Conexion Valencia").setIfType(32).setCollectionEnabled(true).setIfOperStatus(1).addIpInterface("10.0.0.1").setIsSnmpPrimary("N");
             testNode = builder.getCurrentNode();
             assertNotNull(testNode);
             m_nodeDao.save(testNode);
@@ -267,6 +267,26 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "cempMemoryPool", "1.2"));
         assertEquals("CISCO2911/K9", map.get("cempMemoryPoolPhysName"));
         assertEquals("CISCO2911/K9 chassis, Hw Serial#: FCZ161870SC, Hw Revision: 1.0", map.get("cempMemoryPoolPhysDescr"));
+    }
+
+    /**
+     * Test enum-lookup property extender against values of dot1dStpPortState
+     *
+     * @throwsException the exception
+     */
+    @Test
+    @JUnitCollector(datacollectionType = "snmp", datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-dot1d-bridge-base-iftable.xml")
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/cisco-dot1dbridge-iftable-system-snmpwalk.properties")
+    public void testEnumLookupPropertyExtenderVsDot1dStpPortState() throws Exception {
+        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
+        
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
+        assertEquals("collection status", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
+        
+        Map<String, String> map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "dot1dStpPortEntry", "46"));
+        assertEquals("forwarding(5)", map.get("dot1dStpPortStateText"));
+        assertEquals("testDefaultValue", map.get("dot1dStpPortEnableText"));
     }
 
     /* (non-Javadoc)
