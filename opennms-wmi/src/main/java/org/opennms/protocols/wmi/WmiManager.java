@@ -261,7 +261,17 @@ public class WmiManager {
 	 */
 	public void init() throws WmiException {
 		m_WmiClient = (IWmiClient)new WmiClient(m_HostName);
-		m_WmiClient.connect(m_Domain, m_Username, m_Password, m_namespace);
+		for (int i = 0; i < 2; i++) {
+			try {
+				// Connect to the WMI server.
+				m_WmiClient.connect(m_Domain, m_Username, m_Password, m_namespace);
+				break;
+			} catch (final WmiException wmie) {
+				if (!wmie.getMessage().endsWith("0xC00000AC")) {
+					throw wmie;
+				}
+			}
+		}
 	}
 
 	/**

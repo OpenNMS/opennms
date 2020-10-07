@@ -16,13 +16,13 @@
   </description>
   <dependencies>
     <dependency>
-      <groupId>org.jinterop</groupId>
-      <artifactId>j-interop</artifactId>
+      <groupId>com.github.skyghis</groupId>
+      <artifactId>j-interop-ng</artifactId>
       <version>${jinteropVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.jinterop</groupId>
-      <artifactId>j-interopdeps</artifactId>
+      <groupId>com.github.skyghis</groupId>
+      <artifactId>j-interop-ng-deps</artifactId>
       <version>${jinteropVersion}</version>
     </dependency>
   </dependencies>
