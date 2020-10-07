@@ -135,7 +135,9 @@
             ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
         </logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+          <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
     <event>
         <uei>uei.opennms.org/nodes/snmp/interfaceOperTesting</uei>
@@ -149,7 +151,9 @@
             ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
         </logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+            <update-field field-name="severity" update-on-reduction="true"/>
+        </alarm-data>
     </event>
     <event>
         <uei>uei.opennms.org/nodes/snmp/interfaceOperUnknown</uei>
@@ -163,7 +167,9 @@
             ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
         </logmsg>
         <severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+            <update-field field-name="severity" update-on-reduction="true"/>
+        </alarm-data>
     </event>
     <event>
         <uei>uei.opennms.org/nodes/snmp/interfaceOperDormant</uei>
@@ -177,7 +183,9 @@
             ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
         </logmsg>
         <severity>Warning</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+            <update-field field-name="severity" update-on-reduction="true"/>
+        </alarm-data>
     </event>
     <event>
         <uei>uei.opennms.org/nodes/snmp/interfaceOperNotPresent</uei>
@@ -191,7 +199,9 @@
             ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
         </logmsg>
         <severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+            <update-field field-name="severity" update-on-reduction="true"/>
+        </alarm-data>
     </event>
     <event>
         <uei>uei.opennms.org/nodes/snmp/interfaceOperLowerLayerDown</uei>
@@ -206,7 +216,9 @@
             ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
         </logmsg>
         <severity>Minor</severity>
-        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+            <update-field field-name="severity" update-on-reduction="true"/>
+        </alarm-data>
     </event>
    <event>
       <uei>uei.opennms.org/nodes/snmp/interfaceAdminDown</uei>
@@ -266,7 +278,7 @@
             ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
         </logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[snmpifindex]%" auto-clean="false"/>
    </event>
    <event>
       <uei>uei.opennms.org/nodes/snmp/interfaceAdminUp</uei>
