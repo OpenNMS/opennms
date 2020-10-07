@@ -124,19 +124,6 @@
       </statement>
     </action>
 
-    <action name="cleanUpRpStatusChanges">
-      <statement>
-        <!-- Remove expired locations specific status changes -->
-        DELETE 
-          FROM location_specific_status_changes
-         WHERE (systemid, ifserviceid, id) 
-        NOT IN (SELECT systemid, ifserviceid, max(id) 
-                  FROM location_specific_status_changes 
-              GROUP BY systemid, ifserviceid)
-           AND statustime &lt; now() - interval '24 hours'
-      </statement>
-    </action>
-
     <action name="clearPathOutages" >
       <statement>
         UPDATE alarms

@@ -88,7 +88,8 @@ public abstract class OutageModel {
             		"       on node.nodeid = ipinterface.nodeid \n" + 
             		"    join service \n" + 
             		"      on ifservices.serviceid = service.serviceid \n" + 
-            		"   where node.nodeid = ? \n" + 
+            		"   where node.nodeid = ? \n" +
+            		"     and outages.perspective is null \n" +
             		"     and outages.ifregainedservice is null \n" + 
             		"     and outages.suppresstime is null \n" + 
             		"      or outages.suppresstime < now() \n" + 
@@ -133,6 +134,7 @@ public abstract class OutageModel {
                         + "AND ipinterface.ismanaged != 'D' "
                         + "AND ifservices.status != 'D' "
                         + "AND outages.iflostservice >= ? "
+                        + "AND outages.perspective IS NULL "
                         + "ORDER BY timeDown DESC;"
             );
             d.watch(stmt);

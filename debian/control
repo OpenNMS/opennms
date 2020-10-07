@@ -71,21 +71,6 @@ Description: Enterprise-grade Open-source Network Management Platform (Daemon)
  polling, data collection, notifications, etc (basically, anything that is not
  part of the web UI).
 
-Package: opennms-remote-poller
-Architecture: all
-Conflicts: opennms-server
-Depends: oracle-java8-installer | adoptopenjdk-8-openj9xl-jre | adoptopenjdk-8-openj9-jre | adoptopenjdk-8-hotspot-jre | openjdk-8-jre | java8-runtime
-Description: Enterprise-grade Open-source Network Management Platform (Remote Poller)
- OpenNMS is an enterprise-grade network management system written in Java.
- .
- OpenNMS can monitor various network services to determine status and service
- level availability.  Data collection is performed using protocols such as SNMP
- to generate reports and alert on thresholds.  An extensible event management
- and notification system handles both internally and externally generated
- events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
- .
- This is the standalone remote poller for OpenNMS.
-
 Package: opennms-jmx-config-generator
 Architecture: all
 Depends: adoptopenjdk-11-openj9xl-jre | adoptopenjdk-11-openj9-jre | adoptopenjdk-11-hotspot-jre | openjdk-11-jre-headless | openjdk-11-jre | oracle-java8-installer | adoptopenjdk-8-openj9xl-jre | adoptopenjdk-8-openj9-jre | adoptopenjdk-8-hotspot-jre | openjdk-8-jre-headless | openjdk-8-jre | java8-runtime-headless | java8-runtime
@@ -117,22 +102,6 @@ Description: Enterprise-grade Open-source Network Management Platform (Jetty Web
  embedded in the main OpenNMS daemon.  The default URL for this
  web UI is 'http://yourhost:8180/opennms/'
 
-Package: opennms-webapp-remoting
-Architecture: all
-Depends: opennms-webapp-jetty (=${binary:Version})
-Replaces: opennms-webapp-jetty (<< 19.0.0)
-Breaks: opennms-webapp-jetty (<< 19.0.0)
-Description: Enterprise-grade Open-source Network Management Platform (Remote Poller JNLP webapp)
- OpenNMS is an enterprise-grade network management system written in Java.
- .
- OpenNMS can monitor various network services to determine status and service
- level availability.  Data collection is performed using protocols such as SNMP
- to generate reports and alert on thresholds.  An extensible event management
- and notification system handles both internally and externally generated
- events (such as SNMP traps), and generates notices via email, pager, SMS, etc.
- .
- This webapp contains the JNLP application that provides the Remote Poller.
-
 Package: opennms-webapp-hawtio
 Architecture: all
 Depends: opennms-server (=${binary:Version})
@@ -149,7 +118,7 @@ Description: Enterprise-grade Open-source Network Management Platform (Hawtio Co
 
 Package: opennms-common
 Architecture: all
-Depends: libdbi-perl, libdbd-pg-perl, libgetopt-mixed-perl
+Depends: ${perl:Depends}, libdbi-perl, libdbd-pg-perl
 Recommends: libnet-snmp-perl, libxml2-utils, libwww-perl, libxml-twig-perl
 Conflicts: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version})
 Replaces: opennms-plugin-protocol-dhcp (<<${binary:Version}), opennms-plugin-protocol-xml (<<${binary:Version})

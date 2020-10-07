@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -75,9 +75,12 @@ import org.opennms.netmgt.model.OnmsUserList;
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  */
 public abstract class UserManager implements UserConfig {
+	public static final String ALLOW_UNSALTED_PROPERTY = "org.opennms.users.allowUnsalted";
+    private final boolean m_allowUnsalted;
+
     private static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
-    private static final PasswordEncryptor m_passwordEncryptor = new StrongPasswordEncryptor();
+    private static final PasswordEncryptor s_passwordEncryptor = new StrongPasswordEncryptor();
 
     private final ReadWriteLock m_readWriteLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_readWriteLock.readLock();
@@ -101,6 +104,7 @@ public abstract class UserManager implements UserConfig {
      */
     protected UserManager(final GroupManager groupManager) {
         m_groupManager = groupManager;
+        m_allowUnsalted = Boolean.parseBoolean(System.getProperty(ALLOW_UNSALTED_PROPERTY, "true"));
     }
     
     /**
@@ -149,10 +153,22 @@ public abstract class UserManager implements UserConfig {
         }
     }
 
+    private void _assertSaltAcceptable(final User details) throws Exception {
+        if (!m_allowUnsalted) {
+            final Password p = details.getPassword();
+            if (p != null) {
+                if (!p.getSalt()) {
+                    throw new IllegalStateException("org.opennms.users.allowUnsaltedPasswords=false, but " + details.getUserId() + " contains an unsalted password.");
+                }
+            }
+        }
+    }
+
     private void _writeUser(final String name, final User details) throws Exception {
         if (name == null || details == null) {
             throw new Exception("UserFactory:saveUser  null");
         } else {
+            _assertSaltAcceptable(details);
             m_users.put(name, details);
         }
       
@@ -187,7 +203,6 @@ public abstract class UserManager implements UserConfig {
             if (onmsUser.getRoles() != null) {
                 xmlUser.setRoles(new ArrayList<String>(onmsUser.getRoles()));
             }
-            
             _writeUser(onmsUser.getUsername(), xmlUser);
         } finally {
             m_writeLock.unlock();
@@ -875,9 +890,15 @@ public abstract class UserManager implements UserConfig {
         m_writeLock.lock();
         
         try {
+            if (!m_allowUnsalted) {
+                for (final User details : usersList) {
+                    _assertSaltAcceptable(details);
+                }
+            }
+
             // clear out the internal structure and reload it
             m_users.clear();
-        
+
             for (final User curUser : usersList) {
             	m_users.put(curUser.getUserId(), curUser);
             }
@@ -1068,7 +1089,7 @@ public abstract class UserManager implements UserConfig {
         String encryptedPassword = null;
 
         if (useSalt) {
-            encryptedPassword = m_passwordEncryptor.encryptPassword(aPassword);
+            encryptedPassword = s_passwordEncryptor.encryptPassword(aPassword);
         } else {
             // old crappy algorithm
             try {
@@ -1136,7 +1157,7 @@ public abstract class UserManager implements UserConfig {
     }
 
     public boolean checkSaltedPassword(final String raw, final String encrypted) {
-        return m_passwordEncryptor.checkPassword(raw, encrypted);
+        return s_passwordEncryptor.checkPassword(raw, encrypted);
     }
     
     /**

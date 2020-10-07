@@ -33,9 +33,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyListOf;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyListOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -263,7 +263,7 @@ public class MinionStatusTrackerTest {
         when(m_nodeDao.get(Integer.valueOf(1))).thenReturn(node);
         when(m_minionDao.findById(foreignId)).thenReturn(minion);
 
-        Event e = EventUtils.createNodeDeletedEvent(FOREIGN_SOURCE, 1, "one", "one");
+        Event e = EventUtils.createNodeDeletedEvent(FOREIGN_SOURCE, 1, "one", "one", null, null, null, null);
         m_tracker.onNodeDeleted(ImmutableMapper.fromMutableEvent(e));
 
         assertEquals("there should still be a minion", 1, m_tracker.getMinions().size());

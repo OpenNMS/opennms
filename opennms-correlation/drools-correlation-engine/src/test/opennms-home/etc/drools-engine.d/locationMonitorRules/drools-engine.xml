@@ -4,8 +4,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <rule-set name="locationMonitorRules">
     <rule-file>LocationMonitorRules.drl</rule-file>
-    <event>uei.opennms.org/remote/nodes/nodeLostService</event>
-    <event>uei.opennms.org/remote/nodes/nodeRegainedService</event>
+    <event>uei.opennms.org/perspective/nodes/nodeLostService</event>
+    <event>uei.opennms.org/perspective/nodes/nodeRegainedService</event>
     <global name="WIDE_SPREAD_THRESHOLD" type="java.lang.Integer" value="3"/>
     <global name="FLAP_INTERVAL" type="java.lang.Long" value="1000" />
     <global name="FLAP_COUNT" type="java.lang.Integer" value="3" />

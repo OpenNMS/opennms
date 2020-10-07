@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -73,7 +73,7 @@ public class EventSinkIT {
         EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class);
         final OnmsEvent onmsEvent = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
                 .until(DaoUtils.findMatchingCallable(eventDao, new CriteriaBuilder(OnmsEvent.class).eq("eventUei", "uei.opennms.org/alarms/trigger")
-                        .eq("eventSource", "karaf-shell").ge("eventCreateTime", startOfTest).toCriteria()), notNullValue());
+                        .eq("eventSource", "KarafShell_send-event").ge("eventCreateTime", startOfTest).toCriteria()), notNullValue());
 
         assertNotNull("The event sent is not received at OpenNMS", onmsEvent);
     }
@@ -87,7 +87,7 @@ public class EventSinkIT {
         EventDao eventDao = daoFactory.getDao(EventDaoHibernate.class);
         final OnmsEvent onmsEvent = await().atMost(2, MINUTES).pollInterval(10, SECONDS)
                 .until(DaoUtils.findMatchingCallable(eventDao, new CriteriaBuilder(OnmsEvent.class).eq("eventUei", "uei.opennms.org/threshold/relativeChangeExceeded")
-                        .eq("eventSource", "karaf-shell").ge("eventCreateTime", startOfTest).toCriteria()), notNullValue());
+                        .eq("eventSource", "KarafShell_send-event").ge("eventCreateTime", startOfTest).toCriteria()), notNullValue());
 
         assertNotNull("The event sent is not received at OpenNMS", onmsEvent);
     }
@@ -96,7 +96,7 @@ public class EventSinkIT {
         try (final SshClient sshClient = stack.minion().ssh()) {
             // Issue events:send command
             PrintStream pipe = sshClient.openShell();
-            pipe.println("opennms:send-event -u 'uei.opennms.org/alarms/trigger'");
+            pipe.println("opennms:send-event 'uei.opennms.org/alarms/trigger'");
             pipe.println("logout");
 
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
@@ -115,7 +115,7 @@ public class EventSinkIT {
         try (final SshClient sshClient = stack.sentinel().ssh()) {
             // Issue events:send command
             PrintStream pipe = sshClient.openShell();
-            pipe.println("opennms:send-event -u 'uei.opennms.org/threshold/relativeChangeExceeded'");
+            pipe.println("opennms:send-event 'uei.opennms.org/threshold/relativeChangeExceeded'");
             pipe.println("logout");
 
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());

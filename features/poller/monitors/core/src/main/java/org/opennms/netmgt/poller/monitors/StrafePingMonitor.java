@@ -41,7 +41,6 @@ import org.opennms.core.utils.CollectionMath;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -64,7 +63,6 @@ import com.google.common.base.Suppliers;
  * @author <A HREF="mailto:ranger@opennms.org">Benjamin Reed</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
-@Distributable
 @Component
 final public class StrafePingMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(StrafePingMonitor.class);

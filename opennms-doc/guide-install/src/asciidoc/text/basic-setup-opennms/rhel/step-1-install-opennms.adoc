@@ -8,10 +8,22 @@ dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarc
 rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
-.Installation of with all built-in dependencies
+.RHEL 7: 
+[source, shell]
+----
+yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+
+.Installation of {opennms-product-name} with all built-in dependencies
 [source, shell]
 ----
 dnf -y install opennms
+----
+
+.RHEL 7:
+[source, shell]
+----
+yum -y install opennms
 ----
 
 The following packages will be automatically installed:
@@ -48,4 +60,10 @@ TIP: We recommend disabling the {opennms-product-name} repository after installa
 [source, shell]
 ----
 dnf config-manager --disable opennms-repo-stable-*
+----
+
+.RHEL 7:
+[source, shell]
+----
+yum config-manager --disable opennms-repo-stable-*
 ----

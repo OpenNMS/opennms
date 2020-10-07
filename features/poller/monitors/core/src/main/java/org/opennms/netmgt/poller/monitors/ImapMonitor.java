@@ -43,7 +43,6 @@ import org.opennms.core.utils.DefaultSocketWrapper;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.SocketWrapper;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
@@ -76,7 +75,6 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * @version CVS 1.1.1.1
  */
-@Distributable
 public class ImapMonitor extends AbstractServiceMonitor {
     private static final Logger LOG = LoggerFactory.getLogger(ImapMonitor.class);
 

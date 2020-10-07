@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,7 @@
 
 package org.opennms.bootstrap;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -39,6 +40,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.rmi.server.RMISocketFactory;
@@ -254,7 +256,7 @@ public abstract class Bootstrap {
             // Descend into sub-directories
             File[] dirlist = dir.listFiles(m_dirFilter);
             if (dirlist != null) {
-            	Arrays.sort(dirlist);
+                Arrays.sort(dirlist);
                 for (File childDir : dirlist) {
                     loadClasses(childDir, recursive, urls);
                 }
@@ -264,7 +266,7 @@ public abstract class Bootstrap {
         // Add individual JAR files
         File[] children = dir.listFiles(m_jarFilter);
         if (children != null) {
-        	Arrays.sort(children);
+            Arrays.sort(children);
             for (File childFile : children) {
                 urls.add(childFile.toURI().toURL());
             }
@@ -355,7 +357,7 @@ public abstract class Bootstrap {
                 if (DEBUG) { System.err.println("Skipping: " + propertiesFile.getAbsolutePath()); }
             }
         }
-	}
+    }
 
     /**
      * Validates the OpenNMS home directory by checking
@@ -498,11 +500,11 @@ public abstract class Bootstrap {
         }
 
         if (System.getProperty("org.opennms.protocols.icmp.interfaceJar") != null) {
-        	dir += File.pathSeparator + System.getProperty("org.opennms.protocols.icmp.interfaceJar");
+            dir += File.pathSeparator + System.getProperty("org.opennms.protocols.icmp.interfaceJar");
         }
         
         if (System.getProperty("org.opennms.rrd.interfaceJar") != null) {
-        	dir += File.pathSeparator + System.getProperty("org.opennms.rrd.interfaceJar");
+            dir += File.pathSeparator + System.getProperty("org.opennms.rrd.interfaceJar");
         }
 
         if (DEBUG) {
@@ -511,6 +513,7 @@ public abstract class Bootstrap {
 
         final ClassLoader cl = Bootstrap.loadClasses(dir, recurse, appendClasspath);
 
+        writePid(cl);
         configureRMI(cl);
 
         if (classToExec != null) {
@@ -535,6 +538,27 @@ public abstract class Bootstrap {
             Thread bootstrapper = new Thread(execer, "Main");
             bootstrapper.setContextClassLoader(cl);
             bootstrapper.start();
+        }
+    }
+
+    private static void writePid(final ClassLoader cl) {
+        final String pidfile = System.getProperty("opennms.pidfile");
+        if (pidfile != null) {
+            final String pid = BootstrapUtils.getPid();
+            final Path pidpath = Paths.get(pidfile);
+            if (pidpath.getParent().toFile().exists()) {
+                try (final BufferedWriter writer = Files.newBufferedWriter(pidpath)) {
+                    writer.write(pid);
+                    writer.close();
+                } catch (final Exception e) {
+                    System.err.println("ERROR: failed to write PID to " + pidfile + ": " + e.getLocalizedMessage());
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            } else {
+                System.err.println("ERROR: opennms.pidfile=" + pidfile + ", but parent directory (" + pidpath.getParent() + ") doesn't exist.");
+                System.exit(1);
+            }
         }
     }
 

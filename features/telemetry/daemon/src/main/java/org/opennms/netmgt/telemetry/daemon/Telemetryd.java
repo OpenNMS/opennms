@@ -59,8 +59,8 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * telemetryd is responsible for managing the life cycle of
- * {@link Listener}s and {@link Adapter}s as well as connecting
- * both of these to the Sink API.
+ * {@link Listener}s, {@link org.opennms.netmgt.telemetry.api.receiver.Connector}s and {@link Adapter}s
+ * as well as connecting these to the Sink API.
  *
  * @author jwhite
  */
@@ -86,6 +86,9 @@ public class Telemetryd implements SpringServiceDaemon {
 
     @Autowired
     private TelemetryRegistry telemetryRegistry;
+
+    @Autowired
+    private ConnectorManager connectorManager;
 
     private List<TelemetryMessageConsumer> consumers = new ArrayList<>();
     private List<Listener> listeners = new ArrayList<>();
@@ -150,6 +153,12 @@ public class Telemetryd implements SpringServiceDaemon {
             listener.start();
         }
 
+        // Start the connectors
+        if (!config.getConnectors().isEmpty()) {
+            LOG.info("Starting connectors.");
+            connectorManager.start(config);
+        }
+
         LOG.info("{} is started.", NAME);
     }
 
@@ -168,10 +177,14 @@ public class Telemetryd implements SpringServiceDaemon {
         }
         listeners.clear();
 
+        // Stop the connectors
+        LOG.info("Stopping connectors.");
+        connectorManager.stop();
+
         // Stop the dispatchers
         for (AsyncDispatcher<?> dispatcher : telemetryRegistry.getDispatchers()) {
             try {
-                LOG.info("Closing dispatcher.", dispatcher);
+                LOG.info("Closing dispatcher: {}", dispatcher);
                 dispatcher.close();
             } catch (Exception e) {
                 LOG.warn("Error while closing dispatcher.", e);

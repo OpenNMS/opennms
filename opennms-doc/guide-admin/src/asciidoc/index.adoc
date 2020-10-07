@@ -15,6 +15,10 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
+[[ga-admin-about]]
+== About This Guide
+include::text/about/about.adoc[]
+
 [[ga-admin-datachoices]]
 == Data Choices
 include::text/datachoices.adoc[]
@@ -22,7 +26,11 @@ include::text/datachoices.adoc[]
 [[ga-role-user-management]]
 == User Management
 include::text/user-management/users.adoc[]
+include::text/user-management/user-config.adoc[]
 include::text/user-management/security-roles.adoc[]
+include::text/user-management/user-groups.adoc[]
+include::text/user-management/user-oncall.adoc[]
+include::text/user-management/user-maintenance.adoc[]
 include::text/user-management/pre-authentication.adoc[]
 
 [[ga-admin-ui]]
@@ -117,6 +125,7 @@ include::text/service-assurance/monitors/JmxMonitor.adoc[]
 include::text/service-assurance/monitors/JolokiaBeanMonitor.adoc[]
 include::text/service-assurance/monitors/LdapMonitor.adoc[]
 include::text/service-assurance/monitors/LdapsMonitor.adoc[]
+include::text/service-assurance/monitors/MailTransportMonitor.adoc[]
 include::text/service-assurance/monitors/MemcachedMonitor.adoc[]
 include::text/service-assurance/monitors/NetScalerGroupHealthMonitor.adoc[]
 include::text/service-assurance/monitors/NrpeMonitor.adoc[]
@@ -142,6 +151,10 @@ include::text/service-assurance/monitors/WebMonitor.adoc[]
 include::text/service-assurance/monitors/Win32ServiceMonitor.adoc[]
 include::text/service-assurance/monitors/WsManMonitor.adoc[]
 include::text/service-assurance/monitors/XmpMonitor.adoc[]
+
+[[ga-application-perspective-monitoring]]
+=== Application Perspective Monitoring
+include::text/application-perspective-monitoring/application-perspective-monitoring.adoc[]
 
 [[ga-performance-mgmt]]
 == Performance Management
@@ -387,6 +400,7 @@ include::text/telemetryd/protocols/netflow9.adoc[]
 include::text/telemetryd/protocols/nxos.adoc[]
 include::text/telemetryd/protocols/sflow.adoc[]
 include::text/telemetryd/protocols/graphite.adoc[]
+include::text/telemetryd/protocols/openconfig.adoc[]
 
 [[ga-elasticsearch-integration]]
 == Elasticsearch Integration

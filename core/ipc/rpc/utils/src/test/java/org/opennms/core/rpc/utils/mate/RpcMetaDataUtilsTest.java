@@ -30,6 +30,7 @@ package org.opennms.core.rpc.utils.mate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import org.junit.Assert;
@@ -77,5 +78,22 @@ public class RpcMetaDataUtilsTest {
         Assert.assertEquals(42L, interpolatedAttributes.get("attribute8"));
         Assert.assertEquals("aaa${nodeLabel}bbb", interpolatedAttributes.get("attribute9"));
         Assert.assertEquals("aaa${abc}bbb", interpolatedAttributes.get("attribute10"));
+    }
+
+    @Test
+    public void testGetContextKeyFromMedataInterpolator() {
+
+        Optional<ContextKey> output = Interpolator.getContextKeyFromMateData("${ctx1:key1|ctx2:key2|ctx3:key3}");
+        Assert.assertTrue(output.isPresent());
+        Assert.assertEquals("ctx3", output.get().context);
+        Assert.assertEquals("key3", output.get().key);
+        output = Interpolator.getContextKeyFromMateData("${ctx1:key1|default}");
+        Assert.assertTrue(output.isPresent());
+        Assert.assertEquals("ctx1", output.get().context);
+        Assert.assertEquals("key1", output.get().key);
+
+        // Test invalid
+        output = Interpolator.getContextKeyFromMateData("${ctx1|default}");
+        Assert.assertFalse(output.isPresent());
     }
 }

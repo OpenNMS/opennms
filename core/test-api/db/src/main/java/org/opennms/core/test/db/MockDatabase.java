@@ -84,7 +84,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
 
         setClassName(MockDatabase.class.getName());
         setMethodName("MockDatabase constructor");
-        setTestDetails("I do not know who called me.... which is sad. Will you be my friend?");
+        setTestDetails("I do not know who called me.... which is sad. Will you be my friend and help me fix this?\n" + new Exception().getStackTrace());
 
         if (createNow) {
             create();
@@ -480,6 +480,13 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     public String getNextUserNotifIdSql() {
         return getNextSequenceValStatement("userNotifNxtId");
     }
-    
 
+
+    public String getNextSequenceValStatement(String seqName) {
+        return "select nextval('" + seqName + "')";
+    }
+
+    protected Integer getNextId(String nxtIdStmt) {
+        return getJdbcTemplate().queryForObject(nxtIdStmt, Integer.class);
+    }
 }

@@ -37,8 +37,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
@@ -63,7 +61,6 @@ import com.vmware.vim25.mo.VirtualMachine;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-@Distributable(DistributionContext.DAEMON)
 public class VmwareMonitor extends AbstractVmwareMonitor {
     /**
      * valid states for vSphere alarms

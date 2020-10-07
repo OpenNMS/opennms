@@ -47,7 +47,6 @@ import org.opennms.netmgt.jmx.connection.JmxConnectors;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.jmx.impl.connection.connectors.DefaultConnectionManager;
-import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.jmx.wrappers.ObjectNameWrapper;
@@ -66,7 +65,6 @@ import com.google.common.collect.Maps;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-@Distributable
 public class JMXMonitor extends AbstractServiceMonitor {
 
     private static final Logger LOG = LoggerFactory.getLogger(JMXMonitor.class);

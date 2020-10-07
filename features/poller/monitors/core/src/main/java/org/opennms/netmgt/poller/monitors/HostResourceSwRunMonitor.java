@@ -37,8 +37,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.RowCallback;
@@ -74,7 +72,6 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:agalue@opennms.org">Alejandro Galue </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-@Distributable(DistributionContext.DAEMON)
 public class HostResourceSwRunMonitor extends SnmpMonitorStrategy {
     
     private static final Logger LOG = LoggerFactory.getLogger(HostResourceSwRunMonitor.class);

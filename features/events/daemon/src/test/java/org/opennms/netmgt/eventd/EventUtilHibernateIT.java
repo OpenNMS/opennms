@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -120,6 +120,7 @@ public class EventUtilHibernateIT {
      * </ul>
      */
     @Test
+    @JUnitTemporaryDatabase
     public void testExpansionStringWithPercentSign() {
         // Escaped percent sign '%%'
         String testString = "This string for %uei% has a %% sign in it.";
@@ -183,6 +184,7 @@ public class EventUtilHibernateIT {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testGetNodeLabel() {
     	String label = eventUtilDaoImpl.getNodeLabel(m_populator.getNode3().getId());
 		assertEquals("node3",label);
@@ -193,6 +195,7 @@ public class EventUtilHibernateIT {
     }
     
     @Test
+    @JUnitTemporaryDatabase
     public void testGetForeignSource() {
         String label = eventUtilDaoImpl.getForeignSource(m_populator.getNode3().getId());
         assertEquals("imported:", label);
@@ -203,6 +206,7 @@ public class EventUtilHibernateIT {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testGetForeignId() {
         String label = eventUtilDaoImpl.getForeignId(m_populator.getNode3().getId());
         assertEquals("3", label);
@@ -213,12 +217,14 @@ public class EventUtilHibernateIT {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void testGetIfAlias() {
     	String alias = eventUtilDaoImpl.getIfAlias(m_populator.getNode1().getId(), "192.168.1.1");
     	assertEquals("Initial ifAlias value", alias);
     }
     
     @Test
+    @JUnitTemporaryDatabase
     public void testGetAssetFieldValue() {
         OnmsNode node1 = m_populator.getNode1();
         OnmsAssetRecord asset1 = node1.getAssetRecord();
@@ -238,6 +244,7 @@ public class EventUtilHibernateIT {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void getHardwareFieldValue() {
         OnmsNode node1 = m_populator.getNode1();
         OnmsHwEntity hwEntity = new OnmsHwEntity();

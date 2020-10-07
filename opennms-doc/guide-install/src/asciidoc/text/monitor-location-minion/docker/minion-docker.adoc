@@ -49,7 +49,12 @@ services:
       - OPENNMS_HTTP_URL=http://horizon-instance:8980/opennms<8>
       - OPENNMS_HTTP_USER=minion-user<9>
       - OPENNMS_HTTP_PASS=minion-password
-    command: ["-f"]
+    command: ["-c"]
+    healthcheck:
+      test: "/health.sh"<10>
+      interval: 15s
+      timeout: 6s
+      retries: 1
 ----
 <1> Friendly container name
 <2> If you process UDP data like SNMP traps, Syslogs or flows, `network_mode: host` ensures the UDP source addresses are not modified
@@ -60,6 +65,7 @@ services:
 <7> Authentication for ActiveMQ broker
 <8> _REST_ endpoint to connect to the _{opennms-product-name}_ instance
 <9> Authentication for the _REST_ endpoint
+<10> Run our health check to indicate the Minion is ready. It uses the `opennms:health-check` internally running in Karaf.
 
 NOTE: In this example we haven't set credentials to connect the _Minion_ via _REST_ and the _ActiveMQ Message Broker_.
       The _Minion_ will fall back and uses the default admin/admin credentials for communication.
@@ -86,7 +92,7 @@ docker-compose up -d
 ----
 ssh admin@localhost -p 8201
 
-admin@minion> health:check
+admin@minion> opennms:health-check
 Verifying the health of the container
 
 Connecting to OpenNMS ReST API   [ Success  ]
