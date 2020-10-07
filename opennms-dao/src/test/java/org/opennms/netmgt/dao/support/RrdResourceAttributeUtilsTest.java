@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.dao.support;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -37,14 +38,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.PropertiesCache;
+import org.opennms.netmgt.dao.support.RrdResourceAttributeUtils.AlphaNumericOnmsAttributeComparator;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -163,6 +168,35 @@ public class RrdResourceAttributeUtilsTest {
 
         // Verify that after the external update, we can get the updated value
         assertEquals("2013", RrdResourceAttributeUtils.getStringProperty(resourceDir, "year"));
+    }
+
+    @Test
+    public void testResourceAttributeSorting() throws Exception {
+        final AlphaNumericOnmsAttributeComparator comparator = new AlphaNumericOnmsAttributeComparator();
+
+        List<RrdGraphAttribute> testArray = Arrays.asList(
+            new RrdGraphAttribute("abcd123", "abcd123/eth0", "abcd123.jrb"),
+            new RrdGraphAttribute("abcd10", "abcd10/eth0", "abcd10.jrb"),
+            new RrdGraphAttribute("SOMETHING", "SOMETHING/eth0", "something.jrb"),
+            new RrdGraphAttribute("AANYTHING", "AANYTHING/eth0", "aanything.jrb")
+        );
+        testArray.sort(comparator);
+        assertArrayEquals(
+            Arrays.asList("AANYTHING", "abcd10", "abcd123", "SOMETHING").toArray(new String[0]),
+	        testArray.stream().map(RrdGraphAttribute::getName).collect(Collectors.toList()).toArray(new String[0])
+	    );
+
+        testArray = Arrays.asList(
+            new RrdGraphAttribute("NMS1234", "NMS1234/eth0", "nms1234.jrb"),
+            new RrdGraphAttribute("nms1234", "nms1234/eth0", "nms1234.jrb"),
+            new RrdGraphAttribute("this is a test", "test/eth0", "test.jrb"),
+            new RrdGraphAttribute("test go brrr", "brrr/eth0", "brrr.jrb")
+        );
+        testArray.sort(comparator);
+        assertArrayEquals(
+            Arrays.asList("NMS1234", "nms1234", "test go brrr", "this is a test").toArray(new String[0]),
+	        testArray.stream().map(RrdGraphAttribute::getName).collect(Collectors.toList()).toArray(new String[0])
+	    );
     }
 
     private OnmsResource createResource() {
