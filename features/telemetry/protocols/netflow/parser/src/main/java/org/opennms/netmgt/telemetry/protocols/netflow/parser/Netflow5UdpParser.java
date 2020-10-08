@@ -79,7 +79,7 @@ public class Netflow5UdpParser extends ParserBase implements UdpParser, Dispatch
     }
 
     @Override
-    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) {
+    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException {
         Netflow5MessageBuilder builder = new Netflow5MessageBuilder(record, enrichment);
         return builder.buildData();
     }

@@ -35,6 +35,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 import org.junit.Test;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.IllegalFlowException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.DateTimeValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
@@ -47,7 +48,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class FlowTimeoutTest {
 
     @Test
-    public void testWithoutTimeout() throws InvalidProtocolBufferException {
+    public void testWithoutTimeout() throws InvalidProtocolBufferException, IllegalFlowException {
 
         Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
                 .add(new DateTimeValue("flowStartSeconds", Instant.ofEpochSecond(123)))
@@ -63,7 +64,7 @@ public class FlowTimeoutTest {
     }
 
     @Test
-    public void testWithActiveTimeout() throws InvalidProtocolBufferException {
+    public void testWithActiveTimeout() throws InvalidProtocolBufferException, IllegalFlowException {
 
         Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
                 .add(new DateTimeValue("flowStartSeconds", Instant.ofEpochSecond(123)))
@@ -84,7 +85,7 @@ public class FlowTimeoutTest {
     }
 
     @Test
-    public void testWithInactiveTimeout() throws InvalidProtocolBufferException {
+    public void testWithInactiveTimeout() throws InvalidProtocolBufferException, IllegalFlowException {
 
         Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
                 .add(new DateTimeValue("flowStartSeconds", Instant.ofEpochSecond(123)))
@@ -105,7 +106,7 @@ public class FlowTimeoutTest {
 
 
     @Test
-    public void testFirstLastSwitchedValues() throws InvalidProtocolBufferException {
+    public void testFirstLastSwitchedValues() throws InvalidProtocolBufferException, IllegalFlowException {
 
         Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
                 .add(new DateTimeValue("flowStartSeconds", Instant.ofEpochSecond(123)))
@@ -122,15 +123,13 @@ public class FlowTimeoutTest {
         values = ImmutableList.<Value<?>>builder()
                 .add(new DateTimeValue("systemInitTimeMilliseconds", Instant.ofEpochMilli(100000)))
                 .add(new UnsignedValue("flowStartSysUpTime", 2000000))
+                .add(new UnsignedValue("flowEndSysUpTime", 4000000))
                 .build();
-
         ipFixMessageBuilder = new IpFixMessageBuilder(values, (address -> Optional.empty()));
         flowMessage = FlowMessage.parseFrom(ipFixMessageBuilder.buildData());
 
         assertThat(flowMessage.getFirstSwitched().getValue(), is(2000000L + 100000L));
         assertThat(flowMessage.getDeltaSwitched().getValue(), is(2000000L + 100000L));
-        assertThat(flowMessage.getLastSwitched().getValue(), is(0L));
-
-
+        assertThat(flowMessage.getLastSwitched().getValue(), is(4100000L));
     }
 }
