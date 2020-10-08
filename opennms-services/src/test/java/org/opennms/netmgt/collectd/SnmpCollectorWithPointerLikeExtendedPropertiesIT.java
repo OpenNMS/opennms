@@ -201,7 +201,7 @@ public class SnmpCollectorWithPointerLikeExtendedPropertiesIT implements Initial
     }
 
     /**
-     * Test collection for dot1d-bridge base port entry with indirectly-referenced property
+     * Test collection for dot1d-bridge base port entry with indirectly referenced property
      * pulled over from ifTable, using the value of dot1dBasePortIfIndex as a pointer.
      * 
      * MIB dump provided by Jean-Marie Kubek
