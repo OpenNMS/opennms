@@ -244,7 +244,7 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
     }
     
     /**
-     * Test collection for Cisco memory-pool entry with indirectly-referenced property
+     * Test collection for Cisco memory-pool entry with indirectly referenced property
      * pulled over from entPhysicalTable
      * 
      * @throwsException the exception
