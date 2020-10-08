@@ -39,7 +39,10 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -47,6 +50,7 @@ import java.util.Map;
 import javax.net.ssl.SNIHostName;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
+import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -222,27 +226,46 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
                 for (int i = 0; i < certs.length && !serviceStatus.isAvailable(); i++) {
                     if (certs[i] instanceof X509Certificate) {
                         X509Certificate certx = (X509Certificate) certs[i];
+                        String subject = certx.getSubjectDN().getName();
+                        String issuer = certx.getIssuerDN().getName();
+                        String fprint = DatatypeConverter.printHexBinary(MessageDigest.getInstance("SHA-1").digest(certx.getEncoded())).toLowerCase();
+                        StringBuilder reasonBuilder = new StringBuilder();
                         LOG.debug("Checking validity against dates: [current: {}, valid: {}], NotBefore: {}, NotAfter: {}", calCurrent.getTime(), calValid.getTime(), certx.getNotBefore(), certx.getNotAfter());
                         calBefore.setTime(certx.getNotBefore());
                         calAfter.setTime(certx.getNotAfter());
                         if (calCurrent.before(calBefore)) {
-                            LOG.debug("Certificate is invalid, current time is before start time");
-                            serviceStatus = PollStatus.unavailable("Certificate is invalid, current time is before start time");
+                            reasonBuilder.append("Certificate with fingerprint '").append(fprint).append("' issued to ")
+                                    .append(subject).append(" by ").append(issuer)
+                                    .append(" is not yet valid. Current time is before start time. It is valid from ")
+                                    .append(certx.getNotBefore().toString()).append(" until ").append(certx.getNotAfter()).append(".");
+                            LOG.debug(reasonBuilder.toString());
+                            serviceStatus = PollStatus.unavailable(reasonBuilder.toString());
                             break;
                         } else if (calCurrent.before(calAfter)) {
                             if (calValid.before(calAfter)) {
-                                LOG.debug("Certificate is valid, and does not expire before validity check date");
+                                reasonBuilder.append("Certificate with fingerprint '").append(fprint).append("' issued to ")
+                                        .append(subject).append(" by ").append(issuer)
+                                        .append(" is valid. It is valid from ")
+                                        .append(certx.getNotBefore().toString()).append(" until ").append(certx.getNotAfter()).append(".");
+                                LOG.debug(reasonBuilder.toString());
                                 serviceStatus = PollStatus.available(tracker.elapsedTimeInMillis());
                                 break;
                             } else {
-                                String reason = "Certificate is valid, but will expire within " + validityDays + " days (" + certx.getNotAfter() + ").";
-                                LOG.debug(reason);
-                                serviceStatus = PollStatus.unavailable(reason);
+                                reasonBuilder.append("Certificate with fingerprint '").append(fprint).append("' issued to ")
+                                        .append(subject).append(" by ").append(issuer)
+                                        .append(" is valid, but will expire within ").append(validityDays).append(" days. It is valid from ")
+                                        .append(certx.getNotBefore().toString()).append(" until ").append(certx.getNotAfter()).append(".");
+                                LOG.debug(reasonBuilder.toString());
+                                serviceStatus = PollStatus.unavailable(reasonBuilder.toString());
                                 break;
                             }
                         } else {
-                            LOG.debug("Certificate has expired.");
-                            serviceStatus = PollStatus.unavailable("Certificate has expired.");
+                            reasonBuilder.append("Certificate with fingerprint '").append(fprint).append("' issued to ")
+                                    .append(subject).append(" by ").append(issuer)
+                                    .append(" is not longer valid. It was valid from ").append(certx.getNotBefore().toString())
+                                    .append(" until ").append(certx.getNotAfter()).append(".");
+                            LOG.debug(reasonBuilder.toString());
+                            serviceStatus = PollStatus.unavailable(reasonBuilder.toString());
                             break;
                         }
                     }
@@ -265,6 +288,12 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
                 String reason = "IOException while polling address: " + ipAddr;
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
+            } catch (CertificateEncodingException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                String reason = "NoSuchAlgorithException (SHA-1) while polling address: " + ipAddr;
+                LOG.debug(reason, e);
+                e.printStackTrace();
             } finally {
                 try {
                     if (r != null) {
