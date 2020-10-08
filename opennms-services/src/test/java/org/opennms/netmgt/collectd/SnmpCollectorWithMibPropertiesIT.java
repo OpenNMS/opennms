@@ -272,7 +272,7 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
     /**
      * Test enum-lookup property extender against values of dot1dStpPortState
      *
-     * @throwsException the exception
+     * @throws Exception the exception
      */
     @Test
     @JUnitCollector(datacollectionType = "snmp", datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-dot1d-bridge-base-iftable.xml")
