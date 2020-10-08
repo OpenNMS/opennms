@@ -22,7 +22,7 @@ The `mibObj` aliases are shortened to maintain compatibility with storage engine
 
 [source, xml]
 ----
-<resourceType name="ciscoEnvMonTemperatureStatusIndex" label="Cisco Temperature" resourceLabel="${cvmTempStatusDescr} (index ${index})">
+<resourceType name="ciscoEnvMonTemperatureStatusIndex<1>" label="Cisco Temperature" resourceLabel="${cvmTempStatusDescr} (index ${index})">
    <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
    <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
 </resourceType>
@@ -80,6 +80,28 @@ The Enum Lookup property extender provides a mechanism that works like a lookup 
 The Enum Lookup property extender may be used to map an enumerated set of integer values to a corresponding set of human-sensible textual values.
 For example, the `dot1dStpPortTable` contains two integer columns whose values reflect attributes of a port.
 
+[source,text]
+----
+   dot1dStpPortState OBJECT-TYPE <1>
+       SYNTAX      INTEGER {
+                       disabled(1),
+                       blocking(2),
+                       listening(3),
+                       learning(4),
+                       forwarding(5),
+                       broken(6)
+                   }
+  -- ...
+
+   dot1dStpPortEnable OBJECT-TYPE <2>
+       SYNTAX      INTEGER {
+                       enabled(1),
+                       disabled(2)
+                   }
+----
+<1> Port STP state enumerated type
+<2> Port enablement status enumerated type
+
 This extender enables persisting the values of these enumerated integer columns as text that an operator can easiliy recognize.
 
 NOTE: While this extender is intended primarily for translating integer values to more descriptive ones as shown in the example below, it could also be used to translate from one set of alphanumeric values to another set.
@@ -103,10 +125,10 @@ This example shows how to map values of `dot1dStpPortState` and `dot1dStpPortEna
 
 <groups>
   <group name="dot1dStpPortTable" ifType="all">
-    <mibObj oid=".1.3.6.1.2.1.17.2.15.1.3"  instance="dot1dStpPortEntry" alias="dot1dStpPortState"    type="string" />
-    <mibObj oid=".1.3.6.1.2.1.17.2.15.1.4"  instance="dot1dStpPortEntry" alias="dot1dStpPortEnable"   type="string" />
-    <mibObj oid=".1.3.6.1.2.1.17.2.15.1.10" instance="dot1dStpPortEntry" alias="dot1dStpPortFwTrans"  type="counter" />
-    <property instance="dot1dStpPortEntry" alias="dot1dStpPortStateText" class-name="org.opennms.netmgt.collectd.EnumLookupPropertyExtender">
+    <mibObj oid=".1.3.6.1.2.1.17.2.15.1.3"  instance="dot1dStpPortEntry" alias="dot1dStpPortState"  type="string"/> <1>
+    <mibObj oid=".1.3.6.1.2.1.17.2.15.1.4"  instance="dot1dStpPortEntry" alias="dot1dStpPortEnable" type="string"/> <2>
+    <mibObj oid=".1.3.6.1.2.1.17.2.15.1.10" instance="dot1dStpPortEntry" alias="dot1dStpPortFwTrans"   type="counter" />
+    <property instance="dot1dStpPortEntry" alias="dot1dStpPortStateText" class-name="org.opennms.netmgt.collectd.EnumLookupPropertyExtender"> <3>
       <parameter key="enum-attribute" value="dot1dStpPortState"/>
       <parameter key="1" value="disabled(1)"/>
       <parameter key="2" value="blocking(2)"/>
@@ -115,7 +137,7 @@ This example shows how to map values of `dot1dStpPortState` and `dot1dStpPortEna
       <parameter key="5" value="forwarding(5)"/>
       <parameter key="6" value="broken(6)"/>
     </property>
-    <property instance="dot1dStpPortEntry" alias="dot1dStpPortEnableText" class-name="org.opennms.netmgt.collectd.EnumLookupPropertyExtender">
+    <property instance="dot1dStpPortEntry" alias="dot1dStpPortEnableText" class-name="org.opennms.netmgt.collectd.EnumLookupPropertyExtender"> <4>
       <!-- Note absence of parenthetical numeric values; they are entirely optional -->
       <parameter key="1" value="enabled"/>
       <parameter key="2" value="disabled"/>
@@ -123,6 +145,10 @@ This example shows how to map values of `dot1dStpPortState` and `dot1dStpPortEna
   </group>
 </groups>
 ----
+<1> Port STP state enumerated integer attribute
+<2> Port enablement status enumerated integer attribute
+<3> Derived port STP state textual attribute `dot1dStpPortStateText`
+<4> Derived port enablement status textual attribute `dot1dStpPortEnableText`
 
 ==== Index Split Property Extender
 The Index Split property extender enables extraction of part of a resource's local instance identifier.
@@ -131,6 +157,23 @@ The Index Split property extender enables extraction of part of a resource's loc
 The Index Split property extender is useful when collecting data from tables with compound indices, because it enables extraction of a single index component.
 For example, the Cisco Airespace `bsnAPIfLoadParametersTable` is indexed using the tuple of `bsnAPDot3MacAdddress` and `bsnAPIfSlotId`.
 
+[source, text]
+----
+bsnAPIfLoadParametersEntry OBJECT-TYPE
+    -- ...
+    DESCRIPTION
+        "An entry (conceptual row) in the Table.
+        Entries in this MIB are indexed by
+        bsnAPDot3MacAddress and bsnAPIfSlotId"
+    INDEX           {
+                        bsnAPDot3MacAddress,
+                        bsnAPIfSlotId
+                    } <1>
+
+    -- ...
+----
+<1> `bsnAPDot3MacAddress` is the first component of the compound index for the entry type for `bsnAPIfLoadParametersTable`
+
 This extender enables extraction of just the `bsnAPIfSlotId` component for use in a resource label.
 
 ===== Configuring the Index Split Property Extender
@@ -138,17 +181,19 @@ The Index Split property extender expects a single parameter, `index-pattern`, w
 The expression must be general enough to match all possible index values for the table at hand, and should include one capturing group.
 The subpattern matched by the expression's first capturing group will be returned; any further groups are ignored.
 
-This example shows how to extract just the `bsnAPIfSlotId` index component.
+This example shows how to extract just the `bsnAPIfSlotId` index component as a string property.
 
 [source, xml]
 ----
 <group name="bsnAPIfLoadParametersTable" ifType="all">
   <mibObj oid=".1.3.6.1.4.1.14179.2.2.13.1.4" instance="bsnAPIfLoadParametersEntry" alias="bsnAPIfLoadNumOfCli" type="integer" />
-  <property instance="bsnAPIfLoadParametersEntry" alias="slotNumber" class-name="org.opennms.netmgt.collectd.IndexSplitPropertyExtender">
-    <parameter key="index-pattern" value="^.+\.(\d+)$" />
+  <property instance="bsnAPIfLoadParametersEntry" alias="slotNumber" class-name="org.opennms.netmgt.collectd.IndexSplitPropertyExtender"> <1>
+    <parameter key="index-pattern" value="^.+\.(\d+)$" /> <2>
   </property>
 </group>
 ----
+<1> Derived string property `slotNumber`
+<2> Regular expression; the portion in parentheses is what gets extracted. `\d+` means "one or more decimal digit characters".
 
 ==== Regex Property Extender
 The Regex property extender works similarly to the Index Split property extender, with the added capability of importing a string property from a source table.
@@ -156,6 +201,32 @@ The Regex property extender works similarly to the Index Split property extender
 ===== When to Use the Regex Property Extender
 The Regex property extender is useful when some portion of the target MIB table's index can be used as an index to the source MIB table.
 For example, the Cisco Airespace `bsnAPIfLoadParametersTable` is indexed using the tuple of `bsnAPDot3MacAdddress` and `bsnAPIfSlotId`, whereas the `bsnAPTable` is indexed on `bsnAPDot3MacAddress` alone.
+
+[source, text]
+----
+bsnAPIfLoadParametersEntry OBJECT-TYPE
+    -- ...
+    DESCRIPTION
+        "An entry (conceptual row) in the Table.
+        Entries in this MIB are indexed by
+        bsnAPDot3MacAddress and bsnAPIfSlotId"
+    INDEX           {
+                        bsnAPDot3MacAddress,
+                        bsnAPIfSlotId
+                    } <1>
+
+    -- ...
+
+bsnAPEntry OBJECT-TYPE
+    -- ...
+    DESCRIPTION
+        "An entry in the bsnAPTable."
+    INDEX           { bsnAPDot3MacAddress } <2>
+    -- ...
+----
+<1> `bsnAPDot3MacAddress` is the first component of the compound index for the entry type for `bsnAPIfLoadParametersTable`
+<2> `bsnAPDot3MacAddress` is the sole index for the entry type for `bsnAPTable`
+
 By extracting just the first index component and using the result as an index into the source MIB table, it's possible to import the human-sensible `bsnAPName` string property from the source MIB table.
 
 ===== Configuring the Regex Property Extender
@@ -189,19 +260,22 @@ This example shows how to use the value of `bsnAPDot3MacAddress` as an index int
 
 <groups>
   <group name="bsnAPTable" ifType="all">
-    <mibObj oid=".1.3.6.1.4.1.14179.2.2.1.1.3" instance="bsnAPEntry" alias="bsnAPName" type="string" />
+    <mibObj oid=".1.3.6.1.4.1.14179.2.2.1.1.3" instance="bsnAPEntry" alias="bsnAPName" type="string" /> <1>
   </group>
 
   <group name="bsnAPIfLoadParametersTable" ifType="all">
     <mibObj oid=".1.3.6.1.4.1.14179.2.2.13.1.4" instance="bsnAPIfLoadParametersEntry" alias="bsnAPIfLoadNumOfCli" type="integer" />
-    <property instance="bsnAPIfLoadParametersEntry" alias="bsnAPName">
+    <property instance="bsnAPIfLoadParametersEntry" alias="bsnAPName"> <2>
       <parameter key="source-type" value="bsnAPEntry" />
       <parameter key="source-alias" value="bsnAPName" />
-      <parameter key="index-pattern" value="^(.+)\.\d+$" />
+      <parameter key="index-pattern" value="^(.+)\.\d+$" /> <3>
     </property>
   </group>
 </groups>
 ----
+<1> Regular string property `bsnAPName` on the source table
+<2> Extended string property `bsnAPName` on the target table
+<2> Regular expression; the portion in parentheses is what gets extracted. `\d+` means "one or more decimal digit characters".
 
 ==== Pointer-Like Index Property Extender
 The Pointer-Like Index property extender makes it possible to use the value of an attribute from the target MIB table as the index into the source MIB table.
@@ -210,6 +284,50 @@ Unlike the Index Split and Regex extenders, this extender class does not require
 ===== When to Use the Pointer-Like Index Property Extender
 The Pointer-Like Index property extender is useful when the target MIB table contains a column whose value can be used as an index into the source MIB table.
 For example, the Cisco Process MIB's `cpmCPUTotalTable` has its own index that is not shared with any other tables, but its `cpmCPUTotalPhysicalIndex` column contains an integer which can be used as an index into the `entPhysicalTable`.
+
+[source, text]
+----
+cpmCPUTotalEntry OBJECT-TYPE
+    -- ...
+    DESCRIPTION
+        "Overall information about the CPU load. Entries in this
+        table come and go as CPUs are added and removed from the
+        system."
+    INDEX           { cpmCPUTotalIndex } <1>
+    -- ...
+
+cpmCPUTotalPhysicalIndex OBJECT-TYPE <2>
+    -- ...
+    DESCRIPTION
+        "The entPhysicalIndex of the physical entity for which
+        the CPU statistics in this entry are maintained.
+        The physical entity can be a CPU chip, a group of CPUs,
+        a CPU card etc. The exact type of this entity is described by
+        its entPhysicalVendorType value. If the CPU statistics
+        in this entry correspond to more than one physical entity
+        (or to no physical entity), or if the entPhysicalTable is
+        not supported on the SNMP agent, the value of this object
+        must be zero."
+    -- ...
+
+entPhysicalEntry       OBJECT-TYPE
+    -- ...
+    DESCRIPTION
+            "Information about a particular physical entity.
+
+            Each entry provides objects (entPhysicalDescr,
+            entPhysicalVendorType, and entPhysicalClass) to help an NMS
+            identify and characterize the entry, and objects
+            (entPhysicalContainedIn and entPhysicalParentRelPos) to help
+            an NMS relate the particular entry to other entries in this
+            table."
+    INDEX   { entPhysicalIndex } <3>
+    -- ...
+----
+<1> The `cpmCPUTotalTable` entry type is indexed on `cpmCPUTotalIndex`, which has no meaning outside this table
+<2> The `cpmCPUTotalPhysicalIndex` column contains a value of `entPhysicalIndex` corresponding to the CPU referenced in a given row
+<3> The `entPhysicalTable` entry type is indexed on `entPhysicalIndex` and provides many useful textual columns.
+
 By treating `cpmCPUTotalPhysicalIndex` somewhat like a link:https://en.wikipedia.org/wiki/Pointer_(computer_programming)[pointer], it's possible to import string properties from the `entPhysicalTable` for use in the resource-label.
 
 NOTE: Some combinations of Cisco hardware and software appear to use values of `cpmCPUTotalIndex` that are directly interchangeable with `entPhysicalIndex`.
@@ -244,26 +362,30 @@ The target resource gains a pair of string properties, which we will call `cpmCP
 
 <groups>
   <group name="entity-physical-table" ifType="all">
-    <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.2" instance="entPhysicalEntry" alias="entPhysicalDescr" type="string"/>
-    <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="entPhysicalEntry" alias="entPhysicalName" type="string"/>
+    <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.2" instance="entPhysicalEntry" alias="entPhysicalDescr" type="string"/> <1>
+    <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="entPhysicalEntry" alias="entPhysicalName" type="string"/> <2>
   </group>
 
   <group name="cpm-cpu-total" ifType="all">
-    <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.2"  instance="cpmCPUTotalEntry" alias="cpmCPUTotalPhysicalIndex"  type="string" />
+    <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.2"  instance="cpmCPUTotalEntry" alias="cpmCPUTotalPhysicalIndex"  type="string" /> <3>
     <mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.8"  instance="cpmCPUTotalEntry" alias="cpmCPUTotal5minRev"        type="gauge" />
-    <property instance="cpmCPUTotalEntry" alias="cpmCPUTotalName" class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender">
+    <property instance="cpmCPUTotalEntry" alias="cpmCPUTotalName" class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender"> <4>
       <parameter key="source-type" value="entPhysicalEntry"/>
-      <parameter key="source-attribute" value="entPhysicalName"/>
+      <parameter key="source-attribute" value="entPhysicalName"/> <5>
       <parameter key="target-index-pointer-column" value="cpmCPUTotalPhysicalIndex"/>
     </property>
-    <property instance="cpmCPUTotalEntry" alias="cpmCPUTotalDescr" class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender">
+    <property instance="cpmCPUTotalEntry" alias="cpmCPUTotalDescr" class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender"> <6>
       <parameter key="source-type" value="entPhysicalEntry"/>
-      <parameter key="source-attribute" value="entPhysicalDescr"/>
+      <parameter key="source-attribute" value="entPhysicalDescr"/> <7>
       <parameter key="target-index-pointer-column" value="cpmCPUTotalPhysicalIndex"/>
     </property>
   </group>
 </groups>
 ----
+<1>, <2> First we collect `entPhysicalDescr` and `entPhysicalName` in the source group, which uses a resource-type associated with the `entPhysicalTable`
+<3> Then we collect the pointer-like `cpmCPUTotalPhysicalIndex` in the target group, whose resource-type is associated with the `cpmCPUTotalTable`
+<4> We derive `cpmCPUTotalName` in the target group telling the extender to use the pointer-like property's value as an index into the source table, and specify that we want to "pull over" the source attribute `entPhysicalName` <5>
+<6> Deriving `cpmCPUTotalDescr` is almost identical, except that this time we are pulling over the value of `entPhysicalDescr` <7>
 
 ==== SNMP Interface Property Extender
 The SNMP Interface property extender does much the same job as the Pointer-Like Index property extender, but it is specialized for importing properties from the `ifTable`.
@@ -272,6 +394,38 @@ Resources representing rows in the `ifTable` are modeled differently in _{opennm
 ===== When to Use the SNMP Interface Property Extender
 Use the SNMP Interface property extender when the string property you want to import is associated with a network interface which is represented by a row in the `ifTable`.
 For example, the `dot1dBasePortTable` has its own index which does not share any components with any other table, but its `dot1dBasePortIfIndex` column contains a value that is a valid `ifIndex`.
+
+[source, text]
+----
+   dot1dBasePortEntry OBJECT-TYPE
+       -- ...
+       DESCRIPTION
+           "A list of information for each port of the bridge."
+       -- ...
+       INDEX  { dot1dBasePort } <1>
+  -- ...
+
+   dot1dBasePortIfIndex OBJECT-TYPE <2>
+       -- ...
+       DESCRIPTION
+           "The value of the instance of the ifIndex object,
+           defined in IF-MIB, for the interface corresponding
+           to this port."
+       ::= { dot1dBasePortEntry 2 }
+  -- ...
+
+ifEntry OBJECT-TYPE
+    -- ...
+    DESCRIPTION
+            "An entry containing management information applicable to a
+            particular interface."
+    INDEX   { ifIndex } <3>
+    ::= { ifTable 1 }
+----
+<1> The entry type for `dot1dBasePortTable` is indexed on `dot1dBasePort`, which has no significance outside this table
+<2> But `dot1dBasePortTable` contains column `dot1dBasePortIfIndex`, which tells us the `ifIndex` corresponding to the physical port underlying to the associated bridge base port
+<3> `ifIndex` is the index of the `ifTable` entry type (and also of the `ifXTable` entry type)
+
 By using this extender, it's possible to import string attributes from the `ifTable`, `ifXTable`, or another table that augments the `ifTable`.
 
 ===== Configuring the SNMP Interface Property Extender
@@ -297,7 +451,7 @@ This example shows how to use `dot1dBasePortIfIndex` as a pointer-like index to 
 
 <groups>
   <group name="ifTable" ifType="all">
-      <mibObj oid=".1.3.6.1.2.1.2.2.1.1"     instance="ifIndex" alias="interfaceIndex" type="string" />
+    <mibObj oid=".1.3.6.1.2.1.2.2.1.1"     instance="ifIndex" alias="interfaceIndex" type="string" /> <1>
     <mibObj oid=".1.3.6.1.2.1.2.2.1.2"     instance="ifIndex" alias="interfaceDescr" type="string" />
     <mibObj oid=".1.3.6.1.2.1.31.1.1.1.1"  instance="ifIndex" alias="interfaceName"  type="string" />
     <mibObj oid=".1.3.6.1.2.1.31.1.1.1.18" instance="ifIndex" alias="interfaceAlias" type="string" />
@@ -305,24 +459,29 @@ This example shows how to use `dot1dBasePortIfIndex` as a pointer-like index to 
 
   <group name="dot1dBasePortTable" ifType="all">
     <mibObj oid=" .1.3.6.1.2.1.17.1.4.1.1" instance="dot1dBasePortEntry" alias="dot1dBasePort"        type="string" />
-    <mibObj oid=" .1.3.6.1.2.1.17.1.4.1.2" instance="dot1dBasePortEntry" alias="dot1dBasePortIfIndex" type="string" />
+    <mibObj oid=" .1.3.6.1.2.1.17.1.4.1.2" instance="dot1dBasePortEntry" alias="dot1dBasePortIfIndex" type="string" /> <2>
     <mibObj oid=" .1.3.6.1.2.1.17.1.4.1.4" instance="dot1dBasePortEntry" alias="d1dBPDelayExDiscard"  type="counter" />
     <mibObj oid=" .1.3.6.1.2.1.17.1.4.1.5" instance="dot1dBasePortEntry" alias="d1dBPMtuExDiscard"    type="counter" />
-    <property instance="dot1dBasePortEntry" alias="dot1dBasePortIfDescr" class-name="org.opennms.netmgt.collectd.InterfaceSnmpPropertyExtender">
+    <property instance="dot1dBasePortEntry" alias="dot1dBasePortIfDescr" class-name="org.opennms.netmgt.collectd.InterfaceSnmpPropertyExtender"> <3>
       <parameter key="source-ifindex-attribute" value="interfaceIndex"/>
-      <parameter key="source-attribute" value="interfaceDescr"/>
+      <parameter key="source-attribute" value="interfaceDescr"/> <4>
       <parameter key="target-ifindex-pointer-column" value="dot1dBasePortIfIndex"/>
     </property>
-    <property instance="dot1dBasePortEntry" alias="dot1dBasePortIfName" class-name="org.opennms.netmgt.collectd.InterfaceSnmpPropertyExtender">
+    <property instance="dot1dBasePortEntry" alias="dot1dBasePortIfName" class-name="org.opennms.netmgt.collectd.InterfaceSnmpPropertyExtender"> <5>
       <parameter key="source-ifindex-attribute" value="interfaceIndex"/>
-      <parameter key="source-attribute" value="interfaceName"/>
+      <parameter key="source-attribute" value="interfaceName"/> <6>
       <parameter key="target-ifindex-pointer-column" value="dot1dBasePortIfIndex"/>
     </property>
-    <property instance="dot1dBasePortEntry" alias="dot1dBasePortIfAlias" class-name="org.opennms.netmgt.collectd.InterfaceSnmpPropertyExtender">
+    <property instance="dot1dBasePortEntry" alias="dot1dBasePortIfAlias" class-name="org.opennms.netmgt.collectd.InterfaceSnmpPropertyExtender"> <7>
       <parameter key="source-ifindex-attribute" value="interfaceIndex"/>
-      <parameter key="source-attribute" value="interfaceAlias"/>
+      <parameter key="source-attribute" value="interfaceAlias"/> <8>
       <parameter key="target-ifindex-pointer-column" value="dot1dBasePortIfIndex"/>
     </property>
   </group>
 </groups>
 ----
+<1> First we collect all of `ifIndex`, `ifDescr`, `ifName`, and `ifAlias` in a group associated with the `ifIndex` source resource-type, using modified names to avoid collisions with internal workings (the `ifIndex` type is built in, so we do not need a custom resource-type definition for it)
+<2> Then we collect the pointer-like column `dot1dBasePortIfIndex` in the target group
+<3> To derive the `dot1dBasePortIfDescr` string property, we tell the extender which target attribute contains the pointer-like value, which source column needs to have a matching value, and that we want to "pull over" the `interfaceDescr` property <4> from the source group
+<5> Deriving `dot1dBasePortIfName` is almost identical, except that we want the property `interfaceName` <6> from the source group instead
+<7> Again with `dot1dBasePortIfAlias`, we repeat ourselves except that our desired property from the source group is `interfaceAlias` <8>
