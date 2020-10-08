@@ -72,7 +72,11 @@ public abstract class ParserBase implements Parser {
 
     private static final long DEFAULT_CLOCK_SKEW_EVENT_RATE_SECONDS = TimeUnit.HOURS.toSeconds(1);
 
+    private static final long DEFAULT_ILLEGAL_FLOW_EVENT_RATE_SECONDS = TimeUnit.HOURS.toSeconds(1);
+
     public static final String CLOCK_SKEW_EVENT_UEI = "uei.opennms.org/internal/telemetry/clockSkewDetected";
+
+    public static final String ILLEGAL_FLOW_EVENT_UEI = "uei.opennms.org/internal/telemetry/illegalFlowDetected";
 
     private final ThreadLocal<Boolean> isParserThread = new ThreadLocal<>();
 
@@ -100,9 +104,13 @@ public abstract class ParserBase implements Parser {
 
     private long clockSkewEventRate = 0;
 
+    private long illegalFlowEventRate = 0;
+
     private boolean dnsLookupsEnabled = true;
 
-    private LoadingCache<InetAddress, Optional<Instant>> eventCache;
+    private LoadingCache<InetAddress, Optional<Instant>> clockSkewEventCache;
+
+    private LoadingCache<InetAddress, Optional<Instant>> illegalFlowEventCache;
 
     private ExecutorService executor;
 
@@ -139,6 +147,7 @@ public abstract class ParserBase implements Parser {
 
         // Call setters since these also perform additional handling
         setClockSkewEventRate(DEFAULT_CLOCK_SKEW_EVENT_RATE_SECONDS);
+        setIllegalFlowEventRate(DEFAULT_ILLEGAL_FLOW_EVENT_RATE_SECONDS);
         setThreads(DEFAULT_NUM_THREADS);
     }
 
@@ -189,12 +198,27 @@ public abstract class ParserBase implements Parser {
     public void setClockSkewEventRate(final long clockSkewEventRate) {
         this.clockSkewEventRate = clockSkewEventRate;
 
-        this.eventCache = CacheBuilder.newBuilder().expireAfterWrite(this.clockSkewEventRate, TimeUnit.SECONDS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
+        this.clockSkewEventCache = CacheBuilder.newBuilder().expireAfterWrite(this.clockSkewEventRate, TimeUnit.SECONDS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
             @Override
             public Optional<Instant> load(InetAddress key) throws Exception {
                 return Optional.empty();
             }
         });
+    }
+
+    public void setIllegalFlowEventRate(final long illegalFlowEventRate) {
+        this.illegalFlowEventRate = illegalFlowEventRate;
+
+        this.illegalFlowEventCache = CacheBuilder.newBuilder().expireAfterWrite(this.illegalFlowEventRate, TimeUnit.SECONDS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
+            @Override
+            public Optional<Instant> load(InetAddress key) throws Exception {
+                return Optional.empty();
+            }
+        });
+    }
+
+    public long getIllegalFlowEventRate() {
+        return illegalFlowEventRate;
     }
 
     public boolean getDnsLookupsEnabled() {
@@ -241,7 +265,33 @@ public abstract class ParserBase implements Parser {
                     // if we can't keep up
                     final Runnable dispatch = () -> {
                         // Let's serialize
-                        byte[] flowMessage = buildMessage(record, enrichment);
+                        byte[] flowMessage = new byte[0];
+                        try {
+                            flowMessage = buildMessage(record, enrichment);
+                        } catch (IllegalFlowException e) {
+                            final Optional<Instant> instant = illegalFlowEventCache.getUnchecked(remoteAddress.getAddress());
+
+                            if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getIllegalFlowEventRate()) {
+                                illegalFlowEventCache.put(remoteAddress.getAddress(), Optional.of(Instant.now()));
+
+                                eventForwarder.sendNow(new EventBuilder()
+                                        .setUei(ILLEGAL_FLOW_EVENT_UEI)
+                                        .setTime(new Date())
+                                        .setSource(getName())
+                                        .setInterface(remoteAddress.getAddress())
+                                        .setDistPoller(identity.getId())
+                                        .addParam("monitoringSystemId", identity.getId())
+                                        .addParam("monitoringSystemLocation", identity.getLocation())
+                                        .setParam("cause", e.getMessage())
+                                        .setParam("protocol", protocol.name())
+                                        .setParam("illegalFlowEventRate", (int) getIllegalFlowEventRate())
+                                        .getEvent());
+
+                                LOG.warn("Illegal flow detected from exporter {}", remoteAddress.getAddress(), e);
+                            }
+
+                            return;
+                        }
 
                         // Build the message to dispatch
                         final TelemetryMessage msg = new TelemetryMessage(remoteAddress, ByteBuffer.wrap(flowMessage));
@@ -293,7 +343,7 @@ public abstract class ParserBase implements Parser {
         return future;
     }
 
-    protected abstract byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment);
+    protected abstract byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException;
 
 
 
@@ -301,10 +351,10 @@ public abstract class ParserBase implements Parser {
         if (getMaxClockSkew() > 0) {
             long deltaMs = Math.abs(packetTimestampMs - System.currentTimeMillis());
             if (deltaMs > getMaxClockSkew() * 1000L) {
-                final Optional<Instant> instant = eventCache.getUnchecked(remoteAddress);
+                final Optional<Instant> instant = clockSkewEventCache.getUnchecked(remoteAddress);
 
                 if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getClockSkewEventRate()) {
-                    eventCache.put(remoteAddress, Optional.of(Instant.now()));
+                    clockSkewEventCache.put(remoteAddress, Optional.of(Instant.now()));
 
                     eventForwarder.sendNow(new EventBuilder()
                             .setUei(CLOCK_SKEW_EVENT_UEI)
