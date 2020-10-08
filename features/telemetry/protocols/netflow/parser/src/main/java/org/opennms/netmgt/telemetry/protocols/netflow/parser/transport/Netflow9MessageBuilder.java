@@ -39,6 +39,7 @@ import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Me
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.IllegalFlowException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.RecordEnrichment;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.Direction;
@@ -81,7 +82,7 @@ public class Netflow9MessageBuilder {
     }
 
 
-    public byte[] buildData() {
+    public byte[] buildData() throws IllegalFlowException {
 
         values.forEach(this::addField);
 
@@ -121,6 +122,15 @@ public class Netflow9MessageBuilder {
             builder.setNextHopAddress(inetAddress.getHostAddress());
         });
 
+        if (builder.getFirstSwitched().getValue() > builder.getLastSwitched().getValue()) {
+            throw new IllegalFlowException(
+                    String.format("lastSwitched must be greater than firstSwitched: srcAddress=%s, dstAddress=%s, firstSwitched=%d, lastSwitched=%d, duration=%d",
+                            builder.getSrcAddress(),
+                            builder.getDstAddress(),
+                            builder.getFirstSwitched().getValue(),
+                            builder.getLastSwitched().getValue(),
+                            builder.getLastSwitched().getValue() - builder.getFirstSwitched().getValue()));
+        }
 
         // set vlan
         first(srcVlan, dstVlan).ifPresent( vlan -> builder.setVlan(setIntValue(vlan.intValue())));

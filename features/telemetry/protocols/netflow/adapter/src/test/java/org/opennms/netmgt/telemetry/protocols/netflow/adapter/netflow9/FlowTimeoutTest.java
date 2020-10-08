@@ -34,6 +34,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Optional;
 
 import org.junit.Test;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.IllegalFlowException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow9MessageBuilder;
@@ -45,7 +46,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class FlowTimeoutTest {
 
     @Test
-    public void testWithoutTimeout() throws InvalidProtocolBufferException {
+    public void testWithoutTimeout() throws InvalidProtocolBufferException, IllegalFlowException {
 
         Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
                 .add(new UnsignedValue("@unixSecs", 0))
@@ -62,7 +63,7 @@ public class FlowTimeoutTest {
     }
 
     @Test
-    public void testWithActiveTimeout() throws InvalidProtocolBufferException {
+    public void testWithActiveTimeout() throws InvalidProtocolBufferException, IllegalFlowException {
 
         Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
                 .add(new UnsignedValue("@unixSecs", 0))
@@ -84,7 +85,7 @@ public class FlowTimeoutTest {
     }
 
     @Test
-    public void testWithInactiveTimeout() throws InvalidProtocolBufferException {
+    public void testWithInactiveTimeout() throws InvalidProtocolBufferException, IllegalFlowException {
 
         Iterable<Value<?>> values = ImmutableList.<Value<?>>builder()
                 .add(new UnsignedValue("@unixSecs", 0))
