@@ -1,2 +1,2 @@
 .About
-* xref:about.adoc[]
+* xref:about.adoc[About {page-component-title}]
