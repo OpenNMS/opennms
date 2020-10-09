@@ -1,5 +1,5 @@
 .Basic {page-component-title} Core Setup
-* xref:setting-up-opennms.adoc[Setting Up OpenNMS]
-* xref:rhel:installing-on-rhel.adoc[Installing on RHEL]
+* xref:setting-up-opennms.adoc[Setting Up {page-component-title}]
+* xref:installing-on-rhel.adoc[Installing on RHEL]
 * xref:debian:installing-on-debian.adoc[Installing on Debian]
-* xref:docker:opennms-docker.adoc[]
+* xref:docker:opennms-docker.adoc[Run with Docker]

@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-set-up-opennms]]
-= Setting up a basic {page-component-title}
+= Setting up a Basic {page-component-title}
 
 The _{page-component-title}_ platform can be installed on multiple OS families.
 ifdef::opennms-prime[]
