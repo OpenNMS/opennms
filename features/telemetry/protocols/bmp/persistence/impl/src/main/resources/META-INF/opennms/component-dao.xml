@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+	">
+
+  <context:annotation-config />
+  <tx:annotation-driven />
+
+  <bean id="bmpCollectorDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpCollectorDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollectorDao" ref="bmpCollectorDao" />
+
+  <bean id="bmpRouterDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpRouterDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao" ref="bmpRouterDao" />
+
+  <bean id="bmpPeerDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpPeerDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao" ref="bmpPeerDao" />
+
+  <bean id="bmpUnicastPrefixDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpUnicastPrefixDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao" ref="bmpUnicastPrefixDao" />
+
+  <bean id="bmpBaseAttributeDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpBaseAttributeDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttributeDao" ref="bmpBaseAttributeDao" />
+
+  <bean id="bmpStatReportsDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpStatReportsDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatReportsDao" ref="bmpStatReportsDao" />
+
+  <bean id="bmpGlobalIpRibDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpGlobalIpRibDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao" ref="bmpGlobalIpRibDao" />
+
+</beans>

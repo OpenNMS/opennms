@@ -14,5 +14,6 @@
     <module>transport</module>
     <module>parser</module>
     <module>adapter</module>
+    <module>persistence</module>
   </modules>
 </project>
