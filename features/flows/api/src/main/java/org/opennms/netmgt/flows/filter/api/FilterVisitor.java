@@ -35,4 +35,6 @@ public interface FilterVisitor<T> {
     T visit(TimeRangeFilter timeRangeFilter);
 
     T visit(SnmpInterfaceIdFilter snmpInterfaceIdFilter);
+
+    T visit(TosFilter tosFilter);
 }

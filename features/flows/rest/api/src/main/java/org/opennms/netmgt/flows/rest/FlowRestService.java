@@ -91,6 +91,13 @@ public interface FlowRestService {
     @Produces(MediaType.APPLICATION_JSON)
     FlowNodeDetails getFlowExporter(@PathParam("nodeId") final Integer nodeId);
 
+    @GET
+    @Path("tos/enumerate")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<Integer> getTosBytes(@DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
+                              @Context UriInfo uriInfo);
+
+
     /**
      * Retrieve the list of applications.
      *

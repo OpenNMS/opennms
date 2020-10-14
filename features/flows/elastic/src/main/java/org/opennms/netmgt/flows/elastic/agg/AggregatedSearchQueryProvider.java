@@ -40,6 +40,7 @@ import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
+import org.opennms.netmgt.flows.filter.api.TosFilter;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -151,8 +152,15 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
 
     public String getHostname(final String host, List<Filter> filters) {
         return render("hostname.ftl", ImmutableMap.builder()
-                                                  .put("filters", getFilterQueries(filters))
-                                                  .put("host", host)
-                                                  .build());
+                .put("filters", getFilterQueries(filters))
+                .put("host", host)
+                .build());
+    }
+
+    @Override
+    public String visit(TosFilter tosFilter) {
+        return render("filter_tos_interface.ftl", ImmutableMap.builder()
+                .put("tos", tosFilter.getTos())
+                .build());
     }
 }

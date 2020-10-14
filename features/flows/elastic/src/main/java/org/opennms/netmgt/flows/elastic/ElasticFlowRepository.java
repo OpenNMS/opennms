@@ -440,6 +440,10 @@ public class ElasticFlowRepository implements FlowRepository {
         return smartQueryService.getTopNHostSeries(N, step, includeOther, filters);
     }
 
+    @Override
+    public CompletableFuture<List<Integer>> getTosBytes(List<Filter> filters) {
+        return smartQueryService.getTosBytes(filters);
+    }
 
     public Identity getIdentity() {
         return identity;

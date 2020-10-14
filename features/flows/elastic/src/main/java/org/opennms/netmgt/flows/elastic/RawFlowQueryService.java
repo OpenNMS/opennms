@@ -204,6 +204,16 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 .thenCompose((res) -> mapTable(res, host -> this.resolveHostnameForHost(host, filters)));
     }
 
+    @Override
+    public CompletableFuture<List<Integer>> getTosBytes(List<Filter> filters) {
+        final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
+        return searchAsync(searchQueryProvider.getTos(filters), timeRangeFilter)
+                .thenApply(res -> res.getAggregations().getAggregation("tos", TermsAggregation.class)
+                        .getBuckets().stream()
+                        .map(entry -> Integer.valueOf(entry.getKey()))
+                        .collect(Collectors.toList()));
+    }
+
     public CompletableFuture<Conversation> resolveHostnameForConversation(final String convoKey, List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
 

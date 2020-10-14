@@ -66,6 +66,7 @@ import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.NodeCriteria;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
+import org.opennms.netmgt.flows.filter.api.TosFilter;
 import org.opennms.netmgt.flows.rest.FlowRestService;
 import org.opennms.netmgt.flows.rest.model.FlowGraphUrlInfo;
 import org.opennms.netmgt.flows.rest.model.FlowNodeDetails;
@@ -120,6 +121,12 @@ public class FlowRestServiceImpl implements FlowRestService {
                 .collect(Collectors.toList());
 
         return new FlowNodeDetails(nodeId, ifaces);
+    }
+
+    @Override
+    public List<Integer> getTosBytes(long limit, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        return waitForFuture(flowRepository.getTosBytes(filters));
     }
 
     @Override
@@ -374,6 +381,12 @@ public class FlowRestServiceImpl implements FlowRestService {
             } catch (IllegalArgumentException e) {
                 throw new BadRequestException("Invalid node criteria: " + exporterNodeCriteria);
             }
+        }
+
+        final String tosStr = queryParams.getFirst("tos");
+        if (tosStr != null) {
+            int tos = Integer.parseInt(tosStr);
+            filters.add(new TosFilter(tos));
         }
 
         return filters;

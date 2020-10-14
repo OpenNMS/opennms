@@ -117,6 +117,11 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
                              host -> this.resolveHostnameForHost(host, filters));
     }
 
+    @Override
+    public CompletableFuture<List<Integer>> getTosBytes(List<Filter> filters) {
+        return getTosBytes(filters);
+    }
+
     /**
      * Retrieve time series data from aggregated flow statistics.
      *
