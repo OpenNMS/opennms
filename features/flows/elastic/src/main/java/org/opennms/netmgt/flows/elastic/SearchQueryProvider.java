@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
+import org.opennms.netmgt.flows.filter.api.TosFilter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 
@@ -208,6 +209,20 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .put("snmpInterfaceId", snmpInterfaceIdFilter.getSnmpInterfaceId())
                 .build());
     }
+
+    @Override
+    public String visit(final TosFilter tosFilter) {
+        return render("filter_tos_interface.ftl", ImmutableMap.builder()
+                .put("tos", tosFilter.getTos())
+                .build());
+    }
+
+    public String getTos(final List<Filter> filters) {
+        return render("tos.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .build());
+    }
+
 
     public String getHostnameByConversationQuery(final String convoKey, final List<Filter> filters) {
         return render("hostname_by_convo.ftl", ImmutableMap.builder()

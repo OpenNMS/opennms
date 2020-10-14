@@ -182,6 +182,11 @@ public class InitializingFlowRepository implements FlowRepository {
         return delegate.getTopNHostSeries(N, step, includeOther, filters);
     }
 
+    @Override
+    public CompletableFuture<List<Integer>> getTosBytes(List<Filter> filters) {
+        return delegate.getTosBytes(filters);
+    }
+
     private void ensureInitialized() {
         if (initialized.get()) {
             return;

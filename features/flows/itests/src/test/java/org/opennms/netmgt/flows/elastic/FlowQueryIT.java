@@ -599,6 +599,13 @@ public class FlowQueryIT {
     }
 
     @Test
+    public void canGetTosBytes() throws Exception {
+        loadDefaultFlows();
+        final List<Integer> tosBytes = flowRepository.getTosBytes(Collections.emptyList()).get();
+        assertThat(tosBytes, containsInAnyOrder((byte)32, (byte)16, (byte)8, (byte)4));
+    }
+
+    @Test
     public void canRetrieveTopNConversationsSeries() throws Exception {
         // Load the default set of flows
         loadDefaultFlows();
@@ -733,15 +740,19 @@ public class FlowQueryIT {
                 .withSnmpInterfaceId(98)
                 // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
                 .withDirection(Direction.INGRESS)
+                .withTos(4)
                 .withFlow(new Date(3), new Date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
                 .withDirection(Direction.EGRESS)
+                .withTos(8)
                 .withFlow(new Date(3), new Date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
                 // 192.168.1.100:43445 <-> 10.1.1.12:443 (1100 bytes in [13,26])
                 .withDirection(Direction.INGRESS)
                 .withHostnames(null, "la.le.lu")
+                .withTos(16)
                 .withFlow(new Date(13), new Date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100)
                 .withDirection(Direction.EGRESS)
                 .withHostnames("la.le.lu", null)
+                .withTos(32)
                 .withFlow(new Date(13), new Date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
                 // 192.168.1.101:43442 <-> 10.1.1.12:443 (1210 bytes in [14, 45])
                 .withDirection(Direction.INGRESS)

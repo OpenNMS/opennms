@@ -228,6 +228,12 @@ public class SmartQueryService implements FlowQueryService {
                 qs -> qs.getTopNHostSeries(N, step, includeOther, filters));
     }
 
+    @Override
+    public CompletableFuture<List<Integer>> getTosBytes(List<Filter> filters) {
+        return runWithDelegate(filters, false,
+                qs -> qs.getTosBytes(filters));
+    }
+
     public boolean isAlwaysUseAggForQueries() {
         return alwaysUseAggForQueries;
     }

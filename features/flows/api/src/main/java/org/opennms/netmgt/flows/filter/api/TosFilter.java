@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,14 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.flows.filter.api;
 
-import java.util.Collection;
+import java.util.Objects;
 
-/**
- * Primary interface used to persist and query flows.
- */
-public interface FlowRepository extends FlowQueryService {
+public class TosFilter implements Filter {
 
-    void persist(Collection<Flow> packets, FlowSource source) throws FlowException;
+    private final int tos;
+
+    public TosFilter(int tos) {
+        this.tos = tos;
+    }
+
+    public int getTos() {
+        return tos;
+    }
+
+    @Override
+    public <T> T visit(FilterVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TosFilter that = (TosFilter) o;
+        return tos == that.tos;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tos);
+    }
+
 }

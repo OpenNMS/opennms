@@ -75,4 +75,6 @@ public interface FlowQueryService {
 
     CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step, boolean includeOther, List<Filter> filters);
 
+    CompletableFuture<List<Integer>> getTosBytes(List<Filter> filters);
+
 }
