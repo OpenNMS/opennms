@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.sflow.adapter;
 
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.first;
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.get;
+import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getInt64;
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
 
 import java.util.Objects;
