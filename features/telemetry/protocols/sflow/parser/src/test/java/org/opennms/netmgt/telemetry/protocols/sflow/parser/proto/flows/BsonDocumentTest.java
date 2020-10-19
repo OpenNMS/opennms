@@ -115,7 +115,6 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
         flowSample.writeBson(bsonDocumentWriter, this);
-	System.out.println("createSampledIpv4: " + bsonDocument);
         return bsonDocument;
     }
 
@@ -126,7 +125,6 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
         flowSample.writeBson(bsonDocumentWriter, this);
-	System.out.println("createSampledIpv6: " + bsonDocument);
         return bsonDocument;
     }
 
