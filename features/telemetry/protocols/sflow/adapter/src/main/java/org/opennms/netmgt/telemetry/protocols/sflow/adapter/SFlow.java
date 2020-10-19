@@ -94,7 +94,7 @@ public class SFlow implements Flow {
     @Override
     public Direction getDirection() {
         if (!getInt64(document, "source_id").equals(getInt64(document, "input")) &&
-	    !getInt64(document, "source_id").equals(Optional.empty())) {
+            !getInt64(document, "source_id").equals(Optional.empty())) {
             return Direction.EGRESS;
         } else {
             return Direction.INGRESS;
