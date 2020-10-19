@@ -11,4 +11,5 @@ For miscellaneous installation information including Minion directory structure,
 
 IMPORTANT: Commands and instructions are specific to RHEL 8. 
 We provide RHEL 7 alternatives where applicable. 
+Red text in commands indicates text inthat you must substitute for your own values (e.g., "[red]#Office Pittsboro#" means substitute your own office name.)
 
