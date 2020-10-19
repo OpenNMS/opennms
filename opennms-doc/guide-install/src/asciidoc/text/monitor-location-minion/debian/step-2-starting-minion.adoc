@@ -4,13 +4,13 @@
 .Configure systemd to start Minion on system boot
 [source, shell]
 ----
-systemctl enable minion
+sudo systemctl enable minion
 ----
 
 .Start up Minion
 [source, shell]
 ----
-systemctl start minion
+sudo systemctl start minion
 ----
 
 .Test access to Karaf shell with user `admin` and password `admin` and configure the Minion
@@ -19,9 +19,9 @@ systemctl start minion
 ssh -p 8201 admin@localhost
 
 config:edit org.opennms.minion.controller
-config:property-set location #Office-Pittsboro
-config:property-set http-url #http://opennms-fqdn:8980/opennms
-config:property-set broker-url failover:#tcp://opennms-fqdn:61616
+config:property-set location [red]#Office-Pittsboro#
+sudo config:property-set http-url [red]#http://opennms-fqdn:8980/opennms#
+config:property-set broker-url failover:[red]#tcp://opennms-fqdn:61616#
 config:update
 ----
 
@@ -31,8 +31,8 @@ TIP: Include the `failover:` portion of the broker URL to allow the Minion to re
 .Configure the credentials to use when communicating with {opennms-product-name} and exit Karaf shell
 [source]
 ----
-opennms:scv-set opennms.http #minion user name minion password
-opennms:scv-set opennms.broker #minion username minion password
+opennms:scv-set opennms.http [red]#minion user name minion password#
+opennms:scv-set opennms.broker [red]#minion user name minion password#
 <ctrl-d>
 ----
 
@@ -41,7 +41,7 @@ TIP: Another way to configure credentials is to use the `scvcli` utility in your
 .Restart the Minion after updating the credentials
 [source]
 ----
-systemctl restart minion
+sudo systemctl restart minion
 ----
 
 NOTE: The credentials are configured separately since they are encrypted on disk.
