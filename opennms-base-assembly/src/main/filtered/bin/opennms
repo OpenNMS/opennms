@@ -482,6 +482,7 @@ doStart(){
 		if doStatus "$@"; then
 			return 0
 		fi
+                OPENNMS_PID="$(getPid)"
 		if isRunning "$OPENNMS_PID"; then
 			true		# Java process is still running... don't do anything
 		else
