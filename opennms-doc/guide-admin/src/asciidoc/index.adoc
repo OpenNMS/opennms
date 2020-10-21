@@ -32,7 +32,6 @@ include::text/user-management/pre-authentication.adoc[]
 [[ga-provisioning]]
 == Provisioning
 include::text/provisioning/introduction.adoc[]
-include::text/provisioning/concepts.adoc[]
 include::text/provisioning/terminology.adoc[]
 include::text/provisioning/scalability.adoc[]
 include::text/provisioning/getting-started.adoc[]

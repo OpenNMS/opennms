@@ -8,10 +8,10 @@
 Provisioning is a mechanism to import node and service definitions either from an external source such as DNS or HTTP or via the {opennms-product-name} web UI.
 The _Provisiond_ daemon maintains your managed entity inventory through policy-based provisioning. 
 
-Provisiond comes with a RESTFul Web Service API for easy integration with external systems such as CRM or external inventory systems.
+Provisiond comes with a RESTful Web Service API for easy integration with external systems such as CRM or external inventory systems.
 It also includes an adapter API for interfacing with other management systems such as configuration management.
 
-For more details on how provisioning works in {opennms-product-name}, see the provisioning white paper on the https://www.opennms.com/[Opennms website]. 
+For more details on how provisioning works in {opennms-product-name}, see the https://www.opennms.com/[provisioning white paper]. 
 
 ==== How It Works
 
