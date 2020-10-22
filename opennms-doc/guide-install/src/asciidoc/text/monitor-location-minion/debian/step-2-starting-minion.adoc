@@ -21,7 +21,7 @@ ssh -p 8201 admin@localhost
 
 config:edit org.opennms.minion.controller
 config:property-set location [red]#Office-Pittsboro#
-sudo config:property-set http-url [red]#http://opennms-fqdn:8980/opennms#
+config:property-set http-url [red]#http://opennms-fqdn:8980/opennms#
 config:property-set broker-url [red]#failover:tcp://opennms-fqdn:61616#
 config:update
 ----
