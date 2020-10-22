@@ -56,7 +56,7 @@ A number of provisioning, polling, and web UI changes have been made to accomoda
 === Polling and Monitoring
 
 * WMI/SMB support has been updated to use a wider set of encryption types.
-* data collection configuration has been added for Netscaler vServer
+* Data collection configuration has been added for Netscaler vServer.
 
 === Thresholding
 
@@ -68,6 +68,7 @@ A number of provisioning, polling, and web UI changes have been made to accomoda
 * Flow DNS enrichment has been enhanced to improve performance.
 * Aggregate flow queries now support resolving hostnames if available.
 * Sink RPC APIs have been enhanced to expose metrics to Karaf for tracing and performance tuning.
+* The OpenConfig integration now supports gNMI, in addition to JTI.
 
 === Notifications
 
@@ -91,6 +92,7 @@ Documentation improvements and additions have been made in a number of areas:
 * Metadata
 * Mail Transport Monitor
 * Minion/Kafka RPC Tuning
+* Provisioning
 * Thresholding
 * Users Configuration, Duty Schedules, and Security Roles
 
