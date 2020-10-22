@@ -33,8 +33,8 @@ TIP: Include the `failover:` portion of the broker URL to allow the Minion to re
 [source]
 [subs=+quotes]
 ----
-opennms:scv-set opennms.http [red]#minion user name minion password#
-opennms:scv-set opennms.broker [red]#minion user name minion password#
+opennms:scv-set opennms.http [red]#minion username minion password#
+opennms:scv-set opennms.broker [red]#minion username minion password#
 <ctrl-d>
 ----
 
