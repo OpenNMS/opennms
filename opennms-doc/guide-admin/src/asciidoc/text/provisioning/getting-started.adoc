@@ -4,14 +4,20 @@
 
 === Getting Started
 
-{opennms-product-name} installs with a base configuration that automatically begins  service-level monitoring and reporting as soon as you provision managed entities.
+{opennms-product-name} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you provision managed entities (nodes, IP interfaces, SNMP interfaces, and services).
 
 {opennms-product-name} has two methods of provisioining:
 
 * xref:discovery-auto[Auto discovery]
 * xref:directed-discovery[Directed discovery]
 
-Before using auto or directed discovery, you must xref:provision-snmp-configuration [configure SNMP for provisioning]. 
+Use auto discovery if you do not have a "source of truth" for your network inventory; auto discovery can become that source. Be aware that auto discovery can generate too much information, including entities you do not want to monitor. 
+
+Directed discovery is effective if you know your inventory. It is also useful for areas of your network that you cannot auto discover.  
+
+Regardless of the method, provisioning is an iterative process: you will need to fine-tune your results to exclude or add things to what you monitor.
+
+If you collect data via SNMP or are monitoring the availability of the SNMP service on a node, you must xref:provision-snmp-configuration [configure SNMP for provisioning] before using auto or directed discovery. 
 This ensures that {opennms-product-name} can immediately scan newly discovered devices for entities.
 It also makes reporting and thresholding available for these devices.
 
@@ -34,11 +40,11 @@ Any IP addresses already configured that are eclipsed by this range will be remo
 
 For an example of the resulting XML configuration, see xref:xml-samples.adoc#SNMP-commmunity-xml[Configuring SNMP community names].
 
-NOTE: Provisiond includes an option to add community information to a single IP address thorugh the xref:single-node.adoc#quick-add-node[Quick-Add Node] feature. 
+NOTE: Provisiond includes an option to add community information to a single IP address through the xref:single-node.adoc#quick-add-node[Quick-Add Node] feature. 
 
 Now, with SNMP configuration provisioned for our 10 networks, we are ready to begin adding nodes.
 Our first example will be to automatically discover and add all managed entities (nodes, IP interfaces, SNMP interfaces, and monitored IP-based services).
-We will then give an example of how to be more _directed_ and deliberate about your discovery by using _Provisioning Groups_.
+We will then give an example of how to be more directed and deliberate about your discovery by using _Provisioning Groups_.
 
 [[discovery-auto]]
 ==== Automatic Discovery
