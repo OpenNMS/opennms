@@ -482,7 +482,7 @@ doStart(){
 		if doStatus "$@"; then
 			return 0
 		fi
-		if isRunning "$OPENNMS_PID"; then
+		if isRunning "$(getPid)"; then
 			true		# Java process is still running... don't do anything
 		else
 			echo "Started ${install.package.description}, but it stopped running: for details see $REDIRECT" >&2
