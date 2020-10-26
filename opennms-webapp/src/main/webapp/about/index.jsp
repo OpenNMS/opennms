@@ -135,9 +135,20 @@
     <th>Time-Series Strategy:</th>
     <td><%=TimeSeries.getTimeseriesStrategy().getDescr()%></td>
   </tr>
+<%
+    String globalMBStrategy, rpcMBStrategy, sinkMBStrategy;
+    globalMBStrategy = System.getProperty("org.opennms.core.ipc.strategy");
+    if (globalMBStrategy != null) {
+        rpcMBStrategy = globalMBStrategy;
+        sinkMBStrategy = globalMBStrategy;
+    } else {
+        rpcMBStrategy = System.getProperty("org.opennms.core.ipc.rpc.strategy", "ActiveMQ");
+        sinkMBStrategy = System.getProperty("org.opennms.core.ipc.sink.strategy", "ActiveMQ");
+    }
+%>
   <tr>
-    <th>Message Broker Strategy:</th>
-    <td>RPC: <%=System.getProperty("org.opennms.core.ipc.rpc.strategy", "ActiveMQ")%>; Sink: <%=System.getProperty("org.opennms.core.ipc.sink.strategy", "ActiveMQ")%></td>
+    <th>IPC Strategy:</th>
+    <td>RPC: <%= rpcMBStrategy %>; Sink: <%= sinkMBStrategy %></td>
   </tr>
 </table>
 </div>
