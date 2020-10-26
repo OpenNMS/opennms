@@ -72,8 +72,9 @@ public class ApplicationOutageDaoContainer extends OnmsVaadinContainer<Applicati
     @Override
     protected void addAdditionalCriteriaOptions(Criteria criteria, Page page, boolean doOrder) {
 
-        // filter out application ids
-        Collection<Integer> applicationIds = criteria.getRestrictions().stream()
+        // filter out relevant selectedIds. They can be either of type application or service. This works since all ids
+        // are unique.
+        Collection<Integer> selectedIds = criteria.getRestrictions().stream()
                 .filter(r -> r.getType().equals(Restriction.RestrictionType.IN))
                 .map(r-> ((InRestriction)r).getValues())
                 .flatMap(Collection::stream)
@@ -92,18 +93,28 @@ public class ApplicationOutageDaoContainer extends OnmsVaadinContainer<Applicati
         // show only outages detected by a perspective poller
         criteria.addRestriction(Restrictions.isNotNull("perspective"));
 
-        // limit to the displayed applications
+        // find all relevant services by
+        Set<OnmsMonitoredService> services = new HashSet<>();
+
+        // a.) services of selected applications
         List<OnmsApplication> applications;
-        if(applicationIds.isEmpty()) {
+        if(selectedIds.isEmpty()) {
             applications = Collections.emptyList();
         } else {
-            Criteria appCriteria = new CriteriaBuilder(OnmsApplication.class).in("id", applicationIds).toCriteria();
+            Criteria appCriteria = new CriteriaBuilder(OnmsApplication.class).in("id", selectedIds).toCriteria();
             applications = this.applicationDao.findMatching(appCriteria);
         }
-        Set<OnmsMonitoredService> services = new HashSet<>();
         for(OnmsApplication application : applications) {
             services.addAll(application.getMonitoredServices());
         }
+
+        // b.) directly selected interfaces
+        for(int serviceId : selectedIds) {
+            OnmsMonitoredService service = new OnmsMonitoredService();
+            service.setId(serviceId);
+            services.add(service);
+        }
+
         if(services.isEmpty()) {
             criteria.addRestriction(Restrictions.sql("1=2")); // we don't want to find anything
         } else {
