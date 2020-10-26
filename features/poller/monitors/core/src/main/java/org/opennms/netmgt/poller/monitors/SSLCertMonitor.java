@@ -228,14 +228,20 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
                         X509Certificate certx = (X509Certificate) certs[i];
                         String subject = "";
                         if (certx.getSubjectDN() != null && certx.getSubjectDN().getName() != null) {
-                            certx.getSubjectDN().getName();
+                            subject = certx.getSubjectDN().getName();
                         }
                         String issuer = "";
                         if (certx.getIssuerDN() != null && certx.getIssuerDN().getName() != null) {
-                            certx.getIssuerDN().getName();
+                            issuer = certx.getIssuerDN().getName();
                         }
                         String fprint = DatatypeConverter.printHexBinary(MessageDigest.getInstance("SHA-1").digest(certx.getEncoded())).toLowerCase();
                         StringBuilder reasonBuilder = new StringBuilder();
+                        if (certx.getNotBefore() == null || certx.getNotAfter() == null) {
+                            reasonBuilder.append("Unable to check for expiration: one or both of notBefore and notAfter are null for certificate with fingerprint '")
+                                .append(fprint).append("' issued to ").append(subject).append(" by ").append(issuer).append(".");
+                            serviceStatus = PollStatus.unavailable(reasonBuilder.toString());
+                            break;
+                        }
                         LOG.debug("Checking validity against dates: [current: {}, valid: {}], NotBefore: {}, NotAfter: {}", calCurrent.getTime(), calValid.getTime(), certx.getNotBefore(), certx.getNotAfter());
                         calBefore.setTime(certx.getNotBefore());
                         calAfter.setTime(certx.getNotAfter());
@@ -322,7 +328,7 @@ public class SSLCertMonitor extends ParameterSubstitutingMonitor {
 
         return serviceStatus;
     }
-
+    
     protected Calendar getCalendarInstance() {
         return GregorianCalendar.getInstance();
     }
