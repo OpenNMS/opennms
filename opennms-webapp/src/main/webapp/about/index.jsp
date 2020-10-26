@@ -135,6 +135,10 @@
     <th>Time-Series Strategy:</th>
     <td><%=TimeSeries.getTimeseriesStrategy().getDescr()%></td>
   </tr>
+  <tr>
+    <th>Message Broker Strategy:</th>
+    <td>RPC: <%=System.getProperty("org.opennms.core.ipc.rpc.strategy", "ActiveMQ")%>; Sink: <%=System.getProperty("org.opennms.core.ipc.sink.strategy", "ActiveMQ")%></td>
+  </tr>
 </table>
 </div>
 
