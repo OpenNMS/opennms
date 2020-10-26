@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,17 +28,36 @@
 
 package org.opennms.netmgt.flows.filter.api;
 
-public interface FilterVisitor<T> {
+import java.util.Objects;
 
-    T visit(ExporterNodeFilter exporterNodeFilter);
+public class DscpFilter implements Filter {
 
-    T visit(TimeRangeFilter timeRangeFilter);
+    private final int dscp;
 
-    T visit(SnmpInterfaceIdFilter snmpInterfaceIdFilter);
+    public DscpFilter(int dscp) {
+        this.dscp = dscp;
+    }
 
-    T visit(TosFilter tosFilter);
+    public int getDscp() {
+        return dscp;
+    }
 
-    T visit(DscpFilter dscpFilter);
+    @Override
+    public <T> T visit(FilterVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
-    T visit(EcnFilter ecnFilter);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DscpFilter that = (DscpFilter) o;
+        return dscp == that.dscp;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dscp);
+    }
+
 }

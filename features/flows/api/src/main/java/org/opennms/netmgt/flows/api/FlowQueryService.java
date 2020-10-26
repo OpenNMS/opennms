@@ -77,4 +77,5 @@ public interface FlowQueryService {
 
     CompletableFuture<List<Integer>> getTosBytes(List<Filter> filters);
 
+    CompletableFuture<List<Integer>> getDscpBytes(List<Filter> filters);
 }

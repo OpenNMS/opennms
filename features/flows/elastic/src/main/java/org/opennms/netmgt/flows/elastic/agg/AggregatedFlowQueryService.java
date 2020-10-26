@@ -122,6 +122,11 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
         return getTosBytes(filters);
     }
 
+    @Override
+    public CompletableFuture<List<Integer>> getDscpBytes(List<Filter> filters) {
+        return getDscpBytes(filters);
+    }
+
     /**
      * Retrieve time series data from aggregated flow statistics.
      *

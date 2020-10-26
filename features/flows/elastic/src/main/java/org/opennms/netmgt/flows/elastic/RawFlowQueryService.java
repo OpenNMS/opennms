@@ -214,6 +214,16 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                         .collect(Collectors.toList()));
     }
 
+    @Override
+    public CompletableFuture<List<Integer>> getDscpBytes(List<Filter> filters) {
+        final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
+        return searchAsync(searchQueryProvider.getDscp(filters), timeRangeFilter)
+                .thenApply(res -> res.getAggregations().getAggregation("dscp", TermsAggregation.class)
+                        .getBuckets().stream()
+                        .map(entry -> Integer.valueOf(entry.getKey()))
+                        .collect(Collectors.toList()));
+    }
+
     public CompletableFuture<Conversation> resolveHostnameForConversation(final String convoKey, List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
 

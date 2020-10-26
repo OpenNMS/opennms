@@ -45,7 +45,6 @@ import com.google.gson.annotations.SerializedName;
 public class FlowDocument {
     private static final int DOCUMENT_VERSION = 1;
 
-
     public FlowDocument(Flow flow) {
         this.flow = flow;
     }
@@ -307,6 +306,12 @@ public class FlowDocument {
      */
     @SerializedName("netflow.tos")
     private Integer tos;
+
+    @SerializedName("netflow.ecn")
+    private Integer ecn;
+
+    @SerializedName("netflow.dscp")
+    private Integer dscp;
 
     /**
      * Netfow version
@@ -677,8 +682,28 @@ public class FlowDocument {
         return tos;
     }
 
-    public void setTos(Integer tos) {
+    public void setTos(final Integer tos) {
+        if (tos != null) {
+            setEcn((tos & 192) >> 6);
+            setDscp(tos & 63);
+        }
         this.tos = tos;
+    }
+
+    private void setEcn(final Integer ecn) {
+        this.ecn = ecn;
+    }
+
+    private void setDscp(final Integer dscp) {
+        this.dscp = dscp;
+    }
+
+    public Integer getEcn() {
+        return ecn;
+    }
+
+    public Integer getDscp() {
+        return dscp;
     }
 
     public NetflowVersion getNetflowVersion() {

@@ -37,12 +37,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.flows.filter.api.DscpFilter;
+import org.opennms.netmgt.flows.filter.api.EcnFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
-import org.opennms.netmgt.flows.filter.api.TosFilter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
+import org.opennms.netmgt.flows.filter.api.TosFilter;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -217,12 +219,37 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
+    @Override
+    public String visit(final DscpFilter dscpFilter) {
+        return render("filter_tos_interface.ftl", ImmutableMap.builder()
+                .put("tos", dscpFilter.getDscp())
+                .build());
+    }
+
+    @Override
+    public String visit(final EcnFilter ecnFilter) {
+        return render("filter_tos_interface.ftl", ImmutableMap.builder()
+                .put("tos", ecnFilter.getEcn())
+                .build());
+    }
+
     public String getTos(final List<Filter> filters) {
         return render("tos.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .build());
     }
 
+    public String getDscp(final List<Filter> filters) {
+        return render("dscp.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .build());
+    }
+
+    public String getEcn(final List<Filter> filters) {
+        return render("ecn.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .build());
+    }
 
     public String getHostnameByConversationQuery(final String convoKey, final List<Filter> filters) {
         return render("hostname_by_convo.ftl", ImmutableMap.builder()

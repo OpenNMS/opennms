@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.flows.filter.api.DscpFilter;
+import org.opennms.netmgt.flows.filter.api.EcnFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.FilterVisitor;
@@ -161,6 +163,20 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
     public String visit(TosFilter tosFilter) {
         return render("filter_tos_interface.ftl", ImmutableMap.builder()
                 .put("tos", tosFilter.getTos())
+                .build());
+    }
+
+    @Override
+    public String visit(DscpFilter DscpFilter) {
+        return render("filter_dscp_interface.ftl", ImmutableMap.builder()
+                .put("tos", DscpFilter.getDscp())
+                .build());
+    }
+
+    @Override
+    public String visit(EcnFilter ecnFilter) {
+        return render("filter_ecn_interface.ftl", ImmutableMap.builder()
+                .put("tos", ecnFilter.getEcn())
                 .build());
     }
 }

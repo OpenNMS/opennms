@@ -61,6 +61,8 @@ import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.TrafficSummary;
+import org.opennms.netmgt.flows.filter.api.DscpFilter;
+import org.opennms.netmgt.flows.filter.api.EcnFilter;
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.NodeCriteria;
@@ -127,6 +129,12 @@ public class FlowRestServiceImpl implements FlowRestService {
     public List<Integer> getTosBytes(long limit, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         return waitForFuture(flowRepository.getTosBytes(filters));
+    }
+
+    @Override
+    public List<Integer> getDscpBytes(long limit, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        return waitForFuture(flowRepository.getDscpBytes(filters));
     }
 
     @Override
@@ -387,6 +395,18 @@ public class FlowRestServiceImpl implements FlowRestService {
         if (tosStr != null) {
             int tos = Integer.parseInt(tosStr);
             filters.add(new TosFilter(tos));
+        }
+
+        final String dscpStr = queryParams.getFirst("dscp");
+        if (dscpStr != null) {
+            int dscp = Integer.parseInt(dscpStr);
+            filters.add(new DscpFilter(dscp));
+        }
+
+        final String ecnStr = queryParams.getFirst("ecn");
+        if (ecnStr != null) {
+            int ecn = Integer.parseInt(ecnStr);
+            filters.add(new EcnFilter(ecn));
         }
 
         return filters;
