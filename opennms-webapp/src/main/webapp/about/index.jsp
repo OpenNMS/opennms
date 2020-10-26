@@ -131,13 +131,24 @@
     <th>Database Version:</th>
     <td><%=dbVersion%></td>
   </tr>
+<%
+    String globalMBStrategy, sinkMBStrategy, rpcMBStrategy;
+    globalMBStrategy = org.opennms.core.rpc.common.RpcStrategy.getRpcStrategy().getDescr();
+    if (globalMBStrategy != null) {
+        sinkMBStrategy = globalMBStrategy;
+        rpcMBStrategy = globalMBStrategy;
+    } else {
+        sinkMBStrategy = org.opennms.core.ipc.sink.common.SinkStrategy.getSinkStrategy().getDescr();
+        rpcMBStrategy = org.opennms.core.rpc.common.RpcStrategy.getRpcStrategy().getDescr();
+    }
+%>
   <tr>
     <th>Time-Series Strategy:</th>
     <td><%=TimeSeries.getTimeseriesStrategy().getDescr()%></td>
   </tr>
   <tr>
     <th>IPC Strategy:</th>
-    <td><%=org.opennms.core.ipc.sink.common.SinkStrategy.getSinkStrategy().getDescr()%></td>
+    <td>Sink: <%=sinkMBStrategy%>; RPC: <%=rpcMBStrategy%></td>
   </tr>
 </table>
 </div>
