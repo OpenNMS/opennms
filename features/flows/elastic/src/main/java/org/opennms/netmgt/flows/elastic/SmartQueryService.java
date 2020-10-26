@@ -234,6 +234,12 @@ public class SmartQueryService implements FlowQueryService {
                 qs -> qs.getTosBytes(filters));
     }
 
+    @Override
+    public CompletableFuture<List<Integer>> getDscpBytes(List<Filter> filters) {
+        return runWithDelegate(filters, false,
+                qs -> qs.getDscpBytes(filters));
+    }
+
     public boolean isAlwaysUseAggForQueries() {
         return alwaysUseAggForQueries;
     }
