@@ -188,6 +188,16 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
+    public CompletableFuture<List<TrafficSummary<Integer>>> getTosSummaries(List<Filter> filters) {
+        return delegate.getTosSummaries(filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<Integer>, Long, Double>> getTosSeries(long step, List<Filter> filters) {
+        return delegate.getTosSeries(step, filters);
+    }
+
+    @Override
     public CompletableFuture<List<Integer>> getDscp(List<Filter> filters) {
         return delegate.getDscp(filters);
     }

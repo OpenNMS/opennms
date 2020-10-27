@@ -446,6 +446,16 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
+    public CompletableFuture<List<TrafficSummary<Integer>>> getTosSummaries(List<Filter> filters) {
+        return smartQueryService.getTosSummaries(filters);
+    }
+
+    @Override
+    public CompletableFuture<Table<Directional<Integer>, Long, Double>> getTosSeries(long step, List<Filter> filters) {
+        return smartQueryService.getTosSeries(step, filters);
+    }
+
+    @Override
     public CompletableFuture<List<Integer>> getDscp(List<Filter> filters) {
         return smartQueryService.getDscp(filters);
     }
