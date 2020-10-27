@@ -132,9 +132,9 @@ public class FlowRestServiceImpl implements FlowRestService {
     }
 
     @Override
-    public List<Integer> getDscpBytes(long limit, UriInfo uriInfo) {
+    public List<Integer> getDscp(long limit, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        return waitForFuture(flowRepository.getDscpBytes(filters));
+        return waitForFuture(flowRepository.getDscp(filters));
     }
 
     @Override

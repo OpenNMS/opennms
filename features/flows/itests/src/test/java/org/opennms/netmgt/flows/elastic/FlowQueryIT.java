@@ -608,7 +608,7 @@ public class FlowQueryIT {
     @Test
     public void canGetDscpBytes() throws Exception {
         loadDefaultFlows();
-        final List<Integer> dscpBytes = flowRepository.getDscpBytes(Collections.emptyList()).get();
+        final List<Integer> dscpBytes = flowRepository.getDscp(Collections.emptyList()).get();
         assertThat(dscpBytes, containsInAnyOrder(32, 16, 8, 4));
     }
 

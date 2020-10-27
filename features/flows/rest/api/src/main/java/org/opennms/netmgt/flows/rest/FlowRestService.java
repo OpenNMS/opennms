@@ -100,8 +100,8 @@ public interface FlowRestService {
     @GET
     @Path("dscp/enumerate")
     @Produces(MediaType.APPLICATION_JSON)
-    List<Integer> getDscpBytes(@DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
-                              @Context UriInfo uriInfo);
+    List<Integer> getDscp(@DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
+                          @Context UriInfo uriInfo);
 
     /**
      * Retrieve the list of applications.

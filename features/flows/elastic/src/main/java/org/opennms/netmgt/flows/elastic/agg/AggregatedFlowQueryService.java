@@ -120,8 +120,8 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
     }
 
     @Override
-    public CompletableFuture<List<Integer>> getDscpBytes(List<Filter> filters) {
-        return getDscpBytes(filters);
+    public CompletableFuture<List<Integer>> getDscp(List<Filter> filters) {
+        return getDscp(filters);
     }
 
     /**

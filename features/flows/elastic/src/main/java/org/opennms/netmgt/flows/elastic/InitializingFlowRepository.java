@@ -188,8 +188,8 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<Integer>> getDscpBytes(List<Filter> filters) {
-        return delegate.getDscpBytes(filters);
+    public CompletableFuture<List<Integer>> getDscp(List<Filter> filters) {
+        return delegate.getDscp(filters);
     }
 
     private void ensureInitialized() {
