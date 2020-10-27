@@ -221,15 +221,15 @@ public class SearchQueryProvider implements FilterVisitor<String> {
 
     @Override
     public String visit(final DscpFilter dscpFilter) {
-        return render("filter_tos_interface.ftl", ImmutableMap.builder()
-                .put("tos", dscpFilter.getDscp())
+        return render("filter_dscp_interface.ftl", ImmutableMap.builder()
+                .put("dscp", dscpFilter.getDscp())
                 .build());
     }
 
     @Override
     public String visit(final EcnFilter ecnFilter) {
-        return render("filter_tos_interface.ftl", ImmutableMap.builder()
-                .put("tos", ecnFilter.getEcn())
+        return render("filter_ecn_interface.ftl", ImmutableMap.builder()
+                .put("ecn", ecnFilter.getEcn())
                 .build());
     }
 
@@ -241,12 +241,6 @@ public class SearchQueryProvider implements FilterVisitor<String> {
 
     public String getDscp(final List<Filter> filters) {
         return render("dscp.ftl", ImmutableMap.builder()
-                .put("filters", getFilterQueries(filters))
-                .build());
-    }
-
-    public String getEcn(final List<Filter> filters) {
-        return render("ecn.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .build());
     }

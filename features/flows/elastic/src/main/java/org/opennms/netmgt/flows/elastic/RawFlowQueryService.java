@@ -215,7 +215,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
     }
 
     @Override
-    public CompletableFuture<List<Integer>> getDscpBytes(List<Filter> filters) {
+    public CompletableFuture<List<Integer>> getDscp(List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
         return searchAsync(searchQueryProvider.getDscp(filters), timeRangeFilter)
                 .thenApply(res -> res.getAggregations().getAggregation("dscp", TermsAggregation.class)

@@ -684,8 +684,11 @@ public class FlowDocument {
 
     public void setTos(final Integer tos) {
         if (tos != null) {
-            setEcn((tos & 192) >> 6);
-            setDscp(tos & 63);
+            setDscp((tos & 0b11111100) >> 2);
+            setEcn(tos & 0b00000011);
+        } else {
+            setDscp(null);
+            setEcn(null);
         }
         this.tos = tos;
     }

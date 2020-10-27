@@ -446,8 +446,8 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<Integer>> getDscpBytes(List<Filter> filters) {
-        return smartQueryService.getDscpBytes(filters);
+    public CompletableFuture<List<Integer>> getDscp(List<Filter> filters) {
+        return smartQueryService.getDscp(filters);
     }
 
     public Identity getIdentity() {

@@ -169,14 +169,14 @@ public class AggregatedSearchQueryProvider implements FilterVisitor<String> {
     @Override
     public String visit(DscpFilter DscpFilter) {
         return render("filter_dscp_interface.ftl", ImmutableMap.builder()
-                .put("tos", DscpFilter.getDscp())
+                .put("dscp", DscpFilter.getDscp())
                 .build());
     }
 
     @Override
     public String visit(EcnFilter ecnFilter) {
         return render("filter_ecn_interface.ftl", ImmutableMap.builder()
-                .put("tos", ecnFilter.getEcn())
+                .put("ecn", ecnFilter.getEcn())
                 .build());
     }
 }
