@@ -12,11 +12,13 @@ umask 002
 MINION_HOME="/opt/minion"
 MINION_CONFIG="/opt/minion/etc/org.opennms.minion.controller.cfg"
 MINION_PROCESS_ENV_CFG="/opt/minion/etc/minion-process.env"
+MINION_SERVER_CERTS_CFG="/opt/minion/etc/minion-server-certs.env"
 MINION_OVERLAY_ETC="/opt/minion-etc-overlay"
 CONFD_KEY_STORE="/opt/minion/minion-config.yaml"
 CONFD_CONFIG_DIR="/opt/minion/confd"
 CONFD_BIN="/usr/local/bin/confd"
 CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
+CACERTS="/opt/minion/cacerts"
 
 export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT"
 
@@ -191,6 +193,14 @@ configure() {
       [[ $assignment =~ ^#.* ]] && continue
       export "$assignment"
     done < "$MINION_PROCESS_ENV_CFG"
+  fi
+  if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
+    cp "$JAVA_HOME/lib/security/cacerts" "$CACERTS"
+    export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$CACERTS -Djavax.net.ssl.trustStorePassword=changeit"
+    while read certid; do
+      [[ $certid =~ ^#.* ]] && continue
+      keytool -importcert -file "/opt/minion/server-certs/$certid" -alias "$certid" -keystore "$CACERTS" -storepass changeit -noprompt
+    done < "$MINION_SERVER_CERTS_CFG"
   fi
 }
 
