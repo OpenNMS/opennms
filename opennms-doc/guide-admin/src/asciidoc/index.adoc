@@ -43,6 +43,7 @@ include::text/provisioning/fine-grained.adoc[]
 include::text/provisioning/api-examples.adoc[]
 include::text/provisioning/snmp-profile.adoc[]
 include::text/provisioning/auto-discovery-detectors.adoc[]
+include::text/provisioning/xml-samples.adoc[]
 
 [[ga-provisioning-detectors]]
 === Service Detectors
