@@ -138,6 +138,44 @@ public class FlowRestServiceImpl implements FlowRestService {
     }
 
     @Override
+    public FlowSummaryResponse getTosSummary(UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+
+        final FlowSummaryResponse response = new FlowSummaryResponse();
+        response.setStart(timeRangeFilter.getStart());
+        response.setEnd(timeRangeFilter.getEnd());
+
+        final List<TrafficSummary<Integer>> summary = waitForFuture(flowRepository.getTosSummaries(filters));
+
+        this.<Integer>defaultSummaryResponseConsumer("ToS", Object::toString)
+            .apply(response)
+            .accept(summary);
+
+        return response;
+    }
+
+    @Override
+    public FlowSeriesResponse getTosSeries(long step, UriInfo uriInfo) {
+        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
+        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
+
+        final FlowSeriesResponse response = new FlowSeriesResponse();
+        response.setStart(timeRangeFilter.getStart());
+        response.setEnd(timeRangeFilter.getEnd());
+
+        final Table<Directional<Integer>, Long, Double> series = waitForFuture(flowRepository.getTosSeries(step, filters));
+
+        this.<Integer>defaultSeriesReponseConsumer(Object::toString)
+                .apply(response)
+                .accept(series);
+
+        populateResponseFromTable(series, response);
+
+        return response;
+    }
+
+    @Override
     public List<String> getApplications(String matchingPrefix, long limit, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         return waitForFuture(flowRepository.getApplications(matchingPrefix, limit, filters));

@@ -98,6 +98,17 @@ public interface FlowRestService {
                               @Context UriInfo uriInfo);
 
     @GET
+    @Path("tos")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSummaryResponse getTosSummary(@Context UriInfo uriInfo);
+
+    @GET
+    @Path("tos/series")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSeriesResponse getTosSeries(@DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
+                                    @Context final UriInfo uriInfo);
+
+    @GET
     @Path("dscp/enumerate")
     @Produces(MediaType.APPLICATION_JSON)
     List<Integer> getDscp(@DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
