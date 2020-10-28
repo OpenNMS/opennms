@@ -61,6 +61,9 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 public class OpenConfigAdapter extends AbstractScriptedCollectionAdapter {
 
+    private final String DEFAULT_MODE = "gnmi";
+    private final String JTI_MODE = "jti";
+
     private CollectionAgentFactory collectionAgentFactory;
 
     private InterfaceToNodeCache interfaceToNodeCache;
@@ -80,7 +83,7 @@ public class OpenConfigAdapter extends AbstractScriptedCollectionAdapter {
 
         try {
             // Default mode is gnmi
-            if ("jti".equals(mode)) {
+            if (JTI_MODE.equalsIgnoreCase(mode)) {
                 Telemetry.OpenConfigData openConfigData = Telemetry.OpenConfigData.parseFrom(message.getByteArray());
                 String systemId = openConfigData.getSystemId();
                 CollectionAgent agent = getCollectionAgent(messageLog, systemId);

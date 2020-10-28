@@ -193,7 +193,7 @@ public class OpenConfigIT {
         connectorPackage.setName("OpenConfig-Default");
         connectorPackage.setFilter(new PackageConfig.Filter("IPADDR != '0.0.0.0'"));
         if (jti) {
-            connectorPackage.getParameters().add(new Parameter("mode", "jti"));
+            connectorPackage.getParameters().add(new Parameter("mode", "JTI"));
         }
         connectorPackage.getParameters().add(new Parameter("port", "50052"));
         connectorPackage.getParameters().add(new Parameter("group1","paths", "/interfaces"));
@@ -228,7 +228,7 @@ public class OpenConfigIT {
         openConfigAdapter.setClassName(OpenConfigAdapter.class.getCanonicalName());
         openConfigAdapter.getParameters().add(new Parameter("script", scriptFile.getAbsolutePath()));
         if (jti) {
-            openConfigAdapter.getParameters().add(new Parameter("mode", "jti"));
+            openConfigAdapter.getParameters().add(new Parameter("mode", "JTI"));
         }
         openConfigQueue.getAdapters().add(openConfigAdapter);
 

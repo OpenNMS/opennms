@@ -84,6 +84,13 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private static final int DEFAULT_INTERNAL_TIMEOUT = 1000;
     private static final int DEFAULT_FREQUENCY = 300000; //5min
     private static final int DEFAULT_INTERVAL_IN_SEC = 300; //5min
+    private static final String PORT = "port";
+    private static final String MODE = "mode";
+    private static final String PATHS = "paths";
+    private static final String FREQUENCY = "frequency";
+    private static final String INTERVAL = "interval";
+    private static final String RETRIES = "retries";
+    private static final String JTI_MODE = "jti";
     private ManagedChannel channel;
     private final InetAddress host;
     private Integer port;
@@ -100,11 +107,11 @@ public class OpenConfigClientImpl implements OpenConfigClient {
         this.host = Objects.requireNonNull(host);
         this.paramList.addAll(paramList);
         // Extract port and mode which are global.
-        this.paramList.stream().filter(entry -> entry.get("port") != null)
+        this.paramList.stream().filter(entry -> entry.get(PORT) != null)
                 .findFirst().ifPresent(entry ->
-                this.port = Objects.requireNonNull(StringUtils.parseInt(entry.get("port"), null)));
-        this.paramList.stream().filter(entry -> entry.get("mode") != null)
-                .findFirst().ifPresent(entry -> this.mode = entry.get("mode"));
+                this.port = Objects.requireNonNull(StringUtils.parseInt(entry.get(PORT), null)));
+        this.paramList.stream().filter(entry -> entry.get(MODE) != null)
+                .findFirst().ifPresent(entry -> this.mode = entry.get(MODE));
     }
 
     @Override
@@ -139,12 +146,12 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private void subscribeToTelemetry(OpenConfigClient.Handler handler) {
 
         // Defaults to gnmi
-        if ("jti".equals(mode)) {
+        if (JTI_MODE.equalsIgnoreCase(mode)) {
             OpenConfigTelemetryGrpc.OpenConfigTelemetryStub asyncStub = OpenConfigTelemetryGrpc.newStub(channel);
             Telemetry.SubscriptionRequest.Builder requestBuilder = Telemetry.SubscriptionRequest.newBuilder();
             paramList.forEach(entry -> {
-                Integer frequency = StringUtils.parseInt(entry.get("frequency"), DEFAULT_FREQUENCY);
-                String pathString = entry.get("paths");
+                Integer frequency = StringUtils.parseInt(entry.get(FREQUENCY), DEFAULT_FREQUENCY);
+                String pathString = entry.get(PATHS);
                 List<String> paths = pathString != null ? Arrays.asList(pathString.split(",", -1)) : new ArrayList<>();
                 paths.forEach(path -> requestBuilder.addPathList(Telemetry.Path.newBuilder().setPath(path).setSampleFrequency(frequency).build()));
             });
@@ -155,8 +162,8 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             Gnmi.SubscribeRequest.Builder requestBuilder = Gnmi.SubscribeRequest.newBuilder();
             Gnmi.SubscriptionList.Builder subscriptionListBuilder = Gnmi.SubscriptionList.newBuilder();
             paramList.forEach(entry -> {
-                Integer frequency = StringUtils.parseInt(entry.get("frequency"), DEFAULT_FREQUENCY);
-                String pathString = entry.get("paths");
+                Integer frequency = StringUtils.parseInt(entry.get(FREQUENCY), DEFAULT_FREQUENCY);
+                String pathString = entry.get(PATHS);
                 List<String> paths = pathString != null ? Arrays.asList(pathString.split(",", -1)) : new ArrayList<>();
                 paths.forEach(path -> {
                     Gnmi.Path gnmiPath = buildGnmiPath(path);
@@ -222,13 +229,13 @@ public class OpenConfigClientImpl implements OpenConfigClient {
         }
 
         // If it's not subscribed, schedule this to run after configured timeout
-        this.paramList.stream().filter(entry -> entry.get("interval") != null)
+        this.paramList.stream().filter(entry -> entry.get(INTERVAL) != null)
                 .findFirst().ifPresent(entry ->
-                this.interval = StringUtils.parseInt(entry.get("interval"), DEFAULT_INTERVAL_IN_SEC));
+                this.interval = StringUtils.parseInt(entry.get(INTERVAL), DEFAULT_INTERVAL_IN_SEC));
         // When retries is null or <= 0, scheduling will happen indefinitely until it succeeds.
-        this.paramList.stream().filter(entry -> entry.get("retries") != null)
+        this.paramList.stream().filter(entry -> entry.get(RETRIES) != null)
                 .findFirst().ifPresent(entry ->
-                this.retries = StringUtils.parseInt(entry.get("retries"), null));
+                this.retries = StringUtils.parseInt(entry.get(RETRIES), null));
 
         Integer retries = this.retries;
         while (!closed.get()) {
