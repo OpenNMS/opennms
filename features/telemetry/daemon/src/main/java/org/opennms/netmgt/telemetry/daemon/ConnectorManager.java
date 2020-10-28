@@ -55,7 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.base.Strings;
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * The ConnectorManager is responsible for starting/stopping connectors that connect to the target agents.
@@ -91,33 +91,32 @@ public class ConnectorManager {
             if (connectorsByKey.containsKey(key)) {
                 LOG.debug("Connector already exists. Ignoring.");
             }
-            List<Map<String, String>> interpolatedMapList = new ArrayList<>();
-            // Flatten the parameters to a map
-            Map<String,String> parmMap = packageConfig.getParameters().stream()
-                    .filter(parameter -> Strings.isNullOrEmpty(parameter.getGroup()))
-                    .collect(Collectors.toMap(
-                            Parameter::getKey,
-                            Parameter::getValue
-                    ));
-            // Interpolate meta-data in parameter values
-            parmMap = getInterpolated(parmMap, serviceRef);
-            interpolatedMapList.add(parmMap);
-
-            // Interpolate grouped parameters
-            Map<String, Map<String, String>> parmMapByGroup = packageConfig.getParameters().stream()
-                    .filter(parameter -> !Strings.isNullOrEmpty(parameter.getGroup()))
-                    .collect(Collectors.groupingBy(Parameter::getGroup, Collectors.toMap(Parameter::getKey, Parameter::getValue)));
-
-            parmMapByGroup.forEach((group, parmeterMap) -> {
-                interpolatedMapList.add(getInterpolated(parmeterMap, serviceRef));
-            });
-
+            List<Map<String, String>> interpolatedMapList = getGroupedParams(packageConfig, serviceRef);
             // Create a new connector
             LOG.debug("Starting connector for: {}", key);
             final Connector connector = telemetryRegistry.getConnector(connectorConfig);
             connectorsByKey.put(key, connector);
             connector.stream(serviceRef.getNodeId(), serviceRef.getIpAddress(), interpolatedMapList);
         }
+    }
+
+    List<Map<String, String>> getGroupedParams(PackageConfig packageConfig, ServiceRef serviceRef) {
+
+        List<Map<String, String>> interpolatedMapList = new ArrayList<>();
+        // Convert parameters from the package into different groups grouped by parameter group.
+        Map<String, Map<String, String>> parmMapByGroup = packageConfig.getParameters().stream()
+                .peek(parameter -> {
+                    if (parameter.getGroup() == null) {
+                        parameter.setGroup("");
+                    }
+                })
+                .collect(Collectors.groupingBy(Parameter::getGroup, Collectors.toMap(Parameter::getKey, Parameter::getValue)));
+
+        // Interpolate meta-data and add grouped params to list.
+        parmMapByGroup.forEach((group, parmeterMap) -> {
+            interpolatedMapList.add(getInterpolated(parmeterMap, serviceRef));
+        });
+        return interpolatedMapList;
     }
 
     private Map<String, String> getInterpolated(Map<String, String> parameterMap, ServiceRef serviceRef) {
@@ -239,4 +238,8 @@ public class ConnectorManager {
         }
     }
 
+    @VisibleForTesting
+    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+        this.entityScopeProvider = entityScopeProvider;
+    }
 }
