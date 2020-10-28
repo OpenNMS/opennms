@@ -36,7 +36,7 @@ A number of useful commands have been added or updated in the Karaf shell.
 
 === Minion and Sentinel
 
-* The Minion `confd` configuration support now handles a bunch more options, including setting Jetty, RMI, and ssh host and port, Secure Credentials Vault configuration, and environment variables and options for the JVM.
+* The Minion `confd` configuration support now handles a bunch more options, including setting Jetty, RMI, and ssh host and port, Secure Credentials Vault configuration, and environment variables and options for the JVM.  For details, see link:https://github.com/OpenNMS/opennms/blob/develop/opennms-container/minion/CONFD_README.md[the CONFD_README file].
 * It's now possible to override entries in a Sentinel's `system.properties` with a file called `custom.system.properties`
 
 === Application Perspective Monitoring
