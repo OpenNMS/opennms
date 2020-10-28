@@ -4,13 +4,13 @@
 .Configure systemd to start Minion on system boot
 [source, shell]
 ----
-sudo systemctl enable minion
+systemctl enable minion
 ----
 
 .Start up Minion
 [source, shell]
 ----
-sudo systemctl start minion
+systemctl start minion
 ----
 
 .Test access to Karaf shell with user `admin` and password `admin` and configure the Minion
@@ -43,7 +43,7 @@ TIP: Another way to configure credentials is to use the `scvcli` utility in your
 .Restart the Minion after updating the credentials
 [source]
 ----
-sudo systemctl restart minion
+systemctl restart minion
 ----
 
 NOTE: The credentials are configured separately since they are encrypted on disk.
