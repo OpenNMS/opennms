@@ -67,7 +67,7 @@ public class ApplicationStatusEnrichment implements EnrichmentProcessor {
     }
 
     @Override
-    public void enrich(EnrichmentGraphBuilder graphBuilder) {
+    public void enrich(final EnrichmentGraphBuilder graphBuilder) {
         // Prepare calculation
         final List<GenericVertex> allVertices = graphBuilder.getView().getVertices();
         final List<GenericVertex> rootVertices = graphBuilder.getView().getVertices().stream().map(ApplicationVertex::from).filter(v -> v.getApplicationId() != null).map(AbstractDomainVertex::asGenericVertex).collect(Collectors.toList());
@@ -100,37 +100,41 @@ public class ApplicationStatusEnrichment implements EnrichmentProcessor {
         // The status of each Application (root vertices) is the maximum of its children or if all children have an alarm
         // a minimum of "major"
         for (GenericVertex eachRoot : rootVertices) {
-            boolean allChildrenHaveActiveAlarms = true;
-            final StatusInfo.StatusInfoBuilder rootStatusBuilder = StatusInfo.from(DEFAULT_STATUS);
-            // Calculate max severity
-            for (GenericEdge eachEdge : graphBuilder.getView().getConnectingEdges(eachRoot)) {
-                final GenericVertex serviceVertex = graphBuilder.getView().resolveVertex(eachEdge.getTarget());
-                final StatusInfo childStatus = childStatusMap.get(toId(serviceVertex));
-                final Severity childSeverity = childStatus.getSeverity();
-
-                // check if all children have alarms
-                if(childSeverity == null || Severity.Normal.isEqual(childSeverity) || Severity.Unknown.isEqual(childSeverity)){
-                    allChildrenHaveActiveAlarms = false;  // at least one child has no active alarm
-                }
-
-                // check for the highest severity
-                if (rootStatusBuilder.getSeverity().isLessThan(childStatus.getSeverity())) {
-                    rootStatusBuilder.severity(childStatus.getSeverity()).count(childStatus.getCount());
-                }
-
-                // sum up all alarm counts from children
-                rootStatusBuilder.count(rootStatusBuilder.getCount() + childStatus.getCount());
-            }
-
-            // if all children have active alarms, the application status must be at least major
-            if (allChildrenHaveActiveAlarms && rootStatusBuilder.getSeverity().isLessThan(Severity.Major)) {
-                rootStatusBuilder.severity(Severity.Major);
-            }
-            vertexStatusMap.put(eachRoot, rootStatusBuilder.build());
+            vertexStatusMap.put(eachRoot, buildStatusForApplication(eachRoot, graphBuilder, childStatusMap));
         }
 
         // Update vertices
         vertexStatusMap.entrySet().forEach(entry -> graphBuilder.property(entry.getKey(), EnrichedProperties.STATUS, entry.getValue()));
+    }
+
+    StatusInfo buildStatusForApplication(final GenericVertex eachRoot, final EnrichmentGraphBuilder graphBuilder, final Map<String, StatusInfo> childStatusMap) {
+        boolean allChildrenHaveActiveAlarms = true;
+        final StatusInfo.StatusInfoBuilder rootStatusBuilder = StatusInfo.from(DEFAULT_STATUS);
+        // Calculate max severity
+        for (GenericEdge eachEdge : graphBuilder.getView().getConnectingEdges(eachRoot)) {
+            final GenericVertex serviceVertex = graphBuilder.getView().resolveVertex(eachEdge.getTarget());
+            final StatusInfo childStatus = childStatusMap.get(toId(serviceVertex));
+            final Severity childSeverity = childStatus.getSeverity();
+
+            // check if all children have alarms
+            if(childSeverity == null || Severity.Normal.isEqual(childSeverity) || Severity.Unknown.isEqual(childSeverity)){
+                allChildrenHaveActiveAlarms = false;  // at least one child has no active alarm
+            }
+
+            // check for the highest severity
+            if (rootStatusBuilder.getSeverity().isLessThan(childStatus.getSeverity())) {
+                rootStatusBuilder.severity(childStatus.getSeverity());
+            }
+
+            // sum up all alarm counts from children
+            rootStatusBuilder.count(rootStatusBuilder.getCount() + childStatus.getCount());
+        }
+
+        // if all children have active alarms, the application status must be at least major
+        if (allChildrenHaveActiveAlarms && rootStatusBuilder.getSeverity().isLessThan(Severity.Major)) {
+            rootStatusBuilder.severity(Severity.Major);
+        }
+        return rootStatusBuilder.build();
     }
 
     private String toId(GenericVertex vertex) {
