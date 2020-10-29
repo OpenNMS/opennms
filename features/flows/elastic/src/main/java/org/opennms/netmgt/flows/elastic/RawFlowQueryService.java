@@ -216,14 +216,14 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
 
     @Override
     public CompletableFuture<List<TrafficSummary<Integer>>> getTosSummaries(List<Filter> filters) {
-        return getTotalBytesFrom(null, "netflow.tos", null, false,
-                                 filters);
+        //return getTotalBytesFrom(null, "netflow.tos", null, false, filters);
+        return null;
     }
 
     @Override
     public CompletableFuture<Table<Directional<Integer>, Long, Double>> getTosSeries(long step, List<Filter> filters) {
-        return getSeriesFor(applications, "netflow.application", step, false, filters)
-                .thenCompose((res) -> mapTable(res, CompletableFuture::completedFuture));
+        //return getSeriesFor(applications, "netflow.application", step, false, filters).thenCompose((res) -> mapTable(res, CompletableFuture::completedFuture));
+        return null;
     }
 
     @Override
