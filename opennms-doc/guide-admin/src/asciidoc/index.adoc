@@ -33,6 +33,7 @@ include::text/user-management/pre-authentication.adoc[]
 == Provisioning
 include::text/provisioning/introduction.adoc[]
 include::text/provisioning/getting-started.adoc[]
+include::text/provisioning/detectors.adoc[]
 include::text/provisioning/import-handler.adoc[]
 include::text/provisioning/examples.adoc[]
 include::text/provisioning/adapters.adoc[]
