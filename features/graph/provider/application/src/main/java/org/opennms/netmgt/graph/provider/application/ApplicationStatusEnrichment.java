@@ -29,6 +29,7 @@
 package org.opennms.netmgt.graph.provider.application;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,11 +108,14 @@ public class ApplicationStatusEnrichment implements EnrichmentProcessor {
         vertexStatusMap.entrySet().forEach(entry -> graphBuilder.property(entry.getKey(), EnrichedProperties.STATUS, entry.getValue()));
     }
 
-    StatusInfo buildStatusForApplication(final GenericVertex eachRoot, final EnrichmentGraphBuilder graphBuilder, final Map<String, StatusInfo> childStatusMap) {
-        boolean allChildrenHaveActiveAlarms = true;
+    StatusInfo buildStatusForApplication(final GenericVertex application, final EnrichmentGraphBuilder graphBuilder, final Map<String, StatusInfo> childStatusMap) {
+        Collection<GenericEdge> services = graphBuilder.getView().getConnectingEdges(application);
+
+        boolean allChildrenHaveActiveAlarms = services.size() > 0;
+
         final StatusInfo.StatusInfoBuilder rootStatusBuilder = StatusInfo.from(DEFAULT_STATUS);
         // Calculate max severity
-        for (GenericEdge eachEdge : graphBuilder.getView().getConnectingEdges(eachRoot)) {
+        for (GenericEdge eachEdge : services) {
             final GenericVertex serviceVertex = graphBuilder.getView().resolveVertex(eachEdge.getTarget());
             final StatusInfo childStatus = childStatusMap.get(toId(serviceVertex));
             final Severity childSeverity = childStatus.getSeverity();
