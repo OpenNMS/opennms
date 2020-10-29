@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,10 +30,9 @@ package org.opennms.netmgt.collectd;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -44,68 +43,80 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Class RegExPropertyExtender.
+ * The Class PointerLikeIndexPropertyExtender.
  * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @author <a href="mailto:jeffg@opennms.com">Jeff Gehlbach</a> based on the work of
+ * <a href="mailto:agalue@opennms.org">Alejandro Galue</a> and Jean-Marie Kubek
  */
-public class RegExPropertyExtender implements SnmpPropertyExtender {
+public class PointerLikeIndexPropertyExtender implements SnmpPropertyExtender {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(RegExPropertyExtender.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PointerLikeIndexPropertyExtender.class);
 
     /** The Constant SOURCE_TYPE. */
     private static final String SOURCE_TYPE = "source-type";
+    
+    /** The Constant SOURCE_ATTRIBUTE. */
+    private static final String SOURCE_ATTRIBUTE = "source-attribute";
+    
+    /** The Constant TARGET_INDEX_POINTER_COLUMN. */
+    private static final String TARGET_INDEX_POINTER_COLUMN = "target-index-pointer-column";
 
-    /** The Constant SOURCE_ALIAS. */
-    private static final String SOURCE_ALIAS = "source-alias";
-
-    /** The Constant INDEX_PATTERN. */
-    private static final String INDEX_PATTERN = "index-pattern";
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.collectd.SnmpPropertyExtender#getTargetAttribute(java.util.List, org.opennms.netmgt.collectd.SnmpCollectionResource, org.opennms.netmgt.config.datacollection.MibObjProperty)
-     */
     @Override
     public SnmpAttribute getTargetAttribute(List<CollectionAttribute> sourceAttributes, SnmpCollectionResource targetResource, MibObjProperty property) {
         final String sourceType = property.getParameterValue(SOURCE_TYPE);
         if (StringUtils.isBlank(sourceType)) {
-            LOG.warn("Cannot execute the RegEx property extender because: missing parameter {}", SOURCE_TYPE);
+            LOG.warn("Cannot execute the pointer-like-index property extender because: missing parameter {}", SOURCE_TYPE);
             return null;
         }
 
-        final String sourceAlias = property.getParameterValue(SOURCE_ALIAS);
-        if (StringUtils.isBlank(sourceAlias)) {
-            LOG.warn("Cannot execute the RegEx property extender because: missing parameter {}", SOURCE_ALIAS);
+        final String sourceAttribute = property.getParameterValue(SOURCE_ATTRIBUTE);
+        if (StringUtils.isBlank(sourceAttribute)) {
+            LOG.warn("Cannot execute the pointer-like-index property extender because: missing parameter {}", SOURCE_ATTRIBUTE);
             return null;
         }
 
-        final String indexPattern = property.getParameterValue(INDEX_PATTERN);
-        if (StringUtils.isBlank(indexPattern)) {
-            LOG.warn("Cannot execute the RegEx property extender because: missing parameter {}", INDEX_PATTERN);
+        final String targetIndexPointerColumn = property.getParameterValue(TARGET_INDEX_POINTER_COLUMN);
+        if (StringUtils.isBlank(targetIndexPointerColumn)) {
+            LOG.warn("Cannot execute the pointer-like-index property extender because: missing parameter {}", TARGET_INDEX_POINTER_COLUMN);
+            return null;
+        }
+        
+        String pointerLikeIndexValue = null;
+        Optional<CollectionAttribute> pointedToAttribute = null;
+
+        for(AttributeGroup group:targetResource.getGroups()) {
+            for (CollectionAttribute attribute : group.getAttributes()) {
+                try {
+                    if (targetIndexPointerColumn.equals(attribute.getName())) {
+                        pointerLikeIndexValue = attribute.getStringValue();
+                    }
+                } catch (Exception e) {
+                    LOG.error("Error: " + e, e);
+                }
+            }
+        }
+        
+        if (pointerLikeIndexValue == null) {
+            LOG.warn("Could not identify pointer-like-index column {} on target resource {}", targetIndexPointerColumn, targetResource);
             return null;
         }
 
-        Pattern p = Pattern.compile(indexPattern);
-        Matcher m = p.matcher(targetResource.getInstance());
-        Optional<CollectionAttribute> target = null;
-        if (m.find()) {
-            final String index = m.group(1);
-            target = sourceAttributes.stream().filter(a -> matches(sourceType, sourceAlias, index, a)).findFirst();
-        }
+        final String desiredIndex = pointerLikeIndexValue;
+        pointedToAttribute = sourceAttributes.stream().filter(a -> matches(sourceType, sourceAttribute, desiredIndex, a)).findFirst();
 
-        if (target != null && target.isPresent()) {
+        if (pointedToAttribute != null && pointedToAttribute.isPresent()) {
             AttributeGroupType groupType = targetResource.getGroupType(property.getGroupName());
             if (groupType != null) {
                 MibPropertyAttributeType type = new MibPropertyAttributeType(targetResource.getResourceType(), property, groupType);
-                SnmpValue value = SnmpUtils.getValueFactory().getOctetString(target.get().getStringValue().getBytes());
+                SnmpValue value = SnmpUtils.getValueFactory().getOctetString(pointedToAttribute.get().getStringValue().getBytes());
                 return new SnmpAttribute(targetResource, type, value);
             }
-
         }
 
         return null;
     }
-
+    
     /**
      * Matches.
      *
@@ -119,5 +130,4 @@ public class RegExPropertyExtender implements SnmpPropertyExtender {
         final CollectionResource r = a.getResource();
         return a.getName().equals(sourceAlias) && r.getResourceTypeName().equals(sourceType) && r.getInstance().equals(index);
     }
-
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -90,7 +90,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 })
 @JUnitConfigurationEnvironment(systemProperties="org.opennms.rrd.storeByGroup=false")
 @JUnitTemporaryDatabase(reuseDatabase=false) // Relies on records created in @Before so we need a fresh database for each test
-public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestContextAware {
+public class SnmpCollectorWithPointerLikeExtendedPropertiesIT implements InitializingBean, TestContextAware {
 
     /** The Constant TEST_NODE_LABEL. */
     private final static String TEST_NODE_LABEL = "sample.local"; 
@@ -163,9 +163,10 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         Collection<OnmsNode> testNodes = m_nodeDao.findByLabel(TEST_NODE_LABEL);
         if (testNodes == null || testNodes.size() < 1) {
             NetworkBuilder builder = new NetworkBuilder();
-            builder.addNode(TEST_NODE_LABEL).setId(1).setSysObjectId(".1.3.6.1.4.1.9.1.9999"); // Fake Cisco SysOID
-            builder.addSnmpInterface(1).setIfName("Fa0/0").setPhysAddr("44:33:22:11:00").setIfType(6).setCollectionEnabled(true).setIfOperStatus(1).addIpInterface(m_testHostName).setIsSnmpPrimary("P");
-            builder.addSnmpInterface(18).setIfName("Se1/0.102").setIfAlias("Conexion Valencia").setIfType(32).setCollectionEnabled(true).setIfOperStatus(1).addIpInterface("10.0.0.1").setIsSnmpPrimary("N");
+            builder.addNode(TEST_NODE_LABEL).setId(1).setSysObjectId(".1.3.6.1.4.1.9.1.1208");
+            builder.addSnmpInterface(1).setIfName("Vl1").setPhysAddr("de:ad:be:ef:ca:01").setIfType(6).setCollectionEnabled(true).addIpInterface(m_testHostName).setIsSnmpPrimary("P");
+            builder.addSnmpInterface(10146).setIfName("Gi1/0/46").setPhysAddr("de:ad:be:ef:ca:32").setIfType(6).setCollectionEnabled(true).addIpInterface("10.0.46.1").setIsSnmpPrimary("N");
+            builder.addSnmpInterface(10152).setIfName("Gi1/0/52").setPhysAddr("de:ad:be:ef:ca:38").setIfType(6).setCollectionEnabled(true).addIpInterface("10.0.52.1").setIsSnmpPrimary("N");
             testNode = builder.getCurrentNode();
             assertNotNull(testNode);
             m_nodeDao.save(testNode);
@@ -175,7 +176,7 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
         }
 
         Set<OnmsIpInterface> ifaces = testNode.getIpInterfaces();
-        assertEquals(2, ifaces.size());
+        assertEquals(3, ifaces.size());
         iface = ifaces.iterator().next();
 
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
@@ -200,93 +201,52 @@ public class SnmpCollectorWithMibPropertiesIT implements InitializingBean, TestC
     }
 
     /**
-     * Test collection with MibObj Properties.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    @JUnitCollector(datacollectionType = "snmp", datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-NMS8484.xml")
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/airespace.properties")
-    public void testCollect() throws Exception {
-        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
-
-        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
-        assertEquals("collection status", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
-        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
-
-        Map<String, String> slot0 = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "bsnAPIfLoadParametersEntry", "132.178.97.20.31.224.0"));
-        assertEquals("AP84b2.6111.29ac", slot0.get("bsnAPName"));
-        assertEquals("0", slot0.get("slotNumber"));
-        Map<String, String> slot1 = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "bsnAPIfLoadParametersEntry", "132.178.97.20.31.224.1"));
-        assertEquals("AP84b2.6111.29ac", slot1.get("bsnAPName"));
-        assertEquals("1", slot1.get("slotNumber"));
-    }
-
-    /**
-     * Test collection for Cisco QoS with MibObj Properties.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    @JUnitCollector(datacollectionType = "snmp", datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-cisco-qos.xml")
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/cisco-qos.properties")
-    public void testCollectCiscoQoS() throws Exception {
-        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
-
-        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
-        assertEquals("collection status", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
-        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
-
-        Map<String, String> map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "cbQosCMStatsEntry", "290.508801"));
-        assertEquals("OUTBOUND-LLQ", map.get("cbQosClassMapPolicy"));
-        assertEquals("GESTION-ROUTING", map.get("cbQosClassMapName"));
-        assertEquals("Conexion Valencia", map.get("ifAlias"));
-    }
-    
-    /**
-     * Test collection for Cisco memory-pool entry with indirectly referenced property
-     * pulled over from entPhysicalTable
+     * Test collection for dot1d-bridge base port entry with indirectly referenced property
+     * pulled over from ifTable, using the value of dot1dBasePortIfIndex as a pointer.
      * 
-     * @throwsException the exception
-     */
-    @Test
-    @JUnitCollector(datacollectionType = "snmp", datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-cisco-mempool.xml")
-    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/cisco-mempool-snmpwalk.properties")
-    public void testCollectionCiscoMemPoolVsEntPhysical() throws Exception {
-        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
-        
-        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
-        assertEquals("collection status", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
-        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
-        
-        Map<String, String> map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "cempMemoryPool", "1.1"));
-        assertEquals("Processor", map.get("cempMemoryPoolName"));
-        assertEquals("CISCO2911/K9", map.get("cempMemoryPoolPhysName"));
-        assertEquals("CISCO2911/K9 chassis, Hw Serial#: FCZ161870SC, Hw Revision: 1.0", map.get("cempMemoryPoolPhysDescr"));
-        
-        map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "cempMemoryPool", "1.2"));
-        assertEquals("CISCO2911/K9", map.get("cempMemoryPoolPhysName"));
-        assertEquals("CISCO2911/K9 chassis, Hw Serial#: FCZ161870SC, Hw Revision: 1.0", map.get("cempMemoryPoolPhysDescr"));
-    }
-
-    /**
-     * Test enum-lookup property extender against values of dot1dStpPortState
-     *
+     * MIB dump provided by Jean-Marie Kubek
+     * 
      * @throws Exception the exception
      */
     @Test
     @JUnitCollector(datacollectionType = "snmp", datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-dot1d-bridge-base-iftable.xml")
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/cisco-dot1dbridge-iftable-system-snmpwalk.properties")
-    public void testEnumLookupPropertyExtenderVsDot1dStpPortState() throws Exception {
+    public void testCollectionDot1dBasePortIfIndexVsIfTable() throws Exception {
         System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
         
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
         CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
+
+        Map<String, String> map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "dot1dBasePortEntry", "46"));
+        assertEquals("GigabitEthernet1/0/46", map.get("dot1dBasePortIfDescr"));
         
-        Map<String, String> map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "dot1dStpPortEntry", "46"));
-        assertEquals("forwarding(5)", map.get("dot1dStpPortStateText"));
-        assertEquals("testDefaultValue", map.get("dot1dStpPortEnableText"));
+        map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "dot1dBasePortEntry", "52"));
+        assertEquals("GigabitEthernet1/0/52", map.get("dot1dBasePortIfDescr"));
+        assertEquals("Gi1/0/52", map.get("dot1dBasePortIfName"));
+        assertEquals("This is an ifAlias", map.get("dot1dBasePortIfAlias"));
+    }
+    
+    /**
+     * Test collection for cpmCPUTotalTable with indirectly-referenced string properties
+     * pulled over from the entPhysicalTable, using the value of cpmCPUTotalPhysicalIndex
+     * as a pointer
+     * 
+     * MIB dump provided by David Schlenk
+     */
+    @Test
+    @JUnitCollector(datacollectionType = "snmp", datacollectionConfig = "/org/opennms/netmgt/config/datacollection-config-cisco-xe-cpmcputotal-entity.xml")
+    @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/cisco-xe-snmpwalk.properties")
+    public void testCollectionCpmCPUTotalEntryVsEntPhysicalEntry() throws Exception {
+        System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
+        
+        CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
+        assertEquals("collection status", CollectionStatus.SUCCEEDED, collectionSet.getStatus());
+        CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
+
+        Map<String, String> map = m_resourceStorageDao.getStringAttributes(ResourcePath.get("snmp", "1", "cpmCPUTotalEntry", "7"));
+        assertEquals("cpu R0/0", map.get("cpmCPUTotalName"));
+        assertEquals("CPU 0 of module R0", map.get("cpmCPUTotalDescr"));
     }
 
     /* (non-Javadoc)
