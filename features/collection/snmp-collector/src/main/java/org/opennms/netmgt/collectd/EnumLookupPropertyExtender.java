@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -29,10 +29,9 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.config.datacollection.MibObjProperty;
@@ -44,36 +43,45 @@ import org.slf4j.LoggerFactory;
 /**
  * The Class IndexSplitPropertyExtender.
  * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  */
-public class IndexSplitPropertyExtender implements SnmpPropertyExtender {
+public class EnumLookupPropertyExtender implements SnmpPropertyExtender {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(IndexSplitPropertyExtender.class);
-
-    /** The Constant INDEX_PATTERN. */
-    private static final String INDEX_PATTERN = "index-pattern";
+    private static final Logger LOG = LoggerFactory.getLogger(EnumLookupPropertyExtender.class);
+    
+    /** The Constant ENUM_ATTRIBUTE. */
+    private static final String ENUM_ATTRIBUTE = "enum-attribute";
+    
+    /** The Constant DEFAULT_VALUE. */
+    private static final String DEFAULT_VALUE = "default-value";
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.collectd.SnmpPropertyExtender#getTargetAttribute(java.util.List, org.opennms.netmgt.collectd.SnmpCollectionResource, org.opennms.netmgt.config.datacollection.MibObjProperty)
      */
     @Override
     public SnmpAttribute getTargetAttribute(List<CollectionAttribute> sourceAttributes, SnmpCollectionResource targetResource, MibObjProperty property) {
-        final String indexPattern = property.getParameterValue(INDEX_PATTERN);
-        if (StringUtils.isBlank(indexPattern)) {
-            LOG.warn("Cannot execute the Index Split property extender because: missing parameter {}", INDEX_PATTERN);
+        final String defaultValue = property.getParameterValue(DEFAULT_VALUE);
+        
+        final String enumAttribute = property.getParameterValue(ENUM_ATTRIBUTE);
+
+        if (StringUtils.isBlank(enumAttribute)) {
+            LOG.warn("Cannot execute the enum-lookup property extender because: missing parameter {}", ENUM_ATTRIBUTE);
             return null;
         }
 
-        Pattern p = Pattern.compile(indexPattern);
-        Matcher m = p.matcher(targetResource.getInstance());
-        if (m.find()) {
-            final String index = m.group(1);
-            AttributeGroupType groupType = targetResource.getGroupType(property.getGroupName());
-            if (groupType != null) {
-                MibPropertyAttributeType type = new MibPropertyAttributeType(targetResource.getResourceType(), property, groupType);
-                SnmpValue value = SnmpUtils.getValueFactory().getOctetString(index.getBytes());
-                return new SnmpAttribute(targetResource, type, value);
+        for (AttributeGroup group : targetResource.getGroups()) {
+            for (CollectionAttribute attribute : group.getAttributes()) {
+                if (enumAttribute.equals(attribute.getName())) {
+                    final String result = property.getParameterValue(attribute.getStringValue(), defaultValue);
+                    if (result == null) {
+                        return null;
+                    }
+                    AttributeGroupType groupType = targetResource.getGroupType(property.getGroupName());
+                    MibPropertyAttributeType type = new MibPropertyAttributeType(targetResource.getResourceType(), property, groupType);
+                    SnmpValue value = SnmpUtils.getValueFactory().getOctetString(result.getBytes());
+                    return new SnmpAttribute(targetResource, type, value); 
+                }
             }
         }
 
