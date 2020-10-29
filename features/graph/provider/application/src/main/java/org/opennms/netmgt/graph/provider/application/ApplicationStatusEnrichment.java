@@ -43,6 +43,7 @@ import org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.info.Severity;
 import org.opennms.netmgt.graph.api.info.StatusInfo;
 import org.opennms.netmgt.graph.domain.AbstractDomainVertex;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -74,7 +75,7 @@ public class ApplicationStatusEnrichment implements EnrichmentProcessor {
         childVertices.removeAll(rootVertices);
 
         // The status for all child services (OnmsMonitoredServices)
-        final Map<Integer, StatusInfo> childStatusMap = new HashMap<>();
+        final Map<String, StatusInfo> childStatusMap = new HashMap<>();
 
         // Mapping between each vertex to its status
         final Map<GenericVertex, StatusInfo> vertexStatusMap = new HashMap<>();
@@ -86,35 +87,58 @@ public class ApplicationStatusEnrichment implements EnrichmentProcessor {
         final List<MonitoredServiceStatusEntity> result = applicationDao.getAlarmStatus(applications);
         for (MonitoredServiceStatusEntity eachRow : result) {
             final StatusInfo statusInfo = StatusInfo.builder(eachRow.getSeverity()).count(eachRow.getCount()).build();
-            childStatusMap.put(eachRow.getNodeId(), statusInfo);
+            childStatusMap.put(toId(eachRow.getNodeId(), eachRow.getIpAddress().toString(), eachRow.getServiceTypeId()), statusInfo);
         }
 
         // The statusMap until now contains only status for all child vertices which have alarms
         // The others are now filled with NORMAL status entries
         for (GenericVertex eachVertex : childVertices) {
-            final int nodeId = eachVertex.getNodeRef().getNodeId();
-            childStatusMap.putIfAbsent(nodeId, DEFAULT_STATUS);
-            vertexStatusMap.put(eachVertex, childStatusMap.get(nodeId));
+            childStatusMap.putIfAbsent(toId(eachVertex), DEFAULT_STATUS);
+            vertexStatusMap.put(eachVertex, childStatusMap.get(toId(eachVertex)));
         }
 
-        // The status of each Application (root vertices) is the maximum of its children
-        // calculate status for root
+        // The status of each Application (root vertices) is the maximum of its children or if all children have an alarm
+        // a minimum of "major"
         for (GenericVertex eachRoot : rootVertices) {
+            boolean allChildrenHaveActiveAlarms = true;
             final StatusInfo.StatusInfoBuilder rootStatusBuilder = StatusInfo.from(DEFAULT_STATUS);
             // Calculate max severity
             for (GenericEdge eachEdge : graphBuilder.getView().getConnectingEdges(eachRoot)) {
                 final GenericVertex serviceVertex = graphBuilder.getView().resolveVertex(eachEdge.getTarget());
-                final StatusInfo childStatus = childStatusMap.get(serviceVertex.getNodeRef().getNodeId());
+                final StatusInfo childStatus = childStatusMap.get(toId(serviceVertex));
+                final Severity childSeverity = childStatus.getSeverity();
+
+                // check if all children have alarms
+                if(childSeverity == null || Severity.Normal.isEqual(childSeverity) || Severity.Unknown.isEqual(childSeverity)){
+                    allChildrenHaveActiveAlarms = false;  // at least one child has no active alarm
+                }
+
+                // check for the highest severity
                 if (rootStatusBuilder.getSeverity().isLessThan(childStatus.getSeverity())) {
                     rootStatusBuilder.severity(childStatus.getSeverity()).count(childStatus.getCount());
-                } else if (rootStatusBuilder.getSeverity().isEqual(childStatus.getSeverity())) {
-                    rootStatusBuilder.count(rootStatusBuilder.getCount() + childStatus.getCount());
                 }
+
+                // sum up all alarm counts from children
+                rootStatusBuilder.count(rootStatusBuilder.getCount() + childStatus.getCount());
+            }
+
+            // if all children have active alarms, the application status must be at least major
+            if (allChildrenHaveActiveAlarms && rootStatusBuilder.getSeverity().isLessThan(Severity.Major)) {
+                rootStatusBuilder.severity(Severity.Major);
             }
             vertexStatusMap.put(eachRoot, rootStatusBuilder.build());
         }
 
         // Update vertices
         vertexStatusMap.entrySet().forEach(entry -> graphBuilder.property(entry.getKey(), EnrichedProperties.STATUS, entry.getValue()));
+    }
+
+    private String toId(GenericVertex vertex) {
+        ApplicationVertex service = new ApplicationVertex(vertex);
+        return toId(service.getNodeRef().getNodeId(), service.getIpAddress(), service.getServiceTypeId());
+    }
+
+    private String toId(int nodeId, String ipAddress, int serviceTypeId) {
+        return nodeId + "-" + ipAddress + "-" +serviceTypeId;
     }
 }
