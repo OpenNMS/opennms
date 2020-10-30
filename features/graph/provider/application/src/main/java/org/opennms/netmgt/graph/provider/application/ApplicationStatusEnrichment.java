@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
@@ -117,17 +118,17 @@ public class ApplicationStatusEnrichment implements EnrichmentProcessor {
         // Calculate max severity
         for (GenericEdge eachEdge : services) {
             final GenericVertex serviceVertex = graphBuilder.getView().resolveVertex(eachEdge.getTarget());
-            final StatusInfo childStatus = childStatusMap.get(toId(serviceVertex));
+            final StatusInfo childStatus = Optional.ofNullable(childStatusMap.get(toId(serviceVertex))).orElse(StatusInfo.defaultStatus().build());
             final Severity childSeverity = childStatus.getSeverity();
 
             // check if all children have alarms
-            if(childSeverity == null || Severity.Normal.isEqual(childSeverity) || Severity.Unknown.isEqual(childSeverity)){
+            if(Severity.Normal.isEqual(childSeverity) || Severity.Unknown.isEqual(childSeverity)){
                 allChildrenHaveActiveAlarms = false;  // at least one child has no active alarm
             }
 
             // check for the highest severity
-            if (rootStatusBuilder.getSeverity().isLessThan(childStatus.getSeverity())) {
-                rootStatusBuilder.severity(childStatus.getSeverity());
+            if (rootStatusBuilder.getSeverity().isLessThan(childSeverity)) {
+                rootStatusBuilder.severity(childSeverity);
             }
 
             // sum up all alarm counts from children
@@ -141,12 +142,12 @@ public class ApplicationStatusEnrichment implements EnrichmentProcessor {
         return rootStatusBuilder.build();
     }
 
-    private String toId(GenericVertex vertex) {
+    static String toId(final GenericVertex vertex) {
         ApplicationVertex service = new ApplicationVertex(vertex);
         return toId(service.getNodeRef().getNodeId(), service.getIpAddress(), service.getServiceTypeId());
     }
 
-    private String toId(int nodeId, String ipAddress, int serviceTypeId) {
+    static String toId(final int nodeId, final String ipAddress, final int serviceTypeId) {
         return nodeId + "-" + ipAddress + "-" +serviceTypeId;
     }
 }
