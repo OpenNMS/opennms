@@ -135,7 +135,7 @@
             ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
         </logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
           <update-field field-name="severity" update-on-reduction="true"/>
       </alarm-data>
    </event>
