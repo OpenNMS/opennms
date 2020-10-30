@@ -1,0 +1,23 @@
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== Auto Discovery
+
+{opennms-product-name} uses an ICMP ping sweep to find IP addresses on the network and provision node entities.
+
+
+. Click the gear icon and in the *Provisioning* area choose *Configure Discovery*.
+. Accept the default values in the *General Settings* area, or set your own.
+.. The *Foreign Source* ... 
+. Click *Add New* to add the following:
+
++
+* specific address
+* URLs
+* address ranges to include
+* address ranges to exclude 
+
+. Click *Save and Restart Discovery*. 
+
+
+Single Discovery Scan

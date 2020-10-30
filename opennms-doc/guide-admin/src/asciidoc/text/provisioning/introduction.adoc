@@ -11,9 +11,14 @@ The _Provisiond_ daemon maintains your managed entity inventory through policy-b
 Provisiond comes with a RESTful Web Service API for easy integration with external systems such as CRM or external inventory systems.
 It also includes an adapter API for interfacing with other management systems such as configuration management.
 
+[[provisioning-works]]
 ==== How It Works
 
-Provisiond receives requests to add managed entities (nodes, IP interfaces, SNMP interfaces, services) via two basic mechanisms: link:#discovery-auto[automatic disovery], typically via the Discovery daemon, and link:#discovery-directed[directed discovery] using an import requisition, typically via the Provisioning UI.
+Provisiond receives requests to add managed entities (nodes, IP interfaces, SNMP interfaces, services) via three basic mechanisms: 
+
+* link:#discovery-auto[automatic disovery] (typically via the Discovery daemon)
+* link:#discovery-directed[directed discovery] using an import requisition (typically via the Provisioning UI)
+* link:#asset-import[asset import] through the UI or the https://docs.opennms.org/pris/branches/master/pris/pris.html[provisioning integration server] (PRIS)
 
 {opennms-product-name} enables you to control Provisiond behavior by creating provisioning policies that include scanning frequency, IP ranges, and which services to detect. 
 

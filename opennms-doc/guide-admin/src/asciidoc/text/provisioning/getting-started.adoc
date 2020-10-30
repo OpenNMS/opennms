@@ -5,14 +5,17 @@
 
 {opennms-product-name} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you provision managed entities (nodes, IP interfaces, SNMP interfaces, and services).
 
-{opennms-product-name} has two methods of provisioining:
+{opennms-product-name} has three methods of provisioining:
 
 * xref:discovery-auto[Auto discovery]
 * xref:discovery-directed[Directed discovery]
+* link:#asset-import[asset import] through the UI or the https://docs.opennms.org/pris/branches/master/pris/pris.html[provisioning integration server] (PRIS)
 
 Use auto discovery if you do not have a "source of truth" for your network inventory; auto discovery can become that source. Be aware that auto discovery can generate too much information, including entities you do not want to monitor. 
 
 Directed discovery is effective if you know your inventory. It is also useful for areas of your network that you cannot auto discover.
+
+Import assets in the {opennms-product-name} UI using a comma-separated (.csv) file or by integrating single or multiple external inventory systems with PRIS. 
 
 See the link:#provisioning-works[how it works] section of the introdution for more information on the provisioning process. 
 
@@ -48,3 +51,13 @@ NOTE: Provisiond includes an option to add community information to a single IP 
 Now, with SNMP configuration provisioned for our 10 networks, we are ready to begin adding nodes.
 Our first example will be to automatically discover and add all managed entities (nodes, IP interfaces, SNMP interfaces, and monitored IP-based services).
 We will then give an example of how to be more directed and deliberate about your discovery by using provisioning groups.
+
+[[foreign-source-definition]]
+==== Default Foreign Source Definition
+
+A _foreign source_ uniquely identifies an external (foreign) provisioning source and any node entities it is requesting to import into {opennms-product-name}.
+
+A _foreign ID_ is the unique node ID maintained in the foreign system and the foreign source.
+
+{opennms-product-name} uses the combination of the foreign source and foreign ID as a unique foreign key when synchronizing the set of nodes from each source with the nodes in the {opennms-product-name} database.
+This is how provisiond decides if a node entity from an import requisition is new, has been changed, or needs to be deleted.
