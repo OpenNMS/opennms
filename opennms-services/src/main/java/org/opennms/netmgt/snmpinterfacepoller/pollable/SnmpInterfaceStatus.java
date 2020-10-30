@@ -44,7 +44,7 @@ public enum SnmpInterfaceStatus {
     UP(1, "Up"),
     DOWN(2, "Down"),
     TESTING(3, "Testing"),
-    UNKNOWN(4, "Unkown"),
+    UNKNOWN(4, "Unknown"),
     DORMANT(5, "Dormant"),
     NOT_PRESENT(6, "Not Present"),
     LOWER_LAYER_DOWN(7, "Lower Layer Down");
