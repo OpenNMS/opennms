@@ -87,7 +87,7 @@ public class LegacyApplicationStatusProvider implements StatusProvider {
             LegacyApplicationVertex eachRootApplication = (LegacyApplicationVertex) eachRoot;
             OnmsSeverity maxSeverity = OnmsSeverity.NORMAL;
             int count = 0;
-            boolean allChildrenHaveActiveAlarms = true;
+            boolean allChildrenHaveActiveAlarms = eachRootApplication.getChildren().size() > 0 ;
             for (VertexRef eachChild : eachRootApplication.getChildren()) {
                 LegacyApplicationVertex eachChildApplication = (LegacyApplicationVertex) eachChild;
                 Status childStatus = statusMap.get(toId(eachChildApplication));
