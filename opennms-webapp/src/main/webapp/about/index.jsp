@@ -139,13 +139,13 @@
   </tr>
 <%
     String globalMBStrategy, sinkMBStrategy, rpcMBStrategy;
-    globalMBStrategy = org.opennms.core.rpc.common.RpcStrategy.getRpcStrategy().getDescr();
+    globalMBStrategy = org.opennms.core.rpc.common.RpcStrategy.getRpcStrategy().getName();
     if (globalMBStrategy != null) {
         sinkMBStrategy = globalMBStrategy;
         rpcMBStrategy = globalMBStrategy;
     } else {
-        sinkMBStrategy = org.opennms.core.ipc.sink.common.SinkStrategy.getSinkStrategy().getDescr();
-        rpcMBStrategy = org.opennms.core.rpc.common.RpcStrategy.getRpcStrategy().getDescr();
+        sinkMBStrategy = org.opennms.core.ipc.sink.common.SinkStrategy.getSinkStrategy().getName();
+        rpcMBStrategy = org.opennms.core.rpc.common.RpcStrategy.getRpcStrategy().getName();
     }
 %>
   <tr>
