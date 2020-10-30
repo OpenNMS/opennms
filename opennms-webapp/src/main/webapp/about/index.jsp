@@ -137,20 +137,9 @@
     <th>Time-Series Strategy:</th>
     <td><%=TimeSeries.getTimeseriesStrategy().getDescr()%></td>
   </tr>
-<%
-    String globalMBStrategy, sinkMBStrategy, rpcMBStrategy;
-    globalMBStrategy = org.opennms.core.rpc.common.RpcStrategy.getRpcStrategy().getName();
-    if (globalMBStrategy != null) {
-        sinkMBStrategy = globalMBStrategy;
-        rpcMBStrategy = globalMBStrategy;
-    } else {
-        sinkMBStrategy = org.opennms.core.ipc.sink.common.SinkStrategy.getSinkStrategy().getName();
-        rpcMBStrategy = org.opennms.core.rpc.common.RpcStrategy.getRpcStrategy().getName();
-    }
-%>
   <tr>
     <th>IPC Strategy:</th>
-    <td>Sink: <%=sinkMBStrategy%>; RPC: <%=rpcMBStrategy%></td>
+    <td>Sink: <%=SinkStrategy.getSinkStrategy().getName()%>; RPC: <%=RpcStrategy.getRpcStrategy().getName()%></td>
   </tr>
 </table>
 </div>
