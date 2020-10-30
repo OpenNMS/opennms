@@ -65,6 +65,9 @@
         <bundle>wrap:mvn:org.apache.xmlgraphics/batik-util/${batikVersion}</bundle>
         <bundle>wrap:mvn:org.apache.xmlgraphics/batik-xml/${batikVersion}</bundle>
     </feature>
+    <feature name="bcprov" version="${bcprovVersion}" description="Legion of the Bouncy Castle :: Java Cryptography APIs">
+        <bundle>wrap:mvn:org.bouncycastle/bcprov-jdk15on/${bcprovVersion}</bundle>
+    </feature>
     <feature name="bsf" version="${bsfVersion}" description="Apache :: Bean Scripting Framework">
         <bundle>wrap:mvn:bsf/bsf/${bsfVersion}</bundle>
     </feature>
@@ -186,7 +189,8 @@
         <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/${eclipselinkVersion}</bundle>
     </feature>
     <feature name="jcifs" version="${jcifsVersion}" description="jcifs">
-        <bundle>wrap:mvn:org.samba.jcifs/jcifs/${jcifsVersion}</bundle>
+        <feature>bcprov</feature>
+        <bundle>mvn:eu.agno3.jcifs/jcifs-ng/${jcifsVersion}</bundle>
     </feature>
     <feature name="jfreechart" version="1.0.13" description="JFree :: JFreeChart">
         <bundle>wrap:mvn:jfree/jfreechart/1.0.13</bundle>
@@ -805,8 +809,9 @@
         <feature>commons-cli</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-provisioning-api</feature>
-        <bundle dependency="true">wrap:mvn:org.jinterop/j-interop/${jinteropVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.jinterop/j-interopdeps/${jinteropVersion}</bundle>
+        <feature>jcifs</feature>
+        <bundle dependency="true">wrap:mvn:com.github.skyghis/j-interop-ng/${jinteropVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:com.github.skyghis/j-interop-ng-deps/${jinteropVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-wmi/${project.version}</bundle>
     </feature>
     <feature name="opennms-prometheus-collector" version="${project.version}" description="OpenNMS :: Features :: Prometheus Collector">

@@ -185,6 +185,10 @@ include::text/performance-data-collection/collectors/xmp.adoc[]
 === Resource Types
 include::text/performance-data-collection/resource-types.adoc[]
 
+[[ga-property-extenders]]
+=== SNMP Property Extenders
+include::text/performance-data-collection/property-extenders.adoc[]
+
 [[ga-performance-mgmt-shell]]
 === Administration and Troubleshooting
 include::text/performance-data-collection/collectd/collect-admin.adoc[]

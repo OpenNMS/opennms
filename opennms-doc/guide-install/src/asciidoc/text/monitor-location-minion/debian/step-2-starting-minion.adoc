@@ -15,13 +15,14 @@ systemctl start minion
 
 .Test access to Karaf shell with user `admin` and password `admin` and configure the Minion
 [source, shell]
+[subs=+quotes]
 ----
 ssh -p 8201 admin@localhost
 
 config:edit org.opennms.minion.controller
-config:property-set location #Office-Pittsboro
-config:property-set http-url #http://opennms-fqdn:8980/opennms
-config:property-set broker-url failover:#tcp://opennms-fqdn:61616
+config:property-set location [red]#Office-Pittsboro#
+config:property-set http-url [red]#http://opennms-fqdn:8980/opennms#
+config:property-set broker-url [red]#failover:tcp://opennms-fqdn:61616#
 config:update
 ----
 
@@ -30,9 +31,10 @@ TIP: Include the `failover:` portion of the broker URL to allow the Minion to re
 
 .Configure the credentials to use when communicating with {opennms-product-name} and exit Karaf shell
 [source]
+[subs=+quotes]
 ----
-opennms:scv-set opennms.http #minion user name minion password
-opennms:scv-set opennms.broker #minion username minion password
+opennms:scv-set opennms.http [red]#minion username minion password#
+opennms:scv-set opennms.broker [red]#minion username minion password#
 <ctrl-d>
 ----
 

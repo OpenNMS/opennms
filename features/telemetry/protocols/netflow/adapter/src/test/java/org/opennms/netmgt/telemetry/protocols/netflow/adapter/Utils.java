@@ -39,6 +39,7 @@ import java.util.Optional;
 import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowMessage;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.IllegalFlowException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.RecordEnrichment;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
@@ -57,7 +58,7 @@ import com.google.protobuf.util.JsonFormat;
 public class Utils {
 
 
-    public static byte[] buildAndSerialize(Protocol protocol, Iterable<Value<?>> record) {
+    public static byte[] buildAndSerialize(Protocol protocol, Iterable<Value<?>> record) throws IllegalFlowException {
         RecordEnrichment enrichment = (address -> Optional.empty());
         if (protocol.equals(Protocol.NETFLOW5)) {
             Netflow5MessageBuilder builder = new Netflow5MessageBuilder(record, enrichment);
