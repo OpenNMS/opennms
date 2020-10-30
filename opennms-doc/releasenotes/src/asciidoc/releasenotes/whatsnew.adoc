@@ -92,7 +92,6 @@ Documentation improvements and additions have been made in a number of areas:
 * Metadata
 * Mail Transport Monitor
 * Minion/Kafka RPC Tuning
-* Provisioning
 * Thresholding
 * Users Configuration, Duty Schedules, and Security Roles
 
