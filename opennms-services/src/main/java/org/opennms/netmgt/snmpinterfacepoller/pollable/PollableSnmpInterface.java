@@ -363,20 +363,12 @@ public class PollableSnmpInterface implements ReadyRunnable {
 
                     LOG.debug("Previous status Admin/Oper: {}/{}", iface.getIfAdminStatus(), iface.getIfOperStatus());
                     LOG.debug("Current status Admin/Oper: {}/{}", miface.getAdminstatus(), miface.getOperstatus());
-                    LOG.debug("valid up-values for this interface are: ");
-                    for( SnmpInterfaceStatus status : m_upValues) {
-                        LOG.debug(status.getLabel());
-                    }
-                    LOG.debug("valid down-values for this interface are: ");
-                    for( SnmpInterfaceStatus status : m_downValues) {
-                        LOG.debug(status.getLabel());
-                    }
 
-                    // If the interface is Admin Up, and the interface is Operational Down, we generate an alarm.
+                    // If the interface is Admin Up, and the oper status is newly down, we generate an alarm.
                     if ( m_upValues.contains(miface.getAdminstatus())
                          && m_upValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfAdminStatus()))
                          && m_downValues.contains(miface.getOperstatus())
-                         && m_upValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfOperStatus()))) {
+                         && !m_downValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfOperStatus()))) {
                         sendOperDownEvent(iface);
                         if (miface.getOperstatus() != SnmpInterfaceStatus.DOWN) {
                             sendOperDownishEvent(miface.getOperstatus(), iface);
@@ -397,7 +389,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     }
                                             
                     if ( m_downValues.contains(miface.getAdminstatus())
-                         && m_upValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfAdminStatus()))) {
+                         && !m_downValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfAdminStatus()))) {
                         sendAdminDownEvent(iface);
                         miface.setAdminPollStatus(PollStatus.unavailable("ifAdminStatus is " + miface.getAdminstatus().getLabel()));
                     }
