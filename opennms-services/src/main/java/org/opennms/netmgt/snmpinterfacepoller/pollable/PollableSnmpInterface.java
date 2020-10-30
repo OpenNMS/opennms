@@ -364,9 +364,8 @@ public class PollableSnmpInterface implements ReadyRunnable {
                     LOG.debug("Previous status Admin/Oper: {}/{}", iface.getIfAdminStatus(), iface.getIfOperStatus());
                     LOG.debug("Current status Admin/Oper: {}/{}", miface.getAdminstatus(), miface.getOperstatus());
 
-                    // If the interface is Admin Up, and the oper status is newly down, we generate an alarm.
+                    // If the interface is Admin Up and the oper status is newly down, we generate an alarm.
                     if ( m_upValues.contains(miface.getAdminstatus())
-                         && m_upValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfAdminStatus()))
                          && m_downValues.contains(miface.getOperstatus())
                          && !m_downValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfOperStatus()))) {
                         sendOperDownEvent(iface);
@@ -377,38 +376,29 @@ public class PollableSnmpInterface implements ReadyRunnable {
                         miface.setAdminPollStatus(PollStatus.available());
                     }
                     
-                    // If the interface is Admin Up, and the interface is Operational Up, we generate a clean alarm
-                    // if was previous down in alarm table
+                    // If the interface is Admin Up and Operational Up and previously not operational up
+                    // we send the operational up event
                     if ( m_upValues.contains(miface.getAdminstatus())
-                         && m_upValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfAdminStatus()))
                          && m_upValues.contains(miface.getOperstatus())
-                         && m_downValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfOperStatus()))) {
+                         && !m_upValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfOperStatus()))) {
                         sendOperUpEvent(iface);
                         miface.setOperPollStatus(PollStatus.available());
                         miface.setAdminPollStatus(PollStatus.available());
                     }
                                             
+                    // if the interface is now admin down but was not previously, send the admin down event
                     if ( m_downValues.contains(miface.getAdminstatus())
                          && !m_downValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfAdminStatus()))) {
                         sendAdminDownEvent(iface);
                         miface.setAdminPollStatus(PollStatus.unavailable("ifAdminStatus is " + miface.getAdminstatus().getLabel()));
                     }
                     
+                    // if the interface is now admin up and was previously in a non-up state
+                    // send the admin up event
                     if ( m_upValues.contains(miface.getAdminstatus())
-                         && m_downValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfAdminStatus()))
-                         && !m_upValues.contains(miface.getOperstatus())) {
+                         && !m_upValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfAdminStatus()))) {
                         sendAdminUpEvent(iface);
                         miface.setAdminPollStatus(PollStatus.available());
-                        miface.setOperPollStatus(PollStatus.unavailable("ifOperStatus is " + miface.getOperstatus().getLabel()));
-                    }
-
-                    if ( m_upValues.contains(miface.getAdminstatus())
-                         && m_downValues.contains(SnmpInterfaceStatus.statusFromMibValue(iface.getIfAdminStatus()))
-                         && m_upValues.contains(miface.getOperstatus())) {
-                        sendAdminUpEvent(iface);
-                        sendOperUpEvent(iface);
-                        miface.setAdminPollStatus(PollStatus.available());
-                        miface.setOperPollStatus(PollStatus.available());
                     }
 
                     iface.setIfAdminStatus(miface.getAdminstatus().getMibValue());
