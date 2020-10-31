@@ -78,14 +78,13 @@ This column is normally only updated when an import of a <<ga-provisioning, Prov
 The appropriate event will be sent whenever:
 
 * a polled interface's `ifAdminStatus` is up and `ifOperStatus` is in a down state at startup
-* `ifAdminStatus` is in an up state and `ifOperStatus` transitions to a down state from an up state
-* `ifAdminStatus` is in an up state and `ifOperStatus` transitions to an up state from a down state
-* `ifAdminStatus` transitions to a down state from an up state
-* `ifAdminStatus` transitions to an up state from a down state
-* `ifAdminStatus` and `ifOperStatus transition to an up state when `ifAdminStatus` was previously down
+* `ifAdminStatus` is in an up state and `ifOperStatus` transitions to a down state from a not down state
+* `ifAdminStatus` is in an up state and `ifOperStatus` transitions to an up state from a not up state
+* `ifAdminStatus` transitions to a down state from a not down state
+* `ifAdminStatus` transitions to an up state from a not up state
 
 NOTE: It is possible to configure the service to treat additional values of `ifOperStatus` as logically up or down.
-In the even that this configuration option is used and `ifOperStatus` transitions to one of the down values that is not literally `down(2)`, both the `uei.opennms.org/nodes/snmp/interfaceOperDown` event and the more specific event is sent.
+In the event that this configuration option is used and `ifOperStatus` transitions to a state configured as a down value that is not literally `down(2)`, both the `uei.opennms.org/nodes/snmp/interfaceOperDown` event and an event for the more specific state is sent.
 
 === Enabling the Service
 
@@ -111,7 +110,7 @@ The configuration file is `$ONMS_HOME/etc/snmp-interface-poller-configuration.xm
 The default version of this file follows:
 
 ```
-<snmp-interface-poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/snmpinterfacepoller" threads="30" service="SNMP">
+<snmp-interface-poller-configuration xmlns="http://xmlns.opennms.org/xsd/config/snmpinterfacepoller" threads="30" service="SNMP"  up-values="1" down-values="2">
    <node-outage>
       <critical-service name="ICMP"/>
       <critical-service name="SNMP"/>
@@ -199,7 +198,7 @@ Defaults to "2".
 
 ### Using the Service
 
-Besides enabling the service and configuring packages and interfaces to match your use case, a policy that enables polling must be added to the foreign source definition of the import requisitions of the devices which you'd like to use this feature.
+Besides enabling the service and configuring packages and interfaces to match your use case, a policy that enables polling must be added to the foreign source definition of the import requisitions of the devices on which you'd like to use this feature.
 
 Use the `ENABLE_POLLING` and `DISABLE_POLLING` actions of the "Matching SNMP Interface Policy" to manage which SNMP interfaces are polled by this service along with the appropriate `matchBehavior` and parameters for your use case.
 
