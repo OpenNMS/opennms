@@ -410,14 +410,14 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
     public void testIngress() {
         final BsonDocument bsonDocument = createDirectionIngress();
         final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
-	Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
+        Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
     }
 
     @Test
     public void testEgress() {
         final BsonDocument bsonDocument = createDirectionEgress();
         final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
-	Assert.assertEquals(Flow.Direction.EGRESS, sFlow.getDirection());
+        Assert.assertEquals(Flow.Direction.EGRESS, sFlow.getDirection());
     }
 
     /**
