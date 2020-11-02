@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -222,7 +222,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
 
         // Wait for the modal to be visiable
         final By findModal = By.cssSelector(".modal-dialog");
-        final WebElement modal = wait.until(visibilityOfElementLocated(findModal));
+        wait.until(visibilityOfElementLocated(findModal));
         // Find the 'Yes' button in the modal and click it until we can't click anymore
         By findYesButton = By.xpath("//div/button[text()='Yes']");
         final WebElement yesButton = wait.until(elementToBeClickable(findYesButton));
@@ -269,8 +269,8 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumIT {
         clickMenuItem("Info", "Nodes", "element/nodeList.htm");
 
         try {
-            // Disable implicitlyWait
-            driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
+            // Don't wait as long as usual for just the node page, it should be pretty quick
+            driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT / 2, TimeUnit.MILLISECONDS);
             // If this is the only node on the system, we'll be sent directly to its node details page.
             findElementByXpath("//div[@class='card-header']/span[text()='Availability']");
         } catch (NoSuchElementException e) {
