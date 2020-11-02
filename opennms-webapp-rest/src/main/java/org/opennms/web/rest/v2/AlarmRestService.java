@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -193,47 +193,57 @@ public class AlarmRestService extends AbstractDaoRestServiceWithDTO<OnmsAlarm,Al
 
     @Override
     protected Response doUpdateProperties(SecurityContext securityContext, UriInfo uriInfo, OnmsAlarm alarm, MultivaluedMapImpl params) {
-        boolean isProcessAck = true;
+        final String ticketIdValue = params.getFirst("ticketId");
+        final String ticketStateValue = params.getFirst("ticketState");
+
+        boolean isAlarmUpdated = false;
+        if (StringUtils.isNotBlank(ticketIdValue)) {
+            isAlarmUpdated = true;
+            alarm.setTTicketId(ticketIdValue);
+        }
+        if (EnumUtils.isValidEnum(TroubleTicketState.class, ticketStateValue)) {
+            isAlarmUpdated = true;
+            alarm.setTTicketState(TroubleTicketState.valueOf(ticketStateValue));
+        }
+        if (isAlarmUpdated) {
+            getDao().saveOrUpdate(alarm);
+        }
 
         final String ackValue = params.getFirst("ack");
         final String escalateValue = params.getFirst("escalate");
         final String clearValue = params.getFirst("clear");
         final String ackUserValue = params.getFirst("ackUser");
-        final String ticketIdValue = params.getFirst("ticketId");
-        final String ticketStateValue = params.getFirst("ticketState");
 
         final String ackUser = ackUserValue == null ? securityContext.getUserPrincipal().getName() : ackUserValue;
-        SecurityHelper.assertUserEditCredentials(securityContext, ackUser);
+        if (ackUser != null && !StringUtils.isNotBlank(ackUser)) {
+            SecurityHelper.assertUserEditCredentials(securityContext, ackUser);
+        }
 
         final OnmsAcknowledgment acknowledgement = new OnmsAcknowledgment(alarm, ackUser);
         acknowledgement.setAckAction(AckAction.UNSPECIFIED);
+
+        boolean isProcessAck = false;
         if (ackValue != null) {
+            isProcessAck = true;
             if (Boolean.parseBoolean(ackValue)) {
                 acknowledgement.setAckAction(AckAction.ACKNOWLEDGE);
             } else {
                 acknowledgement.setAckAction(AckAction.UNACKNOWLEDGE);
             }
         } else if (escalateValue != null) {
+            isProcessAck = true;
             if (Boolean.parseBoolean(escalateValue)) {
                 acknowledgement.setAckAction(AckAction.ESCALATE);
             }
         } else if (clearValue != null) {
+            isProcessAck = true;
             if (Boolean.parseBoolean(clearValue)) {
                 acknowledgement.setAckAction(AckAction.CLEAR);
             }
-        } else if (StringUtils.isNotBlank(ticketIdValue)) {
-            isProcessAck = false;
-            alarm.setTTicketId(ticketIdValue);
-        } else if (EnumUtils.isValidEnum(TroubleTicketState.class, ticketStateValue)) {
-            isProcessAck = false;
-            alarm.setTTicketState(TroubleTicketState.valueOf(ticketStateValue));
-        } else {
-            throw getException(Status.BAD_REQUEST, "Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
         }
+
         if (isProcessAck) {
             m_ackDao.processAck(acknowledgement);
-        } else {
-            getDao().saveOrUpdate(alarm);
         }
 
         return Response.noContent().build();
