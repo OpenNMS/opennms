@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -120,6 +120,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private OnmsNode node1;
     private OnmsNode node2;
     private OnmsNode node3;
+    private OnmsAlarm alarm1;
 
     @Override
     protected void afterServletStart() throws Exception {
@@ -147,7 +148,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // node with strange values to test double-decoding of the FIQL engine
         node3 = createNode(builder, SERVER3_NAME, "192.168.1.3", new OnmsCategory[] {});
 
-        createAlarm(node1, "uei.opennms.org/test/somethingWentWrong", OnmsSeverity.MAJOR, 0);
+        alarm1 = createAlarm(node1, "uei.opennms.org/test/somethingWentWrong", OnmsSeverity.MAJOR, 0);
         createAlarm(node1, "uei.opennms.org/test/somethingIsStillHappening", OnmsSeverity.WARNING, 1);
         createAlarm(node1, "uei.opennms.org/test/somethingIsOkNow", OnmsSeverity.NORMAL, 2);
 
@@ -677,6 +678,14 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=alarm.situationAlarmCount==2", 1);
     }
 
+    @Test
+    @JUnitTemporaryDatabase
+    public void testAlarmClear() throws Exception {
+        setUser("admin", new String[]{ "ROLE_ADMIN" });
+        sendRequest(PUT, "/alarms/" + alarm1.getId(), parseParamData("clear=true"), 204);
+        executeQueryAndVerify("_s=alarm.severity==CLEARED", 1);
+    }
+
     private void anticipateEvent(EventBuilder eventBuilder) {
         m_eventMgr.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
     }
@@ -714,7 +723,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @SuppressWarnings("deprecation")
-    private void createAlarm(final OnmsNode node, final String eventUei, final OnmsSeverity severity, final long epoch) {
+    private OnmsAlarm createAlarm(final OnmsNode node, final String eventUei, final OnmsSeverity severity, final long epoch) {
         final OnmsIpInterface alarmNode = node.getIpInterfaces().iterator().next();
 
         final OnmsEvent event = new OnmsEvent();
@@ -759,6 +768,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setIfIndex(alarmNode.getIfIndex());
         m_databasePopulator.getAlarmDao().save(alarm);
         m_databasePopulator.getAlarmDao().flush();
+        return alarm;
     }
 
     private void createSituation(OnmsNode node, String eventUei, OnmsSeverity severity, int epoch, String... related) {
