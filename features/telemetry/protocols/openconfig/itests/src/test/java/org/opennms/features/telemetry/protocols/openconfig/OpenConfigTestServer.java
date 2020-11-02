@@ -27,6 +27,7 @@
  *******************************************************************************/
 
 package org.opennms.features.telemetry.protocols.openconfig;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -34,6 +35,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.features.openconfig.proto.gnmi.Gnmi;
+import org.opennms.features.openconfig.proto.gnmi.gNMIGrpc;
 import org.opennms.features.openconfig.proto.jti.OpenConfigTelemetryGrpc;
 import org.opennms.features.openconfig.proto.jti.Telemetry;
 import org.slf4j.Logger;
@@ -51,12 +54,15 @@ public class OpenConfigTestServer {
     private Server server;
     private Boolean errorStream = false;
     private StreamObserver<Telemetry.OpenConfigData> observer;
+    private StreamObserver<Gnmi.SubscribeResponse> gnmiStream;
+    private StreamObserver<Gnmi.SubscribeRequest> requestHandler;
 
 
     public void start() throws IOException {
 
         NettyServerBuilder serverBuilder = NettyServerBuilder.forAddress(new InetSocketAddress(DEFAULT_SERVER_PORT))
-                .addService(new TelemetryServer());
+                .addService(new TelemetryServer())
+                .addService(new GnmiServer());
         server = serverBuilder.build();
         server.start();
     }
@@ -98,9 +104,62 @@ public class OpenConfigTestServer {
 
     }
 
+    class GnmiServer extends gNMIGrpc.gNMIImplBase {
+
+        @Override
+        public io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest> subscribe(
+                io.grpc.stub.StreamObserver<org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse> responseObserver) {
+            gnmiStream = responseObserver;
+            // In real server, this request should be handled only once.
+            requestHandler = new SubscribeRequestReceiver(gnmiStream);
+            return requestHandler;
+
+        }
+    }
+
+    class SubscribeRequestReceiver implements StreamObserver<Gnmi.SubscribeRequest> {
+
+        private final StreamObserver<Gnmi.SubscribeResponse> gnmiStream;
+
+        public SubscribeRequestReceiver(StreamObserver<Gnmi.SubscribeResponse> gnmiStream) {
+            this.gnmiStream = gnmiStream;
+        }
+
+        @Override
+        public void onNext(Gnmi.SubscribeRequest subscribeRequest) {
+            // Send Response.
+            Gnmi.SubscriptionList subscriptionList =   subscribeRequest.getSubscribe();
+            subscriptionList.getSubscriptionList().forEach( subscription -> {
+                Gnmi.SubscribeResponse.Builder responseBuilder = Gnmi.SubscribeResponse.newBuilder();
+                Gnmi.Path.Builder pathBuilder = Gnmi.Path.newBuilder().addElem(Gnmi.PathElem.newBuilder().setName("eth1").build())
+                        .addElem(Gnmi.PathElem.newBuilder().setName("ifInOctets"));
+                responseBuilder.setUpdate(Gnmi.Notification.newBuilder().setTimestamp(System.currentTimeMillis())
+                        .addUpdate(Gnmi.Update.newBuilder().setPath(pathBuilder.build()).setVal(Gnmi.TypedValue.newBuilder().setUintVal(4000).build()).build()).build());
+                executor.scheduleAtFixedRate(() ->
+                        gnmiStream.onNext(responseBuilder.build()), 0, subscription.getSampleInterval(), TimeUnit.MILLISECONDS);
+            });
+
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+
+        }
+
+        @Override
+        public void onCompleted() {
+
+        }
+    }
+
     public void stop() {
         if (server != null) {
-            observer.onCompleted();
+            if(observer != null) {
+                observer.onCompleted();
+            }
+            if(gnmiStream != null) {
+                gnmiStream.onCompleted();
+            }
             server.shutdown();
         }
     }
