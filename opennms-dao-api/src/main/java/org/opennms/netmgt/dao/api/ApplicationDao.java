@@ -69,6 +69,7 @@ public interface ApplicationDao extends OnmsDao<OnmsApplication, Integer> {
      *
      * @return all alarms from the alarm table which have a node id, ip address and service type set.
      */
+
     List<MonitoredServiceStatusEntity> getAlarmStatus();
 
     List<MonitoredServiceStatusEntity> getAlarmStatus(List<OnmsApplication> applications);
