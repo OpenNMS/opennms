@@ -144,15 +144,27 @@ public class OpenConfigIT {
     }
 
     @Test
-    public void testOpenConfig() throws Exception {
+    public void testOpenConfigForJti() throws Exception {
 
         // Use custom configuration to enable openconfig.
-        updateDaoWithConfig(getConfig());
+        updateDaoWithConfig(getConfig(true));
         // Start the daemon
         telemetryd.start();
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
                 .resolve(Paths.get("1", "eth0", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
+    }
+
+    @Test
+    public void testOpenConfigForGnmi() throws Exception {
+
+        // Use custom configuration to enable openconfig.
+        updateDaoWithConfig(getConfig(false));
+        // Start the daemon
+        telemetryd.start();
+        // Wait until the JRB archive is created
+        await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
+                .resolve(Paths.get("1", "eth1", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
     }
 
     private void updateDaoWithConfig(TelemetrydConfig config) throws IOException {
@@ -162,7 +174,7 @@ public class OpenConfigIT {
         telemetrydConfigDao.afterPropertiesSet();
     }
 
-    private TelemetrydConfig getConfig() throws IOException {
+    private TelemetrydConfig getConfig(boolean jti) throws IOException {
         TelemetrydConfig telemetrydConfig = new TelemetrydConfig();
 
         QueueConfig openConfigQueue = new QueueConfig();
@@ -180,19 +192,33 @@ public class OpenConfigIT {
         PackageConfig connectorPackage = new PackageConfig();
         connectorPackage.setName("OpenConfig-Default");
         connectorPackage.setFilter(new PackageConfig.Filter("IPADDR != '0.0.0.0'"));
+        if (jti) {
+            connectorPackage.getParameters().add(new Parameter("mode", "JTI"));
+        }
         connectorPackage.getParameters().add(new Parameter("port", "50052"));
-        connectorPackage.getParameters().add(new Parameter("paths", "/interfaces"));
-        connectorPackage.getParameters().add(new Parameter("frequency", "5000"));
+        connectorPackage.getParameters().add(new Parameter("group1","paths", "/interfaces"));
+        connectorPackage.getParameters().add(new Parameter("group1", "frequency", "5000"));
         connectorConfig.getPackages().add(connectorPackage);
 
-        Files.copy(
-                Paths.get(System.getProperty("opennms.home"),
-                        "etc",
-                        "telemetryd-adapters",
-                        "openconfig-telemetry-resources.groovy"),
-                scriptFile.toPath(),
-                StandardCopyOption.REPLACE_EXISTING
-        );
+        if(jti) {
+            Files.copy(
+                    Paths.get(System.getProperty("opennms.home"),
+                            "etc",
+                            "telemetryd-adapters",
+                            "openconfig-jti-telemetry.groovy"),
+                    scriptFile.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+        } else {
+            Files.copy(
+                    Paths.get(System.getProperty("opennms.home"),
+                            "etc",
+                            "telemetryd-adapters",
+                            "openconfig-gnmi-telemetry.groovy"),
+                    scriptFile.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+        }
 
         assertTrue("Can't read: " + scriptFile.getAbsolutePath(), scriptFile.canRead());
 
@@ -201,6 +227,9 @@ public class OpenConfigIT {
         openConfigAdapter.setName("OpenConfig-Adapter");
         openConfigAdapter.setClassName(OpenConfigAdapter.class.getCanonicalName());
         openConfigAdapter.getParameters().add(new Parameter("script", scriptFile.getAbsolutePath()));
+        if (jti) {
+            openConfigAdapter.getParameters().add(new Parameter("mode", "JTI"));
+        }
         openConfigQueue.getAdapters().add(openConfigAdapter);
 
         PackageConfig packageConfig = new PackageConfig();

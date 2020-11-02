@@ -28,11 +28,12 @@
 
 package org.opennms.netmgt.telemetry.config.model;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Objects;
 
 @XmlRootElement(name="parameter")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -43,12 +44,21 @@ public class Parameter {
     @XmlAttribute(name="value", required=true)
     private String value;
 
+    @XmlAttribute(name="group", required=false)
+    private String group;
+
     public Parameter() {
     }
 
     public Parameter(String key, String value) {
         this.key = key;
         this.value = value;
+    }
+
+    public Parameter(String group, String key, String value) {
+        this.key = key;
+        this.value = value;
+        this.group = group;
     }
 
     public String getKey() {
@@ -67,18 +77,27 @@ public class Parameter {
         this.value = value;
     }
 
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Parameter parameter = (Parameter) o;
         return Objects.equals(key, parameter.key) &&
-                Objects.equals(value, parameter.value);
+                Objects.equals(value, parameter.value) &&
+                Objects.equals(group, parameter.group);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(key, value);
+        return Objects.hash(key, value, group);
     }
 
     @Override
@@ -86,6 +105,7 @@ public class Parameter {
         return "Parameter{" +
                 "key='" + key + '\'' +
                 ", value='" + value + '\'' +
+                ", group='" + group + '\'' +
                 '}';
     }
 }

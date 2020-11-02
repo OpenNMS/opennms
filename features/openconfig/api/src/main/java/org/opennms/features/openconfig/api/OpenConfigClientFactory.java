@@ -29,10 +29,11 @@
 package org.opennms.features.openconfig.api;
 
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
 
 public interface OpenConfigClientFactory {
 
-    OpenConfigClient create(InetAddress ipAddress, Map<String, String> params);
+    OpenConfigClient create(InetAddress ipAddress, List<Map<String, String>> paramList);
     
 }
