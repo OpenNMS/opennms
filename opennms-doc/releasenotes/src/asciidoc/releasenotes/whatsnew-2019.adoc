@@ -309,6 +309,23 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.13]
+
+==== Release Meridian-2019.1.13
+
+Release 2019.1.13 contains a few bug fixes and one enhancement.
+
+The codename for 2019.1.13 is link:$$https://en.wikipedia.org/wiki/Meanings_of_minor_planet_names:_184001%E2%80%93185000#096$$[_Kazlauskas_].
+
+===== Bug
+
+* service starts / restarts work but spit out an error if configured to wait for startup (Issue http://issues.opennms.org/browse/NMS-12966[NMS-12966])
+* Alarm (v1 & v2) ReST Service PUT Can't PUT Multiple Things (Issue http://issues.opennms.org/browse/NMS-12979[NMS-12979])
+
+===== Enhancement
+
+* Identify message broker strategies in web "about" page (Issue http://issues.opennms.org/browse/NMS-12971[NMS-12971])
+
 [releasenotes-changelog-Meridian-2019.1.12]
 
 ==== Release Meridian-2019.1.12
