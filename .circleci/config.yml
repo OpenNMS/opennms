@@ -521,6 +521,9 @@ workflows:
       - tarball-assembly:
           requires:
             - build
+      - doc-assembly:
+          requires:
+            - tarball-assembly
       - horizon-rpm-build:
           requires:
             - build
@@ -665,7 +668,7 @@ workflows:
           # technically only requires the RPM/deb builds, but only publish
           # if everything passes
           requires:
-            - tarball-assembly
+            - doc-assembly
           filters:
             branches:
               only: merge-foundation/<< parameters.previous_branch_label >>-to-<< parameters.main_branch_label >>
@@ -738,7 +741,6 @@ jobs:
             # install fake makensis to satisfy the assemble dependency
             sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
             export MAVEN_OPTS="-Xmx4g -Xms4g"
-            # general assembly
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -DupdatePolicy=never \
               -Daether.connector.resumeDownloads=false \
@@ -749,7 +751,7 @@ jobs:
               -Pbuild-bamboo \
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
-              install javadoc:aggregate --batch-mode
+              install --batch-mode
       - run:
           name: Collect Artifacts
           command: |
@@ -759,9 +761,6 @@ jobs:
             find ./opennms-assemblies/minion/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/minion-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/sentinel/target -name "*.tar.gz" -type f -not -iname '*source*' -exec cp {} "./target/tarballs/sentinel-${OPENNMS_VERSION}.tar.gz" \;
             find ./opennms-assemblies/remote-poller-standalone -name "*.tar.gz" -type f -exec cp {} "./target/artifacts/remote-poller-client-${OPENNMS_VERSION}.tar.gz" \;
-            pushd target/site/apidocs
-              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
-            popd
             cp ./opennms-assemblies/xsds/target/*-xsds.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-xsds.tar.gz"
             cp opennms-doc/guide-all/target/*.tar.gz "./target/artifacts/opennms-${OPENNMS_VERSION}-docs.tar.gz"
             cp target/*-source.tar.gz ./target/artifacts/
@@ -773,6 +772,49 @@ jobs:
           when: always
           path: ~/project/target/tarballs
           destination: tarballs
+
+  doc-assembly:
+    machine:
+      image: ubuntu-1604:201903-01
+    parameters:
+      number-vcpu:
+        default: 2
+        type: integer
+      vaadin-javamaxmem:
+        default: 1g
+        type: string
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Assemble documentation
+          command: |
+            # install fake makensis to satisfy the assemble dependency
+            sudo cp .circleci/scripts/makensis.py /usr/local/bin/makensis
+            export MAVEN_OPTS="-Xmx4g -Xms4g"
+            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
+              -DupdatePolicy=never \
+              -Daether.connector.resumeDownloads=false \
+              -Daether.connector.basic.threads=1 \
+              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
+              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
+              -DmaxCpus=<< parameters.number-vcpu >> \
+              -Pbuild-bamboo \
+              -Prun-expensive-tasks \
+              -Dopennms.home=/opt/opennms \
+              javadoc:aggregate --batch-mode
+      - run:
+          name: Collect Artifacts
+          command: |
+            mkdir -p target/artifacts
+            OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            pushd target/site/apidocs
+              tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
+            popd
+      - store_artifacts:
+          when: always
+          path: ~/project/target/artifacts
+          destination: artifacts
 
   horizon-rpm-build:
     executor: centos-build-executor
