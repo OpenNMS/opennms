@@ -38,6 +38,8 @@
 		org.opennms.core.utils.TimeSeries,
 		org.opennms.core.utils.WebSecurityUtils,
 		org.opennms.core.utils.DBUtils,
+		org.opennms.core.rpc.common.RpcStrategy,
+		org.opennms.core.ipc.sink.common.SinkStrategy,
 		java.sql.Connection
 	"
 %>
@@ -134,6 +136,10 @@
   <tr>
     <th>Time-Series Strategy:</th>
     <td><%=TimeSeries.getTimeseriesStrategy().getDescr()%></td>
+  </tr>
+  <tr>
+    <th>IPC Strategy:</th>
+    <td>Sink: <%=SinkStrategy.getSinkStrategy().getName()%>; RPC: <%=RpcStrategy.getRpcStrategy().getName()%></td>
   </tr>
 </table>
 </div>
