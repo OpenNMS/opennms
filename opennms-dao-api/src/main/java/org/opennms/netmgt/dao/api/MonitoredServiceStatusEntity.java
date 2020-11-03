@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.net.InetAddress;
 import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -38,14 +37,9 @@ public class MonitoredServiceStatusEntity {
     private final Date lastEventTime;
     private final OnmsSeverity severity;
     private final long alarmCount;
-    private final InetAddress ipAddress;
-    private final int serviceTypeId;
 
-    public MonitoredServiceStatusEntity(final int nodeId, final InetAddress ipAddress, final int serviceTypeId,
-                                        final Date lastEventTime, final OnmsSeverity severity, final long alarmCount) {
+    public MonitoredServiceStatusEntity(final int nodeId, final Date lastEventTime, final OnmsSeverity severity, final long alarmCount) {
         this.nodeId = nodeId;
-        this.ipAddress = ipAddress;
-        this.serviceTypeId = serviceTypeId;
         this.lastEventTime = lastEventTime;
         this.severity = severity;
         this.alarmCount = alarmCount;
@@ -61,13 +55,5 @@ public class MonitoredServiceStatusEntity {
 
     public int getNodeId() {
         return nodeId;
-    }
-
-    public int getServiceTypeId() {
-        return serviceTypeId;
-    }
-
-    public InetAddress getIpAddress() {
-        return ipAddress;
     }
 }
