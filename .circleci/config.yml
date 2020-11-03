@@ -749,19 +749,7 @@ jobs:
               -Pbuild-bamboo \
               -Prun-expensive-tasks \
               -Dopennms.home=/opt/opennms \
-              install --batch-mode
-            # javadoc
-            ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
-              -DupdatePolicy=never \
-              -Daether.connector.resumeDownloads=false \
-              -Daether.connector.basic.threads=1 \
-              -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-              -DvaadinJavaMaxMemory=<< parameters.vaadin-javamaxmem >> \
-              -DmaxCpus=<< parameters.number-vcpu >> \
-              -Pbuild-bamboo \
-              -Prun-expensive-tasks \
-              -Dopennms.home=/opt/opennms \
-              javadoc:aggregate --batch-mode
+              install javadoc:aggregate --batch-mode
       - run:
           name: Collect Artifacts
           command: |
