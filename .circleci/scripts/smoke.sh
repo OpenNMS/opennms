@@ -45,7 +45,7 @@ while true; do
     break
   fi
   sleep 1
-done  
+done
 
 # Configure the heap for the Maven JVM - the tests themselves are forked out in separate JVMs
 # The heap size should be sufficient to buffer the output (stdout/stderr) from the test
@@ -54,12 +54,8 @@ export MAVEN_OPTS="-Xmx1g -Xms1g"
 cd ~/project/smoke-test
 if [ $MINIMAL -eq 1 ]; then
   echo "#### Executing minimal set smoke/system tests"
-  # Run a set of known tests
-  for TEST_CLASS in "MenuHeaderIT" "SinglePortFlowsIT"
-  do
-    echo "###### Testing: ${TEST_CLASS}"
-    mvn -N -DskipTests=false -DskipITs=false -Dit.test=$TEST_CLASS install verify
-  done
+  TEST_CLASSES="MenuHeaderIT,SinglePortFlowsIT"
+  mvn -N -DskipTests=false -DskipITs=false -Dit.test=$TEST_CLASSES install verify
 else
   echo "#### Executing complete suite of smoke/system tests"
   find_tests
