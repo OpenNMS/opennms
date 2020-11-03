@@ -1,3 +1,14 @@
+opennms-sentinel (27.0.0-1) stable; urgency=high
+
+  * New major release.  It contains many bug fixes and a ton of new features, most
+    notably the removal of the Remote Poller in favor of a new Minion-based
+    workflow called Application Perspective Monitoring.
+    
+    For details on what has changed, see:
+    https://docs.opennms.org/opennms/releases/27.0.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 03 Nov 2020 12:23:00 -0400
+ 
 opennms-sentinel (26.2.2-1) stable; urgency=low
 
   * New minor release.  It contains a number of bug fixes and enhancements, including
