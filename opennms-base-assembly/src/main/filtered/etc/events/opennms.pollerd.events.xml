@@ -192,7 +192,7 @@
         <event-label>OpenNMS-defined node event: snmp interface Oper Status Not Present</event-label>
         <descr>&lt;p>The operational status of interface is not present
             &lt;/p> &lt;p>This event is generated when an snmp poll on interface find the operational status not present.
-            &lt;/p> &lt;p>The notPresent state indicates that the interface is down specifically because
+            &lt;/p> &lt;p>The not present state indicates that the interface is down specifically because
             some component, typically a hardware component, is not present in the managed system.&lt;/p>
             &lt;p>Params %parm[all]% &lt;/p></descr>
         <logmsg dest="logndisplay">Operational status Not Present on interface ifname:%parm[snmpifname]%

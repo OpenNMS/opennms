@@ -33,7 +33,6 @@ import java.util.*;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.snmpinterfacepoller.pollable.SnmpInterfaceStatus.*;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -41,7 +40,7 @@ import org.opennms.netmgt.snmpinterfacepoller.SnmpPollInterfaceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.opennms.netmgt.snmpinterfacepoller.pollable.SnmpInterfaceStatus.INVALID;
+import static org.opennms.netmgt.snmpinterfacepoller.pollable.SnmpInterfaceStatus.*;
 
 /**
  * Represents a PollableSnmpInterface
@@ -106,10 +105,11 @@ public class PollableSnmpInterface implements ReadyRunnable {
          *                    invalid(0) in the case where an improper value is attempted to be set.
          */
         public void setAdminstatus(SnmpInterfaceStatus adminstatus) {
-            if (adminstatus.getMibValue() > 3 )
+            if (adminstatus.getMibValue() > 3 ) {
                 this.adminstatus = INVALID;
-            else
+            } else {
                 this.adminstatus = adminstatus;
+            }
         }
 
         public SnmpInterfaceStatus getOperstatus() {

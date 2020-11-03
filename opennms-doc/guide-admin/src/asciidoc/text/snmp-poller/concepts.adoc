@@ -4,10 +4,10 @@
 
 === SNMP Interface Poller
 
-_{opennms-product-name}_ can monitor the status of an SNMP interface that is not directly monitored by a <<ga-service-assurance, Service Assurance>> monitor.
+_{opennms-product-name}_ can monitor the status of a SNMP interface that is not directly monitored by a <<ga-service-assurance, Service Assurance>> monitor.
 
 The SNMP Interface Poller is a separate service that uses a node interface, typically a management interface, to get administration and operational status for other interfaces present on the device.
-On a configurable time interval an SNMP GET request is made for two specific objects in an `ifEntry` of the `ifTable` defined in the `IF-MIB`:
+On a configurable time interval a SNMP GET request is made for two specific objects in an `ifEntry` of the `ifTable` defined in the `IF-MIB`:
 
 ```
 ifAdminStatus OBJECT-TYPE
@@ -208,4 +208,4 @@ Add parameter `ifType` with `104` for the value.
 Once you synchronize the requisition, SNMP interface polling will begin for all SNMP interfaces with `ifType 104` found on node interfaces matching the filter of a package in the SNMP interface poller config file.
 
 As explained in the prior sections, exactly how and when the polling is performed is controlled by the settings on the `interface` element the SNMP interface matches in that package.
-If an SNMP interface does not match the criteria of any `interface` element in a package, default settings are used, unless `useCriteriaFilters` is set to true in the top level element, in which case no polling is performed.
+If a SNMP interface does not match the criteria of any `interface` element in a package, default settings are used, unless `useCriteriaFilters` is set to true in the top level element, in which case no polling is performed.
