@@ -107,7 +107,7 @@ public class VmwareAssetsMigratorOffline extends AbstractOnmsUpgrade {
                         do {
                             final Integer nodeId = resultSet.getInt("nodeid");
                             final String vmwareManagedObjectId = resultSet.getString("vmwaremanagedobjectid");
-                            final String vmwareMangedentityType = resultSet.getString("vmwaremanagedentitytype");
+                            final String vmwareManagedentityType = resultSet.getString("vmwaremanagedentitytype");
                             final String vmwareManagementServer = resultSet.getString("vmwaremanagementserver");
                             final String vmwareTopologyInfo = resultSet.getString("vmwaretopologyinfo");
                             final String vmwareState = resultSet.getString("vmwarestate");
@@ -121,7 +121,7 @@ public class VmwareAssetsMigratorOffline extends AbstractOnmsUpgrade {
                             insertStatement.setInt(1, nodeId);
                             insertStatement.setString(2, "VMware");
                             insertStatement.setString(3, "mangedentityType");
-                            insertStatement.setString(4, vmwareMangedentityType);
+                            insertStatement.setString(4, vmwareManagedentityType);
                             insertStatement.execute();
 
                             insertStatement.setInt(1, nodeId);
