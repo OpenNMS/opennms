@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<datacollection-config rrdRepository="%rrdRepository%">
+	<snmp-collection name="default" snmpStorageFlag="all">
+
+		<rrd step="300">
+			<rra>RRA:AVERAGE:0.5:1:2016</rra>
+			<rra>RRA:AVERAGE:0.5:12:1488</rra>
+			<rra>RRA:AVERAGE:0.5:288:366</rra>
+			<rra>RRA:MAX:0.5:288:366</rra>
+			<rra>RRA:MIN:0.5:288:366</rra>
+		</rrd>
+
+	   <resourceType name="entPhysicalEntry" label="Physical Entity" resourceLabel="${entPhysicalName} (${entPhysicalDescr}))">
+	      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+	      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+	   </resourceType>
+
+		<resourceType name="cpmCPUTotalEntry" label="Cisco CPU Total" resourceLabel="${cpmCPUTotalName} (${cpmCPUTotalAlias})">
+			<persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+			<storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+		</resourceType>
+		
+		<groups>
+
+	     <group name="entity-physical-table" ifType="all">
+	        <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.2" instance="entPhysicalEntry" alias="entPhysicalDescr" type="string"/>
+	        <mibObj oid=".1.3.6.1.2.1.47.1.1.1.1.7" instance="entPhysicalEntry" alias="entPhysicalName" type="string"/>
+	     </group>
+
+			<group name="cpm-cpu-total" ifType="all">
+				<mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.2"  instance="cpmCPUTotalEntry" alias="cpmCPUTotalPhysicalIndex"  type="string" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.8"  instance="cpmCPUTotalEntry" alias="cpmCPUTotal5minRev"        type="gauge" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.12" instance="cpmCPUTotalEntry" alias="cpmCPUMemoryUsed"          type="gauge" />
+				<mibObj oid=".1.3.6.1.4.1.9.9.109.1.1.1.1.13" instance="cpmCPUTotalEntry" alias="cpmCPUMemoryFree"          type="gauge" />
+				<property instance="cpmCPUTotalEntry" alias="cpmCPUTotalName" class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender">
+					<parameter key="source-type" value="entPhysicalEntry"/>
+					<parameter key="source-attribute" value="entPhysicalName"/>
+					<parameter key="target-index-pointer-column" value="cpmCPUTotalPhysicalIndex"/>
+				</property>
+				<property instance="cpmCPUTotalEntry" alias="cpmCPUTotalDescr" class-name="org.opennms.netmgt.collectd.PointerLikeIndexPropertyExtender">
+					<parameter key="source-type" value="entPhysicalEntry"/>
+					<parameter key="source-attribute" value="entPhysicalDescr"/>
+					<parameter key="target-index-pointer-column" value="cpmCPUTotalPhysicalIndex"/>
+				</property>
+			</group>
+
+		</groups>
+
+		<systems>
+			<systemDef name="Cisco switches or whatever">
+				<sysoidMask>.1.3.6.1.4.1.9.</sysoidMask>
+				<collect>
+					<includeGroup>entity-physical-table</includeGroup>
+					<includeGroup>cpm-cpu-total</includeGroup>
+				</collect>
+			</systemDef>
+		</systems>
+
+	</snmp-collection>
+</datacollection-config>

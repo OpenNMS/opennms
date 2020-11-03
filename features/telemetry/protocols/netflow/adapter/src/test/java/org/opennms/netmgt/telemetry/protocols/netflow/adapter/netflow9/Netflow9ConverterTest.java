@@ -117,7 +117,12 @@ public class Netflow9ConverterTest {
                 final Packet packet = new Packet(session, header, buffer);
                 packet.getRecords().forEach(rec -> {
 
-                    byte[] message = buildAndSerialize(Protocol.NETFLOW9, rec);
+                    byte[] message = new byte[0];
+                    try {
+                        message = buildAndSerialize(Protocol.NETFLOW9, rec);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                     try {
                         FlowMessage flowMessage = FlowMessage.parseFrom(message);
                         flows.addAll(nf9Converter.convert(flowMessage));

@@ -49,6 +49,7 @@ import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowConverter;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.IllegalFlowException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
@@ -91,9 +92,9 @@ public class Netflow5ConverterTest {
         MatcherAssert.assertThat(flow.getBytes(), equalTo(230L));
         MatcherAssert.assertThat(flow.getInputSnmp(), equalTo(0));
         MatcherAssert.assertThat(flow.getOutputSnmp(), equalTo(0));
-        MatcherAssert.assertThat(flow.getFirstSwitched(), equalTo(1434886852194L));
-        MatcherAssert.assertThat(flow.getLastSwitched(), equalTo(1430591887476L));
-        MatcherAssert.assertThat(flow.getDeltaSwitched(), equalTo(1434886852194L));
+        MatcherAssert.assertThat(flow.getFirstSwitched(), equalTo(1430608661859L));
+        MatcherAssert.assertThat(flow.getLastSwitched(), equalTo(1434870077556L));
+        MatcherAssert.assertThat(flow.getDeltaSwitched(), equalTo(1430608661859L));
         MatcherAssert.assertThat(flow.getPackets(), equalTo(5L));
         MatcherAssert.assertThat(flow.getDirection(), equalTo(Flow.Direction.INGRESS));
         MatcherAssert.assertThat(flow.getNextHop(), equalTo("0.0.0.0"));
@@ -124,7 +125,13 @@ public class Netflow5ConverterTest {
                 final Packet packet = new Packet(header, buffer);
                 packet.getRecords().forEach(rec -> {
 
-                    byte[] message = buildAndSerialize(Protocol.NETFLOW5, rec);
+                    byte[] message = new byte[0];
+                    try {
+                        message = buildAndSerialize(Protocol.NETFLOW5, rec);
+                    } catch (IllegalFlowException e) {
+                        throw new RuntimeException(e);
+                    }
+
                     try {
                         FlowMessage flowMessage = FlowMessage.parseFrom(message);
                         flows.addAll(nf5Converter.convert(flowMessage));

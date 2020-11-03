@@ -33,14 +33,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-
-import org.opennms.netmgt.collectd.SnmpCollectionResource;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.config.datacollection.MibObjProperty;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

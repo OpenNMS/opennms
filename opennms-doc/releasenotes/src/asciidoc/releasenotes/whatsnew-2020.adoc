@@ -215,13 +215,34 @@ Since Meridian 2020 is based on Horizon 26.1, it contains all the fixes and upda
 
 For a more complete list of major changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.1.3.
 
+[releasenotes-changelog-Meridian-2020.1.1]
+
+==== Release Meridian-2020.1.1
+
+Release 2020.1.1 is the second release in the Meridian 2020 series.
+
+It contains a number of bug fixes and enhancements.
+
+The codename for 2020.1.1 is _link:$$https://wikipedia.org/wiki/Tombolo$$[Tombolo]_.
+
+===== Bug
+
+* Unable to poll Vcenter CIM - Calling something in OpenJDK11 that has been removed. (Issue http://issues.opennms.org/browse/NMS-12919[NMS-12919])
+* service starts / restarts work but spit out an error if configured to wait for startup (Issue http://issues.opennms.org/browse/NMS-12966[NMS-12966])
+* Alarm (v1 & v2) ReST Service PUT Can't PUT Multiple Things (Issue http://issues.opennms.org/browse/NMS-12979[NMS-12979])
+
+===== Enhancement
+
+* Add custom string attributes based on indirect and complex SNMP Indices (Issue http://issues.opennms.org/browse/NMS-8484[NMS-8484])
+* Identify message broker strategies in web "about" page (Issue http://issues.opennms.org/browse/NMS-12971[NMS-12971])
+
 [releasenotes-changelog-Meridian-2020.1.0]
 
 ==== Release Meridian-2020.1.0
 
 Release 2020.1.0 is the first release in the Meridian 2020 series, based on Horizon 26.1.x.
 
-The codename for 2020.1.0 is _link:$$https://en.wikipedia.org/wiki/Archipelago$$[Archipelago]_.
+The codename for 2020.1.0 is _link:$$https://wikipedia.org/wiki/Archipelago$$[Archipelago]_.
 
 ===== Bug
 

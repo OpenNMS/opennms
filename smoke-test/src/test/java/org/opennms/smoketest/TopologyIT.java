@@ -77,6 +77,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
     private static final Logger LOG = LoggerFactory.getLogger(TopologyIT.class);
 
     private static final int DEFAULT_MENU_RETRIES = 3;
+    public static int IMPLICIT_WAIT_SECONDS = 2;
 
     private TopologyUIPage topologyUiPage;
 
@@ -110,7 +111,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public void removeFromFocus() {
             try {
-                ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                ui.testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='icon-remove']")).click();
                 waitForTransition();
             } finally {
@@ -120,7 +121,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public void expand() throws NoSuchElementException {
             try {
-                ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                ui.testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='gwt-Anchor icon-plus']")).click();
                 waitForTransition();
             } finally {
@@ -130,7 +131,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public void collapse() throws NoSuchElementException {
             try {
-                ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                ui.testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='gwt-Anchor icon-minus']")).click();
                 waitForTransition();
             } finally {
@@ -229,7 +230,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public ContextMenu contextMenu() {
             try {
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 Actions action = new Actions(testCase.getDriver());
                 action.contextClick(getElement());
                 action.build().perform();
@@ -247,7 +248,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
                 this.contextMenu().click("Change Icon");
                 final String iconXpath = "//*[name()='title' and text()='" + iconName + "']/../*[name()='rect']";
                 try {
-                    testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                    testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                     testCase.findElementByXpath("//*[contains(text(), 'Change Icon')]");
                     testCase.findElementByXpath(iconXpath).click();
                     new WebDriverWait(testCase.getDriver(), 10).until(input -> {
@@ -304,7 +305,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
         public void click(String... menuPath) {
             if (menuPath != null && menuPath.length > 0) {
                 try {
-                    testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                    testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                     for (int i = 0; i < menuPath.length; i++) {
                         final String eachPath = menuPath[i];
                         final WebElement menuElement = testCase.findElementByXpath("//*[@class='v-menubar-popup']//*[@class='v-menubar-submenu']//*[text()='" + eachPath + "']");
@@ -352,7 +353,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public List<String> getLabels() {
             try {
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 List<WebElement> breadcrumbs = testCase.getDriver().findElements(By.xpath("//*[@id='breadcrumbs']//span[@class='v-button-caption']"));
                 return breadcrumbs.stream().map(eachBreadcrumb -> eachBreadcrumb.getText()).collect(Collectors.toList());
             } finally {
@@ -362,7 +363,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public void click(String label) {
             try {
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 WebElement element = testCase.findElementByXpath("//*[@id='breadcrumbs']//*[contains(text(), '" + label + "')]");
                 element.click();
                 waitForTransition();
@@ -384,7 +385,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public String getTitle() {
             try {
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 return testCase.findElementByXpath("//*[@id='topologyInfo']/*[1]").getText();
             } finally {
                 testCase.setImplicitWait();
@@ -393,7 +394,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public String getDescription() {
             try {
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 return testCase.findElementByXpath("//*[@id='topologyInfo']/*[2]").getText();
             } finally {
                 testCase.setImplicitWait();
@@ -463,7 +464,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
         public TopologyUIPage selectTopologyProvider(TopologyProvider topologyProvider) {
             Objects.requireNonNull(topologyProvider);
             try {
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 clickOnMenuItemsWithLabels("View", topologyProvider.getLabel());
                 waitForTransition(); // we have to wait for the UI to re-settle
                 return this;
@@ -507,7 +508,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             final List<FocusedVertex> verticesInFocus = Lists.newArrayList();
             try {
                 // Reduce the timeout so we don't wait around for too long if there are no vertices in focus
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 for (WebElement el : testCase.getDriver().findElements(By.xpath("//*/table[@class='search-token-field']"))) {
                     final String namespace = el.findElement(By.xpath(".//div[@class='search-token-namespace']")).getText();
                     final String label = el.findElement(By.xpath(".//div[@class='search-token-label']")).getText();
@@ -537,7 +538,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             final List<VisibleVertex> visibleVertices = Lists.newArrayList();
             try {
                 // Reduce the timeout so we don't wait around for too long if there are no visible vertices
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 for (WebElement el : testCase.getDriver().findElements(By.xpath("//*[@id='TopologyComponent']//*[@class='vertex-label']"))) {
                     visibleVertices.add(new VisibleVertex(testCase, el.getText()));
                 }
@@ -577,7 +578,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public Layout getSelectedLayout() {
             try {
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 clickOnMenuItemsWithLabels("View"); // we have to click the View menubar, otherwise the menu elements are NOT visible
                 List<WebElement> elements = testCase.getDriver().findElements(By.xpath("//span[@class='v-menubar-menuitem v-menubar-menuitem-checked']"));
                 for (WebElement eachElement : elements) {
@@ -596,7 +597,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
         public void selectLayer(String layerName) {
             Objects.requireNonNull(layerName, "The layer name cannot be null");
             try {
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 openLayerSelectionComponent();
                 WebElement layerElement = testCase.findElementById("layerComponent").findElement(By.xpath("//div[text() = '" + layerName + "']"));
                 layerElement.click();
@@ -612,7 +613,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public String getSelectedLayer() {
             try {
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 openLayerSelectionComponent();
                 WebElement selectedLayer = testCase.findElementByXpath("//div[@id='layerComponent']//div[contains(@class, 'selected')]//div[contains(@class, 'v-label')]");
                 if (selectedLayer != null) {
@@ -706,7 +707,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
         public void defaultFocus() {
             clearFocus();
             try {
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 testCase.findElementById("defaultFocusBtn").click();
                 waitForTransition();
                 testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
@@ -721,7 +722,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
 
         public boolean isSimulationModeEnabled() {
             try {
-                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                testCase.setImplicitWait(IMPLICIT_WAIT_SECONDS, TimeUnit.SECONDS);
                 testCase.findElementByXpath("//*[@id='info-panel-component']//div[text() = 'Simulation Mode Enabled']");
                 return true;
             } catch (NoSuchElementException e) {
