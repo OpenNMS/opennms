@@ -1,0 +1,10 @@
+[template]
+src = "slack.properties.tpl"
+dest = "/opt/opennms/etc/opennms.properties.d/_confd.slack.properties"
+keys = [
+   "opennms/notifd/slack/channel",
+   "opennms/notifd/slack/userName",
+   "opennms/notifd/slack/iconEmoji",
+   "opennms/notifd/slack/iconURL",
+   "opennms/notifd/slack/useSystemProxy"
+]
