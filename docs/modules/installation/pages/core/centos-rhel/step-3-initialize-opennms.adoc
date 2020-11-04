@@ -10,7 +10,7 @@
 /opt/opennms/bin/install -dis
 ----
 
-.Enable OpenNMS core daemon on system boot and start immediately
+.Enable {page-component-title} core server on system boot and start immediately
 [source, console]
 ----
 systemctl enable --now opennms

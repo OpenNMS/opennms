@@ -1,18 +1,15 @@
-[[system-requirements]]
+[[system-requirements-minion]]
 = System Requirements
 
-[[system-requirements-core-server]]
-== Core Server
-
-[[system-resource-requirements]]
-=== System Resource Requirements
+[[system-resource-requirement-minion]]
+== System Resource Requirements
 
 [options="header, autowidth"]
 |===
 |                        | Minimum Specifications* | Recommended Specifications**
 | *CPU*                  | 2 GHz dual core x86_64  | 3 GHz quad core x86_64 and above
-| *RAM*                  | 4 GB (physical)         | 16 GB (physical) and above
-| *Storage (disk space)* | 100 GB HDD, SSD         | 1 TB with SSD and above
+| *RAM*                  | 4 GB (physical)         | 8 GB (physical) and above
+| *Storage (disk space)* | 20 GB HDD, SSD          | 100 GB with SSD and above
 |===
 
 *_You can reduce the minimum storage requirements for development and testing purposes._ +
@@ -25,8 +22,8 @@ Installing and operating OpenNMS {page-component-title} requires:
   If there is an incorrect or missing _A Resource Record_ for the OpenNMS server hostname, OpenNMS might not start correctly.
   The Java security manager might not initialize and an _RMI class loader disabled_ exception will be shown.
 
-[[supported-operating-systems]]
-=== Supported Operating Systems
+[[supported-operating-systems-minion]]
+== Supported Operating Systems
 
 Make sure that your chosen operating system is listed in one of the following tables before you install OpenNMS {page-component-title}.
 See the release notes for information about platform support changes, including deprecated platforms.
@@ -43,30 +40,3 @@ ifeval::["{page-component-title}" == "Horizon"]
 | Ubuntu                  | {ubuntu-version}
 endif::[]
 |===
-
-[[system-components]]
-=== System Components
-
-{page-component-title} {page-component-version} is compatible with the following components:
-
-[options="header, autowidth"]
-|===
-| Component               | Version Compatibility
-| OpenNMS Helm            | {onms-helm-version}
-| OpenNMS Integration API | {oia-version}
-| Cassandra               | {cassandra-version}
-| Elasticsearch           | {elasticsearch-version}
-| Java Development Kit    | {javajdk-version}
-| Kafka                   | {kafka-version}
-| PostgreSQL              | {postgresql-version}
-| RRDTool                 | {rrdtool-version}
-|===
-
-NOTE: RHEL {rhel7-version} users must complete additional steps to install PostgreSQL {postgresql-version}. 
-Refer to https://www.postgresql.org/download/linux/redhat/[PostgreSQL Yum Repository] for instructions. 
-
-[[system-requirements-minion]]
-== Minion
-
-[[system-requirements-sentinel]]
-== Sentinel

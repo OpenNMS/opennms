@@ -1,18 +1,23 @@
-.Add apt repository in /etc/apt/sources.list.d/opennms.list and add GPG key
+.Add apt repository in /etc/apt/sources.list.d/opennms.list
 [source, console]
 ----
-cat << EOF | sudo tee /etc/apt/sources.list.d/opennms.list
+cat << EOF > /etc/apt/sources.list.d/opennms.list
 deb https://debian.opennms.org stable main
 deb-src https://debian.opennms.org stable main
 EOF
-wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
-apt update
 ----
 
-.Installation of {page-component-title} with all built-in dependencies
+.Install gnupg and repository GPG key
 [source, console]
 ----
-apt -y install opennms
+apt -y install gnupg
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+----
+
+.Installation of OpenNMS {page-component-title} with built-in dependencies
+[source, console]
+----
+apt update && apt -y install opennms
 ----
 
 TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
@@ -27,10 +32,17 @@ apt-mark hold libopennms-java \
               opennms-db
 ----
 
-.A successful installation creates the following directory structure
+.Verify directory structure with the tree command
 [source, console]
 ----
-[root@localhost /usr/share/opennms]# tree -L 1
+apt -y install tree
+cd /usr/share/opennms
+tree -L 1
+----
+
+.Directory structure after successful installation
+[source, output]
+----
 .
 └── opennms
    ├── bin

@@ -1,0 +1,128 @@
+[[setting-up-basic-minion]]
+= Setting up a Basic Minion
+
+[[objectives]]
+== Objectives
+
+* Installing {page-component-title} Minion running on a <<minion/system-requirements.adoc#supported-operating-systems-core, Supported Operating Systems>>
+* Create credentials to secure the communication between the Minion and the Core server
+* Configuring {page-component-title} Core server with embedded ActiveMQ message broker for {page-component-title} Minion communication
+* Verfying the setup
+
+== Requirements
+
+* Identical version numbers for {page-component-title} core server and {page-component-title} Minion 
+* {page-component-title} core server is installed and communication to the REST (8980/tcp) and ActiveMQ (616161/tcp) endpoints are possible
+
+[[prepare-core-server]]
+== Prepare {page-component-title} core server
+
+The communication between {page-component-title} core server and the Minion is secured with credentials.
+We use here as example the user _my-minion-user_ with password _my-minion-password_.
+The credentials are used for authenticating the REST endpoint and ActiveMQ message broker.
+
+IMPORTANT: Replace at least _my-minion-password_ with a secure password.
+
+=== Create a minion user
+
+. Log in to the web UI as an administrative user. 
+. Click on the gears icon and choose *Configure Users, Groups and On-Call Roles -> Configure Users*.
+. Add a new user with login name _my-minion-user_ and password _my-minion-password_ and click btn:[OK].
+. In the *Security Roles* area, assign the _ROLE_MINION_ security role.
+.. Optional: fill in a comment for the Minion user's location and purpose.
+. Click btn:[Finish].
+
+The new created Minion user should now be listed in the user List.
+
+=== Enable embedded ActiveMQ
+
+With the {page-component-title} core server comes an embedded ActiveMQ message broker which listens by default on the local loopback interface.
+Allowing Minions to communicate with the {page-component-title} core server requires to change the listening interface to all public network interfaces.
+
+[{tabs}]
+====
+CentOS/RHEL 7/8::
++
+--
+include::centos-rhel/step-1-configure-core.adoc[]
+--
+
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/step-1-configure-core.adoc[]
+--
+====
+
+== Installing the Minion package
+
+[{tabs}]
+====
+CentOS/RHEL 7::
++
+--
+include::centos-rhel7/step-2-install-minion.adoc[]
+--
+
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/step-2-install-minion.adoc[]
+--
+
+Debian::
++
+--
+include::debian/step-2-install-minion.adoc[]
+--
+
+Ubuntu::
++
+--
+include::ubuntu/step-2-install-minion.adoc[]
+--
+====
+
+== Configure the Minion
+
+.Connect to the Karaf shell with user `admin` and password `admin`
+[source, console]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Configure REST endpoints, ActiveMQ and remote location name
+[source,karaf]
+----
+config:edit org.opennms.minion.controller<1>
+config:property-set location Office-Pittsboro<2>
+config:property-set http-url http://opennms-fqdn:8980/opennms<3>
+config:property-set broker-url failover:tcp://opennms-fqdn:61616<4>
+config:update<5>
+----
+<1> Change mode to edit the minion configuration
+<2> Replace Office-Pittsboro with a location name representing your remote location the Minion is running
+<3> Replace the example `http-url` with the URL of your {page-component-title} core server
+<4> Replace the example `broker-url` with the host of your {page-component-title} core server. If you have ActiveMQ with SSL running replace `tcp` with `ssl`.
+<5> Save the configuration
+
+.Configure the credentials and exit Karaf shell
+[source,karaf]
+----
+opennms:scv-set opennms.http my-minion-user my-minion-password<1>
+opennms:scv-set opennms.broker my-minion-user my-minion-password<2>
+----
+<1> Set the credentials for the REST endpoint created in your {page-component-title} core instance
+<2> Set the credentials for the ActiveMQ message broker
+
+TIP: The credentials are encrypted on disk in `$MINION_HOME/etc/scv.jce`.
+
+Exit the Karaf Shell with kbd:[Ctrl+d]
+
+.Restart the Minion to apply the configuration
+[source,console]
+----
+systemctl restart minion
+----
+
+

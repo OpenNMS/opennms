@@ -1,14 +1,14 @@
 .Add repository and import GPG key
 [source, console]
 ----
-yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
+dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
 rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
 .Installation of {page-component-title} with all built-in dependencies
 [source, console]
 ----
-yum -y install opennms
+dnf -y install opennms
 ----
 
 TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
@@ -18,13 +18,20 @@ TIP: We recommend disabling the OpenNMS {page-component-title} repository after 
 .Disable auto updates for OpenNMS {page-component-title}
 [source, console]
 ----
-yum config-manager --disable opennms-repo-stable-*
+dnf config-manager --disable opennms-repo-stable-*
 ----
 
-.A successful installation creates the following directory structure
+.Verify directory structure with the tree command
 [source, console]
 ----
-[root@localhost /opt/opennms]# tree -L 1
+dnf -y install tree
+cd /opt/opennms
+tree -L 1
+----
+
+.Directory structure after successful installation
+[source, output]
+----
 .
 └── opennms
    ├── bin
@@ -38,4 +45,3 @@ yum config-manager --disable opennms-repo-stable-*
    ├── share -> /var/opennms
    └── system
 ----
-

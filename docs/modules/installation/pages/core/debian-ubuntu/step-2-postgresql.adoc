@@ -1,9 +1,3 @@
-.Enable PostgreSQL on system boot and start immediately
-[source, console]
-----
-systemctl enable --now postgresql
-----
-
 .Create an opennms database user with a password and create an opennms database which is owned by the user opennms
 [source, shell]
 ----

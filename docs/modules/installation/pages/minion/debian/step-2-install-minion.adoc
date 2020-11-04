@@ -1,0 +1,57 @@
+.Add apt repository in /etc/apt/sources.list.d/opennms.list
+[source, console]
+----
+cat << EOF > /etc/apt/sources.list.d/opennms.list
+deb https://debian.opennms.org stable main
+deb-src https://debian.opennms.org stable main
+EOF
+----
+
+.Install gnupg and repository GPG key
+[source, console]
+----
+apt -y install gnupg
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+----
+
+.Installation of OpenNMS {page-component-title} with built-in dependencies
+[source, console]
+----
+apt update && apt -y install opennms-minion
+----
+
+TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
+     _{page-component-title}_ requires some manual steps upon upgrade configuration files or migrate database schemas to a new version.
+     For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
+
+[source, console]
+----
+apt-mark hold opennms-minion
+----
+
+.Verify directory structure with the tree command
+[source, console]
+----
+apt -y install tree
+cd /usr/share
+tree minion -L 1
+----
+
+.Directory structure after successful installation
+[source, output]
+----
+minion
+├── bin
+├── data -> /var/lib/minion/data
+├── deploy -> /var/lib/minion/deploy
+├── etc -> /etc/minion
+├── lib
+├── repositories
+└── system
+----
+
+.Enable {page-component-title} Minion on system boot and start immediately
+[source, console]
+----
+systemctl enable --now minion
+----

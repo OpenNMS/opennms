@@ -10,12 +10,11 @@
 /usr/share/opennms/bin/install -dis
 ----
 
-.Enable OpenNMS core daemon on system boot and start immediately
+.Enable {page-component-title} core server on system boot and start immediately
 [source, console]
 ----
 systemctl enable --now opennms
 ----
 
-TIP: If you want to receive SNMP Traps or Syslog messages you have to allow incoming traffic on your host firewall as well.
-     By default OpenNMS SNMP trap daemon is listening on 162/udp and Syslog daemon is listening on 10514/udp.
+TIP: By default OpenNMS SNMP trap daemon is listening on 162/udp and Syslog daemon is listening on 10514/udp.
      The SNMP Trap daemon is enabled by default, the OpenNMS Syslog daemon is disabled.

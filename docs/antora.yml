@@ -4,6 +4,7 @@ title: Horizon
 prerelease: true
 asciidoc:
   attributes:
+    experimental: true
     source-language: asciidoc@
     xrefstyle: short@
     centos7-version: '7.x'

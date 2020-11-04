@@ -1,13 +1,11 @@
 [[setting-up-basic-core-server]]
 = Setting up a Basic Core Server
 
-The _{page-component-title}_ platform can be installed on multiple OS families see in <<system-requirements.adoc#system-requirements-core-server, System Requirements Core Server>>.
-
 [[objectives]]
 == Objectives
 
-* Installing _{page-component-title}_ components and PostgreSQL on a single node using the built-in JRobin as time series storage
-* Setup _{page-component-title}_ on recommended operating systems
+* Installing OpenNMS {page-component-title} components and PostgreSQL on a single node
+* Installing and configuring OpenNMS {page-component-title} on a <<core/system-requirements.adoc#supported-operating-systems-core, Supported Operating Systems>> using JRobin as time series storage
 * Login the Web User Interface and change the default admin password
 
 == Installing OpenNMS {page-component-title}
@@ -26,33 +24,35 @@ CentOS/RHEL 8::
 include::centos-rhel8/step-1-install-opennms.adoc[]
 --
 
-Ubuntu/Debian::
+Debian::
 +
 --
-include::ubuntu-debian/step-1-install-opennms.adoc[]
+include::debian/step-1-install-opennms.adoc[]
+--
+
+Ubuntu::
++
+--
+include::ubuntu/step-1-install-opennms.adoc[]
 --
 ====
 
 == Setting up PostgreSQL
 
+#TODO: Add steps to install PostgreSQL 12 on CentOS/RHEL 7#
+
 [{tabs}]
 ====
-CentOS/RHEL 7::
+CentOS/RHEL 7/8::
 +
 --
-include::centos-rhel7/step-2-postgresql.adoc[]
+include::centos-rhel/step-2-postgresql.adoc[]
 --
 
-CentOS/RHEL 8::
+Debian/Ubuntu::
 +
 --
-include::centos-rhel8/step-2-postgresql.adoc[]
---
-
-Ubuntu/Debian::
-+
---
-include::ubuntu-debian/step-2-postgresql.adoc[]
+include::debian-ubuntu/step-2-postgresql.adoc[]
 --
 ====
 
@@ -60,22 +60,16 @@ include::ubuntu-debian/step-2-postgresql.adoc[]
 
 [{tabs}]
 ====
-CentOS/RHEL 7::
+CentOS/RHEL 7/8::
 +
 --
-include::centos-rhel7/step-3-initialize-opennms.adoc[]
+include::centos-rhel/step-3-initialize-opennms.adoc[]
 --
 
-CentOS/RHEL 8::
+Debian/Ubuntu::
 +
 --
-include::centos-rhel8/step-3-initialize-opennms.adoc[]
---
-
-Ubuntu/Debian::
-+
---
-include::ubuntu-debian/step-3-initialize-opennms.adoc[]
+include::debian-ubuntu/step-3-initialize-opennms.adoc[]
 --
 ====
 
