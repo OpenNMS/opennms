@@ -1,5 +1,0 @@
-.Using a Different Time Series Storage
-
-* xref:introduction.adoc[]
-* xref:rrdtool/rrdtool.adoc[]
-* xref:newts.adoc[]

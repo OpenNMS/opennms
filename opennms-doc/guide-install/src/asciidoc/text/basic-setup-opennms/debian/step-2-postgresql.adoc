@@ -1,0 +1,58 @@
+
+==== Step 2: Initialize and setup PostgreSQL
+
+The _Debian_ package installs the _PostgreSQL_ database and is already initialized.
+The _PostgreSQL_ service is already added in the runlevel configuration for system startup.
+
+.Startup PostgreSQL database
+[source, shell]
+----
+systemctl start postgresql
+----
+
+.Create an opennms database user with a password and create an opennms database which is owned by the user opennms
+[source, shell]
+----
+su - postgres
+createuser -P opennms
+createdb -O opennms opennms
+----
+
+.Set a password for Postgres super user
+[source, shell]
+----
+psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
+exit
+----
+
+NOTE: The super user is required to be able to initialize and change the database schema for installation and updates.
+
+.Configure database access in {opennms-product-name}
+[source, shell]
+----
+vi ${OPENNMS_HOME}/etc/opennms-datasources.xml
+----
+
+.Set credentials to access the PostgreSQL database
+[source, xml]
+----
+<jdbc-data-source name="opennms"
+                    database-name="opennms"<1>
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/opennms"
+                    user-name="** YOUR-OPENNMS-USERNAME **"<2>
+                    password="** YOUR-OPENNMS-PASSWORD **" /><3>
+
+<jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/template1"
+                    user-name="postgres"<4>
+                    password="** YOUR-POSTGRES-PASSWORD **" /><5>
+----
+
+<1> Set the database name _{opennms-product-name}_ should use
+<2> Set the user name to access the _opennms_ database table
+<3> Set the password to access the _opennms_ database table
+<4> Set the _postgres_ user for administrative access to PostgreSQL
+<5> Set the password for administrative access to PostgreSQL

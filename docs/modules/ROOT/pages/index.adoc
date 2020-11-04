@@ -7,6 +7,30 @@
 |Source:  |{page-origin-url}
 |===
 
-**Enterprise Class Open Source Network Management**
+OpenNMS {page-component-title} is a scalable and highly configurable network management platform with comprehensive fault, performance, and traffic monitoring. 
+It easily integrates with your core business applications and workflows to monitor and visualize everything in your network.
 
-OpenNMS: built for scalability, integration, and high levels of configuration since 2000.
+== Audience
+This guide is suitable for administrative users and those who will use {page-component-title} to monitor their network.    
+
+[[conventions]]
+== Typographical Conventions
+
+This guide uses the following typographical conventions:
+
+[cols="25h,~"]
+|===
+
+|*Convention* |*Meaning*
+|*bold* | Indicates UI elements to click or select in a procedure, and the names of UI elements like dialogs or icons. 
+|_italics_| Introduces a defined or special word. Also used for the titles of publications.
+|`code` | Anything you must type or enter, and the names for code-related elements (classes, methods, commands). 
+
+|===
+
+[[ga-admin-help]]
+== Need Help?
+
+* join the https://chat.opennms.com/opennms/channels/opennms-discussion[OpenNMS Discussion] chat
+* join our community on https://opennms.discourse.group/latest[Discourse]
+* contact sales@opennms.com to purchase https://www.opennms.com/support/[customer support]

@@ -1,0 +1,92 @@
+[[setting-up-basic-core-server]]
+= Setting up a Basic Core Server
+
+The _{page-component-title}_ platform can be installed on multiple OS families see in <<system-requirements.adoc#system-requirements-core-server, System Requirements Core Server>>.
+
+[[objectives]]
+== Objectives
+
+* Installing _{page-component-title}_ components and PostgreSQL on a single node using the built-in JRobin as time series storage
+* Setup _{page-component-title}_ on recommended operating systems
+* Login the Web User Interface and change the default admin password
+
+== Installing OpenNMS {page-component-title}
+
+[{tabs}]
+====
+CentOS/RHEL 7::
++
+--
+include::centos-rhel7/step-1-install-opennms.adoc[]
+--
+
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/step-1-install-opennms.adoc[]
+--
+
+Ubuntu/Debian::
++
+--
+include::ubuntu-debian/step-1-install-opennms.adoc[]
+--
+====
+
+== Setting up PostgreSQL
+
+[{tabs}]
+====
+CentOS/RHEL 7::
++
+--
+include::centos-rhel7/step-2-postgresql.adoc[]
+--
+
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/step-2-postgresql.adoc[]
+--
+
+Ubuntu/Debian::
++
+--
+include::ubuntu-debian/step-2-postgresql.adoc[]
+--
+====
+
+== Initialize OpenNMS {page-component-title}
+
+[{tabs}]
+====
+CentOS/RHEL 7::
++
+--
+include::centos-rhel7/step-3-initialize-opennms.adoc[]
+--
+
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/step-3-initialize-opennms.adoc[]
+--
+
+Ubuntu/Debian::
++
+--
+include::ubuntu-debian/step-3-initialize-opennms.adoc[]
+--
+====
+
+== Changing default password
+
+After starting OpenNMS the web application can be accessed on http://<ip-or-fqdn-of-your-server>:8980/opennms.
+The default login user is _admin_ and the password is initialized to _admin_.
+
+. Open in your browser http://<ip-or-fqdn-of-your-server>:8980/opennms
+. Login with with admin/admin
+. Click in main navigation menu on "admin -> Change Password -> Change Password"
+. Set as current password _admin_ and set a new password and confirm your newly set password
+. Click "Submit"
+. Logout and login with your new password

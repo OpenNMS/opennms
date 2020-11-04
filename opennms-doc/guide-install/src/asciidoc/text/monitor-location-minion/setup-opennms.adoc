@@ -1,0 +1,46 @@
+[[gi-minion-setup-communication]]
+=== Set Up {opennms-product-name} to allow Minion communication
+
+Communication between a Minion and {opennms-product-name} uses the REST API and a messaging system, by default ActiveMQ.
+Before installing a Minion, you need to create an authenticated user with the _ROLE_MINION_ security role for these communication channels.
+
+For information on setting up communication between {opennms-product-name} and Kafka, see <<kafka-setup, Setup using Apache Kafka>>. For gRPC, see <<minion-grpc,Minion with gRPC strategy>>.  
+
+IMPORTANT: This guide uses the user name _minion_ with password _minion_ as an example.
+           Change your credentials accordingly.
+
+.Create a minion user in the {opennms-product-name} web UI:
+. Log in to the web UI as an administrative user. 
+. Click on the gears icon and choose *Configure Users, Groups and On-Call Roles -> Configure Users*.
+. Add a new user with login name _minion_ and password _minion_ and click *OK*.
+. In the *Security Roles* area, assign the _ROLE_MINION_ security role.
+.. Optional: fill in a comment for the Minion user's location and purpose.
+. Click *Finish*.
+
+The _minion_ user should now be listed in the user List.
+
+.Configure ActiveMQ to allow communication on public network interface:
+[source, shell]
+----
+vi ${OPENNMS_HOME}/etc/opennms-activemq.xml
+----
+
+.Remove comments for the transport connector listening on 0.0.0.0 and save
+[source, xml]
+----
+<transportConnector name="openwire" uri="tcp://0.0.0.0:61616?useJmx=false&amp;maximumConnections=1000&amp;wireformat.maxFrameSize=104857600"/>
+----
+
+.Restart {opennms-product-name}
+[source, shell]
+----
+systemctl restart opennms
+----
+
+.Verify that port 61616/tcp is listening on all interfaces
+[source, shell]
+----
+ss -lnpt sport = :61616
+State   Recv-Q  Send-Q  Local Address:Port  Peer  Address:Port
+LISTEN  0       128     *:61616             *:*   users:(("java",pid=1,fd=706))
+----

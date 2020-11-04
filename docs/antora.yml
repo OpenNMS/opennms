@@ -6,12 +6,20 @@ asciidoc:
   attributes:
     source-language: asciidoc@
     xrefstyle: short@
-
+    centos7-version: '7.x'
+    centos8-version: '8.x'
+    rhel7-version: '7.x'
+    rhel8-version: '8.x'
+    ubuntu-version: '20.04 LTS'
+    debian-version: '10'
+    onms-helm-version: '3+'
+    oia-version: '0.2.x'
+    cassandra-version: '3.11.x'
+    elasticsearch-version: '6.7.0 - 7.6.2'
+    javajdk-version: 'OpenJDK 8, OpenJDK 11'
+    kafka-version: '1.x - 2.x'
+    postgresql-version: '10.x - 13.x'
+    rrdtool-version: '1.7.x'
 nav:
-- modules/about/nav.adoc
-- modules/installation/basic-setup-opennms/nav.adoc
-- modules/installation/basic-setup-opennms/nav.adoc
-- modules/ROOT/install-opennms-versions.adoc
-- modules/ROOT/minion-config-file.adoc
-- modules/ROOT/run-in-non-root.adoc
-- modules/ROOT/r-statistical-computing.adoc
+- modules/ROOT/index.adoc
+- modules/installation/nav.adoc

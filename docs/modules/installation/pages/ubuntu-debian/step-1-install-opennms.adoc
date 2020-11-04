@@ -1,0 +1,46 @@
+.Add apt repository in /etc/apt/sources.list.d/opennms.list and add GPG key
+[source, console]
+----
+cat << EOF | sudo tee /etc/apt/sources.list.d/opennms.list
+deb https://debian.opennms.org stable main
+deb-src https://debian.opennms.org stable main
+EOF
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+apt update
+----
+
+.Installation of {page-component-title} with all built-in dependencies
+[source, console]
+----
+apt -y install opennms
+----
+
+TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
+     _{page-component-title}_ requires some manual steps upon upgrade configuration files or migrate database schemas to a new version.
+     For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
+
+[source, console]
+----
+apt-mark hold libopennms-java \
+              libopennmsdeps-java \
+              opennms-common \
+              opennms-db
+----
+
+.A successful installation creates the following directory structure
+[source, console]
+----
+[root@localhost /usr/share/opennms]# tree -L 1
+.
+└── opennms
+   ├── bin
+   ├── data
+   ├── deploy
+   ├── etc -> /etc/opennms
+   ├── instances
+   ├── jetty-webapps
+   ├── lib -> ../java/opennms
+   ├── logs -> /var/log/opennms
+   ├── share -> /var/lib/opennms
+   └── system
+----
