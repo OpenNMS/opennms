@@ -170,6 +170,11 @@
             <version>1.7.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-dao-mock</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <repositories>
