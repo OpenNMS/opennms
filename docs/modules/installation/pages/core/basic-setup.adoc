@@ -8,6 +8,8 @@
 * Installing and configuring OpenNMS {page-component-title} on a <<core/system-requirements.adoc#supported-operating-systems-core, Supported Operating Systems>> using JRobin as time series storage
 * Login the Web User Interface and change the default admin password
 
+#TODO: Add hint to run all from a root shell#
+
 == Installing OpenNMS {page-component-title}
 
 [{tabs}]

@@ -14,6 +14,8 @@
 * Identical version numbers for {page-component-title} core server and {page-component-title} Minion 
 * {page-component-title} core server is installed and communication to the REST (8980/tcp) and ActiveMQ (616161/tcp) endpoints are possible
 
+#TODO: Add hint to run all from a root shell#
+
 [[prepare-core-server]]
 == Prepare {page-component-title} core server
 
