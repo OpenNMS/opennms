@@ -12,12 +12,14 @@
 == Requirements
 
 * Linux physical server or a virtual machine running a supported Linux operating system
-* Internet access to download the RPM or Debian packages
+* Internet access to download the installation packages
 * Make sure DNS is working and localhost and your servers host name is resolved properly
 * System user with administrative permissions (sudo) to perform the installation tasks
 
+ifeval::["{page-component-title}" == "Horizon"]
 CAUTION: If you run Debian, you have to install and configure `sudo` yourself.
          A guide can be found in the link:https://wiki.debian.org/sudo/[Debian Wiki].
+endif::[]
 
 == Setting up PostgreSQL
 
@@ -35,11 +37,13 @@ CentOS/RHEL 8::
 include::centos-rhel8/step-1-postgresql.adoc[]
 --
 
+ifeval::["{page-component-title}" == "Horizon"]
 Debian/Ubuntu::
 +
 --
 include::debian-ubuntu/step-1-postgresql.adoc[]
 --
+endif::[]
 ====
 
 == Installing the Core Instance
@@ -58,6 +62,7 @@ CentOS/RHEL 8::
 include::centos-rhel8/step-2-install-core.adoc[]
 --
 
+ifeval::["{page-component-title}" == "Horizon"]
 Debian::
 +
 --
@@ -69,6 +74,7 @@ Ubuntu::
 --
 include::ubuntu/step-2-install-core.adoc[]
 --
+endif::[]
 ====
 
 == Setting up the Core Instance
@@ -81,11 +87,13 @@ CentOS/RHEL 7/8::
 include::centos-rhel/step-3-initialize-core.adoc[]
 --
 
+ifeval::["{page-component-title}" == "Horizon"]
 Debian/Ubuntu::
 +
 --
 include::debian-ubuntu/step-3-initialize-core.adoc[]
 --
+endif::[]
 ====
 
 == First Login

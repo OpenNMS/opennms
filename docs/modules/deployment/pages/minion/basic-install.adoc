@@ -12,7 +12,7 @@
 == Requirements
 
 * Linux physical server or a virtual machine running a supported Linux operating system
-* Internet access to download the RPM or Debian packages
+* Internet access to download the installation packages
 * Make sure DNS is working and localhost and your servers host name is resolved properly
 * System user with administrative permissions (sudo) to perform the installation tasks
 * {page-component-title} Core instance runs on latest stable release
@@ -26,6 +26,11 @@ Configuring a Minion requires the following information and you have to adapt th
   The Core instance network endpoint is indicated with `core-instance-ip`.
 * Credentials for the Core instance and Minion communication.
   In this guide we use `my-minion-user` and `my-minion-password`.
+
+ifeval::["{page-component-title}" == "Horizon"]
+CAUTION: If you run Debian, you have to install and configure `sudo` yourself.
+         A guide can be found in the link:https://wiki.debian.org/sudo/[Debian Wiki].
+endif::[]
 
 [[prepare-Core-server]]
 == Prepare {page-component-title} Core Instance
@@ -60,11 +65,13 @@ CentOS/RHEL 7/8::
 include::centos-rhel/step-1-configure-core.adoc[]
 --
 
+ifeval::["{page-component-title}" == "Horizon"]
 Debian/Ubuntu::
 +
 --
 include::debian-ubuntu/step-1-configure-core.adoc[]
 --
+endif::[]
 ====
 
 == Installing the Minion package
@@ -83,6 +90,7 @@ CentOS/RHEL 8::
 include::centos-rhel8/step-2-install-minion.adoc[]
 --
 
+ifeval::["{page-component-title}" == "Horizon"]
 Debian::
 +
 --
@@ -94,6 +102,7 @@ Ubuntu::
 --
 include::ubuntu/step-2-install-minion.adoc[]
 --
+endif::[]
 ====
 
 == Configure the Minion
@@ -153,11 +162,13 @@ CentOS/RHEL 7/8::
 include::centos-rhel/step-4-secure-karaf.adoc[]
 --
 
+ifeval::["{page-component-title}" == "Horizon"]
 Debian/Ubuntu::
 +
 --
 include::debian-ubuntu/step-4-secure-karaf.adoc[]
 --
+endif::[]
 ====
 
 TIP: Changing the password or encryption algorithm get applied immediately.
