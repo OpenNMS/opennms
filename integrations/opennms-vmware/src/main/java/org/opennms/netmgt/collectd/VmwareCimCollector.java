@@ -45,7 +45,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -70,7 +69,6 @@ import org.opennms.netmgt.config.vmware.cim.VmwareCimGroup;
 import org.opennms.netmgt.dao.VmwareCimDatacollectionConfigDao;
 import org.opennms.netmgt.dao.VmwareConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -78,6 +76,9 @@ import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.base.Strings;
 import com.vmware.vim25.HostRuntimeInfo;
@@ -192,6 +193,8 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
      * the node dao object for retrieving assets
      */
     private NodeDao m_nodeDao = null;
+
+    private TransactionTemplate m_transactionTemplate = null;
 
     /**
      * the config dao
@@ -354,48 +357,61 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
         if (m_vmwareConfigDao == null) {
             m_vmwareConfigDao = BeanUtils.getBean("daoContext", "vmwareConfigDao", VmwareConfigDao.class);
         }
+
+        if (m_transactionTemplate == null) {
+            m_transactionTemplate = BeanUtils.getBean("daoContext", "transactionTemplate", TransactionTemplate.class);
+        }
     }
 
     @Override
     public Map<String, Object> getRuntimeAttributes(CollectionAgent agent, Map<String, Object> parameters) {
         final Map<String, Object> runtimeAttributes = new HashMap<>();
-        final OnmsNode onmsNode = m_nodeDao.get(agent.getNodeId());
-        if (onmsNode == null) {
-            throw new IllegalArgumentException(String.format("VmwareCollector: No node found with id: %d", agent.getNodeId()));
-        }
 
-        // retrieve the metadata
-        final String vmwareManagementServer = VmwareImporter.getManagementServer(onmsNode);
+        m_transactionTemplate.execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus transactionStatus) {
+                final OnmsNode onmsNode = m_nodeDao.get(agent.getNodeId());
+                if (onmsNode == null) {
+                    throw new IllegalArgumentException(String.format("VmwareCollector: No node found with id: %d", agent.getNodeId()));
+                }
 
-        if (Strings.isNullOrEmpty(vmwareManagementServer)) {
-            throw new IllegalArgumentException(String.format("VmwareCollector: No management server is set on node with id %d.",  onmsNode.getId()));
-        }
-        runtimeAttributes.put(VmwareImporter.METADATA_MANAGEMENT_SERVER, vmwareManagementServer);
+                // retrieve the metadata
+                final String vmwareManagementServer = VmwareImporter.getManagementServer(onmsNode);
 
-        final String vmwareManagedObjectId = onmsNode.getForeignId();
-        if (Strings.isNullOrEmpty(vmwareManagedObjectId)) {
-            throw new IllegalArgumentException(String.format("VmwareCollector: No foreign id is set on node with id %d.",  onmsNode.getId()));
-        }
-        runtimeAttributes.put(VmwareImporter.METADATA_MANAGED_OBJECT_ID, vmwareManagedObjectId);
+                if (Strings.isNullOrEmpty(vmwareManagementServer)) {
+                    throw new IllegalArgumentException(String.format("VmwareCollector: No management server is set on node with id %d.",  onmsNode.getId()));
+                }
+                runtimeAttributes.put(VmwareImporter.METADATA_MANAGEMENT_SERVER, vmwareManagementServer);
 
-        // retrieve the collection
-        final String collectionName = ParameterMap.getKeyedString(parameters, "collection", ParameterMap.getKeyedString(parameters, "vmware-collection", null));
-        final VmwareCimCollection collection = m_vmwareCimDatacollectionConfigDao.getVmwareCimCollection(collectionName);
-        if (collection == null) {
-            throw new IllegalArgumentException(String.format("VmwareCollector: No collection found with name '%s'.",  collectionName));
-        }
-        runtimeAttributes.put(VmwareImporter.VMWARE_COLLECTION_KEY, collection);
+                final String vmwareManagedObjectId = onmsNode.getForeignId();
+                if (Strings.isNullOrEmpty(vmwareManagedObjectId)) {
+                    throw new IllegalArgumentException(String.format("VmwareCollector: No foreign id is set on node with id %d.",  onmsNode.getId()));
+                }
+                runtimeAttributes.put(VmwareImporter.METADATA_MANAGED_OBJECT_ID, vmwareManagedObjectId);
 
-        // retrieve the server configuration
-        final Map<String, VmwareServer> serverMap = m_vmwareConfigDao.getServerMap();
-        if (serverMap == null) {
-            throw new IllegalStateException(String.format("VmwareCollector: Error getting vmware-config.xml's server map."));
-        }
-        final VmwareServer vmwareServer = serverMap.get(vmwareManagementServer);
-        if (vmwareServer == null) {
-            throw new IllegalStateException(String.format("VmwareCollector: Error getting credentials for VMware management server: %s", vmwareManagementServer));
-        }
-        runtimeAttributes.put(VmwareImporter.VMWARE_SERVER_KEY, vmwareServer);
+                // retrieve the collection
+                final String collectionName = ParameterMap.getKeyedString(parameters, "collection", ParameterMap.getKeyedString(parameters, "vmware-collection", null));
+                final VmwareCimCollection collection = m_vmwareCimDatacollectionConfigDao.getVmwareCimCollection(collectionName);
+                if (collection == null) {
+                    throw new IllegalArgumentException(String.format("VmwareCollector: No collection found with name '%s'.",  collectionName));
+                }
+                runtimeAttributes.put(VmwareImporter.VMWARE_COLLECTION_KEY, collection);
+
+                // retrieve the server configuration
+                final Map<String, VmwareServer> serverMap = m_vmwareConfigDao.getServerMap();
+                if (serverMap == null) {
+                    throw new IllegalStateException(String.format("VmwareCollector: Error getting vmware-config.xml's server map."));
+                }
+                final VmwareServer vmwareServer = serverMap.get(vmwareManagementServer);
+                if (vmwareServer == null) {
+                    throw new IllegalStateException(String.format("VmwareCollector: Error getting credentials for VMware management server: %s", vmwareManagementServer));
+                }
+                runtimeAttributes.put(VmwareImporter.VMWARE_SERVER_KEY, vmwareServer);
+
+                return null;
+            }
+        });
+
         return runtimeAttributes;
     }
 
