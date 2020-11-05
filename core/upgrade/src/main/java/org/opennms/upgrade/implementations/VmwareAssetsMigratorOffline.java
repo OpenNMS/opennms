@@ -120,7 +120,7 @@ public class VmwareAssetsMigratorOffline extends AbstractOnmsUpgrade {
 
                             insertStatement.setInt(1, nodeId);
                             insertStatement.setString(2, "VMware");
-                            insertStatement.setString(3, "mangedentityType");
+                            insertStatement.setString(3, "managedEntityType");
                             insertStatement.setString(4, vmwareManagedentityType);
                             insertStatement.execute();
 
