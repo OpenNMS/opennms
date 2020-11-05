@@ -5,7 +5,6 @@
 
 {opennms-product-name} uses an ICMP ping sweep to find IP addresses on the network and provision node entities.
 
-
 . Click the gear icon and in the *Provisioning* area choose *Configure Discovery*.
 . Accept the default values in the *General Settings* area, or set your own.
 .. The *Foreign Source* ... 

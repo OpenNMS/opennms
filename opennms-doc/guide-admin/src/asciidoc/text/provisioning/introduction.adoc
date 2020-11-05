@@ -16,7 +16,7 @@ It also includes an adapter API for interfacing with other management systems su
 
 Provisiond receives requests to add managed entities (nodes, IP interfaces, SNMP interfaces, services) via three basic mechanisms: 
 
-* link:#discovery-auto[automatic disovery] (typically via the Discovery daemon)
+* link:#discovery-auto[automatic discovery] (typically via the Discovery daemon)
 * link:#discovery-directed[directed discovery] using an import requisition (typically via the Provisioning UI)
 * link:#asset-import[asset import] through the UI or the https://docs.opennms.org/pris/branches/master/pris/pris.html[provisioning integration server] (PRIS)
 
@@ -75,4 +75,3 @@ All physical (SNMP) and logical (IP) interfaces are discovered and persisted bas
 After interface discovery, Provisiond moves to service detection on each IP interface entity.
 
 For more details on how provisioning works in {opennms-product-name}, see this archived https://wiki.opennms.org/wiki/images/c/ca/ProvisioningUsersGuide.pdf[provisioning white paper]. 
-

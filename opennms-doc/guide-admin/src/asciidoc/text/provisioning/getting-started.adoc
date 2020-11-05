@@ -1,5 +1,5 @@
 // Allow GitHub image rendering
-:imagesdir: ../images
+:imagesdir: ../../images
 
 === Getting Started
 
@@ -27,6 +27,8 @@ If you collect data via SNMP or are monitoring the availability of the SNMP serv
 This ensures that {opennms-product-name} can immediately scan newly discovered devices for entities.
 It also makes reporting and thresholding available for these devices.
 
+In addition, you may want to xref:foreign-source-definition[edit the default foreign source definition] to specify the services to detect and policies to apply during discovery. 
+
 [[provision-snmp-configuration]]
 ==== Configuring SNMP for Provisioning
 
@@ -53,11 +55,45 @@ Our first example will be to automatically discover and add all managed entities
 We will then give an example of how to be more directed and deliberate about your discovery by using provisioning groups.
 
 [[foreign-source-definition]]
-==== Default Foreign Source Definition
+==== Edit Default Foreign Source Definition
 
-A _foreign source_ uniquely identifies an external (foreign) provisioning source and any node entities it is requesting to import into {opennms-product-name}.
+The default foreign source definition serves as a template that defines the services to detect on (DNS, FTP, ICMP, etc.), the scan interval for discovery, and the policies to use when provisioning. 
 
-A _foreign ID_ is the unique node ID maintained in the foreign system and the foreign source.
+Policies determine entity persistence and/or set attributes on the discovered entities that control {opennms-product-name} management behavior. 
+Provisiond applies the default default foreign source definintion unless you choose to modify it. 
 
-{opennms-product-name} uses the combination of the foreign source and foreign ID as a unique foreign key when synchronizing the set of nodes from each source with the nodes in the {opennms-product-name} database.
-This is how provisiond decides if a node entity from an import requisition is new, has been changed, or needs to be deleted.
+.Edit detectors and set scan interval
+
+. In the web UI, click the gear icon in the top right. 
+. In the *Provisioning* area, choose *Manage Provisioning Requisitions*. 
+. Click *Edit Default FS*. 
+
++
+
+image:../images/provisioning/FS_def.png[]
+
++
+
+NOTE: The screen displays the list of service detectors and a tab to view and define policies. 
+Provisiond scans the services in the order in which the detectors appear in the list. 
+
+. Click the appropriate icon to edit, delete, or move a service detector. 
+.. You can also add parameters to a detector, including retries, timeout, port, etc.) by clicking the Edit icon and choosing *Add Parameter*. 
+. Click *Save*. 
+. If desired, update the scan interval using one of the following:
+
++ 
+
+* w: Weeks
+* d: Days
+* h: Hours
+* m: Minutes
+* s: Seconds
+* ms: Milliseconds
+
+For example, to rescan every six days and 53 minutes, use `6d 53m`.
+Specify `0` to disable automatic scanning. 
+
+.Create policies
+
+. Create policies ... 
