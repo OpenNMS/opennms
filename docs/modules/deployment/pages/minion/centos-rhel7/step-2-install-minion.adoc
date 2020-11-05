@@ -1,20 +1,20 @@
 .Install OpenJDK 11 JRE runtime
 [source, console]
 ----
-yum -y install java-11-openjdk-headless
+sudo yum -y install java-11-openjdk-headless
 ----
 
 .Add repository and import GPG key
 [source, console]
 ----
-yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
-rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+sudo yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
+sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
-.Installation of {page-component-title} Minion
+.Installing the of {page-component-title} Minion
 [source, console]
 ----
-yum -y install opennms-minion
+sudo yum -y install opennms-minion
 ----
 
 TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
@@ -24,22 +24,21 @@ TIP: We recommend disabling the OpenNMS {page-component-title} repository after 
 .Disable auto updates for {page-component-title} Minion
 [source, console]
 ----
-yum -y install yum-utils
-yum-config-manager --disable opennms-repo-stable-*
+sudo yum -y install yum-utils
+sudo yum-config-manager --disable opennms-repo-stable-*
 ----
 
 .Verify directory structure with the tree command
 [source, console]
 ----
-yum -y install tree
-cd /opt
-tree minion -L 1
+sudo yum -y install tree
+tree /opt/minion -L 1
 ----
 
 .Directory structure after successful installation
 [source, output]
 ----
-minion
+/opt/minion
 ├── bin
 ├── COPYING
 ├── deploy
@@ -52,5 +51,5 @@ minion
 .Enable {page-component-title} Minion on system boot and start immediately
 [source, console]
 ----
-systemctl enable --now minion
+sudo systemctl enable --now minion
 ----

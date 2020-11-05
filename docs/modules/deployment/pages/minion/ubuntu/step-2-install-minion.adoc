@@ -1,22 +1,21 @@
-.Add apt repository in /etc/apt/sources.list.d/opennms.list
+.Add OpenNMS repository GPG key
 [source, console]
 ----
-cat << EOF > /etc/apt/sources.list.d/opennms.list
-deb https://debian.opennms.org stable main
-deb-src https://debian.opennms.org stable main
-EOF
+sudo apt-key adv --fetch-keys https://debian.opennms.org/OPENNMS-GPG-KEY
 ----
 
-.Install gnupg and repository GPG key
+.Add apt repository
 [source, console]
 ----
-wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+sudo add-apt-repository -s 'deb https://debian.opennms.org stable main'
 ----
 
-.Installation of OpenNMS {page-component-title} with built-in dependencies
+NOTE: The message with conflicting distributions stable but got opennms-xx can be safely ignored.
+
+.Installing the of {page-component-title} Minion
 [source, console]
 ----
-apt update && apt -y install opennms-minion
+sudo apt -y install opennms-minion
 ----
 
 TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
@@ -25,21 +24,20 @@ TIP: We recommend disabling the OpenNMS {page-component-title} repository after 
 
 [source, console]
 ----
-apt-mark hold opennms-minion
+sudo apt-mark hold opennms-minion
 ----
 
 .Verify directory structure with the tree command
 [source, console]
 ----
-apt -y install tree
-cd /usr/share
-tree minion -L 1
+sudo apt -y install tree
+tree /usr/share/minion -L 1
 ----
 
 .Directory structure after successful installation
 [source, output]
 ----
-minion
+/usr/share/minion
 ├── bin
 ├── data -> /var/lib/minion/data
 ├── deploy -> /var/lib/minion/deploy
@@ -52,5 +50,5 @@ minion
 .Enable {page-component-title} Minion on system boot and start immediately
 [source, console]
 ----
-systemctl enable --now minion
+sudo systemctl enable --now minion
 ----

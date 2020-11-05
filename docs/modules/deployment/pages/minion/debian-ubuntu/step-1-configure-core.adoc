@@ -1,7 +1,7 @@
 .Edit ActiveMQ configuration file
 [source, console]
 ----
-vi /usr/share/opennms/etc/opennms-activemq.xml
+sudo vi /usr/share/opennms/etc/opennms-activemq.xml
 ----
 
 .Remove comments for the transport connector listening on 0.0.0.0 and save
@@ -13,7 +13,7 @@ vi /usr/share/opennms/etc/opennms-activemq.xml
 .Restart {page-component-title} core server
 [source, console]
 ----
-systemctl restart opennms
+sudo systemctl restart opennms
 ----
 
 .Verify if ActiveMQ port is available on public network interface
