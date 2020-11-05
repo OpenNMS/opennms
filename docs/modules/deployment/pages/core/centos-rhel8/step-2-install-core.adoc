@@ -1,14 +1,14 @@
 .Add repository and import GPG key
 [source, console]
 ----
-yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
-rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+sudo dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
+sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
 .Installation of {page-component-title} with all built-in dependencies
 [source, console]
 ----
-yum -y install opennms
+sudo dnf -y install opennms
 ----
 
 TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
@@ -18,31 +18,28 @@ TIP: We recommend disabling the OpenNMS {page-component-title} repository after 
 .Disable auto updates for OpenNMS {page-component-title}
 [source, console]
 ----
-yum -y install yum-utils
-yum config-manager --disable opennms-repo-stable-*
+sudo dnf config-manager --disable opennms-repo-stable-*
 ----
 
 .Verify directory structure with the tree command
 [source, console]
 ----
-yum -y install tree
-cd /opt/opennms
-tree -L 1
+sudo dnf -y install tree
+tree /opt/opennms -L 1
 ----
 
 .Directory structure after successful installation
 [source, output]
 ----
-.
-└── opennms
-   ├── bin
-   ├── contrib
-   ├── data
-   ├── deploy
-   ├── etc
-   ├── jetty-webapps
-   ├── lib
-   ├── logs -> /var/log/opennms
-   ├── share -> /var/opennms
-   └── system
+/opt/opennms
+├── bin
+├── contrib
+├── data
+├── deploy
+├── etc
+├── jetty-webapps
+├── lib
+├── logs -> /var/log/opennms
+├── share -> /var/opennms
+└── system
 ----

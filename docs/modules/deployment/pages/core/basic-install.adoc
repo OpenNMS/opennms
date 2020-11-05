@@ -1,0 +1,103 @@
+[[setting-up-basic-core-server]]
+= Setting up a Basic Core Instance
+
+[[objectives-setup-core]]
+== Objectives
+
+* Installing OpenNMS {page-component-title} components and PostgreSQL on a single node
+* Installing and configuring OpenNMS {page-component-title} Core instance on a <<core/system-requirements.adoc#supported-operating-systems-core, Supported Operating Systems>> using JRobin as time series storage
+* Login the Web User Interface and change the default admin password
+
+[[requirements-core]]
+== Requirements
+
+* Linux physical server or a virtual machine running a supported Linux operating system
+* Internet access to download the RPM or Debian packages
+* Make sure DNS is working and localhost and your servers host name is resolved properly
+* System user with administrative permissions (sudo) to perform the installation tasks
+
+CAUTION: If you run Debian, you have to install and configure `sudo` yourself.
+         A guide can be found in the link:https://wiki.debian.org/sudo/[Debian Wiki].
+
+== Setting up PostgreSQL
+
+[{tabs}]
+====
+CentOS/RHEL 7::
++
+--
+include::centos-rhel7/step-1-postgresql.adoc[]
+--
+
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/step-1-postgresql.adoc[]
+--
+
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/step-1-postgresql.adoc[]
+--
+====
+
+== Installing the Core Instance
+
+[{tabs}]
+====
+CentOS/RHEL 7::
++
+--
+include::centos-rhel7/step-2-install-core.adoc[]
+--
+
+CentOS/RHEL 8::
++
+--
+include::centos-rhel8/step-2-install-core.adoc[]
+--
+
+Debian::
++
+--
+include::debian/step-2-install-core.adoc[]
+--
+
+Ubuntu::
++
+--
+include::ubuntu/step-2-install-core.adoc[]
+--
+====
+
+== Setting up the Core Instance
+
+[{tabs}]
+====
+CentOS/RHEL 7/8::
++
+--
+include::centos-rhel/step-3-initialize-core.adoc[]
+--
+
+Debian/Ubuntu::
++
+--
+include::debian-ubuntu/step-3-initialize-core.adoc[]
+--
+====
+
+== First Login
+
+After starting the {page-component-title} Core services the web application can be accessed on +
+`\http://core-instance-ip:8980/opennms`.
+The default login user is _admin_ and the password is initialized to _admin_.
+
+IMPORTANT: Please change immediately the default password to a secure password.
+
+. Open `\http://core-instance-ip:8980/opennms` in your web browser
+. Login with with admin/admin
+. Click in main navigation menu on btn:[admin] -> btn:[Change Password]
+. Use _admin_ as the current password and set a new password and confirm with btn:[Submit]
+. Logout and login with your new password

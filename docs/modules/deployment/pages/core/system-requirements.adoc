@@ -15,13 +15,6 @@
 *_You can reduce the minimum storage requirements for development and testing purposes._ +
 **_The Recommended Specifications don't take into account your intended workload, e.g. network size, number of monitored metrics, flows, events and data retention requirements._
 
-Installing and operating OpenNMS {page-component-title} requires:
-
-* Internet access to yum.opennms.org or debian.opennms.org via https
-* DNS Setup to resolve `localhost` and configured DNS server. 
-  If there is an incorrect or missing _A Resource Record_ for the OpenNMS server hostname, OpenNMS might not start correctly.
-  The Java security manager might not initialize and an _RMI class loader disabled_ exception will be shown.
-
 [[supported-operating-systems-core]]
 == Supported Operating Systems
 
@@ -57,4 +50,5 @@ endif::[]
 | Kafka                   | {kafka-version}
 | PostgreSQL              | {postgresql-version}
 | RRDTool                 | {rrdtool-version}
+| Browser                 | Latest link:https://www.mozilla.org[Mozilla Firefox] or link:https://www.google.com/intl/en_us/chrome/[Google Chrome]
 |===

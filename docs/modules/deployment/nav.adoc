@@ -1,0 +1,8 @@
+.Deployment
+* xref:core/introduction.adoc[]
+** xref:core/system-requirements.adoc[]
+** xref:core/basic-install.adoc[]
+* xref:minion/introduction.adoc[]
+** xref:minion/system-requirements.adoc[]
+** xref:minion/basic-install.adoc[]
+* xref:sentinel/introduction.adoc[]

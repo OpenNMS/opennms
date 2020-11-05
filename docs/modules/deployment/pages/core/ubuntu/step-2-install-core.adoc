@@ -1,22 +1,21 @@
-.Add apt repository in /etc/apt/sources.list.d/opennms.list
+.Add OpenNMS repository GPG key
 [source, console]
 ----
-cat << EOF > /etc/apt/sources.list.d/opennms.list
-deb https://debian.opennms.org stable main
-deb-src https://debian.opennms.org stable main
-EOF
+sudo apt-key adv --fetch-keys https://debian.opennms.org/OPENNMS-GPG-KEY
 ----
 
-.Install repository GPG key
+.Add apt repository
 [source, console]
 ----
-wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+sudo add-apt-repository -s 'deb https://debian.opennms.org stable main'
 ----
+
+NOTE: The message with conflicting distributions stable but got opennms-xx can be safely ignored.
 
 .Installation of OpenNMS {page-component-title} with built-in dependencies
 [source, console]
 ----
-apt update && apt -y install opennms
+sudo apt -y install opennms
 ----
 
 TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
@@ -25,7 +24,7 @@ TIP: We recommend disabling the OpenNMS {page-component-title} repository after 
 
 [source, console]
 ----
-apt-mark hold libopennms-java \
+sudo apt-mark hold libopennms-java \
               libopennmsdeps-java \
               opennms-common \
               opennms-db
@@ -34,24 +33,21 @@ apt-mark hold libopennms-java \
 .Verify directory structure with the tree command
 [source, console]
 ----
-apt -y install tree
-cd /usr/share/opennms
-tree -L 1
+sudo apt -y install tree
+tree /usr/share/opennms -L 1
 ----
 
 .Directory structure after successful installation
 [source, output]
 ----
-.
-└── opennms
-   ├── bin
-   ├── data
-   ├── deploy
-   ├── etc -> /etc/opennms
-   ├── instances
-   ├── jetty-webapps
-   ├── lib -> ../java/opennms
-   ├── logs -> /var/log/opennms
-   ├── share -> /var/lib/opennms
-   └── system
+/usr/share/opennms
+├── bin
+├── data
+├── deploy
+├── etc -> /etc/opennms
+├── jetty-webapps
+├── lib -> ../java/opennms
+├── logs -> /var/log/opennms
+├── share -> /var/lib/opennms
+└── system
 ----

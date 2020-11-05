@@ -1,7 +1,0 @@
-.Installation
-* Core Server
-** xref:core/system-requirements.adoc[]
-** xref:core/basic-setup.adoc[]
-* Minion
-** xref:minion/system-requirements.adoc[]
-** xref:minion/basic-setup.adoc[]

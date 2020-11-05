@@ -1,0 +1,29 @@
+.Install PostgreSQL client and server
+[source, console]
+----
+sudo apt -y install postgresql
+----
+ 
+.Create an opennms database user with a password
+[source, console]
+----
+sudo -u postgres createuser -P opennms
+----
+
+CAUTION: You get asked for a password for the database user `opennms`.
+         This guide uses `YOUR-OPENNMS-PASSWORD` as a placeholder and please set a secure password.
+
+.Create an empty database and set the owner to the opennms user
+[source, console]
+----
+sudo -u postgres createdb -O opennms opennms
+----
+
+.Set a password for Postgres super user
+[source, shell]
+----
+sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
+----
+
+CAUTION: Change `YOUR-POSTGRES-PASSWORD` to a secure one.
+         The super user is required to be able to initialize and change the database schema for installation and updates.

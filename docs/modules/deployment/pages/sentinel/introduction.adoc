@@ -1,0 +1,3 @@
+= Sentinel
+
+#TODO: What is Sentinel in a high-level-nutshell#
