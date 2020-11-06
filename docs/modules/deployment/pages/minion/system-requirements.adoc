@@ -1,22 +1,22 @@
 [[system-requirements-minion]]
-= System Requirements
+= Minimum System Requirements
 
 [[system-resource-requirement-minion]]
 == System Resource Requirements
 
 [options="header, autowidth"]
 |===
-|                        | Minimum Specifications* | Recommended Specifications**
+|                        | Just testing*           | Minimum server specification**
 | *CPU*                  | 2 GHz dual core x86_64  | 3 GHz quad core x86_64 and above
 | *RAM*                  | 4 GB (physical)         | 8 GB (physical) and above
 | *Storage (disk space)* | 20 GB HDD, SSD          | 100 GB with SSD and above
 |===
 
-*_You can reduce the minimum storage requirements for development and testing purposes._ +
-**_The Recommended Specifications don't take into account your intended workload, e.g. network size, number of monitored metrics, flows, events and data retention requirements._
+*_You can install the packages and the services will start up_ +
+**_We don't take into account your intended workload, e.g. network size, number of monitored metrics, flows, events and data retention requirements._
 
-[[supported-operating-systems-minion]]
-== Supported Operating Systems
+[[operating-systems-minion]]
+== Operating Systems
 
 Make sure that your chosen operating system is listed in one of the following tables before you install OpenNMS {page-component-title}.
 See the release notes for information about platform support changes, including deprecated platforms.

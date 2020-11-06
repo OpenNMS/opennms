@@ -4,28 +4,26 @@
 [[objectives]]
 == Objectives
 
-* Installing {page-component-title} Minion running on a <<minion/system-requirements.adoc#supported-operating-systems-Core, Supported Operating Systems>>
-* Create credentials to secure the communication between the Minion and the Core instance
-* Configuring {page-component-title} Core instance with embedded ActiveMQ message broker for {page-component-title} Minion communication
+* Setting up a {page-component-title} Minion running on one of the following <<minion/system-requirements.adoc#operating-systems-Core, Operating Systems>>
+* Create a dedicated Minion with credentials to secure the communication channels between the Minion and the Core instance
+* Configure the communication channels with embedded ActiveMQ and REST between the {page-component-title} Core instance and the {page-component-title} Minion
 * Verfying the setup
 
 == Requirements
 
 * Linux physical server or a virtual machine running a supported Linux operating system
 * Internet access to download the installation packages
-* Make sure DNS is working and localhost and your servers host name is resolved properly
-* System user with administrative permissions (sudo) to perform the installation tasks
+* Ensure DNS is configured, localhost and your servers host name is resolved properly
 * {page-component-title} Core instance runs on latest stable release
-* Communication to the REST (8980/tcp) and ActiveMQ (616161/tcp) endpoints provided by the Core instance are possible from the Minion server
+* The Minion server can access the {page-component-title} Core instance via REST (8980/tcp) and ActiveMQ (616161/tcp)
+* System user with administrative permissions (sudo) to perform the installation tasks
 
 Configuring a Minion requires the following information and you have to adapt them accordingly:
 
-* URL for your OpenNMS {page-component-title} Core instance.
-  To have an example we use `\http://core-instance-ip:8980/opennms` here.
-* ActiveMQ endpoint and if it's SSL or plain text TCP, this example uses `TCP` without SSL using the default ActiveMQ port `61616`.
-  The Core instance network endpoint is indicated with `core-instance-ip`.
-* Credentials for the Core instance and Minion communication.
-  In this guide we use `my-minion-user` and `my-minion-password`.
+* Web UI URL for your OpenNMS {page-component-title} Core instance, we use `\http://core-instance-ip:8980/opennms` as an example.
+* ActiveMQ endpoint and if it's SSL or plain text TCP, we use `failover:tcp://core-instance-ip:61616` as an example.
+  The Core instance network endpoint is indicated with `core-instance-ip`, it can also be a FQDN.
+* Credentials for the Minion user for the Core instance and Minion communication channels, we use `my-minion-user` and `my-minion-password` as an example.
 
 ifeval::["{page-component-title}" == "Horizon"]
 CAUTION: If you run Debian, you have to install and configure `sudo` yourself.
