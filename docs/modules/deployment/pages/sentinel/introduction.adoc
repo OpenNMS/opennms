@@ -1,3 +1,8 @@
 = Sentinel
 
 #TODO: What is Sentinel in a high-level-nutshell#
+
+This section describes how to install the _Sentinel_ to scale individual components.
+
+NOTE: At the moment only flows can be distributed using _Sentinel_.
+      In the future more components will follow.
