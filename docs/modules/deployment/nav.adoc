@@ -6,4 +6,5 @@
 ** xref:minion/system-requirements.adoc[]
 ** xref:minion/basic-install.adoc[]
 * xref:sentinel/introduction.adoc[]
-** xref:sentinel/basic-install.adoc[]
+** xref:sentinel/runtime/install.adoc[]
+** xref:sentinel/flow-processing/setup.adoc[]

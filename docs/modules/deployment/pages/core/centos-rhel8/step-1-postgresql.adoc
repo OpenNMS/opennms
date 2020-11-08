@@ -1,4 +1,4 @@
-.Install PostgreSQL 12 client and server
+.Install PostgreSQL client and server
 [source, console]
 ----
 sudo dnf -y install postgresql-server postgresql

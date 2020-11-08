@@ -6,6 +6,7 @@
 
 * Installing OpenNMS {page-component-title} components and PostgreSQL on a single node
 * Installing and configuring OpenNMS {page-component-title} Core instance on a <<core/system-requirements.adoc#supported-operating-systems-core, Supported Operating Systems>> using JRobin as time series storage
+* PostgreSQL database and {page-component-title} Core run with default configuration which are not optimized for large environments
 * Login the Web User Interface and change the default admin password
 
 [[requirements-core]]

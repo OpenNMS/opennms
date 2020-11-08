@@ -175,6 +175,7 @@ TIP: Changing the password or encryption algorithm get applied immediately.
 TIP: By default the Karaf Shell is restricted to 127.0.0.1.
      If you want enable remote access, set `sshHost=0.0.0.0` in `org.apache.karaf.shell.cfg`.
      The change is applied immediately and a Minion restart is not required.
+     If you have firewall running on your host, allow `8201/tcp` to grant access to the Karaf Shell.
 
 == Verify Connectivity
 
