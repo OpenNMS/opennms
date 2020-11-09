@@ -83,6 +83,20 @@ public class VmwareAssetsMigratorOfflineIT implements TemporaryDatabaseAware<Tem
 
     @Test
     public void testMigrator() throws Exception {
+        // assert that the columns do not exist anymore due to liquibase changeset '27.0.1-remove-vmware-asset-columns'
+        assertEquals(false, temporaryDatabase.getJdbcTemplate().queryForObject("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='assets' AND column_name='vmwaremanagedobjectid')", Boolean.class));
+        assertEquals(false, temporaryDatabase.getJdbcTemplate().queryForObject("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='assets' AND column_name='vmwarestate')", Boolean.class));
+        assertEquals(false, temporaryDatabase.getJdbcTemplate().queryForObject("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='assets' AND column_name='vmwaremanagedentitytype')", Boolean.class));
+        assertEquals(false, temporaryDatabase.getJdbcTemplate().queryForObject("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='assets' AND column_name='vmwaremanagementserver')", Boolean.class));
+        assertEquals(false, temporaryDatabase.getJdbcTemplate().queryForObject("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='assets' AND column_name='vmwaretopologyinfo')", Boolean.class));
+
+        // add columns that do not exist anymore due to liquibase changeset
+        temporaryDatabase.getJdbcTemplate().execute("ALTER TABLE assets ADD COLUMN vmwaremanagedobjectid TEXT");
+        temporaryDatabase.getJdbcTemplate().execute("ALTER TABLE assets ADD COLUMN vmwarestate TEXT");
+        temporaryDatabase.getJdbcTemplate().execute("ALTER TABLE assets ADD COLUMN vmwaremanagedentitytype TEXT");
+        temporaryDatabase.getJdbcTemplate().execute("ALTER TABLE assets ADD COLUMN vmwaremanagementserver TEXT");
+        temporaryDatabase.getJdbcTemplate().execute("ALTER TABLE assets ADD COLUMN vmwaretopologyinfo TEXT");
+
         // assert that columns exists before migrator run
         assertEquals(true, temporaryDatabase.getJdbcTemplate().queryForObject("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='assets' AND column_name='vmwaremanagedobjectid')", Boolean.class));
         assertEquals(true, temporaryDatabase.getJdbcTemplate().queryForObject("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='assets' AND column_name='vmwarestate')", Boolean.class));
