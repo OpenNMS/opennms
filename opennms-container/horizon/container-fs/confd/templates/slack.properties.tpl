@@ -2,9 +2,11 @@
 # DON'T EDIT THIS FILE :: GENERATED WITH CONFD
 #
 
+{{$slackPath := "/opennms/notifd/slack/" -}}
+
 # Configure storage strategy
-org.opennms.netmgt.notifd.slack.channel={{getv "opennms/notifd/slack/channel" "Webhook"}}
-org.opennms.netmgt.notifd.slack.username={{getv "opennms/notifd/slack/userName" "none"}}
-org.opennms.netmgt.notifd.slack.iconEmoji={{getv "opennms/notifd/slack/iconEmoji" ""}}
-org.opennms.netmgt.notifd.slack.iconURL={{getv "opennms/notifd/slack/iconURL" ""}}
-org.opennms.netmgt.notifd.slack.useSystemProxy={{getv "opennms/notifd/slack/useSystemProxy" "true"}}
+org.opennms.netmgt.notifd.slack.channel={{getv (print $slackPath "channel") "Webhook"}}
+org.opennms.netmgt.notifd.slack.username={{getv (print $slackPath "userName") "none"}}
+org.opennms.netmgt.notifd.slack.iconEmoji={{getv (print $slackPath "iconEmoji") ""}}
+org.opennms.netmgt.notifd.slack.iconURL={{getv (print $slackPath "iconURL") ""}}
+org.opennms.netmgt.notifd.slack.useSystemProxy={{getv (print $slackPath "useSystemProxy") "true"}}
