@@ -1,7 +1,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-==== Directed Discovery
+=== Directed Discovery
 
 It is important to understand that the nodes requisitioned from each foreign source are managed as a complete set.
 Nodes defined in a requisition from the foreign source _CRM_ and _CMDB_, for example, will be managed separately from each other even if they should contain exactly the same node definitions.

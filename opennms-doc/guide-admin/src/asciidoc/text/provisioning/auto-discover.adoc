@@ -1,7 +1,7 @@
 // Allow GitHub image rendering
-:imagesdir: ../../../images
+:imagesdir: ../../images
 
-==== Auto Discovery
+=== Auto Discovery
 
 {opennms-product-name} uses an ICMP ping sweep to find IP addresses on the network and provision node entities.
 

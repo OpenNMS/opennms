@@ -7,15 +7,15 @@
 
 {opennms-product-name} has three methods of provisioining:
 
-* xref:discovery-auto[Auto discovery]
-* xref:discovery-directed[Directed discovery]
-* link:#asset-import[asset import] through the UI or the https://docs.opennms.org/pris/branches/master/pris/pris.html[provisioning integration server] (PRIS)
+* xref:discovery-auto[auto discovery]
+* xref:discovery-directed[directed discovery]
+* link:#asset-import[asset import] through the RestAPI or the https://docs.opennms.org/pris/branches/master/pris/pris.html[provisioning integration server] (PRIS)
 
-Use auto discovery if you do not have a "source of truth" for your network inventory; auto discovery can become that source. Be aware that auto discovery can generate too much information, including entities you do not want to monitor. 
+Use auto discovery if you do not have a "source of truth" for your network inventory; auto discovery can become that source. 
+Be aware that auto discovery can generate too much information, including entities you do not want to monitor. 
 
-Directed discovery is effective if you know your inventory. It is also useful for areas of your network that you cannot auto discover.
-
-Import assets in the {opennms-product-name} UI using a comma-separated (.csv) file or by integrating single or multiple external inventory systems with PRIS. 
+Directed discovery is effective if you know your inventory, particularly with smaller networks (i.e., 100–200 nodes). 
+It is also useful for areas of your network that you cannot auto discover.
 
 See the link:#provisioning-works[how it works] section of the introdution for more information on the provisioning process. 
 
@@ -50,17 +50,13 @@ For an example of the resulting XML configuration, see link:#SNMP-commmunity-xml
 
 NOTE: Provisiond includes an option to add community information to a single IP address through the link:#quick-add-node[Quick-Add Node] feature. 
 
-Now, with SNMP configuration provisioned for our 10 networks, we are ready to begin adding nodes.
-Our first example will be to automatically discover and add all managed entities (nodes, IP interfaces, SNMP interfaces, and monitored IP-based services).
-We will then give an example of how to be more directed and deliberate about your discovery by using provisioning groups.
-
 [[foreign-source-definition]]
 ==== Edit Default Foreign Source Definition
 
 The default foreign source definition serves as a template that defines the services to detect on (DNS, FTP, ICMP, etc.), the scan interval for discovery, and the policies to use when provisioning. 
 
 Policies determine entity persistence and/or set attributes on the discovered entities that control {opennms-product-name} management behavior. 
-Provisiond applies the default default foreign source definintion unless you choose to modify it. 
+Provisiond applies the existing default foreign source definintion unless you choose to modify it. 
 
 .Edit detectors and set scan interval
 
@@ -84,16 +80,34 @@ Provisiond scans the services in the order in which the detectors appear in the 
 
 + 
 
-* w: Weeks
-* d: Days
-* h: Hours
-* m: Minutes
-* s: Seconds
-* ms: Milliseconds
+* w: weeks
+* d: days
+* h: hours
+* m: minutes
+* s: seconds
+* ms: milliseconds
+
++
 
 For example, to rescan every six days and 53 minutes, use `6d 53m`.
 Specify `0` to disable automatic scanning. 
 
+. Click *Save*.
+
 .Create policies
 
-. Create policies ... 
+. Click the *Policies* tab in the *Default Foreign Source Definition* screen. 
+. Specify a name for the policy, select the class from the drop down, and fill out any information associated with that class. 
+.. Use the space bar to see the options for the fields. 
+. (optional) Click *Add Paramter* to add additional paramters to the class, or *Save*. 
+. Click *Save*. 
+. Repeat for any additional policies you want to add. 
+. Click *Save* at the top right to save the FS definition. 
+
+NOTE: To return to the default foreign source definition, click *Reset to Default*. 
+
+[[requisition-create]]
+==== Creating a Requisition
+
+A requisition
+
