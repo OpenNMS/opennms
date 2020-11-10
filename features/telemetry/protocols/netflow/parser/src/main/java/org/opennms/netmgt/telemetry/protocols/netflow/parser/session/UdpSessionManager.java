@@ -208,4 +208,8 @@ public class UdpSessionManager {
     public void drop(final SessionKey sessionKey) {
         this.templates.entrySet().removeIf(e -> Objects.equals(e.getKey().sessionKey, sessionKey));
     }
+
+    public int count() {
+        return this.templates.size();
+    }
 }

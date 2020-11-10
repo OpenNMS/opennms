@@ -58,6 +58,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -92,7 +93,19 @@ public abstract class ParserBase implements Parser {
 
     private final DnsResolver dnsResolver;
 
+    private final Meter recordsReceived;
+
+    private final Meter recordsScheduled;
+
     private final Meter recordsDispatched;
+
+    private final Meter recordsCompleted;
+
+    private final Counter recordEnrichmentErrors;
+
+    private final Counter recordDispatchErrors;
+
+    private final Meter invalidFlows;
 
     private final Timer recordEnrichmentTimer;
 
@@ -142,8 +155,14 @@ public abstract class ParserBase implements Parser {
             }
         };
 
+        recordsReceived = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsReceived"));
         recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsDispatched"));
         recordEnrichmentTimer = metricRegistry.timer(MetricRegistry.name("parsers",  name, "recordEnrichment"));
+        recordEnrichmentErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "recordEnrichmentErrors"));
+        invalidFlows = metricRegistry.meter(MetricRegistry.name("parsers",  name, "invalidFlows"));
+        recordsScheduled = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsScheduled"));
+        recordsCompleted = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsCompleted"));
+        recordDispatchErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "recordDispatchErrors"));
 
         // Call setters since these also perform additional handling
         setClockSkewEventRate(DEFAULT_CLOCK_SKEW_EVENT_RATE_SECONDS);
@@ -246,6 +265,8 @@ public abstract class ParserBase implements Parser {
         // Perform the record enrichment and serialization in a thread pool allowing these to be parallelized
         final CompletableFuture<CompletableFuture[]> futureOfFutures = CompletableFuture.supplyAsync(() -> {
             return packet.getRecords().map(record -> {
+                this.recordsReceived.mark();
+
                 final CompletableFuture<AsyncDispatcher.DispatchStatus> future = new CompletableFuture<>();
                 final Timer.Context timerContext = recordEnrichmentTimer.time();
                 // Trigger record enrichment (performing DNS reverse lookups for example)
@@ -253,6 +274,8 @@ public abstract class ParserBase implements Parser {
                 recordEnricher.enrich(record).whenComplete((enrichment, ex) -> {
                     timerContext.close();
                     if (ex != null) {
+                        this.recordEnrichmentErrors.inc();
+
                         // Enrichment failed
                         future.completeExceptionally(ex);
                         return;
@@ -269,6 +292,8 @@ public abstract class ParserBase implements Parser {
                         try {
                             flowMessage = buildMessage(record, enrichment);
                         } catch (IllegalFlowException e) {
+                            this.invalidFlows.mark();
+
                             final Optional<Instant> instant = illegalFlowEventCache.getUnchecked(remoteAddress.getAddress());
 
                             if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getIllegalFlowEventRate()) {
@@ -299,10 +324,12 @@ public abstract class ParserBase implements Parser {
                         // Dispatch
                         dispatcher.send(msg).whenComplete((b, exx) -> {
                             if (exx != null) {
+                                this.recordDispatchErrors.inc();
                                 future.completeExceptionally(exx);
-                                return;
+                            } else {
+                                this.recordsCompleted.mark();
+                                future.complete(b);
                             }
-                            future.complete(b);
                         });
 
                         recordsDispatched.mark();
@@ -316,6 +343,8 @@ public abstract class ParserBase implements Parser {
                         // We're not in one of the parsers threads, execute the dispatch in the pool
                         executor.execute(dispatch);
                     }
+
+                    this.recordsScheduled.mark();
                 });
                 return future;
             }).toArray(CompletableFuture[]::new);
@@ -344,8 +373,6 @@ public abstract class ParserBase implements Parser {
     }
 
     protected abstract byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException;
-
-
 
     protected void detectClockSkew(final long packetTimestampMs, final InetAddress remoteAddress) {
         if (getMaxClockSkew() > 0) {
