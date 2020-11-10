@@ -1,10 +1,10 @@
 .Deployment
 * xref:core/introduction.adoc[]
 ** xref:core/system-requirements.adoc[]
-** xref:core/basic-install.adoc[]
+** xref:core/getting-started.adoc[]
 * xref:minion/introduction.adoc[]
 ** xref:minion/system-requirements.adoc[]
-** xref:minion/basic-install.adoc[]
+** xref:minion/getting-started.adoc[]
 * xref:sentinel/introduction.adoc[]
 ** xref:sentinel/runtime/install.adoc[]
 ** xref:sentinel/flow-processing/setup.adoc[]

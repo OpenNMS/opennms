@@ -1,10 +1,13 @@
-[[setting-up-basic-minion]]
-= Setting up a Basic Minion
+[[getting-started-minion]]
+= Getting started with a Minion
 
 [[objectives]]
 == Objectives
 
 * Setting up a {page-component-title} Minion running on one of the following <<minion/system-requirements.adoc#operating-systems-Core, Operating Systems>>
+* {page-component-title} Core comes with an embedded ActiveMQ message broker for convinience.
+  This should not be used in production.
+  It is only for getting started and testing.
 * Create a dedicated Minion with credentials to secure the communication channels between the Minion and the Core instance
 * Configure the communication channels with embedded ActiveMQ and REST between the {page-component-title} Core instance and the {page-component-title} Minion
 * Verfying the setup

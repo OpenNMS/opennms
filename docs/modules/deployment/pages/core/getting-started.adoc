@@ -1,12 +1,19 @@
-[[setting-up-basic-core-server]]
-= Setting up a Basic Core Instance
+[[getting-started-core]]
+= Getting started with a Core Instance
 
 [[objectives-setup-core]]
 == Objectives
 
-* Installing OpenNMS {page-component-title} components and PostgreSQL on a single node
-* Installing and configuring OpenNMS {page-component-title} Core instance on a <<core/system-requirements.adoc#supported-operating-systems-core, Supported Operating Systems>> using JRobin as time series storage
-* PostgreSQL database and {page-component-title} Core run with default configuration which are not optimized for large environments
+* Installing all required OpenNMS {page-component-title} components including PostgreSQL on a single node
+* This should not be used in production.
+  It is only for getting started and testing.
+ifeval::["{page-component-title}" == "Horizon"]
+* As a result you will have JRobin as time series storage which persists RRD files on the local file system and is the default
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+* As a result you will have RRDtool as time series storage which persists RRD files on the local file system and is the default
+endif::[]
+* {page-component-title} Core and PostgreSQL run with the default configuration which are not optimized for running in production
 * Login the Web User Interface and change the default admin password
 
 [[requirements-core]]
