@@ -1,5 +1,6 @@
+
 // Allow GitHub image rendering
-:imagesdir: ../../images
+:imagesdir: ../../../images
 
 === Getting Started
 
@@ -99,7 +100,7 @@ Specify `0` to disable automatic scanning.
 . Click the *Policies* tab in the *Default Foreign Source Definition* screen. 
 . Specify a name for the policy, select the class from the drop down, and fill out any information associated with that class. 
 .. Use the space bar to see the options for the fields. 
-. (optional) Click *Add Paramter* to add additional paramters to the class, or *Save*. 
+. (optional) Click *Add Parameter* to add additional paramters to the class, or *Save*. 
 . Click *Save*. 
 . Repeat for any additional policies you want to add. 
 . Click *Save* at the top right to save the FS definition. 
@@ -109,5 +110,8 @@ NOTE: To return to the default foreign source definition, click *Reset to Defaul
 [[requisition-create]]
 ==== Creating a Requisition
 
-A requisition
-
+A requisition is a set of nodes (networked devices) that you want to import into {opennms-product-name} for monitoring and management. 
+Organize nodes with a similar network monitoring profile into a requisition, so that you can assign the same services, detectors, and policies to model the network monitoring behavior. 
+ 
+. In the web UI, click the gear icon in the top right. 
+. In the *Provisioning* area, choose *Manage Provisioning Requisitions*. 
