@@ -282,6 +282,7 @@ public abstract class ParserBase implements Parser {
         final CompletableFuture<CompletableFuture[]> futureOfFutures = CompletableFuture.supplyAsync(() -> {
             return packet.getRecords().map(record -> {
                 this.recordsReceived.mark();
+
                 final CompletableFuture<Void> future = new CompletableFuture<>();
                 final Timer.Context timerContext = recordEnrichmentTimer.time();
                 // Trigger record enrichment (performing DNS reverse lookups for example)
