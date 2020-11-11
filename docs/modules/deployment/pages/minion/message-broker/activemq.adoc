@@ -13,7 +13,7 @@ config:property-set http-url http://core-instance-ip:8980/opennms<3>
 config:property-set broker-url failover:tcp://core-instance-ip:61616<4>
 config:update<5>
 ----
-<1> Change mode to edit the minion configuration
+<1> Edit the minion configuration
 <2> Replace Office-Pittsboro with a location name representing your remote location the Minion is running
 <3> Replace the example `http-url` with the URL of your {page-component-title} Core instance
 <4> Replace the example `broker-url` with the host of your {page-component-title} Core instance. If you have ActiveMQ with SSL running replace `tcp` with `ssl`.

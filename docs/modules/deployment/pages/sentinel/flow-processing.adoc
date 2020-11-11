@@ -17,51 +17,13 @@ NOTE: Configurations has to be made in the Sentinel directory.
       We reference `etc` relative to the Sentinel home directory.
       Depending on your operating system the home directory is `/usr/share/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.
 
-== Installing the Flow Features
+== Configure Access to PostgreSQL Database
 
-[{tabs}]
-====
-ActiveMQ::
-+
---
-.Create a file in etc/featuresBoot.d/flows.boot
+.Connect to the Karaf shell via SSH
 [source, console]
 ----
-sudo vi etc/featuresBoot.d/flows.boot
+ssh -p 8301 admin@localhost
 ----
-
-.Add the following features to Sentinel on startup
-[source, editor]
-----
-sentinel-jsonstore-postgres
-sentinel-blobstore-noop
-sentinel-jms
-sentinel-flows
-----
---
-
-Kafka::
-+
---
-.Create a file in etc/featuresBoot.d/flows.boot
-[source, console]
-----
-sudo vi etc/featuresBoot.d/flows.boot
-----
-
-.Add the following features to Sentinel on startup
-[source, editor]
-----
-sentinel-jsonstore-postgres
-sentinel-blobstore-noop
-sentinel-kafka
-sentinel-flows
-----
---
-
-====
-
-== Configure Access to Database and Elasticsearch
 
 .Configure access to the PostgreSQL database
 [source, karaf]
@@ -78,6 +40,14 @@ config:update
 <2> PostgreSQL user name with read/write access to the `opennms-db-name` database
 <3> PostgreSQL password for `my-db-user` user
 <4> Database name of your {page-component-title} Core instance database
+
+== Configure Access to Elasticsearch
+
+.Connect to the Karaf shell via SSH
+[source, console]
+----
+ssh -p 8301 admin@localhost
+----
 
 .Configure access to persist flows to Elasticsearch
 [source, karaf]
@@ -104,261 +74,47 @@ config:update
 ActiveMQ::
 +
 --
-.Configure Sentinel tracing, REST and ActiveMQ endpoints
-[source, karaf]
-----
-config:edit org.opennms.sentinel.controller
-config:property-set location SENTINEL<1>
-config:property-set id 00000000-0000-0000-0000-000000ddba11<2>
-config:property-set http-url http://core-instance-ip:8980/opennms<3>
-config:property-set broker-url failover:tcp://my-activemq-ip:61616<4>
-config:update
-----
-
-<1> A location string is required and is used only for tracing
-<2> Unique identifier is used as service name only for tracing
-<3> Base URL for the web UI which provides the REST endpoints
-<4> URL which points to ActiveMQ broker.
-
-.Verify configuration with running the health-check
-[source, karaf]
-----
-opennms:health-check
-----
-
-.Ensure features are installed and work properly
-[source, output]
-----
-Verifying the health of the container
-
-Verifying installed bundles                    [ Success  ]
-Retrieving NodeDao                             [ Success  ]
-Connecting to JMS Broker                       [ Success  ]
-Connecting to ElasticSearch ReST API (Flows)   [ Success  ]
-Connecting to OpenNMS ReST API                 [ Success  ]
-
-=> Everything is awesome
-----
-
+include::message-broker/activemq.adoc[]
 --
 
 Kafka::
 +
 --
-.Configure Sentinel tracing and REST endpoint
-[source, karaf]
-----
-config:edit org.opennms.sentinel.controller
-config:property-set location SENTINEL<1>
-config:property-set id 00000000-0000-0000-0000-000000ddba11<2>
-config:property-set http-url http://core-instance-ip:8980/opennms<3>
-config:update
-----
-
-<1> A location string is required and is used only for tracing
-<2> Unique identifier is used as service name only for tracing
-<3> Base URL for the web UI which provides the REST endpoints
-
-.Configure Sentinel as Kafka consumer for flow messages
-[source, karaf]
-----
-config:edit org.opennms.core.ipc.sink.kafka.consumer<1>
-config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<2>
-config:update
-----
-
-<1> Edit the configuration for the flow consumer from Kafka
-<2> Set the Kafka servers and ports Sentinel should connect to on start up.
-    If you have more than one, add them comma separated and if you use a different port then 9092 for Kafka, change the port accordingly.
-
-.Configure Sentinel to be able to generate and send events
-[source, karaf]
-----
-config:edit org.opennms.core.ipc.sink.kafka<1>
-config:property-set bootstrap.servers my-kafka-ip-1,my-kafka-ip-2<2>
-----
-
-<1> Edit the configuration to send generated events from Sentinel via Kafka
-<2> Set the Kafka servers and ports Sentinel should connect to on start up.
-    If you have more than one, add them comma separated and if you use a different port then 9092 for Kafka, change the port accordingly.
-
-TIP: If you want to use an Kafka cluster with multiple {page-component-title} instances, the topic prefix can be customized by setting `group.id` which is by default set to `OpenNMS`.
-     You can set a different topic prefix for each instance with `config:edit group.id my-group-id` for the consumer and sink.
-
-.Verify configuration with running the health-check
-[source, karaf]
-----
-opennms:health-check
-----
-
-.Ensure features are installed and work properly
-[source, output]
-----
-Verifying the health of the container
-
-Verifying installed bundles                    [ Success  ]
-Retrieving NodeDao                             [ Success  ]
-Connecting to Kafka from Sink                  [ Success  ]
-Connecting to ElasticSearch ReST API (Flows)   [ Success  ]
-Connecting to OpenNMS ReST API                 [ Success  ]
-
-=> Everything is awesome
-----
-
-#TODO: Verify health check output with Kafka#
-
+include::message-broker/kafka.adoc[]
 --
 ====
 
 == Enable Flow Processing Protocols
+
+.Connect to the Karaf shell via SSH
+[source, console]
+----
+ssh -p 8301 admin@localhost
+----
 
 [{tabs}]
 ====
 Netflow v5::
 +
 --
-[source, karaf]
-----
-config:edit --alias netflow5 --factory org.opennms.features.telemetry.adapters
-config:property-set name Netflow-5<1>
-config:property-set adapters.0.name Netflow-5-Adapter<2>
-config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter<3>
-config:update
-----
-
-<1> Queue name where Sentinel will fetch messages from, by default for {page-component-title} components the queue name convention is `Netflow-5`
-<2> Set a name for the Netflow v5 adapter
-<3> Assign an adapter to enrich Netflow v5 messages
-
-TIP: If you want to process multiple protocols and not just one you have to increase the index `0` in the adapters name and class name accordingly for addtional protocols.
-
-TIP: The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-netflow5.cfg`.
-
-.Verify adapter configuration with running the health-check
-[source, karaf]
-----
-opennms:health-check
-----
-
-.Ensure the configured flow adapters work properly
-[source, output]
-----
-Verifying the health of the container
-
-...
-Verifying Adapter Netflow-5-Adapter (org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter)   [ Success  ]
-----
-
+include::flows/netflow5.adoc[]
 --
 
 Netflow v9::
 +
 --
-[source, karaf]
-----
-config:edit --alias netflow9 --factory org.opennms.features.telemetry.adapters
-config:property-set name Netflow-9<1>
-config:property-set adapters.0.name Netflow-9-Adapter<2>
-config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter<3>
-config:update
-----
-
-<1> Queue name where Sentinel will fetch messages from, by default for {page-component-title} components the queue name convention is `Netflow-9`
-<2> Set a name for the Netflow v9 adapter
-<3> Assign an adapter to enrich Netflow v9 messages
-
-TIP: If you want to process multiple protocols and not just one you have to increase the index `0` in the adapters name and class name accordingly for addtional protocols.
-
-TIP: The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-netflow9.cfg`.
-
-.Verify adapter configuration with running the health-check
-[source, karaf]
-----
-opennms:health-check
-----
-
-.Ensure the configured flow adapters work properly
-[source, output]
-----
-Verifying the health of the container
-
-...
-Verifying Adapter Netflow-9-Adapter (org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9Adapter)   [ Success  ]
-----
-
+include::flows/netflow9.adoc[]
 --
 
 sFlow::
 +
 --
-[source, karaf]
-----
-config:edit --alias sflow --factory org.opennms.features.telemetry.listeners
-config:property-set name SFlow<1>
-config:property-set adapters.0.name SFlow-Adapter<2>
-config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter<3>
-config:update
-----
-
-<1> Queue name where Sentinel will fetch messages from, by default for {page-component-title} components the queue name convention is `SFlow`
-<2> Set a name for the sFlow adapter
-<3> Assign an adapter to enrich sFlow messages
-
-TIP: If you want to process multiple protocols and not just one you have to increase the index `0` in the adapters name and class name accordingly for addtional protocols.
-
-TIP: The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-sflow.cfg`.
-
-.Verify adapter configuration with running the health-check
-[source, karaf]
-----
-opennms:health-check
-----
-
-.Ensure the configured flow adapters work properly
-[source, output]
-----
-Verifying the health of the container
-
-...
-Verifying Adapter SFlow-Adapter (org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter)   [ Success  ]
-----
-
+include::flows/sflow.adoc[]
 --
 
 IPFIX::
 +
 --
-[source, karaf]
-----
-config:edit --alias ipfix --factory org.opennms.features.telemetry.listeners
-config:property-set name IPFIX<1>
-config:property-set adapters.0.name IPFIX-Adapter<2>
-config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter<3>
-config:update
-----
-
-<1> Queue name where Sentinel will fetch messages from, by default for {page-component-title} components the queue name convention is `IPFIX`
-<2> Set a name for the IPFIX adapter
-<3> Assign an adapter to enrich IPFIX messages
-
-TIP: If you want to process multiple protocols and not just one you have to increase the index `0` in the adapters name and class name accordingly for addtional protocols.
-
-TIP: The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-ipfix.cfg`.
-
-.Verify adapter configuration with running the health-check
-[source, karaf]
-----
-opennms:health-check
-----
-
-.Ensure the configured flow adapters work properly
-[source, output]
-----
-Verifying the health of the container
-
-...
-Verifying Adapter IPFIX-Adapter (org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter)   [ Success  ]
-----
-
+include::flows/ipfix.adoc[]
 --
 ====

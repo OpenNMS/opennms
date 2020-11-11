@@ -2,8 +2,8 @@
 = Setting up Message Broker
 
 Distributing {page-component-title} components like Minions and Sentinel require a messaging infrastructure.
-This section describes how to setup your {page-component-title} Core instance to your use an existing messaging infrasturce based on ActiveMQ or Apache Kafka.
-The {page-component-title} Core instance comes with an embedded ActiveMQ system which is by default not reachable from external network.
+This section describes how to setup your {page-component-title} Core instance to use an existing messaging infrasturce based on ActiveMQ or Apache Kafka.
+If you want to learn how it works, {page-component-title} Core comes with an embedded ActiveMQ system which is by default not reachable from external network.
 To get you started quickly, we describe here as well how you can enable and configure the embedded ActiveMQ instance.
 
 CAUTION: We recommend to use Apache Kafka in production and can be scaled to process high workloads.

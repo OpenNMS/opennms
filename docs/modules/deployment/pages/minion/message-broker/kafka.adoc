@@ -40,7 +40,7 @@ config:property-set http-url http://core-instance-ip:8980/opennms<3>
 config:update<4>
 ----
 
-<1> Change mode to edit the minion configuration
+<1> Edit the minion configuration
 <2> Replace Office-Pittsboro with a location name representing your remote location the Minion is running
 <3> Replace the example `http-url` with the URL of your {page-component-title} Core instance
 <4> Save the configuration
@@ -61,21 +61,21 @@ NOTE: The credentials are encrypted on disk in `etc/scv.jce`.
 [source, karaf]
 ----
 config:edit org.opennms.core.ipc.rpc.kafka
-config:property-set bootstrap.servers my-kafka-1:9092,my-kafka-2:9092,my-kafka-3:9092<1>
+config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<1>
 config:update
 ----
 
-<1> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port accordingly.
+<1> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
 
 .Configure the Kafka endpoints for Sink feature
 [source, karaf]
 ----
 config:edit org.opennms.core.ipc.sink.kafka
-config:property-set bootstrap.servers my-kafka-1:9092,my-kafka-2:9092,my-kafka-3:9092<1>
+config:property-set bootstrap.servers my-kafka-ip-1:9092,my-kafka-ip-2:9092<1>
 config:update
 ----
 
-<1> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port accordingly.
+<1> Connect to the following Kafka nodes and adjust the IPs or FQDNs with the Kafka port (9092) accordingly.
 
 NOTE: If you set more than one Kafka node as `bootstrap.servers` the driver will attempt to connect to the first entry.
       If that is successful the whole broker topology will be discovered and will be known by the client.
