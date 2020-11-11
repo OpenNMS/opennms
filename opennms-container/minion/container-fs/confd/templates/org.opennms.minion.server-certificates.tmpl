@@ -1,0 +1,8 @@
+{{range $idx, $elm := getvs "/server-certs/*" -}}
+{{if not $idx -}}
+#
+# DON'T EDIT THIS FILE :: GENERATED WITH CONFD
+#
+{{end -}}
+{{.}}
+{{end -}}
