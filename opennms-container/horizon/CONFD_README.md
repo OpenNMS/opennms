@@ -10,6 +10,7 @@ specific configuration files will overwrite the corresponding config provided by
 The following describes the keys that can be specified in `horizon-config.yaml` to configure Horizon via confd.
 
 ### Slack
+
 ```
 --- 
 notifd:
@@ -21,4 +22,5 @@ notifd:
     useSystemProxy: false
 ```
 
-Config specified will be written to `etc/opennms.properties.d/_confd.slack.properties`.
+Config specified will be written to `etc/opennms.properties.d/_confd.slack.properties`. Check the docs for detailed information about the Slack configuration parameters.
+ 
