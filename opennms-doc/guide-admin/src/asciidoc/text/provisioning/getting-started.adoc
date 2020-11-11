@@ -40,7 +40,7 @@ Proper SNMP configuration allows {opennms-product-name} to understand network an
 . In the *Provisioning* area, choose *Configure SNMP Community Names by IP Address*, and fill in the fields as desired: 
 
 .Configuring SNMP community names
-image:../images/provisioning/SNMP_Config.png[]
+image:provisioning/SNMP_Config.png[]
 
 This screen sets up SNMP within {opennms-product-name} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
 These settings are optimized into the `snmp-configuration.xml` file.
@@ -111,7 +111,28 @@ NOTE: To return to the default foreign source definition, click *Reset to Defaul
 ==== Creating a Requisition
 
 A requisition is a set of nodes (networked devices) that you want to import into {opennms-product-name} for monitoring and management. 
-Organize nodes with a similar network monitoring profile into a requisition, so that you can assign the same services, detectors, and policies to model the network monitoring behavior. 
- 
+You can iteratively build a requisition and later actually import the nodes in the requisition into {opennms-product-name}.
+Doing so processes all of the adds/changes/deletes at once. 
+
+TIP: Organize nodes with a similar network monitoring profile into a requisition, so that you can assign the same services, detectors, and policies to model the network monitoring behavior (e.g., routers, switches).
+
+This procedure desribes how to create an empty requisition.
+Links to additional information on customizing a requisition appear at the end of the procedure. 
+
 . In the web UI, click the gear icon in the top right. 
 . In the *Provisioning* area, choose *Manage Provisioning Requisitions*. 
+. If you haven't already, xref:foreign-source-definition[edit the default foreign soruce definition] to define services to detect. 
+. Click *Add Requisition*, type a name, and click *OK*. 
+. Click the edit icon beside the requisition you created. 
+. (optional) Click *Edit Definition* to define the services, policies, and scan interval to use for this requisition. 
+.. Do this only if this requisition differs from the default foreign source definition already configured. 
+
+NOTE: The requisition remains red until you synchronize it with the database. 
+
+image:provisioning/red_requisition.png[]
+
+Once created, you can
+
+* xref:directed-discovery[manually add nodes to a requisition]
+* xref:auto-discovery[automatically add nodes to a requisition]
+* customize a requisition
