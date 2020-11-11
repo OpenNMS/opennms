@@ -3,19 +3,19 @@
 
 == Objectives
 
-* Install features to persist and process network flow messages with Sentinel to Elasticsearch
+* Install features to persist and network flow messages with Sentinel to Elasticsearch
 * Consume flow messages from Minions through a message broker, i.e. ActiveMQ or Apache Kafka
 * Allow Sentinel to generate and send events to {page-component-title} Core instance via message broker
 
 == Requirements
 
-* PostgreSQL, Elasticsearch and REST endpoint to {page-component-title} Core instance is reachable from the Sentinel node
-* Message broker (ActiveMQ or Apache Kafka) is reachable from the Sentinel node
+* PostgreSQL, Elasticsearch and REST endpoint to {page-component-title} Core instance are running and reachable from the Sentinel node
+* Message broker (ActiveMQ or Apache Kafka) is running and reachable from the Sentinel node
 * Credentials for authentication is configured for the REST endpoint in {page-component-title} Core instance, Message broker, Elasticsearch and the PostgreSQL database
 
 NOTE: Configurations has to be made in the Sentinel directory.
-      We reference here Sentinel `etc` relative to the Sentinel home directory.
-      It is depending on your operating system in `/usr/share/sentinel/etc` for Debian/Ubuntu or `/opt/sentinel/etc` for CentOS/RHEL.
+      We reference `etc` relative to the Sentinel home directory.
+      Depending on your operating system the home directory is `/usr/share/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.
 
 == Installing the Flow Features
 
@@ -232,7 +232,7 @@ config:update
 
 TIP: If you want to process multiple protocols and not just one you have to increase the index `0` in the adapters name and class name accordingly for addtional protocols.
 
-TIP: The configuration is persisted in suffixed with the alias `netflow5` in `etc/org.opennms.features.telemetry.adapters-netflow5.cfg`.
+TIP: The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-netflow5.cfg`.
 
 .Verify adapter configuration with running the health-check
 [source, karaf]
@@ -269,7 +269,7 @@ config:update
 
 TIP: If you want to process multiple protocols and not just one you have to increase the index `0` in the adapters name and class name accordingly for addtional protocols.
 
-TIP: The configuration is persisted in suffixed with the alias `netflow9` in `etc/org.opennms.features.telemetry.adapters-netflow9.cfg`.
+TIP: The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-netflow9.cfg`.
 
 .Verify adapter configuration with running the health-check
 [source, karaf]
@@ -295,8 +295,8 @@ sFlow::
 ----
 config:edit --alias sflow --factory org.opennms.features.telemetry.listeners
 config:property-set name SFlow<1>
-config:property-set parsers.0.name SFlow-Adapter<2>
-config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter<3>
+config:property-set adapters.0.name SFlow-Adapter<2>
+config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.sflow.adapter.SFlowAdapter<3>
 config:update
 ----
 
@@ -306,7 +306,7 @@ config:update
 
 TIP: If you want to process multiple protocols and not just one you have to increase the index `0` in the adapters name and class name accordingly for addtional protocols.
 
-TIP: The configuration is persisted in suffixed with the alias `sflow` in `etc/org.opennms.features.telemetry.adapters-sflow.cfg`.
+TIP: The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-sflow.cfg`.
 
 .Verify adapter configuration with running the health-check
 [source, karaf]
@@ -332,8 +332,8 @@ IPFIX::
 ----
 config:edit --alias ipfix --factory org.opennms.features.telemetry.listeners
 config:property-set name IPFIX<1>
-config:property-set parsers.0.name IPFIX-Adapter<2>
-config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter<3>
+config:property-set adapters.0.name IPFIX-Adapter<2>
+config:property-set adapters.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter<3>
 config:update
 ----
 
@@ -343,7 +343,7 @@ config:update
 
 TIP: If you want to process multiple protocols and not just one you have to increase the index `0` in the adapters name and class name accordingly for addtional protocols.
 
-TIP: The configuration is persisted in suffixed with the alias `ipfix` in `etc/org.opennms.features.telemetry.adapters-ipfix.cfg`.
+TIP: The configuration is persisted with the suffix specified as alias in `etc/org.opennms.features.telemetry.adapters-ipfix.cfg`.
 
 .Verify adapter configuration with running the health-check
 [source, karaf]

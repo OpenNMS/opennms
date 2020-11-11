@@ -1,11 +1,13 @@
-[[setting-up-basic-sentinel]]
-= Setting up a Sentinel Runtime
+[[install-sentinel]]
+= Installing Sentinel Runtime
 
 [[objectives]]
 == Objectives
 
 * Setting up a {page-component-title} Sentinel running on one of the following <<minion/system-requirements.adoc#operating-systems-Core, Operating Systems>>
+* Secure access with encrypted passwords to the Karaf shell
 * Sentinel can be configured with the Karaf Shell from the server via `ssh admin@localhost -p 8301`
+* Sentinel is running as user `sentinel` without root permissions
 
 == Requirements
 
