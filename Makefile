@@ -27,6 +27,8 @@ help:
 	@echo "  clean-docs:       Clean all build artifacts in build and public directory"
 	@echo "  clean-docs-cache: Clear git repository cache and UI components from .cache directory"
 	@echo "  clean-all:        Clean build artifacts and Antora cache"
+	@echo "  serve-docs:       Run a local web server with Docker and Nginx to serve the docs locally"
+	@echo "  stop-serve-docs:  Stop the local web server for serving the docs"
 	@echo ""
 	@echo "Arguments: "
 	@echo "  DOCKER_ANTORA_IMAGE: Antora Docker image to build the documenation, default: $(DOCKER_ANTORA_IMAGE)"
@@ -59,3 +61,11 @@ clean-docs-cache:
 	@rm -rf .cache
 
 clean-all: clean-docs clean-docs-cache
+
+serve-docs:
+	@echo "Start Nginx with public folder as html root ..."
+	docker run --rm -v $(WORKING_DIRECTORY)/public:/usr/share/nginx/html --name opennms-docs -p 8080:80 -d nginx
+
+stop-serve-docs:
+	@echo "Stopping Nginx docs server ..."
+	docker stop opennms-docs

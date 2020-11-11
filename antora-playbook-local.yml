@@ -1,6 +1,5 @@
 site: 
   title: Horizon
-  url: https://docs.opennms.com
   start_page: horizon::index.adoc
 content: 
   sources: 
@@ -12,7 +11,13 @@ ui:
     url: https://github.com/opennms-forge/antora-ui-opennms/releases/download/v1.3.0/ui-bundle.zip
 asciidoc:
   attributes:
+    experimental: true
     stem: latexmath
+    idprefix: ''
+    idseparator: '-'
+    page-pagination: ''
+    source-language: asciidoc@
+    distribution: 'Horizon'
     tabs: tabs
   extensions:
     - ./docs/lib/tabs-block.js
