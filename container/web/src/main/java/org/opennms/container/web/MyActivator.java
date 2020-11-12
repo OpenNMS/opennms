@@ -35,12 +35,12 @@ public final class MyActivator implements BundleActivator {
 
 	@Override
 	public void start(BundleContext arg0) throws Exception {
-		System.err.println("My Activator is started!!!");
+		System.err.println("OpenNMS Karaf container activator starting.");
 	}
 
 	@Override
 	public void stop(BundleContext arg0) throws Exception {
-		System.err.println("My Activator is stopped!!!");
+		System.err.println("OpenNMS Karaf container activator stopping.");
 	}
 	
 }
