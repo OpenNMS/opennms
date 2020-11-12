@@ -12,8 +12,28 @@ There are three ways to do this:
  * quick add node
  * manually adding an interface
 
+[[requisition-add-nodes]]
 ==== Add Nodes to a Requisition
 
 Before adding nodes to a requisition, you must xref:requisition-create[create a requisition].
 
-. 
+. In the web UI, click the gear icon in the top right. 
+. In the *Provisioning* area, choose *Manage Provisioning Requisition*.
+. Click the edit icon beside the requisition you want to add nodes to. 
+. Click *Add Node*. 
+.. {opennms-product-name} auto-generates the foreign ID used to identify this node. 
+. Fill out information in each of the tabs and click *Save*. 
+
++
+* basic information (node label, auto-generated foreign ID, location)
+* path outage (configure network path to limit notifications from nodes behind other nodes)
+* interfaces (add interface IP addresses and services)
+* assets (pre-defined metadata types)
+* categories (label for type of node, e.g., routers, production, switches)
+* meta-data (customized asset information)
+
+. Repeat for each node you want to add. 
+. Click *Return* to view the list of nodes you have added. 
+. Click *Synchronize* to provision them to the {opennms-product-name} database. 
+
+
