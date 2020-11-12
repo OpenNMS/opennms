@@ -5,6 +5,7 @@ prerelease: true
 asciidoc:
   attributes:
     experimental: true
+    prerelease: true
     source-language: asciidoc@
     xrefstyle: short@
     centos7-version: '7.x'
@@ -24,3 +25,5 @@ asciidoc:
 nav:
 - modules/ROOT/index.adoc
 - modules/deployment/nav.adoc
+- modules/reference/nav.adoc
+- modules/todo/nav.adoc

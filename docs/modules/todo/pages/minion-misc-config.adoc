@@ -1,0 +1,40 @@
+= Information about Minion Packages and Configuration
+This section contains miscellaneous information about the Minion installation. 
+
+== Directory structure
+
+A successful installation means the Minion is installed in the following directory structure:
+
+[source, shell]
+----
+[root@localhost /opt/minion]# $ tree -L 1
+.
+├── bin
+├── deploy
+├── etc
+├── lib
+├── repositories
+└── system
+----
+
+TIP: In Debian, symbolic links are set up pointing to `/etc/minion` and `/var/log/minion` to match Debian’s expected filesystem layout.
+
+== Startup configuration
+
+Edit `/etc/sysconfig/minion` file (RHEL) or the `/etc/default/minion` file (Debian) to change the Minion's startup configuration, if you want to override the defaults used at start up including:
+
+* Location of the JDK
+* Memory usage
+* User to run as
+
+[[credentials-alternate]]
+== Alternate way to configure credentials
+
+You can also configure credentials by using the `scvcli` utility in your Minion `bin` directory:
+
+[source]
+----
+cd /opt/minion
+./bin/scvcli set opennms.http #minion user name minion password
+./bin/scvcli set opennms.broker #minion user name minion password
+----
