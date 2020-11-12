@@ -13,7 +13,6 @@
     <name>OpenNMS :: Documentation</name>
     <description>Official documentation</description>
     <modules>
-        <module>guide-install</module>
         <module>guide-admin</module>
         <module>guide-development</module>
         <module>releasenotes</module>

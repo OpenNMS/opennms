@@ -31,13 +31,6 @@
     <dependencies>
         <dependency>
             <groupId>org.opennms.doc</groupId>
-            <artifactId>guide-install</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-            <classifier>docs</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.doc</groupId>
             <artifactId>guide-admin</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
