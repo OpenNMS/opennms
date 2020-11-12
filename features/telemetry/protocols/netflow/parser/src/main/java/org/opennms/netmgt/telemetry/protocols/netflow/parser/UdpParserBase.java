@@ -45,6 +45,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
 
+import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
@@ -55,7 +56,7 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
     public final static long HOUSEKEEPING_INTERVAL = 60000;
 
     private final Meter packetsReceived;
-    private final Meter parserErrors;
+    private final Counter parserErrors;
 
     private UdpSessionManager sessionManager;
 
@@ -72,7 +73,7 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
         super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
 
         this.packetsReceived = metricRegistry.meter(MetricRegistry.name("parsers",  name, "packetsReceived"));
-        this.parserErrors = metricRegistry.meter(MetricRegistry.name("parsers",  name, "parserErrors"));
+        this.parserErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "parserErrors"));
 
         metricRegistry.register(MetricRegistry.name("parsers",  name, "packetsReceived"),
                                 (Gauge<Integer>) () -> (this.sessionManager != null) ? this.sessionManager.count() : null);
@@ -94,7 +95,7 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
             return this.transmit(this.parse(session, buffer), remoteAddress);
         } catch (Exception e) {
             this.sessionManager.drop(sessionKey);
-            this.parserErrors.mark();
+            this.parserErrors.inc();
             throw e;
         }
     }
