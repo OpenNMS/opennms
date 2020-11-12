@@ -38,8 +38,7 @@ Enable tracing with Jaeger on _Minion_ by installing the `opennms-core-tracing-j
 echo 'opennms-core-tracing-jaeger' >> "$MINION_HOME/etc/featuresBoot.d/jaeger.boot"
 ----
 
-NOTE: Either `sentinel-flows` or `sentinel-telemetry` need to be installed before installing `opennms-core-tracing-jaeger` feature.
-Uninstalling the `opennms-core-tracing-jaeger` feature at runtime is not yet supported.
+NOTE: Uninstalling the `opennms-core-tracing-jaeger` feature at runtime is not yet supported.
 To disable tracing with Jaeger, remove the reference from the features boot file and restart _Minion_.
 
 Additional Jaeger tracing options can be added to `$MINION_HOME/etc/system.properties` on _Minion_.
