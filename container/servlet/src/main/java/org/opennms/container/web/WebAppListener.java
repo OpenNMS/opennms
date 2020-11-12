@@ -17,7 +17,6 @@
 package org.opennms.container.web;
 
 import java.io.File;
-import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -36,21 +35,13 @@ public class WebAppListener implements ServletContextListener {
     private ServletContext m_servletContext;
     private BundleContext m_framework;
     private OnmsOSGiBridgeActivator m_bridge = new OnmsOSGiBridgeActivator();
-
-    private void log(final String message) {
-        this.log(message, null);
-    }
-
-    private void log(final String message, final Throwable t) {
-        m_servletContext.log("container.servlet.WebAppListener: " + message, t);
-    }
-
+    
     @Override
     public void contextInitialized(ServletContextEvent sce) {
 
         try {
+            
             m_servletContext = sce.getServletContext();
-            this.log("servlet context initialized");
 
             File karafRoot = new File(m_servletContext.getRealPath("/") + "/WEB-INF/karaf");
 
@@ -66,37 +57,34 @@ public class WebAppListener implements ServletContextListener {
             }
             */
 
+            m_servletContext.log("contextInitialized");
+
             final String root = karafRoot.getAbsolutePath();
-            this.log("using Karaf root: " + root);
-
-            final Properties karafProps = new Properties();
-            karafProps.setProperty("karaf.home", root);
-            karafProps.setProperty("karaf.base", root);
-            karafProps.setProperty("karaf.data", root + File.separator + "data");
-            karafProps.setProperty("karaf.log", root + File.separator + "logs");
-            karafProps.setProperty("karaf.etc", root + File.separator + "etc");
-            karafProps.setProperty("karaf.history", root + File.separator + "data" + File.separator + "history.txt");
-            karafProps.setProperty("karaf.instances", root + File.separator + "instances");
-            karafProps.setProperty("karaf.startLocalConsole", "false");
-            karafProps.setProperty("karaf.startRemoteShell", "true");
-            karafProps.setProperty("karaf.lock", "false");
-            System.setProperties(karafProps);
-
-            this.log("launching Karaf with properties: " + karafProps);
+            m_servletContext.log("Root: " + root);
+            System.setProperty("karaf.home", root);
+            System.setProperty("karaf.base", root);
+            System.setProperty("karaf.data", root + File.separator + "data");
+            System.setProperty("karaf.log", root + File.separator + "logs");
+            System.setProperty("karaf.etc", root + File.separator + "etc");
+            System.setProperty("karaf.history", root + File.separator + "data" + File.separator + "history.txt");
+            System.setProperty("karaf.instances", root + File.separator + "instances");
+            System.setProperty("karaf.startLocalConsole", "false");
+            System.setProperty("karaf.startRemoteShell", "true");
+            System.setProperty("karaf.lock", "false");
             main = new Main(new String[0]);
             main.launch();
-
-            this.log("adding bundle context to Karaf servlet context");
+            
             // get bundle context for registering service
             m_framework = main.getFramework().getBundleContext();
-
+            
             // add bundle context to servlet context for Proxy Servlet
             m_servletContext.setAttribute(BundleContext.class.getName(), m_framework);
 
-            this.log("adding bundle context to OpenNMS OSGi bridge");
+            
             m_bridge.start(m_framework);
+
         } catch (final Throwable e) {
-            this.log("unexpected exception while starting Karaf", e);
+            m_servletContext.log("Unexpected exception while starting Karaf", e);
             main = null;
             e.printStackTrace();
         }
@@ -105,17 +93,15 @@ public class WebAppListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         try {
-            this.log("removing Karaf bundle context from OpenNMS OSGi bridge");
+            
             m_bridge.stop(m_framework);
-            // TODO unregister services form both registries when the osgi container stops
-
-            this.log("stopping Karaf");
+            // TODO unregister services form both registries with the osgi container stops
+            
+            m_servletContext.log("contextDestroyed");
             if (main != null) {
                 main.destroy();
             }
-            this.log("Karaf stopped");
         } catch (final Throwable e) {
-            this.log("unexpected exception while stopping Karaf", e);
             e.printStackTrace();
         }
     }
