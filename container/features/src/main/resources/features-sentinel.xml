@@ -99,7 +99,7 @@
         <feature>opennms-core-ipc-sink-api</feature>
         <feature>opennms-dao-api</feature>
         <feature>opennms-dao</feature>
-
+        <feature>opennms-core-tracing</feature>
         <feature>sentinel-thresholding-service</feature>
 
         <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
