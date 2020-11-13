@@ -24,12 +24,12 @@ See the release notes for information about platform support changes, including 
 [options="header, autowidth"]
 |===
 | Operating System        | Supported Versions (64-bit)
-| RHEL                    | {rhel7-version} +
-                            {rhel8-version}
-| CentOS                  | {centos7-version} +
-                            {centos8-version}
+| RHEL                    | {compatible-rhel7} +
+                            {compatible-rhel8}
+| CentOS                  | {compatible-centos7} +
+                            {compatible-centos8}
 ifeval::["{page-component-title}" == "Horizon"]
-| Debian                  | {debian-version}
-| Ubuntu                  | {ubuntu-version}
+| Debian                  | {compatible-debian}
+| Ubuntu                  | {compatible-ubuntu}
 endif::[]
 |===

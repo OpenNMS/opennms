@@ -20,14 +20,14 @@ See the release notes for information about platform support changes, including 
 
 [options="header, autowidth"]
 |===
-| Operating System        | Supported Versions (64-bit)
-| RHEL                    | {rhel7-version} +
-                            {rhel8-version}
-| CentOS                  | {centos7-version} +
-                            {centos8-version}
+| Operating System        | Compatible Versions (64-bit)
+| RHEL                    | {compatible-rhel7} +
+                            {compatible-rhel8}
+| CentOS                  | {compatible-centos7} +
+                            {compatible-centos8}
 ifeval::["{page-component-title}" == "Horizon"]
-| Debian                  | {debian-version}
-| Ubuntu                  | {ubuntu-version}
+| Debian                  | {compatible-debian}
+| Ubuntu                  | {compatible-ubuntu}
 endif::[]
 |===
 
@@ -39,13 +39,13 @@ endif::[]
 [options="header, autowidth"]
 |===
 | Component               | Version Compatibility
-| OpenNMS Helm            | {onms-helm-version}
-| OpenNMS Integration API | {oia-version}
-| Cassandra               | {cassandra-version}
-| Elasticsearch           | {elasticsearch-version}
-| Java Development Kit    | {javajdk-version}
-| Kafka                   | {kafka-version}
-| PostgreSQL              | {postgresql-version}
-| RRDTool                 | {rrdtool-version}
+| OpenNMS Helm            | {compatible-opennms-helm}
+| OpenNMS Integration API | {compatible-oia}
+| Cassandra               | {compatible-cassandra}
+| Elasticsearch           | {compatible-elasticsearch}
+| Java Development Kit    | {compatible-javajdk}
+| Kafka                   | {compatible-kafka}
+| PostgreSQL              | {compatible-postgresql}
+| RRDTool                 | {compatible-rrdtool}
 | Browser                 | Latest link:https://www.mozilla.org[Mozilla Firefox] or link:https://www.google.com/intl/en_us/chrome/[Google Chrome]
 |===
