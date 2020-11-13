@@ -32,7 +32,7 @@ read-community="public" version="v2c">
 </snmp-config>
 ----
 
-[[[quick-add-xml]]]
+[[quick-add-xml]]
 ==== Quick-Add Node Configuration
 
 If you configure an individual IP address within an existing range, {opennms-product-name} will split the range into two, and add a specific entry for the IP address.

@@ -1,6 +1,0 @@
-
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-[[asset-import]]
-==== Importing Assets
