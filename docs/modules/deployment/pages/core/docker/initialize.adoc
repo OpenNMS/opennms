@@ -1,0 +1,4 @@
+
+#TODO: Run docker-compose run horizon -i to initialze the database and stuff#
+
+#TODO: Start the stack and verify functionality with docker-compose ps#

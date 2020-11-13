@@ -1,10 +1,9 @@
-
-= Run Minion with Docker
-
 :docker-version-tag: bleeding
 ifeval::["{prerelease}" == "false"]
 :docker-version-tag: {page-component-version}
 endif::[]
+
+= Run Minion with Docker
 
 Modern infrastructure allows you to deploy and run workloads in containers.
 {page-component-title} provides and publishes container images on link:https://hub.docker.com/u/opennms[DockerHub].

@@ -23,10 +23,20 @@ endif::[]
 * Internet access to download the installation packages
 * Make sure DNS is working and localhost and your servers host name is resolved properly
 * System user with administrative permissions (sudo) to perform the installation tasks
+ifeval::["{page-component-title}" == "Horizon"]
+* When you are interested in running the services with Docker, you have to install first Docker and Docker Compose first.
+  You find instruction how to install Docker in the link:https://docs.docker.com/[Docker Documentation].
+  The service stacks are build as Docker Compose service stacks.
+  Follow the link:https://docs.docker.com/compose/install/[Install Docker Compose] instructions to install Docker Compose on your system.
+
+CAUTION: Don't use our Docker examples with high workloads with critical data in production.
+         The examples can be used as a starting point to get things up and running in a test environment.
+         Configuration of the services are not tuned for production workloads so they can run also on small hardware specifications.
+endif::[]
 
 ifeval::["{page-component-title}" == "Horizon"]
-CAUTION: If you run Debian, you have to install and configure `sudo` yourself.
-         A guide can be found in the link:https://wiki.debian.org/sudo/[Debian Wiki].
+NOTE: If you run Debian, you have to install and configure `sudo` yourself.
+      A guide can be found in the link:https://wiki.debian.org/sudo/[Debian Wiki].
 endif::[]
 
 == Setting up PostgreSQL
@@ -36,20 +46,26 @@ endif::[]
 CentOS/RHEL 8::
 +
 --
-include::centos-rhel8/step-1-postgresql.adoc[]
+include::centos-rhel8/postgresql.adoc[]
 --
 
 CentOS/RHEL 7::
 +
 --
-include::centos-rhel7/step-1-postgresql.adoc[]
+include::centos-rhel7/postgresql.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
 Debian/Ubuntu::
 +
 --
-include::debian-ubuntu/step-1-postgresql.adoc[]
+include::debian-ubuntu/postgresql.adoc[]
+--
+
+Docker::
++
+--
+include::docker/postgresql.adoc[]
 --
 endif::[]
 ====
@@ -61,26 +77,32 @@ endif::[]
 CentOS/RHEL 8::
 +
 --
-include::centos-rhel8/step-2-install-core.adoc[]
+include::centos-rhel8/install-core.adoc[]
 --
 
 CentOS/RHEL 7::
 +
 --
-include::centos-rhel7/step-2-install-core.adoc[]
+include::centos-rhel7/install-core.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
 Ubuntu::
 +
 --
-include::ubuntu/step-2-install-core.adoc[]
+include::ubuntu/install-core.adoc[]
 --
 
 Debian::
 +
 --
-include::debian/step-2-install-core.adoc[]
+include::debian/install-core.adoc[]
+--
+
+Docker::
++
+--
+include::docker/core.adoc[]
 --
 endif::[]
 ====
@@ -92,14 +114,20 @@ endif::[]
 CentOS/RHEL 7/8::
 +
 --
-include::centos-rhel/step-3-initialize-core.adoc[]
+include::centos-rhel/initialize-core.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
 Debian/Ubuntu::
 +
 --
-include::debian-ubuntu/step-3-initialize-core.adoc[]
+include::debian-ubuntu/initialize-core.adoc[]
+--
+
+Docker::
++
+--
+include::docker/initialize.adoc[]
 --
 endif::[]
 ====
