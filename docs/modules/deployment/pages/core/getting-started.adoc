@@ -33,16 +33,16 @@ endif::[]
 
 [{tabs}]
 ====
-CentOS/RHEL 7::
-+
---
-include::centos-rhel7/step-1-postgresql.adoc[]
---
-
 CentOS/RHEL 8::
 +
 --
 include::centos-rhel8/step-1-postgresql.adoc[]
+--
+
+CentOS/RHEL 7::
++
+--
+include::centos-rhel7/step-1-postgresql.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
@@ -58,29 +58,29 @@ endif::[]
 
 [{tabs}]
 ====
-CentOS/RHEL 7::
-+
---
-include::centos-rhel7/step-2-install-core.adoc[]
---
-
 CentOS/RHEL 8::
 +
 --
 include::centos-rhel8/step-2-install-core.adoc[]
 --
 
-ifeval::["{page-component-title}" == "Horizon"]
-Debian::
+CentOS/RHEL 7::
 +
 --
-include::debian/step-2-install-core.adoc[]
+include::centos-rhel7/step-2-install-core.adoc[]
 --
 
+ifeval::["{page-component-title}" == "Horizon"]
 Ubuntu::
 +
 --
 include::ubuntu/step-2-install-core.adoc[]
+--
+
+Debian::
++
+--
+include::debian/step-2-install-core.adoc[]
 --
 endif::[]
 ====

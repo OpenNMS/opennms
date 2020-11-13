@@ -26,29 +26,29 @@ endif::[]
 
 [{tabs}]
 ====
-CentOS/RHEL 7::
-+
---
-include::centos-rhel7/step-1-install-sentinel.adoc[]
---
-
 CentOS/RHEL 8::
 +
 --
 include::centos-rhel8/step-1-install-sentinel.adoc[]
 --
 
-ifeval::["{page-component-title}" == "Horizon"]
-Debian::
+CentOS/RHEL 7::
 +
 --
-include::debian/step-1-install-sentinel.adoc[]
+include::centos-rhel7/step-1-install-sentinel.adoc[]
 --
 
+ifeval::["{page-component-title}" == "Horizon"]
 Ubuntu::
 +
 --
 include::ubuntu/step-1-install-sentinel.adoc[]
+--
+
+Debian::
++
+--
+include::debian/step-1-install-sentinel.adoc[]
 --
 endif::[]
 ====

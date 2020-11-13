@@ -48,10 +48,10 @@ NOTE: Configurations has to be made in the {page-component-title} etc directory.
 
 [{tabs}]
 ====
-embedded ActiveMQ::
+Kafka::
 +
 --
-include::message-broker/embedded-activemq.adoc[]
+include::message-broker/kafka.adoc[]
 --
 
 ActiveMQ::
@@ -60,9 +60,9 @@ ActiveMQ::
 include::message-broker/activemq.adoc[]
 --
 
-Kafka::
+embedded ActiveMQ::
 +
 --
-include::message-broker/kafka.adoc[]
+include::message-broker/embedded-activemq.adoc[]
 --
 ====

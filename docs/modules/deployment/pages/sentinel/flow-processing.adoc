@@ -71,16 +71,16 @@ config:update
 
 [{tabs}]
 ====
-ActiveMQ::
-+
---
-include::message-broker/activemq.adoc[]
---
-
 Kafka::
 +
 --
 include::message-broker/kafka.adoc[]
+--
+
+ActiveMQ::
++
+--
+include::message-broker/activemq.adoc[]
 --
 ====
 

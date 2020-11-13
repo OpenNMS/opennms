@@ -28,29 +28,29 @@ endif::[]
 
 [{tabs}]
 ====
-CentOS/RHEL 7::
-+
---
-include::centos-rhel7/step-2-install-minion.adoc[]
---
-
 CentOS/RHEL 8::
 +
 --
 include::centos-rhel8/step-2-install-minion.adoc[]
 --
 
-ifeval::["{page-component-title}" == "Horizon"]
-Debian::
+CentOS/RHEL 7::
 +
 --
-include::debian/step-2-install-minion.adoc[]
+include::centos-rhel7/step-2-install-minion.adoc[]
 --
 
+ifeval::["{page-component-title}" == "Horizon"]
 Ubuntu::
 +
 --
 include::ubuntu/step-2-install-minion.adoc[]
+--
+
+Debian::
++
+--
+include::debian/step-2-install-minion.adoc[]
 --
 endif::[]
 ====
@@ -92,16 +92,16 @@ NOTE: Configurations has to be made in the {page-component-title} etc directory.
 
 [{tabs}]
 ====
-ActiveMQ::
-+
---
-include::message-broker/activemq.adoc[]
---
-
 Kafka::
 +
 --
 include::message-broker/kafka.adoc[]
+--
+
+ActiveMQ::
++
+--
+include::message-broker/activemq.adoc[]
 --
 ====
 
