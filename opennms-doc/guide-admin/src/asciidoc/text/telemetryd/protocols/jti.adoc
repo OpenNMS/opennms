@@ -52,7 +52,7 @@ To enable and configure a _UDP Listener_ for JTI on Minion, connect to the _Kara
 ----
 $ ssh -p 8201 admin@localhost
 ...
-admin@minion()> config:edit --alias udp-5000 --factory org.opennms.features.telemetry.listeners
+admin@minion()> config:edit --alias udp-50000 --factory org.opennms.features.telemetry.listeners
 admin@minion()> config:property-set name JTI
 admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.UdpListener
 admin@minion()> config:property-set parameters.port 50000
