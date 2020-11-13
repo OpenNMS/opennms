@@ -53,7 +53,8 @@ Enable tracing with Jaeger on _Sentinel_ by installing the `opennms-core-tracing
 echo 'opennms-core-tracing-jaeger' >> "$SENTINEL_HOME/etc/featuresBoot.d/jaeger.boot"
 ----
 
-NOTE: Uninstalling the `opennms-core-tracing-jaeger` feature at runtime is not yet supported.
+NOTE: Either `sentinel-flows` or `sentinel-telemetry` need to be installed before installing `opennms-core-tracing-jaeger` feature. 
+Uninstalling the `opennms-core-tracing-jaeger` feature at runtime is not yet supported.
 To disable tracing with Jaeger, remove the reference from the features boot file and restart _Sentinel_.
 
 Additional Jaeger tracing options can be added to `$SENTINEL_HOME/etc/system.properties` on _Sentinel_.
