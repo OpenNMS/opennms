@@ -55,7 +55,7 @@ To enable and configure a _TCP Listener_ for IPFIX on Minion, connect to the _Ka
 ----
 $ ssh -p 8201 admin@localhost
 ...
-admin@minion()> config:edit --alias tcp-5000 --factory org.opennms.features.telemetry.listeners
+admin@minion()> config:edit --alias tcp-50000 --factory org.opennms.features.telemetry.listeners
 admin@minion()> config:property-set name IPFIX
 admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.TcpListener
 admin@minion()> config:property-set parameters.port 50000
