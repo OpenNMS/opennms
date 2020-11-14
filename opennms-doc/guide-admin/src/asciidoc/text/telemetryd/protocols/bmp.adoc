@@ -43,7 +43,7 @@ $ ssh -p 8201 admin@localhost
 admin@minion()> config:edit --alias tcp-5000 --factory org.opennms.features.telemetry.listeners
 admin@minion()> config:property-set name BMP
 admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.TcpListener
-admin@minion()> config:property-set parameters.port 50000
+admin@minion()> config:property-set parameters.port 5000
 admin@minion()> config:property-set parsers.0.name BMP 
 admin@minion()> config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser
 admin@minion()> config:update
