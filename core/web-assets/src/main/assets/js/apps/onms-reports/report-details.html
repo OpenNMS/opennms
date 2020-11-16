@@ -12,6 +12,10 @@
         background-color: #fff;
         background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23{$custom-select-indicator-color}' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px;
     }
+
+    .ui-select-match[disabled] {
+        background-color: #eee;
+    }
 </style>
 
 <form name="reportForm" class="form mx-4 mt-2" role="form" novalidate>
@@ -49,7 +53,7 @@
         </div>
         <div ng-show="report.isGrafanaReport() && selected.endpoint" class="form-group">
             <label>Grafana Dashboard</label>
-            <a ng-if="dashboards.length > 0" href="{{selected.endpoint.url}}/{{selected.dashboard.url}}" title="Show Dasbhoard" target="_blank"> <i class="fa fa-dashboard"></i></a>
+            <a ng-if="dashboards.length > 0" href="{{selected.endpoint.url}}/{{selected.dashboard.url}}" title="Show Dashboard" target="_blank"> <i class="fa fa-dashboard"></i></a>
             <a href title="Refresh Dashboards" ng-click="endpointChanged()"><i class="fa fa-refresh"></i></a>
             <ui-select
                     ng-model="selected.dashboard"
@@ -69,7 +73,7 @@
         </div>
 
         <!-- Other Parameters -->
-        <div ng-if="parameter.type === 'string' && parameter.hidden === false" class="form-group" ng-repeat-start="parameter in report.parameters">
+        <div ng-if="parameter.type === 'string' && parameter.hidden === false" class="form-group" ng-repeat-start="parameter in report.parameters track by paramHash(parameter)">
             <label for="{{parameter.name}}" class="">{{parameter.displayName}}</label>
 
             <!--String -->
@@ -182,7 +186,7 @@
                             format="parameter.internalFormat"
                             ng-model="parameter.internalValue"
                             expand="true"
-                            on-state-change="onDateParamStateChange(invalidState)"
+                            on-state-change="onDateParamStateChange(invalidState, date, parameter)"
             ></datetimepicker>
         </div>
         <!-- TimeZone -->
@@ -192,6 +196,8 @@
                     id="{{parameter.name}}"
                     name="{{parameter.name}}"
                     ng-model="parameter.value"
+                    ng-change="timezoneChanged()"
+                    ng-disabled="!report.timezoneEditable"
                     ng-class="{ 'is-invalid' : reportForm[parameter.name].$invalid || report.errors[parameter.name] || report.errors[parameter.name]}"
                     theme="bootstrap" >
                 <ui-select-match placeholder="Select Timezone">
@@ -201,6 +207,10 @@
                     {{timezone}}
                 </ui-select-choices>
             </ui-select>
+            <div ng-show="!report.timezoneEditable" class="text-horizon mt-1" style="font-size: 80%">
+                Time Zone has been explicitly configured in the Grafana Dashboard.
+                This can be modified by changing <i>Timezone</i> in <a href="{{selected.endpoint.url}}/{{selected.dashboard.url}}?editview=settings" target="_blank">Time Options <i class="fa fa-external-link"></i></a>.
+            </div>
             <div ng-show="report.errors[parameter.name]" class="text-danger mt-1" style="font-size: 80%">{{report.errors[parameter.name]}}</div>
         </div>
         <hr class="mb-4"/>
