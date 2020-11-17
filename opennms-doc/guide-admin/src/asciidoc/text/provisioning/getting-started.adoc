@@ -47,8 +47,6 @@ These settings are optimized into the `snmp-configuration.xml` file.
 
 For an example of the resulting XML configuration, see link:#SNMP-commmunity-xml[Configuring SNMP community names].
 
-NOTE: Provisiond includes an option to add community information to a single IP address through the link:#quick-add-node[Quick-Add Node] feature. 
-
 [[foreign-source-definition]]
 ==== Edit Default Foreign Source Definition
 
