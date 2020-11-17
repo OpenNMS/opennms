@@ -44,8 +44,6 @@ image:provisioning/SNMP_Config.png[]
 
 This screen sets up SNMP within {opennms-product-name} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
 These settings are optimized into the `snmp-configuration.xml` file.
-Optimization means that the minimal configuration possible will be written.
-Any IP addresses already configured that are eclipsed by this range will be removed.
 
 For an example of the resulting XML configuration, see link:#SNMP-commmunity-xml[Configuring SNMP community names].
 

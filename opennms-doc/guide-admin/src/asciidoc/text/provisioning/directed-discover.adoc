@@ -5,12 +5,8 @@
 [[directed-discovery]]
 === Directed Discovery
 
-Directed discovery is the process of manually adding nodes to {opennms-product-name}.
-There are three ways to do this:
-
-* xref:requisition-add-nodes[directly in the requisition UI]
-* xref:quick-add-node [quick add node]
-* manually adding an interface
+Directed discovery is the process of manually adding nodes to {opennms-product-name} through the requisition UI. 
+Two other methods for manually adding nodes (quick add node and manually adding an interface) are in the process of being deprecated. We do not recommend using these features. 
 
 Make sure you complete the tasks in the xref:getting-started.adoc[Getting Started] section before adding nodes. 
 
@@ -27,7 +23,7 @@ Before adding nodes to a requisition, you must xref:requisition-create[create a 
 . Fill out information in each of the tabs and click *Save*. 
 +
 * basic information (node label, auto-generated foreign ID, location)
-* path outage (configure network path to limit notifications from nodes behind other nodes)
+* path outage (configure network path to limit notifications from nodes behind other nodes, see xref:service-assurance/path-outages.adoc[Path Outages])
 * interfaces (add interface IP addresses and services)
 * assets (pre-defined metadata types)
 * categories (label/tag for type of node, e.g., routers, production, switches)
@@ -36,45 +32,3 @@ Before adding nodes to a requisition, you must xref:requisition-create[create a 
 . Repeat for each node you want to add. 
 . Click *Return* to view the list of nodes you have added. 
 . Click *Synchronize* to provision them to the {opennms-product-name} database. 
-
-[[quick-add-node]]
-==== Add a Single Node to a Requsition
-
-The quick-add node feature allows you to add a single node to an existing provisioning requisition, and set the community string at the same time the node is provisioned.  
-
-When you configure an individual IP address within an existing range, {opennms-product-name} will split the range into two, and add a specific entry for the IP address. 
-See xref:quick-add-xml[Quick-Add Node Configuration] for the resulting XML configuration.
-
-To use the quick-add node feature, follow these steps:
-
-. Make sure you have xref:requisition-create[created a requisition]. 
-. In the web UI, click the *+* sign beside the gear icon.
-. Specify the requisition to which you want to add the node. 
-
-+
-IMPORTANT: This operation overrides any un-synchronized modifications in the selected requisition.
-
-. Add the IP address and node label. 
-. Fill in optional information in the appropriate fields:
-
-+
-* SNMP parameters (apply only to the node being requisitioned)
-* surveillance category membership (like a tag for the type of node, e.g., router, production, switch)
-* CLI authentication parameters (used only if one or more provisioning adapters are configured to use them)
- 
-. Click *Provision*. 
-. Go to *Manage Provisioning Requisiton* and click *Synchronize* beside the requisition wo which you added to provision it to the {opennms-product-name} database.
-
-[[interface-manual-add]]
-==== Manually Add an Interface
-
-Trigger a scan of an IPv4 or IPv6 interface. 
-If the IP address of the interface is contained in the IP address tables of an existing node, {opennms-product-name} adds the interface into the node. 
-If not, it creates a new node.
-
-. In the web UI, click the gear icon in the top right. 
-. In the *Provisioning* area, select *Manually add an Interface*.
-. Specify the IP address and click *Add*. 
-
-NOTE: If the IP address already exists in {opennms-product-name}, use "Rescan" from the node page to update it. 
-Even if no services exist for this IP, it will still be added. 
