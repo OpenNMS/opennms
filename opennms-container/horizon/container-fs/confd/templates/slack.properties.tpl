@@ -2,17 +2,22 @@
 # DON'T EDIT THIS FILE :: GENERATED WITH CONFD
 #
 
-export OPENNMS_NOTIFD_SLACK_CHANNEL
-export OPENNMS_NOTIFD_SLACK_USERNAME
-export OPENNMS_NOTIFD_SLACK_ICONEMOJI
-export OPENNMS_NOTIFD_SLACK_ICONURL
-export OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY
+{{ if getenv "OPENNMS_NOTIFD_SLACK_CHANNEL" }}
+
+org.opennms.netmgt.notifd.slack.channel={{getenv "OPENNMS_NOTIFD_SLACK_CHANNEL" "Webhook"}}
+org.opennms.netmgt.notifd.slack.username={{getenv "OPENNMS_NOTIFD_SLACK_USERNAME" "none"}}
+org.opennms.netmgt.notifd.slack.iconEmoji={{getenv "OPENNMS_NOTIFD_SLACK_ICONEMOJI" ""}}
+org.opennms.netmgt.notifd.slack.iconURL={{getenv "OPENNMS_NOTIFD_SLACK_ICONURL" ""}}
+org.opennms.netmgt.notifd.slack.useSystemProxy={{getenv "OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY" "true"}}
+
+{{ else }}
 
 {{$slackPath := "/opennms/notifd/slack/" -}}
 
-# Configure storage strategy
-org.opennms.netmgt.notifd.slack.channel={{(getenv (print $slackPath "OPENNMS_NOTIFD_SLACK_CHANNEL") "Webhook"}}
-org.opennms.netmgt.notifd.slack.username={{getenv (print $slackPath "OPENNMS_NOTIFD_SLACK_USERNAME") "none"}}
-org.opennms.netmgt.notifd.slack.iconEmoji={{getenv (print $slackPath "OPENNMS_NOTIFD_SLACK_ICONEMOJI") ""}}
-org.opennms.netmgt.notifd.slack.iconURL={{getenv (print $slackPath "OPENNMS_NOTIFD_SLACK_ICONURL") ""}}
-org.opennms.netmgt.notifd.slack.useSystemProxy={{getenv (print $slackPath "OPENNMS_NOTIFD_SLACK_USESYSTEMPROXY") "true"}}
+org.opennms.netmgt.notifd.slack.channel={{getv (print $slackPath "channel") "Webhook"}}
+org.opennms.netmgt.notifd.slack.username={{getv (print $slackPath "userName")  "none"}}
+org.opennms.netmgt.notifd.slack.iconEmoji={{getv (print $slackPath "iconEmoji")  ""}}
+org.opennms.netmgt.notifd.slack.iconURL={{getv (print $slackPath "iconURL") ""}}
+org.opennms.netmgt.notifd.slack.useSystemProxy={{getv (print $slackPath "useSystemProxy") "true"}}
+
+{{ end }}
