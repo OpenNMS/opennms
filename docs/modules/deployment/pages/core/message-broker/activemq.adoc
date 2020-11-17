@@ -7,7 +7,7 @@ sudo vi etc/opennms.properties.d/activemq.properties
 ----
 
 .Disable embedded ActiveMQ and set the credentials for your ActiveMQ endpoints
-[source, editor]
+[source, activemq.properties]
 ----
 org.opennms.activemq.broker.disable=true<1>
 org.opennms.activemq.broker.url=failover:tcp://my-activemq:61616<2>

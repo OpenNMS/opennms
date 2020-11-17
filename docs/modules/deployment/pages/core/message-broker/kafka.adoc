@@ -5,7 +5,7 @@ sudo vi etc/opennms.properties.d/kafka.properties
 ----
 
 .Configure Kafka 
-[source, editor]
+[source, kafka.properties]
 ----
 org.opennms.core.ipc.rpc.strategy=kafka<1>
 org.opennms.core.ipc.rpc.kafka.bootstrap.servers=my-kafka-ip-1:9092,my-kafka-ip-2:9092<2>

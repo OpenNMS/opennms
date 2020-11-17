@@ -5,7 +5,7 @@ sudo vi /usr/share/opennms/etc/opennms-datasources.xml
 ----
 
 .Set credentials to access the PostgreSQL database
-[source, xml]
+[source, opennms-datasources.xml]
 ----
 <jdbc-data-source name="opennms"
                     database-name="opennms"<1>

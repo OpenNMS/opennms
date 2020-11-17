@@ -29,26 +29,26 @@ endif::[]
 CentOS/RHEL 8::
 +
 --
-include::centos-rhel8/step-1-install-sentinel.adoc[]
+include::centos-rhel8/install-sentinel.adoc[]
 --
 
 CentOS/RHEL 7::
 +
 --
-include::centos-rhel7/step-1-install-sentinel.adoc[]
+include::centos-rhel7/install-sentinel.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
 Ubuntu::
 +
 --
-include::ubuntu/step-1-install-sentinel.adoc[]
+include::ubuntu/install-sentinel.adoc[]
 --
 
 Debian::
 +
 --
-include::debian/step-1-install-sentinel.adoc[]
+include::debian/install-sentinel.adoc[]
 --
 endif::[]
 ====
@@ -62,14 +62,14 @@ IMPORTANT: Change the default user/password _admin/admin_ for the Karaf shell an
 CentOS/RHEL 7/8::
 +
 --
-include::centos-rhel/step-2-secure-karaf.adoc[]
+include::centos-rhel/secure-karaf.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
 Debian/Ubuntu::
 +
 --
-include::debian-ubuntu/step-2-secure-karaf.adoc[]
+include::debian-ubuntu/secure-karaf.adoc[]
 --
 endif::[]
 ====

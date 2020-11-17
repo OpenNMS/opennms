@@ -5,7 +5,7 @@ sudo vi etc/featuresBoot.d/flows.boot
 ----
 
 .Add the following features to Sentinel on startup
-[source, editor]
+[source, flows.boot]
 ----
 sentinel-jsonstore-postgres
 sentinel-blobstore-noop
@@ -36,7 +36,7 @@ config:update
 <4> URL which points to ActiveMQ broker.
 
 .Configure the credentials and exit Karaf shell
-[source,karaf]
+[source, karaf]
 ----
 opennms:scv-set opennms.http my-sentinel-user my-sentinel-password<1>
 opennms:scv-set opennms.broker my-sentinel-user my-sentinel-password<2>
@@ -49,7 +49,7 @@ NOTE: The credentials are encrypted on disk in `etc/scv.jce`.
 Exit the Karaf Shell with kbd:[Ctrl+d]
 
 .Restart the Sentinel to apply the configuration
-[source,console]
+[source, console]
 ----
 sudo systemctl restart minion
 ----

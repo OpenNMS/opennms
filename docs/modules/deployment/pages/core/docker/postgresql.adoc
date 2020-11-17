@@ -7,7 +7,7 @@ vi docker-compose.yml
 ----
 
 .Create the PostgreSQL service and publish the port on your local host
-[source, editor]
+[source, docker-compose.yml]
 [subs="verbatim,attributes"]
 ----
 ---

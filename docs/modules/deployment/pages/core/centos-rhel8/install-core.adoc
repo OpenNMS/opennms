@@ -11,6 +11,16 @@ sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 sudo dnf -y install opennms
 ----
 
+TIP: This is optional, if you want time series trending and forecast functions you have to install the link:https://www.r-project.org/[R project] packages.
+     The additional download size for packages is ~390 MB.
+
+.Installing R package for trending and forcasting
+[source, console]
+----
+sudo dnf -y install epel-release
+sudo dnf -y install R-core
+----
+
 TIP: We recommend disabling the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades while it is running.
      _{page-component-title}_ requires some manual steps upon upgrade configuration files or migrate database schemas to a new version.
      For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.

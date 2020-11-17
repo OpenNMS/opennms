@@ -11,7 +11,7 @@ cd horizon
 vi docker-compose.yml
 ----
 
-[source, yaml]
+[source, docker-compose.yml]
 [subs="verbatim,attributes"]
 ----
 ---
@@ -62,7 +62,7 @@ CAUTION: In some environments it is not allowed to use ICMP (ping) for non-root 
          You can verify with `sysctl -n net.ipv4.ping_group_range` if the group id `10001` is in allowed group range.
          If not you can add the following lines in your service definition in the `docker-compose.yml` file.
 
-[source, editor]
+[source, docker-compose.yml]
 ----
 sysctls:
   net.ipv4.ping_group_range: "10001 10001"
