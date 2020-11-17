@@ -11,6 +11,12 @@ chown 10001:10001 -R etc
 docker-compose run horizon -i
 ----
 
+.Start the service in background
+[source, console]
+----
+docker-compose up -d
+----
+
 TIP: When you run upgrades you can use this command as well.
      You have to delete the file `etc/configured` file first.
      It works as a guard to prevent unnecessary database migration runs on startup.
@@ -21,8 +27,3 @@ TIP: You can show configuration changes from a pristine system with  +
 TIP: If you have changed your configuration files manually you can run the configuration tester with +
      `docker-compose exec horizon bin/config-tester -a`
 
-.Start the service in background
-[source, console]
-----
-docker-compose up -d
-----

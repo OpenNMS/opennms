@@ -19,10 +19,7 @@
 * The Minion server can access the {page-component-title} Core instance via REST (8980/tcp) and desired message broker nodes (e.g. ActiveMQ 61616/tcp, Apache Kafke 9092/tcp)
 * System user with administrative permissions (sudo) to perform the installation tasks
 ifeval::["{page-component-title}" == "Horizon"]
-* When you are interested in running the services with Docker, you have to install first Docker and Docker Compose first.
-  You find instruction how to install Docker in the link:https://docs.docker.com/[Docker Documentation].
-  The service stacks are build as Docker Compose service stacks.
-  Follow the link:https://docs.docker.com/compose/install/[Install Docker Compose] instructions to install Docker Compose on your system.
+* When you are interested in running the services link:https://docs.docker.com/[Docker] you need additionally link:https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
 
 NOTE: If you run Debian, you have to install and configure `sudo` yourself.
       A guide can be found in the link:https://wiki.debian.org/sudo/[Debian Wiki].
