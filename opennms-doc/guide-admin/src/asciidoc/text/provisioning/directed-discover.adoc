@@ -55,7 +55,7 @@ To use the quick-add node feature, follow these steps:
 IMPORTANT: This operation overrides any un-synchronized modifications in the selected requisition.
 
 . Add the IP address and node label. 
-. Fill in optional information in the apporpriate fields:
+. Fill in optional information in the appropriate fields:
 
 +
 * SNMP parameters (apply only to the node being requisitioned)
