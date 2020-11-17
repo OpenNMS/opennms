@@ -170,7 +170,12 @@ export default class ReportDetails {
 
     updateTimezoneParameter(selected) {
         this.dashboard = selected.dashboard;
-        this.parametersByName['timezone'].value = selected.dashboard ? selected.dashboard.timezone : undefined;
+        let timezone = selected.dashboard ? selected.dashboard.timezone : undefined;
+        if (timezone === 'utc') {
+            // special case: Grafana passes UTC as `utc` (sigh)
+            timezone = 'UTC';
+        }
+        this.parametersByName['timezone'].value = timezone;
         this.validateTimezone();
     }
 
