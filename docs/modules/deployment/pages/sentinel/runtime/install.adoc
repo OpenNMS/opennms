@@ -18,7 +18,7 @@
 * System user with administrative permissions (sudo) to perform the installation tasks
 
 ifeval::["{page-component-title}" == "Horizon"]
-CAUTION: If you run Debian, you have to install and configure `sudo` yourself.
+NOTE: If you run Debian, you have to install and configure `sudo` yourself.
          A guide can be found in the link:https://wiki.debian.org/sudo/[Debian Wiki].
 endif::[]
 

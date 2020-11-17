@@ -30,13 +30,11 @@ ifeval::["{page-component-title}" == "Horizon"]
   Follow the link:https://docs.docker.com/compose/install/[Install Docker Compose] instructions to install Docker Compose on your system.
 
 CAUTION: Don't use our Docker examples with high workloads with critical data in production.
-         The examples can be used as a starting point to get things up and running in a test environment.
-         Configuration of the services are not tuned for production workloads so they can run also on small hardware specifications.
-endif::[]
+         Configuration of the services are not tuned for production workloads so they can run also on small hardware specifications to get started and for test environments.
 
-ifeval::["{page-component-title}" == "Horizon"]
 NOTE: If you run Debian, you have to install and configure `sudo` yourself.
       A guide can be found in the link:https://wiki.debian.org/sudo/[Debian Wiki].
+
 endif::[]
 
 == Setting up PostgreSQL
