@@ -53,7 +53,7 @@ NOTE: The Minion process in the container runs as a non-root user and can't open
 
 CAUTION: In some environments it is not allowed to use ICMP (ping) for non-root users.
          {page-component-title} Minion runs as a non-privileged user in the container with `userid=10001, groupid=10001`.
-         You can verify with `sysctl -n net.ipv4.ping_group_range` if the group id `10001` is in allowed group range.
+         You can verify with `sysctl -n net.ipv4.ping_group_range` if the group id `10001` is in the allowed group range.
          If not you can add the following lines in your service definition in the `docker-compose.yml` file.
 
 [source, docker-compose.yml]

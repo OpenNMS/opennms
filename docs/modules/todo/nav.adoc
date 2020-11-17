@@ -1,13 +1,10 @@
 .TODO
-* xref:opennms-docker.adoc[]
-* xref:minion-docker.adoc[]
 * xref:minion-troubleshooting.adoc[]
 * xref:tuning-kafka.adoc[]
 * xref:minion-misc-config.adoc[]
 * xref:minion-config-file.adoc[]
 * xref:install-opennms-versions.adoc[]
 * xref:run-as-non-root.adoc[]
-* xref:r-statistical-computing.adoc[]
 * xref:time-series-storage/introduction.adoc[]
 ** xref:time-series-storage/rrdtool/rrdtool.adoc[]
 ** xref:time-series-storage/rrdtool/debian.adoc[]
