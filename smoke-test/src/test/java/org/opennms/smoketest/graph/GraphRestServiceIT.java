@@ -34,9 +34,11 @@ import static io.restassured.RestAssured.preemptive;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
@@ -53,7 +55,9 @@ import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.graphml.GraphmlDocument;
@@ -419,6 +423,11 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         final OnmsApplication tmpApplication = transactionTemplate.execute(transactionStatus -> {
             final OnmsApplication theApplication = new OnmsApplication();
             theApplication.setName("OpenNMS Application");
+            OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+            location.setLocationName("Default");
+            Set<OnmsMonitoringLocation> locations = new HashSet<>();
+            locations.add(location);
+            theApplication.setPerspectiveLocations(locations);
             monitoredServiceDao.findAllServices().stream()
                     .filter(ms -> ms.getIpAddress().toString().contains("127.0.0.1"))
                     .forEach(service -> service.addApplication(theApplication));
@@ -460,13 +469,18 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         final List<OnmsMonitoredService> services = Lists.newArrayList(application.getMonitoredServices());
         final int nodeId1 = services.get(0).getNodeId();
         final int nodeId2 = services.get(1).getNodeId();
-        final Event nodeLostServiceEvent = new EventBuilder(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, getClass().getSimpleName())
+        final Event nodeLostServiceEvent = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
                 .setNodeid(nodeId1)
                 .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
                 .setService("ICMP")
+                .setParam("perspective", "Default")
                 .getEvent();
-        final Event nodeDownEvent = new EventBuilder(EventConstants.NODE_DOWN_EVENT_UEI, getClass().getSimpleName())
+        final Event nodeLostServiceEventApp2 = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
                 .setNodeid(nodeId2)
+                .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
+                .setService("ICMP")
+                .setParam("perspective", "Default")
+                .setSeverity(OnmsSeverity.CRITICAL.getLabel())
                 .getEvent();
 
         // Take service down, reload graph and verify
@@ -487,8 +501,8 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         verifyStatus(applicationViewResponse.getVertexByNodeId(nodeId1), "Minor", 1);
         verifyStatus(applicationViewResponse.getVertexByNodeId(nodeId2), "Normal", 0);
 
-        // Take node down, reload graph and verify
-        restClient.sendEvent(nodeDownEvent);
+        // Take service down with severity higher than Major
+        restClient.sendEvent(nodeLostServiceEventApp2);
         karafShell.runCommand("opennms:graph-force-reload --container application");
         final Response response2 = given().log().ifValidationFails()
                 .body(query.toString())
@@ -501,9 +515,9 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .extract().response();
         final ApplicationViewResponse applicationViewResponse2 = new ApplicationViewResponse(response2);
         assertThat(applicationViewResponse2.length(), Matchers.is(3));
-        verifyStatus(applicationViewResponse2.getVertexByApplicationId(application.getId()), "Major", 1);
+        verifyStatus(applicationViewResponse2.getVertexByApplicationId(application.getId()), "Critical", 2);
         verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId1), "Minor", 1);
-        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId2), "Major", 1);
+        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId2), "Critical", 1); // we expect the same severity as the interface with the highest severity
 
         // Finally clean up
         applicationDao.delete(application);
