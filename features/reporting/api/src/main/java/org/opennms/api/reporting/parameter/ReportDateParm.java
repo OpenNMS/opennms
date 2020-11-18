@@ -42,11 +42,11 @@ import org.opennms.api.reporting.ReportMode;
  * @version $Id: $
  */
 public class ReportDateParm extends ReportParm implements Serializable {
-
-    private static final long serialVersionUID = -8528562178984136887L;
+    private static final long serialVersionUID = 2L;
     
     private Date m_date;
     private Boolean m_useAbsoluteDate;
+    private boolean m_isAdjustedDate;
     private String m_interval;
     private Integer m_count;
     private Integer m_hours;
@@ -58,6 +58,14 @@ public class ReportDateParm extends ReportParm implements Serializable {
 
     public void setUseAbsoluteDate(Boolean useAbsoluteDate) {
         m_useAbsoluteDate = useAbsoluteDate;
+    }
+
+    public boolean isAdjustedDate() {
+        return m_isAdjustedDate;
+    }
+
+    public void setIsAdjustedDate(final boolean adjusted) {
+        m_isAdjustedDate = adjusted;
     }
 
     public String getInterval() {
@@ -83,10 +91,28 @@ public class ReportDateParm extends ReportParm implements Serializable {
     public void setDate(Date date) {
         m_date = date;
     }
-       
-    public Date getValue(ReportMode mode) {
-        Calendar cal = Calendar.getInstance();
+
+    private Date getAdjustedDate() {
+        if (m_isAdjustedDate) {
+            return m_date;
+        }
+
+
+        long millis = m_date.getTime();
+        if (!m_isAdjustedDate) {
+            if (m_hours != null) {
+                millis += (m_hours * 60 * 60 * 1000);
+            }
+            if (m_minutes != null) {
+                millis += (m_minutes * 60 * 1000);
+            }
+        }
+        return new Date(millis);
+    }
+
+    public Date getValue(final ReportMode mode) {
         if ((mode == ReportMode.SCHEDULED) && (m_useAbsoluteDate == false)) {
+            final Calendar cal = Calendar.getInstance();
             // use the offset date set when the report was scheduled
             int amount = 0 - m_count;
             if (m_interval.equals("year")) {
@@ -98,22 +124,22 @@ public class ReportDateParm extends ReportParm implements Serializable {
                     cal.add(Calendar.DATE, amount);
                 }
             }
-        } else {
-            cal.setTime(m_date);
-        } 
-        if (m_hours != null) {
-            cal.set(Calendar.HOUR_OF_DAY, m_hours);
-        } else {
-            cal.set(Calendar.HOUR_OF_DAY, 0);
+            if (m_hours != null) {
+                cal.set(Calendar.HOUR_OF_DAY, m_hours);
+            } else {
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+            }
+            if (m_minutes != null) {
+                cal.set(Calendar.MINUTE, m_minutes);
+            } else {
+                cal.set(Calendar.MINUTE, 0);
+            }
+            cal.set(Calendar.SECOND,0);
+            cal.set(Calendar.MILLISECOND,0);
+            return cal.getTime();
         }
-        if (m_minutes != null) {
-            cal.set(Calendar.MINUTE, m_minutes);
-        } else {
-            cal.set(Calendar.MINUTE, 0);
-        }                
-        cal.set(Calendar.SECOND,0);
-        cal.set(Calendar.MILLISECOND,0);
-        return cal.getTime();
+
+        return this.getAdjustedDate();
     }
 
     public Integer getHours() {
