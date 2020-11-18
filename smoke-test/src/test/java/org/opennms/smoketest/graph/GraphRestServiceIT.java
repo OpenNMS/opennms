@@ -442,6 +442,25 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
             return initializedApplication;
         });
 
+        final List<OnmsMonitoredService> services = Lists.newArrayList(application.getMonitoredServices());
+        final int nodeId1 = services.get(0).getNodeId();
+        final int nodeId2 = services.get(1).getNodeId();
+
+        // Make sure all former outages have been resolved (can be a problem when test is run twice)
+        restClient.sendEvent( new EventBuilder(EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI, getClass().getSimpleName())
+                .setNodeid(nodeId1)
+                .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
+                .setService("ICMP")
+                .setParam("perspective", "Default")
+                .getEvent());
+        restClient.sendEvent( new EventBuilder(EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI, getClass().getSimpleName())
+                .setNodeid(nodeId2)
+                .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
+                .setService("ICMP")
+                .setParam("perspective", "Default")
+                .setSeverity(OnmsSeverity.CRITICAL.getLabel())
+                .getEvent());
+
         // Force application provider to reload (otherwise we have to wait until cache is invalidated)
         karafShell.runCommand("opennms:graph-force-reload --container application");
 
@@ -466,9 +485,6 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .content("vertices[2].status.count", Matchers.is(0));
 
         // Prepare simulated outages
-        final List<OnmsMonitoredService> services = Lists.newArrayList(application.getMonitoredServices());
-        final int nodeId1 = services.get(0).getNodeId();
-        final int nodeId2 = services.get(1).getNodeId();
         final Event nodeLostServiceEvent = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
                 .setNodeid(nodeId1)
                 .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
