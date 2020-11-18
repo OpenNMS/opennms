@@ -248,6 +248,7 @@ public class ReportParameters implements Serializable {
                 thisReportDateParm.setMinutes(othersReportDateParm.getMinutes());
                 thisReportDateParm.setCount(othersReportDateParm.getCount());
                 thisReportDateParm.setInterval(othersReportDateParm.getInterval());
+                thisReportDateParm.setIsAdjustedDate(othersReportDateParm.isAdjustedDate());
             } else if (thisReportParm instanceof ReportTimezoneParm) {
                 ((ReportTimezoneParm) thisReportParm).setValue(((ReportTimezoneParm) otherReportParm).getValue());
             } else {
