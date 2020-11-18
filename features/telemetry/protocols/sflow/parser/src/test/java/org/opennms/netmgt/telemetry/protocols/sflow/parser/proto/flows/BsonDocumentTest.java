@@ -111,7 +111,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
     private BsonDocument createSampledIpv4() {
         final SampledIpv4 flowData = new SampledIpv4(LENGTH, PROTOCOL, SRC_IPV4, DST_IPV4, SRC_PORT, DST_PORT, TCP_FLAGS, TOS);
         final FlowRecord flowRecord = new FlowRecord(Record.DataFormat.from(0, 3), new Opaque<FlowData>(1, flowData));
-        final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(1L), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
+        final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(101), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
         flowSample.writeBson(bsonDocumentWriter, this);
@@ -121,7 +121,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
     private BsonDocument createSampledIpv6() {
         final SampledIpv6 flowData = new SampledIpv6(LENGTH, PROTOCOL, SRC_IPV6, DST_IPV6, SRC_PORT, DST_PORT, TCP_FLAGS, TOS);
         final FlowRecord flowRecord = new FlowRecord(Record.DataFormat.from(0, 4), new Opaque<FlowData>(1, flowData));
-        final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(1L), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
+        final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(101), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
         flowSample.writeBson(bsonDocumentWriter, this);
@@ -133,7 +133,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         final EthernetHeader ethernetHeader = new EthernetHeader(SRC_VLAN, inet4Header, null, null);
         final SampledHeader flowData = new SampledHeader(HeaderProtocol.IPv4, 1100, 1000, ethernetHeader, inet4Header, null, null);
         final FlowRecord flowRecord = new FlowRecord(Record.DataFormat.from(0, 1), new Opaque<FlowData>(1, flowData));
-        final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(1L), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
+        final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(101), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
         flowSample.writeBson(bsonDocumentWriter, this);
@@ -145,7 +145,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         final EthernetHeader ethernetHeader = new EthernetHeader(SRC_VLAN, null, inet6Header, null);
         final SampledHeader flowData = new SampledHeader(HeaderProtocol.IPv6, 1100, 1000, ethernetHeader, null, inet6Header, null);
         final FlowRecord flowRecord = new FlowRecord(Record.DataFormat.from(0, 1), new Opaque<FlowData>(1, flowData));
-        final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(1L), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
+        final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(101), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
         flowSample.writeBson(bsonDocumentWriter, this);
@@ -380,6 +380,34 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         Assert.assertEquals(new Integer(SUB_AGENT_ID), sFlow.getSubAgentId());
         Assert.assertEquals(new Long(SEQUENCE_NUMBER), sFlow.getSequenceNumber());
         Assert.assertEquals(null, sFlow.getTimestamp());
+    }
+
+    @Test
+    public void testIngress() {
+        final Inet4Header inet4Header = new Inet4Header(TOS, LENGTH, PROTOCOL, (Inet4Address) InetAddressUtils.addr(SRC_IPV4_STR), (Inet4Address) InetAddressUtils.addr(DST_IPV4_STR), SRC_PORT, DST_PORT, TCP_FLAGS);
+        final EthernetHeader ethernetHeader = new EthernetHeader(SRC_VLAN, inet4Header, null, null);
+        final SampledHeader flowData = new SampledHeader(HeaderProtocol.IPv4, 1100, 1000, ethernetHeader, inet4Header, null, null);
+        final FlowRecord flowRecord = new FlowRecord(Record.DataFormat.from(0, 1), new Opaque<FlowData>(1, flowData));
+        final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(101), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
+        final BsonDocument bsonDocument = new BsonDocument();
+        final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
+        flowSample.writeBson(bsonDocumentWriter, this);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
+    }
+
+    @Test
+    public void testEgress() {
+        final Inet4Header inet4Header = new Inet4Header(TOS, LENGTH, PROTOCOL, (Inet4Address) InetAddressUtils.addr(SRC_IPV4_STR), (Inet4Address) InetAddressUtils.addr(DST_IPV4_STR), SRC_PORT, DST_PORT, TCP_FLAGS);
+        final EthernetHeader ethernetHeader = new EthernetHeader(SRC_VLAN, inet4Header, null, null);
+        final SampledHeader flowData = new SampledHeader(HeaderProtocol.IPv4, 1100, 1000, ethernetHeader, inet4Header, null, null);
+        final FlowRecord flowRecord = new FlowRecord(Record.DataFormat.from(0, 1), new Opaque<FlowData>(1, flowData));
+        final FlowSample flowSample = new FlowSample(1, new SFlowDataSource(999), 2, 3, 4, new Interface(INPUT), new Interface(OUTPUT), new Array<FlowRecord>(1, Arrays.<FlowRecord>asList(flowRecord)));
+        final BsonDocument bsonDocument = new BsonDocument();
+        final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
+        flowSample.writeBson(bsonDocumentWriter, this);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        Assert.assertEquals(Flow.Direction.EGRESS, sFlow.getDirection());
     }
 
     /**
