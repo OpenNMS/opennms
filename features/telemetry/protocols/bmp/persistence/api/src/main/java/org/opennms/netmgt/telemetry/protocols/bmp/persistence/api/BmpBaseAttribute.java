@@ -102,7 +102,7 @@ public class BmpBaseAttribute implements Serializable {
     @Column(name = "is_nexthop_ipv4")
     private boolean isNextHopIpv4;
 
-    @Column(name = "timestamp")
+    @Column(name = "last_updated")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 

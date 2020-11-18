@@ -26,12 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
+package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 
-import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
+import java.util.stream.Stream;
 
-public interface BmpMessageHandler {
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpMessageHandler;
+import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 
-    void handle(Message message, String location);
-    void close();
+public interface BmpPersistenceMessageHandler extends BmpMessageHandler {
+
+    Stream<CollectionSetWithAgent> getCollectionSet();
 }

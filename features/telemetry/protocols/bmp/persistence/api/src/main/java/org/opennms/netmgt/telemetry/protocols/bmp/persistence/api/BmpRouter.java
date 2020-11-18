@@ -71,7 +71,7 @@ public class BmpRouter implements Serializable {
     @Column(name = "router_as")
     private Integer routerAS;
 
-    @Column(name = "timestamp", nullable = false)
+    @Column(name = "last_updated", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 

@@ -69,7 +69,7 @@ public class BmpCollector implements Serializable {
     @Column(name = "routers_count", nullable = false)
     private Integer routersCount;
 
-    @Column(name = "timestamp", nullable = false)
+    @Column(name = "last_updated", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 

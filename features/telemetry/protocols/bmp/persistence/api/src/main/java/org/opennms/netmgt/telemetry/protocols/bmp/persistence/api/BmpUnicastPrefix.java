@@ -43,6 +43,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "bmp_ip_ribs")
@@ -79,7 +80,7 @@ public class BmpUnicastPrefix implements Serializable {
     @Column(name = "prefix_len", nullable = false)
     private Integer prefixLen;
 
-    @Column(name = "timestamp", nullable = false)
+    @Column(name = "last_updated", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
@@ -103,6 +104,12 @@ public class BmpUnicastPrefix implements Serializable {
 
     @Column(name = "is_adj_ribin", nullable = false)
     private boolean isAdjRibIn;
+
+    @Transient
+    private String prevBaseAttrHashId;
+
+    @Transient
+    private boolean prevWithDrawnState;
 
     public Long getId() {
         return id;
@@ -230,5 +237,21 @@ public class BmpUnicastPrefix implements Serializable {
 
     public void setAdjRibIn(boolean adjRibIn) {
         isAdjRibIn = adjRibIn;
+    }
+
+    public String getPrevBaseAttrHashId() {
+        return prevBaseAttrHashId;
+    }
+
+    public void setPrevBaseAttrHashId(String prevBaseAttrHashId) {
+        this.prevBaseAttrHashId = prevBaseAttrHashId;
+    }
+
+    public boolean isPrevWithDrawnState() {
+        return prevWithDrawnState;
+    }
+
+    public void setPrevWithDrawnState(boolean prevWithDrawnState) {
+        this.prevWithDrawnState = prevWithDrawnState;
     }
 }

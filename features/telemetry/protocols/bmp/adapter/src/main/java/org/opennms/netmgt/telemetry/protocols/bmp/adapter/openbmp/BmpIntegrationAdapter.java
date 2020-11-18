@@ -67,7 +67,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Stat;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.UnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractAdapter;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapter;
+import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +83,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-public class BmpIntegrationAdapter extends AbstractAdapter {
+public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpIntegrationAdapter.class);
 
@@ -200,7 +201,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
 
     private void handleHeartbeatMessage(final Transport.Message message,
                                         final Transport.Heartbeat heartbeat,
-                                        final Context context) {
+                                        final Context context, String location) {
         final Collector collector = new Collector();
 
         switch (heartbeat.getMode()) {
@@ -224,12 +225,12 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         collector.routers = Lists.transform(heartbeat.getRoutersList(), BmpAdapterTools::address);
         collector.timestamp = context.timestamp;
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)), location);
     }
 
     private void handleInitiationMessage(final Transport.Message message,
                                          final Transport.InitiationPacket initiation,
-                                         final Context context) {
+                                         final Context context, String location) {
         final Router router = new Router();
         router.action = Router.Action.INIT;
         router.sequence = sequence.getAndIncrement();
@@ -246,12 +247,12 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.timestamp = context.timestamp;
         router.bgpId = initiation.hasBgpId() ? BmpAdapterTools.address(initiation.getBgpId()) : null;
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)), location);
     }
 
     private void handleTerminationMessage(final Transport.Message message,
                                           final Transport.TerminationPacket termination,
-                                          final Context context) {
+                                          final Context context, String location) {
         final Router router = new Router();
         router.action = Router.Action.TERM;
         router.sequence = sequence.getAndIncrement();
@@ -286,12 +287,12 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.timestamp = context.timestamp;
         router.bgpId = null;
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)), location);
     }
 
     private void handlePeerUpNotification(final Transport.Message message,
                                           final Transport.PeerUpPacket peerUp,
-                                          final Context context) {
+                                          final Context context, String location) {
         final Transport.Peer bgpPeer = peerUp.getPeer();
 
         final Peer peer = new Peer();
@@ -331,12 +332,12 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.locRibFiltered = bgpPeer.hasLocRibFlags() && bgpPeer.getLocRibFlags().getFiltered();
         peer.tableName = peerUp.getTableName();
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)), location);
     }
 
     private void handlePeerDownNotification(final Transport.Message message,
                                             final Transport.PeerDownPacket peerDown,
-                                            final Context context) {
+                                            final Context context, String location) {
         final Transport.Peer bgpPeer = peerDown.getPeer();
 
         final Peer peer = new Peer();
@@ -392,18 +393,18 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.locRibFiltered = bgpPeer.hasLocRibFlags() && bgpPeer.getLocRibFlags().getFiltered();
         peer.tableName = "";
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)), location);
     }
 
     private void handleStatisticReport(final Transport.Message message,
                                        final Transport.StatisticsReportPacket statisticsReport,
-                                       final Context context) {
+                                       final Context context, String location) {
         final Transport.Peer peer = statisticsReport.getPeer();
 
         final Stat stat = new Stat();
         stat.action = Stat.Action.ADD;
         stat.sequence = sequence.getAndIncrement();
-        stat.routerHash = Record.hash(context.sourceAddress.getHostAddress(), Integer.toString(context.sourcePort), context.collectorHashId);
+        stat.routerHash = Record.hash(context.sourceAddress.getHostAddress(), context.collectorHashId);
         stat.routerIp = context.sourceAddress;
         stat.peerHash = Record.hash(peer.getAddress(), peer.getDistinguisher(), stat.routerHash);
         stat.peerIp = address(peer.getAddress());
@@ -419,7 +420,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         stat.prefixesPrePolicy = statisticsReport.getAdjRibIn().getValue();
         stat.prefixesPostPolicy = statisticsReport.getLocalRib().getValue();
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)), location);
     }
 
     private BaseAttribute toBaseAttributeRecord(final Transport.RouteMonitoringPacket routeMonitoring,
@@ -618,7 +619,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
 
     private void handleRouteMonitoringMessage(final Transport.Message message,
                                               final Transport.RouteMonitoringPacket routeMonitoring,
-                                              final Context context) {
+                                              final Context context, String location) {
         final List<Record> unicastPrefixRecords = new ArrayList<>(routeMonitoring.getWithdrawsCount() + routeMonitoring.getReachablesCount());
 
         // Handle withdraws
@@ -664,59 +665,60 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
 
         // Forward the messages to the handler
         if (baseAttr != null) {
-            this.messageHandler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)));
+            this.messageHandler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)), location);
         }
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.UNICAST_PREFIX, unicastPrefixRecords));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.UNICAST_PREFIX, unicastPrefixRecords), location);
     }
 
     @Override
-    public void handleMessage(final TelemetryMessageLogEntry messageLogEntry,
-                              final TelemetryMessageLog messageLog) {
+    public Stream<CollectionSetWithAgent> handleCollectionMessage(TelemetryMessageLogEntry messageLogEntry, TelemetryMessageLog messageLog) {
         LOG.trace("Parsing packet: {}", messageLogEntry);
         final Transport.Message message;
         try {
             message = Transport.Message.parseFrom(messageLogEntry.getByteArray());
         } catch (final InvalidProtocolBufferException e) {
             LOG.error("Invalid message", e);
-            return;
+            return Stream.empty();
         }
 
         final String collectorHashId = Record.hash(messageLog.getSystemId());
-        final String routerHashId = Record.hash(messageLog.getSourceAddress(), Integer.toString(messageLog.getSourcePort()), collectorHashId);
+        final String routerHashId = Record.hash(messageLog.getSourceAddress(), collectorHashId);
         final Context context = new Context(messageLog.getSystemId(),
-                                            collectorHashId,
-                                            routerHashId,
-                                            Instant.ofEpochMilli(messageLogEntry.getTimestamp()),
-                                            InetAddressUtils.addr(messageLog.getSourceAddress()),
-                                            messageLog.getSourcePort());
+                collectorHashId,
+                routerHashId,
+                Instant.ofEpochMilli(messageLogEntry.getTimestamp()),
+                InetAddressUtils.addr(messageLog.getSourceAddress()),
+                messageLog.getSourcePort());
 
         switch(message.getPacketCase()) {
             case HEARTBEAT:
-                handleHeartbeatMessage(message, message.getHeartbeat(), context);
+                handleHeartbeatMessage(message, message.getHeartbeat(), context, messageLog.getLocation());
                 break;
             case INITIATION:
-                handleInitiationMessage(message, message.getInitiation(), context);
+                handleInitiationMessage(message, message.getInitiation(), context, messageLog.getLocation());
                 break;
             case TERMINATION:
-                handleTerminationMessage(message, message.getTermination(), context);
+                handleTerminationMessage(message, message.getTermination(), context, messageLog.getLocation());
                 break;
             case PEER_UP:
-                handlePeerUpNotification(message, message.getPeerUp(), context);
+                handlePeerUpNotification(message, message.getPeerUp(), context, messageLog.getLocation());
                 break;
             case PEER_DOWN:
-                handlePeerDownNotification(message, message.getPeerDown(), context);
+                handlePeerDownNotification(message, message.getPeerDown(), context, messageLog.getLocation());
                 break;
             case STATISTICS_REPORT:
-                handleStatisticReport(message, message.getStatisticsReport(), context);
+                handleStatisticReport(message, message.getStatisticsReport(), context, messageLog.getLocation());
                 break;
             case ROUTE_MONITORING:
-                handleRouteMonitoringMessage(message, message.getRouteMonitoring(), context);
+                handleRouteMonitoringMessage(message, message.getRouteMonitoring(), context, messageLog.getLocation());
                 break;
             case PACKET_NOT_SET:
                 break;
         }
+        return Stream.empty();
     }
+
 
     @Override
     public void destroy() {
@@ -750,7 +752,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         }
 
         public String getRouterHash() {
-            return Record.hash(sourceAddress.getHostAddress(), Integer.toString(sourcePort), collectorHashId);
+            return Record.hash(sourceAddress.getHostAddress(), collectorHashId);
         }
     }
 

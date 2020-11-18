@@ -366,7 +366,7 @@ public class BmpIntegrationAdapterTest implements BmpMessageHandler {
     }
 
     @Override
-    public void handle(Message message) {
+    public void handle(Message message, String location) {
         messagesHandled.add(message);
     }
 

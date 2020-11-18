@@ -172,7 +172,7 @@
         <column name="routers_count" type="smallint" defaultValue="0">
           <constraints nullable="false" />
         </column>
-        <column name="timestamp" type="timestamp">
+        <column name="last_updated" type="timestamp">
           <constraints nullable="false" />
         </column>
         <column name="name" type="varchar(200)"/>
@@ -209,7 +209,7 @@
           <constraints nullable="false" />
         </column>
         <column name="router_as" type="bigint"/>
-        <column name="timestamp" type="timestamp">
+        <column name="last_updated" type="timestamp">
           <constraints nullable="false" />
         </column>
         <column name="description" type="varchar(255)"/>
@@ -271,7 +271,7 @@
       <column name="is_l3vpn_peer" type="boolean" defaultValue="false">
         <constraints nullable="false" />
       </column>
-      <column name="timestamp" type="timestamp">
+      <column name="last_updated" type="timestamp">
         <constraints nullable="false" />
       </column>
       <column name="is_pre_policy" type="boolean" defaultValue="true">
@@ -344,7 +344,7 @@
       <column name="cluster_list" type="varchar(2048)"/>
       <column name="is_atomic_agg" type="boolean" defaultValue="false"/>
       <column name="is_nexthop_ipv4" type="boolean" defaultValue="true"/>
-      <column name="timestamp" type="timestamp">
+      <column name="last_updated" type="timestamp">
         <constraints nullable="false" />
       </column>
       <column name="originator_id" type="varchar(40)"/>
@@ -389,7 +389,7 @@
       <column name="prefix_len" type="smallint">
         <constraints nullable="false" />
       </column>
-      <column name="timestamp" type="timestamp">
+      <column name="last_updated" type="timestamp">
         <constraints nullable="false" />
       </column>
       <column name="first_added_timestamp" type="timestamp">
@@ -410,42 +410,6 @@
     </createTable>
   </changeSet>
 
-  <changeSet runOnChange="false" author="cgorantla" id="27.0.0-bmp-stat-reports-nxtid">
-    <preConditions onFail="MARK_RAN">
-      <sqlCheck expectedResult="0">
-        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
-        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'bmpstatreportsnxtid'
-      </sqlCheck>
-    </preConditions>
-    <createSequence sequenceName="bmpstatreportsnxtid" />
-    <rollback>
-      <dropSequence sequenceName="bmpstatreportsnxtid" />
-    </rollback>
-  </changeSet>
-
-  <changeSet  author="cgorantla" id="27.0.0-bmp-stat-reports">
-
-    <createTable tableName="bmp_stat_reports" remarks="bmp stat reports">
-      <column name="id" type="bigint">
-        <constraints nullable="false" primaryKey="true"/>
-      </column>
-      <column name="peer_hash_id" type="varchar(36)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="prefixes_rejected" type="int"/>
-      <column name="known_dup_prefixes" type="int"/>
-      <column name="known_dup_withdraws" type="int"/>
-      <column name="invalid_by_cluster_list" type="int"/>
-      <column name="invalid_by_as_path_loop" type="int"/>
-      <column name="invalid_by_originator_id" type="bigint"/>
-      <column name="invalid_by_as_confed_loop" type="bigint"/>
-      <column name="num_routes_adj_rib_in" type="bigint"/>
-      <column name="num_routes_local_rib" type="bigint"/>
-      <column name="timestamp" type="timestamp">
-        <constraints nullable="false" />
-      </column>
-    </createTable>
-  </changeSet>
 
   <changeSet runOnChange="false" author="cgorantla" id="27.0.0-global-ip-ribs-nxtid">
     <preConditions onFail="MARK_RAN">
@@ -481,7 +445,7 @@
       <column name="rpki_origin_as" type="bigint"/>
       <column name="irr_origin_as" type="bigint"/>
       <column name="irr_source" type="varchar(32)"/>
-      <column name="timestamp" type="timestamp">
+      <column name="last_updated" type="timestamp">
         <constraints nullable="false" />
       </column>
       <column name="num_peers" type="int" defaultValue="0"/>

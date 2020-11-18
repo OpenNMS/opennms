@@ -361,6 +361,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.dnsresolver</groupId>
+            <artifactId>org.opennms.features.dnsresolver.netty</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
             <artifactId>org.opennms.features.telemetry.protocols.netflow.adapter</artifactId>
             <version>${project.version}</version>
@@ -540,6 +545,12 @@
             <artifactId>org.opennms.features.scv.shell</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.rpc</groupId>
+            <artifactId>org.opennms.core.ipc.rpc.utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>

@@ -28,14 +28,30 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 
+import java.util.stream.Stream;
+
+import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
+import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpIntegrationAdapter;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpMessageHandler;
+import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 
 import com.codahale.metrics.MetricRegistry;
 
 public class BmpPersistingAdapter extends BmpIntegrationAdapter {
+
+    private final BmpMessageHandler bmpMessagePersister;
+
     public BmpPersistingAdapter(AdapterDefinition adapterConfig, MetricRegistry metricRegistry, BmpMessageHandler messageHandler) {
         super(adapterConfig, metricRegistry, messageHandler);
+        this.bmpMessagePersister = messageHandler;
+    }
+
+    @Override
+    public Stream<CollectionSetWithAgent> handleCollectionMessage(TelemetryMessageLogEntry messageLogEntry, TelemetryMessageLog messageLog) {
+        super.handleCollectionMessage(messageLogEntry, messageLog);
+        BmpPersistenceMessageHandler bmpMessagePersister = (BmpPersistenceMessageHandler) this.bmpMessagePersister;
+        return bmpMessagePersister.getCollectionSet();
     }
 }

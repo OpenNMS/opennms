@@ -88,7 +88,7 @@ public class BmpPeer implements Serializable {
     @Column(name = "is_l3vpn_peer", nullable = false)
     private boolean isL3VPNPeer;
 
-    @Column(name = "timestamp", nullable = false)
+    @Column(name = "last_updated", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 

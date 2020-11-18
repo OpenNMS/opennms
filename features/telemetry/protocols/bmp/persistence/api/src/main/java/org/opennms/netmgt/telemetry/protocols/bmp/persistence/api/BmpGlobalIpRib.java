@@ -75,7 +75,7 @@ public class BmpGlobalIpRib implements Serializable {
     @Column(name = "irr_source")
     private String irrSource;
 
-    @Column(name = "timestamp", nullable = false)
+    @Column(name = "last_updated", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
 

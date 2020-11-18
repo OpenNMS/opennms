@@ -26,7 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp;
+package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -36,9 +39,13 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LocationUtils;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.BaseAttribute;
@@ -72,14 +79,14 @@ import com.google.common.collect.ImmutableList;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/applicationContext-test-message-persister.xml",})
+        "classpath:/applicationContext-test-message-persister.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class BmpMessagePersisterIT {
 
 
     @Autowired
-    private BmpMessageHandler bmpMessageHandler;
+    private BmpMessagePersister bmpMessageHandler;
 
     @Autowired
     private BmpCollectorDao bmpCollectorDao;
@@ -99,13 +106,18 @@ public class BmpMessagePersisterIT {
     @Autowired
     private BmpGlobalIpRibDao bmpGlobalIpRibDao;
 
+
     @Test
     public void testPersistence() {
 
+        CollectionAgent collectionAgent = mock(CollectionAgent.class);
+        CollectionAgentFactory collectionAgentFactory = mock(CollectionAgentFactory.class);
+        when(collectionAgentFactory.createCollectionAgent(Mockito.anyString(), Mockito.any())).thenReturn(collectionAgent);
+        bmpMessageHandler.setCollectionAgentFactory(collectionAgentFactory);
         // Persist collector
         final Collector collector = getCollector();
         Message msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, ImmutableList.of(collector));
-        bmpMessageHandler.handle(msg);
+        bmpMessageHandler.handle(msg, LocationUtils.DEFAULT_LOCATION_NAME);
         List<BmpCollector> collectors = bmpCollectorDao.findAll();
         Assert.assertFalse(collectors.isEmpty());
         BmpCollector bmpCollector = collectors.get(0);
@@ -115,7 +127,7 @@ public class BmpMessagePersisterIT {
         final Router router1 = getRouter1();
         final Router router2 = getRouter2();
         msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.ROUTER, ImmutableList.of(router1, router2));
-        bmpMessageHandler.handle(msg);
+        bmpMessageHandler.handle(msg, LocationUtils.DEFAULT_LOCATION_NAME);
         List<BmpRouter> routers = bmpRouterDao.findAll();
         Assert.assertEquals(2, routers.size());
         BmpRouter bmpRouter = routers.get(0);
@@ -124,7 +136,7 @@ public class BmpMessagePersisterIT {
         // Change collector state to stop and persist collector again. Routers should be down when collector is stopped.
         collector.action = Collector.Action.STOPPED;
         msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.COLLECTOR, ImmutableList.of(collector));
-        bmpMessageHandler.handle(msg);
+        bmpMessageHandler.handle(msg, LocationUtils.DEFAULT_LOCATION_NAME);
         collectors = bmpCollectorDao.findAll();
         Assert.assertFalse(collectors.isEmpty());
         bmpCollector = collectors.get(0);
@@ -137,18 +149,18 @@ public class BmpMessagePersisterIT {
         // Persist peer.
         Peer peer = getPeer();
         msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, ImmutableList.of(peer));
-        bmpMessageHandler.handle(msg);
+        bmpMessageHandler.handle(msg, LocationUtils.DEFAULT_LOCATION_NAME);
         List<BmpPeer> peers = bmpPeerDao.findAll();
         Assert.assertFalse(peers.isEmpty());
 
         //Set Router state to TERM and then again INIT which should update Peers state to Down.
         router1.action = Router.Action.TERM;
         msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.ROUTER, ImmutableList.of(router1));
-        bmpMessageHandler.handle(msg);
+        bmpMessageHandler.handle(msg, LocationUtils.DEFAULT_LOCATION_NAME);
         router1.action = Router.Action.INIT;
         router1.timestamp = Instant.now();
         msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.ROUTER, ImmutableList.of(router1));
-        bmpMessageHandler.handle(msg);
+        bmpMessageHandler.handle(msg, LocationUtils.DEFAULT_LOCATION_NAME);
         peers = bmpPeerDao.findAll();
         Assert.assertTrue(peers.size() == 1);
         BmpPeer bmpPeer = peers.get(0);
@@ -156,9 +168,10 @@ public class BmpMessagePersisterIT {
 
         UnicastPrefix unicastPrefix = getUnicastPrefix();
         msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.UNICAST_PREFIX, ImmutableList.of(unicastPrefix));
-        bmpMessageHandler.handle(msg);
+        bmpMessageHandler.handle(msg, LocationUtils.DEFAULT_LOCATION_NAME);
         List<BmpUnicastPrefix> prefixList = bmpUnicastPrefixDao.findAll();
         Assert.assertFalse(prefixList.isEmpty());
+        bmpMessageHandler.updateGlobalRibs();
         List<BmpGlobalIpRib> bmpGlobalIpRibs = bmpGlobalIpRibDao.findAll();
         Assert.assertFalse(bmpGlobalIpRibs.isEmpty());
 
@@ -166,14 +179,14 @@ public class BmpMessagePersisterIT {
         peer.action = Peer.Action.DOWN;
         peer.timestamp = Instant.now();
         msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.PEER, ImmutableList.of(peer));
-        bmpMessageHandler.handle(msg);
+        bmpMessageHandler.handle(msg, LocationUtils.DEFAULT_LOCATION_NAME);
         prefixList = bmpUnicastPrefixDao.findAll();
         Assert.assertTrue(prefixList.isEmpty());
 
         //Persist BMP Base attributes.
         BaseAttribute baseAttribute = getBmpBaseAttribute();
         msg = new Message("91e3a7ff9f5676ed6ae6fcd8a6b455ec", Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttribute));
-        bmpMessageHandler.handle(msg);
+        bmpMessageHandler.handle(msg, LocationUtils.DEFAULT_LOCATION_NAME);
         List<BmpBaseAttribute> bmpBaseAttributes = bmpBaseAttributeDao.findAll();
         Assert.assertFalse(bmpBaseAttributes.isEmpty());
 

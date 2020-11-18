@@ -34,13 +34,9 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.opennms.core.utils.StringUtils;
-import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Maps;
 
 public class BmpKafkaProducer implements BmpMessageHandler {
     private static final Logger LOG = LoggerFactory.getLogger(BmpKafkaProducer.class);
@@ -70,7 +66,7 @@ public class BmpKafkaProducer implements BmpMessageHandler {
     }
 
     @Override
-    public void handle(Message message) {
+    public void handle(Message message, String location) {
         final StringBuffer buffer = new StringBuffer();
         message.serialize(buffer);
 

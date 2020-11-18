@@ -28,18 +28,32 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.AttributeType;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgentFactory;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.SessionUtils;
-import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpMessageHandler;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.BaseAttribute;
@@ -62,14 +76,16 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatReports
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.PrefixByAS;
+import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-public class BmpMessagePersister implements BmpMessageHandler {
+public class BmpMessagePersister implements BmpPersistenceMessageHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpMessagePersister.class);
 
@@ -94,12 +110,29 @@ public class BmpMessagePersister implements BmpMessageHandler {
     @Autowired
     private SessionUtils sessionUtils;
 
+    private CollectionAgentFactory collectionAgentFactory;
 
-    private Map<String, AtomicInteger> routerConnections = new HashMap<>();
+    @Autowired
+    private InterfaceToNodeCache interfaceToNodeCache;
+
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("updateGlobalRibs-%d")
+            .build();
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(
+            threadFactory);
+
+
+    private Map<String, Long> updatesByPeer = new ConcurrentHashMap<>();
+    private Map<String, Long> withdrawsByPeer = new ConcurrentHashMap<>();
+    private Map<AsnKey, Long> updatesByAsn = new ConcurrentHashMap<>();
+    private Map<AsnKey, Long> withdrawsByAsn = new ConcurrentHashMap<>();
+    private Map<PrefixKey, Long> updatesByPrefix = new ConcurrentHashMap<>();
+    private Map<PrefixKey, Long> withdrawsByPrefix = new ConcurrentHashMap<>();
+    private ConcurrentLinkedQueue<CollectionSetWithAgent> collectionSetQueue = new ConcurrentLinkedQueue<>();
 
 
     @Override
-    public void handle(Message message) {
+    public void handle(Message message, String location) {
         sessionUtils.withTransaction(() -> {
             switch (message.getType()) {
                 case COLLECTOR:
@@ -116,7 +149,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                         try {
                             bmpCollectorDao.saveOrUpdate(collector);
                         } catch (Exception e) {
-                            LOG.error("Exception while persisting BMP collector {}", collector);
+                            LOG.error("Exception while persisting BMP collector {}", collector, e);
                         }
                     });
                     break;
@@ -125,7 +158,6 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     if (bmpCollector != null) {
                         List<BmpRouter> bmpRouters = buildBmpRouters(message, bmpCollector);
                         bmpRouters.forEach(router -> {
-                            // TODO: Understand this usecase better.
                             Integer connections = router.getConnectionCount();
                             // Upon initial router message in INIT/FIRST state,  update all corresponding peer state to down.
                             boolean state = !router.getAction().equals(Router.Action.TERM.value);
@@ -141,7 +173,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                             try {
                                 bmpRouterDao.saveOrUpdate(router);
                             } catch (Exception e) {
-                                LOG.error("Exception while persisting BMP router {}", router);
+                                LOG.error("Exception while persisting BMP router {}", router, e);
                             }
 
                         });
@@ -149,7 +181,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     break;
                 case PEER:
                     List<BmpPeer> bmpPeers = buildBmpPeers(message);
-                    // Retain unicast prefixes that are updated after current peer UP/down message.
+                    // Only retain unicast prefixes that are updated after current peer UP/down message.
                     bmpPeers.forEach(peer -> {
                         Set<BmpUnicastPrefix> unicastPrefixes = peer.getBmpUnicastPrefixes().stream().filter(bmpUnicastPrefix ->
                                 bmpUnicastPrefix.getTimestamp().getTime() > peer.getTimestamp().getTime()
@@ -158,7 +190,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                         try {
                             bmpPeerDao.saveOrUpdate(peer);
                         } catch (Exception e) {
-                            LOG.error("Exception while persisting BMP peer {}", peer);
+                            LOG.error("Exception while persisting BMP peer {}", peer, e);
                         }
                     });
                     break;
@@ -168,7 +200,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                         try {
                             bmpBaseAttributeDao.saveOrUpdate(bmpBaseAttribute);
                         } catch (Exception e) {
-                            LOG.error("Exception while persisting BMP base attribute {}", bmpBaseAttribute);
+                            LOG.error("Exception while persisting BMP base attribute {}", bmpBaseAttribute, e);
                         }
                     });
                     break;
@@ -176,20 +208,10 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     List<BmpUnicastPrefix> bmpUnicastPrefixes = buildBmpUnicastPrefix(message);
                     bmpUnicastPrefixes.forEach(unicastPrefix -> {
                         try {
+                            updateStats(unicastPrefix, location);
                             bmpUnicastPrefixDao.saveOrUpdate(unicastPrefix);
                         } catch (Exception e) {
-                            LOG.error("Exception while persisting BMP unicast prefix {}", unicastPrefix);
-                        }
-                    });
-                    List<PrefixByAS> prefixByASList = bmpUnicastPrefixDao.getPrefixesGroupedbyAS();
-                    prefixByASList.forEach(prefixByAS -> {
-                        BmpGlobalIpRib bmpGlobalIpRib = buildGlobalIpRib(prefixByAS);
-                        if (bmpGlobalIpRib != null) {
-                            try {
-                                bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib);
-                            } catch (Exception e) {
-                                LOG.error("Exception while persisting BMP global iprib  {}", bmpGlobalIpRib);
-                            }
+                            LOG.error("Exception while persisting BMP unicast prefix {}", unicastPrefix, e);
                         }
                     });
                     break;
@@ -197,10 +219,96 @@ public class BmpMessagePersister implements BmpMessageHandler {
         });
     }
 
+    public void init() {
+        scheduledExecutorService.scheduleAtFixedRate(this::updateGlobalRibs, 0, 5, TimeUnit.MINUTES);
+    }
+
+    void updateGlobalRibs() {
+        List<PrefixByAS> prefixByASList = bmpUnicastPrefixDao.getPrefixesGroupedbyAS();
+        prefixByASList.forEach(prefixByAS -> {
+            BmpGlobalIpRib bmpGlobalIpRib = buildGlobalIpRib(prefixByAS);
+            if (bmpGlobalIpRib != null) {
+                try {
+                    bmpGlobalIpRibDao.saveOrUpdate(bmpGlobalIpRib);
+                } catch (Exception e) {
+                    LOG.error("Exception while persisting BMP global iprib  {}", bmpGlobalIpRib, e);
+                }
+            }
+        });
+    }
+
+    private void updateStats(BmpUnicastPrefix unicastPrefix, String location) {
+        // Update counts if this is new prefix update or
+        // if previous withdrawn state is different or it's an update with different base attributes
+        if (unicastPrefix.getId() == null ||
+                (unicastPrefix.isWithDrawn() != unicastPrefix.isPrevWithDrawnState() ||
+                        (!unicastPrefix.isWithDrawn() && !unicastPrefix.getBaseAttrHashId().equals(unicastPrefix.getPrevBaseAttrHashId())))) {
+
+            String peerHashId = unicastPrefix.getBmpPeer().getHashId();
+            Long originAsn = unicastPrefix.getOriginAs();
+            String prefix = unicastPrefix.getPrefix();
+            Integer prefixLen = unicastPrefix.getPrefixLen();
+            boolean isWithdrawn = unicastPrefix.isWithDrawn();
+            if (isWithdrawn) {
+                withdrawsByPeer.compute(peerHashId, (hashId, value) -> (value == null) ? 1 : value + 1);
+                withdrawsByAsn.compute(new AsnKey(peerHashId, originAsn), (hashId, value) -> (value == null) ? 1 : value + 1);
+                withdrawsByPrefix.compute(new PrefixKey(peerHashId, prefix, prefixLen), (hashId, value) -> (value == null) ? 1 : value + 1);
+            } else {
+                updatesByPeer.compute(peerHashId, (hashId, value) -> (value == null) ? 1 : value + 1);
+                updatesByAsn.compute(new AsnKey(peerHashId, originAsn), (hashId, value) -> (value == null) ? 1 : value + 1);
+                updatesByPrefix.compute(new PrefixKey(peerHashId, prefix, prefixLen), (hashId, value) -> (value == null) ? 1 : value + 1);
+            }
+
+
+            // Find the node for the router who has exported the stats and build a collection agent for it
+            String routerAddr = unicastPrefix.getBmpPeer().getBmpRouter().getIpAddress();
+            String peerAddr = unicastPrefix.getBmpPeer().getPeerAddr();
+            InetAddress sourceAddr = InetAddressUtils.getInetAddress(routerAddr);
+            Optional<Integer> nodeId = this.interfaceToNodeCache.getFirstNodeId(location, sourceAddr);
+            if (!nodeId.isPresent()) {
+                return;
+            }
+            final CollectionAgent agent = this.collectionAgentFactory.createCollectionAgent(Integer.toString(nodeId.get()), sourceAddr);
+            // Build resource for the peer
+            final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
+            final DeferredGenericTypeResource peerResource = new DeferredGenericTypeResource(nodeResource, "bmp", peerAddr);
+
+            // Build the collection set for the peer
+            final CollectionSetBuilder builder = new CollectionSetBuilder(agent);
+            builder.withTimestamp(unicastPrefix.getTimestamp());
+
+            final String peerUpdates = String.format("bmp_%s_%s", peerAddr, "updates_by_peer");
+            builder.withIdentifiedNumericAttribute(peerResource, "bmp", "updates_by_peer", updatesByPeer.get(peerHashId),
+                    AttributeType.COUNTER, peerUpdates);
+            final String peerWithdraws = String.format("bmp_%s_%s", peerAddr, "withdraws_by_peer");
+            builder.withIdentifiedNumericAttribute(peerResource, "bmp", "withdraws_by_peer", withdrawsByPeer.get(peerHashId),
+                    AttributeType.COUNTER, peerWithdraws);
+
+            final String asnUpdates = String.format("bmp_%s_%s", peerAddr, "updates_by_asn");
+            builder.withIdentifiedNumericAttribute(peerResource, "bmp", "updates_by_asn", updatesByAsn.get(new AsnKey(peerHashId, originAsn)),
+                    AttributeType.COUNTER, asnUpdates);
+            final String asnWithdraws = String.format("bmp_%s_%s", peerAddr, "withdraws_by_asn");
+            builder.withIdentifiedNumericAttribute(peerResource, "bmp", "withdraws_by_asn", withdrawsByAsn.get(new AsnKey(peerHashId, originAsn)),
+                    AttributeType.COUNTER, asnWithdraws);
+
+            final String prefixUpdates = String.format("bmp_%s_%s", peerAddr, "updates_by_prefix");
+            builder.withIdentifiedNumericAttribute(peerResource, "bmp", "updates_by_prefix", updatesByPrefix.get(new PrefixKey(peerHashId, prefix, prefixLen)),
+                    AttributeType.COUNTER, prefixUpdates);
+
+            final String prefixWithdraws = String.format("bmp_%s_%s", peerAddr, "withdraws_by_prefix");
+            builder.withIdentifiedNumericAttribute(peerResource, "bmp", "withdraws_by_prefix", withdrawsByPrefix.get(new PrefixKey(peerHashId, prefix, prefixLen)),
+                    AttributeType.COUNTER, prefixWithdraws);
+
+            CollectionSetWithAgent collectionSetWithAgent = new CollectionSetWithAgent(agent, builder.build());
+            collectionSetQueue.add(collectionSetWithAgent);
+        }
+
+    }
+
 
     @Override
     public void close() {
-
+        scheduledExecutorService.shutdown();
     }
 
     private List<BmpCollector> buildBmpCollectors(Message message) {
@@ -227,7 +335,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     collectorEntity.setTimestamp(Date.from(collector.timestamp));
                     bmpCollectors.add(collectorEntity);
                 } catch (Exception e) {
-                    LOG.error("Exception while mapping collector with hashId {} to Collector entity", collector.hash);
+                    LOG.error("Exception while mapping collector with admin Id {} to Collector entity", collector.adminId, e);
                 }
             }
         });
@@ -260,7 +368,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     bmpRouterEntity.setBmpCollector(bmpCollector);
                     bmpRouters.add(bmpRouterEntity);
                 } catch (Exception e) {
-                    LOG.error("Exception while mapping collector with hashId {} to Router entity", router.hash);
+                    LOG.error("Exception while mapping Router with IpAddress '{}' to Router entity", InetAddressUtils.str(router.ipAddress), e);
                 }
             }
         });
@@ -312,7 +420,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     peerEntity.setTableName(peer.tableName);
                     bmpPeers.add(peerEntity);
                 } catch (Exception e) {
-                    LOG.error("Exception while mapping peer with hashId {} to Peer entity", peer.hash);
+                    LOG.error("Exception while mapping Peer with peer addr '{}' to Peer entity", InetAddressUtils.str(peer.remoteIp), e);
                 }
             }
         });
@@ -347,7 +455,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     bmpBaseAttribute.setOriginatorId(baseAttribute.originatorId);
                     bmpBaseAttributes.add(bmpBaseAttribute);
                 } catch (Exception e) {
-                    LOG.error("Exception while mapping base attribute with hashId {} to BaseAttribute entity", baseAttribute.hash);
+                    LOG.error("Exception while mapping base attribute with hashId {} to BaseAttribute entity", baseAttribute.hash, e);
                 }
             }
 
@@ -369,7 +477,13 @@ public class BmpMessagePersister implements BmpMessageHandler {
                         bmpUnicastPrefix.setFirstAddedTimestamp(Date.from(unicastPrefix.timestamp));
                         bmpPeer = bmpPeerDao.findByPeerHashId(unicastPrefix.peerHash);
                     } else {
+                        bmpUnicastPrefix.setPrevBaseAttrHashId(bmpUnicastPrefix.getBaseAttrHashId());
+                        bmpUnicastPrefix.setPrevWithDrawnState(bmpUnicastPrefix.isWithDrawn());
                         bmpPeer = bmpUnicastPrefix.getBmpPeer();
+                    }
+                    if (bmpPeer == null) {
+                        LOG.warn("Peer entity with hashId '{}' doesn't exist yet", unicastPrefix.peerHash);
+                        return;
                     }
                     bmpUnicastPrefix.setBmpPeer(bmpPeer);
                     bmpUnicastPrefix.setHashId(unicastPrefix.hash);
@@ -387,7 +501,8 @@ public class BmpMessagePersister implements BmpMessageHandler {
                     bmpUnicastPrefix.setAdjRibIn(unicastPrefix.adjIn);
                     bmpUnicastPrefixes.add(bmpUnicastPrefix);
                 } catch (Exception e) {
-                    LOG.error("Exception while mapping unicast prefix with hashId {} to UnicastPrefix entity", unicastPrefix.hash);
+                    LOG.error("Exception while mapping Unicast prefix with prefix {} to UnicastPrefix entity",
+                            InetAddressUtils.str(unicastPrefix.prefix), e);
                 }
             }
         });
@@ -430,7 +545,7 @@ public class BmpMessagePersister implements BmpMessageHandler {
             bmpGlobalIpRib.setRecvOriginAs(prefixByAS.getOriginAs());
             return bmpGlobalIpRib;
         } catch (Exception e) {
-            LOG.error("Exception while mapping prefix {} to GlobalIpRib entity", prefixByAS.getPrefix());
+            LOG.error("Exception while mapping prefix {} to GlobalIpRib entity", prefixByAS.getPrefix(), e);
         }
         return null;
 
@@ -477,11 +592,96 @@ public class BmpMessagePersister implements BmpMessageHandler {
         this.bmpUnicastPrefixDao = bmpUnicastPrefixDao;
     }
 
+    public BmpGlobalIpRibDao getBmpGlobalIpRibDao() {
+        return bmpGlobalIpRibDao;
+    }
+
+    public void setBmpGlobalIpRibDao(BmpGlobalIpRibDao bmpGlobalIpRibDao) {
+        this.bmpGlobalIpRibDao = bmpGlobalIpRibDao;
+    }
+
     public SessionUtils getSessionUtils() {
         return sessionUtils;
     }
 
     public void setSessionUtils(SessionUtils sessionUtils) {
         this.sessionUtils = sessionUtils;
+    }
+
+    public CollectionAgentFactory getCollectionAgentFactory() {
+        return collectionAgentFactory;
+    }
+
+    public void setCollectionAgentFactory(CollectionAgentFactory collectionAgentFactory) {
+        this.collectionAgentFactory = collectionAgentFactory;
+    }
+
+    public InterfaceToNodeCache getInterfaceToNodeCache() {
+        return interfaceToNodeCache;
+    }
+
+    public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
+        this.interfaceToNodeCache = interfaceToNodeCache;
+    }
+
+    @Override
+    public Stream<CollectionSetWithAgent> getCollectionSet() {
+        List<CollectionSetWithAgent> collectionSetWithAgentList = new ArrayList<>();
+        while (!collectionSetQueue.isEmpty()) {
+            collectionSetWithAgentList.add(collectionSetQueue.poll());
+        }
+        return collectionSetWithAgentList.stream();
+    }
+
+
+    static class AsnKey {
+        private final String peerHashId;
+        private final Long peerAsn;
+
+        public AsnKey(String peerHashId, Long peerAsn) {
+            this.peerHashId = peerHashId;
+            this.peerAsn = peerAsn;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            AsnKey asnKey = (AsnKey) o;
+            return Objects.equals(peerHashId, asnKey.peerHashId) &&
+                    Objects.equals(peerAsn, asnKey.peerAsn);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(peerHashId, peerAsn);
+        }
+    }
+
+    static class PrefixKey {
+        private final String peerHashId;
+        private final String prefix;
+        private final Integer prefixLen;
+
+        public PrefixKey(String peerHashId, String prefix, Integer prefixLen) {
+            this.peerHashId = peerHashId;
+            this.prefix = prefix;
+            this.prefixLen = prefixLen;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PrefixKey prefixKey = (PrefixKey) o;
+            return Objects.equals(peerHashId, prefixKey.peerHashId) &&
+                    Objects.equals(prefix, prefixKey.prefix) &&
+                    Objects.equals(prefixLen, prefixKey.prefixLen);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(peerHashId, prefix, prefixLen);
+        }
     }
 }
