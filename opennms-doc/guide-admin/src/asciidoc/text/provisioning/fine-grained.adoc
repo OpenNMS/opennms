@@ -6,7 +6,7 @@
 
 _provision.pl_ provides an example command-line interface to the provisioning-related {opennms-product-name} REST API endpoints.
 
-The script has many options but the first 3 optional parameters are described here:
+The script has many options but the first three optional parameters are described here:
 
 NOTE: You can use `--help` to the script to see all the available options.
 

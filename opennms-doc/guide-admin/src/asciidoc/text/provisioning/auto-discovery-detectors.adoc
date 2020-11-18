@@ -63,3 +63,14 @@ In above configuration, specifics and ranges are moved into definition with SNMP
 When all of the detectors succeeeds at a given location, then only the specific IP Address considered to be discovered.
 
 A definition without any detectors will fall back to ICMP ping for discovery.
+
+[[ga-provisioning-detectors-meta-data]]
+==== Metadata DSL
+Service detectors can use link:#ga-meta-data-dsl[MetaData DSL](domain specific language) to leverage dynamic configuration in parameter values to interpolate metadata into the parameter. 
+
+The syntax allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+
+During evaluation of an expression, the following scopes are available:
+
+* Node metadata
+* Interface metadata

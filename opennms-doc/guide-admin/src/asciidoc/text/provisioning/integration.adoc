@@ -2,27 +2,27 @@
 // Allow GitHub image rendering
 :imagesdir: ../images
 
+[[provisiond-integration]]
 === Integrating with Provisiond
 
-The ReST API should be used for integration from other provisioning systems with {opennms-product-name}.
+Use the ReST API for integration from other provisioning systems with {opennms-product-name}.
 The ReST API provides an interface for defining foreign sources and requisitions.
 
 ==== Provisioning Groups of Nodes
 
-Just as with the WebUI, groups of nodes can be managed via the ReST API from an external system.
+Just as with the web UI, groups of nodes can be managed via the ReST API from an external system.
 The steps are:
 
-. Create a Foreign Source (if not using the default) for the group
+. Update the default foreign source defintion (if not using the default) for the group
 . Update the SNMP configuration for each node in the group
-. Create/Update the group of nodes
+. Create/update the group of nodes
 
 ==== Example
 
 ===== Step 1 - Create a Foreign Source
 
-If policies for this group of nodes are going to be specified differently than the default policy, then a foreign source should be created for the group.
-Using the ReST API, a foreign source can be provided.
-Here is an example:
+To change the policies for this group of nodes you should create a foreign source for the group.
+You can do so using the ReST API:
 
 NOTE: The XML can be imbedded in the `curl` command option `-d` or be referenced from a file if the `@` prefix is used with the file name as in this case.
 
@@ -94,4 +94,3 @@ A provisioning group file called `etc/imports/customer-a.xml` will be found on t
 
 NOTE: _Add_, _Update_, _Delete_ operations are handled via the ReST API in the same manner as described in detailed specification.
 
-.Adding a Node to a Current Requisition
