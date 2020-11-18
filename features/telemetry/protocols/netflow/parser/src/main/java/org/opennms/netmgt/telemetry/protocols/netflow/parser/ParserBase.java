@@ -266,8 +266,7 @@ public abstract class ParserBase implements Parser {
         final CompletableFuture<CompletableFuture[]> futureOfFutures = CompletableFuture.supplyAsync(() -> {
             return packet.getRecords().map(record -> {
                 this.recordsReceived.mark();
-
-                final CompletableFuture<AsyncDispatcher.DispatchStatus> future = new CompletableFuture<>();
+                final CompletableFuture<Void> future = new CompletableFuture<>();
                 final Timer.Context timerContext = recordEnrichmentTimer.time();
                 // Trigger record enrichment (performing DNS reverse lookups for example)
                 final RecordEnricher recordEnricher = new RecordEnricher(dnsResolver, getDnsLookupsEnabled());
@@ -315,6 +314,7 @@ public abstract class ParserBase implements Parser {
                                 LOG.warn("Illegal flow detected from exporter {}", remoteAddress.getAddress(), e);
                             }
 
+                            future.complete(null);
                             return;
                         }
 
@@ -328,7 +328,7 @@ public abstract class ParserBase implements Parser {
                                 future.completeExceptionally(exx);
                             } else {
                                 this.recordsCompleted.mark();
-                                future.complete(b);
+                                future.complete(null);
                             }
                         });
 
