@@ -408,7 +408,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
     }
 
     @Test
-    public void verifyStatusEnrichmentApplication() {
+    public void verifyStatusEnrichmentApplication() throws InterruptedException {
         final HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
         final ApplicationDaoHibernate applicationDao = daoFactory.getDao(ApplicationDaoHibernate.class);
         final MonitoredServiceDao monitoredServiceDao = daoFactory.getDao(MonitoredServiceDaoHibernate.class);
@@ -463,6 +463,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
         // Force application provider to reload (otherwise we have to wait until cache is invalidated)
         karafShell.runCommand("opennms:graph-force-reload --container application");
+        wait(50); // wait until event is processed
 
         // Fetch data nothing down
         final JSONObject query = new JSONObject()
@@ -502,6 +503,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         // Take service down, reload graph and verify
         restClient.sendEvent(nodeLostServiceEvent);
         karafShell.runCommand("opennms:graph-force-reload --container application");
+        wait(50); // wait until event is processed
         final Response response = given().log().ifValidationFails()
                 .body(query.toString())
                 .contentType(ContentType.JSON)
@@ -520,6 +522,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         // Take service down with severity higher than Major
         restClient.sendEvent(nodeLostServiceEventApp2);
         karafShell.runCommand("opennms:graph-force-reload --container application");
+        wait(50); // wait until event is processed
         final Response response2 = given().log().ifValidationFails()
                 .body(query.toString())
                 .contentType(ContentType.JSON)
