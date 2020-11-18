@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -133,10 +133,13 @@ public class ReportParameterBuilder {
 
     public ReportParameterBuilder withDate(String name, Date value) {
         return withDate(name, value, 0, 0);
-
     }
 
     public ReportParameterBuilder withDate(String name, Date value, int hours, int minutes) {
+        return this.withDate(name, value, hours, minutes, false);
+    }
+
+    public ReportParameterBuilder withDate(String name, Date value, int hours, int minutes, boolean adjusted) {
         Objects.requireNonNull(name);
         Objects.requireNonNull(value);
 
@@ -146,6 +149,7 @@ public class ReportParameterBuilder {
         parm.setUseAbsoluteDate(true);
         parm.setHours(hours);
         parm.setMinutes(minutes);
+        parm.setIsAdjustedDate(adjusted);
 
         dateParams.add(parm);
         return this;

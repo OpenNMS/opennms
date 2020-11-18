@@ -931,7 +931,7 @@
         "30d"
       ]
     },
-    "timezone": "",
+    "timezone": "browser",
     "title": "Flows",
     "uid": "eWsVEL6zz",
     "version": 6
