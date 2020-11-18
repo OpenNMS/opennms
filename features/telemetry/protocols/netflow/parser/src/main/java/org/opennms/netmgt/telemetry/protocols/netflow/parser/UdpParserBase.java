@@ -75,7 +75,7 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
         this.packetsReceived = metricRegistry.meter(MetricRegistry.name("parsers",  name, "packetsReceived"));
         this.parserErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "parserErrors"));
 
-        metricRegistry.register(MetricRegistry.name("parsers",  name, "packetsReceived"),
+        metricRegistry.register(MetricRegistry.name("parsers",  name, "sessionCount"),
                                 (Gauge<Integer>) () -> (this.sessionManager != null) ? this.sessionManager.count() : null);
     }
 
