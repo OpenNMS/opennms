@@ -1,0 +1,10 @@
+= Overview
+
+This documentation provides information and procedures on setup, configuration, and use of the OpenNMS Horizon platform. Using a task-based approach, chapters appear in a recommended order for working with OpenNMS Horizon:
+
+Opt in or out of usage statistics collection (requirement during first login).
+Setup the admin user.
+Create users and security roles.
+Provision your system.
+
+#TODO: add links to these sections of the documentation once incorporated#
