@@ -28,6 +28,9 @@
 
 package org.opennms.features.reporting.rest.internal;
 
+import static java.time.temporal.ChronoUnit.HOURS;
+import static java.time.temporal.ChronoUnit.MINUTES;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,6 +38,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
+import java.time.Duration;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
@@ -42,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
@@ -82,12 +87,15 @@ import org.opennms.web.svclayer.support.SchedulerException;
 import org.opennms.web.utils.QueryParameters;
 import org.opennms.web.utils.QueryParametersBuilder;
 import org.opennms.web.utils.ResponseUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 
 public class ReportRestServiceImpl implements ReportRestService {
+	private static final Logger LOG = LoggerFactory.getLogger(ReportRestServiceImpl.class);
 
     private final DatabaseReportListService databaseReportListService;
     private final ReportWrapperService reportWrapperService;
@@ -446,7 +454,7 @@ public class ReportRestServiceImpl implements ReportRestService {
         return errorObject;
     }
 
-    private ReportParameters parseParameters(final Map<String, Object> inputParameters, final ReportMode mode) {
+    ReportParameters parseParameters(final Map<String, Object> inputParameters, final ReportMode mode) {
         final String reportId = (String) inputParameters.get("id");
         final ReportParameters actualParameters = reportWrapperService.getParameters(reportId);
         final ReportFormat reportFormat = parseReportFormat((String) inputParameters.get("format"));
@@ -487,8 +495,24 @@ public class ReportRestServiceImpl implements ReportRestService {
                     if (jsonParameter.has("date")) {
                         final String dateString = jsonParameter.getString("date");
                         try {
-                            final Date parsedDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
-                            reportParameterBuilder.withDate(parameterName, parsedDate, hours, minutes);
+                            /*
+                             * Since time zones can change the window of the actual dates, we have
+                             * to parse them _in_ the zone the report specifies, or the Date objects
+                             * will have the wrong epoch.
+                             *
+                             * This is pretty hacky to avoid changing the way parameters get passed
+                             * into the ReST API, so we can retain API compatibility.
+                             */
+                            final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                            final TimeZone reportTimeZone = TimeZone.getTimeZone(getZoneFromParameters(jsonParameters));
+                            sdf.setTimeZone(reportTimeZone);
+                            LOG.debug("using time zone: {}", reportTimeZone);
+
+                            final Date parsedDate = sdf.parse(dateString);
+                            LOG.debug("parsed date: {}", parsedDate);
+                            final Date adjusted = new Date(parsedDate.getTime() + Duration.of(hours, HOURS).toMillis() + Duration.of(minutes, MINUTES).toMillis());
+                            LOG.debug("adjusted date: {}", adjusted);
+                            reportParameterBuilder.withDate(parameterName, adjusted, hours, minutes, true);
                         } catch (ParseException e) {
                             throw new SchedulerContextException(parameterName, "The provided value ''{0}'' cannot be parsed as a date. Expected format is yyyy-MM-dd", dateString);
                         }
@@ -512,6 +536,20 @@ public class ReportRestServiceImpl implements ReportRestService {
         actualParameters.apply(mergeWithParameters);
 
         return actualParameters;
+    }
+
+    ZoneId getZoneFromParameters(final JSONArray parameters) {
+        ZoneId id = ZoneId.systemDefault();
+        for (int i=0; i < parameters.length(); i++) {
+            final JSONObject parameter = parameters.getJSONObject(i);
+            if (!parameter.has("name") || !parameter.has("type") || parameter.getString("type") != "timezone") {
+                continue;
+            }
+            final String name = parameter.getString("name");
+			final String value = parameter.has("value") ? parameter.getString("value") : "";
+			id = parseTimezone(name, value);
+        }
+        return id;
     }
 
     private DeliveryOptions parseDeliveryOptions(Map<String, Object> parameters) {
