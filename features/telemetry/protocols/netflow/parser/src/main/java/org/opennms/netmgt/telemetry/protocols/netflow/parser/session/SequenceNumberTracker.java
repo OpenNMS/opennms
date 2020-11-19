@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie;
+package org.opennms.netmgt.telemetry.protocols.netflow.parser.session;
 
-import java.util.stream.Stream;
+public class SequenceNumberTracker {
 
-public interface RecordProvider {
-    Stream<Iterable<Value<?>>> getRecords();
+    private long expected;
 
-    /** Returns the observation domain ID as specified by the underlying packet used to generate these records.
-     *
-     * @return the observation domain ID or <code>0</code> if there is no such concept available.
-     */
-    long getObservationDomainId();
+    public SequenceNumberTracker() {
+        this.expected = 0L;
+    }
 
-    /** Returns the sequence number as provided by the underlying packet used to generate these records.
-     *
-     * @return the sequence number
-     */
-    long getSequenceNumber();
+    public boolean verify(final long sequenceNumber) {
+        boolean valid = this.expected == 0 || this.expected == sequenceNumber;
+
+        this.expected = sequenceNumber + 1;
+
+        return valid;
+    }
 }
