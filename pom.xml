@@ -1493,6 +1493,8 @@
     <springLdapVersion>${springSecurityVersion}</springLdapVersion>
     <springSecurityKerberosVersion>1.0.1.RELEASE</springSecurityKerberosVersion>
 
+    <bouncyCastleVersion>1.67</bouncyCastleVersion>
+
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
     <vaadinVersion>8.5.2</vaadinVersion>
@@ -4331,6 +4333,16 @@
         <artifactId>spock-core</artifactId>
         <version>${spockVersion}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk15on </artifactId>
+        <version>${bouncyCastleVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15on </artifactId>
+        <version>${bouncyCastleVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
