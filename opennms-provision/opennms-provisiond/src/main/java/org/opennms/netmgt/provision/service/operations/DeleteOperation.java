@@ -71,4 +71,9 @@ public class DeleteOperation extends ImportOperation {
         getProvisionService().deleteNode(m_nodeId);
     }
 
+    @Override
+    public OperationType getOperationType() {
+        return OperationType.DELETE;
+    }
+
 }
