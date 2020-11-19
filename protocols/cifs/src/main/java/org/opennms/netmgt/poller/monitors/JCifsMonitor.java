@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.util.Map;
 import java.util.Properties;
@@ -44,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import jcifs.CIFSContext;
 import jcifs.CIFSException;
 import jcifs.Configuration;
-import jcifs.NameServiceClient;
 import jcifs.config.PropertyConfiguration;
 import jcifs.context.BaseContext;
 import jcifs.context.SingletonContext;
@@ -174,82 +171,94 @@ public class JCifsMonitor extends ParameterSubstitutingMonitor {
         CIFSContext authedCtx = baseCtx.withCredentials(new NtlmPasswordAuthenticator(domain, username, password));
 
         // Setting default PollStatus
-        PollStatus serviceStatus = PollStatus.unknown();
+        PollStatus serviceStatus = PollStatus.unknown("unknown CIFS failure");
 
+        try {
+            for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
+                SmbFile smbFile = null;
 
-        for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
+                try {
+                    // Creating SmbFile object
+                    smbFile = new SmbFile(fullUrl, authedCtx);
+                    // Setting the defined timeout
+                    smbFile.setConnectTimeout(tracker.getConnectionTimeout());
+                    // Does the file exists?
+                    boolean smbFileExists = smbFile.exists();
 
-
-            try {
-                // Creating SmbFile object
-                SmbFile smbFile = new SmbFile(fullUrl, authedCtx);
-                // Setting the defined timeout
-                smbFile.setConnectTimeout(tracker.getConnectionTimeout());
-                // Does the file exists?
-                boolean smbFileExists = smbFile.exists();
-
-                switch (enumMode) {
-                    case PATH_EXIST:
-                        if (smbFileExists) {
-                            serviceStatus = PollStatus.up();
-                        } else {
-                            serviceStatus = PollStatus.down("File " + fullUrl + " should exists but doesn't!");
-                        }
-                        break;
-                    case PATH_NOT_EXIST:
-                        if (!smbFileExists) {
-                            serviceStatus = PollStatus.up();
-                        } else {
-                            serviceStatus = PollStatus.down("File " + fullUrl + " should not exists but does!");
-                        }
-                        break;
-                    case FOLDER_EMPTY:
-                        if (smbFileExists) {
-                            if (smbFile.list(smbFilenameFilter).length == 0) {
+                    switch (enumMode) {
+                        case PATH_EXIST:
+                            if (smbFileExists) {
                                 serviceStatus = PollStatus.up();
                             } else {
-                                serviceStatus = PollStatus.down("Directory " + fullUrl + " should be empty but isn't!");
+                                serviceStatus = PollStatus.down("File " + fullUrl + " should exists but doesn't!");
                             }
-                        } else {
-                            serviceStatus = PollStatus.down("Directory " + fullUrl + " should exists but doesn't!");
-                        }
-                        break;
-                    case FOLDER_NOT_EMPTY:
-                        if (smbFileExists) {
-                            if (smbFile.list(smbFilenameFilter).length > 0) {
+                            break;
+                        case PATH_NOT_EXIST:
+                            if (!smbFileExists) {
                                 serviceStatus = PollStatus.up();
                             } else {
-                                serviceStatus = PollStatus.down("Directory " + fullUrl + " should not be empty but is!");
+                                serviceStatus = PollStatus.down("File " + fullUrl + " should not exists but does!");
                             }
-                        } else {
-                            serviceStatus = PollStatus.down("Directory " + fullUrl + " should exists but doesn't!");
+                            break;
+                        case FOLDER_EMPTY:
+                            if (smbFileExists) {
+                                if (smbFile.list(smbFilenameFilter).length == 0) {
+                                    serviceStatus = PollStatus.up();
+                                } else {
+                                    serviceStatus = PollStatus.down("Directory " + fullUrl + " should be empty but isn't!");
+                                }
+                            } else {
+                                serviceStatus = PollStatus.down("Directory " + fullUrl + " should exists but doesn't!");
+                            }
+                            break;
+                        case FOLDER_NOT_EMPTY:
+                            if (smbFileExists) {
+                                if (smbFile.list(smbFilenameFilter).length > 0) {
+                                    serviceStatus = PollStatus.up();
+                                } else {
+                                    serviceStatus = PollStatus.down("Directory " + fullUrl + " should not be empty but is!");
+                                }
+                            } else {
+                                serviceStatus = PollStatus.down("Directory " + fullUrl + " should exists but doesn't!");
+                            }
+                            break;
+                        default:
+                            logger.warn("There is no implementation for the specified mode '{}'", mode);
+                            break;
+                    }
+
+                } catch (final MalformedURLException exception) {
+                    logger.error("Malformed URL on '{}' with error: '{}'", smbHost, exception.getMessage());
+                    serviceStatus = PollStatus.down(exception.getMessage());
+                } catch (final SmbException exception) {
+                    logger.error("SMB error on '{}' with error: '{}'", smbHost, exception.getMessage());
+                    serviceStatus = PollStatus.down(exception.getMessage());
+                } finally {
+                    if (smbFile != null) {
+                        try {
+                            smbFile.close();
+                        } catch (final Exception e) {
+                            LOG.warn("Unable to close {}", fullUrl, e);
                         }
-                        break;
-                    default:
-                        logger.warn("There is no implementation for the specified mode '{}'", mode);
-                        break;
+                    }
                 }
-
-            } catch (MalformedURLException exception) {
-                logger.error("Malformed URL on '{}' with error: '{}'", smbHost, exception.getMessage());
-                serviceStatus = PollStatus.down(exception.getMessage());
-            } catch (SmbException exception) {
-                logger.error("SMB error on '{}' with error: '{}'", smbHost, exception.getMessage());
-                serviceStatus = PollStatus.down(exception.getMessage());
             }
+        } finally {
+            closeContext(authedCtx);
+            closeContext(baseCtx);
         }
 
         return serviceStatus;
     }
 
-    private void setFieldValue(final Field finalStaticField, final Object value) throws NoSuchFieldException, IllegalAccessException {
-        finalStaticField.setAccessible(true);
-
-        final Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(finalStaticField, finalStaticField.getModifiers() & ~Modifier.FINAL);
-
-        finalStaticField.set(null, value);
+    private void closeContext(final CIFSContext context) {
+        if (context != null) {
+            try {
+                context.close();
+            } catch (final Exception e) {
+                LOG.warn("Failed to close CIFS context", e);
+            }
+        }
     }
 
     /**
