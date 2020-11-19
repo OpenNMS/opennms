@@ -44,11 +44,14 @@ import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 import io.netty.buffer.ByteBuf;
 
@@ -92,7 +95,7 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
         final Session session = this.sessionManager.getSession(sessionKey);
 
         try {
-            return this.transmit(this.parse(session, buffer), remoteAddress);
+            return this.transmit(this.parse(session, buffer), session, remoteAddress);
         } catch (Exception e) {
             this.sessionManager.drop(sessionKey);
             this.parserErrors.inc();
