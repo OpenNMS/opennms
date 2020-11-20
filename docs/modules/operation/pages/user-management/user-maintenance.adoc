@@ -1,14 +1,10 @@
-
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[ga-user-maintenance]]
-=== User Maintenance
+= User Maintenance
 User maintenance describes additional tasks and information related to users. 
 
-==== Passwords
+== Passwords
 
-.*Setting a new password for any user*
+=== Setting a new password for any user
 . Log in as a *User* with administrative permissions.
 . Click the gear icon in the top right. 
 . Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users*.
@@ -16,7 +12,7 @@ User maintenance describes additional tasks and information related to users.
 . Type a new *Password*, *Confirm Password*, and click *OK*.
 . Click *Finish*.
 
-.*Changing your password*
+=== Changing your password
 
 . Log in with user name and old password.
 . Choose *Change Password* from the drop-down below your login name. 
@@ -24,7 +20,7 @@ User maintenance describes additional tasks and information related to users.
 . Click *Submit*.
 . Log out and log in with your new password.
 
-==== Deleting users and groups
+== Deleting users and groups
 
 . Log in as a user with administrative permissions.
 . Click the gear icon in the top right. 
@@ -34,6 +30,6 @@ User maintenance describes additional tasks and information related to users.
 
 IMPORTANT: When you delete a group no one receives notification that the group has been deleted. Be aware that deleting a group or user also removes any schedules associated with that group or user, meaning they will not receive notifcations specified as part of a schedule. 
 
-==== Advanced Configuration
+== Advanced Configuration
 
-{opennms-product-name} persists the user, password, and other detail descriptions in the `users.xml` file.
+{page-component-title} persists the user, password, and other detail descriptions in the `users.xml` file.

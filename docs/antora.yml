@@ -26,5 +26,6 @@ asciidoc:
 nav:
 - modules/ROOT/index.adoc
 - modules/deployment/nav.adoc
+- modules/operation/nav.adoc
 - modules/reference/nav.adoc
 - modules/todo/nav.adoc

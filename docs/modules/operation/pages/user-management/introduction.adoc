@@ -1,26 +1,25 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[ga-users-intro]]
+= Users
+
 Managing users involves the following tasks:
 
 * <<ga-data-choices, first-time login and data choices>>
 * <<ga-admin-user-setup, admin user setup>>
 * <<ga-user-config, creating and configuring users>>
-* <<ga-user-groups,creating and configuring groups>>
+* <<ga-user-groups, creating and configuring groups>>
 * <<ga-on-call-role, configuring on-call roles>>
 
 [[ga-data-choices]]
-=== First-Time Login and Data Choices
+== First-Time Login and Data Choices
 
-Access the {opennms-product-name} web application at http://<ip-or-fqdn-of-your-server>:8980/opennms.
+Access the {page-component-title} web application at http://<ip-or-fqdn-of-your-server>:8980/opennms.
 
 The default user login is `admin` with the password `admin`.
 
 The first time you log in we prompt for permission to allow the `Data Choices` module to collect and publish anonymous usage statistics to https://stats.opennms.org.
 
-The OpenNMS Group uses this information to help determine product usage and to improve the {opennms-product-name} software. 
+The OpenNMS Group uses this information to help determine product usage and to improve the {page-component-title} software. 
 
 image:users/data-sources.png[prompt,300]
 
@@ -30,13 +29,13 @@ Statisitcs collection and publication happen only if an admin user opts in.
 NOTE: Admin users can enable or disable usage statistics collection at any time by logging into the UI, clicking the gear icon, selecting *Data Choices* in the *Additional Tools* area, and clicking *Opt-in* or *Opt-out*.
 
 [[ga-data-collection]]
-*Data Collection*
+=== Data Collection
 
 When enabled, the `Data Choices` module collects the following anonymous statistics and publishes them on system startup and every 24 hours after:
 
 * System ID (a randomly generated universally unique identifier (UUID))
-* {opennms-product-name} Release
-* {opennms-product-name} Version
+* {page-component-title} Release
+* {page-component-title} Version
 * OS Architecture
 * OS Name
 * OS Version
@@ -47,7 +46,7 @@ When enabled, the `Data Choices` module collects the following anonymous statist
 * Number of nodes, grouped by System OID
 
 [[ga-admin-user-setup]]
-==== Admin User Setup
+=== Admin User Setup
 
 After logging in for the first time, make sure to change the default admin user password to a secure one: 
 
