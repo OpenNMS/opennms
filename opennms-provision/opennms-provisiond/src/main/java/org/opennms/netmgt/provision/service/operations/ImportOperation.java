@@ -36,7 +36,16 @@ public abstract class ImportOperation {
     private static final Logger LOG = LoggerFactory.getLogger(ImportOperation.class);
     
     private final ProvisionService m_provisionService;
-    
+
+    /**
+     *  Enum to differentiate the type of import operation.
+     */
+    public static enum OperationType {
+
+        INSERT,
+        UPDATE,
+        DELETE;
+    }
     /**
      * <p>Constructor for ImportOperation.</p>
      *
@@ -65,6 +74,8 @@ public abstract class ImportOperation {
      * <p>doPersist</p>
      */
     protected abstract void doPersist();
+
+    public abstract OperationType getOperationType();
 
 
     /**
