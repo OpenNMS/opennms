@@ -199,4 +199,9 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         }
     }
 
+    @Override
+    public OperationType getOperationType() {
+        return OperationType.UPDATE;
+    }
+
 }
