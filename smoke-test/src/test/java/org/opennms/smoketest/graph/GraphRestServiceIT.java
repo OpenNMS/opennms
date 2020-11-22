@@ -503,7 +503,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         // Take service down, reload graph and verify
         restClient.sendEvent(nodeLostServiceEvent);
         karafShell.runCommand("opennms:graph-force-reload --container application");
-        Thread.sleep(50); // wait until event is processed
+        Thread.sleep(500); // wait until event is processed
         final Response response = given().log().ifValidationFails()
                 .body(query.toString())
                 .contentType(ContentType.JSON)
