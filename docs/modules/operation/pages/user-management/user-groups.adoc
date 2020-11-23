@@ -13,7 +13,7 @@ Organizing users into groups helps with notifications and allows you to assign a
 . Specify a group name and description and click *OK*.
 . Add users to the group by selecting them from the *Available Users* column and using the arrows to move them to the *Currently in Group* column.
 . _(Optional)_ Assign categories of responsibility to the group, such as Routers, Switches, Servers, etc. 
-. _(Optional)_ Create a link:#ga-user-schedule[duty schedule].
+. _(Optional)_ Create a <<user-management/user-config.adoc#ga-user-schedule, set a duty schedule>>.
 . Click *Finish*. 
 
 NOTE: Users will receive notifications in the order in which the user appears in the group. 

@@ -9,7 +9,7 @@ The supervisor must have `admin` privileges.
 [[ga-user-on-call]]
 == Assigning a Group to an On-Call Role
 
-Before assigning a group to an on-call role, you must link:#ga-user-group-create[create a group]. 
+Before assigning a group to an on-call role, you must <<user-management/user-groups.adoc#ga-user-group-create, create a group>>. 
 
 . Log in as a user with administrative permissions.
 . Click the gear icon in the top right. 

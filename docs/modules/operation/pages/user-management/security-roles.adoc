@@ -10,7 +10,7 @@ endif::opennms-prime[]
 Available security roles (those with an asterisk are the most commonly used):
 
 .Functions and existing system roles in _{page-component-title}_
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Security Role Name  | Description
 | ROLE_ADMIN*        | Permissions to create, read, update, and delete in the web UI and the _ReST API_.

@@ -6,9 +6,9 @@ Managing users involves the following tasks:
 
 * <<ga-data-choices, first-time login and data choices>>
 * <<ga-admin-user-setup, admin user setup>>
-* <<ga-user-config, creating and configuring users>>
-* <<ga-user-groups, creating and configuring groups>>
-* <<ga-on-call-role, configuring on-call roles>>
+* <<user-management/user-config.adoc#ga-user-config, creating and configuring users>>
+* <<user-management/user-groups.adoc#ga-user-groups, creating and configuring groups>>
+* <<user-management/user-oncall.adoc#ga-on-call-role, configuring on-call roles>>
 
 [[ga-data-choices]]
 == First-Time Login and Data Choices
@@ -56,7 +56,7 @@ After logging in for the first time, make sure to change the default admin user 
 . In the *User Password* area, click *Reset Password*, update the password and click *OK*.
 . Click *Finish* at the bottom of the Modify User screen to save changes. 
 
-We recommend not using the default `admin` user, but instead link:#ga-user-config[creating specific users] with the admin role and/or other permissions. 
+We recommend not using the default `admin` user, but instead <<user-management/user-config.adoc#ga-user-config, creating specific users>> with the admin role and/or other permissions. 
 This helps to keep track of who has performed tasks such as clearing alarms or creating notifications. 
 
 WARNING: Do not delete the default _admin_ and _rtc_ users.

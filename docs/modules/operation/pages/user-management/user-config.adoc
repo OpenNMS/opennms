@@ -1,12 +1,14 @@
+
+[[ga-user-config]]
 = User Creation and Configuration
 
 Only a user with admin privileges can create users and assign security roles to them. 
-We recommend creating a new user with admin privileges instead of using the default `admin` (see link:#ga-admin-user-setup[Admin User Setup]).
+We recommend creating a new user with admin privileges instead of using the default `admin` (see <<user-management/introduction.adoc#ga-admin-user-setup[Admin User Setup]).
 
 Ideally, each user account corresponds to a person, to help track who performs tasks in your {page-component-title} system.
-Assigning different link:#ga-role-user-management-roles[security roles] to each user helps restrict what tasks the user can perform. 
+Assigning different <<user-management/security-roles.adoc#ga-role-user-management-roles, security roles>> to each user helps restrict what tasks the user can perform. 
 
-In addition to local users, you can configure external authentication services including link:https://wiki.opennms.org/wiki/Spring_Security_and_LDAP[LDAP / LDAPS], link:https://wiki.opennms.org/wiki/Spring_Security_and_Radius[RADIUS], and link:https://wiki.opennms.org/wiki/Single_Sign_On[SSO].
+In addition to local users, you can configure external authentication services including link:https://opennms.discourse.group/t/spring-security-and-ldap/1425[LDAP/LDAPS], link:https://opennms.discourse.group/t/spring-security-and-radius/1424[RADIUS], and link:https://wiki.opennms.org/wiki/Single_Sign_On[Single Sign On (SSO]).
 Configuration specifics for these services are outside the scope of this documentation.
 
 WARNING: Do not delete the default _admin_ and _rtc_ users.
@@ -20,7 +22,7 @@ WARNING: Do not delete the default _admin_ and _rtc_ users.
 . Choose *Configure OpenNMS -> Configure Users, Groups and On-Call roles* and select *Configure Users*.
 . Click *Add new user* and specify a user ID, password, password confirmation and click *OK*. 
 . _Optional_: add user information in the appropriate fields.  
-. _Optional_: assign link:#ga-role-user-management-roles[user permissions].
+. _Optional_: assign <<user-management/security-roles.adoc#ga-role-user-management-roles, user permissions>>.
 +
 NOTE: By default a new user has the following permissions:
      Acknowledge and work with alarms and noficiations.
@@ -28,7 +30,7 @@ NOTE: By default a new user has the following permissions:
      Add the _ROLE_ADMIN_ role to create a new admin. 
 
 . _Optional_: specify where to send messages to the user in the notification information area.
-. _Optional_: link:#ga-user-schedule[set a schedule] for when a user should receive notifications.
+. _Optional_: <<ga-user-schedule, set a schedule>> for when a user should receive notifications.
 . Click *Finish* to save changes.
 
 [[ga-user-schedule]]
