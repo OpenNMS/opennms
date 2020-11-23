@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../images
-
-=== Yet Other API Examples
+= Yet Other API Examples
 
 .List the Nodes in a Provisioning Group
 

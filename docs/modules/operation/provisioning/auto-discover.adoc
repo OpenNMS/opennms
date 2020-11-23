@@ -1,17 +1,14 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[auto-discovery]]
-=== Auto Discovery
+= Auto Discovery
 
 Auto discovery is the process of automatically adding nodes to {opennms-product-name}.
 You do this through discovery, either periodically on schedule or through single, unscheduled times. 
 
-Make sure you complete the tasks in the xref:getting-started.adoc[Getting Started] section before adding nodes. 
+Make sure you complete the tasks in the <<provisioning/getting-started.adoc, Getting Started>> section before adding nodes. 
 
 [[discovery-configure]]
-==== Configure Discovery
+== Configure Discovery
 
 Configuring discovery specifies the parameters {opennms-product-name} uses when scanning for nodes.
 

@@ -1,9 +1,6 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[ga-provisioning-introduction]]
-=== Introduction
+= Introduction
 
 Provisioning is a mechanism to import node and service definitions either from an external source such as DNS or HTTP or via the {opennms-product-name} web UI.
 The _Provisiond_ daemon maintains your managed entity inventory through policy-based provisioning. 
@@ -12,7 +9,7 @@ Provisiond comes with a RESTful Web Service API for easy integration with extern
 It also includes an adapter API for interfacing with other management systems such as configuration management.
 
 [[provisioning-works]]
-==== How It Works
+== How It Works
 
 Provisiond receives requests to add managed entities (nodes, IP interfaces, SNMP interfaces, services) via three basic mechanisms: 
 
@@ -25,7 +22,7 @@ Provisiond receives requests to add managed entities (nodes, IP interfaces, SNMP
 Regardless of the method, provisioning is an iterative process: you will need to fine-tune your results to exclude or add things to what you monitor.
 
 [[discovery-auto]]
-==== Automatic Discovery
+== Automatic Discovery
 
 {opennms-product-name} uses an ICMP ping sweep to find IP addresses on the network and provision node entities.
 Using link:#ga-provisioning-auto-discovery-detectors[auto discovery with detectors] allows you to specify services that you need to detect in addition to the ICMP IP address ping. 
@@ -42,7 +39,7 @@ NOTE: Merging occurs only when two automatically discovered nodes appear to be t
 Nodes link:#discovery-directed[discovered directly] are not included in the node merging process.
 
 [[discovery-directed]]
-==== Directed Discovery
+== Directed Discovery
 Directed discovery allows you to specify what you want to provision based on an existing data source such as an in-house inventory, stand-alone provisioning system, or set of element management systems. 
 Using an import requisition, this mechanism directs {opennms-product-name} to add, update, or delete a node entity exactly as defined by the external source. 
 No discovery process is used for finding more interfaces or services.
@@ -50,7 +47,7 @@ No discovery process is used for finding more interfaces or services.
 IMPORTANT: An import requisition is an XML definition of node entities to be provisioned from an external source into {opennms-product-name}.
 See the http://xmlns.opennms.org/xsd/config/model-import[requisition schema] (XSD) for more information. 
 
-===== Understanding the Process
+=== Understanding the Process
 
 Directed disovery involves three phases:
 

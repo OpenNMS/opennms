@@ -1,8 +1,6 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../images
 
-=== SNMP Profiles
+= SNMP Profiles
 
 SNMP Profiles are prefabricated sets of SNMP configuration which are automatically "fitted" against eligible IP addresses at provisioning time.
 Each profile may have a unique label and an optional filter expression.
@@ -49,7 +47,7 @@ The first match that produces a successful SNMP `GET-REQUEST` on the scalar inst
 
 NOTE: `default` as profile label is reserved for default SNMP config.
 
-.Fit a SNMP profile
+== Fit a SNMP profile
 
 The `opennms:snmp-fit` Karaf shell command finds a matching profile for a given IP address and prints out the resulting config.
 
@@ -68,7 +66,7 @@ admin@opennms()> opennms:snmp-fit -s -n -f Switches 172.1.1.107 profile2 <3>
 <3> checks whether the profile labeled `profile2` is a fit for IP address `172.1.1.107`; if so, it saves the resulting configuration and also sends a `newSuspect` event, telling {opennms-product-name} to auto-provision the node at that IP address into the `Switches` requisition.
 If it succeeds, it prints out the resulting agent config, but does not save any definition.
 
-.Remove an IP address from definition.
+== Remove an IP address from definition.
 
 The `opennms:snmp-remove-from-definition` Karaf shell command removes an IP address from the system-wide SNMP configuration definitions.
 
@@ -81,6 +79,6 @@ admin@opennms()> opennms:snmp-remove-from-definition -l MINION 172.1.0.255
 This removes IP address `172.1.0.255` at location `MINION` from the system-wide SNMP configuration so that this IP address can be fitted to a new profile.
 This command might be useful when an IP address formerly assigned to an SNMPv2c-capable switch is reassigned to an SNMPv3-capable load balancer.
 
-.Using SNMP profiles in Snmp Detector
+== Using SNMP profiles in Snmp Detector
 
 By default SnmpDetector doesn't use SNMP profiles. Add property `useSnmpProfiles` and set it to `true` in order to use SNMP Profiles.

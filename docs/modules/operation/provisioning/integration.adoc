@@ -1,14 +1,11 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../images
-
 [[provisiond-integration]]
-=== Integrating with Provisiond
+= Integrating with Provisiond
 
 Use the ReST API for integration from other provisioning systems with {opennms-product-name}.
 The ReST API provides an interface for defining foreign sources and requisitions.
 
-==== Provisioning Groups of Nodes
+== Provisioning Groups of Nodes
 
 Just as with the web UI, groups of nodes can be managed via the ReST API from an external system.
 The steps are:
@@ -17,9 +14,9 @@ The steps are:
 . Update the SNMP configuration for each node in the group
 . Create/update the group of nodes
 
-==== Example
+== Example
 
-===== Step 1 - Create a Foreign Source
+=== Step 1 - Create a Foreign Source
 
 To change the policies for this group of nodes you should create a foreign source for the group.
 You can do so using the ReST API:
@@ -64,7 +61,7 @@ curl -v -u admin:admin http://localhost:8980/opennms/rest/foreignSources/pending
 
 NOTE: The current API doesn’t strictly follow the ReST design guidelines and will be updated in a later release.
 
-===== Step 2 - Update the SNMP configuration
+=== Step 2 - Update the SNMP configuration
 
 The implementation only supports a _PUT_ request because it is an implied "Update" of the configuration since it requires an IP address and all IPs have a default configuration.
 This request is is passed to the SNMP configuration factory in {opennms-product-name} for optimization of the configuration store `snmp-config.xml`.
@@ -77,7 +74,7 @@ NOTE: Community string is the only required element
 curl -v -X PUT -H "Content-Type: application/xml" -H "Accept: application/xml" -d <snmp-info><community>yRuSonoZ</community><port>161</port><retries>1</retries><timeout>2000</timeout><version>v2c</version></snmp-info>" -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
 ----
 
-===== Step 3 - Create/Update the Requisition
+=== Step 3 - Create/Update the Requisition
 
 This example adds 2 nodes to the Provisioning Group, _customer-a_.
 Note that the foreign-source attribute typically has a 1 to 1 relationship to the name of the Provisioning Group requisition.

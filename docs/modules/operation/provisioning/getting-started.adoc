@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-=== Getting Started
+= Getting Started
 
 {opennms-product-name} installs with a base configuration that automatically begins service-level monitoring and reporting as soon as you provision managed entities (nodes, IP interfaces, SNMP interfaces, and services).
 
@@ -22,7 +19,7 @@ See the link:#provisioning-works[how it works] section of the introdution for mo
 
 Regardless of the method, provisioning is an iterative process: you will need to fine-tune your results to exclude or add things to what you monitor.
 
-==== Before You Begin
+== Before You Begin
 
 If you collect data via SNMP or are monitoring the availability of the SNMP service on a node, you must xref:provision-snmp-configuration [configure SNMP for provisioning] before using auto or directed discovery. 
 This ensures that {opennms-product-name} can immediately scan newly discovered devices for entities.
@@ -31,7 +28,7 @@ It also makes reporting and thresholding available for these devices.
 In addition, you may want to xref:foreign-source-definition[edit the default foreign source definition] to specify the services to detect and policies to apply during discovery. 
 
 [[provision-snmp-configuration]]
-==== Configuring SNMP for Provisioning
+== Configuring SNMP for Provisioning
 
 Proper SNMP configuration allows {opennms-product-name} to understand network and node topology as well as to automatically enable performance data collection.
 {opennms-product-name} updates network topology as it provisions nodes.
@@ -48,7 +45,7 @@ These settings are optimized into the `snmp-configuration.xml` file.
 For an example of the resulting XML configuration, see link:#SNMP-commmunity-xml[Configuring SNMP community names].
 
 [[foreign-source-definition]]
-==== Edit Default Foreign Source Definition
+== Edit Default Foreign Source Definition
 
 The default foreign source definition serves as a template that defines the services to detect on (DNS, FTP, ICMP, etc.), the scan interval for discovery, and the policies to use when provisioning. 
 
@@ -104,7 +101,7 @@ Specify `0` to disable automatic scanning.
 NOTE: To return to the default foreign source definition, click *Reset to Default*. 
 
 [[requisition-create]]
-==== Create a Requisition
+== Create a Requisition
 
 A requisition is a set of nodes (networked devices) that you want to import into {opennms-product-name} for monitoring and management. 
 You can iteratively build a requisition and later actually import the nodes in the requisition into {opennms-product-name}.

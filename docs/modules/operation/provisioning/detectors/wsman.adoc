@@ -1,31 +1,27 @@
+=== WS-Man Detector
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+The WS-Management detector attempts to connect to the agent defined in `wsman-config.xml` and issues an identify command.
+If the identify command is successful, the service is marked as detected, and the product details returned by the command are optionally stored in the asset fields (see details below).
 
-==== WS-Man Detector
-
-The WS-Management detector attempts to connect to the agent defined in `wsman-config.xml` and issues an Identify command.
-If the Identify command is successful, the service is marked as detected and the product details returned by the command are optionally stored in the asset fields (see details bellow.)
-
-===== Detector facts
+==== Detector facts
 
 [options="autowidth"]
 |===
 | Implementation | `org.opennms.netmgt.provision.detector.wsman.WsManDetector`
 |===
 
-===== Configuration and Usage
+==== Configuration and Use
 
 .Parameters for the <DETECTOR-NAME-HERE>
 [options="header, autowidth"]
 |===
 | Parameter      | Description                                                                                        | Required | Default value
-| `updateAssets` | Stores the product vendor and product version in the `vendor` and `modelNumber` asset fields       | false    | `true`
+| `updateAssets` | Stores the product vendor and product version in the `vendor` and `modelNumber` asset fields.       | false    | `true`
 |===
 
-===== Examples
+==== Examples
 
-If a valid response to the Identify command is received, the product vendor and product version are stored in the `vendor` and `modelNumber` fields of the associated node`s assets table.
+If a valid response to the identify command is received, the product vendor and product version are stored in the `vendor` and `modelNumber` fields of the associated node's assets table.
 
 For example, a Windows Server 2008 machine returns:
 
@@ -34,10 +30,10 @@ For example, a Windows Server 2008 machine returns:
 | *Product Version* | OS: 6.1.7601 SP: 1.0 Stack: 2.0
 |===
 
-If these assets field are being used for another purpose, this behavior can be disabled by settings the `updateAssets` parameters to `false` in the detector configuration of the appropriate foreign source.
+If these asset fields are being used for another purpose, disable this behavior by setting the `updateAssets` parameters to `false` in the detector configuration of the appropriate foreign source.
 
-NOTE: Some agents may respond to the Identify command with generic identities such as `Openwsman` `2.0.0`.
-      These values can be overridden by specifying the `product-vendor` and `product-version` attributes in `wsman-config.xml`.
+NOTE: Some agents may respond to the identify command with generic identities such as `Openwsman` `2.0.0`.
+      Specify the `product-vendor` and `product-version` attributes in `wsman-config.xml` to overwrite these values.
 
 Example detector configuration:
 
@@ -48,7 +44,7 @@ Example detector configuration:
 </detector>
 ----
 
-The response is logged as _DEBUG_ information in `provisiond.log` and looks like the following:
+The response is logged as DEBUG information in `provisiond.log`:
 
 [source, xml]
 ----
@@ -74,7 +70,7 @@ Payload:
 </s:Envelope>
 ----
 
-<1> `ProductVendor`: Stored to the asset field `vendor`
-<2> `ProductVersion`: Stored in the asset field `modelNumber`
+<1> `ProductVendor`: Stored in the `vendor` asset field. 
+<2> `ProductVersion`: Stored in the `modelNumber` asset field. 
 
-NOTE: The information of the asset fields are used in the _System Definition Rule_ to decide which performance metrics will be gathered from _Collectd_.
+NOTE: The _System Definition Rule_ uses the asset field information to decide which performance metrics to gathere from Collectd.

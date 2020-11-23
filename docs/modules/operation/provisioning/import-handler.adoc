@@ -1,9 +1,6 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../images
-
 [[import-handlers]]
-=== Import Handlers
+= Import Handlers
 
 The new Provisioning service in {opennms-product-name} is continuously improving and adapting to the needs of the community.
 
@@ -14,7 +11,7 @@ For example a requisition can be retrieving the using HTTP protocol: http://myin
 
 In addition to the standard protocols supported by Java, we provide a series of custom URL handlers to help retrieve requisitions from external sources.
 
-==== Generic Handler
+== Generic Handler
 
 The generic handler is made available using URLs of the form: requisition://type?param=1;param=2
 
@@ -39,33 +36,33 @@ The `opennms:show-import` command available via the _Karaf Shell_ can be used to
 opennms:show-import -l MINION http url=http://127.0.0.1:8000/req.xml
 ----
 
-==== File Handler
+== File Handler
 
 Examples:
 
-.Simple
+=== Simple
 
  file:///path/to/my/requisition.xml
 
-.Using the generic handler
+=== Using the generic handler
 
  requisition://file?path=/path/to/my/requisition.xml;location=MINION
 
-==== HTTP Handler
+== HTTP Handler
 
 Examples:
 
-.Simple
+=== Simple
 
  http://myinventory.server.org/nodes.cgi
 
-.Using the generic handler
+=== Using the generic handler
 
  requisition://http?url=http%3A%2F%2Fmyinventory.server.org%2Fnodes.cgi
 
 TIP: When using the generic handler, the URL should be "URL encoded".
 
-==== DNS Handler
+== DNS Handler
 
 The DNS handler requests a _Zone Transfer (AXFR) request_ from a DNS server.
 The A records are recorded and used to build an import requisition.
@@ -76,13 +73,13 @@ The format of the URL for this new protocol handler is: dns://<host>[:port]/<zon
 
 DNS Import Examples:
 
-.Simple
+=== Simple
 
  dns://my-dns-server/myzone.com
 
 This URL will import all A records from the host `my-dns-server` on port 53 (default port) from zone "myzone.com" and since the foreign source (a.k.a. the provisioning group) is not specified it will default to the specified zone.
 
-.Using a Regular Expression Filter
+== Using a Regular Expression Filter
 
  dns://my-dns-server/myzone.com/portland/?expression=^por-.*
 
@@ -92,7 +89,7 @@ If your expression requires URL encoding (for example you need to use a `?` in t
 
  dns://my-dns-server/myzone.com/portland/?expression=^por[0-9]%3F
 
-.DNS Setup
+=== DNS Setup
 
 Currently, the DNS server requires to be setup to allow a zone transfer from the {opennms-product-name} server.
 It is recommended that a secondary DNS server is running on {opennms-product-name} and that the {opennms-product-name} server be allowed to request a zone transfer.
@@ -100,7 +97,7 @@ A quick way to test if zone transfers are working is:
 
  dig -t AXFR @<dnsServer> <zone>
 
-.Configuration
+=== Configuration
 
 The configuration of the Provisoning system has moved from a properties file (`model-importer.properties`) to an XML based configuration container.
 The configuration is now extensible to allow the definition of 0 or more import requisitions each with their own cron based schedule for automatic importing from various sources (intended for integration with external URL such as http and this new dns protocol handler.
@@ -135,7 +132,7 @@ Not very practical but is a good example.
 </provisiond-configuration>
 ----
 
-.Configuration Reload
+== Configuration Reload
 
 Like many of the daemon configuration in the 1.7 branch, the configurations are reloadable without having to restart {opennms-product-name}, using the reloadDaemonConfig uei:
 

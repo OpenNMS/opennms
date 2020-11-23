@@ -1,14 +1,11 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../images
-
 [[xml-sample-provision]]
-=== XML Samples
+= XML Samples
 
 This section provides sample XML configuration for many of the tasks described in the Provisioning chapter.
 
 [[SNMP-commmunity-xml]]
-==== Configuring SNMP community names
+== Configuring SNMP community names
 
 [source, xml]
 .Sample snmp-config.xml

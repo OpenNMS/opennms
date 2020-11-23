@@ -1,8 +1,6 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../images
 
-=== Fine Grained Provisioning Using _provision.pl_
+= Fine Grained Provisioning Using _provision.pl_
 
 _provision.pl_ provides an example command-line interface to the provisioning-related {opennms-product-name} REST API endpoints.
 
@@ -14,7 +12,7 @@ NOTE: You can use `--help` to the script to see all the available options.
  --password (default: admin)
  --url (default: http://localhost:8980/opennms/rest)
 
-==== Create a new requisition
+== Create a new requisition
 
 _provision.pl_ provides easy access to the requisition REST service using the _requisition_ option:
 
@@ -37,7 +35,7 @@ You can get a list of all existing requisitions with the `list` option of the `p
 ${OPENNMS_HOME}/bin/provision.pl list
 ----
 
-===== Create a new Node
+=== Create a new Node
 
 [source, bash]
 ----
@@ -47,7 +45,7 @@ ${OPENNMS_HOME}/bin/provision.pl node add customer1 1 node-a
 This command creates a node element in the requisition _customer1_ called _node-a_ using the script's _node_ option. The node's foreign-ID is _1_ but it can be any alphanumeric value as long as it is unique within the requisition.
 Note the node has no interfaces or services yet.
 
-===== Add an Interface Element to that Node
+=== Add an Interface Element to that Node
 
 [source, bash]
 ----
@@ -56,7 +54,7 @@ ${OPENNMS_HOME}/bin/provision.pl interface add customer1 1 127.0.0.1
 
 This command adds an interface element to the node element using the _interface_ option to the `provision.pl` command and it can now be seen in the pending requisition by running `provision.pl requisition list customer1`.
 
-===== Add a Couple of Services to that Interface
+=== Add a Couple of Services to that Interface
 
 [source, bash]
 ----
@@ -66,7 +64,7 @@ ${OPENNMS_HOME}/bin/provision.pl service add customer1 1 127.0.0.1 SNMP
 
 This adds the 2 services to the specified 127.0.0.1 interface and is now in the pending requisition.
 
-===== Set the Primary SNMP Interface
+=== Set the Primary SNMP Interface
 
 [source, bash]
 ----
@@ -75,7 +73,7 @@ ${OPENNMS_HOME}/bin/provision.pl interface set customer1 1 127.0.0.1 snmp-primar
 
 This sets the 127.0.0.1 interface to be the node's Primary SNMP interface.
 
-===== Add a couple of Node Categories
+=== Add a couple of Node Categories
 
 [source, bash]
 ----
@@ -88,7 +86,7 @@ This adds the two categories to the node and is now in the pending requisition.
 These categories are case-sensitive but do not have to be already defined in {opennms-product-name}.
 They will be created on the fly during the import if they do not already exist.
 
-===== Setting Asset Fields on a Node
+=== Setting Asset Fields on a Node
 
 [source, bash]
 ----
