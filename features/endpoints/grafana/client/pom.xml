@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.endpoints</groupId>
     <artifactId>org.opennms.features.endpoints.grafana</artifactId>
-    <version>27.0.0-SNAPSHOT</version>
+    <version>28.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.endpoints.grafana</groupId>
@@ -68,6 +68,12 @@
       <artifactId>wiremock-jre8</artifactId>
       <version>2.23.2</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>

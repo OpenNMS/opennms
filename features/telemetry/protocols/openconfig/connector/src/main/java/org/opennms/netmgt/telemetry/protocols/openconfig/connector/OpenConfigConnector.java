@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.protocols.openconfig.connector;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -58,11 +59,11 @@ public class OpenConfigConnector implements Connector {
     }
 
     @Override
-    public void stream(int nodeId, InetAddress ipAddress, Map<String, String> params) {
+    public void stream(int nodeId, InetAddress ipAddress, List<Map<String, String>> paramList) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Starting new OpenConfig client for: {}", InetAddressUtils.str(ipAddress));
         }
-        openConfigClient = clientFactory.create(ipAddress, params);
+        openConfigClient = clientFactory.create(ipAddress, paramList);
         openConfigClient.subscribe(new OpenConfigClient.Handler() {
             @Override
             public void accept(InetAddress host, Integer port, byte[] data) {

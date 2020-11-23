@@ -6,7 +6,7 @@
 ----
 echo 'deb https://debian.opennms.org stable main \
       deb-src https://debian.opennms.org stable main' > /etc/apt/sources.list.d/opennms.list
-wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY |apt-key add -
 apt update
 ----
 

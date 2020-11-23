@@ -34,12 +34,14 @@
             <filter>IPADDR != '0.0.0.0'</filter>
             <parameter key="port" value="${requisition:oc.port|9000}"/>
             <parameter key="paths" value="/network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp"/>
+            <parameter key="mode" value="jti"/>
          </package>
     </connector>
 
     <queue name="OpenConfig">
         <adapter name="OpenConfig-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter" enabled="false">
-            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/openconfig-telemetry-resources.groovy"/>
+            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/openconfig-jti-telemetry.groovy"/>
+            <parameter key="mode" value="jti"/>
             <package name="OpenConfig-Default">
                 <rrd step="300">
                     <rra>RRA:AVERAGE:0.5:1:2016</rra>

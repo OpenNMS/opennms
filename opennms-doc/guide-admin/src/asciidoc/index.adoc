@@ -33,6 +33,33 @@ include::text/user-management/user-oncall.adoc[]
 include::text/user-management/user-maintenance.adoc[]
 include::text/user-management/pre-authentication.adoc[]
 
+[[ga-provisioning]]
+== Provisioning
+include::text/provisioning/introduction.adoc[]
+include::text/provisioning/getting-started.adoc[]
+include::text/provisioning/directed-discover.adoc[]
+include::text/provisioning/auto-discover.adoc[]
+include::text/provisioning/integration.adoc[]
+include::text/provisioning/import-handler.adoc[]
+include::text/provisioning/examples.adoc[]
+include::text/provisioning/adapters.adoc[]
+include::text/provisioning/meta-data.adoc[]
+include::text/provisioning/fine-grained.adoc[]
+include::text/provisioning/api-examples.adoc[]
+include::text/provisioning/snmp-profile.adoc[]
+include::text/provisioning/auto-discovery-detectors.adoc[]
+include::text/provisioning/xml-samples.adoc[]
+
+[[ga-provisioning-detectors]]
+=== Service Detectors
+include::text/provisioning/detectors.adoc[]
+include::text/provisioning/detectors/HttpDetector.adoc[]
+include::text/provisioning/detectors/HttpsDetector.adoc[]
+include::text/provisioning/detectors/SnmpDetector.adoc[]
+include::text/provisioning/detectors/wsman.adoc[]
+include::text/provisioning/detectors/wsmanwql.adoc[]
+include::text/provisioning/detectors/ReverseDNSLookupDetector.adoc[]
+
 [[ga-admin-ui]]
 == Administrative Webinterface
 
@@ -185,6 +212,10 @@ include::text/performance-data-collection/collectors/xmp.adoc[]
 === Resource Types
 include::text/performance-data-collection/resource-types.adoc[]
 
+[[ga-property-extenders]]
+=== SNMP Property Extenders
+include::text/performance-data-collection/property-extenders.adoc[]
+
 [[ga-performance-mgmt-shell]]
 === Administration and Troubleshooting
 include::text/performance-data-collection/collectd/collect-admin.adoc[]
@@ -230,34 +261,6 @@ include::text/notifications/concepts.adoc[]
 include::text/notifications/bonus-strategies.adoc[]
 include::text/notifications/strategies/mattermost.adoc[]
 include::text/notifications/strategies/slack.adoc[]
-
-[[ga-provisioning]]
-== Provisioning
-include::text/provisioning/introduction.adoc[]
-include::text/provisioning/concepts.adoc[]
-include::text/provisioning/terminology.adoc[]
-include::text/provisioning/scalability.adoc[]
-include::text/provisioning/getting-started.adoc[]
-include::text/provisioning/import-handler.adoc[]
-include::text/provisioning/examples.adoc[]
-include::text/provisioning/adapters.adoc[]
-include::text/provisioning/meta-data.adoc[]
-include::text/provisioning/integration.adoc[]
-include::text/provisioning/single-node.adoc[]
-include::text/provisioning/fine-grained.adoc[]
-include::text/provisioning/api-examples.adoc[]
-include::text/provisioning/snmp-profile.adoc[]
-include::text/provisioning/auto-discovery-detectors.adoc[]
-
-[[ga-provisioning-detectors]]
-=== Service Detectors
-include::text/provisioning/detectors.adoc[]
-include::text/provisioning/detectors/HttpDetector.adoc[]
-include::text/provisioning/detectors/HttpsDetector.adoc[]
-include::text/provisioning/detectors/SnmpDetector.adoc[]
-include::text/provisioning/detectors/wsman.adoc[]
-include::text/provisioning/detectors/wsmanwql.adoc[]
-include::text/provisioning/detectors/ReverseDNSLookupDetector.adoc[]
 
 [[ga-bsm]]
 == Business Service Monitoring
@@ -333,6 +336,7 @@ include::text/operation/daemon-config-files/introduction.adoc[]
 include::text/operation/daemon-config-files/eventd.adoc[]
 include::text/operation/daemon-config-files/notifd.adoc[]
 include::text/operation/daemon-config-files/pollerd.adoc[]
+include::text/operation/daemon-config-files/snmppoller.adoc[]
 include::text/operation/daemon-config-files/syslogd.adoc[]
 include::text/operation/daemon-config-files/trapd.adoc[]
 
@@ -433,6 +437,10 @@ include::text/alarm-correlation/situation-feedback.adoc[]
 [[ga-meta-data]]
 == Meta-Data
 include::text/meta-data.adoc[]
+
+[[ga-snmp-interface-poller]]
+== SNMP Interface Poller
+include::text/snmp-poller/concepts.adoc[]
 
 [[ga-admin]]
 == {opennms-product-name} Administration

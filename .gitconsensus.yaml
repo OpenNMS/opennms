@@ -12,16 +12,16 @@ extra_labels: false
 pull_requests:
 
   # Minimum number of votes for a pull request
-  quorum: 6
+  quorum: 20
 
   # Required percentage of "yes" votes (ignoring abstentions). It's a good idea to give "no" votes more power.
-  threshold: 0.74
+  threshold: 0.8
 
   # Number of hours after last action (commit or opening the pull request) before issue can be merged
-  merge_delay: 12
+  merge_delay: 120
 
   # Number of votes at which the merge_delay gets ignored, assuming no negative votes.
-  delay_override: 8
+  delay_override: 100
 
   # Close pull requests that don't pass after 30 days without any activity (new commits).
   timeout: 720

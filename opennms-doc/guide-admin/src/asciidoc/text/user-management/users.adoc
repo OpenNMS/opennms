@@ -7,9 +7,9 @@ Managing users involves the following tasks:
 
 * <<ga-data-choices, first-time login and data choices>>
 * <<ga-admin-user-setup, admin user setup>>
-* link:#ga-user-config[creating and configuring users]
-* link:#ga-user-groups[creating and configuring groups]
-* link:#ga-user-on-call[configuring on-call roles]
+* <<ga-user-config, creating and configuring users>>
+* <<ga-user-groups,creating and configuring groups>>
+* <<ga-on-call-role, configuring on-call roles>>
 
 [[ga-data-choices]]
 === First-Time Login and Data Choices

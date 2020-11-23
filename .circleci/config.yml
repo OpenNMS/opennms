@@ -27,11 +27,11 @@ defaults: &defaults
     previous_branch:
       description: the previous branch, if any
       type: string
-      default: release-26.x
+      default: release-27.x
     previous_branch_label:
       description: the previous branch, if any (escaped, no slashes)
       type: string
-      default: release-26.x
+      default: release-27.x
     main_branch:
       description: the auto-merge main branch
       type: string
@@ -727,7 +727,7 @@ jobs:
       - run:
           name: Install Docker buildx
           command: |
-            sudo wget https://github.com/docker/buildx/releases/download/v0.3.1/buildx-v0.3.1.linux-amd64 -O /usr/local/bin/docker-buildx
+            sudo wget https://github.com/docker/buildx/releases/download/v0.4.2/buildx-v0.4.2.linux-amd64 -O /usr/local/bin/docker-buildx
             sudo chmod a+x /usr/local/bin/docker-buildx
             sudo systemctl restart docker
       - dockerhub-login

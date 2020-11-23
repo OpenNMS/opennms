@@ -3,9 +3,10 @@
 
 Use the following commands to install the Minion package, start the Minion, test access to the Karaf shell, configure Minion to communicate with {opennms-product-name}, and verify connectivity. 
 
-You must run all commands on the command line interface with _root_ permissions.
+You must run all commands on the command line interface as the _root_ user.
 
 IMPORTANT: Make sure you have xref:gi-minion-setup-communication[set up {opennms-product-name}] to allow communication with the Minion before completing the steps in this section. 
 
 For miscellaneous installation information including Minion directory structure, startup configuration, and an alternate way to configure credentials, see <<minion-communication, Information about Minion Packages and Configuration>>.
 
+NOTE: Red text in commands indicates text that you must substitute for your own values (e.g., "[red]#Office Pittsboro#" means substitute your own office name).

@@ -114,7 +114,7 @@
     <h3>Only one resource supported</h3>
 
     <p>
-      At this time, only one resource at a time is supported in custom resource
+      Only one resource at a time is supported in custom resource
       graphs.  Please go back and choose a single resource.
     </p>
   </c:when>

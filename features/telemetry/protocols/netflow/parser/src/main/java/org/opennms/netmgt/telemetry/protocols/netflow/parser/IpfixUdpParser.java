@@ -88,7 +88,7 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
     }
 
     @Override
-    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) {
+    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException {
         IpFixMessageBuilder builder = new IpFixMessageBuilder(record, enrichment);
         return builder.buildData();
     }

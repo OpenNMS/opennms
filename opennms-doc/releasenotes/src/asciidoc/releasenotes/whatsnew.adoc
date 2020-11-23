@@ -1,205 +1,102 @@
-[[releasenotes-26]]
+[[releasenotes-27]]
 
-== What's New in OpenNMS Horizon 26
+== What's New in OpenNMS Horizon 27
 
 === System Requirements
 
-* *Java 8 through 11*: OpenNMS Horizon 26 runs on JDK 8 through 11.
+* *Java 8 through 11*: OpenNMS Horizon 27 runs on JDK 8 through 11.
   We recommend the most recent version of OpenJDK 11.
-* *PostgreSQL 10 or higher*: Horizon 26 requires any supported version of PostgreSQL 10 or higher.
+* *PostgreSQL 10 or higher*: Horizon 27 requires any supported version of PostgreSQL from 10 up to (and including) 13.
 
-=== Breaking Changes
+== Breaking Changes
 
-* VMware-related data is not longer stored in node assets.
-This data is now stored in the node's meta-data.
+=== Remote Poller Removed
 
-==== Flow Classification
+The remote poller has been removed from Horizon 27.
+It has been replaced with new infrastructure for <<Application Perspective Monitoring,perspective-based monitoring>> that runs on Minions.
 
-In versions before Horizon 26, the Flow Classification UI accepted invalid IP address values, e.g., `10,192.1,168.1,5.1-160`.  
-When upgrading {opennms-product-name}, existing Flow Classification Rules may be considered invalid. In this case they are silently ignored by the Flow Classification Engine.
+=== VMware Assets
 
-In order to assure no invalid Flow Classification Rules exist, please run the OSGi shell command `opennms-classification:list-invalid-rules` to list all invalid rules.
-If there are any invalid rules, you must manually fix them using the Flow Classification UI.
-For more details, refer to issue https://issues.opennms.org/browse/NMS-12422[NMS-12422].
-
-==== Events and Kafka
-
-Events forwarded to Kafka  are now keyed by `id` rather than `uei`. 
-
-==== Karaf Shell Command Changes
-
-All of the custom Karaf shell commands have now been updated to use a common scope of `opennms`.
-This makes it easier to find and enumerate the commands.
-
-Mapping from previous to new commands is as follows:
-
-[options="header, autowidth"]
-|===
-| Previous Command | New Command 
-| `opennms-provision:detect` | `opennms:detect` 
-| `opennms-provision:list-detectors` | `opennms:list-detectors` 
-| `opennms-provision:show-import` | `opennms:show-import` 
-| `opennms-provision:import-requisition` | `opennms:import-requisition` 
-| `opennms-dns:lookup` | `opennms:dns-lookup` 
-| `opennms-dns:reverse-lookup` | `opennms:dns-reverse-lookup` 
-| `opennms-ping:sweep` | `opennms:ping-sweep` 
-| `opennms-ping:ping` | `opennms:ping` 
-| `opennms-jira:list-projects` | `opennms:jira-list-projects` 
-| `opennms-jira:verify` | `opennms:jira-verify` 
-| `opennms-jira:show-config` | `opennms:jira-show-config` 
-| `opennms-jira:list-priorities` | `opennms:jira-list-priorities` 
-| `opennms-jira:list-fields` | `opennms:jira-list-fields` 
-| `opennms-jira:list-versions` | `opennms:jira-list-versions` 
-| `opennms-jira:list-issue-types` | `opennms:jist-list-issue-types` 
-| `opennms-jira:list-components` | `opennms:jira-list-components` 
-| `opennms-scv:set` | `opennms:scv-set` 
-| `opennms-scv:get` | `opennms:scv-get` 
-| `opennms-datachoices:reset-system-id` | `opennms:datachoices-reset-system-id` 
-| `opennms-datachoices:display-usage-report` | `opennms:datachoices-display-usage-report` 
-| `opennms-datachoices:send-usage-report` | `opennms:datachoies-send-usage-report` 
-| `opennms-poller:test` | `opennms:poll-test` 
-| `opennms-poller:list-monitors` | `opennms:list-monitors` 
-| `opennms-poller:poll` | `opennms:poll` 
-| `opennms-filters:filter` | `opennms:filter` 
-| `opennms-measurements:show-newts-samples` | `opennms:show-newts-samples` 
-| `opennms-measurements:delete-resource` | `opennms:delete-measurement-resources` 
-| `opennms-measurements:show-measurements` | `opennms:show-measurements` 
-| `opennms-measurements:show-resources` | `opennms:show-measurement-resources` 
-| `opennms-enlinkd:delete-topology` | `opennms:delete-topology` 
-| `opennms-enlinkd:generate-topology` | `opennms:generate-topology` 
-| `opennms-provision:list-detectors` | `opennms:list-detectors` 
-| `opennms-collection:list-collectors` | `opennms:list-collectors` 
-| `opennms-minion:id` | `opennms:minion-id` 
-| `opennnms-minion:ping` | *Removed in favor of `opennms:health-check`  
-| `opennms-dns:stress` | `opennms:stress-dns` 
-| `opennms-kafka-producer:sync-alarms` | `opennms:kafka-sync-alarms` 
-| `opennms-kafka-producer:push-topology-edges` | `opennms:kafka-push-topology-edges` 
-| `opennms-kafka-producer:evaluate-filter` | `opennms:kafka-evaluate-filter` 
-| `opennms-kafka-producer:list-alarms` | `opennms:kafka-list-alarms` 
-| `opennms-nodecache:sync` | `opennms:sync-node-cache` 
-| `opnennms-coordination:join-election-domain` | `opennms:join-election-domain` 
-| `opennms-kv-blob:put` | `opennms:kv-put-blob` 
-| `opennms-kv-blob:get` | `opennms:kv-get-blob` 
-| `opennms-kv-blob:benchmark` | `opennms:kv-benchmark-blob` 
-| `opennms-kv-json:get` | `opennms:kv-get-json` 
-| `opennms-kv-json:put` | `opennms:kv-put-json` 
-| `opennms-classification:list-rules` | `opennms:list-classification-rules` 
-| `opennms-classification:reload-engine` | `opennms:reload-classification-engine` 
-| `opennms-classification:list-groups` | `opennms:list-classification-groups` 
-| `opennms-classification:list-invalid-rules` | `opennms:list-classification-invalid-rules` 
-| `opennms-classification:classify` | `opennms:classify-flow` 
-| `opennms-elasticsearch:send-historic-events` | `opennms:send-events-to-elasticsearch` 
-| `opennms-events:show-event-config` | `opennms:show-event-config` 
-| `opennms-reload:daemon` | `opennms:reload-daemon` 
-| `opennms-events:stress` | `opennms:stress-events` 
-| `opennms-events:send` | `opennms:send-event` 
-| `opennms-bsm:generate-hierarchies` | `opennms:bsm-generate-hierarchies` 
-| `opennms-bsm:delete-generated-hierarchies` | `opennms:bsm-delete-generated-hierarchies` 
-| `opennms-bsm:render-graph` | `opennms:bsm-render-graph` 
-| `opennms-asset-topology:regenerate` | `opennms:asset-topo-regenerate` 
-| `opennms-asset-topology:remove` | `opennms:asset-topo-remove` 
-| `opennms-asset-topology:list` | `opennms:asset-topo-list` 
-| `opennms-asset-topology:create` | `opennms:asset-topo-create` 
-| `opennms-asset-topology:regenerateall` | `opennms:asset-topo-regenerate-all` 
-| `opennms-topo:show-history` | `opennms:topo-show-history` 
-| `opennms-topo:delete-history` | `opennms:topo-delete-history` 
-| `opennms-onms:listnamespaces` | `opennms:list-namespaces` 
-| `opennms-topo:listoperations` | `opennms:topo-list-operations` 
-| `opennms-activemq:stats` | `opennms:activemq-stats` 
-| `opennms-activemq:purge-queue` | `opennms:activemq-purge-queue` 
-| `opennms-sentinel:id` | `opennms:id` 
-| `opennms-collection:list-collectors` | `opennms:list-collectors` 
-| `opennms-collection:collect` | `opennms:collect` 
-| `opennms-metrics:stress` | `opennms:stress-metrics` 
-| `opennms-threshold-states:details` | `opennms:threshold-details` 
-| `opennms-threshold-states:enumerate` | `opennms:threshold-enumerate` 
-| `opennms-threshold-states:clear-all` | `opennms:threshold-clear-all` 
-| `opennms-threshold-states:clear` | `opennms:threshold-clear` 
-| `opennms-meta:test` | `opennms:metadata-test` 
-| `opennms-rpc:stress` | `opennms:stress-rpc` 
-| `opennms-kafka-sink:topics` | `opennms:kafka-sink-topics` 
-| `opennms-kafka-rpc:topics` | `opennms:kafka-rpc-topics` 
-| `opennms-snmp:fit` | `opennms:snmp-fit` 
-| `opennms-snmp:show-config` | `opennms:snmp-show-config` 
-| `opennms-snmp:remove-from-definition` | `opennms:snmp-remove-from-definition` 
-| `opennms-snmp:walk` | `opennms:snmp-walk` 
-| `snmp:local-engine-id` | `opennms:snmp-local-engine-id` 
-| `opennms-health:metrics-list` | `opennms:metrics-list` 
-| `opennms-health:metrics-display` | `opennms:metrics-display` 
-| `opennms-health:check` | `opennms:health-check` 
-| `opennms-graph:get` | `opennms:graph-get` 
-| `opennms-graph:list` | `opennms:graph-list` 
-| `opennms-graph:force-reload` | `opennms:graph-force-reload` 
-| `opennms-graph:search` | `opennms:graph-search` 
-|===
+VMware-related data is not longer stored in node assets.
+The `install` command will move any existing VMware asset data to the node's metadata when you upgrade.
 
 == New Features and Improvements
 
-=== Documentation Updates
+=== Karaf Shell
 
-Documentation improvements have been made in a number of areas:
+A number of useful commands have been added or updated in the Karaf shell.
 
-* Docker
-* Grafana PDF Reports
-* Graph Service API
-* Minion
-* Telemetry/flows
-* Thresholding
-* Timeseries Integration
-
-=== Graph API
-
-A new API has been added for querying graph data, inspired by link:http://graphml.graphdrawing.org[GraphML].  
-This API consolidates a number of internal APIs for accessing topology, application, BSM, link, and other data.
-
-=== Kafka and RPC
-
-The RPC APIs for communicating between the OpenNMS core, Minion, and Sentinel have been improved, including adding support for GRPC communication.
-
-It is now possible to configure Kafka to use a single topic for communication rather than one-per-module.
-
-Flow data can now be configured to be enriched with node metadata before being forwarded to Kafka.
+* `alarm-list`: list current alarms (optionally filtered by UEI)
+* `event-list`: list events (optionally filtered by UEI)
+* `ip-addr-range`: generate a list of IP addresses to use in other commands
+* `reload-daemon`: now accepts an optional configuration file to target for reload
+* `send-event`: additional options supported to match the CLI version of `send-event` more closely
+* `snmp-fit`: can now optionally send a `newSuspect` event on success
+* `snmp-get`: like `snmp-walk`, but fetches a single MIB object and prints the result
 
 === Minion and Sentinel
 
-* The Minion can now be configured using `confd` by creating a `minion-config.yaml` file.  
-For details, see link:https://github.com/OpenNMS/opennms/blob/develop/opennms-container/minion/CONFD_README.md[the README in the Minion source].
-* The Minion Docker container has a number of enhancements:
-** Minion container sizes have been halved.
-** Native ICMP support has been added to improve performance.
-** Dockerized Minion now supports ARM.
-* The Jolokia HTTP-JMX bridge has been added to the Minion and Sentinel.
+* The Minion `confd` configuration support now handles a bunch more options, including setting Jetty, RMI, and ssh host and port, Secure Credentials Vault configuration, and environment variables and options for the JVM.  For details, see link:https://github.com/OpenNMS/opennms/blob/develop/opennms-container/minion/CONFD_README.md[the CONFD_README file].
+* It's now possible to override entries in a Sentinel's `system.properties` with a file called `custom.system.properties`
 
-=== Polling and Monitoring
+=== Application Perspective Monitoring
 
-* The HTTP POST monitor has been updated to support injecting headers into the request.
-* The poller now does a better job of validating configs on startup/reload.
+Application Perspective Monitoring replaces the old Remote Poller.
+
+It uses the Minion infrastructure to monitor a service's availability from these different perspectives.
+When a service is not responsive an outage will be generated with the corresponding perspective.
+
+A number of provisioning, polling, and web UI changes have been made to accomodate this new infrastructure.
 
 === Provisioning
 
-* Provisiond has been enhanced to improve performance of scans.
-* Nodes provisioned through new suspect events now get assigned a foreign source.
+* Node scan has been updated to limit the number of concurrent RPC requests so as not to overload communication with Minions.
+* New policies have been added for creating node and interface metadata during provisioning.
 
-=== Telemetry and BMP
+=== Polling and Monitoring
 
-* The flow classification editor now supports CIDR notation for IP address expressions.
-* Support has been added for the BGP Monitoring Protocol (BMP).
+* WMI/SMB support has been updated to use a wider set of encryption types.
+* Data collection configuration has been added for Netscaler vServer.
 
-=== Time-Series API
+=== Thresholding
 
-A new experimental internal API has been added for supporting persisting time-series data in a way that doesn't carry the baggage of the existing persistence APIs which are still heavily influenced by RRDTool.
+* It is now possible to use metadata in threshold evaluation.
+
+=== RPC, Telemetry, Flows, and BMP
+
+* Improvements have been made for supporting aggregate flow metrics.
+* Flow DNS enrichment has been enhanced to improve performance.
+* Aggregate flow queries now support resolving hostnames if available.
+* Sink RPC APIs have been enhanced to expose metrics to Karaf for tracing and performance tuning.
+* The OpenConfig integration now supports gNMI, in addition to JTI.
+
+=== Notifications
+
+* It is now possible to use node-, interface-, and service-level metadata in notifications.
+
+=== ReST API
+
+* Events for `applicationCreated`/`applicationDeleted` are now sent when applications are added or removed through the ReST API.
+* A new v2 API for retrieving application status has been added.
 
 === Web UI Improvements
 
-* The navbar notification alert now shows everywhere, not just the front page.
-* The "user" menu has been reorganized and cleaned up.
-* The requisitions UI now supports deleting a node from its node page in the editor.
+* A new universal search bar has been added which allows for searching alarms, nodes, and more from the top of any page in the UI.
+
+=== Documentation Updates
+
+Documentation improvements and additions have been made in a number of areas:
+
+* Application Perspective Monitoring
+* Data Collection Configuration
+* Metadata
+* Mail Transport Monitor
+* Minion/Kafka RPC Tuning
+* Thresholding
+* Users Configuration, Duty Schedules, and Security Roles
+
+...plus TONS of smaller readability improvements.
 
 == Important Internal Changes
 
-* Kafka has been updated to version 2.4.0.
-* Protobuf has been updated to version 3.11.4.
-* The OpenNMS Integration API is now version 0.4.
-* Internally, events are, in most cases, immutable. 
-For the most part, you should see no changes in the external and code places that events are interacted with.  
-They are converted to mutable versions in places where they are often manipulated (like Drools).
+* Sink internals have been updated to use Protobuf 3.
