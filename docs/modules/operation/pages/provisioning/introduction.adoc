@@ -1,6 +1,6 @@
 
 [[ga-provisioning-introduction]]
-= Introduction
+= Provisioning
 
 Provisioning is a mechanism to import node and service definitions either from an external source such as DNS or HTTP or via the {opennms-product-name} web UI.
 The _Provisiond_ daemon maintains your managed entity inventory through policy-based provisioning. 
