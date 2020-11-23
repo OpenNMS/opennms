@@ -1349,7 +1349,7 @@
     <awsSqsMessagingVersion>1.0.4</awsSqsMessagingVersion>
     <awsSdkVersion>1.11.218</awsSdkVersion>
     <batikVersion>1.7</batikVersion>
-    <bcprovVersion>1.66</bcprovVersion>
+    <bouncyCastleVersion>1.67</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
@@ -1413,7 +1413,7 @@
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <jcifsVersion>2.1.4</jcifsVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
-    <jettyVersion>9.4.30.v20200611</jettyVersion>
+    <jettyVersion>9.4.34.v20201102</jettyVersion>
     <jestVersion>5.3.3</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.0.19</jfreechartVersion>
@@ -1492,8 +1492,6 @@
     <springSecurityVersion>3.2.7.RELEASE</springSecurityVersion>
     <springLdapVersion>${springSecurityVersion}</springLdapVersion>
     <springSecurityKerberosVersion>1.0.1.RELEASE</springSecurityKerberosVersion>
-
-    <bouncyCastleVersion>1.67</bouncyCastleVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
@@ -4336,12 +4334,12 @@
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcpkix-jdk15on </artifactId>
+        <artifactId>bcpkix-jdk15on</artifactId>
         <version>${bouncyCastleVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk15on </artifactId>
+        <artifactId>bcprov-jdk15on</artifactId>
         <version>${bouncyCastleVersion}</version>
       </dependency>
     </dependencies>

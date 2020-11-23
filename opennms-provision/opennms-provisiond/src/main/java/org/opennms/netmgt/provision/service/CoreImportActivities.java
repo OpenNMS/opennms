@@ -138,8 +138,10 @@ public class CoreImportActivities {
             return;
         }
 
-        if (rescanExisting == null || Boolean.valueOf(rescanExisting)) {
-            info("Running scan phase of {}, the parameter {} was set to {} during import.", operation, EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting);
+        if (rescanExisting == null || Boolean.valueOf(rescanExisting) ||
+                // scan at import should always be performed for new nodes irrespective of rescanExisting flag.
+                operation.getOperationType().equals(ImportOperation.OperationType.INSERT)) {
+            info("Running scan phase of {}", operation);
             operation.scan();
     
             info("Finished Running scan phase of {}", operation);

@@ -63,4 +63,10 @@ public class InsertOperation extends SaveOrUpdateOperation {
         getProvisionService().insertNode(getNode());
     }
 
+    @Override
+    public OperationType getOperationType() {
+        return OperationType.INSERT;
+    }
+
+
 }

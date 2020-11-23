@@ -65,8 +65,8 @@
         <bundle>wrap:mvn:org.apache.xmlgraphics/batik-util/${batikVersion}</bundle>
         <bundle>wrap:mvn:org.apache.xmlgraphics/batik-xml/${batikVersion}</bundle>
     </feature>
-    <feature name="bcprov" version="${bcprovVersion}" description="Legion of the Bouncy Castle :: Java Cryptography APIs">
-        <bundle>wrap:mvn:org.bouncycastle/bcprov-jdk15on/${bcprovVersion}</bundle>
+    <feature name="bcprov" version="${bouncyCastleVersion}" description="Legion of the Bouncy Castle :: Java Cryptography APIs">
+        <bundle>wrap:mvn:org.bouncycastle/bcprov-jdk15on/${bouncyCastleVersion}</bundle>
     </feature>
     <feature name="bsf" version="${bsfVersion}" description="Apache :: Bean Scripting Framework">
         <bundle>wrap:mvn:bsf/bsf/${bsfVersion}</bundle>

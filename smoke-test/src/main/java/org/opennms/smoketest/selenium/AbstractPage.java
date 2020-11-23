@@ -56,7 +56,7 @@ public class AbstractPage {
 
     protected List<WebElement> findElements(By by) {
         try {
-            testCase.setImplicitWait(5, TimeUnit.SECONDS);
+            testCase.setImplicitWait(7, TimeUnit.SECONDS);
             return getDriver().findElements(by);
         } finally {
             testCase.setImplicitWait();
@@ -65,7 +65,7 @@ public class AbstractPage {
 
     protected WebElement findElement(By by) {
         try {
-            testCase.setImplicitWait(1, TimeUnit.SECONDS);
+            testCase.setImplicitWait(2, TimeUnit.SECONDS);
             return getDriver().findElement(by);
         } finally {
             testCase.setImplicitWait();
@@ -74,8 +74,8 @@ public class AbstractPage {
 
     protected void waitUntil(ExpectedCondition<Boolean> condition) {
         try {
-            testCase.setImplicitWait(5, TimeUnit.SECONDS);
-            new WebDriverWait(getDriver(), 5).until(condition);
+            testCase.setImplicitWait(7, TimeUnit.SECONDS);
+            new WebDriverWait(getDriver(), 7).until(condition);
         } finally {
             testCase.setImplicitWait();
         }

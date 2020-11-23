@@ -170,7 +170,7 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
 
         public OpsBoardAdminPage open() {
             get("/admin/wallboardConfig.jsp");
-            getDriver().switchTo().frame(0);
+            getDriver().switchTo().frame(findElement(By.name("wallboard-config")));
             return this;
         }
 
