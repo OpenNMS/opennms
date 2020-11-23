@@ -4,7 +4,6 @@
 * xref:minion-misc-config.adoc[]
 * xref:minion-config-file.adoc[]
 * xref:install-opennms-versions.adoc[]
-* xref:run-as-non-root.adoc[]
 * xref:time-series-storage/introduction.adoc[]
 ** xref:time-series-storage/rrdtool/rrdtool.adoc[]
 ** xref:time-series-storage/rrdtool/debian.adoc[]
