@@ -1,17 +1,17 @@
 
-=== WS-Man WQL Detector
+= WS-Man WQL Detector
 
 The WS-Management WQL detector attempts to connect to the agent defined in `wsman-config.xml` and issues a WQL query.
 If the query successfully returns one or more items, the service is marked as detected. Use the WS-Man WQL detector to define arbitrary services based on WQL filter results.
 
-==== Detector facts
+== Detector facts
 
 [options="autowidth"]
 |===
 | Implementation | `org.opennms.netmgt.provision.detector.wsman.WsManWQLDetector`
 |===
 
-==== Configuration and Use
+== Configuration and Use
 
 .Parameters for the <DETECTOR-NAME-HERE>
 [options="header, autowidth"]
@@ -22,7 +22,7 @@ If the query successfully returns one or more items, the service is marked as de
 | `serviceName`  | A custom service name to identify this service.                                                     | no       | `WsManWQLService`
 |===
 
-==== Examples
+== Examples
 
 Example detector configuration:
 

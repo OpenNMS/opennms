@@ -5,6 +5,6 @@ The Operations section provides information and procedures on setup, configurati
 * <<user-management/introduction.adoc#ga-data-choices, Opt in or out>> of usage statistics collection (requirement during first login).
 * <<user-management/introduction.adoc#ga-admin-user-setup, Setup the admin user>>.
 * <<user-management/user-config.adoc#ga-user-config, Create users>> and <<user-management/security-roles#ga-role-user-management-roles, permissions>>.
-* Provision your system.
+* <<provisioning/introduction.adoc#ga-provisioning-introduction, Provision>> your system.
 
 #TODO: add links to these sections of the documentation once incorporated#

@@ -1,17 +1,17 @@
 
-=== SNMP Detector
+= SNMP Detector
 
 Use this detector to find and assigns services based on SNMP.
 The detector binds a service with a given service name when a particular SNMP OID as scalar or table matches a given criteria.
 
-==== Detector facts
+== Detector facts
 
 [options="autowidth"]
 |===
 | Implementation | `org.opennms.netmgt.provision.detector.snmp.SnmpDetector`
 |===
 
-==== Configuration and Use
+== Configuration and Use
 
 .Parameters for the SNMP detector
 [options="header, autowidth"]
@@ -35,7 +35,7 @@ The detector binds a service with a given service name when a particular SNMP OI
 | `ttl`       | Time to live in milliseconds to wait for a response from the Minion.                                    | optional | `20000`                  
 |===
 
-==== Example for SNMP scalar value
+== Example for SNMP scalar value
 
 We have a Dell server farm and want to monitor the global server status provided by the OpenManage Server Administrator.
 Global status is provided by a scalar OID `.1.3.6.1.4.1.674.10892.1.200.10.1.2.1`.
@@ -54,7 +54,7 @@ We create a detector with the name _Dell-OMSA-Global-State_ for this requisition
 
 When the requisition Server synchronizes with the service, _Dell-OMSA-Global-State_ will be detected if #they# support the given SNMP OID.
 
-==== Example using SNMP tables
+== Example using SNMP tables
 
 We have a _HP_ server farm and want to monitor the status of logical drives over _SNMP_ provided from _HP Insight Manager_.
 The status for logical drives is provided in a _SNMP Table_ under `.1.3.6.1.4.1.232.3.2.3.1.1.4`.

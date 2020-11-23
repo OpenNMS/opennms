@@ -1,15 +1,15 @@
-=== HTTP Detector
+= HTTP Detector
 
 Use this detector to find and assign services based on HTTP.
 
-==== Detector facts
+== Detector facts
 
 [options="autowidth"]
 |===
 | Implementation | `org.opennms.netmgt.provision.detector.simple.HttpDetector`
 |===
 
-==== Configuration and Use
+== Configuration and Use
 
 .Parameters for the HTTP detector
 [options="header, autowidth"]
@@ -26,7 +26,7 @@ Use this detector to find and assign services based on HTTP.
 
 NOTE: The HTTP Detector makes only one HTTP request and doesn't follow redirects.
 
-==== Example Configuration
+== Example Configuration
 
 [source,xml]
 ----

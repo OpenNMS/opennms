@@ -2,7 +2,7 @@
 [[ga-provisioning-introduction]]
 = Provisioning
 
-Provisioning is a mechanism to import node and service definitions either from an external source such as DNS or HTTP or via the {opennms-product-name} web UI.
+Provisioning is a mechanism to import node and service definitions either from an external source such as DNS or HTTP or via the {page-component-title} web UI.
 The _Provisiond_ daemon maintains your managed entity inventory through policy-based provisioning. 
 
 Provisiond comes with a RESTful Web Service API for easy integration with external systems such as a configuration management database (CMDB) or external inventory systems.
@@ -15,20 +15,20 @@ Provisiond receives requests to add managed entities (nodes, IP interfaces, SNMP
 
 * link:#discovery-auto[automatic discovery] (typically via the Discovery daemon)
 * link:#discovery-directed[directed discovery] using an import requisition (typically via the Provisioning UI)
-* link:#asset-import[asset import] through the RestAPI or the https://docs.opennms.com/pris/1.2.0/index.html[provisioning integration server] (PRIS)
+* #link:#asset-import#[asset import] through the RestAPI or the https://docs.opennms.com/pris/1.2.0/index.html[provisioning integration server] (PRIS)
 
-{opennms-product-name} enables you to control Provisiond behavior by creating provisioning policies that include scanning frequency, IP ranges, and which services to detect. 
+{page-component-title} enables you to control Provisiond behavior by creating provisioning policies that include scanning frequency, IP ranges, and which services to detect. 
 
 Regardless of the method, provisioning is an iterative process: you will need to fine-tune your results to exclude or add things to what you monitor.
 
 [[discovery-auto]]
 == Automatic Discovery
 
-{opennms-product-name} uses an ICMP ping sweep to find IP addresses on the network and provision node entities.
-Using link:#ga-provisioning-auto-discovery-detectors[auto discovery with detectors] allows you to specify services that you need to detect in addition to the ICMP IP address ping. 
-link:#import-handlers[Import handlers] allow you to further control provisioning. #is this just through directed discovery?#
+{page-component-title} uses an ICMP ping sweep to find IP addresses on the network and provision node entities.
+Using <<provisioning/auto-discovery-detectors.adoc#ga-provisioning-auto-discovery-detectors, auto discovery with detectors>> allows you to specify services that you need to detect in addition to the ICMP IP address ping. 
+<<provisioning/import-handler.adoc#import-handlers, Import handlers>> allow you to further control provisioning. #is this just through directed discovery?#
 
-Automatically discovered entities are analyzed, persisted to the relational data store, and managed based on the policies defined in the link:#foreign-source-definition[default foreign source definition]:
+Automatically discovered entities are analyzed, persisted to the relational data store, and managed based on the policies defined in the <<provisioning/getting-started.adoc#foreign-source-definition, default foreign source definition>>:
 
 * scanned to discover node entity’s interfaces (SNMP and IP)
 * interfaces are persisted
@@ -36,15 +36,15 @@ Automatically discovered entities are analyzed, persisted to the relational data
 * node merging
 
 NOTE: Merging occurs only when two automatically discovered nodes appear to be the same node.
-Nodes link:#discovery-directed[discovered directly] are not included in the node merging process.
+Nodes <<provisioning/directed-discover.adoc#discovery-directed, discovered directly>> are not included in the node merging process.
 
 [[discovery-directed]]
 == Directed Discovery
 Directed discovery allows you to specify what you want to provision based on an existing data source such as an in-house inventory, stand-alone provisioning system, or set of element management systems. 
-Using an import requisition, this mechanism directs {opennms-product-name} to add, update, or delete a node entity exactly as defined by the external source. 
+Using an import requisition, this mechanism directs {page-component-title} to add, update, or delete a node entity exactly as defined by the external source. 
 No discovery process is used for finding more interfaces or services.
 
-IMPORTANT: An import requisition is an XML definition of node entities to be provisioned from an external source into {opennms-product-name}.
+IMPORTANT: An import requisition is an XML definition of node entities to be provisioned from an external source into {page-component-title}.
 See the http://xmlns.opennms.org/xsd/config/model-import[requisition schema] (XSD) for more information. 
 
 === Understanding the Process

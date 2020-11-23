@@ -1,16 +1,16 @@
-=== WS-Man Detector
+= WS-Man Detector
 
 The WS-Management detector attempts to connect to the agent defined in `wsman-config.xml` and issues an identify command.
 If the identify command is successful, the service is marked as detected, and the product details returned by the command are optionally stored in the asset fields (see details below).
 
-==== Detector facts
+== Detector facts
 
 [options="autowidth"]
 |===
 | Implementation | `org.opennms.netmgt.provision.detector.wsman.WsManDetector`
 |===
 
-==== Configuration and Use
+== Configuration and Use
 
 .Parameters for the <DETECTOR-NAME-HERE>
 [options="header, autowidth"]
@@ -19,7 +19,7 @@ If the identify command is successful, the service is marked as detected, and th
 | `updateAssets` | Stores the product vendor and product version in the `vendor` and `modelNumber` asset fields.       | false    | `true`
 |===
 
-==== Examples
+== Examples
 
 If a valid response to the identify command is received, the product vendor and product version are stored in the `vendor` and `modelNumber` fields of the associated node's assets table.
 

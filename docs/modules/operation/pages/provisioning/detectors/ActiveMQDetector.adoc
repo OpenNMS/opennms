@@ -1,15 +1,15 @@
-=== ActiveMQDetector
+= ActiveMQDetector
 
 Use this detector to find and assign services based on ActiveMQ.
 
-==== Detector facts
+== Detector facts
 
 [options="autowidth"]
 |===
 | Implementation | `org.opennms.netmgt.provision.detector.jms.ActiveMQDetector`
 |===
 
-==== Configuration and Use
+== Configuration and Use
 
 .Parameters for the ActiveMQ Detector
 [options="header, autowidth"]
@@ -22,8 +22,8 @@ Use this detector to find and assign services based on ActiveMQ.
 |===
 
 
-==== Examples
+== Examples
 
-===== Example for use-nodelabel=true
+=== Example for use-nodelabel=true
 
 If you are using an SSL-based connector, use this flag so that the detector will adjust the broker-url to reflect the node label as the hostname.

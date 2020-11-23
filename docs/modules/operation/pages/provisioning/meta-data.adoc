@@ -10,5 +10,5 @@ All other contexts are reserved for future use by other provisioning-adapters an
 While provisioning a requisition, the metadata from the requisition is transferred to the database and assigned to the nodes, interfaces and services accordingly.
 
 == User-defined contexts
-If there is a requirement to add more contexts not managed by {opennms-product-name}, the context name must be prefixed by `X-`.
+If there is a requirement to add more contexts not managed by {page-component-title}, the context name must be prefixed by `X-`.
 Any third-party software must take care to choose a context name which is unique enough to not conflict with other software.
