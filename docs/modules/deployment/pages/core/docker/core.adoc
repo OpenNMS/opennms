@@ -57,17 +57,6 @@ services:
 <8> Publish ports to access the web user interface and the Karaf Shell
 <9> Run an internal healt check against the web user interface to verify the service is healthy
 
-CAUTION: In some environments it is not allowed to use ICMP (ping) for non-root users.
-         {page-component-title} Core runs as a non-privileged user in the container with `userid=10001, groupid=10001`.
-         You can verify with `sysctl -n net.ipv4.ping_group_range` if the group id `10001` is in allowed group range.
-         If not you can add the following lines in your service definition in the `docker-compose.yml` file.
-
-[source, docker-compose.yml]
-----
-sysctls:
-  net.ipv4.ping_group_range: "10001 10001"
-----
-
 .Validate your Docker Compose file
 [source, console]
 ----
