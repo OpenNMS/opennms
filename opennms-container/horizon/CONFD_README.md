@@ -16,6 +16,7 @@ The following describes the keys that can be specified in `horizon-config.yaml` 
 opennms:
   notifd:
     slack:
+      webhookURL: https://url.com
       channel: alerting
       userName: username
       iconEmoji: :metal:
@@ -24,10 +25,3 @@ opennms:
 ```
 
 Config specified will be written to `etc/opennms.properties.d/_confd.slack.properties`. Check the docs for detailed information about the Slack configuration parameters.
- 
----
-**NOTE**
-
-When defining the Slack variables within the Docker configuration as environment variables, the environment variables will overwrite the configurations defined in the `horizon-config.yaml`
-
----
