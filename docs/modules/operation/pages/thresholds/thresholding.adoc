@@ -1,6 +1,4 @@
-
-// Allow GitHub image rendering
-:imagesdir: ../../images
+= Thresholding
 
 Thresholding allows you to define limits against network performance metrics of a managed entity to trigger an event when a value goes above or below the specified limit. 
 
@@ -9,21 +7,21 @@ Thresholding allows you to define limits against network performance metrics of 
 * Absolute Value
 * Relative Change
 
-=== How Thresholding Works in {opennms-product-name} 
+== How Thresholding Works in {page-component-title} 
 
-{opennms-product-name} uses _collectors_ to implement data collection for a particular protocol or family of protocols (SNMP, JMX, HTTP, XML/JSON, WS-Management/WinRM, JDBC, etc.).
+{page-component-title} uses _collectors_ to implement data collection for a particular protocol or family of protocols (SNMP, JMX, HTTP, XML/JSON, WS-Management/WinRM, JDBC, etc.).
 You can specify configuration for a particular collector in a _collection package_: essentially the set of instructions that drives the behavior of the collector. 
 
 The _collectd_ daemon gathers and stores performance data from these collectors. 
-This is the data against which {opennms-product-name} applies thresholds. 
+This is the data against which {page-component-title} applies thresholds. 
 Thresholds trigger events when a specified threshold value is met. 
 You can further create notifications and alarms for threshold events. 
 
 image:thresholding/thresholding-flow.png[]
 
-=== What Triggers a Thresholding Event?
+== What Triggers a Thresholding Event?
 
-_{opennms-product-name}_ uses four thresholding algorithms that trigger an event when the datasource value:
+{page-component-title} uses four thresholding algorithms that trigger an event when the datasource value:
 
 * *Low* - equals or drops below the threshold value and re-arms when it equals or comes back up above the re-arm value (e.g., available disk space falls under the specified value)
 * *High* - equals or exceeds the threshold value, and re-arms when it equals or drops below the re-arm value (e.g., bandwidth use exceeds the specified amount)
@@ -32,33 +30,33 @@ _{opennms-product-name}_ uses four thresholding algorithms that trigger an event
 
 These thresholds can be *basic* (tested against a single value) or an *expression* (evaluated against multiple values in an expression). 
 
-_{opennms-product-name}_ applies these algorithms against any performance data (telemetry) collected by <<ga-performance-mgmt,collectd>> or pushed to <<ga-telemetryd, telemetryd>>. 
+{page-component-title} applies these algorithms against any performance data (telemetry) collected by <<performance-data-collection/introduction.adoc#ga-performance-mgmt,collectd>> or pushed to <<telemetryd/introduction.adoc#ga-telemetryd, telemetryd>>. 
 This includes, but is not limited to, metrics such as CPU load, bandwidth, disk space, etc. 
 
-NOTE: The basic walkthrough focuses on how to set simple thresholds using default values in the {opennms-product-name} setup. 
-For information on setting and configuring collectors, collectd, and the  _collectd-configuration.xml_ file, see xref:performance-data-collection/introduction.adoc[Performance Management].
+NOTE: The basic walkthrough focuses on how to set simple thresholds using default values in the {page-component-title} setup. 
+For information on setting and configuring collectors, collectd, and the  _collectd-configuration.xml_ file, see <<performance-data-collection/introduction.adoc#performance-management, Performance Management>>.
 
 [[threshold-bw]]
-=== Basic Walk-through – Thresholding
+== Basic Walk-through – Thresholding
 
 This section describes how to create a basic threshold for a single, system-wide variable: the number of logged-in users. 
-Our threshold will tell {opennms-product-name} to create an event when the number of logged-in users on the device exceeds two, and re-arm when it falls below two. 
+Our threshold will tell {page-component-title} to create an event when the number of logged-in users on the device exceeds two, and re-arm when it falls below two. 
 
 Before creating a threshold, you need to make sure you are collecting the metric against which you want to threshold. 
 
 [[metric-collect]]
-==== Determine You are Collecting Metric
+=== Determine You are Collecting Metric
 In this case, we have chosen a metric (number of logged-in users) that is collected by default. 
-We are also using data collected via SNMP. (For information on other collectors, see xref:xref:performance-data-collection/collectors[Collectors].)
+We are also using data collected via SNMP. (For information on other collectors, see <<performance-data-collection/collectors/collectors.adoc#collectors-overview,Collectors>>.)
 
-. In the {opennms-product-name} UI, choose `Reports>Resource Graphs`.
+. In the {page-component-title} UI, choose `Reports>Resource Graphs`.
 . Select one of the listed resources. 
 . Under `SNMP Node Data`, select `Node-level Performance Data` and choose `Graph Selection`.
 . Scroll to find the `Number of Users` graph. 
 .. You can click the binoculars icon to display only this graph. 
 
 [[threshold-create]]
-==== Create a Threshold
+=== Create a Threshold
 
 . Select `<User_Name>>Configure OpenNMS` from the top-right menu. 
 . Under `Performance Measurement`, choose `Configure Thresholds`.
@@ -90,7 +88,7 @@ In this case, we want to trigger an event when the number of logged-in users exc
 In this case, once the number of logged-in users falls below two. 
 
 | Trigger | 3 | The number of consecutive times the threshold value can occur before the system triggers an event. 
-Since our default polling period is 5 minutes, a value of 3 means {opennms-product-name} would create a threshold event if there are more than 2 users for 15 minutes.
+Since our default polling period is 5 minutes, a value of 3 means {page-component-title} would create a threshold event if there are more than 2 users for 15 minutes.
 
 | Description | leave blank | Optional text to describe your threshold. 
 
@@ -103,7 +101,7 @@ If left blank, it defaults to the standard thresholds UEIs.
 |===
 
 [[threshold-test]]
-==== Testing the Threshold
+=== Testing the Threshold
 
 To test the threshold we just created, log a second person into the node you are monitoring. 
 Navigate to the `Events` page.
@@ -113,7 +111,7 @@ Log out the second user.
 The `Events` page should indicate that the system has re-armed. 
 
 [[thresh-cpu]]
-==== Creating a Threshold for CPU Usage
+=== Creating a Threshold for CPU Usage
 This procedure describes how to create an expression-based threshold when the five-minute CPU load average metric reaches or goes above 70% for two consecutive measurement intervals.
 Expression-based thresholds are useful when you need to threshold on a percentage, not the actual value of the data collected. 
 
@@ -161,10 +159,10 @@ In this case, when the five-minute CPU load average goes above 70% for two conse
 . Click `Save`.
 
 [[ga-threshhold-metadata]]
-==== Using Metadata in a Threshold
+=== Using Metadata in a Threshold
 
 Metadata in expression-based thresholds can streamline threshold creation. 
-The link:#ga-meta-data-dsl[Metadata DSL] (domain specific language) allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
+The <<meta-data.adoc#ga-meta-data-dsl, Metadata DSL>> (domain specific language) allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
 A single expression can behave differently based on the node being tested against.
 
 During evaluation of an expression, the following scopes are available:
@@ -175,14 +173,13 @@ During evaluation of an expression, the following scopes are available:
 
 Metadata is also supported in Value, Re-arm, and Trigger fields for Single-DS and expression-based thresholds.
 
-For more information on metadata and how to define it, see link:#ga-meta-data[Metadata].
-
+For more information on metadata and how to define it, see <<metadata.adoc,Metadata>>.
 
 This procedure uses metadata to trigger an event when the number of logged-in users exceeds 1.
 
 The expression is in the form `${context:key|context_fallback:key_fallback|...|default}`.
 
-Before using metatdata in a threshold, you need to add the metatdata context pair, in this case, a requisition key called userLimit (see link:ga-metadata-webui[Adding Metadata through the Web UI]).
+Before using metatdata in a threshold, you need to add the metatdata context pair, in this case, a requisition key called userLimit (see <<meta-data.adoc#ga-metadata-webui, Adding Metadata through the Web UI>>).
 
 . Select `<User_Name>>Configure OpenNMS` from the top-right menu. 
 . Under *Performance Measurement*, choose *Configure Thresholds*.
@@ -198,6 +195,8 @@ Before using metatdata in a threshold, you need to add the metatdata context pai
 * Rearm: 1
 * Description: Too many logged-in users
 
++
+
 image:metadata/meta-expression1.png[]
 
 . Click *Save*.
@@ -207,7 +206,7 @@ This expression will trigger an event when the number of logged-in users exceeds
 image:metadata/meta-expression2.png[]
 
 [[datasource-determine]]
-==== Determining the Datasource
+=== Determining the Datasource
 Creating a threshold requires the name of the datasource generating the metrics on which you want to threshold. 
 Datasource names for the SNMP protocol appear in `etc/snmp-graph.properties.d/`.
 
@@ -226,9 +225,9 @@ image:thresholding/Graphs.png[]
 . Note the name of the datasource, and enter it in the `Datasource` field when you <<threshold-create, create your threshold>>.  
 
 [[threshold-group]]
-==== Create a Threshold Group
+=== Create a Threshold Group
 A threshold group associates a set of thresholds to a service (e.g., thresholds that apply to all Cisco devices). 
-_{opennms-product-name}_ includes seven preconfigured, editable threshold groups:
+{page-component-title} includes seven preconfigured, editable threshold groups:
 
 * mib2 
 * cisco 
@@ -278,10 +277,10 @@ The following is a sample of how the threshold appears in the _thresholds.xml_ f
 <2>  The details of the threshold including type, datasource type, threshold value, rearm value, etc. 
 
 [[threshold-notification]]
-==== Create a Notification on a Threshold Event
-A custom UEI for each threshold makes it easier to xref:notificatioins/introduction.adoc[create notifications]. 
+=== Create a Notification on a Threshold Event
+A custom UEI for each threshold makes it easier to <<notifications/introduction.adoc#ga-notifications-introduction, create notifications>>. 
 
-=== Thresholding Service
+== Thresholding Service
 
 The Thresholding Service is the component responsible for maintaining the state of the performance metrics and for generating alarms from these when thresholds are triggered (armed) or cleared (unarmed).
 
@@ -289,16 +288,16 @@ The thresholding service listens for and visits performance metrics _after_ they
 
 The state of the thresholds are held in memory and pushed to persistent storage only when they are changed.
 
-==== Distributed Thresholding with Sentinel
+=== Distributed Thresholding with Sentinel
 
-Thresholding for streaming telemetry with <<ga-telemetryd, telemetryd>> is supported on Sentinel when using <<ga-opennms-operation-newts, Newts>>.
+Thresholding for streaming telemetry with <<telemetryd/introduction#ga-telemetryd, telemetryd>> is supported on Sentinel when using <<operation/newts/introduction.adoc#ga-opennms-operation-newts, Newts>>.
 When running on Sentinel, the thresholding state can be stored in either Cassandra or PostgreSQL.
 Given that Newts already requires Cassandra, we recommend using Casssandra in order to help minimize the load on PostgreSQL.
 
-Thresholding on Sentinel uses the same configuration files as _{opennms-product-name}_ and operates similarly.
-When a thresholding changes to/from trigger or cleared, and event is published which is processed by _{opennms-product-name}_ and the alarm is created or updated.
+Thresholding on Sentinel uses the same configuration files as {page-component-title} and operates similarly.
+When a thresholding changes to/from trigger or cleared, and event is published which is processed by {page-component-title} and the alarm is created or updated.
 
-=== Shell Commands
+== Shell Commands
 
 The following shell commands are made available to help debug and manage thresholding.
 

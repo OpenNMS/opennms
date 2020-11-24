@@ -1,6 +1,6 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
+[[ga-telemetryd]]
+= Telemetry Daemon
 
 The telemetry daemon (telemetryd) provides an extensible framework you can use to handle sensor data pushed to _{opennms-product-name}_.
 Use the framework to support applications that use different protocols to transfer metrics.

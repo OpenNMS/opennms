@@ -26,5 +26,6 @@
 **** xref:provisioning/detectors/wsmanwql.adoc[]
 **** xref:provisioning/detectors/ReverseDNSLookupDetector.adoc[]
 ** xref:provisioning/xml-samples.adoc[]
+* xref:thresholds/thresholding.adoc[]
 
 

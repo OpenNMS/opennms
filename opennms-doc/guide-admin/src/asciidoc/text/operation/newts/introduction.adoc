@@ -1,5 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+[[ga-opennms-operation-newts]]
+= Newts
 
 This section describes how to configure _{opennms-product-name}_ to use _Newts_ and how to use _{opennms-product-name}_ to monitor your Cassandra cluster.
