@@ -117,6 +117,12 @@ ActiveMQ::
 --
 include::message-broker/activemq.adoc[]
 --
+
+gRPC::
++
+--
+include::message-broker/grpc.adoc[]
+--
 ====
 
 == Check Minion in the Core web UI

@@ -1,16 +1,9 @@
 .TODO
-* xref:minion-troubleshooting.adoc[]
 * xref:tuning-kafka.adoc[]
-* xref:minion-misc-config.adoc[]
-* xref:minion-config-file.adoc[]
 * xref:install-opennms-versions.adoc[]
 * xref:time-series-storage/introduction.adoc[]
 ** xref:time-series-storage/rrdtool/rrdtool.adoc[]
 ** xref:time-series-storage/rrdtool/debian.adoc[]
 ** xref:time-series-storage/rrdtool/rhel.adoc[]
 ** xref:time-series-storage/newts.adoc[]
-* Minion gRPC
-** xref:minion-grpc/introduction.adoc[]
-** xref:minion-grpc/steps-minion.adoc[]
-** xref:minion-grpc/steps-opennms.adoc[]
 * xref:unused-images.adoc[]

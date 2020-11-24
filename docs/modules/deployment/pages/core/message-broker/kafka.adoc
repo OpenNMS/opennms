@@ -1,4 +1,4 @@
-.Create a configuration file with for Kafka
+.Create a configuration file for Kafka settings
 [source, console]
 ----
 sudo vi etc/opennms.properties.d/kafka.properties

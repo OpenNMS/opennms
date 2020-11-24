@@ -65,4 +65,10 @@ embedded ActiveMQ::
 --
 include::message-broker/embedded-activemq.adoc[]
 --
+
+gRPC::
++
+--
+include::message-broker/grpc.adoc[]
+--
 ====
