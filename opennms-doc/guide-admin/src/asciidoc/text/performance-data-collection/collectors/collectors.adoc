@@ -1,6 +1,9 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[collectors-overview]]
+= Collectors
+
 Collectors collect performance data via specific agents and protocols. 
 This section includes the following information for each collector:
 

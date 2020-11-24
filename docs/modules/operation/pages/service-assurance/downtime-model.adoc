@@ -1,21 +1,18 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[ga-service-assurance-downtime-model]]
-=== Downtime Model
+= Downtime Model
 
 By default the monitoring interval for a service is 5 minutes.
-To detect also short services outages, caused for example by automatic network rerouting, the downtime model can be used.
+To also detect short service outages, caused, for example, by automatic network rerouting, use the downtime model.
 On a detected service outage, the interval is reduced to 30 seconds for 5 minutes.
 If the service comes back within 5 minutes, a shorter outage is documented and the impact on service availability can be less than 5 minutes.
-This behavior is called _Downtime Model_ and is configurable.
+This configurable behavior is called "downtime model".
 
 .Downtime model with resolved and ongoing outage
 image::service-assurance/01_downtime-model.png[]
 
 In figure <<ga-service-assurance-downtime-model, Outages and Downtime Model>> there are two outages.
-The first outage shows a short outage which was detected as _up_ after 90 seconds.
+The first shows a short outage which was detected as "up" after 90 seconds.
 The second outage is not resolved now and the monitor has not detected an available service and was not available in the first 5 minutes (10 times 30 second polling).
 The scheduler changed the polling interval back to 5 minutes.
 

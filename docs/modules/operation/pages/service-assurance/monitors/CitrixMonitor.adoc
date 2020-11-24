@@ -1,13 +1,10 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== CitrixMonitor
+= CitrixMonitor
 
 This monitor is used to test if a Citrix(R) Server or XenApp Server(R) is providing the _Independent Computing Architecture_ (_ICA_) protocol on TCP 1494.
 The monitor opens a TCP socket and tests the greeting banner returns with `ICA`, otherwise the service is unavailable.
 
-===== Monitor facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -15,7 +12,7 @@ The monitor opens a TCP socket and tests the greeting banner returns with `ICA`,
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Usage
 
 .Monitor specific parameters for the CitrixMonitor
 [options="header, autowidth"]
@@ -30,9 +27,9 @@ WARNING: If you have configure the _Metaframe Presentation Server Client_ using 
          You can find additional information on http://support.citrix.com/article/CTX104147[CTX104147].
         It is not verified if the monitor works in this case.
 
-===== Examples
+== Examples
 
-The following example configures _{opennms-product-name}_ to monitor the ICA protocol on TCP 1494 with 2 retries and waiting 5 seconds for each retry.
+The following example configures {page-component-title} to monitor the ICA protocol on TCP 1494 with 2 retries and waiting 5 seconds for each retry.
 [source, xml]
 ----
 <service name="Citrix-TCP-ICA" interval="300000" user-defined="false" status="on">

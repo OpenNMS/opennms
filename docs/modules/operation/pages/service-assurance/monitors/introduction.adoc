@@ -1,13 +1,12 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= Service monitors
 
 To support several specific applications and management agents, _Pollerd_ executes _Service Monitors_.
 This section describes all available built-in _Service Monitors_ which are available and can be configured to allow complex monitoring.
 For information how these can be extended, see _Development Guide_ of the _OpenNMS_ documentation.
 
 [[ga-service-assurance-monitors-common-parameters]]
-==== Common Configuration Parameters
+== Common Configuration Parameters
 
 Application or Device specific _Monitors_ are based on a generic API which provide common configuration parameters.
 These minimal configuration parameters are available in all _Monitors_ and describe the behavior for timeouts, retries, etc.
@@ -24,7 +23,7 @@ These minimal configuration parameters are available in all _Monitors_ and descr
 TIP: In case the _Monitor_ is using the _SNMP Protocol_ the default configuration for `timeout` and `retry` are used from the _SNMP Configuration_ (`snmp-config.xml`).
 
 [[ga-service-assurance-monitors-minion-parameters]]
-===== Minion Configuration Parameters
+=== Minion Configuration Parameters
 
 When nodes are configured with a non-default location, the associated _Service Monitors_ are executed on a _Minion_ configured with that same location.
 If there are many _Minions_ at a given location, the _Service Monitor_ may be executed on any of the _Minions_ that are currently available.
@@ -45,7 +44,7 @@ The following parameters can be used to override this behavior and control *wher
 NOTE: When specifying a _System ID_ the location should also be set to the corresponding location for that system.
 
 [[ga-service-assurance-monitors-placeholder-substitution-parameters]]
-==== Using Placeholders in Parameters
+== Using Placeholders in Parameters
 Some monitor parameters support placeholder substitution.
 You can reference some node, interface, and asset record properties by enclosing them in `{` and `}`.
 The supported properties are:

@@ -1,9 +1,6 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[ga-pollerd-configuration]]
-=== Pollerd Configuration
+= Pollerd Configuration
 
 .Configuration and log files related to Pollerd.
 [options="header, autowidth"]
@@ -52,8 +49,8 @@ cd $OPENNMS_HOME/bin
 image::service-assurance/04_send-event-WebUI.png[]
 
 [[ga-pollerd-configuration-meta-data]]
-==== Metadata DSL
-The link:#ga-meta-data-dsl[Metadata DSL](domain specific language) allows you to use dynamic configuration in parameter values to interpolate metadata into the parameter. 
+== Metadata DSL
+The <<meta-data.adoc#ga-meta-data-dsl, Metadata DSL>>(domain specific language) allows you to use dynamic configuration in parameter values to interpolate metadata into the parameter. 
 
 The syntax allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process.
 

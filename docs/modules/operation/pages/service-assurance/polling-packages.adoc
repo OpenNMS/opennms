@@ -1,16 +1,13 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[ga-pollerd-packages]]
-=== Poller Packages
+= Poller Packages
 
-To define more complex monitoring configuration it is possible to group _Service_ configurations into _Polling Packages_.
-They allow to assign to _Nodes_ different _Service Configurations_.
-To assign a _Polling Package_ to nodes the link:http://www.opennms.org/wiki/Filters[Rules/Filters] syntax can be used.
-Each _Polling Package_ can have its own <<ga-service-assurance-downtime-model, Downtime Model>> configuration.
+To define more complex monitoring configuration it is possible to group service configurations into polling packages.
+They allow you to assign different service configurations to nodes.
+To assign a polling package to nodes, use the the link:http://www.opennms.org/wiki/Filters[Rules/Filters] syntax.
+Each polling package can have its own <<service-assurance/downtime-model.adoc#ga-service-assurance-downtime-model, Downtime Model>> configuration.
 
-Multiple packages can be configured, and an interface can exist in more than one package.
+You can configure multiple packages, and an interface can exist in more than one package.
 This gives great flexibility to how the service levels will be determined for a given device.
 
 .Polling package assigned to Nodes with Rules and Filters
@@ -22,12 +19,12 @@ This gives great flexibility to how the service levels will be determined for a 
   <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" /><3>
 ----
 <1> Unique name of the polling package.
-<2> Filter can be based on IP address, categories or asset attributes of _Nodes_ based on link:http://www.opennms.org/wiki/Filters[Rules/Filters].
+<2> Base filter on IP address, categories or asset attributes of nodes based on link:http://www.opennms.org/wiki/Filters[Rules/Filters].
     The filter is evaluated first and is *required*.
-    This package is used for all _IP Interfaces_ which don't have 0.0.0.0 as an assigned _IP address_ and is *required*.
-<3> Allow to specify if the configuration of _Services_ is applied on a range of _IP Interfaces_ (IPv4 or IPv6).
+    This package is used for all IP interfaces that do not have 0.0.0.0 as an assigned IP address and is *required*.
+<3> Allow to specify if the configuration of services is applied on a range of IP interfaces_ (IPv4 or IPv6).
 
-Instead of the `include-range` it is possible to add one or more specific _IP-Interfaces_ with:
+Instead of the `include-range` it is possible to add one or more specific IP interfaces:
 
 .Defining a specific _IP Interfaces_
 [source, xml]
@@ -35,7 +32,7 @@ Instead of the `include-range` it is possible to add one or more specific _IP-In
 <specific>192.168.1.59</specific>
 ----
 
-It is also possible to exclude _IP Interfaces_ with:
+It is also possible to exclude IP interfaces:
 
 .Exclude IP Interfaces
 [source, xml]
@@ -44,11 +41,11 @@ It is also possible to exclude _IP Interfaces_ with:
 ----
 
 [[ga-pollerd-packages-response-time-config]]
-==== Response Time Configuration
+== Response Time Configuration
 
-The definition of _Polling Packages_ allows to configure similar services with different polling intervals.
-All the response time measurements are persisted in _RRD Files_ and require a definition.
-Each _Polling Package_ contains a _RRD_ definition
+The definition of polling packages allows you to configure similar services with different polling intervals.
+All the response time measurements are persisted in RRD files and require a definition.
+Each polling package contains an RRD definition.
 
 .RRD configuration for Polling Package example1
 [source, xml]
@@ -65,24 +62,24 @@ Each _Polling Package_ contains a _RRD_ definition
     <rra>RRA:MIN:0.5:288:366</rra><6>
 </rrd>
 ----
-<1> Polling interval for all services in this _Polling Package_ is reflected in the step of size 300 seconds.
-    All services in this package have to polled in 5 min interval, otherwise response time measurements are not correct persisted.
+<1> Polling interval for all services in this polling package is reflected in the step of size 300 seconds.
+    All services in this package have to be polled in a 5-minute interval, otherwise response time measurements are not persiste correctly.
 <2> 1 step size is persisted 2016 times: 1 * 5 min * 2016 = 7 d, 5 min accuracy for 7 d.
 <3> 12 steps average persisted 1488 times: 12 * 5 min * 1488 = 62 d, aggregated to 60 min for 62 d.
 <4> 288 steps average persisted 366 times: 288 * 5 min * 366 = 366 d, aggregated to 24 h for 366 d.
 <5> 288 steps maximum from 24 h persisted for 366 d.
 <6> 288 steps minimum from 24 h persisted for 366 d.
 
-WARNING: The _RRD_ configuration and the service polling interval has to be aligned.
-         In other cases the persisted response time data is not correct displayed in the response time graph.
+WARNING: The RRD configuration and the service polling interval must be aligned.
+         #In other cases# the persisted response time data is not correctly displayed in the response time graph.
 
-IMPORTANT: If the polling interval is changed afterwards, existing _RRD_ files needs to be recreated with the new definitions.
+IMPORTANT: If you change the polling interval afterwards, you must recreate existing RRD files with the new definitions.
 
 [[ga-pollerd-packages-overlapping-service]]
-==== Overlapping Services
+== Overlapping Services
 
-With the possibility of specifying multiple _Polling Packages_ it is possible to use the same _Service_ like _ICMP_ multiple times.
-The order how _Polling Packages_ in the `poller-configuration.xml` are defined is important when _IP Interfaces_ match multiple _Polling Packages_ with the same _Service_ configuration.
+With the possibility of specifying multiple polling packages it is possible to use the same service (like ICMP) multiple times.
+The order how polling packages in the `poller-configuration.xml` are defined is important when IP interfaces match multiple polling packages with the same service configuration.
 
 The following example shows which configuration is applied for a specific service:
 
@@ -136,52 +133,52 @@ The following example shows which configuration is applied for a specific servic
 </package>
 ----
 <1> Polling interval in the packages are 300 seconds and 30 seconds
-<2> Different polling interval for the service _ICMP_
-<3> Different retry settings for the service _ICMP_
-<4> Different timeout settings for the service _ICMP_
+<2> Different polling interval for the ICMP service
+<3> Different retry settings for the ICMP service
+<4> Different timeout settings for the ICMP service
 
-The last _Polling Package_ on the service will be applied.
-This can be used to define a less specific catch all filter for a default configuration.
-A more specific _Polling Package_ can be used to overwrite the default setting.
-In the example above all _IP Interfaces_ in _192.168.1/24_ or _2600:/64_ will be monitored with ICMP with different polling, retry and timeout settings.
+The last polling package on the service will be applied.
+This can be used to define a less specific catch-all filter for a default configuration.
+Use a more specific polling package to overwrite the default setting.
+In the above example, all IP interfaces in 192.168.1/24 or 2600:/64 will be monitored with ICMP with different polling, retry, and timeout settings.
 
-Which _Polling Packages_ are applied to the _IP Interface_ and _Service_ can be found in the _Web User Interface_.
-The _IP Interface_ and _Service_ page show which _Polling Package_ and _Service_ configuration is applied for this specific service.
+The WebUI displays which polling packages are applied to the IP interface and service.
+The IP Interface and Service pages show which polling package and service configuration is applied for this specific service.
 
 .Polling Package applied to IP interface and Service
 image::service-assurance/03_polling-package.png[]
 
 [[ga-pollerd-packages-patterns]]
-==== Service Patterns
+== Service Patterns
 
-Usually, the _Poller_ used to monitor a _Service_ is found by the matching the pollers name with the service name.
-In addition, a matching poller can be found if an additional element `pattern` is specified for the poller.
-If so, the poller is used for all services matching the _RegEx_ pattern, too.
+Usually, the poller used to monitor a pervice is found by the matching the poller's name with the service name.
+In addition, you can find a matching poller if an additional element `pattern` is specified for the poller.
+If so, the poller is used for all services matching the RegEx pattern, too.
 
-The _RegEx_ pattern allows to specify named capture groups.
+The RegEx pattern allows you to specify named capture groups.
 There can be multiple capture groups inside of a pattern, but each must have a unique name.
-Please note, that the _RegEx_ must be escaped or be wrapped in a CDATA-Tag inside the configuration XML to make it a valid property.
+Please note, that the RegEx must be escaped or wrapped in a CDATA-Tag inside the configuration XML to make it a valid property.
 
-If a poller is matched using its pattern, the parts of the service name which matches the capture groups of the pattern are available as parameters to the link:#ga-pollerd-configuration-meta-data[Metadata DSL] using the context `pattern` and the capture group name as key.
+If a poller is matched using its pattern, the parts of the service name which match the capture groups of the pattern are available as parameters to the <<service-assurance/configuration.adoc#ga-pollerd-configuration-meta-data, Metadata DSL>> using the context `pattern` and the capture group name as key.
 
 Examples:
 
 `<pattern><![CDATA[^HTTP-(?<vhost>.*)$]]></pattern>`::
-Matches all services which names starts with `HTTP-` followed by a host name.
-If the services is called `HTTP-www.example.com`, the Metadata DSL expression `${pattern:vhost}` will resolved to `www.example.com`.
+Matches all services with names starting with `HTTP-` followed by a host name.
+If the services is called `HTTP-www.example.com`, the Metadata DSL expression `${pattern:vhost}` will resolve to `www.example.com`.
 
 `<pattern><![CDATA[^HTTP-(?<vhost>.*?):(?<port>[0-9]+)$]]></pattern>"`::
-Matches all services which names starts with `HTTP-` followed by a hostname and a port.
-There will be two variables (`${pattern:vhost}` and `${pattern:port}`) which can be used in the poller parameters.
+Matches all services with names starting with `HTTP-` followed by a hostname and a port.
+There will be two variables (`${pattern:vhost}` and `${pattern:port}`), which you can use in the poller parameters.
 
-The service pattern mechanism can be used to whenever there are multiple instances of a service on the same interface.
-By specifying a distinct service name to each instance, the services is identifiable, but there is no need to add a poller definition per service.
-Common use-cases for such services are HTTP Virtual Hosts, where multiple web applications run on the same web-server or BGP session monitoring where each router has multiple neighbours.
+Use the service pattern mechanism whenever there are multiple instances of a service on the same interface.
+By specifying a distinct service name for each instance, the services is identifiable, but there is no need to add a poller definition per service.
+Common use cases for such services are HTTP virtual hosts, where multiple web applications run on the same web server or BGP session monitoring where each router has multiple neighbours.
 
 [[ga-pollerd-packages-test-service-manually]]
-==== Test Services on manually
+== Test Services on Manually
 
-For troubleshooting it is possible to run a test via the _Karaf Shell_:
+For troubleshooting it is possible to run a test via the Karaf shell:
 [source]
 ----
 ssh -p 8101 admin@localhost
@@ -201,7 +198,7 @@ SYNTAX
 
 ARGUMENTS
         host
-                Hostname or IP Address of the system to poll
+                Hostname or IP address of the system to poll
                 (required)
         attributes
                 Monitor specific attributes in key=value form
@@ -227,7 +224,7 @@ OPTIONS
 
 ----
 
-The following example runs the _ICMP_ monitor on a specific _IP Interface_.
+The following example runs the ICMP monitor on a specific IP interface.
 
 .Run ICMP monitor configuration defined in specific Polling Package
 [source]
@@ -235,7 +232,7 @@ The following example runs the _ICMP_ monitor on a specific _IP Interface_.
 opennms> opennms:poll -S ICMP -P example1 10.23.42.1
 ----
 
-The output is verbose which allows debugging of _Monitor_ configurations.
+The output is verbose which allows debugging of monitor configurations.
 Important output lines are shown as the following:
 
 .Important output testing a service on the CLI
@@ -253,24 +250,24 @@ Parameter timeout: 3000 <5>
 Service is Up on 192.168.31.100 using org.opennms.netmgt.poller.monitors.IcmpMonitor: <6>
 	response-time: 407,0000 <7>
 ----
-<1> _Service_ and _Package_ of this test
-<2> Applied _Service_ configuration from _Polling Package_ for this test
-<3> _Service Monitor_ used for this test
+<1> Service and package of this test
+<2> Applied service configuration from polling package for this test
+<3> Service monitor used for this test
 <4> RRD configuration for response time measurement
 <5> Retry and timeout settings for this test
-<6> Polling result for the service polled against the _IP address_
-<7> _Response time_
+<6> Polling result for the service polled against the IP address
+<7> Response time
 
-==== Test filters on Karaf Shell
+== Test filters on Karaf Shell
 
 Filters are ubiquitous in opennms configurations with <filter> syntax.
-This karaf shell can be used to verify filters. For more info, refer to https://wiki.opennms.org/wiki/Filters[Filters].
+Use this Karaf shell to verify filters. For more information, see https://wiki.opennms.org/wiki/Filters[Filters].
 [source]
 ----
 ssh -p 8101 admin@localhost
 ----
 
-Once in the shell, print command help as follows
+Once in the shell, print command help as follows:
 
 [source]
 ----
@@ -296,13 +293,13 @@ nodeId=2 nodeLabel=00000000-0000-0000-0000-000000ddba11 location=MINION
 	IpAddresses:
 		127.0.0.1
 ----
-Another ex:  Run a filter that match a node location and for a given IP Address range.
+Another example: Run a filter that matches a node location and for a given IP address range.
 Refer to https://wiki.opennms.org/wiki/IPLIKE[IPLIKE] for more info on using IPLIKE syntax.
 [source]
 ----
 opennms:filter "location='Default' & (IPADDR IPLIKE 172.*.*.*)"
 ----
-Output is displayed as follows
+Output is displayed as follows:
 [source]
 ----
 nodeId=3 nodeLabel=label1 location=Default
@@ -324,4 +321,4 @@ nodeId=6 nodeLabel=label3 location=Default
 		172.17.0.123
 ----
 
-NOTE: Node info displayed will have nodeId, nodeLabel, location and optional fileds like foreignId, foreignSource, categories when they exist.
+NOTE: Node information displayed will have nodeId, nodeLabel, location, and optional fields like foreignId, foreignSource, and categories when they exist.

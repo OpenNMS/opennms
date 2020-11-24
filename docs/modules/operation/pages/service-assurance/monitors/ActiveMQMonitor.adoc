@@ -1,20 +1,17 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== ActiveMQMonitor
+= ActiveMQMonitor
 
 This monitor tests the availablity of an ActiveMQ Broker.
 The service is considered available if a successful connection is made.
 
-===== Monitor facts
+== Monitor facts
 
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.ActiveMQMonitor`
 |===
 
-===== Configuration and Usage
+== Configuration and Usage
 
 .Monitor specific parameters for the ActiveMQMonitor
 [options="header, autowidth"]
@@ -32,7 +29,7 @@ The service is considered available if a successful connection is made.
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 
-===== Examples
+== Examples
 
 Some example configuration how to configure the monitor in the `poller-configuration.xml`.
 

@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== CiscoPingMibMonitor
+= CiscoPingMibMonitor
 
 This poller monitor's purpose is to create conceptual rows (entries) in the _ciscoPingTable_ on _Cisco IOS_ devices that support the link:http://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?local=en&mibName=CISCO-PING-MIB[CISCO-PING-MIB].
 These entries direct the remote _IOS_ device to ping an IPv4 or IPv6 address with a configurable set of parameters.
@@ -37,14 +34,14 @@ The `packet-count` and `packet-timeout` parameters instead service this purpose 
  ciscoPingVrfName           1.3.6.1.4.1.9.9.16.1.1.1.17
 ----
 
-===== Prerequisites
+== Prerequisites
 
 * One or more _Cisco_ devices running an _IOS_ image of recent vintage; any 12.2 or later image is probably fine.
 Even very low-end devices appear to support the CISCO-PING-MIB.
-* The _IOS_ devices that will perform the remote pings must be configured with an _SNMP write community_ string whose source address access-list includes the address of the {opennms-product-name} server and whose MIB view (if any) includes the OID of the _ciscoPingTable_.
+* The _IOS_ devices that will perform the remote pings must be configured with an _SNMP write community_ string whose source address access-list includes the address of the {page-component-title} server and whose MIB view (if any) includes the OID of the _ciscoPingTable_.
 * The corresponding _SNMP write community_ string must be specified in the `write-community` attribute of either the top-level `<snmp-config>` element of `snmp-config.xml` or a `<definition>` child element that applies to the _SNMP-primary_ interface of the _IOS_ device(s) that will perform the remote pings.
 
-===== Scalability concerns
+== Scalability concerns
 
 This monitor spends a fair amount of time sleeping while it waits for the remote _IOS_ device to complete the requested ping operations.
 The monitor is pessimistic in calculating the delay between creation of the _ciscoPingTable_ entry and its first attempt to retrieve the results of that entry's ping operations -- it will always wait at least (`packet-count * (packet-timeout + packet-delay)`) milliseconds before even checking whether the remote pings have completed.
@@ -56,7 +53,7 @@ The object that holds this identifier is a signed 32-bit integer type, precludin
 It's probably a good idea to mix in the least-significant byte of the millisecond-accurate time as a substitute for that of the whole-second-accurate value to avoid collisions.
 _IOS_ seems to clean up entries in this table within a manner of minutes after their ping operations have completed.
 
-===== Monitor facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -64,7 +61,7 @@ _IOS_ seems to clean up entries in this table within a manner of minutes after t
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Usage
 
 .Monitor specific parameters for the _CiscoPingMibMonitor_
 [options="header, autowidth"]
@@ -122,14 +119,14 @@ This is optional just if you can use variables in the configuration.
                     appears.
 |===
 
-===== Example: Ping the same non-routable address from all routers of customer Foo
+== Example: Ping the same non-routable address from all routers of customer Foo
 
 A service provider's client, Foo Corporation, has network service at multiple locations.
 At each Foo location, a point-of-sale system is statically configured at IPv4 address 192.168.255.1.
 Foo wants to be notified any time a point-of-sale system becomes unreachable.
-Using an {opennms-product-name} remote location monitor is not feasible.
+Using an {page-component-title} remote location monitor is not feasible.
 All of Foo Corporation's CPE routers must be _Cisco IOS_ devices in order to achieve full coverage in this scenario.
-
+page-component-title
 One approach to this requirement is to configure all of Foo Corporation's premise routers to be in the surveillance categories Customer_Foo, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
 We will use the special value `${ipaddr}` for the `proxy-ip-addr` parameter so that the remote pings will be provisioned on each Foo CPE router.
 Since we want each Foo CPE router to ping the same IP address 192.168.255.1, we statically list that value for the `target-ip-addr` address.
@@ -162,10 +159,10 @@ Since we want each Foo CPE router to ping the same IP address 192.168.255.1, we 
 <monitor service="FooPOS" class-name="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" />
 ----
 
-===== Example: Ping from a single IOS device routable address of each router of customer Bar
+== Example: Ping from a single IOS device routable address of each router of customer Bar
 
 A service provider's client, Bar Limited, has network service at multiple locations.
-While {opennms-product-name}' world-class service assurance is generally sufficient, Bar also wants to be notified any time a premise router at one of their locations unreachable from the perspective of an _IOS_ device in Bar's main data center.
+While {page-component-title}' world-class service assurance is generally sufficient, Bar also wants to be notified any time a premise router at one of their locations unreachable from the perspective of an _IOS_ device in Bar's main data center.
 Some or all of the Bar Limited CPE routers may be non-Cisco devices in this scenario.
 
 To meet this requirement, our approach is to configure Bar Limited's premise routers to be in the surveillance categories Customer_Bar, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.

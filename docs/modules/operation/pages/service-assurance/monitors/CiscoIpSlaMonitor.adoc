@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== CiscoIpSlaMonitor
+= CiscoIpSlaMonitor
 
 This monitor can be used to monitor IP SLA configurations on your Cisco devices.
 This monitor supports the following SNMP OIDS from link:http://tools.cisco.com/Support/SNMP/do/BrowseOID.do?local=en&translate=Translate&objectInput=1.3.6.1.4.1.9.9.42[CISCO-RTT-MON-MIB]:
@@ -21,7 +18,7 @@ If the _RTT_LATEST_OPERSENSE_ returns _ok(1)_ the service is marked as _up_.
 The second scenario is to monitor the configured threshold in the _IP SLA_ config.
 If the _RTT_LATEST_OPERSENSE_ returns with _overThreshold(3)_ the service is marked _down_.
 
-===== Monitor facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -29,7 +26,7 @@ If the _RTT_LATEST_OPERSENSE_ returns with _overThreshold(3)_ the service is mar
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Usage
 
 .Monitor-specific parameters for the CiscoIpSlaMonitor
 [options="header, autowidth"]
@@ -41,7 +38,7 @@ If the _RTT_LATEST_OPERSENSE_ returns with _overThreshold(3)_ the service is mar
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Example for HTTP and ICMP echo reply
+== Example for HTTP and ICMP echo reply
 
 In this example we configure an IP SLA entry to monitor Google's website with _HTTP GET_ from the Cisco device.
 We use 8.8.8.8 as our DNS resolver.

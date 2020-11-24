@@ -1,15 +1,15 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
+[[ga-service-assurance]]
+= Service Assurance
 
-This section will cover the basic functionalities how _{opennms-product-name}_ tests if a service or device available and measure his latency.
+This section will cover the basic functionalities how {page-component-title} tests if a service or device available and measure his latency.
 
-In _{opennms-product-name}_ this task is provided by a _Service Monitor_ framework.
+In {page-component-title} this task is provided by a _Service Monitor_ framework.
 The main component is _Pollerd_ which provides the following functionality:
 
 * Track the status of a management resource or an application for availability calculations
 * Measure response times for service quality
-* Correlation of node and interface outages based on a <<ga-service-assurance-critical-service, Critical Service>>
+* Correlation of node and interface outages based on a <<service-assurance/critical-service.adoc#ga-service-assurance-critical-service, Critical Service>>
 
 The following image shows the model and representation of availability and response time.
 
@@ -31,12 +31,12 @@ These fields can be used to validate that _Pollerd_ is polling the services as e
 
 When a _Service Monitor_ detects an outage, _Pollerd_ sends an _Event_ which is used to create an _Alarm_.
 _Events_ can also be used to generate _Notifications_ for on-call network or server administrators.
-The following images shows the interaction of _Pollerd_ in _{opennms-product-name}_.
+The following images shows the interaction of _Pollerd_ in {page-component-title}.
 
 .Service assurance with _Pollerd_ in _OpenNMS_ platform
 image::service-assurance/02_service-assurance.png[]
 
-_Pollerd_ can generate the following _Events_ in _{opennms-product-name}_:
+_Pollerd_ can generate the following _Events_ in {page-component-title}:
 
 [options="header, autowidth"]
 |===

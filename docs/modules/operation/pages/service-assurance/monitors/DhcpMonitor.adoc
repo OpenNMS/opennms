@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== DhcpMonitor
+= DhcpMonitor
 
 This monitor is used to check the availability and functionality of http://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol[DHCP servers].
 The monitor class _DhcpMonitor_ is executed by _Pollerd_ and opens the background process listening for incoming DHCP responses.
@@ -11,11 +8,11 @@ If the DHCP server responds with an _OFFER_ the service is marked as up.
 The background listening process is only started if the _DhcpMonitor_ is used.
 The behavior for testing the DHCP server can be modified in the `poller-configuration.xml` configuration file.
 
-CAUTION: Make sure no DHCP client is running on the _{opennms-product-name}_ server and using port UDP/67 and UDP/68.
+CAUTION: Make sure no DHCP client is running on the {page-component-title} server and using port UDP/67 and UDP/68.
          If UDP/67 and UDP/68 are already in use, you will find warning messages in your log files.
          You can test if a process is listening on UDP/68 with `sudo ss -lnpu sport = :68`.
 
-===== Monitor facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -25,20 +22,20 @@ CAUTION: Make sure no DHCP client is running on the _{opennms-product-name}_ ser
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== _DhcpMonitor_ configuration
+== _DhcpMonitor_ configuration
 
 ._DhcpMonitor_ parameters in `poller-configuration.xml`.
 [options="autowidth"]
 |===
 | Parameter          | Description                                                                                  | Required | Default value
-| `macAddress`       | The MAC address which {opennms-product-name} uses for a dhcp request                         | optional | `00:06:0D:BE:9C:B2`
+| `macAddress`       | The MAC address which {page-component-title} uses for a dhcp request                         | optional | `00:06:0D:BE:9C:B2`
 | `relayMode`        | Puts the poller in `relay` mode                                                              | optional | `false`
-| `myIpAddress`      | This parameter will usually be set to the IP address of the {opennms-product-name} server,
+| `myIpAddress`      | This parameter will usually be set to the IP address of the {page-component-title} server,
                        if `relayMode` is set to `true`.
                        In `relay` mode, the DHCP server being polled will unicast its responses directly
                        back to the IP address specified by `myIpAddress` rather than broadcasting its
                        responses. This allows DHCP servers to be polled even though they are not on the
-                       same subnet as the {opennms-product-name} server, and without the aid of an external relay.  | optional | `127.0.0.1`
+                       same subnet as the {page-component-title} server, and without the aid of an external relay.  | optional | `127.0.0.1`
 | `extendedMode`     | When extendedMode is false, the DHCP poller will send a DISCOVER and expect an
                        OFFER in return. When extendedMode is true, the DHCP poller will first send a
                        DISCOVER. If no valid response is received it will send an INFORM. If no valid
@@ -57,7 +54,7 @@ image::service-assurance/monitors/02_01_dhcp-monitor-messages-broadcast.png[]
 .Visualization of DHCP message flow in relay mode
 image::service-assurance/monitors/02_02_dhcp-monitor-messages-unicast.png[]
 
-===== Example testing DHCP server in the same subnet
+== Example testing DHCP server in the same subnet
 
 Example configuration how to configure the monitor in the `poller-configuration.xml`.
 The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 seconds for the DHCP server _OFFER_ message.
@@ -78,7 +75,7 @@ The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 second
 <monitor service="DHCP" class-name="org.opennms.netmgt.poller.monitors.DhcpMonitor"/>
 ----
 
-===== Example testing DHCP server in a different subnet in extended mode
+== Example testing DHCP server in a different subnet in extended mode
 
 You can use the same monitor in `poller-configuration.xml` as in the example above.
 

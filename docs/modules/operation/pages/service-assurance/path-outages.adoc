@@ -1,9 +1,6 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[ga-service-assurance-path-outage]]
-=== Path Outages
+= Path Outages
 
 An outage of a central network component can cause a lot of node outages.
 _Path Outages_ can be used to suppress _Notifications_ based on how _Nodes_ depend on each other in the network which are defined in a _Critical Path_.
@@ -19,7 +16,7 @@ image::service-assurance/02_path-outage.png[width=600]
 From the perspective of the monitoring system, a Router named _default-gw-01_ is on the _Critical Path_ to reach two networks.
 If Router _default-gw-01_ is down, it is not possible to reach any node in the two networks behind and they will be all unreachable as well.
 In this case an administrator would like to have just one notification for _default-gw-01_ and not for all the other _Nodes_ behind.
-Building this configuration in _{opennms-product-name}_ requires the following information:
+Building this configuration in {page-component-title} requires the following information:
 
 * _Parent Foreign Source_: The _Foreign Source_ where the parent node is defined.
 * _Parent Foreign ID_: The _Foreign ID_ of the parent _Node_ where this node depends on.

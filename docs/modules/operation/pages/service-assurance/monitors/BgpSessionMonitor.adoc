@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== BgpSessionMonitor
+= BgpSessionMonitor
 
 This monitor checks if a BGP-Session to a peering partner (peer-ip) is functional.
 To monitor the BGP-Session the RFC1269 SNMP MIB is used and test the status of the session using the following OIDs is used:
@@ -16,11 +13,11 @@ To monitor the BGP-Session the RFC1269 SNMP MIB is used and test the status of t
 The `<peer-ip>` is the far end IP address of the BGP session end point.
 
 A SNMP get request for `BGP_PEER_STATE_OID` returns a result between `1` to `6`.
-The servicestates for {opennms-product-name} are mapped as follows:
+The servicestates for {page-component-title} are mapped as follows:
 
 [options="header, autowidth"]
 |===
-| Result | State description | Monitor state in {opennms-product-name}
+| Result | State description | Monitor state in {page-component-title}
 | `1`    | _Idle_            | DOWN
 | `2`    | _Connect_         | DOWN
 | `3`    | _Active_          | DOWN
@@ -29,7 +26,7 @@ The servicestates for {opennms-product-name} are mapped as follows:
 | `6`    | _Established_     |  UP
 |===
 
-===== Monitor facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -39,7 +36,7 @@ The servicestates for {opennms-product-name} are mapped as follows:
 
 To define the mapping I used the description from http://www.freesoft.org/CIE/RFC/1771/31.htm[RFC1771 BGP Finite State Machine].
 
-===== Configuration and Usage
+== Configuration and Usage
 
 [options="header, autowidth"]
 |===
@@ -49,7 +46,7 @@ To define the mapping I used the description from http://www.freesoft.org/CIE/RF
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 To monitor the session state _Established_ it is necessary to add a service to your poller configuration in '$OPENNMS_HOME/etc/poller-configuration.xml', for example:
 
@@ -67,7 +64,7 @@ To monitor the session state _Established_ it is necessary to add a service to y
 <monitor service="BGP-Peer-99.99.99.99-AS65423" class-name="org.opennms.netmgt.poller.monitors.BgpSessionMonitor" />
 ----
 
-===== Error code mapping
+== Error code mapping
 
 The _BGP_PEER_LAST_ERROR_OID_ gives an error in HEX-code.
 To make it human readable a codemapping table is implemented:
@@ -118,7 +115,7 @@ To give some additional informations the logmessage contains also
  BGP-Peer Remote AS
  BGP-Peer established time in seconds
 
-===== Debugging
+== Debugging
 
 If you have problems to detect or monitor the BGP Session you can use the following command to figure out where the problem come from.
 
