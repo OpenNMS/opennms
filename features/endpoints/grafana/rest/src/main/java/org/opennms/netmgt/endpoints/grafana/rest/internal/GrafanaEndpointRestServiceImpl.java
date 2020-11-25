@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -134,6 +134,16 @@ public class GrafanaEndpointRestServiceImpl implements GrafanaEndpointRestServic
             final List<Dashboard> dashboards = grafanaEndpointService.getClient(uid).getDashboards();
             return Response.ok().entity(new JSONArray(dashboards).toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
         } catch (IOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(createErrorObject(ex).toString()).build();
+        }
+    }
+
+    @Override
+    public Response getDashboard(final String uid, final String dashboardId) {
+        try {
+            final Dashboard dashboard = grafanaEndpointService.getClient(uid).getDashboardByUid(dashboardId);
+            return Response.ok().entity(new JSONObject(dashboard).toString()).type(MediaType.APPLICATION_JSON_TYPE).build();
+        } catch (final IOException ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(createErrorObject(ex).toString()).build();
         }
     }

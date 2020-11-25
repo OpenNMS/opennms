@@ -135,8 +135,91 @@
             ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
         </logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+          <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
+    <event>
+        <uei>uei.opennms.org/nodes/snmp/interfaceOperTesting</uei>
+        <event-label>OpenNMS-defined node event: snmp interface Oper Status Testing</event-label>
+        <descr>&lt;p>The operational status of interface is testing
+            &lt;/p> &lt;p>This event is generated when an snmp poll on interface find the operational status testing.
+            &lt;/p>&lt;p>The testing state indicates that some tests must be performed on the interface. Once completed
+            the state may change to up, dormant, or down, as appropriate.&lt;/p>
+            &lt;p>Params %parm[all]% &lt;/p></descr>
+        <logmsg dest="logndisplay">Operational status Testing on interface ifname:%parm[snmpifname]%
+            ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+            <update-field field-name="severity" update-on-reduction="true"/>
+        </alarm-data>
+    </event>
+    <event>
+        <uei>uei.opennms.org/nodes/snmp/interfaceOperUnknown</uei>
+        <event-label>OpenNMS-defined node event: snmp interface Oper Status Unknown</event-label>
+        <descr>&lt;p>The operational status of interface is unknown
+            &lt;/p> &lt;p>This event is generated when an snmp poll on interface find the operational status unknown.
+            &lt;/p> &lt;p>The unknown state indicates that the state of the interface can not be
+            ascertained.&lt;/p>
+            &lt;p>Params %parm[all]% &lt;/p></descr>
+        <logmsg dest="logndisplay">Operational status Unknown on interface ifname:%parm[snmpifname]%
+            ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+            <update-field field-name="severity" update-on-reduction="true"/>
+        </alarm-data>
+    </event>
+    <event>
+        <uei>uei.opennms.org/nodes/snmp/interfaceOperDormant</uei>
+        <event-label>OpenNMS-defined node event: snmp interface Oper Status Dormant</event-label>
+        <descr>&lt;p>The operational status of interface is dormant
+            &lt;/p> &lt;p>This event is generated when an snmp poll on interface find the operational status dormant.
+            &lt;/p>&lt;p>The dormant state indicates that the relevant interface is not actually in a condition
+            to pass packets but is in a pending state, waiting for some external event.&lt;/p>
+            &lt;p>Params %parm[all]% &lt;/p></descr>
+        <logmsg dest="logndisplay">Operational status Dormant on interface ifname:%parm[snmpifname]%
+            ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
+        </logmsg>
+        <severity>Warning</severity>
+        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+            <update-field field-name="severity" update-on-reduction="true"/>
+        </alarm-data>
+    </event>
+    <event>
+        <uei>uei.opennms.org/nodes/snmp/interfaceOperNotPresent</uei>
+        <event-label>OpenNMS-defined node event: snmp interface Oper Status Not Present</event-label>
+        <descr>&lt;p>The operational status of interface is not present
+            &lt;/p> &lt;p>This event is generated when an snmp poll on interface find the operational status not present.
+            &lt;/p> &lt;p>The not present state indicates that the interface is down specifically because
+            some component, typically a hardware component, is not present in the managed system.&lt;/p>
+            &lt;p>Params %parm[all]% &lt;/p></descr>
+        <logmsg dest="logndisplay">Operational status Not Present on interface ifname:%parm[snmpifname]%
+            ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+            <update-field field-name="severity" update-on-reduction="true"/>
+        </alarm-data>
+    </event>
+    <event>
+        <uei>uei.opennms.org/nodes/snmp/interfaceOperLowerLayerDown</uei>
+        <event-label>OpenNMS-defined node event: snmp interface Oper Status Lower Layer Down</event-label>
+        <descr>&lt;p>The operational status of interface is lower layer down
+            &lt;/p> &lt;p>This event is generated when an snmp poll on interface find the operational status lower layer down.
+            &lt;/p> &lt;p>The lower layer down state indicates that this interface runs on top of one or
+            more other interfaces and that this interface is down specifically because one or more of these
+            lower-layer interfaces are down.&lt;/p>
+            &lt;p>Params %parm[all]% &lt;/p></descr>
+        <logmsg dest="logndisplay">Operational status Lower Layer Down on interface ifname:%parm[snmpifname]%
+            ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
+        </logmsg>
+        <severity>Minor</severity>
+        <alarm-data reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="1" auto-clean="false">
+            <update-field field-name="severity" update-on-reduction="true"/>
+        </alarm-data>
+    </event>
    <event>
       <uei>uei.opennms.org/nodes/snmp/interfaceAdminDown</uei>
       <event-label>OpenNMS-defined node event: snmp interface Admin Status Down</event-label>
@@ -195,7 +278,7 @@
             ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
         </logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%parm[snmpifindex]%" auto-clean="false"/>
    </event>
    <event>
       <uei>uei.opennms.org/nodes/snmp/interfaceAdminUp</uei>
