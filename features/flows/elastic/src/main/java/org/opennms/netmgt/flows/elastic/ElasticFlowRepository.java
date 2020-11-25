@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -257,7 +258,11 @@ public class ElasticFlowRepository implements FlowRepository {
                     // the bulk request considers retries
                     bulkRequest.execute();
                 } catch (BulkException ex) {
-                    throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedDocuments());
+                    if (ex.getBulkResult() != null) {
+                        throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedDocuments());
+                    } else {
+                        throw new PersistenceException(ex.getMessage(), Collections.emptyList());
+                    }
                 } catch (IOException ex) {
                     LOG.error("An error occurred while executing the given request: {}", ex.getMessage(), ex);
                     throw new FlowException(ex.getMessage(), ex);

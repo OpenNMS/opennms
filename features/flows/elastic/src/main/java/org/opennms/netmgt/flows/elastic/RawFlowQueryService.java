@@ -353,7 +353,10 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                                                                                           String keyForMissingTerm, boolean includeOther,
                                                                                           List<Filter> filters) {
         return getTopN(N, groupByTerm, keyForMissingTerm, filters)
-                .thenCompose((topN) -> getSeriesForSome(topN, step, groupByTerm, keyForMissingTerm, includeOther, filters));
+                .thenCompose(topN ->
+                                     getSeriesForSome(topN, step, groupByTerm, keyForMissingTerm, includeOther, filters)
+                                             .thenApply(table -> TableUtils.sortTableByRowKeys(table, topN))
+                            );
     }
 
     private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesForSome(Collection<String> from, String groupByTerm,
