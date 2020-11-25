@@ -66,6 +66,7 @@ sudo systemctl restart opennms
 
 TIP: This is optional and you can set a maximum message size for gRPC.
      The maxium size has to be the same on the Minion as well.
+     If you don't set a maximum message size the default is 10 MiB.
 
 .Configure maximum message size for gRPC in the Karaf Shell
 [source, karaf]

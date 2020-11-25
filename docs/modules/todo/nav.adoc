@@ -1,9 +1,3 @@
 .TODO
-* xref:tuning-kafka.adoc[]
 * xref:install-opennms-versions.adoc[]
-* xref:time-series-storage/introduction.adoc[]
-** xref:time-series-storage/rrdtool/rrdtool.adoc[]
-** xref:time-series-storage/rrdtool/debian.adoc[]
-** xref:time-series-storage/rrdtool/rhel.adoc[]
-** xref:time-series-storage/newts.adoc[]
 * xref:unused-images.adoc[]
