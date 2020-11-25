@@ -114,6 +114,18 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
+    public String getSeriesFromQuery(int size, long step, long start, long end,
+                                     String groupByTerm, List<Filter> filters) {
+        return render("series_for_terms.ftl", ImmutableMap.builder()
+                                                          .put("filters", getFilterQueries(filters))
+                                                          .put("size", size)
+                                                          .put("groupByTerm", groupByTerm)
+                                                          .put("step", step)
+                                                          .put("start", start)
+                                                          .put("end", end)
+                                                          .build());
+    }
+
     public String getSeriesFromMissingQuery(long step, long start, long end, String groupByTerm,
                                             String keyForMissingTerm, List<Filter> filters) {
         return render("series_for_missing.ftl", ImmutableMap.builder()

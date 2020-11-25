@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.elastic;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.opennms.features.jest.client.SearchResultUtils;
@@ -59,6 +63,7 @@ import io.searchbox.client.JestClient;
 import io.searchbox.core.SearchResult;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
+import lombok.val;
 
 public class RawFlowQueryService extends ElasticFlowQueryService {
     public static final String INDEX_NAME = "netflow";
@@ -90,13 +95,13 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
 
     @Override
     public CompletableFuture<List<TrafficSummary<String>>> getApplicationSummaries(Set<String> applications, boolean includeOther, List<Filter> filters) {
-        return getTotalBytesFrom(applications, "netflow.application", null, includeOther,
-                filters);
+        return getTotalBytesForSome(applications, "netflow.application", null, includeOther,
+                                    filters);
     }
 
     @Override
     public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(Set<String> applications, long step, boolean includeOther, List<Filter> filters) {
-        return getSeriesFor(applications, "netflow.application", step, includeOther, filters)
+        return getSeriesForSome(applications, step, "netflow.application", UNKNOWN_APPLICATION_NAME, includeOther, filters)
                 .thenCompose((res) -> mapTable(res, CompletableFuture::completedFuture));
     }
 
@@ -139,7 +144,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
 
     @Override
     public CompletableFuture<List<TrafficSummary<Conversation>>> getConversationSummaries(Set<String> conversations, boolean includeOther, List<Filter> filters) {
-        return getTotalBytesFrom(unescapeConversations(conversations), "netflow.convo_key", null, includeOther, filters)
+        return getTotalBytesForSome(unescapeConversations(conversations), "netflow.convo_key", null, includeOther, filters)
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                 .map(summary -> this.resolveHostnameForConversation(summary.getEntity(), filters)
                                         .thenApply(conversation -> TrafficSummary.from(conversation)
@@ -151,7 +156,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
 
     @Override
     public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
-        return getSeriesFor(unescapeConversations(conversations), "netflow.convo_key", step, includeOther, filters)
+        return getSeriesForSome(unescapeConversations(conversations), step, "netflow.convo_key", null, includeOther, filters)
                 .thenCompose((res) -> mapTable(res, convoKey -> this.resolveHostnameForConversation(convoKey, filters)));
     }
 
@@ -182,7 +187,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
 
     @Override
     public CompletableFuture<List<TrafficSummary<Host>>> getHostSummaries(Set<String> hosts, boolean includeOther, List<Filter> filters) {
-        return getTotalBytesFrom(hosts, "hosts", null, includeOther, filters)
+        return getTotalBytesForSome(hosts, "hosts", null, includeOther, filters)
                 .thenCompose((summaries) -> transpose(summaries.stream()
                                 .map(summary -> this.resolveHostnameForHost(summary.getEntity(), filters)
                                         .thenApply(host -> TrafficSummary.from(host)
@@ -194,7 +199,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
 
     @Override
     public CompletableFuture<Table<Directional<Host>, Long, Double>> getHostSeries(Set<String> hosts, long step, boolean includeOther, List<Filter> filters) {
-        return getSeriesFor(hosts, "hosts", step, includeOther, filters)
+        return getSeriesForSome(hosts, step, "hosts", null, includeOther, filters)
                 .thenCompose((res) -> mapTable(res, host -> this.resolveHostnameForHost(host, filters)));
     }
 
@@ -215,15 +220,13 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<Integer>>> getTosSummaries(List<Filter> filters) {
-        //return getTotalBytesFrom(null, "netflow.tos", null, false, filters);
-        return null;
+    public CompletableFuture<List<TrafficSummary<String>>> getTosSummaries(List<Filter> filters) {
+        return getTotalBytesForSize(256, "netflow.tos", null, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<Integer>, Long, Double>> getTosSeries(long step, List<Filter> filters) {
-        //return getSeriesFor(applications, "netflow.application", step, false, filters).thenCompose((res) -> mapTable(res, CompletableFuture::completedFuture));
-        return null;
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTosSeries(long step, List<Filter> filters) {
+        return getSeriesForSize(256, step, "netflow.tos", null, filters);
     }
 
     @Override
@@ -300,93 +303,38 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 .thenApply(res -> processGroupedByResult(res, N));
     }
 
-    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesFor(Set<String> entities,
-                                                                                     String groupByTerm,
-                                                                                     long step,
-                                                                                     boolean includeOther,
-                                                                                     List<Filter> filters) {
-        Objects.requireNonNull(groupByTerm);
-
-        if (entities == null || entities.isEmpty()) {
-            return CompletableFuture.completedFuture(null);
-        }
-
-        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
-        final ImmutableTable.Builder<Directional<String>, Long, Double> builder = ImmutableTable.builder();
-        final String seriesFromQuery = searchQueryProvider.getSeriesFromQuery(entities, step,
-                timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, filters);
-        CompletableFuture<Void> seriesFuture;
-
-        seriesFuture = searchAsync(seriesFromQuery, timeRangeFilter)
-                .thenApply(res -> {
-                    toTable(builder, res);
-                    return null;
-                });
-
-        if (includeOther) {
-            // We also want to gather series for all other terms
-            final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(entities, step,
-                    timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, false, filters);
-            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter),
-                    (ignored, res) -> processOthersResult(res, builder));
-        }
-
-        return seriesFuture.thenApply(ignored -> builder.build());
-    }
-
-    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesFromTopN(List<String> topN, long step, String groupByTerm,
+    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesForSome(Collection<String> from, long step, String groupByTerm,
                                                                                           String keyForMissingTerm,
                                                                                           boolean includeOther, List<Filter> filters) {
-        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
-        final ImmutableTable.Builder<Directional<String>, Long, Double> builder = ImmutableTable.builder();
-        CompletableFuture<Void> seriesFuture;
-        if (topN.size() < 1) {
-            // If there are no entries, skip the query
-            seriesFuture = CompletableFuture.completedFuture(null);
-        } else {
-            final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromQuery(topN, step, timeRangeFilter.getStart(),
-                    timeRangeFilter.getEnd(), groupByTerm, filters);
-            seriesFuture = searchAsync(seriesFromTopNQuery, timeRangeFilter)
-                    .thenApply(res -> {
-                        toTable(builder, res);
-                        return null;
-                    });
-        }
-
-        final boolean missingTermIncludedInTopN = keyForMissingTerm != null && topN.contains(keyForMissingTerm);
-        if (missingTermIncludedInTopN) {
-            // We also need to query for items with a missing term, this will require a separate query
-            final String seriesFromMissingQuery = searchQueryProvider.getSeriesFromMissingQuery(step,
-                    timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, keyForMissingTerm, filters);
-            seriesFuture = seriesFuture
-                    .thenCombine(searchAsync(seriesFromMissingQuery, extractTimeRangeFilter(filters)), (ignored,res) -> {
-                        toTable(builder, res);
-                        return null;
-                    });
-        }
-
-        if (includeOther) {
-            // We also want to gather series for terms not part of the Top N
-            final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(topN, step,
-                    timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, missingTermIncludedInTopN, filters);
-            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter),
-                    (ignored,res) -> processOthersResult(res, builder));
-        }
-
-        // Sort the table to ensure that the rows as in the same order as the Top N
-        return seriesFuture.thenApply(ignored -> TableUtils.sortTableByRowKeys(builder.build(), topN));
+        val fag = new FilterAndGroupBy(filters, groupByTerm, step);
+        val addMissing = addSeriesForMissing(fag, from, keyForMissingTerm);
+        val addOther = addSeriesForOther(fag, from, includeOther, keyForMissingTerm);
+        return seriesForSome(fag, from)
+                .thenCompose(addMissing)
+                .thenCompose(addOther)
+                .thenApply(builder -> builder.build());
     }
 
-    private static void toTable(ImmutableTable.Builder<Directional<String>, Long, Double> builder, SearchResult res) {
+    private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesForSize(int size, long step, String groupByTerm,
+                                                                                         String keyForMissingTerm,
+                                                                                         List<Filter> filters) {
+        val fag = new FilterAndGroupBy(filters, groupByTerm, step);
+        val addMissing = addSeriesForMissing(fag, keyForMissingTerm);
+        return seriesForSize(fag, size)
+                .thenCompose(addMissing)
+                .thenApply(builder -> builder.build());
+    }
+
+    private static ImmutableTable.Builder<Directional<String>, Long, Double> toTable(ImmutableTable.Builder<Directional<String>, Long, Double> builder, SearchResult res) {
         final MetricAggregation aggs = res.getAggregations();
         if (aggs == null) {
             // No results
-            return;
+            return builder;
         }
         final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
         if (groupedBy == null) {
             // No results
-            return;
+            return builder;
         }
         for (TermsAggregation.Entry bucket : groupedBy.getBuckets()) {
             final TermsAggregation directionAgg = bucket.getTermsAggregation("direction");
@@ -398,82 +346,212 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 }
             }
         }
+        return builder;
     }
 
     private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesFromTopN(int N, long step, String groupByTerm,
                                                                                           String keyForMissingTerm, boolean includeOther,
                                                                                           List<Filter> filters) {
         return getTopN(N, groupByTerm, keyForMissingTerm, filters)
-                .thenCompose((topN) -> getSeriesFromTopN(topN, step, groupByTerm, keyForMissingTerm, includeOther, filters));
+                .thenCompose(topN ->
+                                     getSeriesForSome(topN, step, groupByTerm, keyForMissingTerm, includeOther, filters)
+                                             .thenApply(table -> TableUtils.sortTableByRowKeys(table, topN))
+                            );
     }
 
-    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFrom(Collection<String> from, String groupByTerm,
-                                                                              String keyForMissingTerm,
-                                                                              boolean includeOther, List<Filter> filters) {
-        final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
-        final long start = timeRangeFilter.getStart();
-        // Remove 1 from the end to make sure we have a single bucket
-        final long end = Math.max(timeRangeFilter.getStart(), timeRangeFilter.getEnd() - 1);
-        // A single step
-        final long step = timeRangeFilter.getEnd() - timeRangeFilter.getStart();
+    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesForSome(Collection<String> from, String groupByTerm,
+                                                                                 String keyForMissingTerm,
+                                                                                 boolean includeOther, List<Filter> filters) {
+        val fag = new FilterAndGroupBy(filters, groupByTerm);
+        val addMissing = addTotalBytesForMissing(fag, from, keyForMissingTerm);
+        val addOther = addTotalBytesForOther(fag, from, includeOther, keyForMissingTerm);
+        return totalBytesForSome(fag, from)
+                .thenCompose(addMissing)
+                .thenCompose(addOther)
+                .thenApply(orderSummariesByFrom(from));
+    }
 
-        CompletableFuture<Map<String, TrafficSummary<String>>> summariesFuture;
+    private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesForSize(int size, String groupByTerm,
+                                                                                 String keyForMissingTerm,
+                                                                                 List<Filter> filters) {
+        val fag = new FilterAndGroupBy(filters, groupByTerm);
+        val addMissing = addTotalBytesForMissing(fag, keyForMissingTerm);
+        return totalBytesForSize(fag, size)
+                .thenCompose(addMissing)
+                .thenApply(orderSummariesByIntKeys());
+    }
+
+    //
+    // helper functions for composing request processing logic
+    //
+
+    private static <T> Function<T, CompletableFuture<T>> keepValue() {
+        return t -> CompletableFuture.completedFuture(t);
+    }
+
+    //
+    // helper functions for composing request processing logic for series
+    //
+
+    private CompletableFuture<ImmutableTable.Builder<Directional<String>, Long, Double>> seriesForSome(FilterAndGroupBy fag, Collection<String> from) {
         if (from.size() < 1) {
             // If there are no entries, skip the query
-            summariesFuture = CompletableFuture.completedFuture(new LinkedHashMap<>());
+            return CompletableFuture.completedFuture(ImmutableTable.builder());
         } else {
-            final String bytesFromQuery = searchQueryProvider.getSeriesFromQuery(from, step, start, end, groupByTerm, filters);
-            summariesFuture = searchAsync(bytesFromQuery, timeRangeFilter).thenApply(RawFlowQueryService::toTrafficSummaries);
-        }
-
-        final boolean missingTermIncluded = keyForMissingTerm != null && from.contains(keyForMissingTerm);
-        if (missingTermIncluded) {
-            // We also need to query for items with a missing term, this will require a separate query
-            final String bytesFromMissingQuery = searchQueryProvider.getSeriesFromMissingQuery(step, start, end,
-                    groupByTerm, keyForMissingTerm, filters);
-            summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromMissingQuery, timeRangeFilter), (summaries,results) -> {
-                summaries.putAll(toTrafficSummaries(results));
-                return summaries;
+            final String bytesFromQuery = searchQueryProvider.getSeriesFromQuery(from, fag.step, fag.start, fag.end, fag.groupByTerm, fag.filters);
+            return searchAsync(bytesFromQuery, fag.timeRangeFilter).thenApply(searchResult -> {
+                val builder = ImmutableTable.<Directional<String>, Long, Double>builder();
+                toTable(builder, searchResult);
+                return builder;
             });
         }
+    }
 
+    private CompletableFuture<ImmutableTable.Builder<Directional<String>, Long, Double>> seriesForSize(FilterAndGroupBy fag, int size) {
+        if (size < 1) {
+            // If there are no entries, skip the query
+            return CompletableFuture.completedFuture(ImmutableTable.builder());
+        } else {
+            final String bytesFromQuery = searchQueryProvider.getSeriesFromQuery(size, fag.step, fag.start, fag.end, fag.groupByTerm, fag.filters);
+            return searchAsync(bytesFromQuery, fag.timeRangeFilter).thenApply(searchResult -> {
+                val builder = ImmutableTable.<Directional<String>, Long, Double>builder();
+                toTable(builder, searchResult);
+                return builder;
+            });
+        }
+    }
+
+    private Function<ImmutableTable.Builder<Directional<String>, Long, Double>, CompletableFuture<ImmutableTable.Builder<Directional<String>, Long, Double>>>
+    addSeriesForMissing(FilterAndGroupBy fag, Collection<String> from, String keyForMissingTerm) {
+        if (from.contains(keyForMissingTerm)) {
+            return addSeriesForMissing(fag, keyForMissingTerm);
+        } else {
+            return keepValue();
+        }
+    }
+
+    private Function<ImmutableTable.Builder<Directional<String>, Long, Double>, CompletableFuture<ImmutableTable.Builder<Directional<String>, Long, Double>>>
+    addSeriesForMissing(FilterAndGroupBy fag, String keyForMissingTerm) {
+        if (keyForMissingTerm != null) {
+            // We also need to query for items with a missing term, this will require a separate query
+            final String seriesFromMissingQuery =
+                    searchQueryProvider.getSeriesFromMissingQuery(fag.step, fag.start, fag.end, fag.groupByTerm, keyForMissingTerm, fag.filters);
+            val missingFuture = searchAsync(seriesFromMissingQuery, fag.timeRangeFilter);
+            return builder -> missingFuture.thenApply(searchResult -> toTable(builder, searchResult));
+        } else {
+            return keepValue();
+        }
+    }
+
+    private Function<ImmutableTable.Builder<Directional<String>, Long, Double>, CompletableFuture<ImmutableTable.Builder<Directional<String>, Long, Double>>>
+    addSeriesForOther(FilterAndGroupBy fag, Collection<String> from, boolean includeOther, String keyForMissingTerm) {
+        if (includeOther) {
+            // We also want to gather series for all other terms
+            final boolean missingTermIncluded = keyForMissingTerm != null && from.contains(keyForMissingTerm);
+            final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(from, fag.step,
+                                                                                              fag.start, fag.end, fag.groupByTerm, missingTermIncluded, fag.filters);
+            val otherFuture = searchAsync(seriesFromOthersQuery, fag.timeRangeFilter);
+            return builder -> otherFuture.thenApply(searchResult -> processOthersResult(searchResult, builder));
+        } else {
+            return keepValue();
+        }
+    }
+
+    //
+    // helper functions for composing request processing logic for totalBytes
+    //
+
+    private CompletableFuture<Map<String, TrafficSummary<String>>> totalBytesForSome(FilterAndGroupBy fag, Collection<String> from) {
+        if (from.size() < 1) {
+            // If there are no entries, skip the query
+            return CompletableFuture.completedFuture(new LinkedHashMap<>());
+        } else {
+            final String bytesFromQuery = searchQueryProvider.getSeriesFromQuery(from, fag.step, fag.start, fag.end, fag.groupByTerm, fag.filters);
+            return searchAsync(bytesFromQuery, fag.timeRangeFilter).thenApply(RawFlowQueryService::toTrafficSummaries);
+        }
+    }
+
+    private CompletableFuture<Map<String, TrafficSummary<String>>> totalBytesForSize(FilterAndGroupBy fag, int size) {
+        if (size < 1) {
+            // If there are no entries, skip the query
+            return CompletableFuture.completedFuture(new LinkedHashMap<>());
+        } else {
+            final String bytesFromQuery = searchQueryProvider.getSeriesFromQuery(size, fag.step, fag.start, fag.end, fag.groupByTerm, fag.filters);
+            return searchAsync(bytesFromQuery, fag.timeRangeFilter).thenApply(RawFlowQueryService::toTrafficSummaries);
+        }
+    }
+
+    private Function<Map<String, TrafficSummary<String>>, CompletableFuture<Map<String, TrafficSummary<String>>>>
+    addTotalBytesForMissing(FilterAndGroupBy fag, Collection<String> from, String keyForMissingTerm) {
+        if (from.contains(keyForMissingTerm)) {
+            return addTotalBytesForMissing(fag, keyForMissingTerm);
+        } else {
+            return keepValue();
+        }
+    }
+
+    private Function<Map<String, TrafficSummary<String>>, CompletableFuture<Map<String, TrafficSummary<String>>>>
+    addTotalBytesForMissing(FilterAndGroupBy fag, String keyForMissingTerm) {
+        if (keyForMissingTerm != null) {
+            // We also need to query for items with a missing term, this will require a separate query
+            val bytesFromMissingQuery
+                    = searchQueryProvider.getSeriesFromMissingQuery(fag.step, fag.start, fag.end, fag.groupByTerm, keyForMissingTerm, fag.filters);
+            val missingFuture = searchAsync(bytesFromMissingQuery, fag.timeRangeFilter);
+            return summaries -> missingFuture.thenApply(results -> {
+                    summaries.putAll(toTrafficSummaries(results));
+                    return summaries;
+                });
+        } else {
+            return keepValue();
+        }
+    }
+
+    private Function<Map<String, TrafficSummary<String>>, CompletableFuture<Map<String, TrafficSummary<String>>>>
+    addTotalBytesForOther(FilterAndGroupBy fag, Collection<String> from, boolean includeOther, String keyForMissingTerm) {
         if (includeOther) {
             // We also want to tally up traffic from other elements not part of the Top N
-            final String bytesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(from, step, start, end,
-                    groupByTerm, missingTermIncluded, filters);
-            summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromOthersQuery, timeRangeFilter), (summaries,results) -> {
-                final MetricAggregation aggs = results.getAggregations();
-                if (aggs == null) {
-                    // No results
-                    return summaries;
-                }
-                final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
-                if (directionAgg == null) {
-                    // No results
-                    return summaries;
-                }
-                final TrafficSummary.Builder<String> trafficSummary = TrafficSummary.from(OTHER_NAME);
-                for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
-                    final boolean isIngress = isIngress(directionBucket);
-                    final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
-                    final List<ProportionalSumAggregation.DateHistogram> sumBuckets = sumAgg.getBuckets();
-                    // There should only be a single bucket here
-                    if (sumBuckets.size() != 1) {
-                        throw new IllegalStateException("Expected 1 bucket, but got: " + sumBuckets);
+            final boolean missingTermIncluded = keyForMissingTerm != null && from.contains(keyForMissingTerm);
+            final String bytesFromOthersQuery =
+                    searchQueryProvider.getSeriesFromOthersQuery(from, fag.step, fag.start, fag.end, fag.groupByTerm, missingTermIncluded, fag.filters);
+            val otherFuture = searchAsync(bytesFromOthersQuery, fag.timeRangeFilter);
+            return summaries -> otherFuture.thenApply(results -> {
+                    final MetricAggregation aggs = results.getAggregations();
+                    if (aggs == null) {
+                        // No results
+                        return summaries;
                     }
-                    final Double sum = sumBuckets.iterator().next().getValue();
-                    if (!isIngress) {
-                        trafficSummary.withBytesOut(sum.longValue());
-                    } else {
-                        trafficSummary.withBytesIn(sum.longValue());
+                    final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
+                    if (directionAgg == null) {
+                        // No results
+                        return summaries;
                     }
-                }
-                summaries.put(OTHER_NAME, trafficSummary.build());
-                return summaries;
-            });
-        }
+                    final TrafficSummary.Builder<String> trafficSummary = TrafficSummary.from(OTHER_NAME);
+                    for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
+                        final boolean isIngress = isIngress(directionBucket);
+                        final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
+                        final List<ProportionalSumAggregation.DateHistogram> sumBuckets = sumAgg.getBuckets();
+                        // There should only be a single bucket here
+                        if (sumBuckets.size() != 1) {
+                            throw new IllegalStateException("Expected 1 bucket, but got: " + sumBuckets);
+                        }
+                        final Double sum = sumBuckets.iterator().next().getValue();
+                        if (!isIngress) {
+                            trafficSummary.withBytesOut(sum.longValue());
+                        } else {
+                            trafficSummary.withBytesIn(sum.longValue());
+                        }
+                    }
+                    summaries.put(OTHER_NAME, trafficSummary.build());
+                    return summaries;
 
-        return summariesFuture.thenApply(summaries -> {
+            });
+        } else {
+            return keepValue();
+        }
+    }
+
+    private Function<Map<String, TrafficSummary<String>>, List<TrafficSummary<String>>> orderSummariesByFrom(Collection<String> from) {
+        return summaries -> {
             // Now build a list in the same order as the given top N list
             final List<TrafficSummary<String>> topNRes = new ArrayList<>(from.size());
             for (String topNEntry : from) {
@@ -485,8 +563,27 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
             // Append any remaining elements
             topNRes.addAll(summaries.values());
             return topNRes;
-        });
+        };
     }
+
+    private Function<Map<String, TrafficSummary<String>>, List<TrafficSummary<String>>> orderSummariesByIntKeys() {
+        return summaries -> summaries
+                .values()
+                .stream()
+                .sorted(TRAFFIC_SUMMARY_STRING_AS_INT_COMPARATOR)
+                .collect(Collectors.toList());
+    }
+
+    private static Predicate<String> IS_INT = Pattern.compile("-?\\d+").asPredicate();
+
+    private static Comparator<TrafficSummary<String>> TRAFFIC_SUMMARY_STRING_AS_INT_COMPARATOR = (s1, s2) -> {
+        // increasing; numbers first; fallback to string order
+        val d1 = IS_INT.test(s1.getEntity());
+        val d2 = IS_INT.test(s2.getEntity());
+        return d1 && d2 ?
+               new Integer(s1.getEntity()).compareTo(new Integer(s2.getEntity())) :
+               d1 ? -1 : d2 ? 1 : s1.getEntity().compareTo(s2.getEntity());
+    };
 
     private static Map<String, TrafficSummary<String>> toTrafficSummaries(SearchResult res) {
         // Build the traffic summaries from the search results
@@ -526,10 +623,10 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
 
     private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromTopN(int N, String groupByTerm, String keyForMissingTerm, boolean includeOther, List<Filter> filters) {
         return getTopN(N, groupByTerm, keyForMissingTerm, filters)
-                .thenCompose((topN) -> getTotalBytesFrom(topN, groupByTerm, keyForMissingTerm, includeOther, filters));
+                .thenCompose((topN) -> getTotalBytesForSome(topN, groupByTerm, keyForMissingTerm, includeOther, filters));
     }
 
-    private static Void processOthersResult(SearchResult res,
+    private static ImmutableTable.Builder<Directional<String>, Long, Double> processOthersResult(SearchResult res,
                                             ImmutableTable.Builder<Directional<String>, Long, Double> builder) {
         final MetricAggregation aggs = res.getAggregations();
         if (aggs == null) {
@@ -550,7 +647,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                         dateHistogram.getValue());
             }
         }
-        return null;
+        return builder;
     }
 
     private static List<String> processGroupedByResult(SearchResult searchResult, long limit) {
@@ -603,4 +700,45 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 .collect(Collectors.toSet());
     }
 
+    private static class FilterAndGroupBy {
+
+        public final String groupByTerm;
+        public final List<Filter> filters;
+        public final TimeRangeFilter timeRangeFilter;
+        public final long start;
+        public final long end;
+        public final long step;
+
+        /** Start/End/Step are calculated such that the interval is covered by a single step */
+        public FilterAndGroupBy(
+                List<Filter> filters,
+                String groupByTerm
+                               ) {
+            Objects.requireNonNull(filters);
+            Objects.requireNonNull(groupByTerm);
+            this.filters = filters;
+            this.groupByTerm = groupByTerm;
+            timeRangeFilter = getRequiredTimeRangeFilter(filters);
+            start = timeRangeFilter.getStart();
+            // Remove 1 from the end to make sure we have a single bucket
+            end = Math.max(timeRangeFilter.getStart(), timeRangeFilter.getEnd() - 1);
+            // A single step
+            step = timeRangeFilter.getEnd() - timeRangeFilter.getStart();
+        }
+
+        public FilterAndGroupBy(
+                List<Filter> filters,
+                String groupByTerm,
+                long step
+                               ) {
+            Objects.requireNonNull(filters);
+            Objects.requireNonNull(groupByTerm);
+            this.filters = filters;
+            this.groupByTerm = groupByTerm;
+            this.step = step;
+            timeRangeFilter = getRequiredTimeRangeFilter(filters);
+            start = timeRangeFilter.getStart();
+            end = timeRangeFilter.getEnd();
+        }
+    }
 }

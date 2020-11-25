@@ -77,9 +77,9 @@ public interface FlowQueryService {
 
     CompletableFuture<List<Integer>> getTosBytes(List<Filter> filters);
 
-    CompletableFuture<List<TrafficSummary<Integer>>> getTosSummaries(List<Filter> filters);
+    CompletableFuture<List<TrafficSummary<String>>> getTosSummaries(List<Filter> filters);
 
-    CompletableFuture<Table<Directional<Integer>, Long, Double>> getTosSeries(long step, List<Filter> filters);
+    CompletableFuture<Table<Directional<String>, Long, Double>> getTosSeries(long step, List<Filter> filters);
 
     CompletableFuture<List<Integer>> getDscp(List<Filter> filters);
 }

@@ -119,22 +119,26 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
 
     @Override
     public CompletableFuture<List<Integer>> getTosBytes(List<Filter> filters) {
-        return getTosBytes(filters);
+        // TODO
+        return null;
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<Integer>>> getTosSummaries(List<Filter> filters) {
-        return getTosSummaries(filters);
+    public CompletableFuture<List<TrafficSummary<String>>> getTosSummaries(List<Filter> filters) {
+        // TODO
+        return null;
     }
 
     @Override
-    public CompletableFuture<Table<Directional<Integer>, Long, Double>> getTosSeries(long step, List<Filter> filters) {
-        return getTosSeries(step, filters);
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTosSeries(long step, List<Filter> filters) {
+        // TODO
+        return null;
     }
 
     @Override
     public CompletableFuture<List<Integer>> getDscp(List<Filter> filters) {
-        return getDscp(filters);
+        // TODO
+        return null;
     }
 
     /**

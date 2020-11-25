@@ -849,6 +849,14 @@
             "type": "keyword",
             "norms": false
           },
+          "dscp": {
+            "type": "keyword",
+            "norms": false
+          },
+          "ecn": {
+            "type": "keyword",
+            "norms": false
+          },
           "version": {
             "type": "keyword",
             "norms": false
