@@ -1,13 +1,10 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== MailTransportMonitor
+= MailTransportMonitor
 
 MailTransportMonitor is used to run a synthetic test of a complete email transaction, including sending a mail and determining that it has been delivered.
 It can also use both sendmail-test and readmail-test independently to determine whether an email can be sent or a mailbox can be read.
 
-===== Monitor facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -15,7 +12,7 @@ It can also use both sendmail-test and readmail-test independently to determine 
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the MailTransportMonitor
 [options="header, autowidth"]
@@ -115,7 +112,7 @@ It can also use both sendmail-test and readmail-test independently to determine 
                      appears
 |===
 
-===== Examples
+== Examples
 
 Test for an end-to-end email transaction.
 
@@ -169,7 +166,7 @@ Test that we can connect via IMAPS and open the OPENNMS folder.
 </service>
 ----
 
-===== Tests
+== Tests
 There are five basic tests that this monitor can perform.
 
 Sending Mail: The most basic test, the sendmail-test is highly configurable.

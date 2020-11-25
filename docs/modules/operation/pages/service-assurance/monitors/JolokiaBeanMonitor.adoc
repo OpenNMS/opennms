@@ -42,7 +42,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | `url`           | The jolokia agent url. Defaults to "http://<ipaddr>:<port>/jolokia"                                 | optional                                          | `-` | Yes
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Variables which can be used in the configuration
 [options="header, autowidth"]

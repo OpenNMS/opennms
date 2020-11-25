@@ -1,5 +1,5 @@
 
-==== SmtpMonitor
+= SmtpMonitor
 
 The SMTP monitor tests for SMTP service availability on a node.
 The monitor first tries to establish a TCP connection on the specified port.
@@ -20,7 +20,7 @@ The behaviour can be simulated with `telnet` or `netcat`:
  QUIT
  221 2.0.0 closing connection j17-v6si13545102ywb.87 - gsmtp
 
-===== Monitor facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -28,7 +28,7 @@ The behaviour can be simulated with `telnet` or `netcat`:
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the SmtpMonitor
 [options="header, autowidth"]
@@ -39,7 +39,7 @@ The behaviour can be simulated with `telnet` or `netcat`:
 | `timeout`            | Timeout in milliseconds for the underlying socket's _connect_ and _read_ operations.       | optional | `3000`
 |===
 
-===== Examples
+== Examples
 
 [source, xml]
 ----

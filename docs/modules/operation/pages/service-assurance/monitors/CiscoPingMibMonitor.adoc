@@ -107,7 +107,7 @@ _IOS_ seems to clean up entries in this table within a manner of minutes after t
                                   monitor's response-time samples will be persisted                                     | optional | `-`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 This is optional just if you can use variables in the configuration.
 

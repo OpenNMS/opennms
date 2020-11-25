@@ -28,7 +28,7 @@ If the response is a valid NTP response, the service is considered available.
 | `timeout` | Time in milliseconds to wait for a response.               | optional | `5000`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

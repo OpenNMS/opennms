@@ -1,20 +1,17 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== WebMonitor
+= WebMonitor
 
 WebMonitor is a clone of HttpMonitor, that uses a different underlying library for doing HTTP connections. 
 WebMonitor uses Apache HttpClient, which acts more like a real browser (follows redirects, etc.) than HttpMonitor.  
 
-===== Monitor facts
+== Monitor facts
 
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.WebMonitor`
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 Note that all parameters listed are optional. 
 
 .Configuration parameters

@@ -41,7 +41,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
                    settings can be configured in link:#ga-opennms-system-properties[system properties] | optional |`false` | No
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

@@ -34,7 +34,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
                            authentication. This parameter specifies the user ID to be used.                            | optional | `-` | Yes
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

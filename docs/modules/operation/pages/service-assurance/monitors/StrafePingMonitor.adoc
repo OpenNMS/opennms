@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== StrafePingMonitor
+= StrafePingMonitor
 
 This monitor is used to monitor http://en.wikipedia.org/wiki/Packet_delay_variation[packet delay variation] to a specific endpoint using _ICMP_.
 The main use case is to monitor a _WAN_ end point and visualize packet loss and _ICMP_ packet round trip time deviation.
@@ -12,7 +9,7 @@ Credit is due to Tobias Oetiker, as this graphing feature is an adaptation of th
 .Visualization of a graph from the StrafePingMonitor
 image::service-assurance/monitors/01_strafeping.png[]
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -20,7 +17,7 @@ image::service-assurance/monitors/01_strafeping.png[]
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 Monitor specific parameters for the StrafePingMonitor
 [options="header, autowidth"]
@@ -38,9 +35,9 @@ Monitor specific parameters for the StrafePingMonitor
 | `rrd-base-name`       | The name of the RRD file to write (minus the extension, `.rrd` or `.jrb`)                  | required | `strafeping`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 The _StrafePingMonitor_ is typically used on WAN connections and not activated for every ICMP enabled device in your network.
 Further this monitor is much I/O heavier than just a simple RRD graph with a single ICMP response time measurement.

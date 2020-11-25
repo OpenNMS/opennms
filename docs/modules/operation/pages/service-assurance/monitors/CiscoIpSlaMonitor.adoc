@@ -36,7 +36,7 @@ If the _RTT_LATEST_OPERSENSE_ returns with _overThreshold(3)_ the service is mar
 | `ignore-thresh` | Boolean indicates if just the status or configured threshold should be monitored.                   | required | ``
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Example for HTTP and ICMP echo reply
 

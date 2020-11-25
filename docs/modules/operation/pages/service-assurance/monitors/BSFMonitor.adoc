@@ -35,7 +35,7 @@ _BSFMonitor_ also grants access to a selection of {page-component-title} interna
 | `file-extensions` | comma-separated list                                           | optional | `-`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Beans which can be used in the script
 [options="header, autowidth"]

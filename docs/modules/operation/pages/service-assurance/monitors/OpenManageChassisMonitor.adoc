@@ -27,7 +27,7 @@ As this monitor uses _SNMP_, the queried nodes must have proper _SNMP_ configura
 | `port`    | The port to which connection shall be tried.                       | optional | from `snmp-config.xml`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

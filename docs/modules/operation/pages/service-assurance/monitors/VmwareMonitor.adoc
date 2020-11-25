@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== VmwareMonitor
+= VmwareMonitor
 
 This monitor is part of the VMware integration provided in _Provisiond_ and test the power state of a virtual machine (VM) or a host system (host).
 If the power state of a VM or host is _poweredOn_ the service is _up_.
@@ -14,7 +11,7 @@ CAUTION: The information for the status of a virtual machine is collected from t
          It is also required to get specific asset fields assigned to an imported virtual machine and host system.
          The following asset fields are required, which are populated by the _VMware_ integration in _Provisiond_: _VMware Management Server_, _VMware Managed Entity Type_ and the _foreignId_ which contains an internal _VMware vCenter Identifier_.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -22,7 +19,7 @@ CAUTION: The information for the status of a virtual machine is collected from t
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the VmwareMonitor
 [options="header, autowidth"]
@@ -33,9 +30,9 @@ CAUTION: The information for the status of a virtual machine is collected from t
 | `reportAlarms`  | Checks for unacknowledged vSphere alarms for a given comma-separated list of severities (red, yellow, green, gray). | optional | ``
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 Some example configuration how to configure the monitor in the `poller-configuration.xml`.
 With this configuration the monitor will go _down_ if any unacknowledged vSphere alarms with severity red or yellow exist for this managed entity.
 

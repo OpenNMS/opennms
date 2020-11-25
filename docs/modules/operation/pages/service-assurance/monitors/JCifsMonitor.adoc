@@ -68,7 +68,7 @@ The _JCifsMonitor_ can *not* test:
 
 CAUTION: Due to limitations in the JCifs library, only global timeouts can be used reliably.
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 TIP: It makes little sense to have retries higher than `1`.
      It is a waste of resources during the monitoring.

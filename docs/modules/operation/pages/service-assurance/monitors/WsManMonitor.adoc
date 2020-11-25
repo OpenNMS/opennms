@@ -1,13 +1,10 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== WsManMonitor
+= WsManMonitor
 
 This monitor can be used to issue a WS-Man _Get_ command and validate the results using a link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SPEL] expression.
-This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -15,7 +12,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the WsManMonitor
 [options="header, autowidth"]
@@ -26,9 +23,9 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | `selector.`    | Used to filter the result set. All selectors must prefixed with `selector.` | optional | `(None)` | No
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 The following monitor will issue a _Get_ against the configured resource and verify that the correct service tag is returned:
   

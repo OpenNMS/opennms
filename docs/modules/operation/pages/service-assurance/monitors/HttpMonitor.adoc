@@ -71,7 +71,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
                            (with a log level of `DEBUG`).                                                              | optional | `-` | No
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

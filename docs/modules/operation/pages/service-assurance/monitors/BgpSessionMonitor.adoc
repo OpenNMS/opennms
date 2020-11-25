@@ -44,7 +44,7 @@ To define the mapping I used the description from http://www.freesoft.org/CIE/RF
 | `bgpPeerIp` | IP address of the far end BGP peer session                              | required | `-`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 == Examples
 

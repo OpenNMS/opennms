@@ -25,7 +25,7 @@ All _ImapMonitor_ parameters apply, so please refer to <<poller-imap-monitor,Ima
 | `port`                 | The destination port where connections shall be attempted. | optional | `993`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

@@ -54,7 +54,7 @@ Additionally, it is possible to configure a page sequence containing a path thro
                      link:#ga-opennms-system-properties[system properties]                                                | optional | `false`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Page Sequence Parameter
 [options="header, autowidth"]

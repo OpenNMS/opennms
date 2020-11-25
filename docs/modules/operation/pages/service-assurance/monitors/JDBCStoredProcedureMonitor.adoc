@@ -35,7 +35,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 
 NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter with the IP or resolved hostname of the interface the monitored service is assigned to.
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Provide the database driver
 

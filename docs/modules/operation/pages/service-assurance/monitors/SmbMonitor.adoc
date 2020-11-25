@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== SmbMonitor
+= SmbMonitor
 
 This monitor is used to test the _NetBIOS over TCP/IP_ name resolution in _Microsoft Windows_ environments.
 The monitor tries to retrieve a _NetBIOS name_ for the IP address of the interface.
@@ -16,7 +13,7 @@ For troubleshooting see the usage of the Microsoft Windows command line tool `nb
 WARNING: Microsoft deprecated the usage of _NetBIOS_.
          Since Windows Server 2000 _DNS_ is used as the default name resolution.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -24,7 +21,7 @@ WARNING: Microsoft deprecated the usage of _NetBIOS_.
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the SmbMonitor
 [options="header, autowidth"]
@@ -33,9 +30,9 @@ WARNING: Microsoft deprecated the usage of _NetBIOS_.
 | `do-node-status` | Try to get the _NetBIOS_ node status type for the given address | optional | `true`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 Some example configuration how to configure the monitor in the `poller-configuration.xml`.
 

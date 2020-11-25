@@ -1,15 +1,12 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== RadiusAuthMonitor
+= RadiusAuthMonitor
 
 This monitor allows to test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] authentication system.
 The availability is tested by sending an _AUTH_ packet to the _RADIUS server_.
 If a valid _ACCEPT_ response is received, the _RADIUS_ service is _up_ and considered as available.
-This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
-IMPORTANT: To use this monitor it is required to install the _RADIUS_ protocol for {opennms-product-name}.
+IMPORTANT: To use this monitor it is required to install the _RADIUS_ protocol for {page-component-title}.
 
 For RPM-based distributions:
 ====
@@ -37,7 +34,7 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 ----
 <1> The `Access-Accept` message which is evaluated by the monitor.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -45,7 +42,7 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the RadiusAuthMonitor
 [options="header, autowidth"]
@@ -68,9 +65,9 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 | `inner-user`     | Username for the tunnelled `pap` authentication when using EAP-TTLS.                              | optional | `Inner-OpenNMS` | Yes
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 Example configuration how to configure the monitor in the `poller-configuration.xml`.
 
 [source, xml]

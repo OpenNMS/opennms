@@ -36,7 +36,7 @@ CAUTION: This monitor is not checking the loadbalanced service it self.
 | `group-health`| The percentage of active servers vs total server of the group as an integer  | optional | `60`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

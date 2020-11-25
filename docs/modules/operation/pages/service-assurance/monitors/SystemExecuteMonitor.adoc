@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== SystemExecuteMonitor
+= SystemExecuteMonitor
 
 If it is required to execute a system call or run a script to determine a service status, the _SystemExecuteMonitor_ can be used.
 It is calling a script or system command, if required it provides additional arguments to the call.
@@ -11,7 +8,7 @@ As an alternative, the output of the system call can be matched against a banner
 If the banner is part of the output the status is interpreted as up.
 If the banner is not available in the output the status is determined as down.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -19,7 +16,7 @@ If the banner is not available in the output the status is determined as down.
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the SystemExecuteMonitor
 [options="header, autowidth"]
@@ -35,7 +32,7 @@ The parameter `args` supports variable replacement for the following set of vari
 
 TIP: Providing always a script output with a more detailed test error makes it easier to diagnose the problem when the nodeLostDown event occurs.
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Variables which can be used in the configuration
 [options="header, autowidth"]
@@ -50,10 +47,10 @@ This monitor implements the <<ga-service-assurance-monitors-common-parameters, C
 | `${nodelabel}`  | Nodelabel of the node the monitor is associated to.
 |===
 
-===== Examples
+== Examples
 
 
-====== Placeholder usage
+=== Placeholder use
 
 [source, xml]
 ----
@@ -61,7 +58,7 @@ This monitor implements the <<ga-service-assurance-monitors-common-parameters, C
 <parameter key="args" value="http://${nodelabel}/${svcname}/static"/>
 ----
 
-====== Exit status example
+=== Exit status example
 
 [source, xml]
 ----
@@ -90,7 +87,7 @@ else
 fi
 ----
 
-====== Banner matching example
+=== Banner matching example
 
 [source, xml]
 ----
@@ -118,7 +115,7 @@ else
 fi
 ----
 
-===== SystemExecuteMonitor vs GpMonitor
+== SystemExecuteMonitor vs. GpMonitor
 
 The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
 

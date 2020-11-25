@@ -49,7 +49,7 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

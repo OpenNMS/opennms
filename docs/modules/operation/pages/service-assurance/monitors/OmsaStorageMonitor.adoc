@@ -73,7 +73,7 @@ The disk array state is resolved to a human readable value by the following stat
 | `port`              | The TCP port OpenManage is listening                                                            | optional | from `snmp-config.xml`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

@@ -1,13 +1,10 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== XmpMonitor
+= XmpMonitor
 
 The http://www.opennms.org/wiki/XMP[XMP] monitor tests for _XMP service/agent_ availability by establishing an _XMP_ session and querying the target agent's _sysObjectID_ variable contained in the _Core MIB_.
 The service is considered available when the session attempt succeeds and the agent returns its _sysObjectID_ without error.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -15,7 +12,7 @@ The service is considered available when the session attempt succeeds and the ag
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 These parameters can be set in the _XMP_ service entry in _collectd-configuration.xml_ and will override settings from _xmp-config.xml_.
 Also, don't forget to add an entry in _response-graph.properties_ so that response values will be graphed.
@@ -31,9 +28,9 @@ Also, don't forget to add an entry in _response-graph.properties_ so that respon
 | `object`      | Name of MIB object to query                            | optional | `sysObjectID`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 .Adding entry in collectd-configuration.xml
 [source, xml]

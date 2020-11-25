@@ -1,12 +1,12 @@
 
 = DhcpMonitor
 
-This monitor is used to check the availability and functionality of http://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol[DHCP servers].
-The monitor class _DhcpMonitor_ is executed by _Pollerd_ and opens the background process listening for incoming DHCP responses.
-A DHCP server is tested by sending a _DISCOVER_ message.
-If the DHCP server responds with an _OFFER_ the service is marked as up.
-The background listening process is only started if the _DhcpMonitor_ is used.
-The behavior for testing the DHCP server can be modified in the `poller-configuration.xml` configuration file.
+Use this monitor to check the availability and functionality of http://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol[DHCP servers].
+The monitor class DhcpMonitor is executed by Pollerd and opens the background process listening for incoming DHCP responses.
+A DHCP server is tested by sending a DISCOVER message.
+If the DHCP server responds with an OFFER, the service is marked as up.
+The background listening process is started only if the DhcpMonitor is used.
+You can modify the behavior for testing the DHCP server in the `poller-configuration.xml` configuration file.
 
 CAUTION: Make sure no DHCP client is running on the {page-component-title} server and using port UDP/67 and UDP/68.
          If UDP/67 and UDP/68 are already in use, you will find warning messages in your log files.
@@ -20,18 +20,18 @@ CAUTION: Make sure no DHCP client is running on the {page-component-title} serve
 | Remote Enabled | true
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<serivce-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-== _DhcpMonitor_ configuration
+== DhcpMonitor configuration
 
-._DhcpMonitor_ parameters in `poller-configuration.xml`.
+.DhcpMonitor parameters in `poller-configuration.xml`.
 [options="autowidth"]
 |===
 | Parameter          | Description                                                                                  | Required | Default value
-| `macAddress`       | The MAC address which {page-component-title} uses for a dhcp request                         | optional | `00:06:0D:BE:9C:B2`
+| `macAddress`       | The MAC address which {page-component-title} uses for a DHCP request                         | optional | `00:06:0D:BE:9C:B2`
 | `relayMode`        | Puts the poller in `relay` mode                                                              | optional | `false`
 | `myIpAddress`      | This parameter will usually be set to the IP address of the {page-component-title} server,
-                       if `relayMode` is set to `true`.
+                       If `relayMode` is set to `true`.
                        In `relay` mode, the DHCP server being polled will unicast its responses directly
                        back to the IP address specified by `myIpAddress` rather than broadcasting its
                        responses. This allows DHCP servers to be polled even though they are not on the
@@ -41,11 +41,11 @@ This monitor implements the <<ga-service-assurance-monitors-common-parameters, C
                        DISCOVER. If no valid response is received it will send an INFORM. If no valid
                        response is received it will then send a REQUEST. OFFER, ACK, and NAK are all
                        considered valid responses in extendedMode.                                                  | optional | `false`
-| `requestIpAddress` | This parameter only applies to REQUEST queries sent to the DHCP server when
+| `requestIpAddress` | This parameter applies only to REQUEST queries sent to the DHCP server when
                        extendedMode is true. The IP address  specified will be requested in the query.              | optional | `127.0.0.1`
-| `rrd-repository` | The location to write RRD data. Generally, you will not want to change this from default       | required | `$OPENNMS_HOME/share/rrd/response`
+| `rrd-repository` | The location to write RRD data. Generally, you will not want to change this from the default.       | required | `$OPENNMS_HOME/share/rrd/response`
 | `rrd-base-name`  | The name of the RRD file to write (minus the extension, +.rrd+ or +.jrb+)                      | required | `dhcp`
-| `ds-name`        | This is the name as reference for this particular data source in the RRD file                  | required | `dhcp`
+| `ds-name`        | This is the name as reference for this particular data source in the RRD file.                  | required | `dhcp`
 |===
 
 .Visualization of DHCP message flow in broadcast mode
@@ -56,8 +56,8 @@ image::service-assurance/monitors/02_02_dhcp-monitor-messages-unicast.png[]
 
 == Example testing DHCP server in the same subnet
 
-Example configuration how to configure the monitor in the `poller-configuration.xml`.
-The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 seconds for the DHCP server _OFFER_ message.
+Example configuration on how to configure the monitor in the `poller-configuration.xml`.
+The monitor will try to send a maximum of 3 DISCOVER messages and waits 3 seconds for the DHCP server OFFER message.
 
 .Configure a DHCP service in `poller-configuration.xml`
 [source, xml]
@@ -79,7 +79,7 @@ The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 second
 
 You can use the same monitor in `poller-configuration.xml` as in the example above.
 
-.Configure _DhcpMonitor_ to test DHCP server in a different subnet. The OFFER from the DHCP server is sent to `myIpAddress`.
+.Configure DhcpMonitor to test DHCP server in a different subnet. The OFFER from the DHCP server is sent to `myIpAddress`.
 [source, xml]
 ----
 <service name="DHCP" interval="300000" user-defined="false" status="on">

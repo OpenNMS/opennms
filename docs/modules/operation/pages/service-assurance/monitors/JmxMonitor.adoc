@@ -1,5 +1,5 @@
 [[poller-jmx-monitor]]
-==== JmxMonitor
+= JmxMonitor
 
 The _JMX_ monitor allows to test service availability of Java applications.
 The monitor offers the following functionalities:
@@ -8,7 +8,7 @@ The monitor offers the following functionalities:
 * existence of management beans
 * test the status of a single or multiple management beans and evaluate their value
 
-===== Monitor facts
+== Monitor facts
 
 [options="autowidth"]
 |===
@@ -16,7 +16,7 @@ The monitor offers the following functionalities:
 | Remote Enabled | `true`
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the JmxMonitor
 [options="header, autowidth"]
@@ -36,7 +36,7 @@ The monitor offers the following functionalities:
                             The ´<variable>´ name is arbitrary.                         | optional | `-`
 |===
 
-===== Examples
+== Examples
 
 .Test if a _JMX_ connection can be established
 [source, xml]

@@ -39,7 +39,7 @@ Received 112 bytes from 8.8.8.8#53 in 41 ms
 
 TIP:
 This monitor is intended for testing the availability of a DNS service.
-If you want to monitor the DNS resolution of some of your nodes from a client's perspective, please use the <<poller-dns-resolution-monitor,DNSResolutionMonitor>>.
+If you want to monitor the DNS resolution of some of your nodes from a client's perspective, please use the <<service-assurance/monitors/DNSResolutionMonitor.adoc#poller-dns-resolution-monitor,DNSResolutionMonitor>>.
 
 ===== Monitor facts
 
@@ -66,7 +66,7 @@ If you want to monitor the DNS resolution of some of your nodes from a client's 
 | `max-answers`          | Maximal number of records in the DNS server respone for the given lookup                     | optional | `-`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

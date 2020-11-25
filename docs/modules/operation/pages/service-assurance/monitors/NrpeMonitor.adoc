@@ -41,7 +41,7 @@ CAUTION: {opennms-product-name} executes every _NRPE_ check in a Java thread wit
               suite _TLS_DH_anon_WITH_AES_128_CBC_SHA_                                                                 | optional | `true`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Example: Using _check_apt_ with _NRPE_
 

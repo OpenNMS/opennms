@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== SSLCertMonitor
+= SSLCertMonitor
 
 This monitor is used to test if a SSL certificate presented by a remote network server are valid.
 A certificate is invalid if its initial time is prior to the current time, or if the current time is prior to 7 days (configurable) before the expiration time.
@@ -21,9 +18,9 @@ You can configure a threshold in days applied on the `notAfter` date.
 While the monitor is mainly useful for plain SSL sockets, the monitor does provide limited support for STARTTLS protocols by providing the user with the ability to specify a STARTTLS message to be sent prior to the SSL negotiation and a regular expression to match to the response received from the server.
 An additional preliminary message and response regular expression pair is available for protocols that require it (such as XMPP).
 
-This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -31,7 +28,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the SSLCertMonitor
 [options="header, autowidth"]
@@ -50,7 +47,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | `starttls-start-response`    | Regular expression which must match response to STARTTLS command  sent to server. | optional | `` | Yes
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Variables which can be passed in the configuration for `server-name`
 [options="header, autowidth"]
@@ -66,7 +63,7 @@ WARNING: The monitor has limited support for communicating on other protocol lay
 The STARTTLS support has only been tested with a single XMPP server.
 It is not known if the same approach will prove useful for other use cases, like sending a Host header for HTTPS, or issue a STARTTLS command for IMAP, POP3, SMTP, FTP, LDAP, or NNTP.
 
-===== Examples
+== Examples
 
 The following examples show how to monitor SSL certificates on services like IMAPS, SMTPS and HTTPS as well as an example use of the STARTTLS feature for XMPP.
 If the certificates expire within 30 days the service goes down and indicates this issue in the reason of the monitor.

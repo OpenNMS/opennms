@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== VmwareCimMonitor
+= VmwareCimMonitor
 
 This monitor is part of the VMware integration provided in _Provisiond_.
 The monitor is specialized to test the health status provided from all _Host System_ (host) sensor data.
@@ -10,7 +7,7 @@ The monitor is specialized to test the health status provided from all _Host Sys
 IMPORTANT: This monitor is only executed if the host is in power state _on_.
 
 IMPORTANT: This monitor requires to import hosts with _Provisiond_ and the _VMware_ import.
-           {opennms-product-name} requires network access to _VMware vCenter_ and the hosts.
+           {page-component-title} requires network access to _VMware vCenter_ and the hosts.
            To get the sensor data the credentials from _vmware-config.xml_ for the responsible _vCenter_ is used.
            The following asset fields are filled from _Provisiond_ and is provided by _VMware_ import feature:
            _VMware Management Server_, _VMware Managed Entity Type_ and the _foreignId_ which contains an internal _VMware vCenter Identifier_.
@@ -37,7 +34,7 @@ NOTE: In case of using link:http://www.vmware.com/files/pdf/Distributed-Power-Ma
 
 state can be changed see the `ignoreStandBy` configuration parameter.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -45,7 +42,7 @@ state can be changed see the `ignoreStandBy` configuration parameter.
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the VmwareCimMonitor
 [options="header, autowidth"]
@@ -55,9 +52,9 @@ state can be changed see the `ignoreStandBy` configuration parameter.
 | `ignoreStandBy` | Treat power state _standBy_ as _up_.                           | optional | `false`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 Some example configuration how to configure the monitor in the `poller-configuration.xml`.
 
 [source, xml]

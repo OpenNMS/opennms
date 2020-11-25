@@ -38,7 +38,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
                     Note: Only LDAPv3 is supported at the moment.                     | optional | `3` | No
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

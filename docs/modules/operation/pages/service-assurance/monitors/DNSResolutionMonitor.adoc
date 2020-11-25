@@ -43,7 +43,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
                       hostname:port, or [ipv6address]:port.             | optional | Use name server from host system running _{opennms-product-name}_ | Yes
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

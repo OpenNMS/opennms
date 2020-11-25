@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== Pop3Monitor
+= Pop3Monitor
 
 The _POP3_ monitor tests for _POP3_ service availability on a node.
 The monitor first tries to establish a _TCP_ connection on the specified port.
@@ -11,7 +8,7 @@ The monitor makes sure the service banner is a valid _POP3_ banner (ie: starts w
 If the banner is valid, the monitor sends a `QUIT` _POP3_ command and makes sure the service answers with a valid response (ie: a response that starts with `+OK`).
 The service is considered available if the service's answer to the `QUIT` command is valid.
 
-The behaviour can be simulated with `telnet`:
+The behavior can be simulated with `telnet`:
 
  $ telnet mail.opennms.org 110
  Trying 192.168.0.100
@@ -22,7 +19,7 @@ The behaviour can be simulated with `telnet`:
  +OK
  Connection closed by foreign host.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -30,7 +27,7 @@ The behaviour can be simulated with `telnet`:
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the Pop3Monitor
 [options="header, autowidth"]
@@ -42,9 +39,9 @@ The behaviour can be simulated with `telnet`:
                          attempts.                                                                             | optional | `false`
 |===
 
-This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 [source, xml]
 ----
