@@ -13,8 +13,7 @@
 * Message broker (ActiveMQ or Apache Kafka) is running and reachable from the Sentinel node
 * Credentials for authentication is configured for the REST endpoint in {page-component-title} Core instance, Message broker, Elasticsearch and the PostgreSQL database
 
-NOTE: Configurations has to be made in the Sentinel directory.
-      We reference `etc` relative to the Sentinel home directory.
+NOTE: Configurations has to be made in the `etc` directory relative to the {page-component-title} Sentinel home directory.
       Depending on your operating system the home directory is `/usr/share/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.
 
 == Configure Access to PostgreSQL Database

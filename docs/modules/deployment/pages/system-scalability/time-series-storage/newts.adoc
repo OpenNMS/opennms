@@ -1,0 +1,92 @@
+= Newts
+
+link:http://newts.io/[Newts] is a time-series data schema for link:http://cassandra.apache.org/[Apache Cassandra].
+It enables link:https://en.wikipedia.org/wiki/Scalability#Horizontal[horizontally scale] capabilities for your time series storage and is an alternative to link:http://www.opennms.org/wiki/JRobin[JRobin] and link:http://oss.oetiker.ch/rrdtool/[RRDtool].
+
+The _Cassandra_ cluster design, setup, sizing, tuning and operation is out of scope for this section.
+To install and set up a _Cassandra_ cluster please follow the link:http://cassandra.apache.org/download[Cassandra installation instructions].
+For further information see link:https://cassandra.apache.org/doc/latest/getting_started/index.html[Cassandra Getting Started Guide].
+
+TIP: To avoid unwanted updates and disable the Cassandra repository on DNF/YUM based distributions or use `apt-mark hold cassandra` on APT based distributions.
+
+IMPORTANT: For simplicity we use the `$\{OPENNMS_HOME}/bin/newts init` command which initializes a Newts keyspace for you and the defaults are not optimal tuned for a production-ready environment.
+           If you want to build a production environment please consult link:https://opennms.discourse.group/t/sizing-cassandra-for-newts/771[Sizing Cassandra for Newts] and link:https://docs.datastax.com/en/dse-planning/doc/planning/planningAntiPatterns.html[planning Anti-patterns in Cassandra] articles.
+
+== Objectives
+
+* Configure {page-component-title} to use an existing _Cassandra_ cluster
+* Initializing the Newts keyspace using `newts init` with STCS without production-ready tuning
+* Verify time series data is stored and can be accessed
+
+== Before you begin
+
+* A running instance of {page-component-title} running on Linux
+* Working data collection and response time metrics from _Collectd_ and _Pollerd_
+* Cassandra cluster with access to the Cassandra client port `9042/tcp`
+
+NOTE: Configurations has to be made in the `etc` directory relative to the {page-component-title} Core home directory.
+      Depending on your operating system the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
+
+== Configure {page-component-title} Core using Newts
+
+.Create a configuration file with the time series storage settings
+[source, console]
+----
+sudo vi etc/opennms.properties.d/timeseries.properties
+----
+
+.Configure the Newts as the time series strategy
+[source, timeseries.properties]
+----
+# Configure storage strategy
+org.opennms.rrd.storeByForeignSource=true<1>
+org.opennms.timeseries.strategy=newts<2>
+
+# Configure Newts time series storage connection
+org.opennms.newts.config.hostname={cassandra-ip1,cassandra-ip2}<3>
+org.opennms.newts.config.keyspace=newts<4>
+org.opennms.newts.config.port=9042<5>
+
+# One year in seconds
+org.opennms.newts.config.ttl=31540000<6>
+
+# Seven days in seconds
+org.opennms.newts.config.resource_shard=604800<7>
+----
+
+<1> Associate time series data by the foreign ID instead of the database generated Node-ID
+<2> Set time-series strategy to use `newts`
+<3> Host or IP addresses of the _Cassandra_ cluster nodes can be a comma-separated list
+<4> Name of the keyspace which is initialized and used
+<5> Port to connect to Cassandra
+<6> Retention rate for the time series data
+<7> Shard metrics every 7 days
+
+.Initialize the Newts schema in Cassandra
+[source, console]
+----
+bin/newts init
+----
+
+.Connect to Cassandra with the CQL shell
+[source, console]
+----
+cd ${CASSANDRA_HOME}/bin
+./cqlsh
+----
+
+.Verify if the keyspace was properly initialized
+[source, console]
+----
+use newts;
+describe table terms;
+describe table samples;
+----
+
+.Apply changes and verify your configuration
+[source, console]
+----
+systemctl restart opennms
+----
+
+Go to the Node detail page from a SNMP managed device and verify if you see response time graphs for ICMP and Node-level Performance data.

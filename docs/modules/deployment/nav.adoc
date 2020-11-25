@@ -10,4 +10,8 @@
 ** xref:sentinel/runtime/install.adoc[]
 ** xref:sentinel/flow-processing.adoc[]
 * System Scalability
+** xref:system-scalability/time-series-storage.adoc[]
+*** xref:system-scalability/time-series-storage/rrdtool.adoc[]
+*** xref:system-scalability/time-series-storage/newts.adoc[]
 ** xref:system-scalability/tuning-kafka.adoc[]
+
