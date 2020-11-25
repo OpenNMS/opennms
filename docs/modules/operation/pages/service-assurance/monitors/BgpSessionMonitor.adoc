@@ -26,7 +26,7 @@ The servicestates for {page-component-title} are mapped as follows:
 | `6`    | _Established_     |  UP
 |===
 
-== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -36,7 +36,7 @@ The servicestates for {page-component-title} are mapped as follows:
 
 To define the mapping I used the description from http://www.freesoft.org/CIE/RFC/1771/31.htm[RFC1771 BGP Finite State Machine].
 
-== Configuration and Usage
+== Configuration and Use
 
 [options="header, autowidth"]
 |===

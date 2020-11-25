@@ -1,9 +1,6 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[poller-ldap-monitor]]
-==== LdapMonitor
+= LdapMonitor
 
 The LDAP monitor tests for LDAP service availability.
 The LDAP monitor first tries to establish a TCP connection on the specified port.
@@ -12,9 +9,9 @@ If the search returns a result within the specified timeout and attempts, the se
 The scope of the LDAP search is limited to the immediate subordinates of the base object.
 The LDAP search is anonymous by default.
 The LDAP monitor makes use of the _com.novell.ldap.LDAPConnection_ class.
-This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -22,7 +19,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the LdapMonitor
 [options="header, autowidth"]
@@ -40,7 +37,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 [source, xml]
 ----

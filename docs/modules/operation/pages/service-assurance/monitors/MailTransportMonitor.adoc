@@ -4,7 +4,7 @@
 MailTransportMonitor is used to run a synthetic test of a complete email transaction, including sending a mail and determining that it has been delivered.
 It can also use both sendmail-test and readmail-test independently to determine whether an email can be sent or a mailbox can be read.
 
-== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===

@@ -4,7 +4,7 @@
 WebMonitor is a clone of HttpMonitor, that uses a different underlying library for doing HTTP connections. 
 WebMonitor uses Apache HttpClient, which acts more like a real browser (follows redirects, etc.) than HttpMonitor.  
 
-== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -19,7 +19,7 @@ Note that all parameters listed are optional.
 |===
 | Parameter | Description | Default value
 | `use-system-proxy` | Specifies that system-wide proxy settings be used. The system proxy settings can be configured via
-                    link:#ga-opennms-system-properties[system properties].                                                 | `false`
+                    <<system-properties/introduction.adoc#ga-opennms-system-properties[system properties>>.                                                 | `false`
 
 | `scheme` | Protocol/scheme to use. | `http, https`
 | `port`| The port to connect to. | 80

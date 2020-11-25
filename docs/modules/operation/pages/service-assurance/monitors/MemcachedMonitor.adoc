@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== MemcachedMonitor
+= MemcachedMonitor
 
 This monitor allows to monitor link:http://memcached.org[Memcached], a distributed memory object caching system.
 To monitor the service availability the monitor tests if the _Memcached_ statistics can be requested.
@@ -33,7 +30,7 @@ The following metrics are collected:
 | _threads_             | Number of threads used by this server.
 |===
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -41,7 +38,7 @@ The following metrics are collected:
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the MemcachedMonitor
 [options="header, autowidth"]
@@ -53,7 +50,7 @@ The following metrics are collected:
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 The following example shows a configuration in the `poller-configuration.xml`.
 

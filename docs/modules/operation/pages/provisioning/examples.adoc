@@ -295,8 +295,8 @@ Let's create another policy named _pollVoIPDialPeers_ that marks interfaces with
 We'll set the _action_ to ENABLE_POLLING and matchBehavior to ALL_PARAMETERS.
 Add a parameter for _ifType_ as the key and _104_ as the value.
 
-If you later decide to move all your meetings to Minecraft and Mumble and therefore have no use for voice circuits, you will want to stop polling these interfaces. 
-To do so, change the action to _DISABLE_POLLING_.
+If you later decide to move all your meetings and therefore have no use for voice circuits, you will want to stop polling these interfaces. 
+To do so, change the action to DISABLE_POLLING.
 
 .Example: Node Category setting policy
 image:provisioning/00020.jpeg[]

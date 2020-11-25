@@ -1,7 +1,7 @@
 
 = XmpMonitor
 
-The http://www.opennms.org/wiki/XMP[XMP] monitor tests for _XMP service/agent_ availability by establishing an _XMP_ session and querying the target agent's _sysObjectID_ variable contained in the _Core MIB_.
+The #https://www.opennms.org/wiki/XMP[XMP]# monitor tests for _XMP service/agent_ availability by establishing an _XMP_ session and querying the target agent's _sysObjectID_ variable contained in the _Core MIB_.
 The service is considered available when the session attempt succeeds and the agent returns its _sysObjectID_ without error.
 
 == Monitor Facts

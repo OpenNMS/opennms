@@ -1,21 +1,18 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[poller-icmp-monitor]]
-==== IcmpMonitor
+= IcmpMonitor
 The ICMP monitor tests for ICMP service availability by sending _echo request_ ICMP messages.
 The service is considered available when the node sends back an _echo reply_ ICMP message within the specified amount of time.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.IcmpMonitor`
-| Remote Enabled | true with some restrictions (see <<poller-icmp-monitor-remote,below>>)
+| Remote Enabled | true with some restrictions (see below)
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the IcmpMonitor
 [options="header, autowidth"]
@@ -30,7 +27,7 @@ The service is considered available when the node sends back an _echo reply_ ICM
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 [source, xml]
 ----

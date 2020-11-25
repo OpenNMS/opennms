@@ -1,7 +1,7 @@
 
 = CiscoPingMibMonitor
 
-This poller monitor's purpose is to create conceptual rows (entries) in the _ciscoPingTable_ on _Cisco IOS_ devices that support the link:http://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?local=en&mibName=CISCO-PING-MIB[CISCO-PING-MIB].
+This poller monitor's purpose is to create conceptual rows (entries) in the _ciscoPingTable_ on _Cisco IOS_ devices that support the #link:http://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?local=en&mibName=CISCO-PING-MIB[CISCO-PING-MIB]#.
 These entries direct the remote _IOS_ device to ping an IPv4 or IPv6 address with a configurable set of parameters.
 After the _IOS_ device has completed the requested ping operations, the poller monitor queries the _IOS_ device to determine the results.
 If the results indicate success according to the configured parameters in the service configuration, then the monitored service is reported as available and the results are available for optional time-series (RRD) storage.
@@ -53,7 +53,7 @@ The object that holds this identifier is a signed 32-bit integer type, precludin
 It's probably a good idea to mix in the least-significant byte of the millisecond-accurate time as a substitute for that of the whole-second-accurate value to avoid collisions.
 _IOS_ seems to clean up entries in this table within a manner of minutes after their ping operations have completed.
 
-== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -61,7 +61,7 @@ _IOS_ seems to clean up entries in this table within a manner of minutes after t
 | Remote Enabled | false
 |===
 
-== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the _CiscoPingMibMonitor_
 [options="header, autowidth"]

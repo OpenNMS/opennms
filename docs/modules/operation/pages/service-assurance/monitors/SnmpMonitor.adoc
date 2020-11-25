@@ -124,7 +124,7 @@ As a working example we want to monitor the thermal system fan status which is p
 The manufacturer _MIB_ gives the following information:
 
 
-.Description of the cpqHeThermalSystemFanStatus from http://h18013.www1.hp.com/products/servers/management/hpsim/mibkit.html[CPQHLTH-MIB]
+.Description of the cpqHeThermalSystemFanStatus from #http://h18013.www1.hp.com/products/servers/management/hpsim/mibkit.html[CPQHLTH-MIB]#
 [source, asn1]
 ----
 SYNTAX 	INTEGER  {
@@ -178,7 +178,7 @@ Any other value indicates a problem with the thermal fan status and marks the se
 
 The second mode shows how to monitor values of a whole SNMP table.
 As a practical use case the status of a set of physical drives is monitored.
-This example configuration shows the status monitoring from the http://h18013.www1.hp.com/products/servers/management/hpsim/mibkit.html[CPQIDA-MIB].
+This example configuration shows the status monitoring from the #http://h18013.www1.hp.com/products/servers/management/hpsim/mibkit.html[CPQIDA-MIB]#.
 
 We use as a scalar object id the physical drive status given by the following tabular OID:
 

@@ -1,15 +1,12 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== HttpsMonitor
+= HttpsMonitor
 
 The HTTPS monitor tests the response of an SSL-enabled HTTP server.
 The HTTPS monitor is an SSL-enabled extension of the HTTP monitor with a default TCP port value of 443.
-All HttpMonitor parameters apply, so please refer to <<poller-http-monitor,HttpMonitor's documentation>> for more information.
-This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+All HttpMonitor parameters apply, so please refer to <<service-assurance/monitors/HttpMonitor.adoc#poller-http-monitor, HttpMonitor>> for more information.
+This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -17,7 +14,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the HttpsMonitor
 [options="header, autowidth"]
@@ -26,7 +23,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | `port`                 | A list of TCP ports to which connection shall be tried. | optional | `443`
 |===
 
-===== Examples
+== Examples
 
 [source, xml]
 ----

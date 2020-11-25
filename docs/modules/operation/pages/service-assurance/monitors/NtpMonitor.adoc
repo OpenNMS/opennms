@@ -1,15 +1,12 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== NtpMonitor
+= NtpMonitor
 
 The NTP monitor tests for NTP service availability.
 During the poll an NTP request query packet is generated.
 If a response is received, it is parsed and validated.
 If the response is a valid NTP response, the service is considered available.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -17,7 +14,7 @@ If the response is a valid NTP response, the service is considered available.
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the NtpMonitor
 [options="header, autowidth"]
@@ -30,7 +27,7 @@ If the response is a valid NTP response, the service is considered available.
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 [source, xml]
 ----

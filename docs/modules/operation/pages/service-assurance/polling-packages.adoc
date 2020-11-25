@@ -4,7 +4,7 @@
 
 To define more complex monitoring configuration it is possible to group service configurations into polling packages.
 They allow you to assign different service configurations to nodes.
-To assign a polling package to nodes, use the the link:http://www.opennms.org/wiki/Filters[Rules/Filters] syntax.
+To assign a polling package to nodes, use the the https://wiki.opennms.org/wiki/Filters[Rules/Filters] syntax.
 Each polling package can have its own <<service-assurance/downtime-model.adoc#ga-service-assurance-downtime-model, Downtime Model>> configuration.
 
 You can configure multiple packages, and an interface can exist in more than one package.
@@ -19,7 +19,7 @@ This gives great flexibility to how the service levels will be determined for a 
   <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" /><3>
 ----
 <1> Unique name of the polling package.
-<2> Base filter on IP address, categories or asset attributes of nodes based on link:http://www.opennms.org/wiki/Filters[Rules/Filters].
+<2> Base filter on IP address, categories or asset attributes of nodes based on https://wiki.opennms.org/wiki/Filters[Rules/Filters].
     The filter is evaluated first and is *required*.
     This package is used for all IP interfaces that do not have 0.0.0.0 as an assigned IP address and is *required*.
 <3> Allow to specify if the configuration of services is applied on a range of IP interfaces_ (IPv4 or IPv6).

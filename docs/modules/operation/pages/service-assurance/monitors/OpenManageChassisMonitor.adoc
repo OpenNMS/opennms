@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== OpenManageChassisMonitor
+= OpenManageChassisMonitor
 
 The _OpenManageChassis_ monitor tests the status of a _Dell_ chassis by querying its _SNMP_ agent.
 The monitor polls the value of the node's _SNMP OID_ .1.3.6.1.4.1.674.10892.1.300.10.1.4.1 (MIB-Dell-10892::chassisStatus).
@@ -10,7 +7,7 @@ If the value is _OK_ (3), the service is considered available.
 
 As this monitor uses _SNMP_, the queried nodes must have proper _SNMP_ configuration in _snmp-config.xml_.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -18,7 +15,7 @@ As this monitor uses _SNMP_, the queried nodes must have proper _SNMP_ configura
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the OpenManageChassisMonitor
 [options="header, autowidth"]
@@ -27,9 +24,9 @@ As this monitor uses _SNMP_, the queried nodes must have proper _SNMP_ configura
 | `port`    | The port to which connection shall be tried.                       | optional | from `snmp-config.xml`
 |===
 
-This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+This monitor implements the <<service-assurance/monitors/introduction.adoc#https://drive.google.com/drive/u/1/folders/1TuQQVg2zCUwa8cZ0-TqGpplJSKJ0Q3pega-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 [source, xml]
 ----
@@ -42,7 +39,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 <monitor service="OMA-Chassis" class-name="org.opennms.netmgt.poller.monitors.OpenManageChassisMonitor" />
 ----
 
-===== Dell MIBs
+== Dell MIBs
 
 _Dell MIBs_ can be found link:ftp://ftp.us.dell.com/sysman[here].
 Download the _DCMIB<version>.zip_ or _DCMIB<version>.exe_ file corresponding to the version of your _OpenManage_ agents.

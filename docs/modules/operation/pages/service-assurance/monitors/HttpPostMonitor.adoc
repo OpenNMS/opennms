@@ -1,14 +1,11 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== HttpPostMonitor
+= HttpPostMonitor
 
 If it is required to _HTTP POST_ any arbitrary content to a remote _URI_, the HttpPostMonitor can be used.
 A use case is to HTTP POST to a SOAP endpoint.
-This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -16,7 +13,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | Remote Enabled | `false`
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the HttpPostMonitor
 [options="header, autowidth"]
@@ -38,12 +35,12 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | `usesslfilter` | Enables or disables the SSL ceritificate validation. `true - false`   | optional | `false` | No
 | `uri`          | The uri to use during the POST.                                       | optional | `/` | Yes
 | `use-system-proxy` | Should the system wide proxy settings be used? The system proxy
-                   settings can be configured in link:#ga-opennms-system-properties[system properties] | optional |`false` | No
+                   settings can be configured in <<system-properties/introduction.adoc#ga-opennms-system-properties[system properties] | optional |`false` | No
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 The following example would create a POST that contains the payload _Word_.
 [source, xml]

@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== HostResourceSwRunMonitor
+= HostResourceSwRunMonitor
 
 This monitor test the running state of one or more processes.
 It does this via SNMP by inspecting the _hrSwRunTable_ of the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB].
@@ -14,7 +11,7 @@ Furthermore, the _SNMP agent_ on the system must support the _HOST-RESOURCES-MIB
 Most modern _SNMP agents_, including most distributions of the _Net-SNMP agent_ and the _SNMP service_ that ships with _Microsoft Windows_, support this _MIB_.
 Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating systems may be somewhat spotty.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -22,7 +19,7 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the HostResourceSwRunMonitor
 [options="header, autowidth"]
@@ -51,7 +48,7 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 The following example shows how to monitor the process called _httpd_ running on a server using this monitor.
 The configuration in `poller-configuration.xml` has to be defined as the following:

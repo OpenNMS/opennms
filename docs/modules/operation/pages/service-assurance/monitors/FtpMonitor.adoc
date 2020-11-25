@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== FtpMonitor
+= FtpMonitor
 
 The FtpMonitor is able to validate ftp connection dial-up processes.
 The monitor can test ftp server on multiple ports and specific login data.
@@ -10,9 +7,9 @@ The monitor can test ftp server on multiple ports and specific login data.
 The service using the FtpMonitor is _up_ if the FTP server responds with return codes between 200 and 299.
 For special cases the service is also marked as _up_ for 425 and 530.
 
-This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -20,7 +17,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | Remote Enabled | `true`
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the FtpMonitor.
 [options="header, autowidth"]
@@ -36,7 +33,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 Some example configuration how to configure the monitor in the 'poller-configuration.xml'
 [source, xml]
@@ -70,7 +67,7 @@ Some example configuration how to configure the monitor in the 'poller-configura
 <monitor service="FTP-Customer" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/>
 ----
 
-===== Hint
+== Hint
 
 *Comment from FtpMonitor source*
 

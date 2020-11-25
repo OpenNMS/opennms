@@ -8,7 +8,7 @@ The monitor offers the following functionalities:
 * existence of management beans
 * test the status of a single or multiple management beans and evaluate their value
 
-== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===

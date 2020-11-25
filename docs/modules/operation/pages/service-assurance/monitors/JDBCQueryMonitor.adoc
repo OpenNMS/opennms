@@ -1,15 +1,12 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== JDBCQueryMonitor
+= JDBCQueryMonitor
 
 The _JDBCQueryMonitor_ runs an SQL query against a database and is able to verify the result of the query.
 A read-only connection is used to run the SQL query, so the data in the database is not altered.
 It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.
-This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -17,7 +14,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the JDBCQueryMonitor
 [options="header, autowidth"]
@@ -62,23 +59,23 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 | `>=`      | `&amp;gt;=`
 |===
 
-===== Evaluating the action - operator - operand
+== Evaluating the action - operator - operand
 
 Only the first result row returned by the SQL query is evaluated.
 The evaluation can be against the value of one column or the number of rows returned by the SQL query.
 
-===== Provide the database driver
+== Provide the database driver
 
 The _JDBCQueryMonitor_ is based on _JDBC_ and requires a JDBC driver to communicate with any database.
-Due to the fact that {opennms-product-name} itself uses a PostgreSQL database, the PostgreSQL JDBC driver is available out of the box.
-For all other database systems a compatible JDBC driver has to be provided to {opennms-product-name} as a _jar-file_.
-To provide a JDBC driver place the _driver-jar_ in the `opennms/lib` folder of your {opennms-product-name}.
+Due to the fact that {page-component-title} itself uses a PostgreSQL database, the PostgreSQL JDBC driver is available out of the box.
+For all other database systems a compatible JDBC driver has to be provided to {page-component-title} as a _jar-file_.
+To provide a JDBC driver place the _driver-jar_ in the `opennms/lib` folder of your {page-component-title}.
 
-===== Examples
+== Examples
 
-====== Row Count
+=== Row Count
 
-The following example checks if the number of events in the {opennms-product-name} database is fewer than 250,000.
+The following example checks if the number of events in the {page-component-title} database is fewer than 250,000.
 
 [source, xml]
 ----
@@ -97,7 +94,7 @@ The following example checks if the number of events in the {opennms-product-nam
 <monitor service="OpenNMS-DB-Event-Limit" class-name="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" />
 ----
 
-====== String Comparison
+=== String Comparison
 
 The following example checks if the queried string matches against a defined operand.
 

@@ -1,24 +1,21 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= NetScalerGroupHealthMonitor
 
-==== NetScalerGroupHealthMonitor
-
-This monitor is designed for _Citrix(R) NetScaler(R)_ loadbalancing checks.
-It checks if more than x percent of the servers assigned to a specific group on a loadbalanced service are active.
-The required data is gathered via SNMP from the _NetScaler(R)_.
-The status of the servers is determined by the _NetScaler(R)_.
+This monitor is designed for Citrix(R) NetScaler(R) loadbalancing checks.
+It checks if more than x percent of the servers assigned to a specific group on a load-balanced service are active.
+The required data is gathered via SNMP from the NetScaler(R).
+The status of the servers is determined by the NetScaler(R).
 The provided service it self is not part of the check.
-The basis of this monitor is the _SnmpMonitorStrategy_.
-A valid SNMP configuration in _{opennms-product-name}_ for the _NetScaler(R)_ is required.
+The basis of this monitor is the SnmpMonitorStrategy.
+A valid SNMP configuration in {page-component-title} for the NetScaler(R) is required.
 
-NOTE: A _NetScaler(R)_ can manage several groups of servers per application.
+NOTE: A NetScaler(R) can manage several groups of servers per application.
       This monitor just covers one group at a time.
       If there are multiple groups to check, define one monitor per group.
 
 CAUTION: This monitor is not checking the loadbalanced service it self.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -26,7 +23,7 @@ CAUTION: This monitor is not checking the loadbalanced service it self.
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the NetScalerGroupHealthMonitor
 [options="header, autowidth"]
@@ -38,7 +35,7 @@ CAUTION: This monitor is not checking the loadbalanced service it self.
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 The following example checks a server group called _central_webfront_http_.
 If at least 70% of the servers are active, the service is up.
@@ -55,7 +52,7 @@ A configuration like the following can be used for the example in the `poller-co
 <monitor service="NetScaler_Health" class-name="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor” />
 ----
 
-===== Details about the used SNMP checks
+== Details about the used SNMP checks
 
 The monitor checks the status of the server group based on the _NS-ROOT-MIB_ using the _svcGrpMemberState_.
 _svcGrpMemberState_ is part of the _serviceGroupMemberTable_.

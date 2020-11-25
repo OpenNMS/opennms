@@ -1,14 +1,11 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== ImapsMonitor
+= ImapsMonitor
 
 The _IMAPS_ monitor tests the response of an _SSL-enabled_ _IMAP_ server.
 The _IMAPS_ monitor is an _SSL-enabled_ extension of the _IMAP_ monitor with a default _TCP_ port value of 993.
-All _ImapMonitor_ parameters apply, so please refer to <<poller-imap-monitor,ImapMonitor's documentation>> for more information.
+All _ImapMonitor_ parameters apply, so please refer to <<service-assurance/monitors/ImapMonitor.adoc#poller-imap-monitor, ImapMonitor>> for more information.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -16,7 +13,7 @@ All _ImapMonitor_ parameters apply, so please refer to <<poller-imap-monitor,Ima
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the ImapsMonitor
 [options="header, autowidth"]
@@ -27,7 +24,7 @@ All _ImapMonitor_ parameters apply, so please refer to <<poller-imap-monitor,Ima
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 [source, xml]
 ----

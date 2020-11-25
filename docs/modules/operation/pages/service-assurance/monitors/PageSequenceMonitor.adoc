@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== PageSequenceMonitor
+= PageSequenceMonitor
 
 The _PageSequenceMonitor_ (PSM) allows OpenNMS to monitor web applications.
 This monitor has several configuration options regarding _IPv4_, _IPv6_ and how to deal with name resolution.
@@ -18,7 +15,7 @@ A test path through an web application can look like this:
 The service is considered as _up_ if all this is working ok.
 If there's an error somewhere, your application will need attention and the service changes the state to _down_.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -26,7 +23,7 @@ If there's an error somewhere, your application will need attention and the serv
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 The configuration for this monitor consists of several parts.
 First is the overall configuration for `retries` and `timeouts`.
@@ -51,7 +48,7 @@ Additionally, it is possible to configure a page sequence containing a path thro
 | `page-sequence`  | Definition of the page-sequence to execute, see table with _Page Sequence Parameter_                 | required | `-`
 | `sequence-retry` | The retry parameter for the entire page sequence.                                                    | optional | `0`
 | `use-system-proxy` | Should the system wide proxy settings be used? The system proxy settings can be configured via
-                     link:#ga-opennms-system-properties[system properties]                                                | optional | `false`
+                     <<system-properties/introduction.adoc#ga-opennms-system-properties[system properties>>                                                | optional | `false`
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
@@ -104,13 +101,13 @@ TIP: If you set `requireIPv4` *and* `requireIPv6` false, the host IP for connect
 | `${nodelabel}`  | Nodelabel of the node the monitor is associated to.
 |===
 
-===== Session variables
+== Session variables
 
 It is possible to assign strings from a retrieved page to variables that can be used in page parameters later in the same sequence.
 First, specify one or more capturing groups in the `successMatch` expression (see link:http://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html[Java Class Pattern] for more information on regular expressions in Java).
 The captured values can then be assigned to variable names by using the session-variable parameter, and used in a later page load.
 
-===== Per-page response times
+== Per-page response times
 
 It is possible to collect response times for individual pages in a sequence.
 To use this functionality, a `ds-name` attribute must be added to each page whose load time should be tracked.
@@ -118,7 +115,7 @@ The response time for each page will be stored in the same _RRD_ file specified 
 
 WARNING: You will need to delete existing _RRD_ files and let them be recreated with the new list of datasources when you add a `ds-name` attribute to a page in a sequence that is already storing response time data.
 
-===== Examples
+== Examples
 
 The following example shows how to monitor the _OpenNMS_ web application using several mechanisms.
 It first does an _HTTP GET_ of `${ipaddr}/opennms` (following redirects as a browser would) and then checks to ensure that the resulting page has the phrase `Password` on it.

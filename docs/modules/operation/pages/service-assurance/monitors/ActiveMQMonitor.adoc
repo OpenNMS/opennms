@@ -4,14 +4,14 @@
 This monitor tests the availablity of an ActiveMQ Broker.
 The service is considered available if a successful connection is made.
 
-== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
 | Class Name     | `org.opennms.netmgt.poller.monitors.ActiveMQMonitor`
 |===
 
-== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the ActiveMQMonitor
 [options="header, autowidth"]

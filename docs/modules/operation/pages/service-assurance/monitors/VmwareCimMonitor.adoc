@@ -27,7 +27,7 @@ The service is _up_ if *all* sensors have the status _OK(5)_.
 If any sensor gives another status then _OK(5)_ the service is marked as _down_.
 The monitor error reason contains a list of all sensors which not returned status _OK(5)_.
 
-NOTE: In case of using link:http://www.vmware.com/files/pdf/Distributed-Power-Management-vSphere.pdf[Distributed Power Management] the _standBy_ state forces a service _down_.
+NOTE: In case of using #link:http://www.vmware.com/files/pdf/Distributed-Power-Management-vSphere.pdf[Distributed Power Management]# the _standBy_ state forces a service _down_.
       The health status is gathrered with a direct connection to the host and in stand by this connection is unavailable and the service is _down_.
       To deal with stand by states, the configuration _ignoreStandBy_ can be used.
       In case of a stand by state, the service is considered as _up_.

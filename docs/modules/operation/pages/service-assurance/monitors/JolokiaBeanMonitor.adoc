@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== JolokiaBeanMonitor
+= JolokiaBeanMonitor
 
 The JolokiaBeanMonitor is a JMX monitor specialized for the use with the link:http://www.jolokia.org[Jolokia framework].
 If it is required to execute a method via _JMX_ or poll an attribute via _JMX_, the _JolokiaBeanMonitor_ can be used.
@@ -12,9 +9,9 @@ To determine the status of the service the _JolokiaBeanMonitor_ relies on the ou
 If the banner is part of the output the status is interpreted as up.
 If the banner is not available in the output the status is determined as _down_.
 Banner matching supports regular expression and substring match.
-This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -22,7 +19,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | Remote Enabled  | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the JolokiaBeanMonitor
 [options="header, autowidth"]
@@ -52,7 +49,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 | `${port}`   | Port the service it bound to.
 |===
 
-===== Examples
+== Examples
 
 Some example configuration how to configure the monitor in the `poller-configuration.xml`
 [source, xml]
@@ -61,9 +58,9 @@ Some example configuration how to configure the monitor in the `poller-configura
 <parameter key="url" value="https://${ipaddr}:${port}/jolokia"/>
 ----
 
-===== AttrName vs MethodName
+== AttrName vs. MethodName
 
-The JolokiaBeanMonitor has two modes of operation. It can either scrape an attribute from a bean, or execute a method and compare output to a banner. The method execute is useful when your application has its own test methods that you would like to trigger via {opennms-product-name}.
+The JolokiaBeanMonitor has two modes of operation. It can either scrape an attribute from a bean, or execute a method and compare output to a banner. The method execute is useful when your application has its own test methods that you would like to trigger via {page-component-title}.
 
 The args to execute a test method called "superTest" that take in a string as input would look like this:
 [source, xml]

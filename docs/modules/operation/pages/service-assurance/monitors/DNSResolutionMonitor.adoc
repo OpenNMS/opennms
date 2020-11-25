@@ -1,19 +1,16 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[poller-dns-resolution-monitor]]
-==== DNSResolutionMonitor
+= DNSResolutionMonitor
 
-The DNS resolution monitor, tests if the node label of an {opennms-product-name} node can be resolved.
-This monitor uses the name resolver configuration from the poller configuration or from the operating system where {opennms-product-name} is running on.
+The DNS resolution monitor, tests if the node label of an {page-component-title} node can be resolved.
+This monitor uses the name resolver configuration from the poller configuration or from the operating system where {page-component-title} is running on.
 It can be used to test a client behavior for a given host name.
 For example: Create a node with the node label www.google.com and an IP interface.
 Assigning the DNS resolution monitor on the IP interface will test if www.google.com can be resolved using the DNS configuration defined by the poller.
-The response from the A record lookup can be any address, it is not verified with the IP address on the {opennms-product-name} IP interface where the monitor is assigned to.
-This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+The response from the A record lookup can be any address, it is not verified with the IP address on the {page-component-title} IP interface where the monitor is assigned to.
+This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -21,7 +18,7 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | Remote Enabled | true
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the DNSResolutionMonitor
 [options="header, autowidth"]
@@ -40,12 +37,12 @@ This monitor implements <<ga-service-assurance-monitors-placeholder-substitution
 | `lookup`          | Alternate DNS record to lookup                    | optional | The node label. | Yes
 | `nameserver`      | The DNS server to query for the records. +
                       The string can be in the form of hostname, +
-                      hostname:port, or [ipv6address]:port.             | optional | Use name server from host system running _{opennms-product-name}_ | Yes
+                      hostname:port, or [ipv6address]:port.             | optional | Use name server from host system running {page-component-title} | Yes
 |===
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 The following example shows the possibilities monitoring IPv4 and/or IPv6 for the service configuration:
 
@@ -134,12 +131,12 @@ The following example shows the possibilities monitoring IPv4 and/or IPv6 for th
 
 To have response time graphs for the name resolution you have to configure RRD graphs for the given ds-names (`dns-res-v4`, `dns-res-v6`, `dns-res-both`, `dns-res-either`, `dns-res-cname-mx`) in '$OPENNMS_HOME/etc/response-graph.properties'.
 
-===== DNSResolutionMonitor vs DnsMonitor
+== DNSResolutionMonitor vs. DnsMonitor
 
 The DNSResolutionMonitor is used to measure the availability and record outages of a name resolution from client perspective.
 The service is mainly used for websites or similar public available resources.
 It can be used in combination with the Page Sequence Monitor to give a hint if a website isn't available for DNS reasons.
 
 The DnsMonitor on the other hand is a test against a specific DNS server.
-In {opennms-product-name} the DNS server is the node and the DnsMonitor will send a lookup request for a given A record to the DNS server IP address.
+In {page-component-title} the DNS server is the node and the DnsMonitor will send a lookup request for a given A record to the DNS server IP address.
 The service goes down if the DNS server doesn't have a valid A record in his zone database or as some other issues resolving A records.

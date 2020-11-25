@@ -4,7 +4,7 @@
 This monitor is used to test if a Citrix(R) Server or XenApp Server(R) is providing the _Independent Computing Architecture_ (_ICA_) protocol on TCP 1494.
 The monitor opens a TCP socket and tests the greeting banner returns with `ICA`, otherwise the service is unavailable.
 
-== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -12,7 +12,7 @@ The monitor opens a TCP socket and tests the greeting banner returns with `ICA`,
 | Remote Enabled | true
 |===
 
-== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the CitrixMonitor
 [options="header, autowidth"]

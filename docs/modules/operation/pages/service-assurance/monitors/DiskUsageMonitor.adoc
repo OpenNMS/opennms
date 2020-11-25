@@ -14,7 +14,7 @@ Therefore systems against which it is to be used must have an SNMP agent support
 Most modern _SNMP agents_, including most distributions of the _Net-SNMP agent_ and the _SNMP service_ that ships with _Microsoft Windows_, support this _MIB_.
 Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating systems may be somewhat spotty.
 
-== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -22,7 +22,7 @@ Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating sy
 | Remote Enabled | false, relies on SNMP configuration.
 |===
 
-== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the DiskUsageMonitor
 [options="header, autowidth"]

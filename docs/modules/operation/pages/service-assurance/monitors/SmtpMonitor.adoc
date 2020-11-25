@@ -20,7 +20,7 @@ The behaviour can be simulated with `telnet` or `netcat`:
  QUIT
  221 2.0.0 closing connection j17-v6si13545102ywb.87 - gsmtp
 
-== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===

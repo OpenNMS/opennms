@@ -1,7 +1,7 @@
 
 = BSFMonitor
 
-This monitor runs a _Bean Scripting Framework_ http://commons.apache.org/proper/commons-bsf/[BSF] compatible script to determine the status of a service.
+This monitor runs a _Bean Scripting Framework_ http://commons.apache.org/proper/commons-bsf/[BSF]-compatible script to determine the status of a service.
 Users can write scripts to perform highly custom service checks.
 This monitor is not optimised for scale.
 It's intended for a small number of custom checks or prototyping of monitors.
@@ -11,7 +11,7 @@ It's intended for a small number of custom checks or prototyping of monitors.
 The _BSFMonitor_ avoids the overhead of _fork(2)_ that is used by the _SystemExecuteMonitor_.
 _BSFMonitor_ also grants access to a selection of {page-component-title} internal methods and classes that can be used in the script.
 
-== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -19,7 +19,7 @@ _BSFMonitor_ also grants access to a selection of {page-component-title} interna
 | Remote Enabled | false
 |===
 
-== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the _BSFMonitor_
 [options="header, autowidth"]

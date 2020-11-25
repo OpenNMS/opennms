@@ -1,9 +1,6 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[poller-imap-monitor]]
-==== ImapMonitor
+= ImapMonitor
 
 This monitor checks if an _IMAP_ server is functional.
 The test is done by initializing a very simple _IMAP_ conversation.
@@ -27,7 +24,7 @@ The behavior can be simulated with `telnet`:
 
 If one of the tests in the sample above fails the service is marked _down_.
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -35,7 +32,7 @@ If one of the tests in the sample above fails the service is marked _down_.
 | Remote Enabled  | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the ImapMonitor
 [options="header, autowidth"]
@@ -47,7 +44,7 @@ If one of the tests in the sample above fails the service is marked _down_.
 
 This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
-===== Examples
+== Examples
 
 Some example configuration how to configure the monitor in the `poller-configuration.xml`
 

@@ -1,13 +1,11 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= JCifsMonitor
 
-==== JCifsMonitor
 This monitor allows to test a file sharing service based on the CIFS/SMB protocol.
-This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
+This monitor implements <<service-assurance/monitors/introduction.adoc#ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 WARNING: This monitor is not installed by default.
-You have to install `opennmms-plugin-protocol-cifs` from your {opennms-product-name} installation repository.
+You have to install `opennmms-plugin-protocol-cifs` from your {page-component-title} installation repository.
 
 With the _JCIFS_ monitor you have different possibilities to test the availability of the _JCIFS_ service:
 
@@ -36,7 +34,7 @@ The _JCifsMonitor_ can *not* test:
 * Age or modification time stamps of files or folders
 * Permissions or other attributes of files or folders
 
-===== Monitor facts
+== Monitor Facts
 
 [options="autowidth"]
 |===
@@ -44,7 +42,7 @@ The _JCifsMonitor_ can *not* test:
 | Remote Enabled | false
 |===
 
-===== Configuration and Usage
+== Configuration and Use
 
 .Monitor specific parameters for the JCifsMonitor
 [options="header, autowidth"]
@@ -76,7 +74,7 @@ TIP: It makes little sense to have retries higher than `1`.
 TIP: Please consider, if you are accessing shares with Mac OSX you have some side effects with the hidden file '.DS_Store.'
      It could give you false positives in monitoring, you can use then the `folderIgnoreFiles` parameter.
 
-===== Example test existence of a file
+== Example test existence of a file
 
 This example shows how to configure the _JCifsMonitor_ to test if a file share is available over a network.
 For this example we have access to a share for error logs and we want to get an outage if we have any error log files in our folder.

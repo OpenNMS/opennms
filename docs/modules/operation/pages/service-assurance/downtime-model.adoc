@@ -11,7 +11,7 @@ This configurable behavior is called "downtime model".
 .Downtime model with resolved and ongoing outage
 image::service-assurance/01_downtime-model.png[]
 
-In figure <<ga-service-assurance-downtime-model, Outages and Downtime Model>> there are two outages.
+The above figure (Downtime model with resolved and ongoing outage) shows two outages.
 The first shows a short outage which was detected as "up" after 90 seconds.
 The second outage is not resolved now and the monitor has not detected an available service and was not available in the first 5 minutes (10 times 30 second polling).
 The scheduler changed the polling interval back to 5 minutes.
