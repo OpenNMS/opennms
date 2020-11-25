@@ -146,9 +146,9 @@ public class FlowRestServiceImpl implements FlowRestService {
         response.setStart(timeRangeFilter.getStart());
         response.setEnd(timeRangeFilter.getEnd());
 
-        final List<TrafficSummary<Integer>> summary = waitForFuture(flowRepository.getTosSummaries(filters));
+        final List<TrafficSummary<String>> summary = waitForFuture(flowRepository.getTosSummaries(filters));
 
-        this.<Integer>defaultSummaryResponseConsumer("ToS", Object::toString)
+        this.<String>defaultSummaryResponseConsumer("ToS", Object::toString)
             .apply(response)
             .accept(summary);
 
@@ -164,9 +164,9 @@ public class FlowRestServiceImpl implements FlowRestService {
         response.setStart(timeRangeFilter.getStart());
         response.setEnd(timeRangeFilter.getEnd());
 
-        final Table<Directional<Integer>, Long, Double> series = waitForFuture(flowRepository.getTosSeries(step, filters));
+        final Table<Directional<String>, Long, Double> series = waitForFuture(flowRepository.getTosSeries(step, filters));
 
-        this.<Integer>defaultSeriesReponseConsumer(Object::toString)
+        this.<String>defaultSeriesReponseConsumer(Object::toString)
                 .apply(response)
                 .accept(series);
 

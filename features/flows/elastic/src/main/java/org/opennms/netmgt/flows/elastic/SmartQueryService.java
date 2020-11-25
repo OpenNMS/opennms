@@ -235,13 +235,13 @@ public class SmartQueryService implements FlowQueryService {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<Integer>>> getTosSummaries(List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<String>>> getTosSummaries(List<Filter> filters) {
         return runWithDelegate(filters, false,
                                qs -> qs.getTosSummaries(filters));
     }
 
     @Override
-    public CompletableFuture<Table<Directional<Integer>, Long, Double>> getTosSeries(long step, List<Filter> filters) {
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getTosSeries(long step, List<Filter> filters) {
         return runWithDelegate(filters, false,
                                qs -> qs.getTosSeries(step, filters));
     }
