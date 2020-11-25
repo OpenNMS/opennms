@@ -9,3 +9,5 @@
 * xref:sentinel/introduction.adoc[]
 ** xref:sentinel/runtime/install.adoc[]
 ** xref:sentinel/flow-processing.adoc[]
+* System Scalability
+** xref:system-scalability/tuning-kafka.adoc[]

@@ -1,5 +1,4 @@
 .TODO
-* xref:tuning-kafka.adoc[]
 * xref:install-opennms-versions.adoc[]
 * xref:time-series-storage/introduction.adoc[]
 ** xref:time-series-storage/rrdtool/rrdtool.adoc[]
