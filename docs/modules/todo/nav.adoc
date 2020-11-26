@@ -1,3 +1,0 @@
-.TODO
-* xref:install-opennms-versions.adoc[]
-* xref:unused-images.adoc[]

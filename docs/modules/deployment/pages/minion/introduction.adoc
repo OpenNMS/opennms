@@ -17,7 +17,6 @@ The network area where access to managed network devices and applications is all
 Monitored _Nodes_ and _IP Services_ are associated to _Locations_ and are defined during _Provisioning_.
 Each Minion is configured with a _Location_ and all _Nodes_ and _IP Services_ in the same _Location_ are monitored through this Minion.
 
-[[minion-locations]]
 ._Nodes_ with _Minions_ in _Locations_
 image::deployment/minion/location.png[]
 
@@ -31,7 +30,6 @@ The _Provisioning System_ allows to associate _Nodes_ to a _Location_.
 
 Figure <<gi-install-minion-communication, Minion communication>> gives a more detailed overview about the communication between an {page-component-title} instance and a _Minion_.
 
-[[minion-communication]]
 .Minion communication
 image::deployment/minion/communication.png[]
 
@@ -74,3 +72,9 @@ IMPORTANT: Packages are only available for _RHEL_-based systems (_RPMS_).
 
 #TODO: We can remove this warning here it is a requirement in the install section#
 WARNING: To avoid issues, make sure the _Minion_ and the instance of {page-component-title} have the same version.
+
+image::deployment/minion/minion-communication.png[]
+
+image::deployment/minion/minion-communication.png[]
+
+image::deployment/minion/setup-minion-kafka.png[]

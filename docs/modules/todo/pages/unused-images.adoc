@@ -1,5 +1,0 @@
-= Unused Images
-
-image::minion-communication.png[]
-
-image::setup-minion-kafka.png[]
