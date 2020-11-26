@@ -144,7 +144,7 @@ public class MailTransportMonitorTest {
         		"\n" + 
         		"<!--  Example end2end test sending to localhost and reading from gmail.  In an\n" + 
         		"      end2end test, mail is sent to the specified host and read from the specified host.\n" + 
-        		"      If the host value is set to ${ipaddr}, then the IP address of the service being\n" + 
+        		"      If the host value is set to $\{ipaddr}, then the IP address of the service being\n" + 
         		"      polled will be used.  And end2end test is configured when both a send and a read\n" + 
         		"      test are defined.  The subject in the send is used for the match and the subject is\n" + 
         		"      modified to have the current time in millis appended.  The subject-match attribute in\n" + 

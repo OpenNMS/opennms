@@ -41,7 +41,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Define the host and port of the sendmail server. If you don't,
- * defaults will be used and ${ipaddr} is replaced with the IP address of the service.
+ * defaults will be used and $\{ipaddr} is replaced with the IP address of the service.
  */
 
 @XmlRootElement(name="sendmail-host")
@@ -66,7 +66,7 @@ public class SendmailHost implements Serializable {
     }
 
     public String getHost() {
-        return m_host == null? "${ipaddr}" : m_host;
+        return m_host == null? "$\{ipaddr}" : m_host;
     }
 
     public void setHost(final String host) {

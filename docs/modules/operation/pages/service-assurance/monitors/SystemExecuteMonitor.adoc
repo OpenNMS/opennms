@@ -38,13 +38,13 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 [options="header, autowidth"]
 |===
 | Variable        | Description
-| `${timeout}`    | Timeout in milliseconds, based on config of the service.
-| `${timeoutsec}` | Timeout in seconds, based on config of the service.
-| `${retry}`      | Amount of retries based on config of the service.
-| `${svcname}`    | Service name based on the config of the service.
-| `${ipaddr}`     | IP-address of the interface the service is bound to.
-| `${nodeid}`     | Nodeid of the node the monitor is associated to.
-| `${nodelabel}`  | Nodelabel of the node the monitor is associated to.
+| `$\{timeout}`    | Timeout in milliseconds, based on config of the service.
+| `$\{timeoutsec}` | Timeout in seconds, based on config of the service.
+| `$\{retry}`      | Amount of retries based on config of the service.
+| `$\{svcname}`    | Service name based on the config of the service.
+| `$\{ipaddr}`     | IP-address of the interface the service is bound to.
+| `${\nodeidl}`     | Nodeid of the node the monitor is associated to.
+| `$\{nodelabel}`  | Nodelabel of the node the monitor is associated to.
 |===
 
 == Examples
@@ -54,8 +54,8 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 
 [source, xml]
 ----
-<parameter key="args" value="-i ${ipaddr} -t ${timeout}"/>
-<parameter key="args" value="http://${nodelabel}/${svcname}/static"/>
+<parameter key="args" value="-i $\{ipaddr} -t $\{timeout}"/>
+<parameter key="args" value="http://$\{nodelabel}/$\{svcname}/static"/>
 ----
 
 === Exit status example
@@ -129,7 +129,7 @@ The args string that matches the _GpMonitor_ call looks like this:
 
 [source, xml]
 ----
-<parameter key="args" value="--hostname ${ipaddr} --timeout ${timeoutsec}" />
+<parameter key="args" value="--hostname $\{ipaddr} --timeout $\{timeoutsec}" />
 ----
 
 To migrate the GpMonitor parameters `hoption` and `toption` just replace the `--hostname` and `--timeout` directly in the `args` key.

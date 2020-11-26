@@ -61,13 +61,13 @@ final public class SystemExecuteMonitor extends AbstractServiceMonitor {
      * Provided that the script's response is valid we set the service status to SERVICE_AVAILABLE and return.
      * The parameter script
      * The parameter args is handed over to the called script. The following variables will be replaced.
-     * ${timeout} will be replaced with the specified timeout in milliseconds.
-     * ${timeoutsec} will be replaced with the specified timeout in seconds not in milliseconds.
-     * ${retry} will be replaced with the amount off specified retires.
-     * ${ipaddr} will be replaced with the ip-address of the interface that holds the polled service at the node.
-     * ${nodeid} will be replaced with the nodeid of the node that holds the polled service.
-     * ${nodelabel} will be replaced with the nodelabel of the node that holds the polled service.
-     * ${svcname} will be replaced with the name of the polled service.
+     * $\{timeout} will be replaced with the specified timeout in milliseconds.
+     * $\{timeoutsec} will be replaced with the specified timeout in seconds not in milliseconds.
+     * $\{retry} will be replaced with the amount off specified retires.
+     * $\{ipaddr} will be replaced with the ip-address of the interface that holds the polled service at the node.
+     * ${\nodeidl} will be replaced with the nodeid of the node that holds the polled service.
+     * $\{nodelabel} will be replaced with the nodelabel of the node that holds the polled service.
+     * $\{svcname} will be replaced with the name of the polled service.
      *
      * The timeout is handled by ExecRunner and is also passed as a parameter to
      * the script or program being called.
@@ -174,13 +174,13 @@ final public class SystemExecuteMonitor extends AbstractServiceMonitor {
 
     private String enrichArguments(String args, MonitoredService svc, TimeoutTracker tracker, Map <String, Object> parameters) {
         String richArgs = args;
-        richArgs = richArgs.replace("${timeout}", ((Long)tracker.getTimeoutInMillis()).toString());
-        richArgs = richArgs.replace("${timeoutsec}", ((Long)tracker.getTimeoutInSeconds()).toString());
-        richArgs = richArgs.replace("${retry}", ParameterMap.getKeyedString(parameters, "retry", ((Integer)DEFAULT_RETRY).toString()));
-        richArgs = richArgs.replace("${ipaddr}", svc.getIpAddr());
-        richArgs = richArgs.replace("${nodeid}", ((Integer) svc.getNodeId()).toString());
-        richArgs = richArgs.replace("${nodelabel}", svc.getNodeLabel());
-        richArgs = richArgs.replace("${svcname}", svc.getSvcName());
+        richArgs = richArgs.replace("$\{timeout}", ((Long)tracker.getTimeoutInMillis()).toString());
+        richArgs = richArgs.replace("$\{timeoutsec}", ((Long)tracker.getTimeoutInSeconds()).toString());
+        richArgs = richArgs.replace("$\{retry}", ParameterMap.getKeyedString(parameters, "retry", ((Integer)DEFAULT_RETRY).toString()));
+        richArgs = richArgs.replace("$\{ipaddr}", svc.getIpAddr());
+        richArgs = richArgs.replace("${\nodeidl}", ((Integer) svc.getNodeId()).toString());
+        richArgs = richArgs.replace("$\{nodelabel}", svc.getNodeLabel());
+        richArgs = richArgs.replace("$\{svcname}", svc.getSvcName());
         return richArgs;
     }
 

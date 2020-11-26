@@ -188,7 +188,7 @@ GROUP BY
 					<subreportParameterExpression><![CDATA[$P{ONMS_REPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="NODE_ID">
-					<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F{\nodeidl}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="AVAILABILITY_WARNING">
 					<subreportParameterExpression><![CDATA[$P{AVAILABILITY_WARNING}]]></subreportParameterExpression>
@@ -197,7 +197,7 @@ GROUP BY
 					<subreportParameterExpression><![CDATA[$P{AVAILABILITY_CRITICAL}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="NODE_LABEL">
-					<subreportParameterExpression><![CDATA[$F{nodelabel}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F\{nodelabel}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="START_TIME">
 					<subreportParameterExpression><![CDATA[$P{START_TIME}]]></subreportParameterExpression>

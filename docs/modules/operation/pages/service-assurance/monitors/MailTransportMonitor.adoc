@@ -37,7 +37,7 @@ It can also use both sendmail-test and readmail-test independently to determine 
 [options="header, autowidth"]
 |===
 | Attribute       | Description                                                                                         | Required | Default value
-| `host`          | The SMTP server address for sending mail                                                            | optional | `${ipaddr}`
+| `host`          | The SMTP server address for sending mail                                                            | optional | `$\{ipaddr}`
 | `port`          | The SMTP server port                                                                                | optional | `25`
 |===
 
@@ -82,7 +82,7 @@ It can also use both sendmail-test and readmail-test independently to determine 
 [options="header, autowidth"]
 |===
 | Attribute   | Description                                                                                             | Required | Default value
-| `host`      | The target host for reading mail                                                                        | optional | `${ipaddr}`
+| `host`      | The target host for reading mail                                                                        | optional | `$\{ipaddr}`
 | `port`      | The appropriate port for the protocol                                                                   | optional | `110`
 |===
 
@@ -108,7 +108,7 @@ It can also use both sendmail-test and readmail-test independently to determine 
 [options="header, autowidth"]
 |===
 | Variable        | Description
-| `${ipaddr}`     | This value will be substituted with the IP address of the interface on which the monitored service 
+| `$\{ipaddr}`     | This value will be substituted with the IP address of the interface on which the monitored service 
                      appears
 |===
 
@@ -123,7 +123,7 @@ Test for an end-to-end email transaction.
     <mail-transport-test>
       <mail-test>
         <sendmail-test attempt-interval="30000" use-authentication="false" use-jmta="false" debug="false" >
-          <sendmail-host host="${ipaddr}" port="25" />
+          <sendmail-host host="$\{ipaddr}" port="25" />
           <sendmail-protocol mailer="smtpsend" />
           <sendmail-message to="opennms@gmail.com" subject="OpenNMS Test Message"
             body="This is an OpenNMS test message." />

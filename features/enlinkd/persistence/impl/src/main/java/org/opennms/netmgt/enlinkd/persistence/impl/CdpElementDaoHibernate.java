@@ -75,7 +75,7 @@ public class CdpElementDaoHibernate extends AbstractDaoHibernate<CdpElement, Int
     @Override
     public void deleteByNodeId(Integer nodeId) {
         getHibernateTemplate().bulkUpdate("delete from CdpElement rec where rec.node.id = ? ",
-                                    new Object[] {nodeId});
+                                    new Object[] {\nodeidl});
     }
 
 

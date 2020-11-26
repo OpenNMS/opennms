@@ -51,7 +51,7 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
  * Response time resources are stored in paths like:
- *   response/${ipaddr}/ds.rrd
+ *   response/$\{ipaddr}/ds.rrd
  *
  */
 public final class ResponseTimeResourceType implements OnmsResourceType {

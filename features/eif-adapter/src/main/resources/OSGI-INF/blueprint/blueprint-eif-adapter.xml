@@ -45,7 +45,7 @@
 
     <route id="eifToEvent">
       <!-- Receive EIF stream from TCP port and decode the incoming bytes -->
-      <from uri="netty4:tcp://{{interface}}:{{port}}?sync=false&amp;decoder=#eifMessageDecoder"/>
+      <from uri="netty4:tcp://{{interface}}:{\{port}}?sync=false&amp;decoder=#eifMessageDecoder"/>
       <convertBodyTo type="org.opennms.netmgt.xml.event.Log"/>
       <!-- Send to the OpenNMS event log to the IPC manager -->
       <bean ref="eventIpcManager" method="send"/>

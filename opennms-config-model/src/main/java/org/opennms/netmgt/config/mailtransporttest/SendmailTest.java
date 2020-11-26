@@ -78,7 +78,7 @@ public class SendmailTest implements Serializable {
     /**
      * Define the host and port of the sendmail server. If you
      * don't, defaults will be used and
-     *  ${ipaddr} is replaced with the IP address of the service.
+     *  $\{ipaddr} is replaced with the IP address of the service.
      */
     @XmlElement(name="sendmail-host", required = true)
     private SendmailHost m_sendmailHost;

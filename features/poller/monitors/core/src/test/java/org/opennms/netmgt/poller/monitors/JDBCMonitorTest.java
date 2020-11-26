@@ -88,7 +88,7 @@ public class JDBCMonitorTest {
     public void testParameterSubstitution() throws Exception {
         JDBCMonitor monitor = new JDBCMonitor();
         Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("url", "{nodeLabel}");
+        parameters.put("url", "\{nodelabel}");
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "JDBC");
         Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
         assertTrue(subbedParams.get("subbed-url").toString().equals("localhost"));

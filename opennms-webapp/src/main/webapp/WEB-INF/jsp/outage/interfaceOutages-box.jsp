@@ -56,7 +56,7 @@
 <c:set var="ipAddr"><%=ipAddr%></c:set>
 
 <c:url var="outageLink" value="outage/list.htm">
-  <c:param name="filter" value="intf=${ipAddr}"/>
+  <c:param name="filter" value="intf=$\{ipaddr}"/>
 </c:url>
 
 <div class="card">

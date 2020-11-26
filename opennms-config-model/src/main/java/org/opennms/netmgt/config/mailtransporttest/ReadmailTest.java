@@ -73,7 +73,7 @@ public class ReadmailTest implements Serializable {
 
     /**
      * Define the host and port of the sendmail server. If you
-     * don't, defaults will be used and ${ipaddr} is replaced with the IP address of the service.
+     * don't, defaults will be used and $\{ipaddr} is replaced with the IP address of the service.
      */
     @XmlElement(name="readmail-host", required=true)
     private ReadmailHost m_readmailHost;

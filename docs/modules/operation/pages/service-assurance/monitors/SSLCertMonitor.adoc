@@ -53,10 +53,10 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 [options="header, autowidth"]
 |===
 | Variable        | Description
-| `${ipaddr}`     | The node's IP-Address
-| `${nodeid}`     | The node ID
-| `${nodelabel}`  | Label of the node the monitor is associated to.
-| `${svcname}`    | The service name
+| `$\{ipaddr}`     | The node's IP-Address
+| `${\nodeidl}`     | The node ID
+| `$\{nodelabel}`  | Label of the node the monitor is associated to.
+| `$\{svcname}`    | The service name
 |===
 
 WARNING: The monitor has limited support for communicating on other protocol layers above the SSL session layer.
@@ -89,7 +89,7 @@ Configuration in `poller-configuration.xml` is as the following:
     <parameter key="timeout" value="3000"/>
     <parameter key="port" value="443"/>
     <parameter key="days" value="30"/>
-    <parameter key="server-name" value="${nodelabel}.example.com"/>
+    <parameter key="server-name" value="$\{nodelabel}.example.com"/>
 </service>
 <service name="XMPP-STARTTLS-5222" interval="7200000" user-defined="false" status="on">
     <parameter key="retry" value="2"/>

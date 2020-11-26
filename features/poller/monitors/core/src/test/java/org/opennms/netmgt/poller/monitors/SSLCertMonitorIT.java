@@ -157,7 +157,7 @@ public class SSLCertMonitorIT {
         parameters.put("timeout", "500");
         parameters.put("verbose", "true");
         parameters.put("days", "5");
-        parameters.put("server-name", "${nodelabel}.example.com");
+        parameters.put("server-name", "$\{nodelabel}.example.com");
 
         MonitoredService svc = MonitorTestUtils.getMonitoredService(3, "test", DnsUtils.resolveHostname("localhost", false), "SSLCert");
         PollStatus status = monitor.poll(svc, parameters);

@@ -10,7 +10,7 @@ The _JIRA Ticketing Plugin_ is used to create JIRA Issues in response to _{openn
 [[ga-ticketing-jira-setup]]
 ==== Setup
 
-First, you'll need to install the `{opennms-package-base-name}-plugin-ticketer-jira` package for your system.
+First, you'll need to install the `opennms-plugin-ticketer-jira` package for your system.
 The JIRA ticketing plugin and its dependencies are not part of the core packages.
 
 Now, in order to enable the plugin start by setting following property in `${OPENNMS_HOME}/etc/opennms.properties`:

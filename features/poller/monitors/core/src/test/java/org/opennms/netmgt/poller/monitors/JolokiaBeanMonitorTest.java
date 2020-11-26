@@ -88,7 +88,7 @@ public class JolokiaBeanMonitorTest {
     public void testParameterSubstitution() throws Exception {
         JolokiaBeanMonitor monitor = new JolokiaBeanMonitor();
         Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("auth-username", "{nodeLabel}");
+        parameters.put("auth-username", "\{nodelabel}");
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "JOLOKIA");
         Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
         assertTrue(subbedParams.get("subbed-auth-username").toString().equals("localhost"));

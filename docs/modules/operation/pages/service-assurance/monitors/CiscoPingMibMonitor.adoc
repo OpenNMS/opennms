@@ -88,10 +88,10 @@ _IOS_ seems to clean up entries in this table within a manner of minutes after t
                                   effective ones.                                                                       | optional | `-`
 | `proxy-ip-addr`               | IP address of the interface that should be used as the _proxy_ for this service.
                                   Effective only if none of `proxy-node-id`, `proxy-node-foreign-source`, nor
-                                  `proxy-node-foreign-id` appears alongside this parameter. A value of `${ipaddr}` will
+                                  `proxy-node-foreign-id` appears alongside this parameter. A value of `$\{ipaddr}` will
                                   be substituted with the IP address of the interface on which the monitored service
                                   appears.                                                                              | optional | `-`
-| `target-ip-addr`              | IP address that the remote _IOS_ device should ping. A value of `${ipaddr}` will be
+| `target-ip-addr`              | IP address that the remote _IOS_ device should ping. A value of `$\{ipaddr}` will be
                                   substituted with the IP address of the interface on which the monitored service
                                   appears.                                                                              | optional | `-`
 | `success-percent`             | A whole-number percentage of pings that must succeed (from the perspective of the
@@ -115,7 +115,7 @@ This is optional just if you can use variables in the configuration.
 [options="header, autowidth"]
 |===
 | Variable        | Description
-| `${ipaddr}`     | This value will be substituted with the IP address of the interface on which the monitored service
+| `$\{ipaddr}`     | This value will be substituted with the IP address of the interface on which the monitored service
                     appears.
 |===
 
@@ -128,7 +128,7 @@ Using an {page-component-title} remote location monitor is not feasible.
 All of Foo Corporation's CPE routers must be _Cisco IOS_ devices in order to achieve full coverage in this scenario.
 page-component-title
 One approach to this requirement is to configure all of Foo Corporation's premise routers to be in the surveillance categories Customer_Foo, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
-We will use the special value `${ipaddr}` for the `proxy-ip-addr` parameter so that the remote pings will be provisioned on each Foo CPE router.
+We will use the special value `$\{ipaddr}` for the `proxy-ip-addr` parameter so that the remote pings will be provisioned on each Foo CPE router.
 Since we want each Foo CPE router to ping the same IP address 192.168.255.1, we statically list that value for the `target-ip-addr` address.
 
 [source, xml]
@@ -147,7 +147,7 @@ Since we want each Foo CPE router to ping the same IP address 192.168.255.1, we 
     <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
     <parameter key="rrd-base-name" value="ciscoping" />
     <parameter key="ds-name" value="ciscoping" />
-    <parameter key="proxy-ip-addr" value="${ipaddr}" />
+    <parameter key="proxy-ip-addr" value="$\{ipaddr}" />
     <parameter key="target-ip-addr" value="192.168.255.1" />
   </service>
   <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
@@ -166,7 +166,7 @@ While {page-component-title}' world-class service assurance is generally suffici
 Some or all of the Bar Limited CPE routers may be non-Cisco devices in this scenario.
 
 To meet this requirement, our approach is to configure Bar Limited's premise routers to be in the surveillance categories Customer_Bar, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
-This time, though, we will use the special value `${ipaddr}` not in the `proxy-ip-addr` parameter but in the `target-ip-addr` parameter so that the remote pings will be performed for each Bar CPE router.
+This time, though, we will use the special value `$\{ipaddr}` not in the `proxy-ip-addr` parameter but in the `target-ip-addr` parameter so that the remote pings will be performed for each Bar CPE router.
 Since we want the same _IOS_ device 20.11.5.11 to ping the CPE routers, we statically list that value for the `proxy-ip-addr` address.
 Example `poller-configuration.xml` additions
 
@@ -187,7 +187,7 @@ Example `poller-configuration.xml` additions
     <parameter key="rrd-base-name" value="ciscoping" />
     <parameter key="ds-name" value="ciscoping" />
     <parameter key="proxy-ip-addr" value="20.11.5.11" />
-    <parameter key="target-ip-addr" value="${ipaddr}" />
+    <parameter key="target-ip-addr" value="$\{ipaddr}" />
   </service>
   <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
   <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->

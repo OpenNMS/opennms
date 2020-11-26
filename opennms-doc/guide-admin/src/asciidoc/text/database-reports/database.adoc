@@ -134,8 +134,8 @@ To receive data from the _Measurements API_ simply create a query as follows:
 [source, xml]
 ------
 <query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000"> <1>
-  <source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P{nodeId}].interfaceSnmp[$P{interface}]"/>
-  <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P{nodeid}].interfaceSnmp[$P{interface}]"/>
+  <source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P{\nodeidl}].interfaceSnmp[$P{interface}]"/>
+  <source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P{\nodeidl}].interfaceSnmp[$P{interface}]"/>
 </query-request>
 ------
 <1> The query language. In our case, `measurement`, but `JasperReports` supports a lot out of the box, such as `sql`, `xpath`, etc.
@@ -228,7 +228,7 @@ The following example shows the usage of that helper.
 [source, xml]
 ------
 <parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
-  <defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
+  <defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{\nodeidl}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
 </parameter>
 <queryString language="Measurement">
   <![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000">
@@ -254,8 +254,8 @@ The following example shows the usage of that helper.
 </parameter>
 <queryString language="Measurement">
   <![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="2000">
-<source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P{nodeId}].interfaceSnmp[$P{interface}]"/>
-<source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P{nodeId}].interfaceSnmp[$P{interface}]"/>
+<source aggregation="AVERAGE" label="IfInOctets" attribute="ifHCInOctets" transient="false" resourceId="node[$P{\nodeidl}].interfaceSnmp[$P{interface}]"/>
+<source aggregation="AVERAGE" label="IfOutOctets" attribute="ifHCOutOctets" transient="false" resourceId="node[$P{\nodeidl}].interfaceSnmp[$P{interface}]"/>
 </query-request>]]>
 ------
 

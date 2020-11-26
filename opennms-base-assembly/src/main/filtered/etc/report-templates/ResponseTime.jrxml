@@ -177,7 +177,7 @@ ORDER BY
 		</groupFooter>
 	</group>
 	<group name="nodelabel_group">
-		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
+		<groupExpression><![CDATA[$F\{nodelabel}]]></groupExpression>
 		<groupHeader>
 			<band height="22">
 				<rectangle>
@@ -189,7 +189,7 @@ ORDER BY
 				<textField>
 					<reportElement style="Sub-sub-header" x="0" y="0" width="555" height="20" uuid="953efd1e-d849-4963-97e0-5f94823c634b"/>
 					<textElement textAlignment="Left"/>
-					<textFieldExpression><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Node " + $F\{nodelabel}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -283,7 +283,7 @@ ORDER BY
 					<subreportParameterExpression><![CDATA[$F{ipaddr}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="nodeId">
-					<subreportParameterExpression><![CDATA[String.valueOf($F{nodeid})]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[String.valueOf($F{\nodeidl})]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="endDate">
 					<subreportParameterExpression><![CDATA[$P{endDate}]]></subreportParameterExpression>

@@ -75,7 +75,7 @@ public class JmsConfigDaoTest {
             + "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
             + "<jms-northbounder-config>"
             + "  <enabled>true</enabled>"
-            + "  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}</message-format>"
+            + "  <message-format>ALARM ID:${alarmId} NODE:$\{nodelabel}</message-format>"
             + ">\n" + "  <destination>"
             + "    <jms-destination>OpenNMSAlarmQueue</jms-destination>"
             + "    <send-as-object-message>false</send-as-object-message>"
@@ -107,7 +107,7 @@ public class JmsConfigDaoTest {
         assertEquals(new Integer("1000"), config.getNaglesDelay());
         assertEquals(new Integer(100), config.getBatchSize());
         assertEquals(new Integer(300000), config.getQueueSize());
-        assertEquals("ALARM ID:${alarmId} NODE:${nodeLabel}", config.getMessageFormat());
+        assertEquals("ALARM ID:${alarmId} NODE:$\{nodelabel}", config.getMessageFormat());
 
         JmsDestination jmsDestination = config.getDestinations().get(0);
         assertNotNull(jmsDestination);

@@ -399,7 +399,7 @@ public class TimelineRestService extends OnmsRestService {
     @GET
     @Produces("text/html")
     @Transactional
-    @Path("html/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
+    @Path("html/{\nodeidl}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
     public Response html(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
         long delta = end - start;
 
@@ -462,7 +462,7 @@ public class TimelineRestService extends OnmsRestService {
     @GET
     @Produces("image/png")
     @Transactional
-    @Path("image/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
+    @Path("image/{\nodeidl}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
     public Response image(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
         long delta = end - start;
 

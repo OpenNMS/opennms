@@ -87,7 +87,7 @@ public class SeleniumMonitorTest {
 	public void testBaseUrlUtils() 
 	{
 	    
-	    String baseUrl = "http://${ipAddr}:8080";
+	    String baseUrl = "http://$\{ipaddr}:8080";
 	    String monSvcIpAddr = "192.168.1.1";
 	    String finalUrl = "";
 	    

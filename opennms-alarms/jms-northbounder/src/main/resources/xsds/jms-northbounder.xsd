@@ -15,7 +15,7 @@
          <xsd:element name="nagles-delay" type="xsd:int" minOccurs="0" default="1000"/>
          <xsd:element name="batch-size" type="xsd:int" minOccurs="0" default="100"/>
          <xsd:element name="queue-size" type="xsd:int" minOccurs="0" default="300000"/>
-         <xsd:element name="message-format" type="xsd:string" minOccurs="0" default="ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}"/>
+         <xsd:element name="message-format" type="xsd:string" minOccurs="0" default="ALARM ID:${alarmId} NODE:$\{nodelabel} ${logMsg}"/>
          <xsd:element name="destination" type="jmsDestination" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="uei" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:all>

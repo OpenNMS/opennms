@@ -411,7 +411,7 @@
                <statement>UPDATE alarms SET severity = severity+1 WHERE alarmid = ${alarmid} and alarmAckUser is null and severity &lt; 7</statement>
            </action>
            <action name="delete" >
-               <statement>DELETE FROM alarms WHERE nodeid = ${nodeid} and eventuei = ${eventuei}</statement>
+               <statement>DELETE FROM alarms WHERE nodeid = ${\nodeidl} and eventuei = ${eventuei}</statement>
            </action>
            <action name="deleteDayOldAlarms" >
                <statement>DELETE FROM alarms WHERE alarmAckUser IS NOT NULL AND lastEventTime &lt; CURRENT_TIMESTAMP</statement>
@@ -461,8 +461,8 @@
     
     <action-event name="eventEscalated" for-each-result="true" >
       <assignment type="field" name="uei" value="uei.opennms.org/vacuumd/alarmEscalated" />
-      <assignment type="field" name="nodeid" value="${nodeid}" />
-      <assignment type="field" name="interface" value="${ipaddr}" />
+      <assignment type="field" name="nodeid" value="${\nodeidl}" />
+      <assignment type="field" name="interface" value="$\{ipaddr}" />
       <assignment type="field" name="service" value="${servicename}" />
       <assignment type="parameter" name="alarmId" value="${alarmid}" />
       <assignment type="parameter" name="alarmEventUei" value="${eventUei}" />

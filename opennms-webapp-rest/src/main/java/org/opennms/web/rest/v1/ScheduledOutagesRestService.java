@@ -80,9 +80,9 @@ import org.springframework.stereotype.Component;
  * 
  * <p>Node and Interface status (the requests return true or false):</p>
  * <ul>
- * <li><b>GET /sched-outages/{outageName}/nodeInOutage/{nodeId}</b><br>to check if a node (with a specific nodeId) is currently on outage for a specific scheduled outage calendar.</li>
+ * <li><b>GET /sched-outages/{outageName}/nodeInOutage/{\nodeidl}</b><br>to check if a node (with a specific nodeId) is currently on outage for a specific scheduled outage calendar.</li>
  * <li><b>GET /sched-outages/{outageName}/interfaceInOutage/{ipAddr}</b><br>to check if an interface (with a specific IP address) is currently on outage for a specific scheduled outage calendar.</li>
- * <li><b>GET /sched-outages/nodeInOutage/{nodeId}</b><br>to check if a node (with a specific nodeId) is currently in outage.</li>
+ * <li><b>GET /sched-outages/nodeInOutage/{\nodeidl}</b><br>to check if a node (with a specific nodeId) is currently in outage.</li>
  * <li><b>GET /sched-outages/interfaceInOutage/{ipAddr}</b><br>to check if an interface (with a specific IP address) is currently on outage.</li>
  * </ul>
  * 
@@ -283,7 +283,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     }
 
     @GET
-    @Path("{outageName}/nodeInOutage/{nodeId}")
+    @Path("{outageName}/nodeInOutage/{\nodeidl}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isNodeInOutage(@PathParam("outageName") String outageName, @PathParam("nodeId") Integer nodeId) {
         Outage outage = getOutage(outageName);
@@ -292,7 +292,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     }
 
     @GET
-    @Path("nodeInOutage/{nodeId}")
+    @Path("nodeInOutage/{\nodeidl}")
     @Produces(MediaType.TEXT_PLAIN)
     public String isNodeInOutage(@PathParam("nodeId") int nodeId) {
         for (Outage outage : m_pollOutagesDao.getReadOnlyConfig().getOutages()) {

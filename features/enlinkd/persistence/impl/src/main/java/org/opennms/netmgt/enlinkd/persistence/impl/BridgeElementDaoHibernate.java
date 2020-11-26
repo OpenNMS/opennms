@@ -90,7 +90,7 @@ public class BridgeElementDaoHibernate extends AbstractDaoHibernate<BridgeElemen
     @Override
     public void deleteByNodeId(Integer nodeId) {
         getHibernateTemplate().bulkUpdate("delete from BridgeElement rec where rec.node.id = ? ",
-                                    new Object[] {nodeId});
+                                    new Object[] {\nodeidl});
     }
 	
 

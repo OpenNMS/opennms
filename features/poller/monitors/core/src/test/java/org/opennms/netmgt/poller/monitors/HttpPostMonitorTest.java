@@ -74,7 +74,7 @@ public class HttpPostMonitorTest {
     public void testParameterSubstitution() throws UnknownHostException {
         HttpPostMonitor monitor = new HttpPostMonitor();
         Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("url", "/{nodeLabel}.html");
+        parameters.put("url", "/\{nodelabel}.html");
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "HTTP");
         Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
         assertTrue(subbedParams.get("subbed-url").toString().equals("/localhost.html"));

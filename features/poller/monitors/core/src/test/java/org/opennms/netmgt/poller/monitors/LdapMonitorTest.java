@@ -88,7 +88,7 @@ public class LdapMonitorTest {
     public void testParameterSubstitution() throws Exception {
         LdapMonitor monitor = new LdapMonitor();
         Map<String, Object> parameters = new ConcurrentSkipListMap<String, Object>();
-        parameters.put("dn", "{nodeLabel}");
+        parameters.put("dn", "\{nodelabel}");
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "LDAP");
         Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
         assertTrue(subbedParams.get("subbed-dn").toString().equals("localhost"));

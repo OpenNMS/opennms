@@ -145,7 +145,7 @@ public class AvailabilityRestService extends OnmsRestService {
     }
 
     @GET
-    @Path("/categories/{category}/nodes/{nodeId}")
+    @Path("/categories/{category}/nodes/{\nodeidl}")
     public AvailabilityNode getCategoryNode(@PathParam("category") final String categoryName, @PathParam("nodeId") final Long nodeId) {
         try {
             final String category = URLDecoder.decode(categoryName, StandardCharsets.UTF_8.name());
@@ -165,7 +165,7 @@ public class AvailabilityRestService extends OnmsRestService {
     }
 
     @GET
-    @Path("/nodes/{nodeId}")
+    @Path("/nodes/{\nodeidl}")
     public AvailabilityNode getNode(@PathParam("nodeId") final Integer nodeId) {
         try {
             final AvailabilityNode avail = getAvailabilityNode(nodeId);

@@ -53,7 +53,7 @@ public class SyslogConfigDaoTest {
             "  <nagles-delay>10000</nagles-delay>" +
             "  <batch-size>10</batch-size>" +
             "  <queue-size>100</queue-size>" +
-            "  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}</message-format>" +
+            "  <message-format>ALARM ID:${alarmId} NODE:$\{nodelabel}</message-format>" +
             "  <date-format>yyyy-MM-dd HH:mm:ss</date-format>" +
             ">\n" +
             "  <destination>" +
@@ -81,7 +81,7 @@ public class SyslogConfigDaoTest {
             "  <nagles-delay>10000</nagles-delay>" +
             "  <batch-size>10</batch-size>" +
             "  <queue-size>100</queue-size>" +
-            "  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}</message-format>" +
+            "  <message-format>ALARM ID:${alarmId} NODE:$\{nodelabel}</message-format>" +
             "  <date-format>yyyy-MM-dd HH:mm:ss.SSS</date-format>" +
             ">\n" +
             "  <destination>" +
@@ -108,7 +108,7 @@ public class SyslogConfigDaoTest {
             "  <nagles-delay>10000</nagles-delay>" +
             "  <batch-size>10</batch-size>" +
             "  <queue-size>100</queue-size>" +
-            "  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}</message-format>" +
+            "  <message-format>ALARM ID:${alarmId} NODE:$\{nodelabel}</message-format>" +
             "  <date-format>yyyy-MM-dd HH:mm:ss.SSSZ</date-format>" +
             ">\n" +
             "  <destination>" +
@@ -124,7 +124,7 @@ public class SyslogConfigDaoTest {
             "    <first-occurrence-only>true</first-occurrence-only>" +
             "    <filter name=\"filter-1\">" +
             "      <rule>uei matches '^.*traps.*'</rule>" +
-            "      <message-format>ALARM ${alarmId} ON node ${nodeLabel}@${foreignSource}</message-format>" +
+            "      <message-format>ALARM ${alarmId} ON node $\{nodelabel}@${foreignSource}</message-format>" +
             "    </filter>" +
             "    <filter name=\"filter-2\" enabled=\"false\">" +
             "      <rule>uei matches '^.*traps.*'</rule>" +
@@ -154,7 +154,7 @@ public class SyslogConfigDaoTest {
         assertEquals(new Integer("10000"), config.getNaglesDelay());
         assertEquals(new Integer(10), config.getBatchSize());
         assertEquals(new Integer(100), config.getQueueSize());
-        assertEquals("ALARM ID:${alarmId} NODE:${nodeLabel}", config.getMessageFormat());
+        assertEquals("ALARM ID:${alarmId} NODE:$\{nodelabel}", config.getMessageFormat());
         assertEquals("yyyy-MM-dd HH:mm:ss", config.getDateFormat());
 
         SyslogDestination syslogDestination = config.getDestinations().get(0);

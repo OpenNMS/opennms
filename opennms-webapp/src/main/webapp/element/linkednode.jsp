@@ -84,11 +84,11 @@
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="headTitle" value="${nodeLabel}" />
+  <jsp:param name="headTitle" value="$\{nodelabel}" />
   <jsp:param name="headTitle" value="Linked Node Info" />
   <jsp:param name="title" value="Linked Node Info" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<a href='element/node.jsp?node=${nodeId}'>Node</a>" />
+  <jsp:param name="breadcrumb" value="<a href='element/node.jsp?node=${\nodeidl}'>Node</a>" />
   <jsp:param name="breadcrumb" value="Links" />
 </jsp:include>
 
@@ -104,7 +104,7 @@
 </script>
 
 <!-- Body -->
-  <h4>Node: ${nodeLabel}</h4>
+  <h4>Node: $\{nodelabel}</h4>
 
 <div class="row">
 <div class="col-md-12">
@@ -114,9 +114,9 @@
 <div class="card">
 	<div class="card-header"><span>
 <% if (bridgelinks.isEmpty()) { %>
-		No Bridge Forwarding Table Links found on ${nodeLabel} by Enhanced Linkd
+		No Bridge Forwarding Table Links found on $\{nodelabel} by Enhanced Linkd
 <% } else { %>
-        ${nodeLabel} Shared Segments found by Enhanced Linkd
+        $\{nodelabel} Shared Segments found by Enhanced Linkd
 <% } %>
  </span></div>
 		<!-- Link box -->
@@ -183,9 +183,9 @@
 
 <div class="card-header"><span>
 <%  if (lldpLinks.isEmpty()) { %>
-No LLDP Remote Table Links found on ${nodeLabel} by Enhanced Linkd
+No LLDP Remote Table Links found on $\{nodelabel} by Enhanced Linkd
 <% } else { %>
-${nodeLabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Links found by Enhanced Linkd
+$\{nodelabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Links found by Enhanced Linkd
 <% } %>
 </span></div>
 		<!-- Link box -->
@@ -235,9 +235,9 @@ ${nodeLabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Lin
 <div class="card">
 <div class="card-header"><span>
 <% if (cdpLinks.isEmpty()) { %>
-No CDP Cache Table Links found on ${nodeLabel} by Enhanced Linkd
+No CDP Cache Table Links found on $\{nodelabel} by Enhanced Linkd
 <% } else { %>
-${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Links found by Enhanced Linkd
+$\{nodelabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Links found by Enhanced Linkd
 <% } %>
 </span></div>
 <table class="table table-sm">
@@ -283,9 +283,9 @@ ${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Lin
 <div class="card">
 <div class="card-header"><span>
 <%   if (ospfLinks.isEmpty()) { %>
-No OSPF Links found on ${nodeLabel} by Enhanced Linkd
+No OSPF Links found on $\{nodelabel} by Enhanced Linkd
 <% } else { %>
-${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links found by Enhanced Linkd
+$\{nodelabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links found by Enhanced Linkd
 <% } %>
 </span></div>
 <table class="table table-sm">
@@ -336,9 +336,9 @@ ${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links fo
 	<div class="card-header">
 		<span>
 <%   if (isisLinks.isEmpty()) { %>
-No IS-IS Adjacency Links found on ${nodeLabel} by Enhanced Linkd
+No IS-IS Adjacency Links found on $\{nodelabel} by Enhanced Linkd
 <% } else { %>
-${nodeLabel} (id <%=isiselem.getIsisSysID() %>) IS-IS Adj Table Links found by Enhanced Linkd
+$\{nodelabel} (id <%=isiselem.getIsisSysID() %>) IS-IS Adj Table Links found by Enhanced Linkd
 <% } %>
 </span></div>
 		<!-- Link box -->

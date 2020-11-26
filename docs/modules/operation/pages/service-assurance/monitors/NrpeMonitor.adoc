@@ -31,7 +31,7 @@ CAUTION: {page-component-title} executes every NRPE check in a Java thread witho
 |===
 | Parameter | Description                                                                                              | Required | Default value
 | `retry`   | Number of retries before the service is marked as _down_.                                                | optional | `0`
-| `command` | The {check_name} of the command configured as `command[{check_name}]="/path/to/plugin/check-script"      | required | empty
+| `command` | The {\check_name} of the command configured as `command[{\check_name}]="/path/to/plugin/check-script"      | required | empty
 | `port`    | Port to access NRPE on the remote server.                                                              | optional | `5666`
 | `padding` | Padding for sending the command to the NRPE agent.                                                     | optional | `2`
 | `usessl`  | Enable encryption of network communication. NRPE uses SSL with anonymous DH and the following cipher

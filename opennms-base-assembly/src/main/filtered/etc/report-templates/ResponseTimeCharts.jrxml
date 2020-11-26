@@ -193,12 +193,12 @@ ORDER BY
 		</groupFooter>
 	</group>
 	<group name="nodelabel_group">
-		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
+		<groupExpression><![CDATA[$F\{nodelabel}]]></groupExpression>
 		<groupHeader>
 			<band height="20">
 				<textField>
 					<reportElement style="Node_Group" x="0" y="0" width="553" height="20" uuid="6c8f8a1a-c1c8-465b-b2cd-5720a3578ad4"/>
-					<textFieldExpression><![CDATA["Node: " + $F{nodelabel}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Node: " + $F\{nodelabel}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -303,7 +303,7 @@ ORDER BY
 								<datasetParameterExpression><![CDATA[$F{ipaddr}]]></datasetParameterExpression>
 							</datasetParameter>
 							<datasetParameter name="ds_nodeid">
-								<datasetParameterExpression><![CDATA[String.valueOf($F{nodeid})]]></datasetParameterExpression>
+								<datasetParameterExpression><![CDATA[String.valueOf($F{\nodeidl})]]></datasetParameterExpression>
 							</datasetParameter>
 							<datasetParameter name="ds_startDateTime">
 								<datasetParameterExpression><![CDATA[$P{startDate}.getTime()]]></datasetParameterExpression>

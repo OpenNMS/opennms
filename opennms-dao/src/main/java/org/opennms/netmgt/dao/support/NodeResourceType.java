@@ -47,7 +47,7 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
  * Nodes are top-level resources stored in paths like:
- *   snmp/${nodeId}/ds.rrd
+ *   snmp/${\nodeidl}/ds.rrd
  * or when storeByFs is enabled:
  *   snmp/fs/${fs}/${fid}/ds.rrd
  *

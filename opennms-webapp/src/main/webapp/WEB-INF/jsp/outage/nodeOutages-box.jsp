@@ -51,7 +51,7 @@
 
 
 <c:url var="outageLink" value="outage/list.htm">
-  <c:param name="filter" value="node=${nodeId}"/>
+  <c:param name="filter" value="node=${\nodeidl}"/>
 </c:url>
 <div class="card">
 <div class="card-header">

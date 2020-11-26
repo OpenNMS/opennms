@@ -82,7 +82,7 @@ public class Page implements Serializable {
     private String m_userInfo;
 
     @XmlAttribute(name="host")
-    private String m_host = "${ipaddr}";
+    private String m_host = "$\{ipaddr}";
 
     @XmlAttribute(name="requireIPv6")
     private Boolean m_requireIPv6;
@@ -198,7 +198,7 @@ public class Page implements Serializable {
     }
 
     public String getHost() {
-        return m_host == null? "${ipaddr}" : m_host;
+        return m_host == null? "$\{ipaddr}" : m_host;
     }
 
     public void setHost(final String host) {

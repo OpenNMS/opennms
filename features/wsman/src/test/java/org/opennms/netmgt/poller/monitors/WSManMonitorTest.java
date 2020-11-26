@@ -77,7 +77,7 @@ public class WSManMonitorTest {
                 EXAMPLE_NODE));
         // Positive match using substitution
         assertEquals(PollStatus.up(), poll(
-                "#IdentifyingDescriptions matches '.*ServiceTag' and #OtherIdentifyingInfo matches '{nodeLabel}'",
+                "#IdentifyingDescriptions matches '.*ServiceTag' and #OtherIdentifyingInfo matches '\{nodelabel}'",
                 EXAMPLE_NODE));
         // Negative match
         assertEquals(PollStatus.down(), poll(

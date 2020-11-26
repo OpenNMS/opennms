@@ -157,7 +157,7 @@ TestCreateRequisitionWithOneNode()
     local nodeLabel=uzbekistan
     local ip=192.168.39.1
 
-    createRequisitionWithOneNode ${BASE_URL} ${foreignSource} ${foreignId} ${nodeLabel} ${ip}
+    createRequisitionWithOneNode ${BASE_URL} ${foreignSource} ${foreignId} $\{nodelabel} ${ip}
     shuAssert "Unexpected failure creating requistion" $?
 
     shuAssertRequisitionExists $foreignSource
@@ -220,7 +220,7 @@ TestAddNodeWithDuplicatedForeignIdToRequisition()
     local nodeLabel=uzbekistan
     local ip=192.168.39.1
 
-    createRequisitionWithOneNode ${BASE_URL} ${foreignSource} ${foreignId} ${nodeLabel} ${ip}
+    createRequisitionWithOneNode ${BASE_URL} ${foreignSource} ${foreignId} $\{nodelabel} ${ip}
     shuAssert "Unexpected failure creating requistion" $?
 
     shuAssertRequisitionExists $foreignSource
@@ -275,7 +275,7 @@ TestSyncRequisition()
 
     shuDenyNodeInDB ${foreignSource} ${foreignId}
 
-    addNodeToRequisition ${BASE_URL} ${foreignSource} ${foreignId} ${nodeLabel} ${ip}
+    addNodeToRequisition ${BASE_URL} ${foreignSource} ${foreignId} $\{nodelabel} ${ip}
 
     synchRequisition ${BASE_URL} ${foreignSource}
 

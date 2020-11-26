@@ -19,7 +19,7 @@
 		<band height="20" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="0" width="206" height="20" uuid="16b1351b-d047-4acf-a0ec-e3c0e973db10"/>
-				<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F\{nodelabel}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

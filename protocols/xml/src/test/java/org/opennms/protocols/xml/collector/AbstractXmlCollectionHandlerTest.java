@@ -58,9 +58,9 @@ public class AbstractXmlCollectionHandlerTest {
         node.setAssetRecord(asset);
         Map<String, String> parameters = new HashMap<>();
         parameters.put("port", "80");
-        String url = AbstractXmlCollectionHandler.parseString("URL", "http://{nodeLabel}:{parameter:port}/{ipAddress}/serial/{serialNumber}/{step}", node, "127.0.0.1", 300, parameters);
+        String url = AbstractXmlCollectionHandler.parseString("URL", "http://\{nodelabel}:{parameter:port}/{ipAddress}/serial/{serialNumber}/{step}", node, "127.0.0.1", 300, parameters);
         Assert.assertEquals("http://mynode.local:80/127.0.0.1/serial/1001/300", url);
-        String multiline = "<data>\n   <source label='{nodeLabel}'/>\n</data>";
+        String multiline = "<data>\n   <source label='\{nodelabel}'/>\n</data>";
         String xml = AbstractXmlCollectionHandler.parseString("Content", multiline, node, "127.0.0.1", 300, parameters);
         Assert.assertEquals("<data>\n   <source label='mynode.local'/>\n</data>", xml);
 

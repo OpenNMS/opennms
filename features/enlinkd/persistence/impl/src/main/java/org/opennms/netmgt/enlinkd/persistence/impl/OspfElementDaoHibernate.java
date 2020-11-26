@@ -73,7 +73,7 @@ public class OspfElementDaoHibernate extends AbstractDaoHibernate<OspfElement, I
     @Override
     public void deleteByNodeId(Integer nodeId) {
         getHibernateTemplate().bulkUpdate("delete from OspfElement rec where rec.node.id = ? ",
-                                 new Object[] {nodeId});
+                                 new Object[] {\nodeidl});
     }
 
 }

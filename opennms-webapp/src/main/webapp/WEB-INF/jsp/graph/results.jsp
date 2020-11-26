@@ -252,7 +252,7 @@
                   <c:set var="nodeId" value="${attribute.value}"/>
                 </c:if>
               </c:forEach>
-              <div style="display: inline" ng-controller="checkFlowsCtrl" ng-init="getFlowInfo(${nodeId}, ${ifIndex}, ${results.start.time}, ${results.end.time})">
+              <div style="display: inline" ng-controller="checkFlowsCtrl" ng-init="getFlowInfo(${\nodeidl}, ${ifIndex}, ${results.start.time}, ${results.end.time})">
                 <c:forEach var="graph" items="${resultSet.graphs}">
                     <c:url var="specificGraphUrl" value="${requestScope.relativeRequestPath}">
                         <c:param name="reports" value="${graph.name}"/>

@@ -136,7 +136,7 @@ GROUP BY
 	<field name="average_duration_seconds" class="java.lang.Double"/>
 	<field name="outages_seconds" class="java.lang.Double"/>
 	<group name="node_id_group">
-		<groupExpression><![CDATA[$F{nodeid}]]></groupExpression>
+		<groupExpression><![CDATA[$F{\nodeidl}]]></groupExpression>
 		<groupHeader>
 			<band height="30">
 				<staticText>
@@ -147,7 +147,7 @@ GROUP BY
 				<textField>
 					<reportElement style="Table-Header" x="76" y="10" width="224" height="20" uuid="b47bf3ab-6e9b-458f-8dc6-26cb3db6f22a"/>
 					<textElement verticalAlignment="Middle"/>
-					<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F\{nodelabel}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement style="Table-Header" x="300" y="10" width="55" height="20" uuid="53897437-0667-4316-ac0e-6d30275771c6"/>

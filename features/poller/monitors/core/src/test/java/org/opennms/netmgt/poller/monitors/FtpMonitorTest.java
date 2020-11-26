@@ -134,7 +134,7 @@ public class FtpMonitorTest {
         m.put("retries", 0);
         m.put("timeout", TIMEOUT);
         m.put("userid", "{ipAddr}");
-        m.put("password", "{nodeLabel}");
+        m.put("password", "\{nodelabel}");
         MockMonitoredService svc = new MockMonitoredService(1, "Node One", InetAddress.getByName("127.0.0.1"), "FTP");
         Map<String, Object> subbedParams = mon.getRuntimeAttributes(svc, m);
         assertTrue(subbedParams.get("subbed-userid").equals("127.0.0.1"));

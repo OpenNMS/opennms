@@ -63,22 +63,22 @@ import org.springframework.transaction.annotation.Transactional;
  * The Class HardwareInventoryResource.
  *
  *  Retrieve the root entity (all hardware inventory)
- *  GET /nodes/{nodeId}/hardwareInventory
+ *  GET /nodes/{\nodeidl}/hardwareInventory
  *
  *  Override the root entity (all hardware inventory)
- *  POST /nodes/{nodeId}/hardwareInventory
+ *  POST /nodes/{\nodeidl}/hardwareInventory
  *
  *  Retrieve a specific entity
- *  GET /nodes/{nodeId}/hardwareInventory/{entPhysicalIndex}
+ *  GET /nodes/{\nodeidl}/hardwareInventory/{entPhysicalIndex}
  *
  *  Delete a specific entity
- *  DELETE /nodes/{nodeId}/hardwareInventory/{entPhysicalIndex}
+ *  DELETE /nodes/{\nodeidl}/hardwareInventory/{entPhysicalIndex}
  *
  *  Modify an existing entity
- *  PUT /nodes/{nodeId}/hardwareInventory/{entPhysicalIndex}
+ *  PUT /nodes/{\nodeidl}/hardwareInventory/{entPhysicalIndex}
  *
  *  Add a child entity
- *  POST /nodes/{nodeId}/hardwareInventory/{entPhysicalIndex}
+ *  POST /nodes/{\nodeidl}/hardwareInventory/{entPhysicalIndex}
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */

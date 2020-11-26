@@ -29,7 +29,7 @@
 	</parameter>
 	<parameter name="ipv4_interface" class="java.lang.String"/>
 	<parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor($P{nodeid}, $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor($P{\nodeidl}, $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
 	</parameter>
 	<queryString language="measurement">
 		<![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="5000">

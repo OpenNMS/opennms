@@ -177,7 +177,7 @@ order by d.value desc]]>
 		<band height="22" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="0" width="140" height="16" uuid="27a3911b-2cb4-4f8c-8113-cd87a3b7ddca"/>
-				<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F\{nodelabel}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="140" y="0" width="280" height="16" forecolor="#9C9C9C" uuid="ee591f75-53af-49d4-96aa-ef1022246013"/>
@@ -203,9 +203,9 @@ order by d.value desc]]>
 				<categoryDataset>
 					<categorySeries>
 						<seriesExpression><![CDATA["I/O WAIT"]]></seriesExpression>
-						<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+						<categoryExpression><![CDATA[$F\{nodelabel}]]></categoryExpression>
 						<valueExpression><![CDATA[$F{value}]]></valueExpression>
-						<labelExpression><![CDATA[$F{nodelabel}]]></labelExpression>
+						<labelExpression><![CDATA[$F\{nodelabel}]]></labelExpression>
 					</categorySeries>
 				</categoryDataset>
 				<linePlot>

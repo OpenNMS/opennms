@@ -64,7 +64,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
  *       &lt;attribute name="virtual-host" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="scheme" type="{http://www.w3.org/2001/XMLSchema}string" default="http" /&gt;
  *       &lt;attribute name="user-info" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="host" type="{http://www.w3.org/2001/XMLSchema}string" default="${ipaddr}" /&gt;
+ *       &lt;attribute name="host" type="{http://www.w3.org/2001/XMLSchema}string" default="$\{ipaddr}" /&gt;
  *       &lt;attribute name="port" default="80"&gt;
  *         &lt;simpleType&gt;
  *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}int"&gt;
@@ -204,7 +204,7 @@ public class Url implements Serializable {
     }
 
     public String getHost() {
-        return m_host == null? "${ipaddr}" : m_host;
+        return m_host == null? "$\{ipaddr}" : m_host;
     }
 
     public void setHost(final String value) {

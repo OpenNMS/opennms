@@ -32,7 +32,7 @@
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<group name="nodelabel">
-		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
+		<groupExpression><![CDATA[$F\{nodelabel}]]></groupExpression>
 		<groupHeader>
 			<band height="32">
 				<textField>
@@ -40,7 +40,7 @@
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F\{nodelabel}]]></textFieldExpression>
 				</textField>
 				<rectangle>
 					<reportElement mode="Opaque" x="0" y="0" width="36" height="24" forecolor="#CCCCCC" backcolor="#CCCCCC" uuid="ac90dec2-0c99-429c-8c6c-06e392282467"/>

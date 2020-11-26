@@ -163,7 +163,7 @@ public class OutageRestService extends OnmsRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    @Path("forNode/{nodeId}")
+    @Path("forNode/{\nodeidl}")
     public OnmsOutageCollection forNodeId(@Context final UriInfo uriInfo,
             @PathParam("nodeId") final int nodeId,
             @DefaultValue("604800000") @QueryParam("dateRange") final long dateRange,

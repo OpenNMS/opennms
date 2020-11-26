@@ -10,8 +10,8 @@
 			message-content-type="text/plain" message-encoding="7-bit" quit-wait="true"
 			ssl-enable="true" start-tls="false" transport="smtps" />
 		<sendmail-message to="noc@networksRus.com" from="networksRusNOC@gmail.com"
-			subject="ALARM ${alarmId} FROM NODE ${nodeLabel}@${foreignSource}"
-			   body="ALARM ${alarmId} FROM NODE ${nodeLabel}@${foreignSource}: ${logMsg}&#10;Description: ${description}" />
+			subject="ALARM ${alarmId} FROM NODE $\{nodelabel}@${foreignSource}"
+			   body="ALARM ${alarmId} FROM NODE $\{nodelabel}@${foreignSource}: ${logMsg}&#10;Description: ${description}" />
 		<user-auth user-name="networksRusNOC" password="w00t" />
 	</sendmail-config>
 

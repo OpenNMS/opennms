@@ -190,7 +190,7 @@ ORDER BY
 		<field name="eventuei" class="java.lang.String"/>
 		<field name="tally" class="java.lang.Long"/>
 		<variable name="top25_style_helper_COUNT" class="java.lang.Integer" calculation="Count">
-			<variableExpression><![CDATA[$F{nodeid}]]></variableExpression>
+			<variableExpression><![CDATA[$F{\nodeidl}]]></variableExpression>
 		</variable>
 	</subDataset>
 	<subDataset name="top25_events_by_node" uuid="4bb7f4b9-8fb9-4785-a6f1-bb8796369674">
@@ -226,7 +226,7 @@ ORDER BY
 		<field name="nodeid" class="java.lang.Integer"/>
 		<field name="tally" class="java.lang.Long"/>
 		<variable name="top25_style_helper_COUNT" class="java.lang.Integer" calculation="Count">
-			<variableExpression><![CDATA[$F{nodelabel}]]></variableExpression>
+			<variableExpression><![CDATA[$F\{nodelabel}]]></variableExpression>
 		</variable>
 	</subDataset>
 	<subDataset name="events_eph" uuid="0f6db18c-619b-4849-80bb-532c152a6bfd">
@@ -1059,8 +1059,8 @@ ORDER BY
 						<jr:detailCell style="table_3line_grid" height="18" rowSpan="1">
 							<textField hyperlinkType="Reference" hyperlinkTarget="Blank">
 								<reportElement style="Table-Body" x="0" y="0" width="458" height="18" uuid="6e3518e9-f45c-4fe7-8001-90e5468400fe"/>
-								<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
-								<hyperlinkReferenceExpression><![CDATA[$P{OPENNMS_URL_BASE}+"/event/list?sortby=id&filter=node="+$F{nodeid}]]></hyperlinkReferenceExpression>
+								<textFieldExpression><![CDATA[$F\{nodelabel}]]></textFieldExpression>
+								<hyperlinkReferenceExpression><![CDATA[$P{OPENNMS_URL_BASE}+"/event/list?sortby=id&filter=node="+$F{\nodeidl}]]></hyperlinkReferenceExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1096,7 +1096,7 @@ ORDER BY
 					</dataset>
 					<categorySeries>
 						<seriesExpression><![CDATA["Dummy Series"]]></seriesExpression>
-						<categoryExpression><![CDATA[$F{nodeid}]]></categoryExpression>
+						<categoryExpression><![CDATA[$F{\nodeidl}]]></categoryExpression>
 						<valueExpression><![CDATA[$F{tally}]]></valueExpression>
 					</categorySeries>
 				</categoryDataset>
@@ -1147,8 +1147,8 @@ ORDER BY
 								<textElement>
 									<font size="10"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
-								<hyperlinkReferenceExpression><![CDATA[$P{OPENNMS_URL_BASE}+"/event/list?sortby=id&filter=node="+$F{nodeid}]]></hyperlinkReferenceExpression>
+								<textFieldExpression><![CDATA[$F\{nodelabel}]]></textFieldExpression>
+								<hyperlinkReferenceExpression><![CDATA[$P{OPENNMS_URL_BASE}+"/event/list?sortby=id&filter=node="+$F{\nodeidl}]]></hyperlinkReferenceExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1169,7 +1169,7 @@ ORDER BY
 									<font size="10" isBold="false"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{eventuei}]]></textFieldExpression>
-								<hyperlinkReferenceExpression><![CDATA[$F{eventdisplay}.equals("Y") ? $P{OPENNMS_URL_BASE}+"/event/list?sortby=id&filter=exactUei="+$F{eventuei}.replaceAll("/", "%2F")+"&filter=node="+$F{nodeid} : ""]]></hyperlinkReferenceExpression>
+								<hyperlinkReferenceExpression><![CDATA[$F{eventdisplay}.equals("Y") ? $P{OPENNMS_URL_BASE}+"/event/list?sortby=id&filter=exactUei="+$F{eventuei}.replaceAll("/", "%2F")+"&filter=node="+$F{\nodeidl} : ""]]></hyperlinkReferenceExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -1208,7 +1208,7 @@ ORDER BY
 					</dataset>
 					<categorySeries>
 						<seriesExpression><![CDATA["Dummy Series"]]></seriesExpression>
-						<categoryExpression><![CDATA[$F{eventuei}+$F{nodeid}]]></categoryExpression>
+						<categoryExpression><![CDATA[$F{eventuei}+$F{\nodeidl}]]></categoryExpression>
 						<valueExpression><![CDATA[$F{tally}]]></valueExpression>
 					</categorySeries>
 				</categoryDataset>
@@ -1255,7 +1255,7 @@ ORDER BY
 							<textField hyperlinkType="Reference" hyperlinkTarget="Blank">
 								<reportElement style="Table-Body" x="0" y="0" width="239" height="18" uuid="e42a4e96-3a2e-4a9e-988b-b70eb9530e28"/>
 								<textFieldExpression><![CDATA[$F{node}]]></textFieldExpression>
-								<hyperlinkReferenceExpression><![CDATA[($F{nodeid} != null) ? $P{OPENNMS_URL_BASE}+"/event/list?sortby=id&filter=node="+$F{nodeid}+"&filter=exactUei="+$F{eventuei} : ""]]></hyperlinkReferenceExpression>
+								<hyperlinkReferenceExpression><![CDATA[($F{\nodeidl} != null) ? $P{OPENNMS_URL_BASE}+"/event/list?sortby=id&filter=node="+$F{\nodeidl}+"&filter=exactUei="+$F{eventuei} : ""]]></hyperlinkReferenceExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

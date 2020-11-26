@@ -91,7 +91,7 @@ final public class JolokiaBeanMonitor extends ParameterSubstitutingMonitor {
     public static final String PARAMETER_METHODINPUT1 = "input1";
     public static final String PARAMETER_METHODINPUT2 = "input2";
 
-    public static final String DEFAULT_URL = "http://${ipaddr}:${port}/jolokia";
+    public static final String DEFAULT_URL = "http://$\{ipaddr}:$\{port}/jolokia";
     private static final Logger LOGGER = LoggerFactory.getLogger(JolokiaBeanMonitor.class);
     /**
      * {@inheritDoc}
@@ -150,8 +150,8 @@ final public class JolokiaBeanMonitor extends ParameterSubstitutingMonitor {
 
         LOGGER.debug("poll: address = " + hostAddress + ", port = " + port + ", " + tracker);
 
-        strURL = strURL.replace("${ipaddr}", hostAddress);
-        strURL = strURL.replace("${port}", ((Integer) port).toString());
+        strURL = strURL.replace("$\{ipaddr}", hostAddress);
+        strURL = strURL.replace("$\{port}", ((Integer) port).toString());
 
         LOGGER.debug("poll: final URL address = " + strURL);
 

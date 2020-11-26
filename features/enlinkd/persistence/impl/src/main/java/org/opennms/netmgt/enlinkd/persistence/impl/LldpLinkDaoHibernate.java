@@ -81,7 +81,7 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
    @Override
    public void deleteByNodeId(Integer nodeId) {
        getHibernateTemplate().bulkUpdate("delete from LldpLink lldpLink where lldpLink.node.id = ? ",
-                                         new Object[] {nodeId});
+                                         new Object[] {\nodeidl});
     }
 
     public List<LldpLink> findLinksForIds(List<Integer> linkIds) {

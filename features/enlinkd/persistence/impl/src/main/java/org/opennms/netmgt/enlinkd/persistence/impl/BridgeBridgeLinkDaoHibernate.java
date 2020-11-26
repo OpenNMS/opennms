@@ -95,13 +95,13 @@ public class BridgeBridgeLinkDaoHibernate extends AbstractDaoHibernate<BridgeBri
         @Override
         public void deleteByNodeId(Integer nodeId) {
             getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink rec where rec.node.id = ? ",
-                                              new Object[] {nodeId});
+                                              new Object[] {\nodeidl});
         }
 
         @Override
         public void deleteByDesignatedNodeId(Integer nodeId) {
             getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink rec where rec.designatedNode.id = ? ",
-                                              new Object[] {nodeId});
+                                              new Object[] {\nodeidl});
         }
 
 

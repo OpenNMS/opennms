@@ -87,7 +87,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
             final MailTransportParameters mailParms = MailTransportParameters.get(parameters);
 
             try {
-                if ("${ipaddr}".equals(mailParms.getReadTestHost())) {
+                if ("$\{ipaddr}".equals(mailParms.getReadTestHost())) {
                     mailParms.setReadTestHost(svc.getIpAddr());
                 }
             } catch (final IllegalStateException ise) {
@@ -95,7 +95,7 @@ public class MailTransportMonitor extends AbstractServiceMonitor {
             }
 
             try {
-                if ("${ipaddr}".equals(mailParms.getSendTestHost())) {
+                if ("$\{ipaddr}".equals(mailParms.getSendTestHost())) {
                     mailParms.setSendTestHost(svc.getIpAddr());
                 }
             } catch (final IllegalStateException ise) {

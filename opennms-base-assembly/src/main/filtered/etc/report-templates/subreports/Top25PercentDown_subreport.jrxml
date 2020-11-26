@@ -178,7 +178,7 @@ LIMIT 25]]>
 			<textField>
 				<reportElement style="Body" x="0" y="0" width="148" height="20"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F\{nodelabel}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
 				<reportElement style="Body" x="148" y="0" width="151" height="20"/>

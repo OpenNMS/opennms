@@ -349,7 +349,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         page.setMethod("GET");
         page.setHttpVersion("1.1");
         page.setScheme("http");
-        page.setHost("${ipaddr}");
+        page.setHost("$\{ipaddr}");
         page.setDisableSslVerification("true");
         page.setPort(7080);
         page.setPath("/Login.do");
@@ -361,7 +361,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         page.setMethod("POST");
         page.setHttpVersion("1.1");
         page.setScheme("http");
-        page.setHost("${ipaddr}");
+        page.setHost("$\{ipaddr}");
         page.setDisableSslVerification("true");
         page.setPort(7080);
         page.setPath("/j_security_check.do");

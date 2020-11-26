@@ -294,8 +294,8 @@ public class JCifsMonitorTest {
         JCifsMonitor jCifsMonitor = new JCifsMonitor();
 
         m.put("username", "{ipAddr}");
-        m.put("password", "{nodeLabel}");
-        m.put("domain", "{nodeId}");
+        m.put("password", "\{nodelabel}");
+        m.put("domain", "{\nodeidl}");
         m.put("mode", "PATH_EXIST");
         m.put("path", "/validPath");
 

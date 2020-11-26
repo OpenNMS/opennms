@@ -87,7 +87,7 @@ public interface FlowRestService {
      * @return node details
      */
     @GET
-    @Path("exporters/{nodeId}")
+    @Path("exporters/{\nodeidl}")
     @Produces(MediaType.APPLICATION_JSON)
     FlowNodeDetails getFlowExporter(@PathParam("nodeId") final Integer nodeId);
 

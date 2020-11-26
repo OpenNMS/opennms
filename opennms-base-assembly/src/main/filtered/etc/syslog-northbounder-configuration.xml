@@ -5,10 +5,10 @@
    <nagles-delay>1000</nagles-delay>
    <batch-size>100</batch-size>
    <queue-size>300000</queue-size>
-   <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}; ${logMsg}</message-format>
+   <message-format>ALARM ID:${alarmId} NODE:$\{nodelabel}; ${logMsg}</message-format>
     <!-- You can specify date format within <date-format>, default is ISO 8601 -->
 <!-- You could do something like the following
-   <message-format>ALARM ID:${alarmId} NODE:${nodeLabel} IP:${ipAddr} 
+   <message-format>ALARM ID:${alarmId} NODE:$\{nodelabel} IP:$\{ipaddr} 
       FIRST:${firstOccurrence} LAST:${lastOccurrence} 
       COUNT:${count} UEI:${alarmUei} SEV:${severity} 
       x733Type:${x733AlarmType} x733Cause:${x733ProbableCause} 

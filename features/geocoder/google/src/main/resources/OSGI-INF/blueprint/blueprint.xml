@@ -24,7 +24,7 @@
 		<property name="apiKey" value="${apiKey}"/>
 		<property name="useEnterpriseCredentials" value="${useEnterpriseCredentials}"/>
 		<property name="useSystemProxy" value="${useSystemProxy}"/>
-		<property name="timeout" value="${timeout}"/>
+		<property name="timeout" value="$\{timeout}"/>
 	</bean>
 
 	<bean id="googleGeocoderService" class="org.opennms.features.geocoder.google.GoogleGeocoderService">

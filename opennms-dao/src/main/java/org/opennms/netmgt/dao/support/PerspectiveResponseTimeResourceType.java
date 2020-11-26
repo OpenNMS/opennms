@@ -49,7 +49,7 @@ import org.opennms.netmgt.model.ResourceTypeUtils;
 
 /**
  * Perspective response time resources are stored in paths like:
- *   response/${ipaddr}/perspective/${perspectiveLocation}/ds.rrd
+ *   response/$\{ipaddr}/perspective/${perspectiveLocation}/ds.rrd
  */
 public final class PerspectiveResponseTimeResourceType implements OnmsResourceType {
 

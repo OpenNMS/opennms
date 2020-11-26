@@ -80,7 +80,7 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
                                This is a _Regular Expression_ matched against every line, and it will be considered a
                                failure at the first match and sets the service with this monitor _Down_.                  | `-`      | `-`
 | `failureMessage`           | The failure message is used to construct the reason code.
-                               `${n}` values may be used to pull information from matching groups in the `failureMatch`
+                               `${\n}` values may be used to pull information from matching groups in the `failureMatch`
                                regular expression.                                                                        | `-`      | `-`
 | `successMatch`             | Text to look for in the response body.
                                This is a _Regular Expression_ matched against every line, and it will be considered a
@@ -98,7 +98,7 @@ TIP: If you set `requireIPv4` *and* `requireIPv6` false, the host IP for connect
 [options="header, autowidth"]
 |===
 | Variable        | Description
-| `${nodelabel}`  | Nodelabel of the node the monitor is associated to.
+| `$\{nodelabel}`  | Nodelabel of the node the monitor is associated to.
 |===
 
 == Session variables
@@ -118,7 +118,7 @@ WARNING: You will need to delete existing _RRD_ files and let them be recreated 
 == Examples
 
 The following example shows how to monitor the _OpenNMS_ web application using several mechanisms.
-It first does an _HTTP GET_ of `${ipaddr}/opennms` (following redirects as a browser would) and then checks to ensure that the resulting page has the phrase `Password` on it.
+It first does an _HTTP GET_ of `$\{ipaddr}/opennms` (following redirects as a browser would) and then checks to ensure that the resulting page has the phrase `Password` on it.
 Next, a login is attempted using _HTTP POST_ to the relative _URL_ for submitting form data (usually, the _URL_ which the form action points to).
 The parameters (`_j_username_` and `_j_password_`) indicate the form's data and values to be submitted.
 Furthermore a custom header (`foo`) is set for demonstration purposes.

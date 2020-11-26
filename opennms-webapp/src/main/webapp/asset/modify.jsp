@@ -67,12 +67,12 @@
   if (nodeId != null) {
     if (accessChecker.isNodeAccessible(nodeId)) {
 %>
-      <div class="container-fluid" ng-controller="NodeAssetsCtrl" ng-init="init(${nodeId})">
+      <div class="container-fluid" ng-controller="NodeAssetsCtrl" ng-init="init(${\nodeidl})">
 
         <div growl></div>
 
         <h4>
-          Node: <strong><a href="element/node.jsp?node=${nodeId}">{{ nodeLabel }}</a></strong>
+          Node: <strong><a href="element/node.jsp?node=${\nodeidl}">{{ nodeLabel }}</a></strong>
         </h4>
         <p>
           Last modified by {{ (master['lastModifiedBy'] || 'no one') }} at {{ master['lastModifiedDate'] | onmsDate }}

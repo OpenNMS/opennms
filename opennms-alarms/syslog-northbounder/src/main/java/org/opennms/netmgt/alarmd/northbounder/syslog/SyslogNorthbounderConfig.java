@@ -66,7 +66,7 @@ public class SyslogNorthbounderConfig implements Serializable {
     private Integer m_queueSize;
 
     /** The message format. */
-    @XmlElement(name = "message-format", required = false, defaultValue = "ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}")
+    @XmlElement(name = "message-format", required = false, defaultValue = "ALARM ID:${alarmId} NODE:$\{nodelabel} ${logMsg}")
     private String m_messageFormat;
     
     /** The date format. */
@@ -123,7 +123,7 @@ public class SyslogNorthbounderConfig implements Serializable {
      * @return the message format
      */
     public String getMessageFormat() {
-        return m_messageFormat == null ? "ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}" : m_messageFormat;
+        return m_messageFormat == null ? "ALARM ID:${alarmId} NODE:$\{nodelabel} ${logMsg}" : m_messageFormat;
     }
 
     /**

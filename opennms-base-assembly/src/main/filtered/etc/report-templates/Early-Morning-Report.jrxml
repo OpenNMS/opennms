@@ -815,7 +815,7 @@ WHERE
 					</rowGroup>
 					<rowGroup name="nodelabel" width="187" totalPosition="End">
 						<bucket class="java.lang.String">
-							<bucketExpression><![CDATA[$F{nodelabel}]]></bucketExpression>
+							<bucketExpression><![CDATA[$F\{nodelabel}]]></bucketExpression>
 						</bucket>
 						<crosstabRowHeader>
 							<cellContents backcolor="#E1E1E1" mode="Opaque">
@@ -827,7 +827,7 @@ WHERE
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7"/>
 									</textElement>
-									<textFieldExpression><![CDATA[$V{nodelabel}]]></textFieldExpression>
+									<textFieldExpression><![CDATA[$V\{nodelabel}]]></textFieldExpression>
 								</textField>
 							</cellContents>
 						</crosstabRowHeader>
@@ -1014,7 +1014,7 @@ WHERE
 					</rowGroup>
 					<rowGroup name="nodelabel" width="188" totalPosition="End">
 						<bucket class="java.lang.String">
-							<bucketExpression><![CDATA[$F{nodelabel}]]></bucketExpression>
+							<bucketExpression><![CDATA[$F\{nodelabel}]]></bucketExpression>
 						</bucket>
 						<crosstabRowHeader>
 							<cellContents backcolor="#E1E1E1" mode="Opaque">
@@ -1026,7 +1026,7 @@ WHERE
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="SansSerif" size="7"/>
 									</textElement>
-									<textFieldExpression><![CDATA[$V{nodelabel}]]></textFieldExpression>
+									<textFieldExpression><![CDATA[$V\{nodelabel}]]></textFieldExpression>
 								</textField>
 							</cellContents>
 						</crosstabRowHeader>
@@ -1661,43 +1661,43 @@ WHERE
 						</dataset>
 						<categorySeries>
 							<seriesExpression><![CDATA["indeterminate"]]></seriesExpression>
-							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<categoryExpression><![CDATA[$F\{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{indeterminate}]]></valueExpression>
 							<labelExpression><![CDATA["indeterminate"]]></labelExpression>
 						</categorySeries>
 						<categorySeries>
 							<seriesExpression><![CDATA["cleared"]]></seriesExpression>
-							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<categoryExpression><![CDATA[$F\{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{cleared}]]></valueExpression>
 							<labelExpression><![CDATA["cleared"]]></labelExpression>
 						</categorySeries>
 						<categorySeries>
 							<seriesExpression><![CDATA["normal"]]></seriesExpression>
-							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<categoryExpression><![CDATA[$F\{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{normal}]]></valueExpression>
 							<labelExpression><![CDATA["normal"]]></labelExpression>
 						</categorySeries>
 						<categorySeries>
 							<seriesExpression><![CDATA["warning"]]></seriesExpression>
-							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<categoryExpression><![CDATA[$F\{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{warning}]]></valueExpression>
 							<labelExpression><![CDATA["warning"]]></labelExpression>
 						</categorySeries>
 						<categorySeries>
 							<seriesExpression><![CDATA["minor"]]></seriesExpression>
-							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<categoryExpression><![CDATA[$F\{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{minor}]]></valueExpression>
 							<labelExpression><![CDATA["minor"]]></labelExpression>
 						</categorySeries>
 						<categorySeries>
 							<seriesExpression><![CDATA["major"]]></seriesExpression>
-							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<categoryExpression><![CDATA[$F\{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{major}]]></valueExpression>
 							<labelExpression><![CDATA["major"]]></labelExpression>
 						</categorySeries>
 						<categorySeries>
 							<seriesExpression><![CDATA["critical"]]></seriesExpression>
-							<categoryExpression><![CDATA[$F{nodelabel}]]></categoryExpression>
+							<categoryExpression><![CDATA[$F\{nodelabel}]]></categoryExpression>
 							<valueExpression><![CDATA[$F{critical}]]></valueExpression>
 							<labelExpression><![CDATA["critical"]]></labelExpression>
 						</categorySeries>

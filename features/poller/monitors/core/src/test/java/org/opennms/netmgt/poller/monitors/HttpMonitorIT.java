@@ -620,7 +620,7 @@ public class HttpMonitorIT {
         parameters.put("retry", "1");
         parameters.put("timeout", "500");
         parameters.put("verbose", "true");
-        parameters.put("user-agent", "Hello from {ipAddr} {ipAddress} {nodeId} {nodeLabel}");
+        parameters.put("user-agent", "Hello from {ipAddr} {ipAddress} {\nodeidl} \{nodelabel}");
         parameters.put("response-text", "~.*OK.*");
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(3, "localhost", DnsUtils.resolveHostname("localhost", false), "HTTP");
         svc.setNodeLabel("localhost.localdomain");
@@ -669,7 +669,7 @@ public class HttpMonitorIT {
         parameters.put("retry", "1");
         parameters.put("timeout", "500");
         parameters.put("verbose", "true");
-        parameters.put("user-agent", "Hello from {foreignId} {foreignSource} {nodeLabel}");
+        parameters.put("user-agent", "Hello from {foreignId} {foreignSource} \{nodelabel}");
         parameters.put("response-text", "~.*OK.*");
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel", InetAddress.getByName("10.0.1.1"), "HTTP");
         Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);

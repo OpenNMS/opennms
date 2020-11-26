@@ -13,7 +13,7 @@
                    </rrd> 
                    <uris>
                      <uri name="test-document-count">
-                       <url path="/HttpCollector_UnitTest_${ipaddr}.txt"
+                       <url path="/HttpCollector_UnitTest_$\{ipaddr}.txt"
                             user-agent="Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/412 (KHTML, like Gecko) Safari/412"
                             dotall="true" case-insensitive="true" unicode-case="true"
                             matches=".*Document Count:\s+([0-9,]+(\.[0-9]*)?).*Document Type:\s+(blah).*Some Number:\s+([0-9,]+).*"
@@ -26,7 +26,7 @@
                        </attributes>
                      </uri>
                      <uri name="test-second-uri">
-                       <url path="/HttpCollector_UnitTest2_${ipaddr}.txt"
+                       <url path="/HttpCollector_UnitTest2_$\{ipaddr}.txt"
                             user-agent="Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/412 (KHTML, like Gecko) Safari/412"
                             dotall="true"
                             matches=".*Answer.*everything:\s+([0-9,]+(\.[0-9]*)?).*Favorite interjection:\s+(.00.).*"

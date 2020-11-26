@@ -101,8 +101,8 @@ V0.2 Original working version
         <!-- Version 0.8 7-10-06- using qosalarmstate. Note &#39; is the ' character -->
         <action name="clearossjProblems" >
 	        <statement>
-                   UPDATE alarms SET qosalarmstate=&#39;clearing&#39; , severity=2, reductionkey= reductionkey||${lasteventid}, lasteventtime = ${lastEventTime}, alarmackuser=1, alarmacktime=${lastEventTime}   WHERE alarmType=1 AND lastEventTime &lt;=  ${lastEventTime} AND (( severity > 2 ) OR (severity = 1)) AND eventUei = ${clearUei} AND dpName = ${dpName} AND nodeID = ${nodeID} AND ipaddr = ${ipaddr} ;
-                   DELETE FROM alarms WHERE ( alarmType=2 AND lastEventTime &lt;=  ${lastEventTime} AND clearUei = ${clearUei} AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} )
+                   UPDATE alarms SET qosalarmstate=&#39;clearing&#39; , severity=2, reductionkey= reductionkey||${lasteventid}, lasteventtime = ${lastEventTime}, alarmackuser=1, alarmacktime=${lastEventTime}   WHERE alarmType=1 AND lastEventTime &lt;=  ${lastEventTime} AND (( severity > 2 ) OR (severity = 1)) AND eventUei = ${clearUei} AND dpName = ${dpName} AND nodeID = ${\nodeidl} AND ipaddr = $\{ipaddr} ;
+                   DELETE FROM alarms WHERE ( alarmType=2 AND lastEventTime &lt;=  ${lastEventTime} AND clearUei = ${clearUei} AND dpName = ${dpName} and nodeID = ${\nodeidl} and ipaddr = $\{ipaddr} )
 		                         OR ( alarmid &lt;= ( SELECT  max(alarmid)-10  from alarms WHERE severity=2 AND alarmAckUser IS NOT NULL ))
             </statement>
 

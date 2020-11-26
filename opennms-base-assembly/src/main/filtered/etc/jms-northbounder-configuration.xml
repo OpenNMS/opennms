@@ -4,7 +4,7 @@
    <nagles-delay>1000</nagles-delay>
    <batch-size>100</batch-size>
    <queue-size>300000</queue-size>
-   <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}; ${logMsg}</message-format>
+   <message-format>ALARM ID:${alarmId} NODE:$\{nodelabel}; ${logMsg}</message-format>
    <destination>
       <first-occurence-only>true</first-occurence-only>
       <send-as-object-message>false</send-as-object-message>

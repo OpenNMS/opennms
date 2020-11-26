@@ -58,7 +58,7 @@
 		<defaultValueExpression><![CDATA[$P{endDate}.getTime()]]></defaultValueExpression>
 	</parameter>
 	<parameter name="nodeResourceDescriptor" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{nodeid}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[org.opennms.netmgt.jasper.helper.MeasurementsHelper.getNodeOrNodeSourceDescriptor(String.valueOf($P{\nodeidl}), $P{foreignsource}, $P{foreignid})]]></defaultValueExpression>
 	</parameter>
 	<queryString language="measurement">
 		<![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="5000">

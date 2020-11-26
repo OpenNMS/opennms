@@ -354,7 +354,7 @@ public class SyslogNorthBounderTest {
                 "  <nagles-delay>1000</nagles-delay>\n" + 
                 "  <batch-size>30</batch-size>\n" + 
                 "  <queue-size>30000</queue-size>\n" + 
-                "  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}; PARM-1-NAME: ${parm[name-#1]} PARM-1:${parm[#1]} PARM-2-NAME: ${parm[name-#2]} " +
+                "  <message-format>ALARM ID:${alarmId} NODE:$\{nodelabel}; PARM-1-NAME: ${parm[name-#1]} PARM-1:${parm[#1]} PARM-2-NAME: ${parm[name-#2]} " +
                 "PARM-3-NAME: ${parm[name-#3]} PARM-foreignSource:${parm[foreignSource]} PARM-4-NAME: ${parm[name-#4]} PARM-4: ${parm[#4]} ${logMsg}</message-format>\n" + 
                 "  <destination>\n" + 
                 "    <destination-name>localTest</destination-name>\n" + 

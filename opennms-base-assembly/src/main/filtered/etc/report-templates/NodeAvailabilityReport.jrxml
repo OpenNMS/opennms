@@ -190,7 +190,7 @@ ORDER BY
 		<field name="outages_percent" class="java.lang.Double"/>
 		<field name="avail_total" class="java.lang.Double"/>
 		<variable name="style_helper_COUNT" class="java.lang.Integer" calculation="Count">
-			<variableExpression><![CDATA[$F{nodelabel}]]></variableExpression>
+			<variableExpression><![CDATA[$F\{nodelabel}]]></variableExpression>
 		</variable>
 		<variable name="SURVEILLANCE_CAT_AVAILABILITY_AVG" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Average">
 			<variableExpression><![CDATA[$F{avail_percent}]]></variableExpression>
@@ -440,7 +440,7 @@ ORDER BY
 						<jr:detailCell style="Table_Grid" height="17" rowSpan="1">
 							<textField>
 								<reportElement style="Table_Detail" x="12" y="0" width="294" height="17" uuid="899fca92-a6a7-4138-88ea-093e73ab6fd8"/>
-								<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F\{nodelabel}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

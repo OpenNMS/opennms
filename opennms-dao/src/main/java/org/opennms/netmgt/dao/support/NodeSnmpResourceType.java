@@ -42,8 +42,8 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 /**
  * Node SNMP resources point to the resources stored in the root
  * of the node path i.e.
- *   snmp/${nodeId}/ds1.rrd
- *   snmp/${nodeId}/ds2.rrd
+ *   snmp/${\nodeidl}/ds1.rrd
+ *   snmp/${\nodeidl}/ds2.rrd
  *
  */
 public final class NodeSnmpResourceType implements OnmsResourceType {

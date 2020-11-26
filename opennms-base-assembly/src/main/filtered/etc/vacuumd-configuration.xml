@@ -149,8 +149,8 @@
     <!--
     <action-event name="maintenanceExpirationWarning" for-each-result="true" >
       <assignment type="field" name="uei" value="uei.opennms.org/asset/maintenance/expirationWarning" />
-      <assignment type="field" name="nodeid" value="${nodeid}" />
-      <assignment type="parameter" name="nodeId" value="${nodeid}" />
+      <assignment type="field" name="nodeid" value="${\nodeidl}" />
+      <assignment type="parameter" name="nodeId" value="${\nodeidl}" />
       <assignment type="parameter" name="maintcontractexpires" value="${maintcontractexpires}" />
       <assignment type="parameter" name="maintcontract" value="${maintcontract}" />
       <assignment type="parameter" name="timeframe" value="${timeframe}" />

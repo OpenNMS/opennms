@@ -227,7 +227,7 @@ ORDER BY
 	<field name="avail_percent" class="java.lang.Double"/>
 	<field name="avail_total" class="java.lang.Double"/>
 	<variable name="style_helper_COUNT" class="java.lang.Integer" calculation="Count">
-		<variableExpression><![CDATA[$F{nodelabel}]]></variableExpression>
+		<variableExpression><![CDATA[$F\{nodelabel}]]></variableExpression>
 	</variable>
 	<variable name="SURVEILLANCE_CAT_AVAILABILITY_AVG" class="java.lang.Double" resetType="Group" resetGroup="SURVEILLANCE_CAT" calculation="Average">
 		<variableExpression><![CDATA[$F{avail_percent}]]></variableExpression>

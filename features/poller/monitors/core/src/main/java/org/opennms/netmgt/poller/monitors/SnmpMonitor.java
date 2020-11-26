@@ -73,7 +73,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                                                                                 // Object
                                                                                 // Id
 
-    private static final String DEFAULT_REASON_TEMPLATE = "Observed value '${observedValue}' does not meet criteria '${operator} ${operand}'";
+    private static final String DEFAULT_REASON_TEMPLATE = "Observed value '$\{observedvalue}' does not meet criteria '$\{operator} $\{operand}'";
 
     /**
      * {@inheritDoc}
@@ -146,7 +146,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
             // the parameter "matchall" to "count" will act as if "walk" has been set to "true".
             if ("count".equals(matchstr)) {
                 if (DEFAULT_REASON_TEMPLATE.equals(reasonTemplate)) {
-                    reasonTemplate = "Value: ${matchCount} outside of range Min: ${minimum} to Max: ${maximum}";
+                    reasonTemplate = "Value: $\{matchcount} outside of range Min: $\{minimum} to Max: $\{maximum}";
                 }
                 int matchCount = 0;
                 List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
@@ -171,7 +171,7 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
                 }
             } else if ("true".equals(walkstr)) {
                 if (DEFAULT_REASON_TEMPLATE.equals(reasonTemplate)) {
-                    reasonTemplate = "SNMP poll failed, addr=${ipaddr} oid=${oid}";
+                    reasonTemplate = "SNMP poll failed, addr=$\{ipaddr} oid=$\{oid}";
                 }
                 List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
                 for(SnmpValue result : results) {
@@ -194,9 +194,9 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
             } else {
                 if (DEFAULT_REASON_TEMPLATE.equals(reasonTemplate)) {
                     if (operator != null) {
-                        reasonTemplate = "Observed value '${observedValue}' does not meet criteria '${operator} ${operand}'";
+                        reasonTemplate = "Observed value '$\{observedvalue}' does not meet criteria '$\{operator} $\{operand}'";
                     } else {
-                        reasonTemplate = "Observed value '${observedValue}' was null";
+                        reasonTemplate = "Observed value '$\{observedvalue}' was null";
                     }
                 }
 

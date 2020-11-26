@@ -222,7 +222,7 @@ ORDER BY
 		</groupFooter>
 	</group>
 	<group name="nodelabel_group">
-		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
+		<groupExpression><![CDATA[$F\{nodelabel}]]></groupExpression>
 		<groupHeader>
 			<band/>
 		</groupHeader>
@@ -240,7 +240,7 @@ ORDER BY
 				</textField>
 				<textField>
 					<reportElement x="0" y="1" width="348" height="20" uuid="d5f4ff68-0c6c-49e4-95b8-3c241c986c68"/>
-					<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F\{nodelabel}]]></textFieldExpression>
 				</textField>
 				<subreport isUsingCache="true">
 					<reportElement x="0" y="21" width="554" height="136" uuid="99259917-9048-44c0-953f-da88a0fcff30"/>
@@ -257,7 +257,7 @@ ORDER BY
 						<subreportParameterExpression><![CDATA[$P{SUBREPORT_START_TIME}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="NODE_LABEL">
-						<subreportParameterExpression><![CDATA[$F{nodelabel}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[$F\{nodelabel}]]></subreportParameterExpression>
 					</subreportParameter>
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "ResponseTimeSummary_Availability_subreport.jasper"]]></subreportExpression>
@@ -356,7 +356,7 @@ ORDER BY
 					<subreportParameterExpression><![CDATA[$P{MEASUREMENT_PASSWORD}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="nodeid">
-					<subreportParameterExpression><![CDATA[String.valueOf($F{nodeid})]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[String.valueOf($F{\nodeidl})]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="foreignid">
 					<subreportParameterExpression><![CDATA[$F{foreignid}]]></subreportParameterExpression>

@@ -156,7 +156,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
     private CollectionSet getCollectionSet(MonitoredService service, Map<String, Number> entries, String rrdBaseName) {
         // When making calls directly to RrdUtils#createRrd() and RrdUtils#updateRrd(),
         // the behavior was as follows:
-        // 1) All samples get written to response/${ipAddr}/${rrdBaseName}.rrd
+        // 1) All samples get written to response/$\{ipaddr}/${rrdBaseName}.rrd
         //     This happens whether or not storeByGroup is enabled.
         // 2) If multiple entries are present, the DSs are created in the same order that they
         //    appear in the map

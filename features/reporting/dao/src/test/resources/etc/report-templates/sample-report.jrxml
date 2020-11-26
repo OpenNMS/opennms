@@ -14,7 +14,7 @@
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<group name="nodelabel">
-		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
+		<groupExpression><![CDATA[$F\{nodelabel}]]></groupExpression>
 		<groupHeader>
 			<band height="40">
 				<textField>
@@ -22,7 +22,7 @@
 					<textElement>
 						<font isBold="true"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{nodelabel}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F\{nodelabel}]]></textFieldExpression>
 				</textField>
 				<rectangle>
 					<reportElement mode="Opaque" x="0" y="13" width="36" height="24" forecolor="#CCCCCC" backcolor="#CCCCCC"/>

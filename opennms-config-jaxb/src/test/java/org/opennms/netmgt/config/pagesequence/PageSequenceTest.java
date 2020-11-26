@@ -79,7 +79,7 @@ public class PageSequenceTest extends XmlTestNoCastor<PageSequence> {
         page.setMethod("GET");
         page.setHttpVersion("1.1");
         page.setScheme("http");
-        page.setHost("${ipaddr}");
+        page.setHost("$\{ipaddr}");
         page.setDisableSslVerification("true");
         page.setPort(7080);
         page.setPath("/Login.do");
@@ -91,7 +91,7 @@ public class PageSequenceTest extends XmlTestNoCastor<PageSequence> {
         page.setMethod("POST");
         page.setHttpVersion("1.1");
         page.setScheme("http");
-        page.setHost("${ipaddr}");
+        page.setHost("$\{ipaddr}");
         page.setDisableSslVerification("true");
         page.setPort(7080);
         page.setPath("/j_security_check.do");

@@ -253,7 +253,7 @@ ORDER BY
 						<jr:detailCell style="expire_warning_TD" height="17" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="160" height="17" uuid="c6c0d9b3-a1b6-45c2-b1d6-ebc1de2ba1c3"/>
-								<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F\{nodelabel}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -440,7 +440,7 @@ ORDER BY
 		<band height="114" splitType="Prevent">
 			<textField>
 				<reportElement style="Body" x="122" y="3" width="427" height="20" uuid="a63b0cb0-d03d-49db-88d5-0eb9a9c938b9"/>
-				<textFieldExpression><![CDATA[$F{nodelabel}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F\{nodelabel}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement style="Body" x="21" y="3" width="101" height="20" uuid="e0595e7d-a560-4bd0-b0cd-0bcc5230d274"/>

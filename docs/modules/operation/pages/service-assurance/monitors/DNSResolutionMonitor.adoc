@@ -86,7 +86,7 @@ The following example shows the possibilities monitoring IPv4 and/or IPv6 for th
     <parameter key="rrd-base-name" value="dns-res-v6"/>
     <parameter key="ds-name" value="dns-res-v6"/>
     <parameter key="nameserver" value="{ipAddr}"/>
-    <parameter key="lookup" value="{nodeLabel}"/>
+    <parameter key="lookup" value="\{nodelabel}"/>
 </service>
 
 <!-- Assigned service test if the node label is resolved for an AAAA record AND A record -->

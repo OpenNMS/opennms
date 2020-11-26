@@ -72,7 +72,7 @@ createRequisitionWithOneNode()
     cat <<EOF > $req
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model-import foreign-source="${foreignSource}">
-    <node node-label="${nodeLabel}" foreign-id="${foreignId}">
+    <node node-label="$\{nodelabel}" foreign-id="${foreignId}">
         <interface status="1" snmp-primary="P" ip-addr="${ip}" descr="vmnet8">
             <monitored-service service-name="ICMP"/>
         </interface>
@@ -102,7 +102,7 @@ addNodeToRequisition()
     local req=/tmp/provision.request.$$
 
     cat <<EOF > $req
-    <node node-label="${nodeLabel}" foreign-id="${foreignId}">
+    <node node-label="$\{nodelabel}" foreign-id="${foreignId}">
         <interface status="1" snmp-primary="P" ip-addr="${ip}" descr="vmnet8">
             <monitored-service service-name="ICMP"/>
         </interface>

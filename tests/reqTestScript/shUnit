@@ -177,14 +177,14 @@ shuRunOneTest() {
 
 shuFmtNbrTests() {
     n="${1}"
-    if [ ${n} -eq 0 ] 
+    if [ ${\n} -eq 0 ] 
     then
         shuRetFmtNbrTests="No tests"
-    elif [ ${n} -eq 1 ] 
+    elif [ ${\n} -eq 1 ] 
     then
         shuRetFmtNbrTests="1 test" 
     else
-        shuRetFmtNbrTests="${n} tests" 
+        shuRetFmtNbrTests="${\n} tests" 
     fi
 }
 

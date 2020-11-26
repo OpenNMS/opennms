@@ -14,7 +14,7 @@
       <rule>foreignSource matches '^Routers.*'</rule>
       <from>donotreply@domain.com</from>
       <to>tarus@opennms.org, jeff@opennms.org</to>
-      <subject>${nodeLabel} : Something is wrong!</subject>
+      <subject>$\{nodelabel} : Something is wrong!</subject>
       <body>${logMsg} - ${description}</body>
     </filter>
   </destination>

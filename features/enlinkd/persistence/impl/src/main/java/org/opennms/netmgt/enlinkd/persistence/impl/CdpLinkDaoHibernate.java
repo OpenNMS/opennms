@@ -85,7 +85,7 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
     @Override
     public void deleteByNodeId(Integer nodeId) {
         getHibernateTemplate().bulkUpdate("delete from CdpLink cdpLink where cdpLink.node.id = ? ",
-                                          new Object[] {nodeId});
+                                          new Object[] {\nodeidl});
     }
 
 }

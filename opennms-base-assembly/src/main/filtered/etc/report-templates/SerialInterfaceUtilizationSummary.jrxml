@@ -132,7 +132,7 @@ ORDER BY
 	<variable name="ICMP_Latency_MIN" class="java.lang.Double"/>
 	<variable name="ICMP_Latency_MAX" class="java.lang.Double"/>
 	<group name="nodelabel_group">
-		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
+		<groupExpression><![CDATA[$F\{nodelabel}]]></groupExpression>
 		<groupHeader>
 			<band height="21">
 				<rectangle>
@@ -141,7 +141,7 @@ ORDER BY
 				<textField>
 					<reportElement style="Sub-header" mode="Transparent" x="0" y="0" width="555" height="20" uuid="43f617ae-cb2a-4176-8cbc-73081ac20d83"/>
 					<textElement textAlignment="Left"/>
-					<textFieldExpression><![CDATA["Node " + $F{nodelabel}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Node " + $F\{nodelabel}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -189,7 +189,7 @@ ORDER BY
 						<subreportParameterExpression><![CDATA[$F{snmpifname}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="nodeid">
-						<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[$F{\nodeidl}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="foreignsource">
 						<subreportParameterExpression><![CDATA[$F{foreignsource}]]></subreportParameterExpression>

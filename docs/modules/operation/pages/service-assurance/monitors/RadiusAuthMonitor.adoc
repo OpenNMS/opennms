@@ -10,12 +10,12 @@ IMPORTANT: To use this monitor it is required to install the _RADIUS_ protocol f
 
 For RPM-based distributions:
 ====
-`yum install {opennms-package-base-name}-plugin-protocol-radius`
+`yum install opennms-plugin-protocol-radius`
 ====
 
 For Debian-based distributions:
 ====
-`apt-get install {opennms-package-base-name}-plugin-protocol-radius`
+`apt-get install opennms-plugin-protocol-radius`
 ====
 
 The test is similar to test the behavior of a _RADIUS_ server by evaluating the result with the command line tool `radtest`.

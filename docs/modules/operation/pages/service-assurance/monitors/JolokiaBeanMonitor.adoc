@@ -45,8 +45,8 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 [options="header, autowidth"]
 |===
 | Variable    | Description
-| `${ipaddr}` | IP-address of the interface the service is bound to.
-| `${port}`   | Port the service it bound to.
+| `$\{ipaddr}` | IP-address of the interface the service is bound to.
+| `$\{port}`   | Port the service it bound to.
 |===
 
 == Examples
@@ -54,8 +54,8 @@ This monitor implements the <<service-assurance/monitors/introduction.adoc#ga-se
 Some example configuration how to configure the monitor in the `poller-configuration.xml`
 [source, xml]
 ----
-<parameter key="url" value="http://${ipaddr}:${port}/jolokia"/>
-<parameter key="url" value="https://${ipaddr}:${port}/jolokia"/>
+<parameter key="url" value="http://$\{ipaddr}:$\{port}/jolokia"/>
+<parameter key="url" value="https://$\{ipaddr}:$\{port}/jolokia"/>
 ----
 
 == AttrName vs. MethodName

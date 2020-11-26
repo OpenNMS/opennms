@@ -64,8 +64,8 @@ public class ParameterSubstitutingMonitorTest {
         m.put("retries", 0);
         m.put("timeout", 2000);
         m.put("userid", "{ipAddr}");
-        m.put("password", "{nodeLabel}");
-        m.put("server-name", "{nodelabel}"); // written wrong, correct name would be "nodeLabel"
+        m.put("password", "\{nodelabel}");
+        m.put("server-name", "\{nodelabel}"); // written wrong, correct name would be "nodeLabel"
         MockMonitoredService svc = new MockMonitoredService(1, "Node One", InetAddress.getByName("127.0.0.1"), "FTP");
         Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, m);
         assertEquals("127.0.0.1", subbedParams.get("subbed-userid"));

@@ -167,13 +167,13 @@ ORDER BY
 		</groupFooter>
 	</group>
 	<group name="nodelabel_group">
-		<groupExpression><![CDATA[$F{nodelabel}]]></groupExpression>
+		<groupExpression><![CDATA[$F\{nodelabel}]]></groupExpression>
 		<groupHeader>
 			<band height="59">
 				<textField>
 					<reportElement style="Node_Group" x="0" y="0" width="554" height="20" uuid="9cf5d812-b1e6-4d56-b134-8d7df83cd63a"/>
 					<textElement textAlignment="Left"/>
-					<textFieldExpression><![CDATA["Node " + $F{nodelabel} + "(" + $F{nodeid} + ")"]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Node " + $F\{nodelabel} + "(" + $F{\nodeidl} + ")"]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement style="Table-Header" x="0" y="21" width="110" height="36" uuid="dd5b8010-f786-42da-b6cc-65ecc5a7eb74">
@@ -312,7 +312,7 @@ ORDER BY
 					<subreportParameterExpression><![CDATA[$P{startDate}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="nodeid">
-					<subreportParameterExpression><![CDATA[$F{nodeid}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F{\nodeidl}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="foreignsource">
 					<subreportParameterExpression><![CDATA[$F{foreignsource}]]></subreportParameterExpression>

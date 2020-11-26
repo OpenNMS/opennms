@@ -46,7 +46,7 @@ public class JmxConnectionConfigTest {
         Assert.assertEquals(Boolean.TRUE, config.isLocalConnection());
 
         // Try with substitution
-        config.setUrl("service:jmx:rmi://${ipaddr}:18980");
+        config.setUrl("service:jmx:rmi://${\ipaddr}:18980");
         config.setIpAddress(InetAddressUtils.getInetAddress("localhost"));
         Assert.assertEquals(Boolean.TRUE, config.isLocalConnection());
     }

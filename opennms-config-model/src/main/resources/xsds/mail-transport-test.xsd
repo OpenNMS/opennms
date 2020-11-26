@@ -114,12 +114,12 @@
       <documentation>
       
         Define the host and port of the sendmail server.  If you don't, defaults will be used and
-        ${ipaddr} is replaced with the IP address of the service.
+        $\{ipaddr} is replaced with the IP address of the service.
         
       </documentation>
     </annotation>
     <complexType>
-      <attribute name="host" type="string" use="optional" default="${ipaddr}" />
+      <attribute name="host" type="string" use="optional" default="$\{ipaddr}" />
       <attribute name="port" type="integer" use="optional" default="25" />
     </complexType>
   </element>
@@ -145,7 +145,7 @@
       <documentation>
       
         Define the host and port of the sendmail server.  If you don't, defaults will be used and
-        ${ipaddr} is replaced with the IP address of the service.
+        $\{ipaddr} is replaced with the IP address of the service.
         
       </documentation>
     </annotation>
@@ -153,7 +153,7 @@
       <sequence>
         <element ref="this:readmail-protocol" minOccurs="1" maxOccurs="1" />
       </sequence>
-      <attribute name="host" type="string" use="optional" default="${ipaddr}" />
+      <attribute name="host" type="string" use="optional" default="$\{ipaddr}" />
       <attribute name="port" type="integer" use="optional" default="110" />
     </complexType>
   </element>

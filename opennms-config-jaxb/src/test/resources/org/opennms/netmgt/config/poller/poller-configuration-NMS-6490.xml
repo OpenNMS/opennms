@@ -96,16 +96,16 @@
             <parameter key="page-sequence">
                 <page-sequence xmlns="http://xmlns.opennms.org/xsd/page-sequence" xmlns:ns3="http://xmlns.opennms.org/xsd/config/poller">
     
-                    <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1" method="GET" path="/Login.do" port="7080" response-range="100-399" scheme="http" successMatch="(HQ Login)|(Sign in to Hyperic HQ)" xmlns="" xmlns:ns6="http://xmlns.opennms.org/xsd/page-sequence"/>
+                    <page disable-ssl-verification="true" host="$\{ipaddr}" http-version="1.1" method="GET" path="/Login.do" port="7080" response-range="100-399" scheme="http" successMatch="(HQ Login)|(Sign in to Hyperic HQ)" xmlns="" xmlns:ns6="http://xmlns.opennms.org/xsd/page-sequence"/>
     
-                    <page disable-ssl-verification="true" failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)" failureMessage="HQ Login in Failed" host="${ipaddr}" http-version="1.1" method="POST" path="/j_security_check.do" port="7080" response-range="100-399" scheme="http" successMatch="HQ Dashboard" xmlns="" xmlns:ns6="http://xmlns.opennms.org/xsd/page-sequence">
+                    <page disable-ssl-verification="true" failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)" failureMessage="HQ Login in Failed" host="$\{ipaddr}" http-version="1.1" method="POST" path="/j_security_check.do" port="7080" response-range="100-399" scheme="http" successMatch="HQ Dashboard" xmlns="" xmlns:ns6="http://xmlns.opennms.org/xsd/page-sequence">
         
                         <parameter key="j_username" value="hqadmin"/>
         
                         <parameter key="j_password" value="hqadmin"/>
     </page>
     
-                    <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1" method="GET" path="/Logout.do" port="7080" response-range="100-399" scheme="http" successMatch="HQ Login" xmlns="" xmlns:ns6="http://xmlns.opennms.org/xsd/page-sequence"/>
+                    <page disable-ssl-verification="true" host="$\{ipaddr}" http-version="1.1" method="GET" path="/Logout.do" port="7080" response-range="100-399" scheme="http" successMatch="HQ Login" xmlns="" xmlns:ns6="http://xmlns.opennms.org/xsd/page-sequence"/>
 </page-sequence>
             </parameter>
         </service>

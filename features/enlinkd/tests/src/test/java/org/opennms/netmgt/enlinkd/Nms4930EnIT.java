@@ -68,7 +68,7 @@ dlink_DGS-3612G.properties:.1.3.6.1.2.1.17.7.1.2.2.1.2.400.0.30.88.163.47.205 = 
 dlink_DGS-3612G.properties:.1.3.6.1.2.1.17.7.1.2.2.1.3.400.0.30.88.163.47.205 = INTEGER: 3
 
 BFT
-   61 rows .1.3.6.1.2.1.17.7.1.2.2.1.2 {port}    —> 57 + 1 self + 2 duplicated + 1 without a valid status 
+   61 rows .1.3.6.1.2.1.17.7.1.2.2.1.2 \{port}    —> 57 + 1 self + 2 duplicated + 1 without a valid status 
    60 rows .1.3.6.1.2.1.17.7.1.2.2.1.3 {learned} -> 57 + 1 self + 2 duplicated
 
    Port    ->BFT entries
@@ -107,7 +107,7 @@ dlink_DGS-3612G.properties:.1.3.6.1.2.1.17.7.1.2.2.1.2.400.0.25.91.18.89.128 = I
 dlink_DGS-3612G.properties:.1.3.6.1.2.1.17.7.1.2.2.1.3.400.0.25.91.18.89.128 = INTEGER: 4
 
 BFT
-    1170 righe bridge .1.3.6.1.2.1.17.7.1.2.2.1.2 {port}
+    1170 righe bridge .1.3.6.1.2.1.17.7.1.2.2.1.2 \{port}
     1172 righe bridge .1.3.6.1.2.1.17.7.1.2.2.1.3 {learned}
 
 INTEGER: 0      1

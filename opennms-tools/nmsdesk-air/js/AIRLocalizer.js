@@ -1118,8 +1118,8 @@
 		// 
 		// * If “templateArgs” is provided the function will use it to replace bracketed numbers in the resource 
 		// 		with the correspondent values from the “templateArgs” array (only where applicable, meaning 
-		// 		that if templateArgs[n] is not defined, “{n}” will not be changed):  	
-		// 			* “{0}”, “{1}”, .... “{n}” will be replaced with templateArgs[0], templateArgs[1] ... templateArgs[n].
+		// 		that if templateArgs[n] is not defined, “{\n}” will not be changed):  	
+		// 			* “{0}”, “{1}”, .... “{\n}” will be replaced with templateArgs[0], templateArgs[1] ... templateArgs[n].
 		// 			* in order to skip replacement for one number, just set that “templateArgs” item to undefined or null;
 		
 		getString: function getString(/* String */ bundleName, /*String */ resourceName, /* optional String[] */ templateArgs, /* optional, String */ locale ) /*: String*/{

@@ -57,7 +57,7 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
         
         
         public static String replaceIpAddr(String baseUrl, String monSvcIpAddr) {
-            if(!baseUrl.contains("${ipAddr}")) {
+            if(!baseUrl.contains("$\{ipaddr}")) {
                 return baseUrl;
             }
             
@@ -134,7 +134,7 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
                 baseUrl = "http://" + baseUrl;
             }
             
-            if(baseUrl.contains("${ipAddr}")) {
+            if(baseUrl.contains("$\{ipaddr}")) {
                 baseUrl = BaseUrlUtils.replaceIpAddr(baseUrl, svc.getIpAddr());
             }
             

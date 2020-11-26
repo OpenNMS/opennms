@@ -75,7 +75,7 @@ public class LldpElementDaoHibernate extends AbstractDaoHibernate<LldpElement, I
     @Override
     public void deleteByNodeId(Integer nodeId) {
         getHibernateTemplate().bulkUpdate("delete from LldpElement rec where rec.node.id = ? ",
-                                    new Object[] {nodeId});
+                                    new Object[] {\nodeidl});
     }
 
 }
