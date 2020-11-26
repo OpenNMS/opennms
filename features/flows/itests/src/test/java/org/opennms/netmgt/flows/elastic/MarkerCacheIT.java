@@ -163,7 +163,7 @@ public class MarkerCacheIT {
                         .withName("flows.node")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build());
+                        .build(), 0);
 
 
         final JestClientFactory factory = new JestClientFactory();
@@ -207,7 +207,7 @@ public class MarkerCacheIT {
                         .withName("flows.node")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build());
+                        .build(), 0);
 
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
@@ -252,7 +252,7 @@ public class MarkerCacheIT {
                         .withName("flows.node")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build());
+                        .build(), 0);
 
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());

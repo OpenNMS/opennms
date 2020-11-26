@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.flows;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -117,7 +118,7 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
 
                     flowPackets += 1;
 
-                    final List<Flow> converted = converter.convert(flowPacket);
+                    final List<Flow> converted = converter.convert(flowPacket, Instant.ofEpochMilli(eachMessage.getTimestamp()));
                     flows.addAll(converted);
 
                     this.entriesConverted.mark(converted.size());

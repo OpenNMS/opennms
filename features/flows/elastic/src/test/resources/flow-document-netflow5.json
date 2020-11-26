@@ -1,5 +1,6 @@
 {
   "@timestamp": 0,
+  "@clock_correction": 0,
   "@version": 1,
   "host": "192.168.1.1",
   "hosts": [
