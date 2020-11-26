@@ -5,7 +5,7 @@
 The global behavior of _{page-component-title}_ is configured with properties files.
 Configuration can also affect the _Java Virtual Machine_ under which _{page-component-title}_ runs.
 Changes in these properties files require a restart of _{page-component-title}_.
-The configuration files can be found in `${OPENNMS_HOME}/etc`.
+The configuration files can be found in `$\{opennms_home}/etc`.
 
 The priority for _Java system properties_ is as follows:
 
@@ -18,6 +18,6 @@ The priority for _Java system properties_ is as follows:
 
 Property files in `opennms.properties.d/` are sorted alphabetically.
 
-TIP: To avoid conflicts with customized configurations, all custom properties can be added to one or more files in `${OPENNMS_HOME}/etc/opennms.properties.d/`.
+TIP: To avoid conflicts with customized configurations, all custom properties can be added to one or more files in `$\{opennms_home}/etc/opennms.properties.d/`.
      It is recommended to avoid modification of OpenNMS properties from the default installation.
      Create dedicated files with your customized properties in `opennms.properties.d/`.

@@ -26,13 +26,13 @@
 # put an '@' here so we don't break maven substition
 
 opennms_home='${install.dir}'
-if [ ! -d "${opennms_home}" ]; then
+if [ ! -d "$\{opennms_home}" ]; then
     opennms_home="$OPENNMS_HOME"
 fi
 
 default_date_pattern="%Y%m%d_%H%M%S"
 default_oldest_survivor="120"
-default_output_dir="${opennms_home}/logs"
+default_output_dir="$\{opennms_home}/logs"
 default_base_filename="opennms-thread-dump"
 
 java_conf="$opennms_home/etc/java.conf"
@@ -77,10 +77,10 @@ printHelp() {
 
 
 find_jstack_bin() {
-    if [ ! -e ${opennms_home}/etc/java.conf ]; then
-        die "FATAL: File ${opennms_home} does not exist."
+    if [ ! -e $\{opennms_home}/etc/java.conf ]; then
+        die "FATAL: File $\{opennms_home} does not exist."
     fi
-    java_bin=`head -n 1 ${opennms_home}/etc/java.conf`
+    java_bin=`head -n 1 $\{opennms_home}/etc/java.conf`
     java_bin_actual=`readlink -f ${java_bin}`
     echo ${java_bin_actual} | egrep -q 'jre/bin/java'
     if [ $? -eq 0 ]; then
@@ -94,10 +94,10 @@ find_jstack_bin() {
 }
 
 find_opennms_pid() {
-    if [ -r ${opennms_home}/logs/opennms.pid ]; then
-        opennms_pid=`head -n 1 ${opennms_home}/logs/opennms.pid`
-    elif [ -r ${opennms_home}/logs/karaf.pid ]; then
-        opennms_pid=`head -n 1 ${opennms_home}/logs/karaf.pid`
+    if [ -r $\{opennms_home}/logs/opennms.pid ]; then
+        opennms_pid=`head -n 1 $\{opennms_home}/logs/opennms.pid`
+    elif [ -r $\{opennms_home}/logs/karaf.pid ]; then
+        opennms_pid=`head -n 1 $\{opennms_home}/logs/karaf.pid`
     else
         die "FATAL: Unable to determine OpenNMS PID. Tried opennms.pid and karaf.pid."
     fi
@@ -149,8 +149,8 @@ writeThreadDump() {
 
 RUNAS=root
 # Load opennms.conf, if it exists, to override configuration options.
-if [ -f "${opennms_home}/etc/opennms.conf" ]; then
-	. "${opennms_home}/etc/opennms.conf"
+if [ -f "$\{opennms_home}/etc/opennms.conf" ]; then
+	. "$\{opennms_home}/etc/opennms.conf"
 fi
 
 # Load ~/.opennms-dev/opennms.conf if it exists, to override configuration options.

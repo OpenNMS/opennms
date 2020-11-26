@@ -12,7 +12,7 @@ Internally all _Elasticsearch_ integrations use the https://github.com/searchbox
 === Configuration
 
 The location of the configuration file depends on the feature.
-For flows, it can be found in `${OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+For flows, it can be found in `$\{opennms_home}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
 
 The following properties can be set:
 
@@ -144,7 +144,7 @@ globalElasticPassword=changeme
 === Credentials
 
 It is possible to define credentials for each Elasticsearch node individually.
-Credentials for each node must be stored in `${OPENNMS_HOME}/etc/elastic-credentials.xml`.
+Credentials for each node must be stored in `$\{opennms_home}/etc/elastic-credentials.xml`.
 
 .Custom credentials
 ```xml

@@ -176,7 +176,7 @@ In addition to the `queryString`, the following _JasperReports_ parameters are s
 === Disable Scheduler
 
 In cases where the scheduler executing the reports must be disabled, set the system property `opennms.report.scheduler.enabled` to `false`.
-You can set this in `${OPENNMS_HOME}/etc/opennms.properties` or `${OPENNMS_HOME}/etc/opennms.properties.d/<my-properties-file>.properties`.
+You can set this in `$\{opennms_home}/etc/opennms.properties` or `$\{opennms_home}/etc/opennms.properties.d/<my-properties-file>.properties`.
 
 [[ga-database-reports-helper-methods]]
 === Helper methods

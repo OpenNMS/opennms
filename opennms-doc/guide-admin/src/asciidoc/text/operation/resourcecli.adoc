@@ -13,7 +13,7 @@ For the deletion of resources the data and all generated indexes must be gathere
 The _resourcecli_ tool simplifies this process and works with _Newts_-based storage as well as with _RRDTool_ and _JRobin_ files.
 
 ==== Usage
-The utility is installed by default and its wrapper script is located in the `${OPENNMS_HOME}/bin` directory.
+The utility is installed by default and its wrapper script is located in the `$\{opennms_home}/bin` directory.
 
 [source, shell]
 ----

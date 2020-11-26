@@ -15,7 +15,7 @@ Situation Feedback needs to be enabled by installing the feature from the Karaf 
 
 `feature:install opennms-situation-feedback`
 
-In order to ensure that the feature continues to be installed as subsequent restarts, add `opennms-situation-feedback` to the `featuresBoot` property in the `${OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
+In order to ensure that the feature continues to be installed as subsequent restarts, add `opennms-situation-feedback` to the `featuresBoot` property in the `$\{opennms_home}/etc/org.apache.karaf.features.cfg`.
 
 ==== Requirements
 

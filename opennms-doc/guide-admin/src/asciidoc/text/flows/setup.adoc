@@ -28,7 +28,7 @@ NOTE: This configuration is stored in `${OPENNMS_HOME/etc/org.opennms.features.f
 
 ==== Enabling a protocol
 
-Next, enable one or more of the protocols you would like to handle in `${OPENNMS_HOME}/etc/telemetryd-configuration.xml`.
+Next, enable one or more of the protocols you would like to handle in `$\{opennms_home}/etc/telemetryd-configuration.xml`.
 
 NOTE: In this example we enable the NetFlow v5 protocol, but the same process can be repeated for any of the other flow related protocols.
 
@@ -52,7 +52,7 @@ Apply the changes without restarting by sending a `reloadDaemonConfig` event via
 .Send a reloadDaemonConfig event through CLI
 [source]
 ----
-${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+$\{opennms_home}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
 This will open a UDP socket bound to `0.0.0.0:8877` to which _NetFlow v5_ messages can be forwarded.
@@ -79,7 +79,7 @@ Once configured, an icon will appear on the top right corner of a resource graph
 In this example we'll look at enabling a generic listener for the NetFlow v5 protocol on Minion.
 
 IMPORTANT: NetFlow v5 uses the generic UDP listener, but other protocols require a specific listener.
-           See the examples in `${OPENNMS_HOME}/etc/telemetryd-configuration.xml`, or <<ga-telemetryd-listener, Telemetryd Listener Reference>> for details.
+           See the examples in `$\{opennms_home}/etc/telemetryd-configuration.xml`, or <<ga-telemetryd-listener, Telemetryd Listener Reference>> for details.
 
 To enable and configure a _Listener_ for NetFlow v5 on Minion, connect to the _Karaf Console_ and set the following properties:
 

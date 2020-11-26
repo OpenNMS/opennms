@@ -6,7 +6,7 @@ _{page-component-title}_ sends a request to stream periodic updates once to the 
 Data is generated as Google protocol buffers (gpb) structured messages over _UDP_.
 For detailed information about _JTI_, see the https://www.juniper.net/documentation/en_US/junos/topics/concept/junos-telemetry-interface-oveview.html[Juniper Documentation].
 
-To enable support for JTI, edit `${OPENNMS_HOME}/etc/telemetryd-configuration.xml` set `enabled=true` for `JTI` protocol.
+To enable support for JTI, edit `$\{opennms_home}/etc/telemetryd-configuration.xml` set `enabled=true` for `JTI` protocol.
 
 .Enable JTI protocol in telemetryd-configuration.xml 
 [source, xml]
@@ -39,7 +39,7 @@ Apply the changes without restarting by sending a `reloadDaemonConfig` event in 
 .Send a reloadDaemonConfig event through CLI
 [source]
 ----
-${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+$\{opennms_home}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
 By default, this will open a UDP socket bound to `0.0.0.0:50000` to which _JTI_ messages can be forwarded.

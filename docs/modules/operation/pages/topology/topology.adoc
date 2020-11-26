@@ -1,14 +1,14 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+[[topology-map]]
+= Topology Map
 
-This section describes how to configure the _Topology Map_.
+This section describes how to configure the topology map.
 
-=== Properties
+== Properties
 
-The _Topology Map_ supports the following properties, which can be influenced by changing the file `etc/org.opennms.features.topology.app.cfg`:
+The topology map supports the following properties, which can be influenced by changing the file `etc/org.opennms.features.topology.app.cfg`:
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Property                                  | Type         | Default             | Description
 | `showHeader`                              | `Boolean`    | `true`              | Defines if the _{page-component-title}_ header is shown.
@@ -19,10 +19,10 @@ The _Topology Map_ supports the following properties, which can be influenced by
                                                                                    The resolution is only enabled if no longitude/latitude information is available.
 |===
 
-=== Icons
+== Icons
 
-Each Vertex on the _Topology Map_ is represented by an icon.
-The default icon is configured in the icon mapping file: `${OPENNMS_HOME}/etc/org.opennms.features.topology.app.icons.<topology-namespace>.cfg`.
+Each Vertex on the topology map is represented by an icon.
+The default icon is configured in the icon mapping file: `$\{opennms_home}/etc/org.opennms.features.topology.app.icons.<topology-namespace>.cfg`.
 If an icon mapping file does not exist for a _Topology Provider_, the provider does not support customization.
 
 [source]
@@ -50,7 +50,7 @@ If multiple `segments` exist they must be separated by `.`, e.g. `my.custom.key`
 Any existing default `icon keys` are not configurable and should not be changed.
 
 Icon id::
-The `icon id` is a unique icon identifier to reference an icon within one of the available SVG icons located in `${OPENNMS_HOME}/jetty-webapps/opennms/svg`.
+The `icon id` is a unique icon identifier to reference an icon within one of the available SVG icons located in `$\{opennms_home}/jetty-webapps/opennms/svg`.
 For more details see <<ga-topology-add-icons>>.
 
 [source]
@@ -76,16 +76,16 @@ bsm.reduction-key = reduction_key <3>
 <2> Icon definition for IP Services
 <3> Icon definition for Reduction Keys
 
-==== Icon resolution
+=== Icon resolution
 
 The icon of a vertex is resolved as follows:
 
  * If a `vertex id` to `icon id` mapping is defined, the icon referenced by the `icon id` is used
- * If a mapping for the `icon key` determined by the _Topology Provider_ for the vertex is defined, the icon referenced by the `icon id` is used
+ * If a mapping for the `icon key` determined by the Topology Provider for the vertex is defined, the icon referenced by the `icon id` is used
  ** If no mapping exists and the `icon key` has more than one `segments`, reduce the `icon key` by the last `segment` and try resolving that `icon key`
  * If no mapping is defined, the fallback `icon key` `default` is used.
 
-The following example icon mapping is defined for the _Linkd Topology Provider_ to illustrate this behaviour.
+The following example icon mapping is defined for the Linkd Topology Provider to illustrate this behavior.
 
 [source]
 ----
@@ -97,14 +97,14 @@ If the Enterprise OID of a node is `1.3.6.1.4.1.9.1.485` the icon with id `serve
 If the Enterprise OID of a node is `1.3.6` the icon with id `server2` is used.
 However, if the Enterprise OID of a node is `1.3.6.1.4.1.9.1.13` the icon with id `server2` is used.
 
-===== Linkd Topology Provider
+==== Linkd Topology Provider
 
-The _Linkd Topology Provider_ uses the `Enterprise OID` from each node to determine the icon of a vertex.
+The Linkd Topology Provider uses the `Enterprise OID` from each node to determine the icon of a vertex.
 
-==== Change existing icon mappings
+=== Change existing icon mappings
 
-The easiest way to change an icon representation of an existing Vertex is to use the _Icon Selection Dialog_ from the Vertex' context menu in the _Topology Map_.
-This will create a custom `icon key` to `icon id` mapping in the _Topology Provider_ specific icon mapping file.
+The easiest way to change an icon representation of an existing Vertex is to use the Icon Selection Dialog from the Vertex' context menu in the topology map.
+This will create a custom `icon key` to `icon id` mapping in the topology provider specific icon mapping file.
 As `icon key` the Vertex id is used.
 This allows each Vertex to have it's own icon.
 
@@ -113,12 +113,12 @@ If a more generic approach is preferred the icon mapping file can be modified ma
 WARNING: Do NOT remove the default mappings and do NOT change the icon keys in the default mappings.
 
 [[ga-topology-add-icons]]
-==== Add new icons
+=== Add new icons
 
-All available icons are stored in SVG files located in `${OPENNMS_HOME}/jetty-webapps/opennms/svg`.
+All available icons are stored in SVG files located in `$\{opennms_home}/jetty-webapps/opennms/svg`.
 To add new icons, either add definitions to an existing SVG file or create a new SVG file in that directory.
 
-Whatever way new icons are added to _OpenNMS_ it is important that each new `icon id` describes a set of icons, rather than a single icon.
+Whatever way new icons are added to OpenNMS it is important that each new `icon id` describes a set of icons, rather than a single icon.
 The following example illustrates this.
 
 [source,xml]
@@ -149,7 +149,7 @@ Each SVG `<icon id>_icon` group must contain three sub groups with the ids: `<ic
 
 NOTE: It is important that each `icon id` is unique overall SVG files. This means there cannot be another `my-custom` icon id in any other SVG file.
 
-If the new icons should be selectable from the _Topology Map's Icon Selection Dialog_ an entry with the new `icon id` must be added to the file `${OPENNMS_HOME}/etc/org.opennms.features.topology.app.icons.properties`.
+If the new icons should be selectable from the topology map's icon selection dialog an entry with the new `icon id` must be added to the file `$\{opennms_home}/etc/org.opennms.features.topology.app.icons.properties`.
 
 [source]
 .Snippet of `org.opennms.features.topology.app.icons.list`
@@ -168,4 +168,4 @@ my-custom <2>
 <1> Already existing icon ids
 <2> New icon id
 
-NOTE: The order of the entries in `org.opennms.features.topology.app.icons.list` determine the order in the _Icon Selection Dialog_ in the _Topology Map_.
+NOTE: The order of the entries in `org.opennms.features.topology.app.icons.list` determine the order in the icon selection dialog in the topology map.

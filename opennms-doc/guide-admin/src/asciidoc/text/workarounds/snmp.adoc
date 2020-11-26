@@ -28,7 +28,7 @@ By default, the SNMP subsystem in {page-component-title} does not treat _any_ li
 | inconsistentName(18)    | false  | false
 |===
 
-You can override this behavior by setting a property inside `${OPENNMS_HOME}/etc/opennms.properties` in the form:
+You can override this behavior by setting a property inside `$\{opennms_home}/etc/opennms.properties` in the form:
 
 `org.opennms.netmgt.snmp.errorStatus._[statusCode]_._[type]_`
 

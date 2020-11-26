@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * The Rest Endpoints are provided by the jax-rs-connector, which already provides access to those.
  * As those need to be made available to the Jetty Classpath, it would either mean copy over
- * some jax-rs-connector jars to the ${OPENNMS_HOME}/lib directory and hack the custom.properties, or provide a wrapper implementation.
+ * some jax-rs-connector jars to the $\{opennms_home}/lib directory and hack the custom.properties, or provide a wrapper implementation.
  * As the last was easier, this is what was used.
  *
  * @author mvrueden

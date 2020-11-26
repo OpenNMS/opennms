@@ -33,7 +33,7 @@
 
 # shellcheck disable=SC2016
 opennms_home='${install.dir}'
-if [ ! -d "${opennms_home}" ]; then
+if [ ! -d "$\{opennms_home}" ]; then
     # shellcheck disable=SC2153
     opennms_home="$OPENNMS_HOME"
 fi
@@ -156,8 +156,8 @@ javaCheck() {
         OPENJDK_MINIMUM_BUILD=14
     fi
 
-    if [ -x "${opennms_home}/bin/find-java.sh" ]; then
-        found="$("${opennms_home}/bin/find-java.sh" "${minimum_version}" "${maximum_version}" "$JP")"
+    if [ -x "$\{opennms_home}/bin/find-java.sh" ]; then
+        found="$("$\{opennms_home}/bin/find-java.sh" "${minimum_version}" "${maximum_version}" "$JP")"
         if [ -n "$found" ] && [ -d "$found" ] && [ -x "$found/bin/java" ]; then
             return 0
         else
@@ -214,15 +214,15 @@ javaCheck() {
 # foolproof but should get us close.
 #
 javaPaths() {
-        if [ -x "${opennms_home}/bin/find-java.sh" ]; then
-                found="$("${opennms_home}/bin/find-java.sh" "${minimum_version}" "${maximum_version}")"
+        if [ -x "$\{opennms_home}/bin/find-java.sh" ]; then
+                found="$("$\{opennms_home}/bin/find-java.sh" "${minimum_version}" "${maximum_version}")"
                 if [ -d "${found}" ] && [ -x "${found}/bin/java" ]; then
                         JP="${found}/bin/java"
                         return 0
                 fi
         fi
 
-        warn "${opennms_home}/bin/find-java.sh failed to find a valid JDK. Falling back to the old algorithm."
+        warn "$\{opennms_home}/bin/find-java.sh failed to find a valid JDK. Falling back to the old algorithm."
         for searchdir in "${searchdirs[@]}"; do
                 if [ ! -d "$searchdir" ]; then
                         continue;

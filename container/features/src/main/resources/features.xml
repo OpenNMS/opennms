@@ -1646,7 +1646,7 @@
         <bundle>mvn:org.opennms.features.graphml/org.opennms.features.graphml.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.graphml/org.opennms.features.graphml.service/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.graphml/org.opennms.features.graphml.rest/${project.version}</bundle>
-        <!-- Provided by ${OPENNMS_HOME}/lib -->
+        <!-- Provided by $\{opennms_home}/lib -->
         <!-- <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle> -->
     </feature>
 
@@ -1679,7 +1679,7 @@
     </feature>
     <feature name="opennms-graph-persistence" description="OpenNMS :: Features :: Graph :: Persistence" version="${project.version}">
         <feature>opennms-graph-api</feature>
-        <!-- Provided by ${OPENNMS_HOME}/lib -->
+        <!-- Provided by $\{opennms_home}/lib -->
         <!-- <feature>opennms-dao-api</feature> -->
         <!-- <feature>opennms-dao</feature> -->
         <!-- <bundle>mvn:org.opennms.features.graph.dao/org.opennms.features.graph.dao.api/${project.version}</bundle> -->

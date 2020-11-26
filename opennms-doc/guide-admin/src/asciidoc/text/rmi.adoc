@@ -6,7 +6,7 @@ By default, the RMI port in the {page-component-title} server is disabled, for s
 
 === Enabling RMI
 
-To enable the RMI port in {page-component-title}, you will have to add the following to the `${OPENNMS_HOME}/etc/opennms.conf` file.  If you do not have an `opennms.conf` file, you can create it.
+To enable the RMI port in {page-component-title}, you will have to add the following to the `$\{opennms_home}/etc/opennms.conf` file.  If you do not have an `opennms.conf` file, you can create it.
 
 [source, bash, options="nowrap", opennms.conf]
 ----

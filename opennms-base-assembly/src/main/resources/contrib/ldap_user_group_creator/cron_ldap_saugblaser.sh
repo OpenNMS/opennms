@@ -13,9 +13,9 @@ BASE_DN="OU=Employee Users,OU=Example.com Users,DC=example,DC=com"
 BASE_FILTER="memberOf=CN=OpenNMS DESIGNATOR_GOES_HERE,OU=Security Groups,OU=Example.com Security Groups,DC=example,DC=com";
 GROUP_DESIGNATORS="Users Admins Read Provision"
 
-STAGE_USERS_FILE=${OPENNMS_HOME}/etc/users.xml.stage
-FINAL_USERS_FILE=${OPENNMS_HOME}/etc/users.xml
-LDAP_SB_PATH=${OPENNMS_HOME}/contrib/ldap_user_saugblaser/ldap_user_saugblaser.pl
+STAGE_USERS_FILE=$\{opennms_home}/etc/users.xml.stage
+FINAL_USERS_FILE=$\{opennms_home}/etc/users.xml
+LDAP_SB_PATH=$\{opennms_home}/contrib/ldap_user_saugblaser/ldap_user_saugblaser.pl
 
 echo > ${STAGE_USERS_FILE} <<EOH
 <?xml version="1.0" encoding="UTF-8"?>

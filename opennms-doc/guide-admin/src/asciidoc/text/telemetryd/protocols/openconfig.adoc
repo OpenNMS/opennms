@@ -6,7 +6,7 @@ https://www.openconfig.net/[OpenConfig] is an open-source initiative by network 
 The OpenConfig client allows you to stream OpenConfig telemetry data over gRPC to {page-component-title}. 
 Some vendors currently using OpenConfig telemetry include Juniper, Arista, and Cisco.   
 
-To enable support for OpenConfig, edit `${OPENNMS_HOME}/etc/telemetryd-configuration.xml` set `enabled=true` for the `OpenConfig` protocol.
+To enable support for OpenConfig, edit `$\{opennms_home}/etc/telemetryd-configuration.xml` set `enabled=true` for the `OpenConfig` protocol.
 
 .Enable OpenConfig protocol in telemetryd-configuration.xml
 [source, xml]
@@ -45,7 +45,7 @@ Apply the changes without restarting by sending a `reloadDaemonConfig` event in 
 .Send a reloadDaemonConfig event through CLI
 [source]
 ----
-${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+$\{opennms_home}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
 ===== OpenConfig Connector

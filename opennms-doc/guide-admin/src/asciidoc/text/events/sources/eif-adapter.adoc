@@ -34,7 +34,7 @@ The feature has a debug level logging that can be used to debug operations.
 
 NOTE: link:$$http://karaf.apache.org/manual/latest/#_using_the_console$$[Documentation] on using the _OSGi_ console embedded in _OpenNMS_ and the related http://camel.apache.org/karaf.html[camel commands].
 
-NOTE: Features installed through the Karaf shell persist only as long as the `${OPENNMS_HOME}/data` directory remains intact. To enable the feature more permanently, add it to the `featuresBoot` list in `${OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
+NOTE: Features installed through the Karaf shell persist only as long as the `$\{opennms_home}/data` directory remains intact. To enable the feature more permanently, add it to the `featuresBoot` list in `$\{opennms_home}/etc/org.apache.karaf.features.cfg`.
 
 You should now be able to configure your EIF forwarders to send to this destination, and their events will be translated into OpenNMS Events and written to the _event bus_.
 

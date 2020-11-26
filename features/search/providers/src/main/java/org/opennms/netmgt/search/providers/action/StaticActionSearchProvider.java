@@ -52,7 +52,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 /**
- * Searches entries in <code>${OPENNMS_HOME}/etc/search-actions.xml</code>.
+ * Searches entries in <code>$\{opennms_home}/etc/search-actions.xml</code>.
  *
  * @author mvrueden
  */

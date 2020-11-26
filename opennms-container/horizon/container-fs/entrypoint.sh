@@ -31,7 +31,7 @@ usage() {
   echo "Overlay Config file:"
   echo "If you want to overwrite the default configuration with your custom config, you can use an overlay config"
   echo "folder in which needs to be mounted to ${OPENNMS_OVERLAY_ETC}."
-  echo "Every file in this folder is overwriting the default configuration file in ${OPENNMS_HOME}/etc."
+  echo "Every file in this folder is overwriting the default configuration file in $\{opennms_home}/etc."
   echo ""
   echo "-f: Start OpenNMS in foreground with existing data and configuration."
   echo "-h: Show this help."
@@ -42,18 +42,18 @@ usage() {
 }
 
 initOrUpdate() {
-  if [[ -f "${OPENNMS_HOME}"/etc/configured ]]; then
-    echo "System is already configured. Enforce init or update by delete the ${OPENNMS_HOME}/etc/configured file."
+  if [[ -f "$\{opennms_home}"/etc/configured ]]; then
+    echo "System is already configured. Enforce init or update by delete the $\{opennms_home}/etc/configured file."
   else
-    echo "Find and set Java environment for running OpenNMS in ${OPENNMS_HOME}/etc/java.conf."
-    "${OPENNMS_HOME}"/bin/runjava -s
+    echo "Find and set Java environment for running OpenNMS in $\{opennms_home}/etc/java.conf."
+    "$\{opennms_home}"/bin/runjava -s
 
     echo "Run OpenNMS install command to initialize or upgrade the database schema and configurations."
-    ${JAVA_HOME}/bin/java -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -cp "${OPENNMS_HOME}/lib/opennms_bootstrap.jar" org.opennms.bootstrap.InstallerBootstrap "${@}" || exit ${E_INIT_CONFIG}
+    ${JAVA_HOME}/bin/java -Dopennms.home="$\{opennms_home}" -Dlog4j.configurationFile="$\{opennms_home}"/etc/log4j2-tools.xml -cp "$\{opennms_home}/lib/opennms_bootstrap.jar" org.opennms.bootstrap.InstallerBootstrap "${@}" || exit ${E_INIT_CONFIG}
 
     # If Newts is used initialize the keyspace with a given REPLICATION_FACTOR which defaults to 1 if unset
     if [[ "${OPENNMS_TIMESERIES_STRATEGY}" == "newts" ]]; then
-      ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.newts.cli.Newts" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar init -r ${REPLICATION_FACTOR-1} || exit ${E_INIT_CONFIG}
+      ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.newts.cli.Newts" -Dopennms.home="$\{opennms_home}" -Dlog4j.configurationFile="$\{opennms_home}"/etc/log4j2-tools.xml -jar $\{opennms_home}/lib/opennms_bootstrap.jar init -r ${REPLICATION_FACTOR-1} || exit ${E_INIT_CONFIG}
     else
       echo "The time series strategy ${OPENNMS_TIMESERIES_STRATEGY} is selected, skip Newts keyspace initialisation. If unset defaults to rrd to use RRDTool."
     fi
@@ -62,7 +62,7 @@ initOrUpdate() {
 
 configTester() {
   echo "Run config tester to validate existing configuration files."
-  ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.config.tester.ConfigTester" -Dopennms.home="${OPENNMS_HOME}" -Dlog4j.configurationFile="${OPENNMS_HOME}"/etc/log4j2-tools.xml -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar "${@}" || exit ${E_INIT_CONFIG}
+  ${JAVA_HOME}/bin/java -Dopennms.manager.class="org.opennms.netmgt.config.tester.ConfigTester" -Dopennms.home="$\{opennms_home}" -Dlog4j.configurationFile="$\{opennms_home}"/etc/log4j2-tools.xml -jar $\{opennms_home}/lib/opennms_bootstrap.jar "${@}" || exit ${E_INIT_CONFIG}
 }
 
 processConfdTemplates() {
@@ -72,14 +72,14 @@ processConfdTemplates() {
 
 # Initialize database and configure Karaf
 initConfigWhenEmpty() {
-  if [ ! -d ${OPENNMS_HOME} ]; then
-    echo "OpenNMS home directory doesn't exist in ${OPENNMS_HOME}."
+  if [ ! -d $\{opennms_home} ]; then
+    echo "OpenNMS home directory doesn't exist in $\{opennms_home}."
     exit ${E_ILLEGAL_ARGS}
   fi
 
-  if [ ! "$(ls --ignore .git --ignore .gitignore -A ${OPENNMS_HOME}/etc)"  ]; then
-    echo "No existing configuration in ${OPENNMS_HOME}/etc found. Initialize from etc-pristine."
-    cp -r ${OPENNMS_HOME}/share/etc-pristine/* ${OPENNMS_HOME}/etc/ || exit ${E_INIT_CONFIG}
+  if [ ! "$(ls --ignore .git --ignore .gitignore -A $\{opennms_home}/etc)"  ]; then
+    echo "No existing configuration in $\{opennms_home}/etc found. Initialize from etc-pristine."
+    cp -r $\{opennms_home}/share/etc-pristine/* $\{opennms_home}/etc/ || exit ${E_INIT_CONFIG}
   fi
 
   if [[ ! -d /opennms-data/mibs ]]; then
@@ -109,7 +109,7 @@ applyOverlayConfig() {
   if [ -d "${OPENNMS_OVERLAY}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY})" ]; then
     echo "Apply custom configuration from ${OPENNMS_OVERLAY}."
     # Use rsync so that we can overlay files into directories that are symlinked
-    rsync -K -rl ${OPENNMS_OVERLAY}/* ${OPENNMS_HOME}/ || exit ${E_INIT_CONFIG}
+    rsync -K -rl ${OPENNMS_OVERLAY}/* $\{opennms_home}/ || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${OPENNMS_OVERLAY}. Use default configuration."
   fi
@@ -117,7 +117,7 @@ applyOverlayConfig() {
   # Overlay etc specific config
   if [ -d "${OPENNMS_OVERLAY_ETC}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY_ETC})" ]; then
     echo "Apply custom etc configuration from ${OPENNMS_OVERLAY_ETC}."
-    cp -r ${OPENNMS_OVERLAY_ETC}/* ${OPENNMS_HOME}/etc || exit ${E_INIT_CONFIG}
+    cp -r ${OPENNMS_OVERLAY_ETC}/* $\{opennms_home}/etc || exit ${E_INIT_CONFIG}
   else
     echo "No custom config found in ${OPENNMS_OVERLAY_ETC}. Use default configuration."
   fi
@@ -125,7 +125,7 @@ applyOverlayConfig() {
   # Overlay jetty specific config
   if [ -d "${OPENNMS_OVERLAY_JETTY_WEBINF}" ] && [ -n "$(ls -A ${OPENNMS_OVERLAY_JETTY_WEBINF})" ]; then
     echo "Apply custom Jetty WEB-INF configuration from ${OPENNMS_OVERLAY_JETTY_WEBINF}."
-    cp -r ${OPENNMS_OVERLAY_JETTY_WEBINF}/* ${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF || exit ${E_INIT_CONFIG}
+    cp -r ${OPENNMS_OVERLAY_JETTY_WEBINF}/* $\{opennms_home}/jetty-webapps/opennms/WEB-INF || exit ${E_INIT_CONFIG}
   else
     echo "No custom Jetty WEB-INF config found in ${OPENNMS_OVERLAY_JETTY_WEBINF}. Use default configuration."
   fi

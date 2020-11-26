@@ -26,7 +26,7 @@ _PUT_ requires form data using `application/x-www-form-urlencoded` as a Content-
 
 POST requires XML (application/xml) or JSON (application/json) as its Content-Type.
 
-TIP: See `${OPENNMS_HOME}/share/xsds/event.xsd` for the reference schema.
+TIP: See `$\{opennms_home}/share/xsds/event.xsd` for the reference schema.
 
 [options="header", cols="5,10"]
 |===

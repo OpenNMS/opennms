@@ -40,7 +40,7 @@ IMPORTANT: The _newts_converter_ utility needs the path to the base directory of
 For instance the utility needs the datasource configuration during the migration process to query the database to lookup node data.
 
 ==== Usage
-The utility is installed by default and its wrapper script is located in the `${OPENNMS_HOME}/bin` directory.
+The utility is installed by default and its wrapper script is located in the `$\{opennms_home}/bin` directory.
 
 [source, shell]
 ----

@@ -1,5 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= {page-component-title} Administration
 
 This section describes administrative tasks, such as shutdown and restart, you may need to perform with your {page-component-title} instance.
