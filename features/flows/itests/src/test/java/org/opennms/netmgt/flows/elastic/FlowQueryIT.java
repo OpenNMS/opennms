@@ -31,8 +31,12 @@ package org.opennms.netmgt.flows.elastic;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.mock;
 
@@ -42,12 +46,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
@@ -85,12 +92,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 
 import io.searchbox.client.JestClient;
+import lombok.val;
 
 public class FlowQueryIT {
 
     @Rule
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
-                    .withPlugins(DriftPlugin.class));
+            .withPlugins(DriftPlugin.class));
 
     private ElasticFlowRepository flowRepository;
 
@@ -292,7 +300,7 @@ public class FlowQueryIT {
 
         // Retrieve the Top N applications over a subset of the range
         final List<TrafficSummary<String>> appTrafficSummary = flowRepository.getTopNApplicationSummaries(1, false,
-                Lists.newArrayList(new TimeRangeFilter(10,  20))).get();
+                Lists.newArrayList(new TimeRangeFilter(10, 20))).get();
 
         // Expect the top application with a partial sum of all the bytes
         assertThat(appTrafficSummary, hasSize(1));
@@ -671,6 +679,126 @@ public class FlowQueryIT {
         ));
     }
 
+    @Test
+    public void canGetTosSummaries() throws Exception {
+        loadDefaultFlows();
+
+        val memoryResult = DEFAULT_FLOWS
+                .stream()
+                .map(fd -> FlowQueryIT.flowDoc2TrafficSummary(fd, fd.getTos().toString()))
+                // collect the traffic summaries into a map
+                // -> the map key is the traffic summary key and the map value is the merged traffic summary for that key
+                .collect(Collectors.groupingBy(
+                        TrafficSummary::getEntity,
+                        Collectors.reducing(FlowQueryIT::mergeTrafficSummaries)
+                ))
+                .values()
+                .stream()
+                .map(o -> o.get())
+                .sorted(Comparator.comparing(s -> new Integer(s.getEntity())))
+                .toArray();
+
+        val elasticResult = flowRepository.getTosSummaries(getFilters()).get();
+
+        assertThat(elasticResult, contains(memoryResult));
+    }
+
+    @Test
+    public void canGetTosSeries() throws Exception {
+        loadDefaultFlows();
+
+        val step = 8;
+
+        val memoryResult = DEFAULT_FLOWS
+                .stream()
+                .map(fd -> flowDoc2Pair(fd, step, fd.getTos().toString()))
+                // collect the pairs of directionals and maps (of indexes into bytes) into a map
+                // -> the key is the directional and the value are the merged maps for that key
+                .collect(Collectors.groupingBy(
+                        Pair::getLeft,
+                        Collectors.reducing(
+                                Collections.<Long, Double>emptyMap(),
+                                Pair::getRight,
+                                FlowQueryIT::mergeSeries
+                        )
+                        )
+                );
+
+        val elasticResult = flowRepository.getTosSeries(step, getFilters()).get();
+
+        // The result calculated in memory (seriesByDirectonal) and the result returned by elastic (series.rowMap())
+        // can not be asserted for equality because of rounding errors
+        // -> construct a specific hamcrest matcher that allows for some discrepancy when comparing the
+        //    number of transferred bytes (that are represented by doubles)
+        // -> this assertion checks that there is a matching entry in elastic's result for each entry of the memory result
+        assertThat(
+                elasticResult.rowMap(),
+                allOf(memoryResult
+                        .entrySet()
+                        .stream()
+                        .map(dme -> hasEntry(
+                                equalTo(dme.getKey()),
+                                allOf(dme.getValue()
+                                        .entrySet()
+                                        .stream()
+                                        .map(ime -> hasEntry(
+                                                equalTo(ime.getKey()),
+                                                closeTo(ime.getValue(), 0.1)
+                                        ))
+                                        .collect(Collectors.toList())
+                                )
+                        ))
+                        .collect(Collectors.toList())
+                )
+        );
+
+        // check the other way round:
+        // -> check that there is a matching entry in the memory result for each entry in elastic's result
+        assertThat(memoryResult, allOf(elasticResult.rowKeySet().stream().map(k -> hasKey(k)).collect(Collectors.toList())));
+    }
+
+    private static <K> TrafficSummary<K> flowDoc2TrafficSummary(FlowDocument fd, K key) {
+        return TrafficSummary
+                .from(key)
+                .withBytes(
+                        fd.getDirection() == Direction.INGRESS ? fd.getBytes() : 0,
+                        fd.getDirection() == Direction.EGRESS ? fd.getBytes() : 0)
+                .build();
+    }
+
+    private static <K> Pair<Directional<K>, Map<Long, Double>> flowDoc2Pair(FlowDocument fd, long step, K key) {
+        val firstSwitched = fd.getFirstSwitched();
+        val lastSwitched = fd.getLastSwitched();
+        val duration = lastSwitched - firstSwitched;
+        double bytes = fd.getBytes();
+        val firstIndex = firstSwitched / step;
+        val lastIndex = (lastSwitched - 1) / step;
+        val res = new HashMap<Long, Double>();
+        for (long idx = firstIndex; idx <= lastIndex; idx++) {
+            long from = Math.max(idx * step, firstSwitched);
+            long to = Math.min((idx + 1) * step, lastSwitched);
+            double value = bytes * (to - from) / duration;
+            res.put(idx * step, value);
+        }
+        return Pair.of(new Directional(key, fd.getDirection() == Direction.INGRESS), res);
+    }
+
+    private static <K> TrafficSummary<K> mergeTrafficSummaries(TrafficSummary<K> t1, TrafficSummary<K> t2) {
+        return TrafficSummary.from(t1.getEntity())
+                .withBytes(t1.getBytesIn() + t2.getBytesIn(), t1.getBytesOut() + t2.getBytesOut()).build();
+
+    }
+
+    private static Map<Long, Double> mergeSeries(Map<Long, Double> m1, Map<Long, Double> m2) {
+        val res = new HashMap<Long, Double>();
+        res.putAll(m1);
+        m2.forEach((l, d) -> {
+            val o = res.get(l);
+            res.put(l, o != null ? o + d : d);
+        });
+        return res;
+    }
+
     private <L> void verifyHttpsSeries(Table<Directional<L>, Long, Double> appTraffic, L label) {
         // Pull the values from the table into arrays for easy comparision and validate
         List<Long> timestamps = getTimestampsFrom(appTraffic);
@@ -741,41 +869,42 @@ public class FlowQueryIT {
         return column;
     }
 
-    private void loadDefaultFlows() throws FlowException {
-        final List<FlowDocument> flows = new FlowBuilder()
-                .withExporter("SomeFs", "SomeFid", 99)
-                .withSnmpInterfaceId(98)
-                // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
-                .withDirection(Direction.INGRESS)
-                .withTos(4 + 64)
-                .withFlow(new Date(3), new Date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
-                .withDirection(Direction.EGRESS)
-                .withTos(8 + 128)
-                .withFlow(new Date(3), new Date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
-                // 192.168.1.100:43445 <-> 10.1.1.12:443 (1100 bytes in [13,26])
-                .withDirection(Direction.INGRESS)
-                .withHostnames(null, "la.le.lu")
-                .withTos(16 + 64)
-                .withFlow(new Date(13), new Date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100)
-                .withDirection(Direction.EGRESS)
-                .withHostnames("la.le.lu", null)
-                .withTos(32 + 128)
-                .withFlow(new Date(13), new Date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
-                // 192.168.1.101:43442 <-> 10.1.1.12:443 (1210 bytes in [14, 45])
-                .withDirection(Direction.INGRESS)
-                .withHostnames("ingress.only", "la.le.lu")
-                .withFlow(new Date(14), new Date(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
-                .withDirection(Direction.EGRESS)
-                .withHostnames("la.le.lu", null)
-                .withFlow(new Date(14), new Date(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
-                // 192.168.1.102:50000 <-> 10.1.1.13:50001 (200 bytes in [50, 52])
-                .withDirection(Direction.INGRESS)
-                .withFlow(new Date(50), new Date(52), "192.168.1.102", 50000, "10.1.1.13", 50001, 200)
-                .withDirection(Direction.EGRESS)
-                .withFlow(new Date(50), new Date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100)
-                .build();
+    private static List<FlowDocument> DEFAULT_FLOWS = new FlowBuilder()
+            .withExporter("SomeFs", "SomeFid", 99)
+            .withSnmpInterfaceId(98)
+            // 192.168.1.100:43444 <-> 10.1.1.11:80 (110 bytes in [3,15])
+            .withDirection(Direction.INGRESS)
+            .withTos(4 + 64)
+            .withFlow(new Date(3), new Date(15), "192.168.1.100", 43444, "10.1.1.11", 80, 10)
+            .withDirection(Direction.EGRESS)
+            .withTos(8 + 128)
+            .withFlow(new Date(3), new Date(15), "10.1.1.11", 80, "192.168.1.100", 43444, 100)
+            // 192.168.1.100:43445 <-> 10.1.1.12:443 (1100 bytes in [13,26])
+            .withDirection(Direction.INGRESS)
+            .withHostnames(null, "la.le.lu")
+            .withTos(16 + 64)
+            .withFlow(new Date(13), new Date(26), "192.168.1.100", 43445, "10.1.1.12", 443, 100)
+            .withDirection(Direction.EGRESS)
+            .withHostnames("la.le.lu", null)
+            .withTos(32 + 128)
+            .withFlow(new Date(13), new Date(26), "10.1.1.12", 443, "192.168.1.100", 43445, 1000)
+            // 192.168.1.101:43442 <-> 10.1.1.12:443 (1210 bytes in [14, 45])
+            .withDirection(Direction.INGRESS)
+            .withHostnames("ingress.only", "la.le.lu")
+            .withFlow(new Date(14), new Date(45), "192.168.1.101", 43442, "10.1.1.12", 443, 110)
+            .withDirection(Direction.EGRESS)
+            .withHostnames("la.le.lu", null)
+            .withFlow(new Date(14), new Date(45), "10.1.1.12", 443, "192.168.1.101", 43442, 1100)
+            // 192.168.1.102:50000 <-> 10.1.1.13:50001 (200 bytes in [50, 52])
+            .withDirection(Direction.INGRESS)
+            .withFlow(new Date(50), new Date(52), "192.168.1.102", 50000, "10.1.1.13", 50001, 200)
+            .withDirection(Direction.EGRESS)
+            .withFlow(new Date(50), new Date(52), "10.1.1.13", 50001, "192.168.1.102", 50000, 100)
+            .build();
 
-        this.loadFlows(flows);
+
+    private void loadDefaultFlows() throws FlowException {
+        this.loadFlows(DEFAULT_FLOWS);
     }
 
     private void loadFlows(final List<FlowDocument> flowDocuments) throws FlowException {
