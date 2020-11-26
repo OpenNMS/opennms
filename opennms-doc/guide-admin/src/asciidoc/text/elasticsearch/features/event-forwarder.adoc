@@ -43,7 +43,7 @@ Besides the general _Elasticsearch_ connection settings, the following propertie
 |`logAllEvents`
 | false
 | optional
-| If changed to true, then archive all events even if they have not been persisted in the _{opennms-product-name}_ database.
+| If changed to true, then archive all events even if they have not been persisted in the _{page-component-title}_ database.
 
 |`batchSize`
 | 200
@@ -68,9 +68,9 @@ feature:install opennms-es-rest
 
 ===== Loading Historical Events
 
-It is possible to load historical _{opennms-product-name}_ events into _Elasticsearch_ from the _{opennms-product-name}_ database using a _karaf_ console command.
-The command uses the _{opennms-product-name}_ Events ReST interface to retrieve a set number of historical events and forward them to _Elasticsearch_.
-Because we are using the ReST interface it is also possible to contact a remote _{opennms-product-name}_ and download its events into _Elasticsearch_ by using the correct remote URL and credentials.
+It is possible to load historical _{page-component-title}_ events into _Elasticsearch_ from the _{page-component-title}_ database using a _karaf_ console command.
+The command uses the _{page-component-title}_ Events ReST interface to retrieve a set number of historical events and forward them to _Elasticsearch_.
+Because we are using the ReST interface it is also possible to contact a remote _{page-component-title}_ and download its events into _Elasticsearch_ by using the correct remote URL and credentials.
 
 The following example sends historic events to _Elasticsearch_ using the _karaf_ console:
 

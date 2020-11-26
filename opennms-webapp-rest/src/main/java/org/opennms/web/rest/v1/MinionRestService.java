@@ -68,7 +68,7 @@ public class MinionRestService extends OnmsRestService {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    @Path("{minionId}/{key}")
+    @Path("{minionId}/\{key}")
     @Transactional
     public String getMinionProperty(@PathParam("minionId") final String minionId, @PathParam("key") final String key) {
         final OnmsMinion minion = getMinion(minionId);

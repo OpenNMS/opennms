@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../images
 
-{opennms-product-name} supports the assignment of arbitrary metadata to nodes, interfaces and services. 
+{page-component-title} supports the assignment of arbitrary metadata to nodes, interfaces and services. 
 You can then use this metadata to dynamically configure service monitoring, performance data collection, service detection, and expression-based thresholds. 
 
 The metadata is a simple triad of strings containing a context, a key and the associated value.
@@ -22,13 +22,13 @@ image:metadata/metadata-view.png[]
 === Contexts
 
 A context distinguishes different kinds of metadata use. 
-{opennms-product-name} uses several default contexts: pattern (used with polling), requisition, node, interface, and service. 
+{page-component-title} uses several default contexts: pattern (used with polling), requisition, node, interface, and service. 
 
 Three special contexts provide details about nodes, interfaces and services objects.
 Each context has keys associated with it that you can use in a metadata expression. 
 
 You can create user-defined contexts in the ReST API by prefixing the context name with `X-`. 
-Using an `X-` prefix can help to avoid future {opennms-product-name} contexts interfering with a user-defined context, since {opennms-product-name} contexts are not prefixed in this way.  
+Using an `X-` prefix can help to avoid future {page-component-title} contexts interfering with a user-defined context, since {page-component-title} contexts are not prefixed in this way.  
 
 ==== Node context
 

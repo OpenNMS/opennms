@@ -1,13 +1,10 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= HttpCollector
 
-==== HttpCollector
+The HttpCollector collects performance data via HTTP and HTTPS.
+Attributes are extracted from the HTTP responses using a regular expression.
 
-The _HttpCollector_ collects performance data via _HTTP_ and _HTTPS_.
-Attributes are extracted from the _HTTP_ responses using a regular expression.
-
-===== Collector Facts
+== Collector Facts
 
 [options="autowidth"]
 |===
@@ -16,29 +13,29 @@ Attributes are extracted from the _HTTP_ responses using a regular expression.
 | Supported on Minion | `Yes`
 |===
 
-===== Collector Parameters
+== Collector Parameters
 
-Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the HttpCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                                                    | Required | Default value
-| `collection`           | The name of the _HTTP Collection_ to use.                                      | required | (none)
+| `collection`           | The name of the HTTP Collection to use.                                      | required | (none)
 | `thresholding-enabled` | Whether collected performance data should be tested against thresholds.         | optional | `true`
 | `port`                 | Override the default port in all of the URIs                               | optional | 80
 | `timeout`              | Connection and socket timeout in milliseconds                                  | optional | 3000
 | `retry`                | Number of retries                                                              | optional | 2
 | `use-system-proxy`     | Should the system-wide proxy settings be used? Configure system proxy settings
-                          via link:#ga-opennms-system-properties[system properties]        | optional | `false`
+                          via <<system-properties.adoc#ga-opennms-system-properties, system properties>>        | optional | `false`
 |===
 
 
-===== HTTP Collection Configuration
+== HTTP Collection Configuration
 
-NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding <<performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files. 
 
-Define _HTTP Collections_ in `etc/http-datacollection-config.xml`.
+Define HTTP Collections in `etc/http-datacollection-config.xml`.
 
 This snippet provides a collection definition named `opennms-copyright`:
 
@@ -65,7 +62,7 @@ This snippet provides a collection definition named `opennms-copyright`:
 </http-collection>
 ----
 
-Once added to `etc/http-datacollection-config.xml` you can test it using the `collect` command available in the _Karaf Shell_:
+Once added to `etc/http-datacollection-config.xml` you can test it using the `collect` command available in the Karaf Shell:
 
 [source]
 ----

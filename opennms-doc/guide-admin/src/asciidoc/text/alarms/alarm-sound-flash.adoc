@@ -5,7 +5,7 @@
 === Alarm Sounds
 
 Often users want an audible indication of a change in alarm state. 
-The _{opennms-product-name}_ alarm list page has the optional ability to generate a sound either on each new alarm or (more annoyingly) on each change to an alarm event count on the page.
+The _{page-component-title}_ alarm list page has the optional ability to generate a sound either on each new alarm or (more annoyingly) on each change to an alarm event count on the page.
 
 The figure <<ga-alarm-sounds-ui, Alarm Sounds View>> shows the alarm list page when alarms sounds are enabled.
 
@@ -22,7 +22,7 @@ However users can modify the default sound setting for the duration of their log
 
 === Flashing Unacknowledged Alarms 
 
-By default _{opennms-product-name}_ displays the alarm list page with acknowledged and unacknowledged alarms listed in separate search tabs.
+By default _{page-component-title}_ displays the alarm list page with acknowledged and unacknowledged alarms listed in separate search tabs.
 In a number of operational environments it is useful to see all of the alarms on the same page with unacknowledged alarms flashing to indicate that they haven't yet been noticed by one of the team.
 This allows everyone to see at a glance the real time status of all alarms and which alarms still need attention.
 
@@ -33,7 +33,7 @@ All alarms can be selected to be escalated, cleared, acknowledged and unacknowle
 
 === Configuring Alarm Sounds and Flashing
 
-By default _{opennms-product-name}_ does not enable alarm sounds or flashing alarms. 
+By default _{page-component-title}_ does not enable alarm sounds or flashing alarms. 
 The default settings are included in opennms.properties.
 However rather than editing the default opennms.properties file, the system administrator should enable these features by creating a new file in opennms.properties.d and applying the following settings;
 

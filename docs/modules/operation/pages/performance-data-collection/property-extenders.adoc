@@ -1,5 +1,5 @@
-// Allow GitHub image rendering
-:imagesdir: ../../images
+
+= SNMP Property Extenders
 
 When collecting tabular numeric metrics from a given MIB table, it's helpful to include one or more string properties from each conceptual row of the table in question.
 These properties can be used in the `resourceLabel` attribute of the `resourceType` associated with the collected data.
@@ -62,21 +62,23 @@ The `class-name` attribute of the `property` element contains the full class nam
 The `property` element takes a number of `parameter` child elements; these parameters are used to configure the property extender class named in `class-name`.
 Each extender class recognizes a different set of parameters.
 
-==== Cisco CBQoS Property Extender
+== Cisco CBQoS Property Extender
 This property extender is used only in very specific circumstances.
 
-===== When to Use Cisco CBQoS Property Extender
+=== When to Use Cisco CBQoS Property Extender
+
 The Cisco CBQoS Property Extender is designed specifically and exclusively for the purpose of including string properties across `ifXTable` and the several MIB tables that make up the Cisco Class-Based QoS MIB.
 It is not useful for any other sets of target and source tables.
 
-===== Configuring Cisco CBQoS Extended Properties
+=== Configuring Cisco CBQoS Extended Properties
+
 The complex relationships among the various Cisco CBQoS tables are encapsulated in the code of this property extender class.
 As a result, this extender takes only a single parameter, `target-property`, whose value must be one of `policyName`, `classMapName`, `interfaceAlias`, or `interfaceName`.
 
-==== Enum Lookup Property Extender
+== Enum Lookup Property Extender
 The Enum Lookup property extender provides a mechanism that works like a lookup table for values of a local MIB table column.
 
-===== When to use the Enum Lookup Property Extender
+=== When to use the Enum Lookup Property Extender
 The Enum Lookup property extender may be used to map an enumerated set of integer values to a corresponding set of human-sensible textual values.
 For example, the `dot1dStpPortTable` contains two integer columns whose values reflect attributes of a port.
 
@@ -106,7 +108,7 @@ This extender enables persisting the values of these enumerated integer columns 
 
 NOTE: While this extender is intended primarily for translating integer values to more descriptive ones as shown in the example below, it could also be used to translate from one set of alphanumeric values to another set.
 
-===== Configuring the Enum Lookup Property Extender
+=== Configuring the Enum Lookup Property Extender
 The Enum Lookup property extender expects zero or more parameters.
 Only the `default-value` parameter has a fixed name; if it is present, its value is used any time a lookup cannot be completed.
 If `default-value` is not provided and a lookup fails, no value will be returned for the property.
@@ -150,11 +152,13 @@ This example shows how to map values of `dot1dStpPortState` and `dot1dStpPortEna
 <3> Derived port STP state textual attribute `dot1dStpPortStateText`
 <4> Derived port enablement status textual attribute `dot1dStpPortEnableText`
 
-==== Index Split Property Extender
+== Index Split Property Extender
+
 The Index Split property extender enables extraction of part of a resource's local instance identifier.
 
-===== When to use the Index Split Property Extender
-The Index Split property extender is useful when collecting data from tables with compound indices, because it enables extraction of a single index component.
+=== When to Use the Index Split Property Extender
+
+Use the Index Split property extender when collecting data from tables with compound indices, because it enables extraction of a single index component.
 For example, the Cisco Airespace `bsnAPIfLoadParametersTable` is indexed using the tuple of `bsnAPDot3MacAdddress` and `bsnAPIfSlotId`.
 
 [source, text]
@@ -176,7 +180,8 @@ bsnAPIfLoadParametersEntry OBJECT-TYPE
 
 This extender enables extraction of just the `bsnAPIfSlotId` component for use in a resource label.
 
-===== Configuring the Index Split Property Extender
+=== Configuring the Index Split Property Extender
+
 The Index Split property extender expects a single parameter, `index-pattern`, whose value is a regular expression.
 The expression must be general enough to match all possible index values for the table at hand, and should include one capturing group.
 The subpattern matched by the expression's first capturing group will be returned; any further groups are ignored.
@@ -195,10 +200,12 @@ This example shows how to extract just the `bsnAPIfSlotId` index component as a 
 <1> Derived string property `slotNumber`
 <2> Regular expression; the portion in parentheses is what gets extracted. `\d+` means "one or more decimal digit characters".
 
-==== Regex Property Extender
+== Regex Property Extender
+
 The Regex property extender works similarly to the Index Split property extender, with the added capability of importing a string property from a source table.
 
-===== When to Use the Regex Property Extender
+=== When to Use the Regex Property Extender
+
 The Regex property extender is useful when some portion of the target MIB table's index can be used as an index to the source MIB table.
 For example, the Cisco Airespace `bsnAPIfLoadParametersTable` is indexed using the tuple of `bsnAPDot3MacAdddress` and `bsnAPIfSlotId`, whereas the `bsnAPTable` is indexed on `bsnAPDot3MacAddress` alone.
 
@@ -229,7 +236,8 @@ bsnAPEntry OBJECT-TYPE
 
 By extracting just the first index component and using the result as an index into the source MIB table, it's possible to import the human-sensible `bsnAPName` string property from the source MIB table.
 
-===== Configuring the Regex Property Extender
+=== Configuring the Regex Property Extender
+
 The Regex property extender expects three parameters, all of which are required:
 
 .Regex Property Extender Parameters
@@ -277,11 +285,13 @@ This example shows how to use the value of `bsnAPDot3MacAddress` as an index int
 <2> Extended string property `bsnAPName` on the target table
 <2> Regular expression; the portion in parentheses is what gets extracted. `\d+` means "one or more decimal digit characters".
 
-==== Pointer-Like Index Property Extender
+== Pointer-Like Index Property Extender
+
 The Pointer-Like Index property extender makes it possible to use the value of an attribute from the target MIB table as the index into the source MIB table.
 Unlike the Index Split and Regex extenders, this extender class does not require the target and source MIB tables to share any index components.
 
-===== When to Use the Pointer-Like Index Property Extender
+=== When to Use the Pointer-Like Index Property Extender
+
 The Pointer-Like Index property extender is useful when the target MIB table contains a column whose value can be used as an index into the source MIB table.
 For example, the Cisco Process MIB's `cpmCPUTotalTable` has its own index that is not shared with any other tables, but its `cpmCPUTotalPhysicalIndex` column contains an integer which can be used as an index into the `entPhysicalTable`.
 
@@ -333,7 +343,8 @@ By treating `cpmCPUTotalPhysicalIndex` somewhat like a link:https://en.wikipedia
 NOTE: Some combinations of Cisco hardware and software appear to use values of `cpmCPUTotalIndex` that are directly interchangeable with `entPhysicalIndex`.
 This relationship does not hold across all product lines or software revisions.
 
-===== Configuring the Pointer-Like Index Property Extender
+=== Configuring the Pointer-Like Index Property Extender
+
 The Pointer-Like Index property extender expects three parameters, all of which are required:
 
 .Pointer-Like Index Property Extender Parameters
@@ -387,11 +398,13 @@ The target resource gains a pair of string properties, which we will call `cpmCP
 <4> We derive `cpmCPUTotalName` in the target group telling the extender to use the pointer-like property's value as an index into the source table, and specify that we want to "pull over" the source attribute `entPhysicalName` <5>
 <6> Deriving `cpmCPUTotalDescr` is almost identical, except that this time we are pulling over the value of `entPhysicalDescr` <7>
 
-==== SNMP Interface Property Extender
-The SNMP Interface property extender does much the same job as the Pointer-Like Index property extender, but it is specialized for importing properties from the `ifTable`.
-Resources representing rows in the `ifTable` are modeled differently in _{opennms-product-name}_ compared to other tabular resource types, and this extender accounts for those differences.
+== SNMP Interface Property Extender
 
-===== When to Use the SNMP Interface Property Extender
+The SNMP Interface property extender does much the same job as the Pointer-Like Index property extender, but it is specialized for importing properties from the `ifTable`.
+Resources representing rows in the `ifTable` are modeled differently in {page-component-title} compared to other tabular resource types, and this extender accounts for those differences.
+
+=== When to Use the SNMP Interface Property Extender
+
 Use the SNMP Interface property extender when the string property you want to import is associated with a network interface which is represented by a row in the `ifTable`.
 For example, the `dot1dBasePortTable` has its own index which does not share any components with any other table, but its `dot1dBasePortIfIndex` column contains a value that is a valid `ifIndex`.
 
@@ -428,7 +441,8 @@ ifEntry OBJECT-TYPE
 
 By using this extender, it's possible to import string attributes from the `ifTable`, `ifXTable`, or another table that augments the `ifTable`.
 
-===== Configuring the SNMP Interface Property Extender
+=== Configuring the SNMP Interface Property Extender
+
 The SNMP Interface property extender expects two or three parameters:
 
 .SNMP Interface Property Extender Parameters

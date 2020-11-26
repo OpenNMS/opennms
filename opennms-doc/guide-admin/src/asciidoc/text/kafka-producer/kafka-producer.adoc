@@ -3,7 +3,7 @@
 
 === Overview
 
-The _Kafka Producer feature_ allows events, alarms, nodes, topologies and metrics from _{opennms-product-name}_ to be forwarded to _Kafka_.
+The _Kafka Producer feature_ allows events, alarms, nodes, topologies and metrics from _{page-component-title}_ to be forwarded to _Kafka_.
 
 These objects are stored in different topics and the payloads are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
 See `opennms-kafka-producer.proto` and `collectionset.proto` in the corresponding source distribution for the model definitions.
@@ -23,7 +23,7 @@ The _Kafka Producer_ listens for changes made to the current set of alarms and f
 The records are keyed by alarm reduction key and contain a _GPB_ encoded model of the alarm.
 When an alarm is deleted, a _null_ value is sent with the corresponding reduction key.
 Publishing records in this fashion allows the topic to be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
-The _Kafka Producer_ will also perform periodic synchronization tasks to ensure that the contents of the Kafka topic reflect the current state of alarms in the _{opennms-product-name}_ database.
+The _Kafka Producer_ will also perform periodic synchronization tasks to ensure that the contents of the Kafka topic reflect the current state of alarms in the _{page-component-title}_ database.
 
 By default, all alarms (and subsequent updates) are forwarded to a topic named `alarms`.
 
@@ -65,13 +65,13 @@ The records are keyed in this fashion to help ensure that collection sets relate
 
 When enabled (this functionality is disabled by default), the metrics are written to a topic named `metrics`.
 
-NOTE: When exclusively writing to _Kafka_, no metrics or resource graphs will be available on the _{opennms-product-name}_ instance.
+NOTE: When exclusively writing to _Kafka_, no metrics or resource graphs will be available on the _{page-component-title}_ instance.
 
 === Enabling the Kafka Producer
 
 The _Kafka Producer_ is disabled by default and can be enabled as follows.
 
-First, login to the _Karaf_ shell of your _{opennms-product-name}_ instance and configure the _Kafka_ client settings to point to your _Kafka_ broker.
+First, login to the _Karaf_ shell of your _{page-component-title}_ instance and configure the _Kafka_ client settings to point to your _Kafka_ broker.
 See link:https://kafka.apache.org/10/documentation.html#producerconfigs[Producer Configs] for a complete list of available options.
 
 [source]

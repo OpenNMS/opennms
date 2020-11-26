@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-_{opennms-product-name}_ persists/forwards certain data to _Elasticsearch_.
+_{page-component-title}_ persists/forwards certain data to _Elasticsearch_.
 
 The following chapters describe the configuration possibilities as well as the available features.
 
@@ -122,7 +122,7 @@ When bulk operations fail, only the failed items are retried.
 | -
 
 | _indexPrefix_
-| Prefix is prepended to the index and template names. Can be used in cases where you want to share the same Elasticsearch cluster with many _{opennms-product-name}_ instances.
+| Prefix is prepended to the index and template names. Can be used in cases where you want to share the same Elasticsearch cluster with many _{page-component-title}_ instances.
 | optional
 | -
 |===

@@ -3,7 +3,7 @@
 
 === GraphML
 
-In {opennms-product-name} the `GraphMLTopoloyProvider` uses http://graphml.graphdrawing.org/[GraphML] formatted files to visualize graphs.
+In {page-component-title} the `GraphMLTopoloyProvider` uses http://graphml.graphdrawing.org/[GraphML] formatted files to visualize graphs.
 
 [quote, , http://graphml.graphdrawing.org]
 ____
@@ -14,7 +14,7 @@ Unlike many other file formats for graphs, GraphML does not use a custom syntax.
 Instead, it is based on XML and hence ideally suited as a common denominator for all kinds of services generating, archiving, or processing graphs.
 ____
 
-{opennms-product-name} does not support the full feature set of GraphML.
+{page-component-title} does not support the full feature set of GraphML.
 The following features are not supported: Nested graphs, Hyperedges, Ports and Extensions.
 For more information about GraphML refer to the http://graphml.graphdrawing.org/primer/graphml-primer.html[Official Documentation].
 
@@ -23,7 +23,7 @@ A basic graph definition using GraphML usually consists of the following GraphML
  * Graph element to describe the graph
  * Key elements to define custom properties, each element in the GraphML document can define as data elements
  * Node and Edge elements
- * Data elements to define custom properties, which {opennms-product-name} will then interpret.
+ * Data elements to define custom properties, which {page-component-title} will then interpret.
 
 A very minimalistic example is given below:
 
@@ -33,13 +33,13 @@ include::examples/minimalistic.xml[]
 ----
 <1> The optional label of the menu entry.
 <2> The graph definition.
-<3> Each graph must have a namespace, otherwise {opennms-product-name} refuses to load the graph.
+<3> Each graph must have a namespace, otherwise {page-component-title} refuses to load the graph.
 <4> Node definitions.
 
 ==== Create/Update/Delete GraphML Topology
 
 In order to create a GraphML Topology, a valid GraphML xml file must exist.
-Afterwards this is send to the {opennms-product-name} REST API to create it:
+Afterwards this is send to the {page-component-title} REST API to create it:
 
 [source, shell]
 ----
@@ -67,7 +67,7 @@ In addition it may take a while before the Topology is actually selectable from 
 
 ==== Supported Attributes
 
-A various set of GraphML attributes are supported and interpreted by {opennms-product-name} while reading the GraphML file.
+A various set of GraphML attributes are supported and interpreted by {page-component-title} while reading the GraphML file.
 The following table explains the supported attributes and for which GraphML elements they may be used.
 
 [quote, , http://graphml.graphdrawing.org/primer/graphml-primer.html#Attributes]
@@ -134,7 +134,7 @@ If none is specified, there is no status provided at all.
 
 ===== Default Vertex Status Provider
 The `default` status provider calculates the status based on the worst unacknowledged alarm associated with the Vertex's node.
-In order to have a status calculated a ({opennms-product-name}) node must be associated with the Vertex.
+In order to have a status calculated a ({page-component-title}) node must be associated with the Vertex.
 This can be achieved by setting the GraphML attribute `nodeID` on the GraphML node accordingly.
 
 ===== Script Vertex Status Provider

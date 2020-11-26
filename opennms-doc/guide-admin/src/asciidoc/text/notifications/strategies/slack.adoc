@@ -5,8 +5,8 @@
 [[ga-notifications-strategy-slack]]
 ==== Slack Notifications
 
-If your organization uses the Slack team communications platform, you can configure _{opennms-product-name}_ to send notices to any Slack channel via an incoming webhook.
-You must configure an incoming webhook in your Slack team and do a bit of manual configuration to your _{opennms-product-name}_ instance.
+If your organization uses the Slack team communications platform, you can configure _{page-component-title}_ to send notices to any Slack channel via an incoming webhook.
+You must configure an incoming webhook in your Slack team and do a bit of manual configuration to your _{page-component-title}_ instance.
 
 First, add the following bit of XML to the `notificationCommands.xml` configuration file (no customization should be needed):
 

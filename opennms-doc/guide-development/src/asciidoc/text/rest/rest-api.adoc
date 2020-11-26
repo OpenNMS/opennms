@@ -1,6 +1,6 @@
 
 A RESTful interface is a web service conforming to the REST architectural style as described in the book link:http://oreilly.com/catalog/9780596529260[RESTful Web Services].
-This page is describes the RESTful interface for {opennms-product-name}.
+This page is describes the RESTful interface for {page-component-title}.
 
 === ReST URL
 

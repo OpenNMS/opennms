@@ -5,7 +5,7 @@
 [[ga-ticketing-jira]]
 === JIRA Ticketing Plugin
 
-The _JIRA Ticketing Plugin_ is used to create JIRA Issues in response to _{opennms-product-name}_ alarms.
+The _JIRA Ticketing Plugin_ is used to create JIRA Issues in response to _{page-component-title}_ alarms.
 
 [[ga-ticketing-jira-setup]]
 ==== Setup
@@ -47,9 +47,9 @@ NOTE: Either use `opennms:jist-list-issue-types` _OSGI Command_ or https://confl
 
 Next, add `jira-troubleticketer` to the `featuresBoot` property in the `${OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`
 
-Restart _{opennms-product-name}_.
+Restart _{page-component-title}_.
 
-When _{opennms-product-name}_ has started again, login to the _Karaf Shell_ and install the feature:
+When _{page-component-title}_ has started again, login to the _Karaf Shell_ and install the feature:
 
 [source]
 ----
@@ -71,7 +71,7 @@ Afterwards you can type for example `opennms:jira-list-projects --help` to deter
 
 ==== Custom fields
 
-The _{opennms-product-name}_ Ticketer model is limited to the most common fields provided by all ticketing systems.
+The _{page-component-title}_ Ticketer model is limited to the most common fields provided by all ticketing systems.
 
 Besides the common fields creator, create date, description or subject, ticket system proprietary fields usually need to be set.
 

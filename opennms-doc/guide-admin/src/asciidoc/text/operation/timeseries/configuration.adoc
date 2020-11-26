@@ -5,7 +5,7 @@
 
 ===== Enabling Time Series Integration Layer
 
-_{opennms-product-name}_ can be configured to use the Time Series Integration Layer by setting the following property in `${OPENNMS_HOME}/etc/opennms.properties`:
+_{page-component-title}_ can be configured to use the Time Series Integration Layer by setting the following property in `${OPENNMS_HOME}/etc/opennms.properties`:
 
 [source]
 ----
@@ -36,7 +36,7 @@ To this end, set the following property in the same file:
 org.opennms.rrd.storeByForeignSource=true
 ----
 
-With these set, _{opennms-product-name}_ will begin persisting metrics using the _Time Series Integration Layer_ when restarted.
+With these set, _{page-component-title}_ will begin persisting metrics using the _Time Series Integration Layer_ when restarted.
 
 Additional configuration options are presented in the next section.
 
@@ -77,7 +77,7 @@ You might need to tune the cache settings to suit your needs. See parameters abo
 [options="header, autowidth"]
 |===
 | Name                             | Description
-| TimeseriesMetaDataCache          | Caches metadata that uses _{opennms-product-name}_  internally.
+| TimeseriesMetaDataCache          | Caches metadata that uses _{page-component-title}_  internally.
 | TimeseriesSearcherCache          | Caches metrics by tag to improve the resource lookup.
 | TimeseriesPersisterMetaTagCache  | Caches all additionally configured and resolved meta-tag values by resource.
 |===
@@ -88,8 +88,8 @@ However, note that the memory used by the ring buffer is reserved, and larger va
 
 [[ga-opennms-operation-timeseries-properties-meta-tags]]
 ===== Expose additional meta tags
-Metrics that are stored via the time series plugin contain the minimal set of tags for _{opennms-product-name}_ to work.
-This might not be sufficient if the data is used outside of _{opennms-product-name}_ as well.
+Metrics that are stored via the time series plugin contain the minimal set of tags for _{page-component-title}_ to work.
+This might not be sufficient if the data is used outside of _{page-component-title}_ as well.
 Configure additional meta tags via `${OPENNMS_HOME}/etc/opennms.properties`.
 
 The configuration of the tags has the following form:

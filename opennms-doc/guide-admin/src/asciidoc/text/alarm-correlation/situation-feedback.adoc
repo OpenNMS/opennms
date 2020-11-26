@@ -23,7 +23,7 @@ The feature requires Elasticsearch to persist the feeback records.
 
 ===== Configuration Elasticsearch persistence
 
-From a Karaf shell on your _{opennms-product-name}_ instance, start by configuring the Situation Feedback persistence to use your Elasticsearch cluster:
+From a Karaf shell on your _{page-component-title}_ instance, start by configuring the Situation Feedback persistence to use your Elasticsearch cluster:
 
 [source]
 ----

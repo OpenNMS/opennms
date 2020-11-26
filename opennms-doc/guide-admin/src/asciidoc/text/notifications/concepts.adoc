@@ -5,7 +5,7 @@
 [[ga-notifications-concepts]]
 === Concepts
 
-_Notifications_ are how _{opennms-product-name}_ informs users about an event that happened in the network, without the users having to log in and look at the UI.
+_Notifications_ are how _{page-component-title}_ informs users about an event that happened in the network, without the users having to log in and look at the UI.
 The core concepts required to understand notifications are:
 
 * Events and UEIs
@@ -19,7 +19,7 @@ Also related, but presently only loosely coupled to notifications, are _Alarms_ 
 
 ==== Events and UEIs
 
-As discussed in the chapter on <<ga-events>>, events are central to the operation of _{opennms-product-name}_.
+As discussed in the chapter on <<ga-events>>, events are central to the operation of _{page-component-title}_.
 Almost everything that happens in the system is the result of, or the cause of, one or more events; Every notification is triggered by exactly one event.
 A good understanding of events is therefore essential to a working knowledge of notifications.
 
@@ -29,7 +29,7 @@ Most notifications are triggered by an exact UEI match (though they may also be 
 
 ==== Users, Groups, and On-Call Roles
 
-_Users_ are entities with login accounts in the _{opennms-product-name}_ system.
+_Users_ are entities with login accounts in the _{page-component-title}_ system.
 Ideally each user corresponds to a person.
 They are used to control access to the web UI, but also carry contact information (e-mail addresses, phone numbers, etc.) for the people they represent.
 A user may receive a notification either individually or as part of a _Group_ or _On-Call Role_.
@@ -59,7 +59,7 @@ NOTE: The order of the _Users_ in the group is relevant and is used as the order
 . Use the trash bin icon next to the _Group_ to delete
 . Confirm delete request with *OK*
 
-_On-Call Roles_ are an overlay on top of groups, designed to enable _{opennms-product-name}_ to target the appropriate user or users according to a calendar configuration.
+_On-Call Roles_ are an overlay on top of groups, designed to enable _{page-component-title}_ to target the appropriate user or users according to a calendar configuration.
 A common use case is to have System Engineers in _On-Call_ rotations with a given schedule.
 The _On-Call Roles_ allow to assign a predefined _Duty Schedule_ to an existing _Group_ with _Users_.
 For each _On-Call Role_ a _User_ is assigned as a _Supervisor_ to be responsible for the group of people in this _On-Call Role_.
@@ -145,6 +145,6 @@ The following notification commands are included in the default configuration:
 
 Notification commands are customizable and extensible by editing the `notificationCommands.xml` file.
 
-NOTE: Use external binary notification commands sparingly to avoid fork-bombing your _{opennms-product-name}_ system.
+NOTE: Use external binary notification commands sparingly to avoid fork-bombing your _{page-component-title}_ system.
 Originally, all notification commands were external.
 Today only the `numericPage` and `textPage` commands use external programs to do their work.

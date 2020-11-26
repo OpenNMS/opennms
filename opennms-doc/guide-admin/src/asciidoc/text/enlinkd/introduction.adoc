@@ -13,14 +13,14 @@ _Enlinkd-Updaters_, for every supported discovery protocol, use the provided Top
 
 The connections discovered by _Enlinkd_ collectors and by Bridge Domain Discovery are called _Links_.
 The term _Link_, within the context of _Enlinkd_, is not synonymous with the term "link" when used with respect to the network OSI _Layer 2_ domain, whereby a link only indicates a _Layer 2_ connection.
-A _Link_ in context of _Enlinkd_ is a more abstract concept and is used to describe any connection between two _{opennms-product-name} Nodes_.
+A _Link_ in context of _Enlinkd_ is a more abstract concept and is used to describe any connection between two _{page-component-title} Nodes_.
 These _Links_ are discovered based on information provided by an agent's understanding of connections at the OSI _Layer 2_, _Layer 3_, or other OSI layers.
 
 The Topologies discovered by _Enlinkd-Updaters_ are made of _Vertices_ and _Edges_.
 
 The following sections describe the _Enlinkd_ daemon and its configuration.
 Additionally, the supported _Link discovery_ implementations will be described as well as a list of the SNMP MIBs that the SNMP agents must expose in order for _EnLinkd_ to gather _Links_ between _Nodes_.
-FYI: Detailed information about a node's connections (discovered _Links_) and supporting link data can be seen on the _Node detail page_ within the _{opennms-product-name}_ Web-UI.
+FYI: Detailed information about a node's connections (discovered _Links_) and supporting link data can be seen on the _Node detail page_ within the _{page-component-title}_ Web-UI.
 
 [[ga-enlinkd-daemon]]
 === Enlinkd Daemon
@@ -67,7 +67,7 @@ During the _EnLink_ discovery process informational and error output is logged t
 |===
 | Attribute              | Type      | Default    | Description
 | `threads`              | _Integer_ | `5`        | Number of parallel threads used by _Collectors_,  _Updaters_ and _Discovery_.
-| `initial_sleep_time`   | _Integer_ | `60000`    | Time in milliseconds to wait for start _Collectors_  after {opennms-product-name} is started.
+| `initial_sleep_time`   | _Integer_ | `60000`    | Time in milliseconds to wait for start _Collectors_  after {page-component-title} is started.
 | `rescan_interval`      | _Integer_ | `86400000` | Interval in milliseconds for _Collectors_.
 | `topology_interval`    | _Integer_ | `30000`   | Interval in milliseconds for _Updaters_.
 | `bridge_topology_interval`    | _Integer_ | `300000`   | Interval in milliseconds for _Discovery_.

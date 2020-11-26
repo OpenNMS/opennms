@@ -2,7 +2,7 @@
 [[ga-telemetryd]]
 = Telemetry Daemon
 
-The telemetry daemon (telemetryd) provides an extensible framework you can use to handle sensor data pushed to _{opennms-product-name}_.
+The telemetry daemon (telemetryd) provides an extensible framework you can use to handle sensor data pushed to _{page-component-title}_.
 Use the framework to support applications that use different protocols to transfer metrics.
 With _telemetryd_, operators can define listeners supporting different protocols to receive the telemetry data and adapters transferring the received data into generic formats like flows or performance data.
 
@@ -39,7 +39,7 @@ image::telemetryd/telemetryd-connectors.png[]
 
 === _Adapters_
 _Adapters_ enrich and process the data dispatched over a queue.
-They receive the data from queue and transform it into a format usable by _{opennms-product-name}_.
+They receive the data from queue and transform it into a format usable by _{page-component-title}_.
 Adapters can also enrich the incoming data to attach node or interface information, depending on information already available.
 
 For example: an _Adapter_ may be used to transform telemetry data received via sFlow into performance data and persist it to the applicable node.
@@ -52,8 +52,8 @@ TIP: If you have multiple _Adapters_, the execution order is the same as defined
 
 ==== Working with Minions
 Listeners and parsers run on Minion, but adapters do not. 
-Adapters run on Sentinel, while the main {opennms-product-name} instance can run listeners, parsers, and adapters. 
-When using Minion as a listener, you must use adapters on {opennms-product-name} or Sentinel to transform the data. 
+Adapters run on Sentinel, while the main {page-component-title} instance can run listeners, parsers, and adapters. 
+When using Minion as a listener, you must use adapters on {page-component-title} or Sentinel to transform the data. 
 
 === _Queues_
 _Queues_ transfer data between _Parsers_ and _Adapters_ and are represented by a channel in the messaging system.
@@ -97,9 +97,9 @@ parsers.0.queue.use-routing-key=false
 ----
 
 === Push Sensor Data through Minion
-_Listeners_ and their _Parsers_ may run on either _{opennms-product-name}_ or _Minion_, whereas adapters run on _{opennms-product-name}_ or _Sentinel_.
-If a _Listener_ and its _Parsers_ are running on _Minion_, the received messages will be automatically dispatched to the associated _Adapters_ running in _{opennms-product-name}_ or _Sentinel_ via a _Queue_.
-Minions can listen (receive) data, but requires {opennms-product-name} or Sentinel to process.
+_Listeners_ and their _Parsers_ may run on either _{page-component-title}_ or _Minion_, whereas adapters run on _{page-component-title}_ or _Sentinel_.
+If a _Listener_ and its _Parsers_ are running on _Minion_, the received messages will be automatically dispatched to the associated _Adapters_ running in _{page-component-title}_ or _Sentinel_ via a _Queue_.
+Minions can listen (receive) data, but requires {page-component-title} or Sentinel to process.
 
 .Running _Listener_ on a _Minion_ forwarding packets using the messaging system
 image::telemetryd/telemetryd-minion.png[]

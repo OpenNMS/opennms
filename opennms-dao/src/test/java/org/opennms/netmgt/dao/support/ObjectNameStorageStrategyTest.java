@@ -124,7 +124,7 @@ public class ObjectNameStorageStrategyTest {
         ResourcePath parentResource = ResourcePath.get("1");
         CollectionResource resource = new MockCollectionResource(parentResource, "java.lang:type=MemoryPool,name=Survivor Space", "");
         List<org.opennms.netmgt.collection.api.Parameter> params = new ArrayList<>();
-        Parameter p = new Parameter("index-format", "${domain}");
+        Parameter p = new Parameter("index-format", "$\{domain}");
         params.add(p);
         ObjectNameStorageStrategy instance = new ObjectNameStorageStrategy();
         instance.setParameters(params);
@@ -150,7 +150,7 @@ public class ObjectNameStorageStrategyTest {
         assertEquals(expResult, result);
 
         params.clear();
-        p.setValue("${domain}:type=${type},name=${name}");
+        p.setValue("$\{domain}:type=${type},name=${name}");
         params.add(p);
         instance.setParameters(params);
         expResult = "java.lang:type=MemoryPool,name=Survivor Space";
@@ -163,7 +163,7 @@ public class ObjectNameStorageStrategyTest {
         ResourcePath parentResource = ResourcePath.get("1");
         CollectionResource resource = new MockCollectionResource(parentResource, "d:k1=\"ab\",k2=\"cd\",k3=\"v3\"", "");
         List<org.opennms.netmgt.collection.api.Parameter> params = new ArrayList<>();
-        Parameter p = new Parameter("index-format", "${domain}-${k1}-${k2}-${k3}");
+        Parameter p = new Parameter("index-format", "$\{domain}-${k1}-${k2}-${k3}");
         params.add(p);
         ObjectNameStorageStrategy instance = new ObjectNameStorageStrategy();
         instance.setParameters(params);

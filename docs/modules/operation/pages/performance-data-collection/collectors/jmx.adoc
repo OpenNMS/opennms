@@ -1,13 +1,10 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= JmxCollector
 
-==== JmxCollector
+The JmxCollector collects performance data via JMX.
+Attributes are extracted from the available MBeans.
 
-The _JmxCollector_ collects performance data via _JMX_.
-Attributes are extracted from the available _MBeans_.
-
-===== Collector Facts
+== Collector Facts
 
 [options="autowidth"]
 |===
@@ -16,16 +13,15 @@ Attributes are extracted from the available _MBeans_.
 | Supported on Minion | `Yes`
 |===
 
-===== Collector Parameters
+== Collector Parameters
 
-
-Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the Jsr160Collector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                                                     | Required | Default value
-| `collection`           | The name of the _JMX Collection_ to use.                                         | required | (none)
+| `collection`           | The name of the JMX Collection to use.                                         | required | (none)
 | `thresholding-enabled` | Whether collected performance data should be tested against thresholds           | optional | `true`
 | `retry`                | Number of retries                                                               | optional | `3`
 | `friendlyName`         | Name of the path in which the metrics should be stored                          | optional | Value of the port, or 'jsr160' if no port is set.
@@ -50,11 +46,11 @@ If `url` is not defined the collector falls back to legacy mode and the deprecat
 
 NOTE: If a service requires different configuration, an entry in `$OPENNMS_HOME/etc/jmx-config.xml` can overwrite it.
 
-===== JMX Collection Configuration
+== JMX Collection Configuration
 
-NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding <<performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files. 
 
-Define _JMX Collections_ in `etc/jmx-datacollection-config.xml` and `etc/jmx-datacollection-config.d/`.
+Define JMX Collections in `etc/jmx-datacollection-config.xml` and `etc/jmx-datacollection-config.d/`.
 
 This snippet provides a collection definition named `opennms-poller`:
 
@@ -76,13 +72,13 @@ This snippet provides a collection definition named `opennms-poller`:
 </jmx-collection>
 ----
 
-Once added to `etc/jmx-datacollection-config.xml` you can test it using the `collect` command available in the _Karaf Shell_:
+Once added to `etc/jmx-datacollection-config.xml` you can test it using the `collect` command available in the Karaf Shell:
 
 ----
 opennms:collect org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 collection=opennms-poller port=18980
 ----
 
-===== Generic Resource Type
+== Generic Resource Type
 
 To support wildcard (*) in objectname, JMX collector supports generic resource types.
 JMX configuration requires two changes for this to work:
@@ -109,7 +105,7 @@ JMX configuration requires two changes for this to work:
    <attrib name="Value" alias="Lag" type="gauge"/>
 </mbean>
 ----
-====== Resource definition
+=== Resource definition
 
 JMX objectname is the full name of MBean in form of `( domain:key=value, key=value, ..)`.
 Wildcard `(*)` can exist anywhere in the objectname.
@@ -122,7 +118,7 @@ Here `BrokerName` can be defined as parameter for SiblingColumnStorageStrategy
 ----
    <parameter key="sibling-column-name" value="BrokerName" />
 ----
-The extracted BrokerNames from the wildcard will be the resource folders in the form of `nodeId/resourceTypeName/{resource-label}`
+The extracted BrokerNames from the wildcard will be the resource folders in the form of `nodeId/resourceTypeName/\{resource-label}`
 
 Wildcard may exist in domain as well. For example: `org.apache.*:BrokerName=trap, Type=Queue`.
 Then `domain` can be defined as the `sibling-column-name` parameter.
@@ -131,7 +127,7 @@ Then `domain` can be defined as the `sibling-column-name` parameter.
 ----
 To use the `objectname` itself as a resource label, use `IndexStorageStrategy` as storageStrategy in `resource-type` definition.
 
-===== Third-Party JMX Services
+== Third-Party JMX Services
 
 Some Java applications provide their own JMX implementation and require certain libraries to be present on the classpath, e.g., the Java application server Wildfly.
 To successfully collect data, you may need to do the following:

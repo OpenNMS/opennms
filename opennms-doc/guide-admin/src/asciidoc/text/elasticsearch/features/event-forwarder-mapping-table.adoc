@@ -4,7 +4,7 @@
 
 ====== Table of Index Mapping
 
-The following table describes the mapping of simple _{opennms-product-name}_ events to the Raw Events Index.
+The following table describes the mapping of simple _{page-component-title}_ events to the Raw Events Index.
 Note that fields that begin with an underscore (_) are internal to Elasticsearch.
 
 [options="header, autowidth"]

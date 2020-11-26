@@ -5,13 +5,13 @@
 
 === Time to Live (TTL) for RPCs
 
-Remote procedure calls (RPCs) between _{opennms-product-name}_ and _Minion_ include a time limit which, if exceeded, aborts the requests and discards any subsequent responses.
+Remote procedure calls (RPCs) between _{page-component-title}_ and _Minion_ include a time limit which, if exceeded, aborts the requests and discards any subsequent responses.
 We call this limit the time-to-live or TTL.
 We make an effort to use logical values where possible and provide means to configure the TTLs for circumstances where the default values are not suitable (i.e., for interacting with devices or locations with high latency).
 
 Our modules and services have different rules for determining the TTL.
 
-TIP: To troubleshoot TTLs, consider enabling the link:#opentracing[OpenTracing] integration on both _{opennms-product-name}_ and _Minion_.
+TIP: To troubleshoot TTLs, consider enabling the link:#opentracing[OpenTracing] integration on both _{page-component-title}_ and _Minion_.
 
 ==== TTLs in Pollerd & Collectd
 

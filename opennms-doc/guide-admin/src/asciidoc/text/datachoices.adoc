@@ -4,7 +4,7 @@
 
 The first time a user with the `Admin` role logs into the system, a prompt appears for permission to allow the `Data Choices` module to collect and publish anonymous usage statistics to https://stats.opennms.org.
 
-The OpenNMS Group uses this information to help determine product usage, and improve the {opennms-product-name} software. 
+The OpenNMS Group uses this information to help determine product usage, and improve the {page-component-title} software. 
 
 image:data-choices/data-sources.png[prompt, 300]
 
@@ -14,8 +14,8 @@ Statisitcs collection and publication happen only once an admin user opts-in.
 When enabled, the following anonymous statistics are collected and published on system startup and every 24 hours after:
 
 * System ID (a randomly generated UUID)
-* {opennms-product-name} Release
-* {opennms-product-name} Version
+* {page-component-title} Release
+* {page-component-title} Version
 * OS Architecture
 * OS Name
 * OS Version

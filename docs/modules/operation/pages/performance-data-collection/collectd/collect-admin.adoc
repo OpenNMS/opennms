@@ -1,7 +1,6 @@
-// Allow GitHub image rendering
-:imagesdir: ../../images
 
-==== Collectd Administration
+[[collectd-admin]]
+= Collectd Administration
 
 This section describes reference and administrative information associated with collectd. 
 
@@ -9,10 +8,10 @@ This section describes reference and administrative information associated with 
 [options="header, autowidth"]
 |===
 | File                                           | Description 
-| `$OPENNMS_HOME/etc/collectd-configuration.xml` | Configuration file for global collectd daemon and collectors configuration. (See <<configuration.adoc, Configuring Collectd>>.)
+| `$OPENNMS_HOME/etc/collectd-configuration.xml` | Configuration file for global collectd daemon and collectors configuration. (See <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, Configuring Collectd>>.)
 | `$OPENNMS_HOME/logs/collectd.log`              | Log file for all collectors and the global collectd daemon.
 | `$OPENNMS_HOME/etc/snmp-graph.properties`      | RRD graph definitions to render performance data measurements in the UI.
 | `$OPENNMS_HOME/etc/snmp-graph.properties.d`    | Directory with RRD graph definitions for devices and applications to render performance data measurements in the UI.
 | `$OPENNMS_HOME/etc/events/opennms.events.xml`  | Event definitions for collectd, i.e., _dataCollectionSucceeded_, and _dataCollectionFailed_.
-| `$OPENNMS_HOME/etc/resource-types.d`           | Directory to store generic resource type definitions. (See <<resource-types.adoc, Resource Types>>.)
+| `$OPENNMS_HOME/etc/resource-types.d`           | Directory to store generic resource type definitions. (See <<performance-data-collection/resource-types.adoc#resource-types, Resource Types>>.)
 |===

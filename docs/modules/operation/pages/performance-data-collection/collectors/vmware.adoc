@@ -1,13 +1,9 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= VmwareCollector
 
-==== VmwareCollector
+The VmwareCollector collects peformance metrics for managed entities from vCenter.
 
-The _VmwareCollector_ collects peformance metrics for managed entities from _vCenter_.
-
-===== Collector Facts
-
+== Collector Facts
 [options="autowidth"]
 |===
 | Class Name          | `org.opennms.netmgt.collectd.VmwareCollector`
@@ -15,14 +11,14 @@ The _VmwareCollector_ collects peformance metrics for managed entities from _vCe
 | Supported on Minion | `Yes`
 |===
 
-===== Collector Parameters
+== Collector Parameters
 
-Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the VmwareCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                 | Required | Default value
-| `collection`           | The name of the _VMWare Collection_ to use.  | required |
+| `collection`           | The name of the VMWare Collection to use.  | required |
 | `timeout`              | Connection timeout in milliseconds          | optional |
 |===

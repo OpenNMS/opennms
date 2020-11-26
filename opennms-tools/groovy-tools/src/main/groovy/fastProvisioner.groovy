@@ -1095,7 +1095,7 @@ class Property {
     void save(w) {
         boolean first = true;
         
-        val.each { item -> if (first) { w.print("${key}=${item}"); first = false; } else { w.println('\\'); w.print(item) } }
+        val.each { item -> if (first) { w.print("$\{key}=${item}"); first = false; } else { w.println('\\'); w.print(item) } }
         w.println();
     }
     

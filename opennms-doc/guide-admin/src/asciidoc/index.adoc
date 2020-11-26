@@ -11,7 +11,7 @@
 [[ga]]
 = Administrators Guide
 :author: Copyright (c) 2015-{docyear} The OpenNMS Group, Inc.
-:revnumber: {opennms-product-name} {opennms-version}
+:revnumber: {page-component-title} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
@@ -443,6 +443,6 @@ include::text/meta-data.adoc[]
 include::text/snmp-poller/concepts.adoc[]
 
 [[ga-admin]]
-== {opennms-product-name} Administration
+== {page-component-title} Administration
 include::text/admin/introduction.adoc[]
 include::text/admin/restart.adoc[]

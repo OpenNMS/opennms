@@ -3,9 +3,9 @@
 :imagesdir: ../../../images
 ==== Newts Monitoring
 
-This section describes the metrics _{opennms-product-name}_ collects for monitoring the _Newts_ keyspace from `org.apache.cassandra.metrics.Keyspace` on an _Cassandra_ node.
+This section describes the metrics _{page-component-title}_ collects for monitoring the _Newts_ keyspace from `org.apache.cassandra.metrics.Keyspace` on an _Cassandra_ node.
 
-TIP: JMX must be enabled on the _Cassandra_ nodes and made accessible from __{opennms-product-name}_ in order to collect these metrics.
+TIP: JMX must be enabled on the _Cassandra_ nodes and made accessible from __{page-component-title}_ in order to collect these metrics.
      See link:https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX authentication] for details.
 
 The data collection is bound to the agent IP interface with the service name _JMX-Cassandra-Newts_.

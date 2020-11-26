@@ -1,14 +1,11 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-==== JdbcCollector
+= JdbcCollector
 
 
-The _JdbcCollector_ collects performance data via _JDBC_ drivers.
-Attributes are retrieved using _SQL_ queries.
+The JdbcCollector collects performance data via JDBC drivers.
+Attributes are retrieved using SQL queries.
 
-===== Collector Facts
+== Collector Facts
 
 [options="autowidth"]
 |===
@@ -17,35 +14,35 @@ Attributes are retrieved using _SQL_ queries.
 | Supported on Minion   | `Yes` (see limitations)
 |===
 
-====== Limitations on _Minion_
+=== Limitations on Minion
 
-When running on _Minion_ the data sources in `opennms-datasources.xml` cannot be referenced.
-Instead, you must set the _JDBC_ connection settings using the service parameters.
+When running on Minion the data sources in `opennms-datasources.xml` cannot be referenced.
+Instead, you must set the JDBC connection settings using the service parameters.
 
-Also, the _JDBC_ driver must be properly loaded in the _Minion_ container (see <<minion/jdbc-driver.adoc, Installing JDBC drivers in Minion>>)
-By default, only the _JDBC_ driver for _PostgreSQL_ is available.
+Also, the JDBC driver must be properly loaded in the Minion container (see <<minion/jdbc-driver.adoc, Installing JDBC drivers in Minion>>)
+By default, only the JDBC driver for PostgreSQL is available.
 
-===== Collector Parameters
+== Collector Parameters
 
-Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the JdbcCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                                                    | Required | Default value
-| `collection`           | The name of the _JDBC Collection_ to use.                                       | required | (empty)
+| `collection`           | The name of the JDBC Collection to use.                                       | required | (empty)
 | `data-source`          | Use an existing datasource defined in _opennms-datasources.xml_                  | optional | NO_DATASOURCE_FOUND
 | `driver`               | Driver class name                                                              | optional | org.postgresql.Driver
-| `url`                  | _JDBC_ URL                                                                     | optional | jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
-| `user`                 | _JDBC_ username                                                                | optional | postgres
-| `password`             | _JDBC_ password                                                                | optional | (empty string)
+| `url`                  | JDBC URL                                                                     | optional | jdbc:postgresql://:OPENNMS_JDBC_HOSTNAME/opennms
+| `user`                 | JDBC username                                                                | optional | postgres
+| `password`             | JDBC password                                                                | optional | (empty string)
 |===
 
-===== JDBC Collection Configuration
+== 0JDBC Collection Configuration
 
-NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding <<performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files. 
 
-Define _JDBC Collections_ in `etc/jdbc-datacollection-config.xml`.
+Define JDBC Collections in `etc/jdbc-datacollection-config.xml`.
 
 This snippet provided a collection definition named `opennms-stats`:
 
@@ -72,14 +69,14 @@ This snippet provided a collection definition named `opennms-stats`:
 </jdbc-collection>
 ----
 
-Once added to `etc/jdbc-datacollection-config.xml` you can test it using the `collect` command available in the _Karaf Shell_:
+Once added to `etc/jdbc-datacollection-config.xml` you can test it using the `collect` command available in the Karaf Shell:
 
 [source]
 ----
 opennms:collect org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=opennms-stats data-source=opennms
 ----
 
-To test this same collection on _Minion_ you must specify the _JDBC_ settings as service attributes, for example:
+To test this same collection on Minion you must specify the JDBC settings as service attributes, for example:
 
 [source]
 ----

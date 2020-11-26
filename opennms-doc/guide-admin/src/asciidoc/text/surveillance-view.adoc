@@ -32,10 +32,10 @@ This _Surveillance View_ model also builds the foundation of the <<ga-dashboard-
 ==== Default Surveillance View Configuration
 
 _Surveillance Views_ are defined in the `surveillance-views.xml` file.
-This file resides in the _{opennms-product-name}_ `etc` directory.
+This file resides in the _{page-component-title}_ `etc` directory.
 
 NOTE: This file can be modified in a text editor and is reread every time the _Surveillance View_ page is loaded.
-Thus, changes to this file do not require _{opennms-product-name}_ to be restarted.
+Thus, changes to this file do not require _{page-component-title}_ to be restarted.
 
 The default configuration looks like this:
 
@@ -79,7 +79,7 @@ WARNING: Please note, that the old `report-category` attribute is deprecated and
 
 ==== Configuring Surveillance Views
 
-The _Surveillance View_ configuration can also be modified using the _Surveillance View Configurations_ editor on the _{opennms-product-name}_ _Admin_ page.
+The _Surveillance View_ configuration can also be modified using the _Surveillance View Configurations_ editor on the _{page-component-title}_ _Admin_ page.
 
 .The _Surveillance View Configurations_ UI
 image::surveillance-view/02_surveillance-view-config-ui.png[]
@@ -95,7 +95,7 @@ Furthermore, the position of an entry can be modified using the up/down buttons.
 .Editing a _Surveillance View_
 image::surveillance-view/03_surveillance-view-config-ui-edit.png[]
 
-Editing row or column definitions require to choose an unique label for this entry and at least one _{opennms-product-name}_ category.
+Editing row or column definitions require to choose an unique label for this entry and at least one _{page-component-title}_ category.
 When finished you can hit the _Save_ button to persist your modified configuration or _Cancel_ to close this dialog.
 
 ==== Categorizing Nodes
@@ -108,6 +108,6 @@ Recalling from your _Surveillance View_, choose two categories that represent a 
 You can use user and group names for _Surveillance Views_. When the _Surveillance View_ page is invoked the following criteria selects the proper _Surveillance View_ to be displayed.
 The first matching item wins:
 
-. Surveillance View name equal to the user name they used when logging into {opennms-product-name}.
-. Surveillance View name equal to the user's assigned {opennms-product-name} group name
+. Surveillance View name equal to the user name they used when logging into {page-component-title}.
+. Surveillance View name equal to the user's assigned {page-component-title} group name
 . Surveillance View name equal to the `default-view` attribute in the `surveillance-views.xml` configuration file.

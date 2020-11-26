@@ -3,7 +3,7 @@
 
 [[ga-events-event-configuration]]
 === Event Configuration
-The back-end configuration surrounding events is broken into two areas: the configuration of `Eventd` itself, and the configuration of all types of events known to {opennms-product-name}.
+The back-end configuration surrounding events is broken into two areas: the configuration of `Eventd` itself, and the configuration of all types of events known to {page-component-title}.
 
 ==== The eventd-configuration.xml file
 
@@ -83,7 +83,7 @@ Not all events will have values for all tokens, and some refer specifically to i
 `%uei%`::
     The Universal Event Identifier for the event.
 `%source%`::
-    The source of the event (which {opennms-product-name} service daemon created it).
+    The source of the event (which {page-component-title} service daemon created it).
 `%descr%`::
     The event description.
 `%logmsg%`::
@@ -181,7 +181,7 @@ You can access event parameters using the `parm` replacement token, which takes 
 The ordering of event definitions is very important, as an incoming event is matched against them in order.
 It is possible and often useful to have several event definitions which could match variant forms of a given event, for example based on the values of SNMP trap variable bindings.
 
-The tributary files included via the `<event-file>` tag have been broken up by vendor. When {opennms-product-name} starts, each tributary file is loaded in order.
+The tributary files included via the `<event-file>` tag have been broken up by vendor. When {page-component-title} starts, each tributary file is loaded in order.
 The ordering of events inside each tributary file is also preserved.
 
 The tributary files listed at the very end of `eventconf.xml` contain catch-all event definitions.
@@ -189,11 +189,11 @@ When slotting your own event definitions, take care not to place them below thes
 
 .A few tips
 * To save memory and shorten startup times, you may wish to remove event definition files that you know you do not need.
-* If you need to customize some events in one of the default tributary files, you may wish to make a copy of the file containing only the customized events, and slot the copy above the original; this practice will make it easier to maintain your customizations in case the default file changes in a future release of {opennms-product-name}.
+* If you need to customize some events in one of the default tributary files, you may wish to make a copy of the file containing only the customized events, and slot the copy above the original; this practice will make it easier to maintain your customizations in case the default file changes in a future release of {page-component-title}.
 
 ==== Reloading the event configuration
 
-After making manual changes to `OPENNMS_HOME/etc/eventconf.xml` or any of its tributary files, you can trigger a reload of the event configuration by issuing the following command on the {opennms-product-name} server:
+After making manual changes to `OPENNMS_HOME/etc/eventconf.xml` or any of its tributary files, you can trigger a reload of the event configuration by issuing the following command on the {page-component-title} server:
 
 [source,sh]
 ----
@@ -214,7 +214,7 @@ Changes to `log42.xml` will be take effect within 60 seconds with no extra actio
 At level `DEBUG`, `Eventd` will log a verbose description of every event it handles to `OPENNMS_HOME/logs/eventd.log`.
 On busy systems, this setting may create so much noise as to be impractical.
 In these cases, you can get terse event summaries by setting `Eventd` to log at level `INFO` and setting `logEventSummaries="yes"` in `OPENNMS_HOME/etc/eventd-configuration.xml`.
-Note that changes to `eventd-configuration.xml` require a full restart of {opennms-product-name}.
+Note that changes to `eventd-configuration.xml` require a full restart of {page-component-title}.
 
 ==== Karaf Shell
 

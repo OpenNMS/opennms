@@ -1,12 +1,9 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= XmlCollector
 
-==== XmlCollector
+The XmlCollector collects and extracts metrics from XML and JSON documents.
 
-The _XmlCollector_ collects and extracts metrics from _XML_ and _JSON_ documents.
-
-===== Collector Facts
+== Collector Facts
 
 [options="autowidth"]
 |===
@@ -15,23 +12,23 @@ The _XmlCollector_ collects and extracts metrics from _XML_ and _JSON_ documents
 | Supported on Minion   | `Yes` (see limitations)
 |===
 
-====== Limitations on _Minion_
+=== Limitations on Minion
 
-The following handlers are not currently supported on _Minion_:
+The following handlers are not currently supported on Minion:
 
 * DefaultJsonCollectionHandler
 * Sftp3gppXmlCollectionHandler
 * Sftp3gppVTDXmlCollectionHandler
 
-===== Collector Parameters
+== Collector Parameters
 
-Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the XmlCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                              | Required | Default value
-| `collection`           | The name of the _XML Collection_ to use.  | required | `-`
+| `collection`           | The name of the XML Collection to use.  | required | `-`
 | `handler-class`        | Class that performs the collection.     | optional | `org.opennms.protocols.xml.collector.DefaultXmlCollectionHandler`
 |===
 
@@ -44,11 +41,11 @@ The available handlers include:
 * `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler`
 * `org.opennms.protocols.http.collector.HttpCollectionHandler`
 
-===== XML Collection Configuration
+== XML Collection Configuration
 
-NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding <<performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files. 
 
-_XML Collections_ are defined in `etc/xml-datacollection-config.xml` and `etc/xml-datacollection/`.
+XML Collections are defined in `etc/xml-datacollection-config.xml` and `etc/xml-datacollection/`.
 
 This snippet provides a collection definition named `xml-opennms-nodes`:
 
@@ -79,7 +76,7 @@ The request element can have the following child elements:
 | `retries`               | How often should the request be repeated in case of an error?         | optional | 0
 | `use-system-proxy`      | Should the system-wide proxy settings be used? Configure the system proxy
                             settings
-                            via link:#ga-opennms-system-properties[system properties]             | optional | false
+                            via <<system-properties.adoc#ga-opennms-system-properties, system properties>>             | optional | false
 |===
 
 The referenced `opennms-nodes.xml` file contains:
@@ -93,14 +90,14 @@ The referenced `opennms-nodes.xml` file contains:
 </xml-groups>
 ----
 
-With the configuration in place, you can test it using the `collect` command available in the _Karaf Shell_:
+With the configuration in place, you can test it using the `collect` command available in the Karaf Shell:
 
 [source]
 ----
 opennms:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
 ----
 
-===== Caveats
+== Caveats
 
 The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be single element of type object to make xpath query work.
 If the root element is an array, it will be wrapped in an object, whereas the original array is accessible as `/elements`.

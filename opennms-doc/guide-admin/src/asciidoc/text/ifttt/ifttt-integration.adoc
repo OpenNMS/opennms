@@ -6,14 +6,14 @@ The free web-based service _IFTTT_ allows to combine web applications using simp
 Each supported service has several triggers that can be used to trigger actions of other services.
 This allows for example to change brightness and color of a smart bulb, send messages or date to IoT devices.
 
-The _{opennms-product-name}_ integration makes uses of the so-called "Webhooks" service, that allows to trigger actions when a specific web-request was received.
-The basic operation is as follows: _{opennms-product-name}_ polls for alarms and matches the alarm reduction key against a given filter and the alarm's associated nodes against a given category filter.
+The _{page-component-title}_ integration makes uses of the so-called "Webhooks" service, that allows to trigger actions when a specific web-request was received.
+The basic operation is as follows: _{page-component-title}_ polls for alarms and matches the alarm reduction key against a given filter and the alarm's associated nodes against a given category filter.
 For the resulting alarm set the maximum severity and total count is computed.
 If one of these values changed compared to the last poll one or more events specified for the computed maximum severity will be sent to _IFTTT_.
 
 === IFTTT Configuration
 
-In order to use the _IFTTT_ integration in _{opennms-product-name}_ you need an _IFTTT_ account.
+In order to use the _IFTTT_ integration in _{page-component-title}_ you need an _IFTTT_ account.
 With this account you are able to create so-called applets that combine a trigger with an action.
 In our case we use the "Webhooks" service as the trigger and define the event name `OpenNMS`.
 After this step you can combine this trigger with any of the possible supported services and their actions.
@@ -29,11 +29,11 @@ In the following example this key is `X71dfUZsH4Wkl6cjsLjdV`.
 .Webhooks service settings
 image:ifttt/webhooks-settings-small.png[]
 
-On the side of _{opennms-product-name}_ you need a configuration that defines which event names to send on an alarm count or severity change.
+On the side of _{page-component-title}_ you need a configuration that defines which event names to send on an alarm count or severity change.
 The configuration file `ifttt-config.xml` contains so called trigger packages.
 
 The operation is as follows:
-_{opennms-product-name}_ retrieves all alarms that have a node associated.
+_{page-component-title}_ retrieves all alarms that have a node associated.
 Each trigger package defines whether only acknowledged alarms should be taken into account.
 It then computes the maximum severity and alarm count for each trigger package's category filter and reduction key filter.
 After that it triggers all events defined in the corresponding trigger sets for the computed maximum severity.

@@ -2,11 +2,11 @@
 // Allow GitHub image rendering
 :imagesdir: ../images
 
-By default, the RMI port in the {opennms-product-name} server is disabled, for security reasons.  If you wish to enable it so you can access {opennms-product-name} through jconsole or remote-manage {opennms-product-name}, you will have to add some settings to the default {opennms-product-name} install.
+By default, the RMI port in the {page-component-title} server is disabled, for security reasons.  If you wish to enable it so you can access {page-component-title} through jconsole or remote-manage {page-component-title}, you will have to add some settings to the default {page-component-title} install.
 
 === Enabling RMI
 
-To enable the RMI port in {opennms-product-name}, you will have to add the following to the `${OPENNMS_HOME}/etc/opennms.conf` file.  If you do not have an `opennms.conf` file, you can create it.
+To enable the RMI port in {page-component-title}, you will have to add the following to the `${OPENNMS_HOME}/etc/opennms.conf` file.  If you do not have an `opennms.conf` file, you can create it.
 
 [source, bash, options="nowrap", opennms.conf]
 ----
@@ -22,7 +22,7 @@ ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dopennms.poller.server.
 ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostname=<your-server-ip-address>"
 ----
 
-This tells {opennms-product-name} to listen for RMI on port `18980`, and to listen on all interfaces. (Originally, RMI was only used for the legacy Remote Poller, so despite the property name mentioning the "opennms poller server" it applies to RMI as a whole.)  Note that you _must_ include the `-Djava.rmi.server.hostname=` option or {opennms-product-name} will accept connections on the RMI port, but not be able to complete a valid connection.
+This tells {page-component-title} to listen for RMI on port `18980`, and to listen on all interfaces. (Originally, RMI was only used for the legacy Remote Poller, so despite the property name mentioning the "opennms poller server" it applies to RMI as a whole.)  Note that you _must_ include the `-Djava.rmi.server.hostname=` option or {page-component-title} will accept connections on the RMI port, but not be able to complete a valid connection.
 
 Authentication will only be allowed for users that are in the `admin` role (i.e. `ROLE_ADMIN`), or the `jmx` role (i.e. `ROLE_JMX`).
 To make a user an admin, be sure to add only the `ROLE_ADMIN` role to the user in `users.xml`.
@@ -43,9 +43,9 @@ readonly:: Allows retrieving JMX metrics but does *not* allow executing MBeans, 
 
 === Enabling SSL
 
-To enable SSL on the RMI port, you will need to have an existing keystore for the {opennms-product-name} server.  For information on configuring a keystore, please refer to the official _{opennms-product-name}_ Wiki article link:http://wiki.opennms.org/wiki/Standalone_HTTPS_with_Jetty[Standalone HTTPS with Jetty].
+To enable SSL on the RMI port, you will need to have an existing keystore for the {page-component-title} server.  For information on configuring a keystore, please refer to the official _{page-component-title}_ Wiki article link:http://wiki.opennms.org/wiki/Standalone_HTTPS_with_Jetty[Standalone HTTPS with Jetty].
 
-You will need to change the `com.sun.management.jmxremote.ssl` option to `true`, and tell {opennms-product-name} where your keystore is.
+You will need to change the `com.sun.management.jmxremote.ssl` option to `true`, and tell {page-component-title} where your keystore is.
 
 [source, bash, options="nowrap", opennms.conf]
 ----
@@ -67,9 +67,9 @@ ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.rmi.server.hostna
 
 === Connecting to RMI over SSL
 
-Note that if you are using a self-signed or otherwise untrusted certificate, you will need to configure a _truststore_ on the client side when you attempt to connect over SSL-enabled RMI.  To create a truststore, follow the example in <<ga-operation-https-client,the HTTPS client instructions>> in the operator section of the manual.  You may then use the truststore to connect to your {opennms-product-name} RMI server.
+Note that if you are using a self-signed or otherwise untrusted certificate, you will need to configure a _truststore_ on the client side when you attempt to connect over SSL-enabled RMI.  To create a truststore, follow the example in <<ga-operation-https-client,the HTTPS client instructions>> in the operator section of the manual.  You may then use the truststore to connect to your {page-component-title} RMI server.
 
-For example, when using `jconsole` to connect to the {opennms-product-name} RMI interface to get JVM statistics, you would run:
+For example, when using `jconsole` to connect to the {page-component-title} RMI interface to get JVM statistics, you would run:
 
 [options="nowrap"]
 ----

@@ -1,12 +1,9 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= VmwareCimCollector
 
-==== VmwareCimCollector
+The VmwareCimCollector collects ESXi host and sensor metrics from vCenter.
 
-The _VmwareCimCollector_ collects _ESXi_ host and sensor metrics from _vCenter_.
-
-===== Collector Facts
+== Collector Facts
 
 [options="autowidth"]
 |===
@@ -15,14 +12,14 @@ The _VmwareCimCollector_ collects _ESXi_ host and sensor metrics from _vCenter_.
 | Supported on Minion | `Yes`
 |===
 
-===== Collector Parameters
+== Collector Parameters
 
-Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the VmwareCimCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                     | Required | Default value
-| `collection`           | The name of the _VMWare CIM Collection_ to use.  | required |
+| `collection`           | The name of the VMWare CIM Collection to use.  | required |
 | `timeout`              | Connection timeout in milliseconds              | optional |
 |===

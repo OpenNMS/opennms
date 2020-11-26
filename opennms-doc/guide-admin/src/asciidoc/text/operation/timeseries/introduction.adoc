@@ -2,9 +2,9 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-This section describes how to configure _{opennms-product-name}_ to use the _Time Series Integration Layer_.
+This section describes how to configure _{page-component-title}_ to use the _Time Series Integration Layer_.
 
-Traditionally _{opennms-product-name}_ supports storing time series data in _RRD_ files on disk or via _Newts_ in _Cassandra_.
+Traditionally _{page-component-title}_ supports storing time series data in _RRD_ files on disk or via _Newts_ in _Cassandra_.
 These implementations require a deep knowledge of OpenNMS. It is hard to add another time series database.
 
 With the rise of many new time series databases, we want to provide an easy way to support other time series databases with minimal effort.

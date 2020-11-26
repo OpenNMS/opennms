@@ -1,12 +1,9 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= XmpCollector
 
-==== XmpCollector
+The XmpCollector collects peformance metrics via the X/Open Management Protocol API (XMP) protocol.
 
-The _XmpCollector_ collects peformance metrics via the X/Open Management Protocol API (XMP) protocol.
-
-===== Collector Facts
+== Collector Facts
 
 [options="autowidth"]
 |===
@@ -15,15 +12,15 @@ The _XmpCollector_ collects peformance metrics via the X/Open Management Protoco
 | Supported on Minion | `No`
 |===
 
-===== Collector Parameters
+== Collector Parameters
 
-Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the XmpCollector
 [options="header, autowidth"]
 |===
 | Parameter     | Description                                          | Required | Default value
-| `collection`  | The name of the _XMP Collection_ to use.              | required |
+| `collection`  | The name of the XMP Collection to use.              | required |
 | `port`        | The TCP port on which the agent communicates.         | required |
 | `authenUser`  | The username used for authenticating to the agent.    | optional |  (none)
 | `timeout`     | The timeout used when communicating with the agent.   | optional |  3000

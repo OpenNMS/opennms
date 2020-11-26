@@ -4,7 +4,7 @@
 
 === Configuring system proxies
 
-System proxy settings may be used with certain _{opennms-product-name}_ components via the `use-system-proxy` or `useSystemProxy` parameters.
+System proxy settings may be used with certain _{page-component-title}_ components via the `use-system-proxy` or `useSystemProxy` parameters.
 To configure system proxy servers, set some or all of the following properties:
 
 [options="header, autowidth"]

@@ -1835,7 +1835,7 @@ Ajax.Request = Class.create(Ajax.Base, {
 
   isSameOrigin: function() {
     var m = this.url.match(/^\s*https?:\/\/[^\/]*/);
-    return !m || (m[0] == '#{protocol}//#{domain}#\{port}'.interpolate({
+    return !m || (m[0] == '#{protocol}//#\{domain}#\{port}'.interpolate({
       protocol: location.protocol,
       domain: document.domain,
       port: location.port ? ':' + location.port : ''

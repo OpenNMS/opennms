@@ -1,11 +1,8 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[ga-performance-mgmt-adhoc-collection]]
-===== Ad hoc collection
+= Ad hoc collection
 
-The `opennms:collect` _Karaf Shell_ command can be used to trigger and perform a collection on any of the available collectors.
+The `opennms:collect` Karaf Shell command can be used to trigger and perform a collection on any of the available collectors.
 
 The results of the collection (also referred to as the "collection set") will be displayed in the console after a successful collection.
 The resulting collection set will not be persisted, nor will any thresholding be applied.
@@ -61,7 +58,7 @@ A complete list of options is available using:
 opennms:collect --help
 ----
 
-===== Interpreting the output
+== Interpreting the output
 
 After a successful collection, the collection set will be displayed in the following format:
 

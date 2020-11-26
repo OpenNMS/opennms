@@ -9,8 +9,8 @@ The _Graph Service API_ was heavily inspired by the link:http://graphml.graphdra
 === Terminology
 
 A *Graph* consists of any number of points with any number of connections in between.
-Usually these points are called *Nodes*, but as *Nodes* have a specific meaning in _{opennms-product-name}_ in the context of the _Graph Service_ they are called *Vertices* (plural of *Vertex*).
-The connection between two *Vertices* are usually called *Link*, however it also has a specific meaning inside _{opennms-product-name}_, thus it is called *Edge*.
+Usually these points are called *Nodes*, but as *Nodes* have a specific meaning in _{page-component-title}_ in the context of the _Graph Service_ they are called *Vertices* (plural of *Vertex*).
+The connection between two *Vertices* are usually called *Link*, however it also has a specific meaning inside _{page-component-title}_, thus it is called *Edge*.
 A *Graph Container* contains any number of *Graphs*.
 In general an *Element* can either be a *Graph*, *Vertex* or *Edge*.
 
@@ -95,7 +95,7 @@ Therefore each provider allows to fetch the meta data only without loading the g
 
 === Cache
 
-All calls to `GraphContainerProvider.loadGraphContainer()` are cached until _{opennms-product-name}_ restarts.
+All calls to `GraphContainerProvider.loadGraphContainer()` are cached until _{page-component-title}_ restarts.
 This means it is up to the implementor to invalidate the cache.
 
 This can be achieved by manually invoking the `org.opennms.netmgt.graph.api.service.GraphContainerCache.invalidate(String containerId)` method as the `GraphContainerCache` is exposed as an OSGi-service.

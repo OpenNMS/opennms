@@ -4,7 +4,7 @@
 [[ga-alarm-notes]]
 === Alarm Notes
 
-_{opennms-product-name}_ creates an _Alarm_ for issues in the network.
+_{page-component-title}_ creates an _Alarm_ for issues in the network.
 Working with a few people in a team, it is helpful to share information about a current _Alarm_.
 _Alarm Notes_ can be used to assign comments to a specific _Alarm_ or a whole class of _Alarms_.
 .

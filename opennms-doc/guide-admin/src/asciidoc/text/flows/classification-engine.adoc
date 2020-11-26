@@ -52,7 +52,7 @@ A rule has the following fields:
 | `exporterFilter`
 | `optional`
 | The exporter of the flow must match this criteria.
-  It supports all capabilities of the _https://wiki.opennms.org/wiki/Filters[{opennms-product-name} Filters API]_.
+  It supports all capabilities of the _https://wiki.opennms.org/wiki/Filters[{page-component-title} Filters API]_.
 
 | `protocol`
 | `optional`
@@ -145,7 +145,7 @@ Let's assume the following rules are defined:
 |===
 
 
-The following flows are send to _{opennms-product-name}_ and with the rules defined above classified accordingly.
+The following flows are send to _{page-component-title}_ and with the rules defined above classified accordingly.
 
 [%header, cols=2]
 |===

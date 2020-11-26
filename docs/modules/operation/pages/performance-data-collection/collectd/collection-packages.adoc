@@ -1,9 +1,6 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[ga-collectd-packages]]
-==== Configuring Collector Packages
+= Configuring Collector Packages
 
 Collector packages in the _collectd-configuration.xml_ file contain the information (IP addresses, interfaces, services, and connection parameters) that collectd needs to activate data collection. 
 
@@ -14,8 +11,8 @@ If you create a new collector package, we recommend copying and pasting an exist
 
 A collector package has two categories of information to edit or specify:
 
-* <<ga-coll-pack-attribute,collector package attributes>>
-* <<ga-collectd-packages-services, collector package services>>
+* <<performance-data-collection/collectd/collection-packages.adoc#ga-coll-pack-attribute,collector package attributes>>
+* <<performance-data-collection/collectd/collection-packages.adoc#ga-collectd-packages-services, collector package services>>
 
 [[ga-coll-pack-attribute]]
 .Collector Package Attributes
@@ -87,7 +84,7 @@ Each service is associated with a specific collector; the collector and its rela
 <7> Run the _SnmpCollector_ implementation for the service named `SNMP`.
 
 The following table lists service attributes common to all services.
-For a list of collector-specific parameters and their default values, refer to the specific collector listed in the <<collectors.adoc, Collectors>> section. 
+For a list of collector-specific parameters and their default values, refer to the specific collector listed in the <<performance-data-collection/collectors/collectors.adoc#collectors-overview, Collectors>> section. 
 
 [options="autowidth"]
 |===
@@ -102,7 +99,7 @@ For a list of collector-specific parameters and their default values, refer to t
 .Configuration overview for data collection with Collectd
 image::performance-management/02_collectd-configuration-xml.png[]
 
-==== Guidelines for Collector Packages
+== Guidelines for Collector Packages
 
 You can configure multiple packages, and an interface can exist in more than one package.
 This gives great flexibility in determining the service levels for a given device.
@@ -116,8 +113,9 @@ OR
 * Use it as a more-specific collector package to overwrite the default setting.
 
 [[ga-collectd-packages-services-meta-data]]
-===== Meta-Data-DSL
-link:#ga-meta-data-dsl[Metadata-DSL] allows you to use dynamic configuration in each parameter value to interpolate metadata into a parameter.
+=== Meta-Data-DSL
+
+<<meta-data.adoc#ga-meta-data-dsl, Metadata-DSL>> allows you to use dynamic configuration in each parameter value to interpolate metadata into a parameter.
 The syntax allows for the use of patterns in an expression, whereby the metadata is replaced with a corresponding value during the collection process. 
 
 During evaluation of an expression the following scopes are available:

@@ -4,15 +4,15 @@
 
 [[webui-grafana-dashboard-box]]
 
-link:http://grafana.org/[Grafana] provides an API key which gives access for 3rd party application like _{opennms-product-name}_.
-The _Grafana Dashboard Box_ on the start page shows dashboards related to _{opennms-product-name}_.
+link:http://grafana.org/[Grafana] provides an API key which gives access for 3rd party application like _{page-component-title}_.
+The _Grafana Dashboard Box_ on the start page shows dashboards related to _{page-component-title}_.
 To filter relevant dashboards, you can use a _tag_ for dashboards and make them accessible.
 If no _tag_ is provided all dashboards from _Grafana_ will be shown.
 
 The feature is by default deactivated and is configured through `opennms.properties`. Please note that this feature
 works with the _Grafana API v2.5.0_.
 
-.Quick access to Grafana dashboards from the {opennms-product-name} start page
+.Quick access to Grafana dashboards from the {page-component-title} start page
 image:webui/startpage/01_grafana-box.png[]
 
 .Grafana Dashboard configuration properties

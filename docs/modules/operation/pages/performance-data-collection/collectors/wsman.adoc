@@ -1,16 +1,13 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[ga-performance-mgmt-collectors-wsman-collector]]
-==== WsManCollector
+= WsManCollector
 
-The _WsManCollector_ collects peformance metrics using the Web Services-Management (WS-Management) protocol.
+The WsManCollector collects peformance metrics using the Web Services-Management (WS-Management) protocol.
 
 Web Services-Management (WS-Management) is a DMTF open standard defining a SOAP-based protocol for the management of servers, devices, applications and various Web services.
 Windows Remote Management (WinRM) is the Microsoft implementation of WS-Management Protocol.
 
-===== Collector Facts
+== Collector Facts
 
 [options="autowidth"]
 |===
@@ -19,28 +16,28 @@ Windows Remote Management (WinRM) is the Microsoft implementation of WS-Manageme
 | Supported on Minion | `Yes`
 |===
 
-===== Collector Parameters
+== Collector Parameters
 
-Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the WsManCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                              | Required | Default value
-| `collection`           | The name of the _WS-Man Collection_ to use.  | required |
+| `collection`           | The name of the WS-Man Collection to use.  | required |
 |===
 
 [[ga-performance-mgmt-collectors-wsman-setup]]
-===== WS-Management Setup
+== WS-Management Setup
 
-Before setting up {opennms-product-name} to communicate with a WS-Management agent, you should confirm that it is properly configured and reachable from the {opennms-product-name} system.
+Before setting up {page-component-title} to communicate with a WS-Management agent, you should confirm that it is properly configured and reachable from the {page-component-title} system.
 If you need help enabling the WS-Management agent, consult the documentation from the manufacturer.
 Here are some resources that could help:
 
-* link:https://msdn.microsoft.com/en-us/library/windows/desktop/aa384372(v=vs.85).aspx[Installation and Configuration for Windows Remote Management]
-* link:http://www.hurryupandwait.io/blog/understanding-and-troubleshooting-winrm-connection-and-authentication-a-thrill-seekers-guide-to-adventure[Troubleshooting WinRM connection and authentication]
+* https://msdn.microsoft.com/en-us/library/windows/desktop/aa384372(v=vs.85).aspx[Installation and Configuration for Windows Remote Management]
+* http://www.hurryupandwait.io/blog/understanding-and-troubleshooting-winrm-connection-and-authentication-a-thrill-seekers-guide-to-adventure[Troubleshooting WinRM connection and authentication]
 
-We suggest using the link:https://github.com/Openwsman/openwsman/wiki/openwsman-command-line-client[Openwsman command line client] to validate authentication and connectivity.
+We suggest using the https://github.com/Openwsman/openwsman/wiki/openwsman-command-line-client[Openwsman command line client] to validate authentication and connectivity.
 Packages are available for most distributions under `wsmancli`.
 
 For example:
@@ -50,13 +47,13 @@ For example:
 wsman identify -h localhost -P 5985 -u wsman -p secret
 ----
 
-Once validated, add the agent-specific details to the {opennms-product-name} configuration, defined in the next section.
+Once validated, add the agent-specific details to the {page-component-title} configuration, defined in the next section.
 
-====== Troubleshooting and Commands
+=== Troubleshooting and Commands
 
-For troubleshooting there is a set of commands you can use in _Powershell_ verified on _Microsoft Windows Server 2012_.
+For troubleshooting there is a set of commands you can use in Powershell verified on Microsoft Windows Server 2012.
 
-.Enable _WinRM_ in PowerShell
+.Enable WinRM in PowerShell
 [source, shell]
 ----
 Enable-PSRemoting
@@ -95,7 +92,7 @@ winrm e winrm/config/listener
 nc -z -w1 <windows-server-ip-or-host> 5985;echo $?
 ----
 
-IMPORTANT: Use BasicAuthentication just with _WinRM_ over _HTTPS_ with verifiable certificates in production environment.
+IMPORTANT: Use BasicAuthentication just with WinRM over HTTPS with verifiable certificates in production environment.
 
 .Enable BasicAuthentication
 [source, shell]
@@ -106,9 +103,9 @@ winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 ----
 
 [[ga-performance-mgmt-collectors-wsman-agent-config]]
-===== WS-Management Agent Configuration
+== WS-Management Agent Configuration
 
-NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding <<performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files. 
 
 The agent-specific configuration details are maintained in `etc/wsman-config.xml`.
 This file has a similar structure as `etc/snmp-config.xml`, which the reader may already be familiar with.
@@ -139,26 +136,26 @@ Here is an example with several definitions:
 [options="header, autowidth"]
 |===
 | Attribute         | Description                                                                                   | Default
-| `timeout`         | _HTTP_ Connection and response timeout in milliseconds.                                       | _HTTP_ client default
+| `timeout`         | HTTP Connection and response timeout in milliseconds.                                       | HTTP client default
 | `retry`           | Number of retries on connection failure.                                                      | `0`
-| `username`        | Username for basic authentication.                                                            | _none_
-| `password`        | Password used for basic authentication.                                                       | _none_
-| `port`            | _HTTP/S_ port                                                                                 | _Default for protocol_
-| `max-elements`    | Maximum number of elements to retrieve in a single request.                                   | _no limit_
-| `ssl`             | Enable _SSL_                                                                                  | `False`
-| `strict-ssl`      | Enforce _SSL_ certificate verification.                                                       | `True`
+| `username`        | Username for basic authentication.                                                            | none
+| `password`        | Password used for basic authentication.                                                       | none
+| `port`            | HTTP/S port                                                                                 | Default for protocol
+| `max-elements`    | Maximum number of elements to retrieve in a single request.                                   | no limit
+| `ssl`             | Enable SSL                                                                                  | `False`
+| `strict-ssl`      | Enforce SSL certificate verification.                                                       | `True`
 | `path`            | Path in the URL to the WS-Management service.                                                 | `/`
-| `product-vendor`  | Used to overwrite the detected product vendor.                                                | _none_
-| `product-version` | Used to overwrite the detected product version.                                               | _none_
+| `product-vendor`  | Used to overwrite the detected product vendor.                                                | none
+| `product-version` | Used to overwrite the detected product version.                                               | none
 | `gss-auth`        | Enables GSS authentication.
                       When enabled a reverse lookup is performed on the target IP address in order to determine the
                       canonical host name.                                                                          | `False`
 |===
 
-NOTE: If you try to connect against _Microsoft Windows Server_ make sure to set specific ports for _WinRM_ connections.
-      By default _Microsoft Windows Server_ uses port `TCP/5985` for plain text and port `TCP/5986` for _SSL_ connections.
+NOTE: If you try to connect against Microsoft Windows Server make sure to set specific ports for WinRM connections.
+      By default Microsoft Windows Server uses port `TCP/5985` for plain text and port `TCP/5986` for SSL connections.
 
-===== WS-Management Collection Configuration
+== WS-Management Collection Configuration
 
 Configuration for the WS-Management collector is stored in `etc/wsman-datacollection-config.xml` and `etc/wsman-datacollection.d/*.xml`.
 
@@ -194,7 +191,7 @@ System definitions and related groups can be defined in the root `etc/wsman-data
 
 TIP: Avoid modifying any of the distribution configuration files and create new ones to store you specific details instead.
 
-Here is an example configuration file for a _Dell iDRAC_:
+Here is an example configuration file for a Dell iDRAC:
 
 [source, xml]
 ----
@@ -227,9 +224,9 @@ Here is an example configuration file for a _Dell iDRAC_:
 ----
 
 [[ga-performance-mgmt-collectors-wsman-system-definitions]]
-====== System Definitions
+=== System Definitions
 
-Rules in the system definition are written using link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SpEL] expressions.
+Rules in the system definition are written using http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SpEL] expressions.
 
 The expression has access to the following variables in its evaluation context:
 
@@ -245,7 +242,7 @@ The expression has access to the following variables in its evaluation context:
 If a particular agent is matched by any of the rules, then the collector will attempt to collect the referenced groups from the agent.
 
 [[ga-performance-mgmt-collectors-wsman-group-definitions]]
-====== Group Definitions
+=== Group Definitions
 
 Groups are retrieved by issuing an Enumerate command against a particular `Resource URI` and parsing the results.
 The Enumerate commands can include an optional `filter` in order to filter the records and attributes that are returned.
@@ -282,7 +279,7 @@ This can be achieved using the following attribute definition:
 ----
 
 [[ga-performance-mgmt-collectors-wsman-special-attributes]]
-====== Special Attributes
+=== Special Attributes
 
 A group can contain the placeholder attribute `##ElementCount##` that, during collection, will be populated with the total number of results returned for that group. 
 This can be used to threshold on the number results returned by an enumeration. 

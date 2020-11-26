@@ -5,14 +5,14 @@
 [[ga-ticketing-remedy]]
 === Remedy Ticketing Plugin
 
-The _Remedy Ticketing Plugin_ is used to create requests in the BMC Remedy ARS Help Desk Module in response to _{opennms-product-name}_ alarms.
+The _Remedy Ticketing Plugin_ is used to create requests in the BMC Remedy ARS Help Desk Module in response to _{page-component-title}_ alarms.
 
 ==== Remedy Product Overview
 It's important to be specific when discussing Remedy, because BMC Remedy is a suite of products.
-The _{opennms-product-name}_ Remedy Ticketing Plugin requires the core Remedy ARS and the Help Desk Module.
+The _{page-component-title}_ Remedy Ticketing Plugin requires the core Remedy ARS and the Help Desk Module.
 The Help Desk Module contains a Help Desk Interface Web Service, which serves as the endpoint for creating, updating, and fetching tickets.
 
-The Help Desk Interface (HDI) Web Service requires extensive configuration for its basic operation, and may need additional customization to interoperate with the _{opennms-product-name}_ Remedy Ticketing Plugin.
+The Help Desk Interface (HDI) Web Service requires extensive configuration for its basic operation, and may need additional customization to interoperate with the _{page-component-title}_ Remedy Ticketing Plugin.
 Contact your Remedy administrator for help with required configuration tasks.
 
 ==== Supported Remedy Product Versions
@@ -29,9 +29,9 @@ Currently supported Remedy product versions are listed below:
 [[ga-ticketing-remedy-setup]]
 ==== Setup
 
-The Remedy Ticketing Plugin and its dependencies are part of the _{opennms-product-name}_ core packages.
+The Remedy Ticketing Plugin and its dependencies are part of the _{page-component-title}_ core packages.
 
-Start by enabling the plugin and the ticket controls in the _{opennms-product-name}_ web interface, by setting the following properties in `${OPENNMS_HOME}/etc/opennms.properties`:
+Start by enabling the plugin and the ticket controls in the _{page-component-title}_ web interface, by setting the following properties in `${OPENNMS_HOME}/etc/opennms.properties`:
 
 [source]
 ----
@@ -74,14 +74,14 @@ Now configure the plugin itself by setting the following properties in `${OPENNM
 | `remedy.reportedSource`                      | required | A valid Reported Source for ticket creation
 | `remedy.impact`                              | required | A valid value for Impact, used in ticket creation
 | `remedy.urgency`                             | required | A valid value for Urgency, used in ticket creation
-| `remedy.reason.reopen`                       | required | The reason code set in Remedy when the ticket is reopened in _{opennms-product-name}_
-| `remedy.resolution`                          | required | The reason code set in Remedy when the ticket is closed in _{opennms-product-name}_
-| `remedy.reason.cancelled`                    | required | The reason code set in Remedy when the ticket is cancelled in _{opennms-product-name}_
+| `remedy.reason.reopen`                       | required | The reason code set in Remedy when the ticket is reopened in _{page-component-title}_
+| `remedy.resolution`                          | required | The reason code set in Remedy when the ticket is closed in _{page-component-title}_
+| `remedy.reason.cancelled`                    | required | The reason code set in Remedy when the ticket is cancelled in _{page-component-title}_
 |===
 
 NOTE: The values for many of the required properties are site-specific; contact your Remedy administrator for assistance.
 
-Restart _{opennms-product-name}_.
+Restart _{page-component-title}_.
 
 The plugin should be ready to use. When troubleshooting, consult the following log files:
 

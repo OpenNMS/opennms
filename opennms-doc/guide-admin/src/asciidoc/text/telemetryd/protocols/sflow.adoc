@@ -2,9 +2,9 @@
 ==== sFlow
 
 sFlow is capable of transporting both, telemetry data and flow information.
-_{opennms-product-name}_ can utilize both data types and extract and persist accordingly.
+_{page-component-title}_ can utilize both data types and extract and persist accordingly.
 
-See <<ga-flow-support, Flow Support>> for details on flow support in _{opennms-product-name}_.
+See <<ga-flow-support, Flow Support>> for details on flow support in _{page-component-title}_.
 
 
 [[telemetryd-sflow-parser-udp]]

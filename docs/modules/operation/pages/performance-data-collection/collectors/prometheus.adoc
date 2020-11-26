@@ -1,16 +1,13 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[ga-performance-mgmt-collectors-prometheus-collector]]
-==== PrometheusCollector
+= PrometheusCollector
 
-The _PrometheusCollector_ collects performance metrics via HTTP(S) using the text-based link:https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format[Prometheus Exposition format].
-This has been adopted by many applications and is in the process of being standardized in the link:https://openmetrics.io/[OpenMetrics] project.
+The _PrometheusCollector_ collects performance metrics via HTTP(S) using the text-based https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format[Prometheus Exposition format].
+This has been adopted by many applications and is in the process of being standardized in the https://openmetrics.io/[OpenMetrics] project.
 
-This collector provides tools for parsing and mapping the metrics to the collection model used by {opennms-product-name}.
+This collector provides tools for parsing and mapping the metrics to the collection model used by {page-component-title}.
 
-===== Collector Facts
+== Collector Facts
 
 [options="autowidth"]
 |===
@@ -19,7 +16,7 @@ This collector provides tools for parsing and mapping the metrics to the collect
 | Supported on Minion | `Yes`
 |===
 
-===== Collector Parameters
+== Collector Parameters
 
 .Collector-specific parameters for the PrometheusCollector
 [options="header, autowidth"]
@@ -34,11 +31,11 @@ This collector provides tools for parsing and mapping the metrics to the collect
 
 
 [[ga-performance-mgmt-collectors-prometheus-collector-usage]]
-===== Prometheus Collector Usage
+== Prometheus Collector Usage
 
-Let's demonstrate the usage of the collector with an example running against link:https://github.com/prometheus/node_exporter[node_exporter].
+Let's demonstrate the usage of the collector with an example running against https://github.com/prometheus/node_exporter[node_exporter].
 
-Obtain a copy of the appropriate release binary from the link:https://github.com/prometheus/node_exporter/releases[node_exporter release page].
+Obtain a copy of the appropriate release binary from the https://github.com/prometheus/node_exporter/releases[node_exporter release page].
 
 Extract and start the service:
 [source]
@@ -81,7 +78,7 @@ NOTE: Some collectors require a database node and IP interface.
 > Update the IP addresses in the command as necessary.
 
 [[ga-performance-mgmt-collectors-prometheus-collector-configuration]]
-===== Prometheus Collector Configuration
+== Prometheus Collector Configuration
 
 Prometheus collection definitions are maintained in `etc/prometheus-datacollection.d/`.
 

@@ -1,12 +1,9 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= NSClientCollector
 
-==== NSClientCollector
+The NSClientCollector collects performance data over HTTP from NSClient++.
 
-The _NSClientCollector_ collects performance data over _HTTP_ from _NSClient++_.
-
-===== Collector Facts
+== Collector Facts
 
 [options="autowidth"]
 |===
@@ -15,13 +12,13 @@ The _NSClientCollector_ collects performance data over _HTTP_ from _NSClient++_.
 | Supported on Minion | `Yes`
 |===
 
-===== Collector Parameters
+== Collector Parameters
 
-Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>).
+Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the NSClientCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                                                     | Required | Default value
-| `collection`           | The name of the _NSClient Collection_ to use.                                    | optional | default
+| `collection`           | The name of the NSClient Collection to use.                                    | optional | default
 |===

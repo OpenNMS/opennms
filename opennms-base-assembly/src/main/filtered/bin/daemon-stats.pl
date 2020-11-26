@@ -132,7 +132,7 @@ sub get_all_daemon_names {
 	$XML->parse($response->content);
 	my $root = $XML->root;
 	for my $child ($root->children('MBean')) {
-		if ( ( $child->{att}->{objectname} ) =~ /^OpenNMS:Name=(.*)$/ ) {
+		if ( ( $child->{att}->\{objectname} ) =~ /^OpenNMS:Name=(.*)$/ ) {
 			push @daemons, ( $1 );
 		}
 	}

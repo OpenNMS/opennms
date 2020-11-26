@@ -3,8 +3,8 @@
 :imagesdir: ../../../images
 
 [[ga-alarmd-introduction]]
-_{opennms-product-name}_ has the ability to monitor the state of problems with its managed entities (ME), their resources, the services they provide, as well as the applications they host; or more simply, _the Network_.
-In _{opennms-product-name}_, the state of these problems are characterized as _Alarms_.
+_{page-component-title}_ has the ability to monitor the state of problems with its managed entities (ME), their resources, the services they provide, as well as the applications they host; or more simply, _the Network_.
+In _{page-component-title}_, the state of these problems are characterized as _Alarms_.
 
 .In the beginning, there were Events
 Before Alarmd was created, OpenNMS' Events (or messages) were used not only as interprocess communication messages (IPC), but also as indications of problems in _the network_.

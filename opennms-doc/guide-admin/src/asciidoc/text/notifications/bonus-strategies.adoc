@@ -5,4 +5,4 @@
 [[ga-notifications-bonus-strategies]]
 === Bonus Notification Methods
 
-A handful of newer notification methods are included in _{opennms-product-name}_ but currently require manual steps to activate.
+A handful of newer notification methods are included in _{page-component-title}_ but currently require manual steps to activate.

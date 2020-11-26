@@ -2,24 +2,24 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-Reporting on information from the _{opennms-product-name}_ monitoring system is important for strategical or operational decisions.
+Reporting on information from the _{page-component-title}_ monitoring system is important for strategical or operational decisions.
 Database reports give access to the embedded _JasperReports_ engine and allow users to create and customize report templates.
-Run these reports on demand or on a predefined schedule within _{opennms-product-name}_.
+Run these reports on demand or on a predefined schedule within _{page-component-title}_.
 
-NOTE: Originally database reports created reports working on data stored in the _{opennms-product-name}_ database only.
+NOTE: Originally database reports created reports working on data stored in the _{page-component-title}_ database only.
       This is no longer mandatory, performance data can also be used.
-      Theoretically the reports do not need to be _{opennms-product-name}_ related.
+      Theoretically the reports do not need to be _{page-component-title}_ related.
 
-NOTE: The _{opennms-product-name} Report Engine_ allows the creation of various kinds of reports and also supports distributed report repositories.
+NOTE: The _{page-component-title} Report Engine_ allows the creation of various kinds of reports and also supports distributed report repositories.
          These features are not covered by this documentation.
          Only reports using _JasperReports_ and Grafana dashboards are described here.
 
 [[ga-database-reports-overview]]
 === Overview
 
-The _{opennms-product-name} Report Engine_ uses the _JasperReport_ library to create reports in various output formats.
+The _{page-component-title} Report Engine_ uses the _JasperReport_ library to create reports in various output formats.
 Each report template must be a `*.jrxml` file.
-The _{opennms-product-name} Report Engine_ passes a _JDBC_ Connection to the _{opennms-product-name} Database_ to each report on execution.
+The _{page-component-title} Report Engine_ passes a _JDBC_ Connection to the _{page-component-title} Database_ to each report on execution.
 
 .feature overview
 |===
@@ -33,18 +33,18 @@ For more details on how _JasperReports_ works, please refer to the link:http://c
 
 === Modify existing reports
 
-All default _{opennms-product-name}_ reports are located in `$OPENNMS_HOME/etc/report-templates`.
-Each `.jrxml` file located there can be modified; the changes are applied the next time _{opennms-product-name}_ creates a report.
+All default _{page-component-title}_ reports are located in `$OPENNMS_HOME/etc/report-templates`.
+Each `.jrxml` file located there can be modified; the changes are applied the next time _{page-component-title}_ creates a report.
 
-When a subreport has been modified, _{opennms-product-name}_ will detect a change based on the report's `lastModified` time and will recompile the report.
+When a subreport has been modified, _{page-component-title}_ will detect a change based on the report's `lastModified` time and will recompile the report.
 A compiled version of the report is represented by a `.jasper` file with the same name as the `.jrxml` file.
 Subreports are located in `$OPENNMS_HOME/etc/report-templates/subreports`.
 
-TIP: If unsure, simply delete all `.jasper` files and _{opennms-product-name}_ will automatically compile the subreports if needed.
+TIP: If unsure, simply delete all `.jasper` files and _{page-component-title}_ will automatically compile the subreports if needed.
 
 === Add a custom report
 
-To add a new _JasperReport_ report to the _Local {opennms-product-name} Report Repository_, do the following:
+To add a new _JasperReport_ report to the _Local {page-component-title} Report Repository_, do the following:
 
 Create a new entry in the `$OPENNMS_HOME/etc/database-reports.xml` file.
 
@@ -84,13 +84,13 @@ In addition, create a new entry in the `$OPENNMS_HOME/etc/jasper-reports.xml` fi
 When developing new reports, we recommended using the _Jaspersoft Studio_ application.
 Download it link:http://community.jaspersoft.com/project/jaspersoft-studio[here].
 
-TIP: We recommend always using the same _Jaspersoft Studio_ version that the {opennms-product-name} _JasperReport_ library uses.
-     Currently {opennms-product-name} uses version {jasperReportsVersion}.
+TIP: We recommend always using the same _Jaspersoft Studio_ version that the {page-component-title} _JasperReport_ library uses.
+     Currently {page-component-title} uses version {jasperReportsVersion}.
 
 [[ga-database-reports-connect-database]]
-==== Connect to the {opennms-product-name} Database
+==== Connect to the {page-component-title} Database
 
-To actually create SQL statements against the _{opennms-product-name}_ database you must create a `database Data Adapter`.
+To actually create SQL statements against the _{page-component-title}_ database you must create a `database Data Adapter`.
 The official _Jaspersoft Studio_ documentation and wiki cover how to do this.
 
 [[ga-database-reports-measurement-ds-helpers]]
@@ -126,7 +126,7 @@ WARNING: Before _OpenNMS Horizon 17_ and _OpenNMS Meridian 2016_, it was possibl
 To access performance data within reports, we created a custom _Measurement Datasource_ that allows you to query the _Measurements API_ and process the returned data in your reports.
 Please refer to the link:http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurements API documentation] on how to use the _Measurements API_.
 
-NOTE:  When using the _Measurements Datasource_ within a report a `HTTP` connection to the _Measurements API_ is only established if the report is NOT running within {opennms-product-name}, e.g. when used with _Jaspersoft Studio_.
+NOTE:  When using the _Measurements Datasource_ within a report a `HTTP` connection to the _Measurements API_ is only established if the report is NOT running within {page-component-title}, e.g. when used with _Jaspersoft Studio_.
 
 To receive data from the _Measurements API_ simply create a query as follows:
 
@@ -181,7 +181,7 @@ You can set this in `${OPENNMS_HOME}/etc/opennms.properties` or `${OPENNMS_HOME}
 [[ga-database-reports-helper-methods]]
 === Helper methods
 
-There are a few helper methods to help create reports in _{opennms-product-name}_.
+There are a few helper methods to help create reports in _{page-component-title}_.
 
 These helpers come with the _Measurement Datasource_.
 
@@ -264,8 +264,8 @@ To get the appropriate `interface descriptor` depends on the input parameter.
 [[ga-database-reports-https]]
 ==== Use HTTPS
 
-To establish a secure connection to the _Measurements API_, you must import the public certificate of the running _{opennms-product-name}_ to the _Java Trust Store_.
-In addition, _{opennms-product-name}_ must be configured to use that _Java Trust Store_.
+To establish a secure connection to the _Measurements API_, you must import the public certificate of the running _{page-component-title}_ to the _Java Trust Store_.
+In addition, _{page-component-title}_ must be configured to use that _Java Trust Store_.
 Please follow the instructions in this <<ga-operation-ssl-opennms-trust-store,chapter>> to setup the _Java Trust Store_ correctly.
 
 In addition please also set the property `org.opennms.netmgt.jasper.measurement.ssl.enable` in `$OPENNMS_HOME\etc\opennms.properties` to `true` to ensure that only secure connections are established.
@@ -276,15 +276,15 @@ WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false`
 [[ga-database-reports-limitations]]
 === Limitations
 
- * Only a _JDBC Datasource_ to the _{opennms-product-name} Database connection_ can be passed to a report, or no datasource at all.
+ * Only a _JDBC Datasource_ to the _{page-component-title} Database connection_ can be passed to a report, or no datasource at all.
    One does not have to use the datasource, though.
 
-=== Creating PDF Reports from Grafana Dashboards Using {opennms-product-name}
+=== Creating PDF Reports from Grafana Dashboards Using {page-component-title}
 
-{opennms-product-name} provides three templates to create a PDF report from an existing Grafana dashboard. 
+{page-component-title} provides three templates to create a PDF report from an existing Grafana dashboard. 
 You can also schedule and email these PDF reports to anyone:
 
-* Keep staff without access to {opennms-product-name} informed about network performance for improved capacity planning
+* Keep staff without access to {page-component-title} informed about network performance for improved capacity planning
 * Create a permanent record of strategic information and progress over a long period of time
 
 The PDF report displays each of the panels from the specified dashboard, with one, two, or four panels per page, depending on the selected template. 
@@ -295,9 +295,9 @@ image:database-reports/Dashboard-pdf.png[PDF report]
 
 ==== Before You Begin
 
-This feature requires {opennms-product-name} and an instance of Grafana with at least one dashboard and panel. OpenNMS allows you to create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
+This feature requires {page-component-title} and an instance of Grafana with at least one dashboard and panel. OpenNMS allows you to create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
 
-You must set up Grafana as a datasource by xref:grafana-ednpoint[configuring the Grafana endpoint] in {opennms-product-name}. 
+You must set up Grafana as a datasource by xref:grafana-ednpoint[configuring the Grafana endpoint] in {page-component-title}. 
 
 [[grafana-endpoint]]
 ==== Configure the Grafana Endpoint
@@ -308,7 +308,7 @@ Configuring the Grafana endpoint sets up Grafana as the datasource for the dashb
 . Choose **Configuration > API Keys** and click **New API Key**. 
 . Specify a key name and "Viewer" role and click **Add**.
 .. Leave the time to live blank so that the key never expires. 
-. Copy the key so that you can paste it into the {opennms-product-name} UI. 
+. Copy the key so that you can paste it into the {page-component-title} UI. 
 +
 image:database-reports/API-Key.png[Grafana API, 400]
 
@@ -322,18 +322,18 @@ image:database-reports/grafana-endpoint.png[Endpoint, 400]
 . Fill in the information and click *Test Connection*.
 . Click *Create*.
 
-You can now use {opennms-product-name} to create PDF reports of Grafana dashboards. 
+You can now use {page-component-title} to create PDF reports of Grafana dashboards. 
 
 ==== Creating a PDF of a Grafana Dashboard
 
-. In the {opennms-product-name} UI, choose `Reports>Database Reports`.
+. In the {page-component-title} UI, choose `Reports>Database Reports`.
 . In the `Report Templates` area, click `Grafana Dashboard Report <Xppp>`, where `<Xppp>` represents the number of panels per page you want to display. 
 . In the `Report Parameters` area, specify the appropriate information.
 .. Note that `Grafana Endpoint` is the datasource. Select a Grafana dashboard from the drop-down list. 
 .. You can also specify CSV for report type. 
 . Click `Create Report`. 
 .. You are prompted to save the report locally or open it.
-The file is saved to a folder on the {opennms-product-name} Server. 
+The file is saved to a folder on the {page-component-title} Server. 
 It also appears in the UI in the `Persisted Reports` tab. 
 . To send the report to someone, click `Deliver this report`.
 . Fill out the `Report Delivery Options`.

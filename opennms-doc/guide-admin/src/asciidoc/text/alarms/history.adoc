@@ -25,7 +25,7 @@ This feature requires _Elasticsearch_ 7.x.
 
 Alarm history indexing can be enabled as follows:
 
-First, login to the _Karaf_ shell of your _{opennms-product-name}_ instance and configure the _Elasticsearch_ client settings to point to your _Elasticsearch_ cluster.
+First, login to the _Karaf_ shell of your _{page-component-title}_ instance and configure the _Elasticsearch_ client settings to point to your _Elasticsearch_ cluster.
 See <<ga-elasticsearch-integration-configuration, Elasticsearch Integration Configuration>> for a complete list of available options.
 
 [source]

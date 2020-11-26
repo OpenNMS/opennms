@@ -4,17 +4,17 @@
 
 === Using AWS SQS
 
-By default, _{opennms-product-name}_ uses an _ActiveMQ_ broker to communicate with _Minions_.
+By default, _{page-component-title}_ uses an _ActiveMQ_ broker to communicate with _Minions_.
 This broker is used for both issuing remote procedure calls (RPCs, ie. ping this host) and for transporting unsolicited messages such as SNMP traps and syslog messages.
 
 _AWS SQS_ can be used as an alternative to _ActiveMQ_ for both remote procedure calls and transporting the unsolicited messages.
 
-_AWS SQS_ must be enabled on both _{opennms-product-name}_ and _Minion_ to function.
+_AWS SQS_ must be enabled on both _{page-component-title}_ and _Minion_ to function.
 
-==== _{opennms-product-name}_ Configuration
+==== _{page-component-title}_ Configuration
 
-Enable and configure the _AWS SQS_ on _{opennms-product-name}_ by using the following commands.
-The `initialSleepTime` property will ensure that messages are not consumed from _AWS SQS_ until the _{opennms-product-name}_ system has fully initialized.
+Enable and configure the _AWS SQS_ on _{page-component-title}_ by using the following commands.
+The `initialSleepTime` property will ensure that messages are not consumed from _AWS SQS_ until the _{page-component-title}_ system has fully initialized.
 
 [source, sh]
 ----
@@ -54,7 +54,7 @@ You can enable FIFO queues by adding the following parameter to the `aws-sqs.pro
 org.opennms.core.ipc.aws.sqs.sink.FifoQueue=true
 ----
 
-Restart _{opennms-product-name}_ to apply the changes.
+Restart _{page-component-title}_ to apply the changes.
 
 ==== Minion Configuration
 
@@ -100,7 +100,7 @@ IMPORTANT: The Minion SQS settings must match what OpenNMS currently has.
 
 ==== SQS Configuration Settings
 
-From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SetQueueAttributes.html[Amazon SQS Documentation], the following tables list parameters which can be added to either Minion (via `MINION_HOME/etc/org.opennms.core.ipc.aws.sqs.cfg`) or _{opennms-product-name}_ (via `OPENNMS_HOME/etc/opennms.properties.d/aws-sqs.properties`), along with the correct syntax for each environment.
+From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SetQueueAttributes.html[Amazon SQS Documentation], the following tables list parameters which can be added to either Minion (via `MINION_HOME/etc/org.opennms.core.ipc.aws.sqs.cfg`) or _{page-component-title}_ (via `OPENNMS_HOME/etc/opennms.properties.d/aws-sqs.properties`), along with the correct syntax for each environment.
 
 ===== Sink Settings
 
@@ -108,7 +108,7 @@ Queues used for reception of unsolicited messages (e.g. SNMP traps, syslog messa
 
 [options="header"]
 |====
-| Parameter                      | Notes                                         | _{opennms-product-name}_                                          | Minion
+| Parameter                      | Notes                                         | _{page-component-title}_                                          | Minion
 | `DelaySeconds`                 | Default: 0 seconds                            | `org.opennms.core.ipc.aws.sqs.sink.DelaySeconds`                  | `sink.DelaySeconds`
 | `MaximumMessageSize`           | Default: 262144 bytes                         | `org.opennms.core.ipc.aws.sqs.sink.MaximumMessageSize`            | `sink.MaximumMessageSize`
 | `MessageRetentionPeriod`       | Default: 1209600 seconds                      | `org.opennms.core.ipc.aws.sqs.sink.MessageRetentionPeriod`        | `sink.MessageRetentionPeriod`
@@ -128,7 +128,7 @@ Queues used for provisioning, service polling, data collection, and other concer
 
 [options="header"]
 |====
-| Parameter                       | Notes                                     | _{opennms-product-name}_                                         | Minion
+| Parameter                       | Notes                                     | _{page-component-title}_                                         | Minion
 | `DelaySeconds`                  | Default: 0 seconds                        | `org.opennms.core.ipc.aws.sqs.rpc.DelaySeconds`                  | `rpc.DelaySeconds`
 | `MaximumMessageSize`            | Default: 262144 bytes                     | `org.opennms.core.ipc.aws.sqs.rpc.MaximumMessageSize`            | `rpc.MaximumMessageSize`
 | `MessageRetentionPeriod`        | Default: 1209600 seconds                  | `org.opennms.core.ipc.aws.sqs.rpc.MessageRetentionPeriod`        | `rpc.MessageRetentionPeriod`
@@ -146,11 +146,11 @@ NOTE: When FIFO queues are not required, there is no need to add `FifoQueue=fals
 
 ==== Managing Multiple Environments
 
-In order to support multiple _{opennms-product-name}_ environments in a single AWS region, the `aws_queue_name_prefix` property can be used to prefix the queue names.
+In order to support multiple _{page-component-title}_ environments in a single AWS region, the `aws_queue_name_prefix` property can be used to prefix the queue names.
 
 For example, if we set this property to be "PROD", the queue names will resemble `PROD-OpenNMS-Sink-Heartbeat`, instead of `OpenNMS-Sink-Heartbeat`.
 
-WARNING: This property must be properly configured at  _{opennms-product-name}_  and Minion side.
+WARNING: This property must be properly configured at  _{page-component-title}_  and Minion side.
 
 ==== AWS Credentials
 

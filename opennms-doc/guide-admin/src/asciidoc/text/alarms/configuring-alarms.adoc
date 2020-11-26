@@ -5,7 +5,7 @@
 [[ga-alarmd-configuration]]
 === Configuring Alarms
 
-Since Alarmd instantiates Alarms from Events, defining Alarms in _{opennms-product-name}_ entails defining an additional XML element of an Event indicating a problem or resolution in the Network.
+Since Alarmd instantiates Alarms from Events, defining Alarms in _{page-component-title}_ entails defining an additional XML element of an Event indicating a problem or resolution in the Network.
 This additional element is the "alarm-data" element.
 
 NOTE: Any Event that is marked as "donotpersist" in the logmsg element's "dest" attribute, will not be processed as an Alarm.

@@ -1,6 +1,6 @@
 
 
-The goal of _Sentinel_ is to scale out and distribute individual components from _{opennms-product-name}_.
+The goal of _Sentinel_ is to scale out and distribute individual components from _{page-component-title}_.
 
 WARNING:    The sentinel feature is still in development and this is only a very rough documentation, not covering all aspects.
             Please refer to the Limitations section for more details
@@ -11,7 +11,7 @@ Currently _Sentinel_ is in a very early state of development and therefore the u
 
  * Only allows distribution of _Telemetryd_ functionality (such as processing flows, or use the existing telemetry adapters to store measurements data to _Newts_)
  * Requires a _Minion_ to work as a (message) producer
- * In most cases, it is advised to disable those adapters and listeners in _{opennms-product-name}_ if they are also running by a _Sentinel_ instance.
+ * In most cases, it is advised to disable those adapters and listeners in _{page-component-title}_ if they are also running by a _Sentinel_ instance.
 
 === Installation
 
@@ -24,7 +24,7 @@ To disable this functionality set `karaf.clean.cache = false` in `${SENTINEL_HOM
 
 === Configuration
 
-It is assumed, that the _Sentinel_ container is running on a different system than the _{opennms-product-name}_ and _Minion_.
+It is assumed, that the _Sentinel_ container is running on a different system than the _{page-component-title}_ and _Minion_.
 Therefore at least the following configurations are necessary:
 
  - Configure the datasource to connect to the Postgres database
@@ -34,7 +34,7 @@ Therefore at least the following configurations are necessary:
 
 ==== Configure the datasource
 
-This is required in order to have _Sentinel_ connect to the PostgreSQL database _{opennms-product-name}_.
+This is required in order to have _Sentinel_ connect to the PostgreSQL database _{page-component-title}_.
 
 ----
 config:edit org.opennms.netmgt.distributed.datasource
@@ -57,15 +57,15 @@ config:update
 ----
 <1> used only for tracing, must be provided
 <2> used only for tracing, must be provided
-<3> url which points to {opennms-product-name} (required)
-<4> url which points to the {opennms-product-name} Active MQ Broker (only required if using feature `sentinel-jms`, otherwise may be omitted)
+<3> url which points to {page-component-title} (required)
+<4> url which points to the {page-component-title} Active MQ Broker (only required if using feature `sentinel-jms`, otherwise may be omitted)
 
 NOTE:   Basically the same properties as for the _Minion Controller_ are supported, but must be placed in config file
         `org.opennms.sentinel.controller.cfg` instead of `org.opennms.minion.controller.cfg`.
 
 ==== Configure Connectivity
 
-By default the _Sentinel_ consumes messages from the _{opennms-product-name} ActiveMQ Broker_.
+By default the _Sentinel_ consumes messages from the _{page-component-title} ActiveMQ Broker_.
 See `Configure the Controller` for more details.
 
 As with _Minion_ the _Sentinel_ can also be configured to consume messages from _Kafka_
@@ -107,7 +107,7 @@ The following list contains some features which may be installed manually:
 
 | sentinel-jms
 | false
-| Provides connectivity to the {opennms-product-name} _ActiveMQ_ Broker.
+| Provides connectivity to the {page-component-title} _ActiveMQ_ Broker.
 
 | sentinel-kafka
 | false
@@ -206,7 +206,7 @@ NOTE: This is also available in _Minion_ Containers and will replace the now dep
 
 === Flow Processing
 
-In order to process flows via _Sentinel_ ensure that _{opennms-product-name}_, _Minion_ and _Sentinel_ are all installed according
+In order to process flows via _Sentinel_ ensure that _{page-component-title}_, _Minion_ and _Sentinel_ are all installed according
 to the official Installation Guide.
 
 Afterwards the following configuration examples help setting everything up.
@@ -279,7 +279,7 @@ NOTE:   The name of the listener, in this case `Netflow-5` must match with the n
         configuration in the _Sentinel_ container.
 
 ==== Configure OpenNMS
-_{opennms-product-name}_ must expose its _ActiveMQ Broker_ to have a _Minion_ and _Sentinel_ connect to it.
+_{page-component-title}_ must expose its _ActiveMQ Broker_ to have a _Minion_ and _Sentinel_ connect to it.
 This can be done in `$OPENNMS_HOME/etc/opennms-activemq.xml`.
 For more details please refer to the Minion Installation Guide.
 
@@ -404,7 +404,7 @@ Simply copy it to `${SENTINEL_HOME}/deploy/`.
 
 === Persisting Collection Sets to Newts
 
-In the previous chapter it is described on how to setup _{opennms-product-name}_, _Minion_ and _Sentinel_ in order to distribute the processing of flows.
+In the previous chapter it is described on how to setup _{page-component-title}_, _Minion_ and _Sentinel_ in order to distribute the processing of flows.
 However, it only covered flow processing adapters, but there are more, e.g. the `NxosGpbAdapter`, which can also be run on a _Sentinel_.
 
 ==== Adapters
@@ -449,7 +449,7 @@ config:property-set adapters.2.parameters.script /opt/sentinel/etc/sflow-host.gr
 config:update
 ----
 
-Please note, that in both cases the file `/opt/sentinel/etc/sflow-host.groovy` must be provided manually, e.g. by manually copying it over from _{opennms-product-name}_.
+Please note, that in both cases the file `/opt/sentinel/etc/sflow-host.groovy` must be provided manually, e.g. by manually copying it over from _{page-component-title}_.
 
 ===== NxosGpbAdapter
 
@@ -457,7 +457,7 @@ In order to use this adapter, the feature `sentinel-telemetry-nxos` and `sentine
 In addition either `sentinel-jms` or `sentinel-kafka` should be installed and configured properly.
 See the previous _Flow Processing_ chapter for more details.
 
-Besides this, configuration files from _{opennms-product-name}_ must be copied to _Sentinel_ to `/opt/sentinel/etc`.
+Besides this, configuration files from _{page-component-title}_ must be copied to _Sentinel_ to `/opt/sentinel/etc`.
 The following files and directories are required:
 
  * `${OPENNMS_HOME}/etc/datacollection`
@@ -479,7 +479,7 @@ admin@sentinel> config:update
 ----
 
 Please note, that the file `/opt/sentinel/etc/cisco-nxos-telemetry-interface.groovy` must also be provided manually,
-e.g. by manually copying it over from _{opennms-product-name}_.
+e.g. by manually copying it over from _{page-component-title}_.
 
 ===== JtiGpbAdapter
 
@@ -487,7 +487,7 @@ In order to use this adapter, the feature `sentinel-telemetry-jti` and `sentinel
 In addition either `sentinel-jms` or `sentinel-kafka` should be installed and be configured properly.
 See the previous _Flow Processing_ chapter for more details.
 
-Besides this, configuration files from _{opennms-product-name}_ must be copied to _Sentinel_ to `/opt/sentinel/etc`.
+Besides this, configuration files from _{page-component-title}_ must be copied to _Sentinel_ to `/opt/sentinel/etc`.
 The following files and directories are required:
 
  * `${OPENNMS_HOME}/etc/datacollection`
@@ -509,14 +509,14 @@ admin@sentinel> config:update
 ----
 
 Please note, that the file `/opt/sentinel/etc/junos-telemetry-interface.groovy` must also be provided manually,
-e.g. by manually copying it over from _{opennms-product-name}_.
+e.g. by manually copying it over from _{page-component-title}_.
 
 [[ga-sentinel-configure-newts]]
 ==== Configure Newts
 
-The configuration of _Newts_ for _Sentinel_ uses the same properties as for _{opennms-product-name}_.
+The configuration of _Newts_ for _Sentinel_ uses the same properties as for _{page-component-title}_.
 The only difference is, that the properties for _Sentinel_ are stored in `/opt/sentinel/etc/org.opennms.newts.config.cfg` instead of `*.properties` files.
-The name of each property is the same as for _{opennms-product-name}_ without the `org.opennms.newts.config` prefix.
+The name of each property is the same as for _{page-component-title}_ without the `org.opennms.newts.config` prefix.
 The following example shows a custom _Newts_ configuration using the _Sentinel_'s _Karaf Shell_.
 
 ----

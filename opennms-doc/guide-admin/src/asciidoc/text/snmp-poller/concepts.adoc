@@ -4,7 +4,7 @@
 
 === SNMP Interface Poller
 
-_{opennms-product-name}_ can monitor the status of a SNMP interface that is not directly monitored by a <<ga-service-assurance, Service Assurance>> monitor.
+_{page-component-title}_ can monitor the status of a SNMP interface that is not directly monitored by a <<ga-service-assurance, Service Assurance>> monitor.
 
 The SNMP Interface Poller is a separate service that uses a node interface, typically a management interface, to get administration and operational status for other interfaces present on the device.
 On a configurable time interval a SNMP GET request is made for two specific objects in an `ifEntry` of the `ifTable` defined in the `IF-MIB`:
@@ -102,7 +102,7 @@ To enable it, simply change the value of the `enabled` attribute of the `service
 </service>
 ```
 
-A restart of _{opennms-product-name}_ is required.
+A restart of _{page-component-title}_ is required.
 
 ### Configuring the Service
 

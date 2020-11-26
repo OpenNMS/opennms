@@ -299,7 +299,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     }
 
     @GET
-    @Path("{nodeCriteria}/metadata/{context}/{key}")
+    @Path("{nodeCriteria}/metadata/{context}/\{key}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
     public OnmsMetaDataList getMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context, @PathParam("key") String key) {
         final OnmsNode node = getDao().get(nodeCriteria);
@@ -332,7 +332,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     }
 
     @DELETE
-    @Path("{nodeCriteria}/metadata/{context}/{key}")
+    @Path("{nodeCriteria}/metadata/{context}/\{key}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
     public Response deleteMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context, @PathParam("key") String key) {
         writeLock();
@@ -368,7 +368,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
     }
 
     @PUT
-    @Path("{nodeCriteria}/metadata/{context}/{key}/{value}")
+    @Path("{nodeCriteria}/metadata/{context}/\{key}/{value}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
     public Response putMetaData(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("context") String context, @PathParam("key") String key, @PathParam("value") String value) {
         writeLock();

@@ -1,13 +1,10 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../../images
-
-==== SnmpCollector
+= SnmpCollector
 
 The _SnmpCollector_ collects performance data through the _SNMP protocol_.
 Configure access to the _SNMP Agent_ through the _SNMP configuration_ in the Web UI (<<provisioning/getting-started.adoc#provision-snmp-configuration,`Admin>Configure SNMP Community Names by IP Address`>>). 
 
-===== Collector Facts
+== Collector Facts
 
 [options="autowidth"]
 |===
@@ -16,9 +13,9 @@ Configure access to the _SNMP Agent_ through the _SNMP configuration_ in the Web
 | Supported on Minion | `Yes`
 |===
 
-===== Collector Parameters
+== Collector Parameters
 
-Use these parameters used in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+Use these parameters in the <<performance-data-collection/collectd/configuration.adoc#ga-collectd-configuration, _collectd-configuration.xml_ file>>.
 
 .Collector-specific parameters for the SnmpCollector
 [options="header, autowidth"]
@@ -29,9 +26,9 @@ Use these parameters used in the <<collection-packages.adoc,_collectd-configurat
 | `timeout`              | Timeout in milliseconds to wait for SNMP responses.                            | optional | _SNMP_ configuration
 |===
 
-===== SNMP Collection Configuration
+== SNMP Collection Configuration
 
-NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
+NOTE: Understanding <<performance-data-collection/resource-types.adoc#resource-types, resource types>> helps when editing collector-specific configuration files. 
 
 Define _SNMP Collection_ in `etc/datacollection-config.xml` and `etc/datacollection.d/*.xml`.
 
@@ -66,7 +63,7 @@ Define _SNMP Collection_ in `etc/datacollection-config.xml` and `etc/datacollect
 .Configuration overview for SNMP data collection
 image::performance-management/collectors/01_snmp-datacollection-configuration.png[]
 
-====== SnmpCollectorNG
+=== SnmpCollectorNG
 
 The `SnmpCollectorNG` provides an alternate implementation to the `SnmpCollector` that takes advantages of new _APIs_ in the platform.
 It is provided as a separate collector while we work to validate its functionality and run-time characteristics, with the goal of eventually having it replace the `SnmpCollector`.

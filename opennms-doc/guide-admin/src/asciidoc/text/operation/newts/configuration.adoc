@@ -5,7 +5,7 @@
 
 ===== Enabling Newts
 
-_{opennms-product-name}_ can be configured to use Newts by setting the following property in in `${OPENNMS_HOME}/etc/opennms.properties`:
+_{page-component-title}_ can be configured to use Newts by setting the following property in in `${OPENNMS_HOME}/etc/opennms.properties`:
 
 [source]
 ----
@@ -20,7 +20,7 @@ To this end, the following property should also be set in the same file:
 org.opennms.rrd.storeByForeignSource=true
 ----
 
-With these set, _{opennms-product-name}_ will begin persisting metrics using the _Newts_ engine when restarted.
+With these set, _{page-component-title}_ will begin persisting metrics using the _Newts_ engine when restarted.
 
 Additional configuration options are presented in the next section.
 
@@ -96,6 +96,6 @@ The samples gathered by the collectors are temporarily stored in a ring buffer b
 The value of the `ring_buffer_size` should be increased if you expect large peaks of collectors returning at once or latency in persisting these to _Cassandra_.
 However, note that the memory used by the ring buffer is reserved, and larger values may require an increased heap size.
 
-Cache priming is used to help reduce the number of records that need to be indexed after restarting _{opennms-product-name}_.
+Cache priming is used to help reduce the number of records that need to be indexed after restarting _{page-component-title}_.
 This works by rebuilding the cache using the index data that has already been persisted in Cassandra.
 If you continue to see large spikes of index related inserts after rebooting you may want to consider increasing the amount of time spent priming the cache.

@@ -6,14 +6,14 @@
 === Introduction
 
 OpenTracing enables distributed tracing which makes it possible to monitor RPCs or transactions across process boundaries.
-This functionality can be leveraged to help track and diagnose communication problems that may arise in distributed deployments of _{opennms-product-name}_ that leverage _Minion_ and/or _Sentinel_.
-_{opennms-product-name}_ currently supports link:https://www.jaegertracing.io/[Jaeger] which implements the OpenTracing API.
+This functionality can be leveraged to help track and diagnose communication problems that may arise in distributed deployments of _{page-component-title}_ that leverage _Minion_ and/or _Sentinel_.
+_{page-component-title}_ currently supports link:https://www.jaegertracing.io/[Jaeger] which implements the OpenTracing API.
 
-OpenTracing is now supported on RPC calls between _Minion_ and _{opennms-product-name}_  and Sink API calls (including flows) between _Minion_ and _Sentinel_ or _{opennms-product-name}_.
+OpenTracing is now supported on RPC calls between _Minion_ and _{page-component-title}_  and Sink API calls (including flows) between _Minion_ and _Sentinel_ or _{page-component-title}_.
 
-==== Enabling Tracing on _{opennms-product-name}_
+==== Enabling Tracing on _{page-component-title}_
 
-By default the tracing instrumentation _{opennms-product-name}_ is disabled (a no-op tracer is used.)
+By default the tracing instrumentation _{page-component-title}_ is disabled (a no-op tracer is used.)
 
 Enable tracing with Jeager as follows:
 
@@ -23,7 +23,7 @@ echo 'org.opennms.core.tracer=jaeger' >> "$OPENNMS_HOME/etc/opennms.properties.d
 echo 'opennms-core-tracing-jaeger' >> "$OPENNMS_HOME/etc/featuresBoot.d/jaeger.boot"
 ----
 
-Restart _{opennms-product-name}_ to apply the changes.
+Restart _{page-component-title}_ to apply the changes.
 
 Additional Jaeger tracing options can be added to the `jaeger.properties` file specified above.
 Available configuration options are listed link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[here].

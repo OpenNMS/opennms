@@ -11,7 +11,7 @@ The _Topology Map_ supports the following properties, which can be influenced by
 [options="header, autowidth"]
 |===
 | Property                                  | Type         | Default             | Description
-| `showHeader`                              | `Boolean`    | `true`              | Defines if the _{opennms-product-name}_ header is shown.
+| `showHeader`                              | `Boolean`    | `true`              | Defines if the _{page-component-title}_ header is shown.
 | `autoRefresh.enabled`                     | `Boolean`    | `false`             | If enabled, auto refresh is enabled by default.
 | `autoRefresh.interval`                    | `Integer`    | `60`                | Defines the auto refresh interval in seconds.
 | `hiddenCategoryPrefix`                    | `String`     | _empty String_      | A String which allows hiding categories. For example a value of `server` will hide all categories starting with `server`.

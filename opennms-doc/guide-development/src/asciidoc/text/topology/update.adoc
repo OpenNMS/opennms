@@ -3,7 +3,7 @@
 
 === Topologies Updates
 
-In {opennms-product-name} the `Kafka Producer` uses Topologies Updates to send topologies messages to Kafka.
+In {page-component-title} the `Kafka Producer` uses Topologies Updates to send topologies messages to Kafka.
 
 Enhanced Linkd has six `OnmsTopologyUpdaters` each sending its own  NODES, BRIDGE, CDP, ISIS, LLDP and OSPF protocol `OnmsTopologyMessage`.
 
