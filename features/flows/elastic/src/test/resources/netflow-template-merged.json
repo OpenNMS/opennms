@@ -743,6 +743,10 @@
         "type": "date",
         "format": "epoch_millis"
       },
+      "@clock_correction": {
+        "type": "date",
+        "format": "epoch_millis"
+      },
       "host": {
         "type": "keyword",
         "norms": false

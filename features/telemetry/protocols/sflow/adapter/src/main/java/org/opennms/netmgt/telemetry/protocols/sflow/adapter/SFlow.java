@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.firs
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.get;
 import static org.opennms.netmgt.telemetry.protocols.common.utils.BsonUtils.getString;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -70,10 +71,17 @@ public class SFlow implements Flow {
 
     private final Header header;
     private final BsonDocument document;
+    private final Instant receivedAt;
 
-    public SFlow(final Header header, final BsonDocument document) {
+    public SFlow(final Header header, final BsonDocument document, final Instant receivedAt) {
         this.header = header;
         this.document = Objects.requireNonNull(document);
+        this.receivedAt = Objects.requireNonNull(receivedAt);
+    }
+
+    @Override
+    public long getReceivedAt() {
+        return this.receivedAt.toEpochMilli();
     }
 
     @Override

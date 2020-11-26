@@ -33,7 +33,7 @@ import java.beans.PropertyDescriptor;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -204,7 +204,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
     @Test
     public void testSampledIpv4() {
         final BsonDocument bsonDocument = createSampledIpv4();
-        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(new Long(LENGTH), sFlow.getBytes());
         Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
         Assert.assertEquals(DST_IPV4_STR, sFlow.getDstAddr());
@@ -238,7 +238,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
     @Test
     public void testSampledIpv6() {
         final BsonDocument bsonDocument = createSampledIpv6();
-        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(new Long(LENGTH), sFlow.getBytes());
         Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
         Assert.assertEquals(DST_IPV6_STR, sFlow.getDstAddr());
@@ -272,7 +272,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
     @Test
     public void testSampledHeaderIpv4() {
         final BsonDocument bsonDocument = createSampledHeaderIpv4();
-        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(new Long(LENGTH), sFlow.getBytes());
         Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
         Assert.assertEquals(DST_IPV4_STR, sFlow.getDstAddr());
@@ -306,7 +306,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
     @Test
     public void testSampledHeaderIpv6() {
         final BsonDocument bsonDocument = createSampledHeaderIpv6();
-        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(new Long(LENGTH), sFlow.getBytes());
         Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
         Assert.assertEquals(DST_IPV6_STR, sFlow.getDstAddr());
@@ -340,7 +340,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
     @Test
     public void testExtendedRouterIpv4() {
         final BsonDocument bsonDocument = createExtendedRouterIpv4();
-        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(new Integer(SRC_MASK_LEN), sFlow.getSrcMaskLen());
         Assert.assertEquals(new Integer(DST_MASK_LEN), sFlow.getDstMaskLen());
         Assert.assertEquals(ROUTER_IPV4_STR, sFlow.getNextHop());
@@ -349,7 +349,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
     @Test
     public void testExtendedRouterIpv6() {
         final BsonDocument bsonDocument = createExtendedRouterIpv6();
-        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(new Integer(SRC_MASK_LEN), sFlow.getSrcMaskLen());
         Assert.assertEquals(new Integer(DST_MASK_LEN), sFlow.getDstMaskLen());
         Assert.assertEquals(ROUTER_IPV6_STR, sFlow.getNextHop());
@@ -358,14 +358,14 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
     @Test
     public void testExtendedSwitch() {
         final BsonDocument bsonDocument = createExtendedSwitch();
-        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(new Integer(SRC_VLAN), sFlow.getVlan());
     }
 
     @Test
     public void testExtendedGateway() {
         final BsonDocument bsonDocument = createExtendedGateway();
-        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(new Long(SRC_AS), sFlow.getSrcAs());
     }
 
@@ -435,7 +435,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
     }
 
     private void testGetterForDocument(final BsonDocument bsonDocument) throws Exception {
-        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         for (final PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(SFlow.class).getPropertyDescriptors()) {
             final Object object = propertyDescriptor.getReadMethod().invoke(sFlow);
             System.out.println(propertyDescriptor.getReadMethod().getName() + "() returns '" + object + "'");

@@ -28,17 +28,21 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import static com.spotify.hamcrest.pojo.IsPojo.pojo;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.model.OnmsNode;
@@ -47,17 +51,13 @@ import com.google.common.collect.Lists;
 
 public class DocumentEnricherTest {
 
-    private DocumentEnricher enricher;
-    private AtomicInteger nodeDaoGetCounter;
-    private InterfaceToNodeCache interfaceToNodeCache;
-
-    @Before
-    public void setUp() {
+    @Test
+    public void verifyCacheUsage() {
         final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
-        enricher = factory.getEnricher();
+        final DocumentEnricher enricher = factory.getEnricher();
         final NodeDao nodeDao = factory.getNodeDao();
-        interfaceToNodeCache = factory.getInterfaceToNodeCache();
-        nodeDaoGetCounter = factory.getNodeDaoGetCounter();
+        final InterfaceToNodeCache interfaceToNodeCache = factory.getInterfaceToNodeCache();
+        final AtomicInteger nodeDaoGetCounter = factory.getNodeDaoGetCounter();
 
         interfaceToNodeCache.setNodeId("Default", InetAddressUtils.addr("10.0.0.1"), 1);
         interfaceToNodeCache.setNodeId("Default", InetAddressUtils.addr("10.0.0.2"), 2);
@@ -66,10 +66,7 @@ public class DocumentEnricherTest {
         nodeDao.save(createOnmsNode(1, "my-requisition"));
         nodeDao.save(createOnmsNode(2, "my-requisition"));
         nodeDao.save(createOnmsNode(3, "my-requisition"));
-    }
 
-    @Test
-    public void verifyCacheUsage() {
         final List<FlowDocument> documents = Lists.newArrayList();
         documents.add(createFlowDocument("10.0.0.1", "10.0.0.2"));
         documents.add(createFlowDocument("10.0.0.1", "10.0.0.3"));
@@ -99,6 +96,10 @@ public class DocumentEnricherTest {
 
     private static FlowDocument createFlowDocument(String sourceIp, String destIp) {
         final FlowDocument document = new FlowDocument();
+        document.setTimestamp(System.currentTimeMillis());
+        document.setFirstSwitched(document.getTimestamp() - 20_000L);
+        document.setDeltaSwitched(document.getTimestamp() - 10_000L);
+        document.setLastSwitched(document.getTimestamp() - 5_000L);
         document.setSrcAddr(sourceIp);
         document.setSrcPort(510);
         document.setDstAddr(destIp);
@@ -117,6 +118,9 @@ public class DocumentEnricherTest {
 
     @Test
     public void testCreateClassificationRequest() {
+        final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
+        final DocumentEnricher enricher = factory.getEnricher();
+
         final FlowDocument flowDocument = new FlowDocument();
 
         // verify that null values are handled correctly, see issue HZN-1329
@@ -143,6 +147,9 @@ public class DocumentEnricherTest {
 
     @Test
     public void testDirection() {
+        final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory();
+        final DocumentEnricher enricher = factory.getEnricher();
+
         final FlowDocument d1 = new FlowDocument();
         d1.setSrcAddr("1.1.1.1");
         d1.setSrcPort(1);
@@ -185,5 +192,44 @@ public class DocumentEnricherTest {
         assertEquals("2.2.2.2", c3.getDstAddress());
         assertEquals(new Integer(1), c3.getSrcPort());
         assertEquals(new Integer(2), c3.getDstPort());
+    }
+
+    @Test
+    public void testClockCorrection() {
+        final MockDocumentEnricherFactory factory = new MockDocumentEnricherFactory(2400_000L);
+        final DocumentEnricher enricher = factory.getEnricher();
+
+        final FlowDocument base = createFlowDocument("10.0.0.1", "10.0.0.3");
+
+        final TestFlow flow1 = new TestFlow(base);
+        flow1.setReceivedAt(flow1.getTimestamp());
+
+        final TestFlow flow2 = new TestFlow(base);
+        flow2.setReceivedAt(flow2.getTimestamp() - 3600_000L);
+
+        final TestFlow flow3 = new TestFlow(base);
+        flow3.setReceivedAt(flow3.getTimestamp() + 3600_000L);
+
+        final List<Flow> flows = Lists.newArrayList(flow1, flow2, flow3);
+
+        final List<FlowDocument> docs = enricher.enrich(flows, new FlowSource("Default", "127.0.0.1", null));
+
+        assertThat(docs, contains(
+                pojo(FlowDocument.class)
+                        .where(FlowDocument::getTimestamp, is(base.getTimestamp()))
+                        .where(FlowDocument::getFirstSwitched, is(base.getFirstSwitched()))
+                        .where(FlowDocument::getDeltaSwitched, is(base.getDeltaSwitched()))
+                        .where(FlowDocument::getLastSwitched, is(base.getLastSwitched())),
+                pojo(FlowDocument.class)
+                        .where(FlowDocument::getTimestamp, is(base.getTimestamp() - 3600_000L))
+                        .where(FlowDocument::getFirstSwitched, is(base.getFirstSwitched() - 3600_000L))
+                        .where(FlowDocument::getDeltaSwitched, is(base.getDeltaSwitched() - 3600_000L))
+                        .where(FlowDocument::getLastSwitched, is(base.getLastSwitched() - 3600_000L)),
+                pojo(FlowDocument.class)
+                        .where(FlowDocument::getTimestamp, is(base.getTimestamp() + 3600_000L))
+                        .where(FlowDocument::getFirstSwitched, is(base.getFirstSwitched() + 3600_000L))
+                        .where(FlowDocument::getDeltaSwitched, is(base.getDeltaSwitched() + 3600_000L))
+                        .where(FlowDocument::getLastSwitched, is(base.getLastSwitched() + 3600_000L))
+        ));
     }
 }

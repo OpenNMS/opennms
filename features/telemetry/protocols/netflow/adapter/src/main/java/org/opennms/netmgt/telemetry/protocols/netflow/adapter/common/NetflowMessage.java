@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.common;
 
+import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.flows.api.Flow;
@@ -38,10 +40,16 @@ import com.google.common.base.Strings;
 public class NetflowMessage implements Flow {
 
     private final FlowMessage flowMessageProto;
+    private final Instant receivedAt;
 
-
-    public NetflowMessage(FlowMessage flowMessageProto) {
+    public NetflowMessage(FlowMessage flowMessageProto, final Instant receivedAt) {
         this.flowMessageProto = flowMessageProto;
+        this.receivedAt = Objects.requireNonNull(receivedAt);
+    }
+
+    @Override
+    public long getReceivedAt() {
+        return this.receivedAt.toEpochMilli();
     }
 
     @Override

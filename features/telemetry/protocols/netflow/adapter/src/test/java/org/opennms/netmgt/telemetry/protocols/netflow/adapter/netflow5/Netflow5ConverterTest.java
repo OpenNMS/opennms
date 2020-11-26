@@ -41,6 +41,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -134,7 +135,7 @@ public class Netflow5ConverterTest {
 
                     try {
                         FlowMessage flowMessage = FlowMessage.parseFrom(message);
-                        flows.addAll(nf5Converter.convert(flowMessage));
+                        flows.addAll(nf5Converter.convert(flowMessage, Instant.now()));
                     } catch (InvalidProtocolBufferException e) {
                         throw new RuntimeException(e);
                     }

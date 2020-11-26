@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.common;
 
+import java.time.Instant;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.flows.api.Converter;
@@ -38,7 +40,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 public class NetflowConverter implements Converter<FlowMessage> {
 
     @Override
-    public List<Flow> convert(FlowMessage packet) {
-        return Collections.singletonList(new NetflowMessage(packet));
+    public List<Flow> convert(FlowMessage packet, final Instant receivedAt) {
+        return Collections.singletonList(new NetflowMessage(packet, receivedAt));
     }
 }

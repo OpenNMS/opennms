@@ -65,6 +65,10 @@ public class MockDocumentEnricherFactory {
     private final AtomicInteger nodeDaoGetCounter = new AtomicInteger(0);
 
     public MockDocumentEnricherFactory() {
+        this(0);
+    }
+
+    public MockDocumentEnricherFactory(final long clockSkewCorrectionThreshold) {
         nodeDao = createNodeDao();
         interfaceToNodeCache = new MockInterfaceToNodeCache();
         assetRecordDao = new MockAssetRecordDao();
@@ -82,7 +86,7 @@ public class MockDocumentEnricherFactory {
                     .withName("flows.node")
                     .withMaximumSize(1000)
                     .withExpireAfterWrite(300)
-                    .build());
+                    .build(), clockSkewCorrectionThreshold);
 
         // Required for mock node dao
         addServiceRegistry(nodeDao);
