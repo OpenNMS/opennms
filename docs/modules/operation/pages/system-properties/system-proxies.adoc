@@ -1,10 +1,8 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../images
+[[system-proxies]]
+= Configuring system proxies
 
-=== Configuring system proxies
-
-System proxy settings may be used with certain _{page-component-title}_ components via the `use-system-proxy` or `useSystemProxy` parameters.
+System proxy settings may be used with certain {page-component-title} components via the `use-system-proxy` or `useSystemProxy` parameters.
 To configure system proxy servers, set some or all of the following properties:
 
 [options="header, autowidth"]
@@ -18,6 +16,7 @@ To configure system proxy servers, set some or all of the following properties:
 | `https.nonProxyHosts`         | None       | Pipe-separated list of hostnames or IP addresses which bypass HTTPS proxying
 |===
 
-TIP: Depending on the JVM in use, the properties `http.proxyUser`, `http.proxyPassword`, and their `https.*` equivalents _may_ enable the use of proxy servers that require authentication.
+TIP: Depending on the JVM in use, the properties `http.proxyUser`, `http.proxyPassword`, and their `https.*` equivalents may enable the use of proxy servers that require authentication.
 
-WARNING: Setting these properties may have unintended effects. Use with care.
+WARNING: Setting these properties may have unintended effects. 
+Use with care.

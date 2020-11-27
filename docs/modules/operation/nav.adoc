@@ -150,6 +150,8 @@
 ** xref:alarms/history.adoc[]
 
 * xref:topology/topology.adoc[] 
+* xref:system-properties/introduction.adoc[]
+** xref:system-properties/system-proxies.adoc[]
 * xref:meta-data.adoc[]
 * xref:admin/introduction.adoc[]
 ** xref:admin/restart.adoc[]
