@@ -1,32 +1,32 @@
 
 [[ga-alarm-history]]
-=== Alarm History
+= Alarm History
 
-The _Alarm History_ feature integrates with _Elasticsearch_ to provide long term storage and maintain a history of alarm state changes.
+The alarm history feature integrates with Elasticsearch to provide long term storage and maintain a history of alarm state changes.
 
-When enabled, alarms are indexed in _Elasticsearch_ when they are created, deleted, or when any of the "interesting" fields on the alarm are updated (more on this below.)
+When enabled, alarms are indexed in Elasticsearch when they are created, deleted, or when any of the "interesting" fields on the alarm are updated (more on this below.)
 
 Alarms are indexed in such a fashion that allows operators to answer the following questions:
 
-1. What were all the state changes of a particular alarm?
-2. What was the last known state of an alarm at a given point in time?
-3. Which alarms were present (i.e. not deleted) on the system at a given point in time?
-4. Which alarms are currently present on the system?
+. What were all the state changes of a particular alarm?
+. What was the last known state of an alarm at a given point in time?
+. Which alarms were present (i.e. not deleted) on the system at a given point in time?
+. Which alarms are currently present on the system?
 
-A simple _REST_ API is also made available for the purposes of evaluating the results, verifying the data that is stored and providing examples on how to query the data.
+A simple REST API is also made available for the purposes of evaluating the results, verifying the data that is stored and providing examples on how to query the data.
 
 [[ga-alarm-history-requirements]]
-==== Requirements
+== Requirements
 
-This feature requires _Elasticsearch_ 7.x.
+This feature requires #Elasticsearch 7.x#.
 
 [[ga-alarm-history-setup]]
-==== Setup
+== Setup
 
 Alarm history indexing can be enabled as follows:
 
-First, login to the _Karaf_ shell of your _{page-component-title}_ instance and configure the _Elasticsearch_ client settings to point to your _Elasticsearch_ cluster.
-See <<ga-elasticsearch-integration-configuration, Elasticsearch Integration Configuration>> for a complete list of available options.
+First, login to the Karaf shell of your {page-component-title} instance and configure the Elasticsearch client settings to point to your Elasticsearch cluster.
+See <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, Elasticsearch Integration Configuration>> for a complete list of available options.
 
 [source]
 ----
@@ -47,19 +47,19 @@ admin@opennms()> feature:install opennms-alarm-history-elastic
 In order to ensure that the feature continues to be installed as subsequent restarts, add `opennms-alarm-history-elastic` to the `featuresBoot` property in the `$\{opennms_home}/etc/org.apache.karaf.features.cfg`.
 
 [[ga-alarm-history-indexing]]
-==== Alarm indexing
+== Alarm indexing
 
-When alarms are initially created, we push a document to _Elasticsearch_ that includes all of the alarm fields as well as additional details on some of the related objects (i.e. the node.)
+When alarms are initially created, we push a document to Elasticsearch that includes all of the alarm fields as well as additional details on some of the related objects (i.e., the node.)
 
 In order to avoid pushing a new document every time a new event is reduced on to an existing alarm, we only push a new document when (at least) one of these conditions are met:
 
-1. We have not recently pushed a document for that alarm. (See `alarmReindexDurationMs`.)
-2. The severity of the alarm has changed.
-3. The alarm has been acknowledged or unacknowledged.
-4. Either of the associated sticky or journal memos have changed.
-5. The state of the associated ticket has changed.
-6. The alarm has been associated with, or removed, from a situation.
-7. A related alarm has been added or removed from the situation.
+. We have not recently pushed a document for that alarm. (See `alarmReindexDurationMs`.)
+. The severity of the alarm has changed.
+. The alarm has been acknowledged or unacknowledged.
+. Either of the associated sticky or journal memos have changed.
+. The state of the associated ticket has changed.
+. The alarm has been associated with, or removed, from a situation.
+. A related alarm has been added or removed from the situation.
 
 NOTE: To change this behaviour and push a new document for *every* change, you can set `indexAllUpdates` to `true`.
 
@@ -98,40 +98,40 @@ The following table describes a subset of the fields in the alarm document:
 |===
 
 [[ga-alarm-history-options]]
-==== Options
+== Options
 
-In addition to those mentioned in <<ga-elasticsearch-integration-configuration, Elasticsearch Integration Configuration>>, the following properties can be set in `$\{opennms_home}/etc/org.opennms.features.alarms.history.elastic.cfg`:
+In addition to those mentioned in <<elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, Elasticsearch Integration Configuration>>, the following properties can be set in `$\{opennms_home}/etc/org.opennms.features.alarms.history.elastic.cfg`:
 
 [options="header, autowidth"]
 |===
 | Property | Description | Required | default
 
-| _indexAllUpdates_
+| indexAllUpdates
 | Index every alarm update, including simple event reductions.
 | optional
 | `false`
 
-| _alarmReindexDurationMs_
+| alarmReindexDurationMs
 | Number of milliseconds to wait before re-indexing an alarm if nothing "interesting" has changed.
 | optional
 | `3600000`
 
-| _lookbackPeriodMs_
+| lookbackPeriodMs
 | Number of milliseconds to go back when searching for alarms.
 | optional
 | `604800000`
 
-| _batchIndexSize_
+| batchIndexSize
 | Maximum number of records inserted in a single batch insert.
 | optional
 | `200`
 
-| _bulkRetryCount_
+| bulkRetryCount
 | Number of retries until a bulk operation is considered failed.
 | optional
 | `3`
 
-| _taskQueueCapacity_
+| taskQueueCapacity
 | Maximum number of tasks to hold in memory.
 | optional
 | `5000`

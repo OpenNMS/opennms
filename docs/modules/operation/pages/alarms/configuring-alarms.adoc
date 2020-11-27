@@ -1,14 +1,12 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
 
 [[ga-alarmd-configuration]]
-=== Configuring Alarms
+= Configuring Alarms
 
-Since Alarmd instantiates Alarms from Events, defining Alarms in _{page-component-title}_ entails defining an additional XML element of an Event indicating a problem or resolution in the Network.
+Since Alarmd instantiates alarms from events, defining alarms in {page-component-title} entails defining an additional XML element of an event indicating a problem or resolution in the Network.
 This additional element is the "alarm-data" element.
 
-NOTE: Any Event that is marked as "donotpersist" in the logmsg element's "dest" attribute, will not be processed as an Alarm.
+NOTE: Any Event that is marked as "donotpersist" in the logmsg element's "dest" attribute, will not be processed as an alarm.
 
 .alarm-data Schema Definition (XSD)
 [source,XML]
@@ -51,13 +49,13 @@ NOTE: Any Event that is marked as "donotpersist" in the logmsg element's "dest" 
 </simpleType>
 ----
 *NOTE*
-See also: <<ga-events-anatomy-of-an-event>>
+See also: <<events/anataomy-events.adoc#ga-events-anatomy-of-an-event, anatomy of an event>>
 
 .The reduction-key
-The critical attribute when defining the alarm-data of an Event, is the _reduction-key_.
-This attribute can contain literal strings as well as references to properties (fields and parameters) of the Event.
-The purpose of the reduction-key is to uniquely identify the signature of a problem and, as such, is used to reduce (de-duplicate) Events so that only one problem is instantiated.
-Most commonly, the event's identifier (UEI) is used as the left most (least significant) portion of the reduction-key, followed by other properties of the Event from least to most significant and, traditionally, separated with the literal ':'.
+The critical attribute when defining the alarm-data of an event, is the reduction-key.
+This attribute can contain literal strings as well as references to properties (fields and parameters) of the event.
+The purpose of the reduction-key is to uniquely identify the signature of a problem and, as such, is used to reduce (de-duplicate) events so that only one problem is instantiated.
+Most commonly, the event's identifier (UEI) is used as the left most (least significant) portion of the reduction-key, followed by other properties of the event from least to most significant and, traditionally, separated with the literal ':'.
 
 .Multi-part reduction-key
 ====
@@ -95,13 +93,13 @@ The alarm-type attribute helps Alarmd with pair-wise resolution... the matching 
 
 .The clear-key attribute
 This attribute is used in the pair-wise correlation feature of Alarmd.
-When configuring a resolution Alarm, set this attribute to match the reduction-key of a the corresponding problem Alarm.
+When configuring a resolution alarm, set this attribute to match the reduction-key of a the corresponding problem alarm.
 
 .The auto-clean attribute
-This attribute instructs Alarmd to only retain the most recent Event reduced into an alarm.
-For alarms that are super chatty, this is a way to reduce the size of the most recent Events in the database.
+This attribute instructs Alarmd to only retain the most recent event reduced into an alarm.
+For alarms that are super chatty, this is a way to reduce the size of the most recent events in the database.
 
-WARNING: Do not use this feature with Alarms that have pair-wise correlation (matching problems with resolutions).
+WARNING: Do not use this feature with alarms that have pair-wise correlation (matching problems with resolutions).
 
 .The update-field element
 Use this element to override Alarmd's default behavior for which some fields are updated during reduction.
@@ -116,13 +114,13 @@ The Alarm fields that are currently allowed to be controlled this way are:
 * acktime
 * ackuser
 
-NOTE: With the new single alarm behavior in H23, if an Alarm transitions from an alarm-type 2 back to alarm-type 1 the Severity will be set to the most Event's value.
+NOTE: If an alarm transitions from an alarm-type 2 back to alarm-type 1 the Severity will be set to the most #recent# event's value.
 
 .Reduction (de-duplication) of Alarms
-Alarmd is designed to reduce multiple occurrences of an Alarm into a single alarm.
+Alarmd is designed to reduce multiple occurrences of an alarm into a single alarm.
 
 .Pairwise Correlation
-Alarmd is also intrinsically designed to automatically match resolving events with an existing Alarm.
+Alarmd is also intrinsically designed to automatically match resolving events with an existing alarm.
 Alarms with matching resolutions with problems (Ups with Downs), should be indicated with the alarm-type attribute.
 .Bulleted
 * alarm-type="1" (problem alarm)
@@ -130,7 +128,7 @@ Alarms with matching resolutions with problems (Ups with Downs), should be indic
 * alarm-type="3" (notification alarm... alarm with no resolution such as SNMP Authentication Failures)
 
 .Instantiate new Alarms for existing cleared problem
-NOTE: Also new in H23, a global property setting that controls behavior of alarm reduction of currently cleared Alarms.
+NOTE: Alarmd includes a global property setting that controls the behavior of alarm reduction of currently cleared alarms.
 
 Create a properties file called alarmd.properties in the $OPENNMS_ETC/opennms.properties.d/ folder and add the following property set to true:
 [source]
@@ -149,21 +147,21 @@ Now, with this property set, when a repeat incident occurs and the current state
 .New node down Alarm with existing cleared Alarm
 image:alarms/new_after_clear_3.png[]
 
-What happens is that Alarmd will alter the existing Alarm's reductionKey to be unique.
+What happens is that Alarmd will alter the existing alarm's reductionKey to be unique.
 Thus preventing it from ever again being reused for a reoccurring problem in the Network (the literal ":ID:" and the alarm ID is appended to the reductionKey).
 
 .Altered reductionKey
 image:alarms/new_after_clear_4.png[]
 
 .Re-enable legacy dual Alarm state behavior
-NOTE: Now in H23, a global property setting can set to re-enable the legacy dual Alarm behavior.
+NOTE: You can set a global property setting to re-enable the legacy (pre-H 23) dual alarm behavior.
 
 Create a properties file called alarmd.properties in the $OPENNMS_ETC/opennms.properties.d/ folder and add the following property set to true:
 [source]
 ----
 ###### Alarmd Properties ######
 # Enable this property to have the traditional dual alarm handling of alarms state
-# for Alarm pairwise correlation.
+# for alarm pairwise correlation.
 # Default: false
 #org.opennms.alarmd.legacyAlarmState = false
 org.opennms.alarmd.legacyAlarmState = true

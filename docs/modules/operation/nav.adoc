@@ -142,7 +142,12 @@
 **** xref:performance-data-collection/shell/measurements.adoc[]
 **** xref:performance-data-collection/shell/stress-testing.adoc[]
 
-
+* xref:alarms/introduction.adoc[]
+** xref:alarms/alarmd.adoc[]
+** xref:alarms/configuring-alarms.adoc[]
+** xref:alarms/alarm-notes.adoc[]
+** xref:alarms/alarm-sound-flash.adoc[]
+** xref:alarms/history.adoc[]
 
 * xref:topology/topology.adoc[] 
 * xref:meta-data.adoc[]
