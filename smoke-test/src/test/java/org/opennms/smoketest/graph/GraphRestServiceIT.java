@@ -31,6 +31,8 @@ package org.opennms.smoketest.graph;
 import static com.jayway.awaitility.Awaitility.await;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
@@ -462,8 +464,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .getEvent());
 
         // Force application provider to reload (otherwise we have to wait until cache is invalidated)
-        karafShell.runCommand("opennms:graph-force-reload --container application");
-        Thread.sleep(50); // wait until event is processed
+        awaitForApplicationStatus(application, "Normal");
 
         // Fetch data nothing down
         final JSONObject query = new JSONObject()
@@ -502,17 +503,9 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
         // Take service down, reload graph and verify
         restClient.sendEvent(nodeLostServiceEvent);
-        karafShell.runCommand("opennms:graph-force-reload --container application");
-        Thread.sleep(500); // wait until event is processed
-        final Response response = given().log().ifValidationFails()
-                .body(query.toString())
-                .contentType(ContentType.JSON)
-                .post("{container_id}/{namespace}", "application", "application")
-                .then()
-                .log().ifValidationFails()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .extract().response();
+        awaitForApplicationStatus(application, "Minor");
+
+        final Response response = getApplicationViewResponse(query.toString());
         final ApplicationViewResponse applicationViewResponse = new ApplicationViewResponse(response);
         assertThat(applicationViewResponse.length(), Matchers.is(3));
         verifyStatus(applicationViewResponse.getVertexByApplicationId(application.getId()), "Minor", 1);
@@ -521,17 +514,9 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
         // Take service down with severity higher than Major
         restClient.sendEvent(nodeLostServiceEventApp2);
-        karafShell.runCommand("opennms:graph-force-reload --container application");
-        Thread.sleep(50); // wait until event is processed
-        final Response response2 = given().log().ifValidationFails()
-                .body(query.toString())
-                .contentType(ContentType.JSON)
-                .post("{container_id}/{namespace}", "application", "application")
-                .then()
-                .log().ifValidationFails()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .extract().response();
+        awaitForApplicationStatus(application, "Critical");
+
+        final Response response2 = getApplicationViewResponse(query.toString());
         final ApplicationViewResponse applicationViewResponse2 = new ApplicationViewResponse(response2);
         assertThat(applicationViewResponse2.length(), Matchers.is(3));
         verifyStatus(applicationViewResponse2.getVertexByApplicationId(application.getId()), "Critical", 2);
@@ -540,6 +525,33 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
         // Finally clean up
         applicationDao.delete(application);
+    }
+
+    private void awaitForApplicationStatus(final OnmsApplication application, final String severity) {
+        final JSONObject query = new JSONObject()
+                .put("semanticZoomLevel", 1)
+                .put("verticesInFocus", Lists.newArrayList(String.format("Application:%s", application.getId())));
+        await()
+                .atMost(1, MINUTES)
+                .until(() -> {
+                    karafShell.runCommand("opennms:graph-force-reload --container application");
+                    return new ApplicationViewResponse(getApplicationViewResponse(query.toString()))
+                            .getVertexByApplicationId(application.getId())
+                            .getJSONObject("status")
+                            .getString("severity");
+                }, equalTo(severity));
+    }
+
+    private Response getApplicationViewResponse(final String query) {
+        return given().log().ifValidationFails()
+                .body(query)
+                .contentType(ContentType.JSON)
+                .post("{container_id}/{namespace}", "application", "application")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().response();
     }
 
     @Test
