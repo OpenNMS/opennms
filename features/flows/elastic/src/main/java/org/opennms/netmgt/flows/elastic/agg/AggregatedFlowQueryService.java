@@ -141,6 +141,12 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
         return null;
     }
 
+    @Override
+    public CompletableFuture<List<String>> getAllValues(String field, List<Filter> filters) {
+        // TODO
+        return null;
+    }
+
     /**
      * Retrieve time series data from aggregated flow statistics.
      *

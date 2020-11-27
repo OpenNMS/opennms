@@ -31,9 +31,9 @@ package org.opennms.netmgt.flows.api;
 import java.util.Collection;
 
 /**
- * Primary interface used to persist and query flows.
+ * Primary interface used to persist flows.
  */
-public interface FlowRepository extends FlowQueryService {
+public interface FlowRepository {
 
     void persist(Collection<Flow> packets, FlowSource source) throws FlowException;
 }

@@ -270,4 +270,11 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .put("host", host)
                 .build());
     }
+
+    public String getAllValues(String field, List<Filter> filters) {
+        return render("all_values.ftl", ImmutableMap.builder()
+                .put("filters", getFilterQueries(filters))
+                .put("field", field)
+                .build());
+    }
 }

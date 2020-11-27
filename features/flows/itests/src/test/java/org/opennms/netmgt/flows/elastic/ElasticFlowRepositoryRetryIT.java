@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import static org.mockito.Mockito.mock;
-
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -100,8 +98,7 @@ public class ElasticFlowRepositoryRetryIT {
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher,
                              new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings(),
-                            mock(SmartQueryService.class)), client);
+                            new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), new IndexSettings()), client);
 
             consumer.accept(elasticFlowRepository);
 

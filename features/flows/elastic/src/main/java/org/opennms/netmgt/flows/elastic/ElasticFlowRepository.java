@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -52,16 +51,11 @@ import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.flows.api.Conversation;
-import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.EnrichedFlowForwarder;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
-import org.opennms.netmgt.flows.api.Host;
-import org.opennms.netmgt.flows.api.TrafficSummary;
-import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
@@ -77,7 +71,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.collect.Table;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 import io.opentracing.Scope;
@@ -144,8 +137,6 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final IndexSettings indexSettings;
 
-    private final SmartQueryService smartQueryService;
-
     private final EnrichedFlowForwarder enrichedFlowForwarder;
 
     private boolean enableFlowForwarding = false;
@@ -168,8 +159,7 @@ public class ElasticFlowRepository implements FlowRepository {
                                  DocumentEnricher documentEnricher,
                                  SessionUtils sessionUtils, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
                                  Identity identity, TracerRegistry tracerRegistry, EnrichedFlowForwarder enrichedFlowForwarder,
-                                 IndexSettings indexSettings,
-                                 SmartQueryService smartQueryService) {
+                                 IndexSettings indexSettings) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
@@ -180,7 +170,6 @@ public class ElasticFlowRepository implements FlowRepository {
         this.tracerRegistry = tracerRegistry;
         this.enrichedFlowForwarder = enrichedFlowForwarder;
         this.indexSettings = Objects.requireNonNull(indexSettings);
-        this.smartQueryService = Objects.requireNonNull(smartQueryService);
 
         this.emptyFlows = metricRegistry.counter("emptyFlows");
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
@@ -335,134 +324,6 @@ public class ElasticFlowRepository implements FlowRepository {
                 });
             }
         }
-    }
-
-    @Override
-    public CompletableFuture<Long> getFlowCount(List<Filter> filters) {
-        return smartQueryService.getFlowCount(filters);
-    }
-
-    @Override
-    public CompletableFuture<List<String>> getApplications(String matchingPrefix, long limit, List<Filter> filters) {
-        return smartQueryService.getApplications(matchingPrefix, limit, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTopNApplicationSummaries(int N, boolean includeOther,
-                                                                                       List<Filter> filters) {
-        return smartQueryService.getTopNApplicationSummaries(N, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getApplicationSummaries(Set<String> applications,
-                                                                                   boolean includeOther,
-                                                                                   List<Filter> filters) {
-        return smartQueryService.getApplicationSummaries(applications, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getApplicationSeries(Set<String> applications,
-                                                                                            long step,
-                                                                                            boolean includeOther,
-                                                                                            List<Filter> filters) {
-        return smartQueryService.getApplicationSeries(applications, step, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationSeries(int N, long step,
-                                                                                                boolean includeOther,
-                                                                                                List<Filter> filters) {
-        return smartQueryService.getTopNApplicationSeries(N, step, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<String>> getConversations(String locationPattern, String protocolPattern,
-                                                            String lowerIPPattern, String upperIPPattern,
-                                                            String applicationPattern, long limit,
-                                                            List<Filter> filters) {
-        return smartQueryService.getConversations(locationPattern, protocolPattern,
-                lowerIPPattern, upperIPPattern,
-                applicationPattern, limit,
-                filters);
-    }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversationSummaries(int N,
-                                                                                              boolean includeOther,
-                                                                                              List<Filter> filters) {
-        return smartQueryService.getTopNConversationSummaries(N, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<Conversation>>> getConversationSummaries(Set<String> conversations,
-                                                                                          boolean includeOther,
-                                                                                          List<Filter> filters) {
-        return smartQueryService.getConversationSummaries(conversations, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getConversationSeries(Set<String> conversations, long step, boolean includeOther, List<Filter> filters) {
-        return smartQueryService.getConversationSeries(conversations, step, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationSeries(int N,
-                                                                                                          long step,
-                                                                                                          boolean includeOther,
-                                                                                                          List<Filter> filters) {
-        return smartQueryService.getTopNConversationSeries(N, step, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<String>> getHosts(String regex, long limit, List<Filter> filters) {
-        return smartQueryService.getHosts(regex, limit, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<Host>>> getTopNHostSummaries(int N, boolean includeOther,
-                                                                              List<Filter> filters) {
-        return smartQueryService.getTopNHostSummaries(N, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<Host>>> getHostSummaries(Set<String> hosts,
-                                                                            boolean includeOther,
-                                                                            List<Filter> filters) {
-        return smartQueryService.getHostSummaries(hosts, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<Host>, Long, Double>> getHostSeries(Set<String> hosts, long step,
-                                                                                     boolean includeOther,
-                                                                                     List<Filter> filters) {
-        return smartQueryService.getHostSeries(hosts, step, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<Host>, Long, Double>> getTopNHostSeries(int N, long step,
-                                                                                         boolean includeOther,
-                                                                                         List<Filter> filters) {
-        return smartQueryService.getTopNHostSeries(N, step, includeOther, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<Integer>> getTosBytes(List<Filter> filters) {
-        return smartQueryService.getTosBytes(filters);
-    }
-
-    @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTosSummaries(List<Filter> filters) {
-        return smartQueryService.getTosSummaries(filters);
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTosSeries(long step, List<Filter> filters) {
-        return smartQueryService.getTosSeries(step, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<Integer>> getDscp(List<Filter> filters) {
-        return smartQueryService.getDscp(filters);
     }
 
     public Identity getIdentity() {
