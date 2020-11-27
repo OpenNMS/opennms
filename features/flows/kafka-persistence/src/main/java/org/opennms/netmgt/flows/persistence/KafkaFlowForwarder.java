@@ -71,7 +71,7 @@ public class KafkaFlowForwarder implements EnrichedFlowForwarder {
     private final Counter skipped;
     private final Counter failed;
 
-    public KafkaFlowForwarder(ConfigurationAdmin configAdmin,
+    public KafkaFlowForwarder(final ConfigurationAdmin configAdmin,
                               final MetricRegistry metricRegistry) {
         this.configAdmin = configAdmin;
 
