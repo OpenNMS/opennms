@@ -1,7 +1,7 @@
 
-===== Charts
+= Charts
 
-This _Dashlet_ displays an existing link:http://www.opennms.org/wiki/Chart-configuration.xml[Chart].
+This dashlet displays an existing https://wiki.opennms.org/wiki/Chart-configuration.xml[Chart].
 
 [options="autowidth"]
 |===

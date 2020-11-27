@@ -1,7 +1,7 @@
 
-===== URL
+= URL
 
-This _Dashlet_ shows the content of a web page or other web application, e.g. other monitoring systems by a given URL.
+This dashlet shows the content of a web page or other web application, e.g., other monitoring systems by a given URL.
 
 [options="autowidth"]
 |===

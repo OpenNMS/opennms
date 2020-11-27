@@ -1,19 +1,18 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= Trend
 
-The _Trend_ feature allows to display small inline charts of database-based statistics.
-These chart are accessible in the _Status_ menu of the _OpenNMS'_ web application.
-Furthermore it is also possible to configure these charts to be displayed on the _OpenNMS'_ landing page.
+The Trend feature allows to display small inline charts of database-based statistics.
+These chart are accessible in the Status menu of the OpenNMS web application.
+Furthermore it is also possible to configure these charts to be displayed on the OpenNMS landing page.
 To achieve this alter the `org.opennms.web.console.centerUrl` property to also include the entry `/trend/trend-box.htm`.
 
 .Trend chart structure
 image:webui/trend/trend-chart.png[]
 
-These charts can be configured and defined in the `trend-configuration.xml` file in your _OpenNMS'_ `etc` directory.
-The following sample defines a _Trend_ chart for displaying nodes with ongoing outages.
+These charts can be configured and defined in the `trend-configuration.xml` file in your OpenNMS `etc` directory.
+The following sample defines a Trend chart for displaying nodes with ongoing outages.
 
-.Sample _Trend_ chart XML definition for displaying nodes with outages
+.Sample Trend chart XML definition for displaying nodes with outages
 [source,XML]
 ----
    <trend-definition name="nodes">
@@ -54,15 +53,15 @@ The following sample defines a _Trend_ chart for displaying nodes with ongoing o
                         now() - interval '1 hour' * (O + 1) AS S,
                         now() - interval '1 hour' * O as E
                     from
-                        generate_series(0, 23) as O
+                        generateseries(0, 23) as O
                 ) I order by S;
             ]]>
         </query>
     </trend-definition>
 ----
 
-<1> title of the _Trend_ chart, see below for supported variable substitutions
-<2> subtitle of the _Trend_ chart, see below for supported variable substitutions
+<1> title of the Trend chart, see below for supported variable substitutions
+<2> subtitle of the Trend chart, see below for supported variable substitutions
 <3> defines whether the chart is visible by default
 <4> icon for the chart, see https://getbootstrap.com/docs/4.1/extend/icons/[Icons] for viable options
 <5> options for inline chart, see http://omnipotent.net/jquery.sparkline/#common[jQuery Sparklines] for viable options
@@ -79,27 +78,27 @@ The following table describes the available variable substitutions.
 [options="header, autowidth"]
 |===
 | Name                                       | Type      | Description
-| `${intMax}`                                | _Integer_ | integer maximum value
-| `${doubleMax}`                             | _Double_  | maximum value
-| `${intMin}`                                | _Integer_ | integer minimum value
-| `${doubleMin}`                             | _Double_  | minimum value
-| `${intAvg}`                                | _Integer_ | integer average value
-| `${doubleAvg}`                             | _Double_  | average value
-| `${intSum}`                                | _Integer_ | integer sum of values
-| `${doubleSum}`                             | _Double_  | sum of value
-| `${intValue[]}`                            | _Integer_ | array of integer result values for the given SQL query
-| `${doubleValue[]}`                         | _Double_  | array of result values for the given SQL query
-| `${intValueChange[]}`                      | _Integer_ | array of integer value changes for the given SQL query
-| `${doubleValueChange[]}`                   | _Double_  | array of value changes for the given SQL query
-| `${intLastValue}`                          | _Integer_ | last integer value
-| `${doubleLastValue}`                       | _Double_  | last value
-| `${intLastValueChange}`                    | _Integer_ | last integer value change
-| `${doubleLastValueChange}`                 | _Double_  | last value change
+| `$\{intmax}`                                | Integer | integer maximum value
+| `$\{doublemax}`                             | Double  | maximum value
+| `$\{intmin}`                                | Integer | integer minimum value
+| `$\{doublemin}`                             | Double  | minimum value
+| `$\{intavg}`                                | Integer | integer average value
+| `$\{doubleavg}`                             | Double  | average value
+| `$\{intsum}`                                | Integer | integer sum of values
+| `$\{doublesum}`                             | Double  | sum of value
+| `${intValue[]}`                            | Integer | array of integer result values for the given SQL query
+| `${doubleValue[]}`                         | Double  | array of result values for the given SQL query
+| `${intValueChange[]}`                      | Integer | array of integer value changes for the given SQL query
+| `${doubleValueChange[]}`                   | Double  | array of value changes for the given SQL query
+| `$\{intlastvalue}`                          | Integer | last integer value
+| `$\{doublelastvalue}`                       | Double  | last value
+| `$\{intlastvaluechange}`                    | Integer | last integer value change
+| `$\{doublelastvaluechange}`                 | Double  | last value change
 |===
 
 You can also display a single graph in your JSP files by including the file `/trend/single-trend-box.jsp` and specifying the `name` parameter.
 
-.Sample JSP snippet to include a single _Trend_ chart with name 'example'
+.Sample JSP snippet to include a single Trend chart with name 'example'
 [source,XML]
 ----
 <jsp:include page="/trend/single-trend-box.jsp" flush="false">

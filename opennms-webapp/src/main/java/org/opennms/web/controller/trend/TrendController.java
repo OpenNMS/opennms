@@ -100,17 +100,17 @@ public class TrendController extends AbstractController implements InitializingB
 
         final DoubleSummaryStatistics doubleSummaryStatistics = values.stream().mapToDouble(Double::doubleValue).summaryStatistics();
 
-        replacements.put("${doubleMax}", String.format("%.2f", doubleSummaryStatistics.getMax()));
-        replacements.put("${intMax}", String.format("%d", (int) doubleSummaryStatistics.getMax()));
+        replacements.put("$\{doublemax}", String.format("%.2f", doubleSummaryStatistics.getMax()));
+        replacements.put("$\{intmax}", String.format("%d", (int) doubleSummaryStatistics.getMax()));
 
-        replacements.put("${doubleMin}", String.format("%.2f", doubleSummaryStatistics.getMin()));
-        replacements.put("${intMin}", String.format("%d", (int) doubleSummaryStatistics.getMin()));
+        replacements.put("$\{doublemin}", String.format("%.2f", doubleSummaryStatistics.getMin()));
+        replacements.put("$\{intmin}", String.format("%d", (int) doubleSummaryStatistics.getMin()));
 
-        replacements.put("${doubleAvg}", String.format("%.2f", doubleSummaryStatistics.getAverage()));
-        replacements.put("${intAvg}", String.format("%d", (int) doubleSummaryStatistics.getAverage()));
+        replacements.put("$\{doubleavg}", String.format("%.2f", doubleSummaryStatistics.getAverage()));
+        replacements.put("$\{intavg}", String.format("%d", (int) doubleSummaryStatistics.getAverage()));
 
-        replacements.put("${doubleSum}", String.format("%.2f", doubleSummaryStatistics.getSum()));
-        replacements.put("${intSum}", String.format("%d", (int) doubleSummaryStatistics.getSum()));
+        replacements.put("$\{doublesum}", String.format("%.2f", doubleSummaryStatistics.getSum()));
+        replacements.put("$\{intsum}", String.format("%d", (int) doubleSummaryStatistics.getSum()));
 
         for (int i = 0; i < values.size(); i++) {
             double current = values.get(i);
@@ -131,17 +131,17 @@ public class TrendController extends AbstractController implements InitializingB
         }
 
         if (values.size() > 0) {
-            replacements.put("${doubleLastValueChange}", replacements.get("${doubleValueChange[" + (values.size() - 1) + "]}"));
-            replacements.put("${intLastValueChange}", replacements.get("${intValueChange[" + (values.size() - 1) + "]}"));
+            replacements.put("$\{doublelastvaluechange}", replacements.get("${doubleValueChange[" + (values.size() - 1) + "]}"));
+            replacements.put("$\{intlastvaluechange}", replacements.get("${intValueChange[" + (values.size() - 1) + "]}"));
 
-            replacements.put("${doubleLastValue}", replacements.get("${doubleValue[" + (values.size() - 1) + "]}"));
-            replacements.put("${intLastValue}", replacements.get("${intValue[" + (values.size() - 1) + "]}"));
+            replacements.put("$\{doublelastvalue}", replacements.get("${doubleValue[" + (values.size() - 1) + "]}"));
+            replacements.put("$\{intlastvalue}", replacements.get("${intValue[" + (values.size() - 1) + "]}"));
         } else {
-            replacements.put("${doubleLastValueChange}", "NaN");
-            replacements.put("${intLastValueChange}", "NaN");
+            replacements.put("$\{doublelastvaluechange}", "NaN");
+            replacements.put("$\{intlastvaluechange}", "NaN");
 
-            replacements.put("${doubleLastValue}", "NaN");
-            replacements.put("${intLastValue}", "NaN");
+            replacements.put("$\{doublelastvalue}", "NaN");
+            replacements.put("$\{intlastvalue}", "NaN");
         }
 
         return replacements;

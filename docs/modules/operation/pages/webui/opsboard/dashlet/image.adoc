@@ -1,12 +1,12 @@
 
-===== Image
+= Image
 
-This _Dashlet_ displays an image by a given URL.
+This dashlet displays an image by a given URL.
 
 [options="autowidth"]
 |===
 | Boost support    | false
-| `imageUrl`       | URL with the location of the image to show in this _Dashlet_
+| `imageUrl`       | URL with the location of the image to show in this dashlet
 | `maximizeHeight` | Rescale the image to fill display width
 | `maximizeWidth`  | Rescale the image to fill display height
 |===

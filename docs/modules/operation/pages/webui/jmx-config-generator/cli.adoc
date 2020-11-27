@@ -1,18 +1,15 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
+= CLI-based utility
 
-==== CLI based utility
-
-The command line _(CLI)_ based tool is not installed by default.
+The command line (CLI)-based tool is not installed by default.
 ifdef::opennms-prime[]
-It is available as an _RPM_ package in the official repositories.
+It is available as an RPM package in the official repositories.
 endif::opennms-prime[]
 ifndef::opennms-prime[]
-It is available as _Debian_ and _RPM_ package in the official repositories.
+It is available as Debian and RPM package in the official repositories.
 endif::opennms-prime[]
 
-===== Installation
+== Installation
 
 .RHEL based installation with Yum
 
@@ -30,11 +27,11 @@ apt-get install opennms-jmx-config-generator
 ----
 endif::opennms-prime[]
 
-.Installation from source
+=== Installation from source
 
-It is required to have the _Java 8 Development Kit_ with _Apache Maven_ installed.
+It is required to have the Java 8 Development Kit with Apache Maven installed.
 The `mvn` binary has to be in the path environment.
-After cloning the repository you have to enter the source folder and compile an executable _JAR_.
+After cloning the repository you have to enter the source folder and compile an executable JAR.
 
 [source, shell]
 ----
@@ -50,9 +47,9 @@ This file can be invoked by:
 java -jar target/jmxconfiggenerator-28.0.0-SNAPSHOT-onejar.jar
 ----
 
-===== Usage
+== Use
 
-After installing the the _JMX Config Generator_ the tool's wrapper script is located in the `$\{opennms_home}/bin` directory.
+After installing the the JMX Config Generator the tool's wrapper script is located in the `$\{opennms_home}/bin` directory.
 
 [source, shell]
 ----
@@ -62,31 +59,31 @@ $ ./jmx-config-generator
 
 TIP: When invoked without parameters the usage and help information is printed.
 
-The _JMX Config Generator_ uses sub-commands for the different configuration generation tasks.
+The JMX Config Generator uses sub-commands for the different configuration generation tasks.
 Each of these sub-commands provide different options and parameters.
 The command line tool accepts the following sub-commands.
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Sub-command             | Description
-| `query`                 | Queries a _MBean Server_ for certain _MBeans_ and _attributes_.
+| `query`                 | Queries a MBean Server for certain MBeans and attributes.
 | `generate-conf`         | Generates a valid `jmx-datacollection-config.xml` file.
-| `generate-graph`        | Generates a _RRD_ graph definition file with matching graph definitions for a given `jmx-datacollection-config.xml`.
+| `generate-graph`        | Generates a RRD graph definition file with matching graph definitions for a given `jmx-datacollection-config.xml`.
 |===
 
 The following global options are available in each of the sub-commands of the tool:
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Option/Argument  | Description                                  | Default
 | `-h (--help)`    | Show help and usage information.             | false
 | `-v (--verbose)` | Enables verbose mode for debugging purposes. | false
 |===
 
-===== Sub-command: query
+== Sub-command: query
 
-This sub-command is used to query a _MBean Server_ for it's available _MBean_ objects.
-The following example queries the server `myserver` with the credentials `myusername/mypassword` on port `7199` for _MBean objects_ in the `java.lang` domain.
+This sub-command is used to query a MBean Server for its available MBean objects.
+The following example queries the server `myserver` with the credentials `myusername/mypassword` on port `7199` for MBean objects in the `java.lang` domain.
 
 [source, shell]
 ----
@@ -113,44 +110,44 @@ java.lang:type=ClassLoading
 <output omitted>
 ----
 
-The following command line options are available for the _query_ sub-command.
+The following command line options are available for the query sub-command.
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Option/Argument              | Description                                                                                                | Default
-| `<filter criteria>`          | A filter criteria to query the _MBean Server_ for.
+| `<filter criteria>`          | A filter criteria to query the MBean Server for.
                                  The format is `<objectname>[:attribute name]`.
-                                 The `<objectname>` accepts the default _JMX_ object name pattern to identify the _MBeans_ to be retrieved.
+                                 The `<objectname>` accepts the default JMX object name pattern to identify the MBeans to be retrieved.
                                  If `null` all domains are shown.
-                                 If no key properties are specified, the domain's _MBeans_ are retrieved.
+                                 If no key properties are specified, the domain's MBeans are retrieved.
                                  To execute for certain attributes, you have to add `:<attribute name>`.
                                  The `<attribute name>` accepts regular expressions.
                                  When multiple `<filter criteria>` are provided they are `OR` concatenated.                                 | -
-| `--host <host>`              | Hostname or IP address of the remote _JMX_ host.                                                           | -
+| `--host <host>`              | Hostname or IP address of the remote JMX host.                                                           | -
 | `--ids-only`                 | Only show the ids of the attributes.                                                                       | false
 | `--ignore <filter criteria>` | Set `<filter criteria>` to ignore while running.                                                           | -
 | `--include-values`           | Include attribute values.                                                                                  | false
-| `--jmxmp`                    | Use _JMXMP_ and not _JMX over RMI_.                                                                        | false
-| `--password <password>`      | Password for _JMX_ authentication.                                                                         | -
-| `--port <port>`              | Port of _JMX_ service.                                                                                     | -
+| `--jmxmp`                    | Use JMXMP and not JMX over RMI.                                                                        | false
+| `--password <password>`      | Password for JMX authentication.                                                                         | -
+| `--port <port>`              | Port of JMX service.                                                                                     | -
 | `--show-domains`             | Only lists the available domains.                                                                          | true
-| `--show-empty`               | Includes _MBeans_, even if they do not have attributes.
+| `--show-empty`               | Includes MBeans, even if they do not have attributes.
                                  Either due to the `<filter criteria>` or while there are none.                                             | false
-| `--url <url>`                | Custom connection _URL_ +
+| `--url <url>`                | Custom connection URL +
                                  `<hostname>:<port>` +
                                  `service:jmx:<protocol>:<sap>` +
                                  `service:jmx:remoting-jmx://<hostname>:<port>`                                                             | -
-| `--username <username>`      | Username for _JMX_ authentication.                                                                         | -
+| `--username <username>`      | Username for JMX authentication.                                                                         | -
 | `-h (--help)`                | Show help and usage information.                                                                           | false
 | `-v (--verbose)`             | Enables verbose mode for debugging purposes.                                                               | false
 |===
 
-===== Sub-command: generate-conf
+== Sub-command: generate-conf
 
-This sub-command can be used to generate a valid `jmx-datacollection-config.xml` for a given set of _MBean objects_ queried from a _MBean Server_.
+This sub-command can be used to generate a valid `jmx-datacollection-config.xml` for a given set of MBean objects queried from a MBean Server.
 
-The following example generate a configuration file `myconfig.xml` for _MBean_ objects in the `java.lang` domain of the server `myserver` on port `7199` with the credentials `myusername/mypassword`.
-You have to define either an _URL_ or a hostname and port to connect to a _JMX_ server.
+The following example generate a configuration file `myconfig.xml` for MBean objects in the `java.lang` domain of the server `myserver` on port `7199` with the credentials `myusername/mypassword`.
+You have to define either an URL or a hostname and port to connect to a JMX server.
 
 [source, shell]
 ----
@@ -158,43 +155,43 @@ jmx-config-generator generate-conf --host myserver --username myusername --passw
 Dictionary entries loaded: '18'
 ----
 
-The following options are available for the _generate-conf_ sub-command.
+The following options are available for the generate-conf sub-command.
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Option/Argument         | Description                                                                             | Default
 | `<attribute id>`        | A list of attribute Ids to be included for the generation of the configuration file.    | -
-| `--dictionary <file>`   | Path to a dictionary file for replacing attribute names and part of _MBean_ attributes.
+| `--dictionary <file>`   | Path to a dictionary file for replacing attribute names and part of MBean attributes.
                             The file should have for each line a replacement, e.g. Auxillary:Auxil.                 | -
-| `--host <host>`         | Hostname or IP address of _JMX_ host.                                                   | -
-| `--jmxmp`               | Use _JMXMP_ and not _JMX over RMI_.                                                     | false
+| `--host <host>`         | Hostname or IP address of JMX host.                                                   | -
+| `--jmxmp`               | Use JMXMP and not JMX over RMI.                                                     | false
 | `--output <file>`       | Output filename to write generated `jmx-datacollection-config.xml`.                     | -
-| `--password <password>` | Password for _JMX_ authentication.                                                      | -
-| `--port <port>`         | Port of _JMX_ service                                                                   | -
-| `--print-dictionary`    | Prints the used dictionary to _STDOUT_.
+| `--password <password>` | Password for JMX authentication.                                                      | -
+| `--port <port>`         | Port of JMX service                                                                   | -
+| `--print-dictionary`    | Prints the used dictionary to STDOUT.
                             May be used with `--dictionary`                                                         | false
-| `--service <value>`     | The _Service Name_ used as _JMX_ data collection name.                                  | anyservice
+| `--service <value>`     | The service name used as JMX data collection name.                                  | anyservice
 | `--skipDefaultVM`       | Skip default JavaVM Beans.                                                              | false
 | `--skipNonNumber`       | Skip attributes with non-number values                                                  | false
-| `--url <url>`           | Custom connection _URL_ +
+| `--url <url>`           | Custom connection URL +
                             `<hostname>:<port>` +
                             `service:jmx:<protocol>:<sap>` +
                             `service:jmx:remoting-jmx://<hostname>:<port>`                                          | -
-| `--username <username>` | Username for _JMX_ authentication                                                       | -
+| `--username <username>` | Username for JMX authentication                                                       | -
 | `-h (--help)`           | Show help and usage information.                                                        | false
 | `-v (--verbose)`        | Enables verbose mode for debugging purposes.                                            | false
 |===
 
-TIP: The option `--skipDefaultVM` offers the ability to ignore the _MBeans_ provided as standard by the _JVM_ and just create configurations for the _MBeans_ provided by the _Java Application_ itself.
+TIP: The option `--skipDefaultVM` offers the ability to ignore the MBeans provided as standard by the JVM and just create configurations for the MBeans provided by the java application itself.
 This is particularly useful if an optimized configuration for the JVM already exists.
 If the `--skipDefaultVM` option is not set the generated configuration will include the MBeans of the JVM and the MBeans of the Java Application.
 
 IMPORTANT: Check the file and see if there are `alias` names with more than 19 characters.
            This errors are marked with `NAME_CRASH_AS_19_CHAR_VALUE`
 
-===== Sub-command: generate-graph
+== Sub-command: generate-graph
 
-This sub-command generates a _RRD_ graph definition file for a given configuration file.
+This sub-command generates a RRD graph definition file for a given configuration file.
 The following example generates a graph definition file `mygraph.properties` using the configuration in file `myconfig.xml`.
 
 [source, shell]
@@ -210,7 +207,7 @@ java.lang.Compilation.MBeanReport, \
 
 The following options are available for this sub-command.
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Option/Argument                    | Description                                                                                        | Default
 | `--input <jmx-datacollection.xml>` | Configuration file to use as input to generate the graph properties file                           | -
@@ -221,11 +218,11 @@ The following options are available for this sub-command.
 | `-v (--verbose)`                   | Enables verbose mode for debugging purposes.                                                       | false
 |===
 
-===== Graph Templates
+== Graph Templates
 
-The _JMX Config Generator_ uses a template file to generate the graphs.
+The JMX Config Generator uses a template file to generate the graphs.
 It is possible to use a user-defined template.
-The option `--template` followed by a file lets the _JMX Config Generator_ use the external template file as base for the graph generation.
+The option `--template` followed by a file lets the JMX Config Generator use the external template file as base for the graph generation.
 The following example illustrates how a custom template `mytemplate.vm` is used to generate the graph definition file `mygraph.properties` using the configuration in file `myconfig.xml`.
 
 [source, shell]
@@ -265,16 +262,16 @@ report.${report.id}.command=--title="${report.title}" \
 #end
 ----
 
-The _JMX Config Generator_ generates different types of graphs from the `jmx-datacollection-config.xml`.
+The JMX Config Generator generates different types of graphs from the `jmx-datacollection-config.xml`.
 The different types are listed below:
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Type                     | Description
-| AttributeReport          | For each attribute of any _MBean_ a graph will be generated.
+| AttributeReport          | For each attribute of any MBean a graph will be generated.
                              Composite attributes will be ignored.
-| MbeanReport              | For each _MBean_ a combined graph with all attributes of the _MBeans_ is generated.
+| MbeanReport              | For each MBean a combined graph with all attributes of the MBeans is generated.
                              Composite attributes will be ignored.
-| CompositeReport          | For each composite attribute of every _MBean_ a graph is generated.
-| CompositeAttributeReport | For each composite member of every _MBean_ a combined graph with all composite attributes is generated.
+| CompositeReport          | For each composite attribute of every MBean a graph is generated.
+| CompositeAttributeReport | For each composite member of every MBean a combined graph with all composite attributes is generated.
 |===
