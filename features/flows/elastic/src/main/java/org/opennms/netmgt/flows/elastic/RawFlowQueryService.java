@@ -96,7 +96,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
     @Override
     public CompletableFuture<List<TrafficSummary<String>>> getApplicationSummaries(Set<String> applications, boolean includeOther, List<Filter> filters) {
         return getTotalBytesForSome(applications, "netflow.application", null, includeOther,
-                                    filters);
+                filters);
     }
 
     @Override
@@ -239,6 +239,21 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                         .collect(Collectors.toList()));
     }
 
+    @Override
+    public CompletableFuture<List<String>> getAllValues(String field, List<Filter> filters) {
+        final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
+        return searchAsync(searchQueryProvider.getAllValues(field, filters), timeRangeFilter)
+                .thenApply(res -> {
+                    val buckets = res.getJsonObject().getAsJsonObject("aggregations").getAsJsonObject("my_buckets");
+//                    res.getAggregations().getAggregation("my_buckets", null);
+//                    res.getAggregations().getAggregation("my_buckets", TermsAggregation.class)
+//                            .getBuckets().stream()
+//                            .map(entry -> entry.getKey())
+//                            .collect(Collectors.toList())
+                    return Collections.emptyList();
+                });
+    }
+
     public CompletableFuture<Conversation> resolveHostnameForConversation(final String convoKey, List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
 
@@ -251,7 +266,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
 
         final String hostnameQuery = searchQueryProvider.getHostnameByConversationQuery(convoKey, filters);
         return searchAsync(hostnameQuery, timeRangeFilter)
-                .thenApply(res ->  {
+                .thenApply(res -> {
                     final JsonObject hit = res.getFirstHit(JsonObject.class).source;
                     if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), key.getLowerIp())) {
                         Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withLowerHostname);
@@ -277,7 +292,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
 
         final String hostnameQuery = searchQueryProvider.getHostnameByHostQuery(host, filters);
         return searchAsync(hostnameQuery, timeRangeFilter)
-                .thenApply(res ->  {
+                .thenApply(res -> {
                     final JsonObject hit = res.getFirstHit(JsonObject.class).source;
                     if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), host)) {
                         Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withHostname);
@@ -298,14 +313,14 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
         // Increase the multiplier for increased accuracy
         // See https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html#_size
         final int multiplier = 2;
-        final String query = searchQueryProvider.getTopNQuery(multiplier*N, groupByTerm, keyForMissingTerm, filters);
+        final String query = searchQueryProvider.getTopNQuery(multiplier * N, groupByTerm, keyForMissingTerm, filters);
         return searchAsync(query, extractTimeRangeFilter(filters))
                 .thenApply(res -> processGroupedByResult(res, N));
     }
 
     private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesForSome(Collection<String> from, long step, String groupByTerm,
-                                                                                          String keyForMissingTerm,
-                                                                                          boolean includeOther, List<Filter> filters) {
+                                                                                         String keyForMissingTerm,
+                                                                                         boolean includeOther, List<Filter> filters) {
         val fag = new FilterAndGroupBy(filters, groupByTerm, step);
         val addMissing = addSeriesForMissing(fag, from, keyForMissingTerm);
         val addOther = addSeriesForOther(fag, from, includeOther, keyForMissingTerm);
@@ -354,9 +369,9 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                                                                                           List<Filter> filters) {
         return getTopN(N, groupByTerm, keyForMissingTerm, filters)
                 .thenCompose(topN ->
-                                     getSeriesForSome(topN, step, groupByTerm, keyForMissingTerm, includeOther, filters)
-                                             .thenApply(table -> TableUtils.sortTableByRowKeys(table, topN))
-                            );
+                        getSeriesForSome(topN, step, groupByTerm, keyForMissingTerm, includeOther, filters)
+                                .thenApply(table -> TableUtils.sortTableByRowKeys(table, topN))
+                );
     }
 
     private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesForSome(Collection<String> from, String groupByTerm,
@@ -449,7 +464,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
             // We also want to gather series for all other terms
             final boolean missingTermIncluded = keyForMissingTerm != null && from.contains(keyForMissingTerm);
             final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(from, fag.step,
-                                                                                              fag.start, fag.end, fag.groupByTerm, missingTermIncluded, fag.filters);
+                    fag.start, fag.end, fag.groupByTerm, missingTermIncluded, fag.filters);
             val otherFuture = searchAsync(seriesFromOthersQuery, fag.timeRangeFilter);
             return builder -> otherFuture.thenApply(searchResult -> processOthersResult(searchResult, builder));
         } else {
@@ -498,9 +513,9 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                     = searchQueryProvider.getSeriesFromMissingQuery(fag.step, fag.start, fag.end, fag.groupByTerm, keyForMissingTerm, fag.filters);
             val missingFuture = searchAsync(bytesFromMissingQuery, fag.timeRangeFilter);
             return summaries -> missingFuture.thenApply(results -> {
-                    summaries.putAll(toTrafficSummaries(results));
-                    return summaries;
-                });
+                summaries.putAll(toTrafficSummaries(results));
+                return summaries;
+            });
         } else {
             return keepValue();
         }
@@ -515,34 +530,34 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                     searchQueryProvider.getSeriesFromOthersQuery(from, fag.step, fag.start, fag.end, fag.groupByTerm, missingTermIncluded, fag.filters);
             val otherFuture = searchAsync(bytesFromOthersQuery, fag.timeRangeFilter);
             return summaries -> otherFuture.thenApply(results -> {
-                    final MetricAggregation aggs = results.getAggregations();
-                    if (aggs == null) {
-                        // No results
-                        return summaries;
-                    }
-                    final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
-                    if (directionAgg == null) {
-                        // No results
-                        return summaries;
-                    }
-                    final TrafficSummary.Builder<String> trafficSummary = TrafficSummary.from(OTHER_NAME);
-                    for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
-                        final boolean isIngress = isIngress(directionBucket);
-                        final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
-                        final List<ProportionalSumAggregation.DateHistogram> sumBuckets = sumAgg.getBuckets();
-                        // There should only be a single bucket here
-                        if (sumBuckets.size() != 1) {
-                            throw new IllegalStateException("Expected 1 bucket, but got: " + sumBuckets);
-                        }
-                        final Double sum = sumBuckets.iterator().next().getValue();
-                        if (!isIngress) {
-                            trafficSummary.withBytesOut(sum.longValue());
-                        } else {
-                            trafficSummary.withBytesIn(sum.longValue());
-                        }
-                    }
-                    summaries.put(OTHER_NAME, trafficSummary.build());
+                final MetricAggregation aggs = results.getAggregations();
+                if (aggs == null) {
+                    // No results
                     return summaries;
+                }
+                final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
+                if (directionAgg == null) {
+                    // No results
+                    return summaries;
+                }
+                final TrafficSummary.Builder<String> trafficSummary = TrafficSummary.from(OTHER_NAME);
+                for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
+                    final boolean isIngress = isIngress(directionBucket);
+                    final ProportionalSumAggregation sumAgg = directionBucket.getAggregation("bytes", ProportionalSumAggregation.class);
+                    final List<ProportionalSumAggregation.DateHistogram> sumBuckets = sumAgg.getBuckets();
+                    // There should only be a single bucket here
+                    if (sumBuckets.size() != 1) {
+                        throw new IllegalStateException("Expected 1 bucket, but got: " + sumBuckets);
+                    }
+                    final Double sum = sumBuckets.iterator().next().getValue();
+                    if (!isIngress) {
+                        trafficSummary.withBytesOut(sum.longValue());
+                    } else {
+                        trafficSummary.withBytesIn(sum.longValue());
+                    }
+                }
+                summaries.put(OTHER_NAME, trafficSummary.build());
+                return summaries;
 
             });
         } else {
@@ -627,7 +642,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
     }
 
     private static ImmutableTable.Builder<Directional<String>, Long, Double> processOthersResult(SearchResult res,
-                                            ImmutableTable.Builder<Directional<String>, Long, Double> builder) {
+                                                                                                 ImmutableTable.Builder<Directional<String>, Long, Double> builder) {
         final MetricAggregation aggs = res.getAggregations();
         if (aggs == null) {
             // No results
@@ -675,10 +690,10 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
         return filter;
     }
 
-    private static TimeRangeFilter extractTimeRangeFilter(Collection<Filter> filters){
+    private static TimeRangeFilter extractTimeRangeFilter(Collection<Filter> filters) {
         return filters.stream()
-                .filter(f -> f instanceof  TimeRangeFilter)
-                .map(f -> (TimeRangeFilter)f)
+                .filter(f -> f instanceof TimeRangeFilter)
+                .map(f -> (TimeRangeFilter) f)
                 .findFirst().orElse(null);
     }
 
@@ -709,11 +724,13 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
         public final long end;
         public final long step;
 
-        /** Start/End/Step are calculated such that the interval is covered by a single step */
+        /**
+         * Start/End/Step are calculated such that the interval is covered by a single step
+         */
         public FilterAndGroupBy(
                 List<Filter> filters,
                 String groupByTerm
-                               ) {
+        ) {
             Objects.requireNonNull(filters);
             Objects.requireNonNull(groupByTerm);
             this.filters = filters;
@@ -730,7 +747,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 List<Filter> filters,
                 String groupByTerm,
                 long step
-                               ) {
+        ) {
             Objects.requireNonNull(filters);
             Objects.requireNonNull(groupByTerm);
             this.filters = filters;

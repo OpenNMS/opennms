@@ -134,8 +134,6 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final IndexSettings indexSettings;
 
-    private final SmartQueryService smartQueryService;
-
     private final EnrichedFlowForwarder enrichedFlowForwarder;
 
     private boolean enableFlowForwarding = false;
@@ -158,8 +156,7 @@ public class ElasticFlowRepository implements FlowRepository {
                                  DocumentEnricher documentEnricher,
                                  SessionUtils sessionUtils, NodeDao nodeDao, SnmpInterfaceDao snmpInterfaceDao,
                                  Identity identity, TracerRegistry tracerRegistry, EnrichedFlowForwarder enrichedFlowForwarder,
-                                 IndexSettings indexSettings,
-                                 SmartQueryService smartQueryService) {
+                                 IndexSettings indexSettings) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
@@ -170,7 +167,6 @@ public class ElasticFlowRepository implements FlowRepository {
         this.tracerRegistry = tracerRegistry;
         this.enrichedFlowForwarder = enrichedFlowForwarder;
         this.indexSettings = Objects.requireNonNull(indexSettings);
-        this.smartQueryService = Objects.requireNonNull(smartQueryService);
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logEnrichementTimer = metricRegistry.timer("logEnrichment");

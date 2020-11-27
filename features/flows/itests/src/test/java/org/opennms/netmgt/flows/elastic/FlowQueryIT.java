@@ -122,8 +122,7 @@ public class FlowQueryIT {
         smartQueryService.setAlwaysUseRawForQueries(true); // Always use RAW values for these tests
         flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
                 new MockSessionUtils(), new MockNodeDao(), new MockSnmpInterfaceDao(),
-                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings,
-                smartQueryService);
+                new MockIdentity(), new MockTracerRegistry(), new MockDocumentForwarder(), settings);
 
         final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
 
@@ -611,6 +610,13 @@ public class FlowQueryIT {
     public void canGetTosBytes() throws Exception {
         loadDefaultFlows();
         final List<Integer> tosBytes = smartQueryService.getTosBytes(Collections.emptyList()).get();
+        assertThat(tosBytes, containsInAnyOrder(160, 136, 80, 68));
+    }
+
+    @Test
+    public void canGetTosBytes2() throws Exception {
+        loadDefaultFlows();
+        final List<String> tosBytes = smartQueryService.getAllValues("netflow.tos", Collections.emptyList()).get();
         assertThat(tosBytes, containsInAnyOrder(160, 136, 80, 68));
     }
 

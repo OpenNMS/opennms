@@ -82,4 +82,7 @@ public interface FlowQueryService {
     CompletableFuture<Table<Directional<String>, Long, Double>> getTosSeries(long step, List<Filter> filters);
 
     CompletableFuture<List<Integer>> getDscp(List<Filter> filters);
+
+    CompletableFuture<List<String>> getAllValues(String field, List<Filter> filters);
+
 }
