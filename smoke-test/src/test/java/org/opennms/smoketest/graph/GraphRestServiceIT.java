@@ -58,11 +58,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.ApplicationDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.OutageDaoHibernate;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -430,6 +433,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         final PlatformTransactionManager transactionManager = new HibernateTransactionManager(applicationDao.getSessionFactory());
         final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
         final OutageDaoHibernate outageDao = daoFactory.getDao(OutageDaoHibernate.class); // TODO: Patrick remove later
+        final AlarmDao alarmDao = daoFactory.getDao(AlarmDaoHibernate.class); // TODO: Patrick remove later
 
         // Clean up
         applicationDao.findAll().forEach(applicationDao::delete);
@@ -527,10 +531,9 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
             LOG.warn("APPLICATION ALARMS: " + applicationDao.getAlarmStatus().stream()
                     .map(s -> s.getNodeId()+"::"+s.getServiceTypeId() +"::"+ s.getIpAddress().toString() + "=" + s.getSeverity())
                     .collect(Collectors.joining()));
+            LOG.warn("ALL ALARMS: " + alarmDao.findAll().stream().map(OnmsAlarm::toString).collect(Collectors.joining(", ")));
             return null;
         });
-
-
 
         awaitForApplicationStatus(application, "Minor");
 
