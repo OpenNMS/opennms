@@ -36,6 +36,11 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -43,6 +48,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
 import org.json.JSONArray;
@@ -66,10 +72,12 @@ import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.graphml.GraphmlDocument;
+import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.opennms.smoketest.topo.GraphMLTopologyIT;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
+import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateTransactionManager;
@@ -516,6 +524,9 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 Collection<OnmsOutage> outages = outageDao.currentOutagesForServiceFromPerspectivePoller(service);
                 LOG.warn("OUTAGES for service: " + service + " " + outages);
             }
+            LOG.warn("APPLICATION ALARMS: " + applicationDao.getAlarmStatus().stream()
+                    .map(s -> s.getNodeId()+"::"+s.getServiceTypeId() +"::"+ s.getIpAddress().toString() + "=" + s.getSeverity())
+                    .collect(Collectors.joining()));
             return null;
         });
 
