@@ -36,6 +36,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -54,9 +55,11 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.hibernate.ApplicationDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.OutageDaoHibernate;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -67,6 +70,8 @@ import org.opennms.smoketest.topo.GraphMLTopologyIT;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -78,7 +83,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 public class GraphRestServiceIT extends OpenNMSSeleniumIT {
-
+    private static final Logger LOG = LoggerFactory.getLogger(GraphRestServiceIT.class);
     private static final String CONTAINER_ID = "test";
 
     private final RestClient restClient = stack.opennms().getRestClient();
@@ -416,6 +421,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
         final MonitoredServiceDao monitoredServiceDao = daoFactory.getDao(MonitoredServiceDaoHibernate.class);
         final PlatformTransactionManager transactionManager = new HibernateTransactionManager(applicationDao.getSessionFactory());
         final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+        final OutageDaoHibernate outageDao = daoFactory.getDao(OutageDaoHibernate.class); // TODO: Patrick remove later
 
         // Clean up
         applicationDao.findAll().forEach(applicationDao::delete);
@@ -503,6 +509,18 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
         // Take service down, reload graph and verify
         restClient.sendEvent(nodeLostServiceEvent);
+        Thread.sleep(5000); // TODO: Patrick remove later
+
+        transactionTemplate.execute(status -> { // TODO: Patrick remove later
+            for(OnmsMonitoredService service : application.getMonitoredServices()) {
+                Collection<OnmsOutage> outages = outageDao.currentOutagesForServiceFromPerspectivePoller(service);
+                LOG.warn("OUTAGES for service: " + service + " " + outages);
+            }
+            return null;
+        });
+
+
+
         awaitForApplicationStatus(application, "Minor");
 
         final Response response = getApplicationViewResponse(query.toString());
