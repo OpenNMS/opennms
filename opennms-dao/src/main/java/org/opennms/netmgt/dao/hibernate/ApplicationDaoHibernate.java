@@ -49,11 +49,15 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import com.google.common.collect.Lists;
 
 public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplication, Integer> implements ApplicationDao {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ApplicationDaoHibernate.class);
 
 	/**
 	 * <p>Constructor for ApplicationDaoHibernate.</p>
@@ -122,14 +126,15 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 	public List<MonitoredServiceStatusEntity> getAlarmStatus(final List<OnmsApplication> applications) {
 		Objects.requireNonNull(applications);
 		final List<OnmsMonitoredService> services = applications.stream().flatMap(application -> application.getMonitoredServices().stream()).collect(Collectors.toList());
+		LOG.info("GET ALARM STATUS: services="+services);// TODO: Patrick remove
 		final String sql = "select alarm.node.id, alarm.ipAddr, alarm.serviceType.id, min(alarm.lastEventTime), max(alarm.severity), (count(*) - count(alarm.alarmAckTime)) " +
 				"from OnmsAlarm alarm " +
 				"where alarm.severity != " + OnmsSeverity.CLEARED.getId() + " and alarm.reductionKey in :keys " +
 				"group by alarm.node.id, alarm.ipAddr, alarm.serviceType.id";
-
+		LOG.info("GET ALARM STATUS: sql="+sql);// TODO: Patrick remove
 		// Build query based on reduction keys
 		final Set<String> reductionKeys = services.stream().flatMap(service -> ReductionKeyHelper.getNodeLostServiceFromPerspectiveReductionKeys(service).stream()).collect(Collectors.toSet());
-
+		LOG.info("GET ALARM STATUS: reductionKeys="+reductionKeys); // TODO: Patrick remove
 		// Avoid querying the database if unnecessary
 		if (services.isEmpty() || reductionKeys.isEmpty()) {
 			return Lists.newArrayList();
