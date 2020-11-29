@@ -67,7 +67,6 @@ import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.OutageDaoHibernate;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
@@ -513,6 +512,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
                 .setService("ICMP")
                 .setParam("perspective", "Default")
+                .setSeverity(OnmsSeverity.MINOR.getLabel())
                 .getEvent();
         final Event nodeLostServiceEventApp2 = new EventBuilder(EventConstants.PERSPECTIVE_NODE_LOST_SERVICE_UEI, getClass().getSimpleName())
                 .setNodeid(nodeId2)
