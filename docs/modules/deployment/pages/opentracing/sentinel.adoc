@@ -1,0 +1,44 @@
+Enable tracing with Jaeger on Sentinel by installing the `opennms-core-tracing-jaeger` feature.
+
+NOTE: Configurations has to be made in the `etc` directory relative to the Sentinel home directory.
+      Depending on your operating system the home directory is in `/usr/share/sentinel` for Debian/Ubuntu or `/opt/sentinel` for CentOS/RHEL.
+
+.Create a file to load the tracing feature on startup
+[source, console]
+----
+sudo vi etc/featuresBoot.d/jaeger.boot
+----
+
+.Add the Jaeger feature and save the file
+[source, jaeger.boot]
+----
+opennms-core-tracing-jaeger
+----
+
+NOTE: Uninstalling the `opennms-core-tracing-jaeger` feature at runtime is not yet supported.
+      To disable tracing with Jaeger, remove the reference from the features boot file and restart Sentinel.
+
+.Create a configuration file for tracing settings
+[source, console]
+----
+sudo vi etc/custom.system.properties
+----
+
+.Add configuration properties for tracing with Jaeger
+[source, jaeger.properties]
+----
+JAEGER_SERVICE_NAME=my-sentinel-id<1>
+JAEGER_AGENT_HOST=my-jaeger-host<2>
+----
+
+<1> Set a name for this service which identifies this specific Sentinel in Jaeger
+<2> Replace the `my-jaeger-host` with your Jaeger instance where you collect the tracing information
+
+TIP: Available configuration options are listed in the link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[Jaeger Core Readme].
+
+Restart Minion to apply the changes.
+
+[source, console]
+----
+sudo systemctl restart sentinel
+----
