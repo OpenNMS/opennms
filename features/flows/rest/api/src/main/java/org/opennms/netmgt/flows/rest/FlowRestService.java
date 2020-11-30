@@ -41,6 +41,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.rest.model.FlowGraphUrlInfo;
 import org.opennms.netmgt.flows.rest.model.FlowNodeDetails;
 import org.opennms.netmgt.flows.rest.model.FlowNodeSummary;
@@ -92,27 +93,29 @@ public interface FlowRestService {
     FlowNodeDetails getFlowExporter(@PathParam("nodeId") final Integer nodeId);
 
     @GET
-    @Path("tos/enumerate")
+    @Path("field/{field}/values")
     @Produces(MediaType.APPLICATION_JSON)
-    List<Integer> getTosBytes(@DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
-                              @Context UriInfo uriInfo);
+    List<Integer> getFieldValues(
+            @PathParam("field")LimitedCardinalityField field,
+            @Context UriInfo uriInfo
+    );
 
     @GET
-    @Path("tos")
+    @Path("field/{field}/summaries")
     @Produces(MediaType.APPLICATION_JSON)
-    FlowSummaryResponse getTosSummary(@Context UriInfo uriInfo);
+    FlowSummaryResponse getFieldSummaries(
+            @PathParam("field")LimitedCardinalityField field,
+            @Context UriInfo uriInfo
+    );
 
     @GET
-    @Path("tos/series")
+    @Path("field/{field}/series")
     @Produces(MediaType.APPLICATION_JSON)
-    FlowSeriesResponse getTosSeries(@DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
-                                    @Context final UriInfo uriInfo);
-
-    @GET
-    @Path("dscp/enumerate")
-    @Produces(MediaType.APPLICATION_JSON)
-    List<Integer> getDscp(@DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
-                          @Context UriInfo uriInfo);
+    FlowSeriesResponse getFieldSeries(
+            @PathParam("field")LimitedCardinalityField field,
+            @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
+            @Context UriInfo uriInfo
+    );
 
     /**
      * Retrieve the list of applications.

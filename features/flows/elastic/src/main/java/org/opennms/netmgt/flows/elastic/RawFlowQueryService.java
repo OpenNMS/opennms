@@ -50,6 +50,7 @@ import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Host;
+import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
@@ -209,49 +210,31 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 .thenCompose((res) -> mapTable(res, host -> this.resolveHostnameForHost(host, filters)));
     }
 
+    /** Constructs a GPath that select the values of the given key in a composite aggregation. */
+    private static <X> GPath<List<X>> compositeKeyValuesPath(String field, GPath<X> fieldValueAccess) {
+        return fieldValueAccess
+                .field(field)
+                .field("key")
+                .array("buckets")
+                .field("my_buckets")
+                .field("aggregations", "aggs");
+    }
+
     @Override
-    public CompletableFuture<List<Integer>> getTosBytes(List<Filter> filters) {
+    public CompletableFuture<List<String>> getFieldValues(LimitedCardinalityField field, List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
-        return searchAsync(searchQueryProvider.getTos(filters), timeRangeFilter)
-                .thenApply(res -> res.getAggregations().getAggregation("tos", TermsAggregation.class)
-                        .getBuckets().stream()
-                        .map(entry -> Integer.valueOf(entry.getKey()))
-                        .collect(Collectors.toList()));
+        return searchAsync(searchQueryProvider.getAllValues(field.fieldName, filters), timeRangeFilter)
+                .thenApply(res -> compositeKeyValuesPath(field.fieldName, GPath.string()).eval(res.getJsonObject()));
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTosSummaries(List<Filter> filters) {
-        return getTotalBytesForSize(256, "netflow.tos", null, filters);
+    public CompletableFuture<List<TrafficSummary<String>>> getFieldSummaries(LimitedCardinalityField field, List<Filter> filters) {
+        return getTotalBytesForSize(field.size, field.fieldName, null, filters);
     }
 
     @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTosSeries(long step, List<Filter> filters) {
-        return getSeriesForSize(256, step, "netflow.tos", null, filters);
-    }
-
-    @Override
-    public CompletableFuture<List<Integer>> getDscp(List<Filter> filters) {
-        final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
-        return searchAsync(searchQueryProvider.getDscp(filters), timeRangeFilter)
-                .thenApply(res -> res.getAggregations().getAggregation("dscp", TermsAggregation.class)
-                        .getBuckets().stream()
-                        .map(entry -> Integer.valueOf(entry.getKey()))
-                        .collect(Collectors.toList()));
-    }
-
-    @Override
-    public CompletableFuture<List<String>> getAllValues(String field, List<Filter> filters) {
-        final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
-        return searchAsync(searchQueryProvider.getAllValues(field, filters), timeRangeFilter)
-                .thenApply(res -> {
-                    val buckets = res.getJsonObject().getAsJsonObject("aggregations").getAsJsonObject("my_buckets");
-//                    res.getAggregations().getAggregation("my_buckets", null);
-//                    res.getAggregations().getAggregation("my_buckets", TermsAggregation.class)
-//                            .getBuckets().stream()
-//                            .map(entry -> entry.getKey())
-//                            .collect(Collectors.toList())
-                    return Collections.emptyList();
-                });
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getFieldSeries(LimitedCardinalityField field, long step, List<Filter> filters) {
+        return getSeriesForSize(field.size, step, field.fieldName, null, filters);
     }
 
     public CompletableFuture<Conversation> resolveHostnameForConversation(final String convoKey, List<Filter> filters) {

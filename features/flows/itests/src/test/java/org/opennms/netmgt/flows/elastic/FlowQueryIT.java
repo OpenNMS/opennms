@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -80,6 +81,7 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.Host;
+import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.filter.api.Filter;
@@ -606,25 +608,8 @@ public class FlowQueryIT {
         assertThat(convoTraffic.rowKeySet(), hasSize(4));
     }
 
-    @Test
-    public void canGetTosBytes() throws Exception {
-        loadDefaultFlows();
-        final List<Integer> tosBytes = smartQueryService.getTosBytes(Collections.emptyList()).get();
-        assertThat(tosBytes, containsInAnyOrder(160, 136, 80, 68));
-    }
-
-    @Test
-    public void canGetTosBytes2() throws Exception {
-        loadDefaultFlows();
-        final List<String> tosBytes = smartQueryService.getAllValues("netflow.tos", Collections.emptyList()).get();
-        assertThat(tosBytes, containsInAnyOrder(160, 136, 80, 68));
-    }
-
-    @Test
-    public void canGetDscpBytes() throws Exception {
-        loadDefaultFlows();
-        final List<Integer> dscpBytes = smartQueryService.getDscp(Collections.emptyList()).get();
-        assertThat(dscpBytes, containsInAnyOrder(40, 34, 20, 17));
+    private static List<Integer> toInts(List<String> l) {
+        return l.stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
     }
 
     @Test
@@ -686,13 +671,29 @@ public class FlowQueryIT {
         ));
     }
 
-    @Test
-    public void canGetTosSummaries() throws Exception {
+    private void canGetFieldValues(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy) throws Exception {
         loadDefaultFlows();
 
         val memoryResult = DEFAULT_FLOWS
                 .stream()
-                .map(fd -> FlowQueryIT.flowDoc2TrafficSummary(fd, fd.getTos().toString()))
+                .map(aggregateBy)
+                .distinct()
+                .sorted()
+                .map(i -> i.toString())
+                .toArray()
+                ;
+
+        val elasticResult = smartQueryService.getFieldValues(field, getFilters()).get();
+
+        assertThat(elasticResult, containsInAnyOrder(memoryResult));
+    }
+
+    private void canGetFieldSummaries(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy) throws Exception {
+        loadDefaultFlows();
+
+        val memoryResult = DEFAULT_FLOWS
+                .stream()
+                .map(fd -> FlowQueryIT.flowDoc2TrafficSummary(fd, aggregateBy.apply(fd).toString()))
                 // collect the traffic summaries into a map
                 // -> the map key is the traffic summary key and the map value is the merged traffic summary for that key
                 .collect(Collectors.groupingBy(
@@ -705,20 +706,19 @@ public class FlowQueryIT {
                 .sorted(Comparator.comparing(s -> new Integer(s.getEntity())))
                 .toArray();
 
-        val elasticResult = smartQueryService.getTosSummaries(getFilters()).get();
+        val elasticResult = smartQueryService.getFieldSummaries(field, getFilters()).get();
 
         assertThat(elasticResult, contains(memoryResult));
     }
 
-    @Test
-    public void canGetTosSeries() throws Exception {
+    private void canGetFieldSeries(LimitedCardinalityField field, Function<FlowDocument, Integer> aggregateBy) throws Exception {
         loadDefaultFlows();
 
         val step = 8;
 
         val memoryResult = DEFAULT_FLOWS
                 .stream()
-                .map(fd -> flowDoc2Pair(fd, step, fd.getTos().toString()))
+                .map(fd -> flowDoc2Pair(fd, step, aggregateBy.apply(fd).toString()))
                 // collect the pairs of directionals and maps (of indexes into bytes) into a map
                 // -> the key is the directional and the value are the merged maps for that key
                 .collect(Collectors.groupingBy(
@@ -731,7 +731,7 @@ public class FlowQueryIT {
                         )
                 );
 
-        val elasticResult = smartQueryService.getTosSeries(step, getFilters()).get();
+        val elasticResult = smartQueryService.getFieldSeries(field, step, getFilters()).get();
 
         // The result calculated in memory the result returned by elastic
         // can not be asserted for equality because of rounding errors
@@ -762,6 +762,51 @@ public class FlowQueryIT {
         // check the other way round:
         // -> check that there is a matching entry in the memory result for each entry in elastic's result
         assertThat(memoryResult, allOf(elasticResult.rowKeySet().stream().map(k -> hasKey(k)).collect(Collectors.toList())));
+    }
+
+    @Test
+    public void canGetTosValues() throws Exception {
+        canGetFieldValues(LimitedCardinalityField.TOS, fd -> fd.getTos());
+    }
+
+    @Test
+    public void canGetTosSummaries() throws Exception {
+        canGetFieldSummaries(LimitedCardinalityField.TOS, fd -> fd.getTos());
+    }
+
+    @Test
+    public void canGetTosSeries() throws Exception {
+        canGetFieldSeries(LimitedCardinalityField.TOS, fd -> fd.getTos());
+    }
+
+    @Test
+    public void canGetDscpValues() throws Exception {
+        canGetFieldValues(LimitedCardinalityField.DSCP, fd -> fd.getDscp());
+    }
+
+    @Test
+    public void canGetDscpSummaries() throws Exception {
+        canGetFieldSummaries(LimitedCardinalityField.DSCP, fd -> fd.getDscp());
+    }
+
+    @Test
+    public void canGetDscpSeries() throws Exception {
+        canGetFieldSeries(LimitedCardinalityField.DSCP, fd -> fd.getDscp());
+    }
+
+    @Test
+    public void canGetEcnValues() throws Exception {
+        canGetFieldValues(LimitedCardinalityField.ECN, fd -> fd.getEcn());
+    }
+
+    @Test
+    public void canGetEcnSummaries() throws Exception {
+        canGetFieldSummaries(LimitedCardinalityField.ECN, fd -> fd.getEcn());
+    }
+
+    @Test
+    public void canGetEcnSeries() throws Exception {
+        canGetFieldSeries(LimitedCardinalityField.ECN, fd -> fd.getEcn());
     }
 
     private static <K> TrafficSummary<K> flowDoc2TrafficSummary(FlowDocument fd, K key) {

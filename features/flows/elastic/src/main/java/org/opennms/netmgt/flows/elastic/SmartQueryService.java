@@ -41,6 +41,7 @@ import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowQueryService;
 import org.opennms.netmgt.flows.api.Host;
+import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
@@ -229,33 +230,21 @@ public class SmartQueryService implements FlowQueryService {
     }
 
     @Override
-    public CompletableFuture<List<Integer>> getTosBytes(List<Filter> filters) {
+    public CompletableFuture<List<String>> getFieldValues(LimitedCardinalityField field, List<Filter> filters) {
         return runWithDelegate(filters, false,
-                qs -> qs.getTosBytes(filters));
+                qs -> qs.getFieldValues(field, filters));
     }
 
     @Override
-    public CompletableFuture<List<String>> getAllValues(String field, List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<String>>> getFieldSummaries(LimitedCardinalityField field, List<Filter> filters) {
         return runWithDelegate(filters, false,
-                qs -> qs.getAllValues(field, filters));
+                               qs -> qs.getFieldSummaries(field, filters));
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<String>>> getTosSummaries(List<Filter> filters) {
+    public CompletableFuture<Table<Directional<String>, Long, Double>> getFieldSeries(LimitedCardinalityField field, long step, List<Filter> filters) {
         return runWithDelegate(filters, false,
-                               qs -> qs.getTosSummaries(filters));
-    }
-
-    @Override
-    public CompletableFuture<Table<Directional<String>, Long, Double>> getTosSeries(long step, List<Filter> filters) {
-        return runWithDelegate(filters, false,
-                               qs -> qs.getTosSeries(step, filters));
-    }
-
-    @Override
-    public CompletableFuture<List<Integer>> getDscp(List<Filter> filters) {
-        return runWithDelegate(filters, false,
-                qs -> qs.getDscp(filters));
+                               qs -> qs.getFieldSeries(field, step, filters));
     }
 
     public boolean isAlwaysUseAggForQueries() {
