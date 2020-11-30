@@ -392,7 +392,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
         flowSample.writeBson(bsonDocumentWriter, this);
-        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(Flow.Direction.INGRESS, sFlow.getDirection());
     }
 
@@ -406,7 +406,7 @@ public class BsonDocumentTest implements SampleDatagramEnrichment {
         final BsonDocument bsonDocument = new BsonDocument();
         final BsonDocumentWriter bsonDocumentWriter = new BsonDocumentWriter(bsonDocument);
         flowSample.writeBson(bsonDocumentWriter, this);
-        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument);
+        final SFlow sFlow = new SFlow(SFLOW_HEADER, bsonDocument, Instant.now());
         Assert.assertEquals(Flow.Direction.EGRESS, sFlow.getDirection());
     }
 
