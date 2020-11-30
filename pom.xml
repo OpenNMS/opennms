@@ -151,14 +151,6 @@
     <module>opennms-asterisk</module>
     <module>opennms-config-dao</module>
   </modules>
-  <dependencies>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.16</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
   <build>
   <extensions>
     <extension>

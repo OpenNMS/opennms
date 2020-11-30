@@ -94,25 +94,68 @@ public interface FlowRestService {
     @GET
     @Path("tos/enumerate")
     @Produces(MediaType.APPLICATION_JSON)
-    List<Integer> getTosBytes(@DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
-                              @Context UriInfo uriInfo);
+    List<Integer> getTosValues(
+            @Context UriInfo uriInfo
+    );
 
     @GET
     @Path("tos")
     @Produces(MediaType.APPLICATION_JSON)
-    FlowSummaryResponse getTosSummary(@Context UriInfo uriInfo);
+    FlowSummaryResponse getTosSummaries(
+            @Context UriInfo uriInfo
+    );
 
     @GET
     @Path("tos/series")
     @Produces(MediaType.APPLICATION_JSON)
-    FlowSeriesResponse getTosSeries(@DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
-                                    @Context final UriInfo uriInfo);
+    FlowSeriesResponse getTosSeries(
+            @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
+            @Context UriInfo uriInfo
+    );
 
     @GET
     @Path("dscp/enumerate")
     @Produces(MediaType.APPLICATION_JSON)
-    List<Integer> getDscp(@DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final long limit,
-                          @Context UriInfo uriInfo);
+    List<Integer> getDscpValues(
+            @Context UriInfo uriInfo
+    );
+
+    @GET
+    @Path("dscp")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSummaryResponse getDscpSummaries(
+            @Context UriInfo uriInfo
+    );
+
+    @GET
+    @Path("dscp/series")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSeriesResponse getDscpSeries(
+            @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
+            @Context UriInfo uriInfo
+    );
+
+    @GET
+    @Path("ecn/enumerate")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<Integer> getEcnValues(
+            @Context UriInfo uriInfo
+    );
+
+    @GET
+    @Path("ecn")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSummaryResponse getEcnSummaries(
+            @Context UriInfo uriInfo
+    );
+
+    @GET
+    @Path("ecn/series")
+    @Produces(MediaType.APPLICATION_JSON)
+    FlowSeriesResponse getEcnSeries(
+            @DefaultValue(DEFAULT_STEP_MS) @QueryParam("step") final long step,
+            @Context UriInfo uriInfo
+    );
 
     /**
      * Retrieve the list of applications.

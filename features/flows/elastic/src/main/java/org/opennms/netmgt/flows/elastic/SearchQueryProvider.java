@@ -245,18 +245,6 @@ public class SearchQueryProvider implements FilterVisitor<String> {
                 .build());
     }
 
-    public String getTos(final List<Filter> filters) {
-        return render("tos.ftl", ImmutableMap.builder()
-                .put("filters", getFilterQueries(filters))
-                .build());
-    }
-
-    public String getDscp(final List<Filter> filters) {
-        return render("dscp.ftl", ImmutableMap.builder()
-                .put("filters", getFilterQueries(filters))
-                .build());
-    }
-
     public String getHostnameByConversationQuery(final String convoKey, final List<Filter> filters) {
         return render("hostname_by_convo.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
@@ -272,7 +260,7 @@ public class SearchQueryProvider implements FilterVisitor<String> {
     }
 
     public String getAllValues(String field, List<Filter> filters) {
-        return render("all_values.ftl", ImmutableMap.builder()
+        return render("field_values_for_all.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("field", field)
                 .build());

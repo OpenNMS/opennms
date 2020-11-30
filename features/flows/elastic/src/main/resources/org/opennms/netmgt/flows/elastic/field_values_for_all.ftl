@@ -8,9 +8,11 @@
         }
     },
     "aggs": {
-        "dscp": {
-            "terms": {
-                "field": "netflow.dscp"
+        "my_buckets": {
+            "composite": {
+                "sources": [
+                    { "${field}": { "terms": { "field": "${field}" } } }
+                ]
             }
         }
     }

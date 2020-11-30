@@ -1,5 +1,5 @@
 {
 "terms": {
-"dscp": [${dscp?long?c}]
+"dscp": ["${dscp?long?c}"]
 }
 }

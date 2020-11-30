@@ -60,6 +60,7 @@ import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowQueryService;
 import org.opennms.netmgt.flows.api.Host;
+import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.DscpFilter;
 import org.opennms.netmgt.flows.filter.api.EcnFilter;
@@ -125,20 +126,16 @@ public class FlowRestServiceImpl implements FlowRestService {
         return new FlowNodeDetails(nodeId, ifaces);
     }
 
-    @Override
-    public List<Integer> getTosBytes(long limit, UriInfo uriInfo) {
+    private List<Integer> getFieldValues(LimitedCardinalityField field, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        return waitForFuture(flowQueryService.getTosBytes(filters));
+        return waitForFuture(flowQueryService.getFieldValues(field, filters))
+                .stream()
+                .map(Integer::valueOf)
+                .sorted()
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public List<Integer> getDscp(long limit, UriInfo uriInfo) {
-        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        return waitForFuture(flowQueryService.getDscp(filters));
-    }
-
-    @Override
-    public FlowSummaryResponse getTosSummary(UriInfo uriInfo) {
+    private FlowSummaryResponse getFieldSummaries(LimitedCardinalityField field, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
 
@@ -146,17 +143,16 @@ public class FlowRestServiceImpl implements FlowRestService {
         response.setStart(timeRangeFilter.getStart());
         response.setEnd(timeRangeFilter.getEnd());
 
-        final List<TrafficSummary<String>> summary = waitForFuture(flowQueryService.getTosSummaries(filters));
+        final List<TrafficSummary<String>> summary = waitForFuture(flowQueryService.getFieldSummaries(field, filters));
 
-        this.<String>defaultSummaryResponseConsumer("ToS", Object::toString)
-            .apply(response)
-            .accept(summary);
+        this.<String>defaultSummaryResponseConsumer(field.name(), Object::toString)
+                .apply(response)
+                .accept(summary);
 
         return response;
     }
 
-    @Override
-    public FlowSeriesResponse getTosSeries(long step, UriInfo uriInfo) {
+    private FlowSeriesResponse getFieldSeries(LimitedCardinalityField field, long step, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
 
@@ -164,7 +160,7 @@ public class FlowRestServiceImpl implements FlowRestService {
         response.setStart(timeRangeFilter.getStart());
         response.setEnd(timeRangeFilter.getEnd());
 
-        final Table<Directional<String>, Long, Double> series = waitForFuture(flowQueryService.getTosSeries(step, filters));
+        final Table<Directional<String>, Long, Double> series = waitForFuture(flowQueryService.getFieldSeries(field, step, filters));
 
         this.<String>defaultSeriesReponseConsumer(Object::toString)
                 .apply(response)
@@ -173,6 +169,51 @@ public class FlowRestServiceImpl implements FlowRestService {
         populateResponseFromTable(series, response);
 
         return response;
+    }
+
+    @Override
+    public List<Integer> getTosValues(UriInfo uriInfo) {
+        return getFieldValues(LimitedCardinalityField.TOS, uriInfo);
+    }
+
+    @Override
+    public FlowSummaryResponse getTosSummaries(UriInfo uriInfo) {
+        return getFieldSummaries(LimitedCardinalityField.TOS, uriInfo);
+    }
+
+    @Override
+    public FlowSeriesResponse getTosSeries(long step, UriInfo uriInfo) {
+        return getFieldSeries(LimitedCardinalityField.TOS, step, uriInfo);
+    }
+
+    @Override
+    public List<Integer> getDscpValues(UriInfo uriInfo) {
+        return getFieldValues(LimitedCardinalityField.DSCP, uriInfo);
+    }
+
+    @Override
+    public FlowSummaryResponse getDscpSummaries(UriInfo uriInfo) {
+        return getFieldSummaries(LimitedCardinalityField.DSCP, uriInfo);
+    }
+
+    @Override
+    public FlowSeriesResponse getDscpSeries(long step, UriInfo uriInfo) {
+        return getFieldSeries(LimitedCardinalityField.DSCP, step, uriInfo);
+    }
+
+    @Override
+    public List<Integer> getEcnValues(UriInfo uriInfo) {
+        return getFieldValues(LimitedCardinalityField.ECN, uriInfo);
+    }
+
+    @Override
+    public FlowSummaryResponse getEcnSummaries(UriInfo uriInfo) {
+        return getFieldSummaries(LimitedCardinalityField.ECN, uriInfo);
+    }
+
+    @Override
+    public FlowSeriesResponse getEcnSeries(long step, UriInfo uriInfo) {
+        return getFieldSeries(LimitedCardinalityField.ECN, step, uriInfo);
     }
 
     @Override

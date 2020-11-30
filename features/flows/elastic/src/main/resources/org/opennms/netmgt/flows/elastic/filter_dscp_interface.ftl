@@ -1,5 +1,5 @@
 {
     "terms": {
-        "netflow.dscp": [${dscp?long?c}]
+        "netflow.dscp": ["${dscp?long?c}"]
     }
 }

@@ -1,5 +1,5 @@
 {
   "terms": {
-    "netflow.tos": [${tos?long?c}]
+    "netflow.tos": ["${tos?long?c}"]
   }
 }
