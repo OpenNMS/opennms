@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[ga-events-sources-xml-tcp]]
-==== XML-TCP
+= XML-TCP
 
-Any application or script can create custom events in {page-component-title} by sending properly-formatted XML data over a TCP socket.
+Any application or script can create custom events in {page-component-title} by sending properly formatted XML data over a TCP socket.

@@ -1,12 +1,10 @@
-// Allow GitHub image rendering
-:imagesdir: ../../../images
 
 [[ga-events-sources-sink-api]]
 
-==== Sink
+= Sink
 
-Events can also be created by routing them to a specific topic on _Kafka_ / _ActiveMQ_.
+Events can also be created by routing them to a specific topic on Kafka/ActiveMQ.
 
-The topic name should be of the form  `OpenNMS`.Sink.Events where `OpenNMS` is default instance id of {page-component-title}.
-The instance id is configurable through a system property `org.opennms.instance.id`.
+The topic name should be of the form `OpenNMS`.Sink.Events where `OpenNMS` is the default instance ID of {page-component-title}.
+The instance ID is configurable through a system property `org.opennms.instance.id`.
 

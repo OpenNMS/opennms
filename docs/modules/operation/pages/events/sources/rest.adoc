@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[ga-events-sources-rest]]
-==== ReST
+= ReST
 
-Posting an event in XML format to the appropriate endpoint in the {page-component-title} ReST API will cause the creation of a corresponding event, just as with the XML-TCP interface.
+Posting an event in XML format to the appropriate endpoint in the {page-component-title} ReST API will create a corresponding event, just as with the XML-TCP interface.
