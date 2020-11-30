@@ -129,7 +129,7 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 		LOG.info("GET ALARM STATUS: services="+services);// TODO: Patrick remove
 		final String sql = "select alarm.node.id, alarm.ipAddr, alarm.serviceType.id, min(alarm.lastEventTime), max(alarm.severity), (count(*) - count(alarm.alarmAckTime)) " +
 				"from OnmsAlarm alarm " +
-				"where alarm.severity != " + OnmsSeverity.CLEARED.getId() + " and alarm.reductionKey in :keys " +
+				"where alarm.severity != :severity and alarm.reductionKey in :keys " +
 				"group by alarm.node.id, alarm.ipAddr, alarm.serviceType.id";
 		LOG.info("GET ALARM STATUS: sql="+sql);// TODO: Patrick remove
 		// Build query based on reduction keys
@@ -141,7 +141,7 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 		}
 
 		// Convert to object
-		final List<Object[][]> perspectiveAlarmsForService = (List<Object[][]>) getHibernateTemplate().findByNamedParam(sql, new String[]{"keys"}, new Object[]{reductionKeys.toArray()});
+		final List<Object[][]> perspectiveAlarmsForService = (List<Object[][]>) getHibernateTemplate().findByNamedParam(sql, new String[]{"keys", "severity"}, new Object[]{reductionKeys.toArray(), OnmsSeverity.CLEARED});
 		final List<MonitoredServiceStatusEntity> entityList = new ArrayList<>();
 		for (Object[] eachRow : perspectiveAlarmsForService) {
 			MonitoredServiceStatusEntity entity = new MonitoredServiceStatusEntity((Integer)eachRow[0],
