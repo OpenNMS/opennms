@@ -106,7 +106,7 @@ public class KafkaFlowForwarderIT {
         kafkaConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getCanonicalName());
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(KafkaFlowForwarder.KAFKA_CLIENT_PID).getProperties()).thenReturn(kafkaConfig);
-        flowForwarder = new KafkaFlowForwarder(configAdmin);
+        flowForwarder = new KafkaFlowForwarder(configAdmin, new MetricRegistry());
         flowForwarder.setTopicName(topicName);
         flowForwarder.init();
     }
