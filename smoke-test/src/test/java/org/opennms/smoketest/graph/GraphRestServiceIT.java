@@ -474,13 +474,14 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
                 .setService("ICMP")
                 .setParam("perspective", "Default")
+                .setSeverity(OnmsSeverity.CLEARED.getLabel())
                 .getEvent());
         restClient.sendEvent( new EventBuilder(EventConstants.PERSPECTIVE_NODE_REGAINED_SERVICE_UEI, getClass().getSimpleName())
                 .setNodeid(nodeId2)
                 .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
                 .setService("ICMP")
                 .setParam("perspective", "Default")
-                .setSeverity(OnmsSeverity.CRITICAL.getLabel())
+                .setSeverity(OnmsSeverity.CLEARED.getLabel())
                 .getEvent());
 
         // Force application provider to reload (otherwise we have to wait until cache is invalidated)
