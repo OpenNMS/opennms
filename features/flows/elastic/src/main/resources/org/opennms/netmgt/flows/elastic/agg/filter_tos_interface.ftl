@@ -1,5 +1,5 @@
 {
   "terms": {
-    "tos": [${tos?long?c}]
+    "tos": ["${tos?long?c}"]
   }
 }

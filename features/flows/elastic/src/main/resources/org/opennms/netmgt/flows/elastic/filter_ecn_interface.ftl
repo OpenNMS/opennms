@@ -1,5 +1,5 @@
 {
     "terms": {
-        "netflow.ecn": [${ecn?long?c}]
+        "netflow.ecn": ["${ecn?long?c}"]
     }
 }

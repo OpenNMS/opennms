@@ -1,5 +1,5 @@
 {
 "terms": {
-"ecn": [${ecn?long?c}]
+"ecn": ["${ecn?long?c}"]
 }
 }
