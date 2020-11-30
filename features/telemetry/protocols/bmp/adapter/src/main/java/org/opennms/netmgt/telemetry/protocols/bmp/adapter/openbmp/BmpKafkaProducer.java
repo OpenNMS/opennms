@@ -66,7 +66,7 @@ public class BmpKafkaProducer implements BmpMessageHandler {
     }
 
     @Override
-    public void handle(Message message, String location) {
+    public void handle(Message message, Context context) {
         final StringBuffer buffer = new StringBuffer();
         message.serialize(buffer);
 

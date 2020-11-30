@@ -73,6 +73,9 @@
 		<argument ref="bmpMessagePersister"/>
 		<property name="telemetryRegistry" ref="telemetryRegistry" />
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+		<property name="filterDao" ref="filterDao" />
+		<property name="persisterFactory" ref="persisterFactory" />
+		<property name="thresholdingService" ref="thresholdingService" />
 	</bean>
 
 	<service ref="bmpPersistingAdapterFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">

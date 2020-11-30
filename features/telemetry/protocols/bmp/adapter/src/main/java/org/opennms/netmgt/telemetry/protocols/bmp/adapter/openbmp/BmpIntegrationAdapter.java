@@ -41,7 +41,6 @@ import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.timestamp;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.uint32;
 
-import java.net.InetAddress;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -201,7 +200,7 @@ public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
 
     private void handleHeartbeatMessage(final Transport.Message message,
                                         final Transport.Heartbeat heartbeat,
-                                        final Context context, String location) {
+                                        final Context context) {
         final Collector collector = new Collector();
 
         switch (heartbeat.getMode()) {
@@ -225,12 +224,12 @@ public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
         collector.routers = Lists.transform(heartbeat.getRoutersList(), BmpAdapterTools::address);
         collector.timestamp = context.timestamp;
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)), location);
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)), context);
     }
 
     private void handleInitiationMessage(final Transport.Message message,
                                          final Transport.InitiationPacket initiation,
-                                         final Context context, String location) {
+                                         final Context context) {
         final Router router = new Router();
         router.action = Router.Action.INIT;
         router.sequence = sequence.getAndIncrement();
@@ -247,12 +246,12 @@ public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
         router.timestamp = context.timestamp;
         router.bgpId = initiation.hasBgpId() ? BmpAdapterTools.address(initiation.getBgpId()) : null;
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)), location);
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)), context);
     }
 
     private void handleTerminationMessage(final Transport.Message message,
                                           final Transport.TerminationPacket termination,
-                                          final Context context, String location) {
+                                          final Context context) {
         final Router router = new Router();
         router.action = Router.Action.TERM;
         router.sequence = sequence.getAndIncrement();
@@ -287,12 +286,12 @@ public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
         router.timestamp = context.timestamp;
         router.bgpId = null;
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)), location);
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)), context);
     }
 
     private void handlePeerUpNotification(final Transport.Message message,
                                           final Transport.PeerUpPacket peerUp,
-                                          final Context context, String location) {
+                                          final Context context) {
         final Transport.Peer bgpPeer = peerUp.getPeer();
 
         final Peer peer = new Peer();
@@ -332,12 +331,12 @@ public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
         peer.locRibFiltered = bgpPeer.hasLocRibFlags() && bgpPeer.getLocRibFlags().getFiltered();
         peer.tableName = peerUp.getTableName();
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)), location);
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)), context);
     }
 
     private void handlePeerDownNotification(final Transport.Message message,
                                             final Transport.PeerDownPacket peerDown,
-                                            final Context context, String location) {
+                                            final Context context) {
         final Transport.Peer bgpPeer = peerDown.getPeer();
 
         final Peer peer = new Peer();
@@ -393,12 +392,12 @@ public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
         peer.locRibFiltered = bgpPeer.hasLocRibFlags() && bgpPeer.getLocRibFlags().getFiltered();
         peer.tableName = "";
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)), location);
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)), context);
     }
 
     private void handleStatisticReport(final Transport.Message message,
                                        final Transport.StatisticsReportPacket statisticsReport,
-                                       final Context context, String location) {
+                                       final Context context) {
         final Transport.Peer peer = statisticsReport.getPeer();
 
         final Stat stat = new Stat();
@@ -420,7 +419,7 @@ public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
         stat.prefixesPrePolicy = statisticsReport.getAdjRibIn().getValue();
         stat.prefixesPostPolicy = statisticsReport.getLocalRib().getValue();
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)), location);
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)), context);
     }
 
     private BaseAttribute toBaseAttributeRecord(final Transport.RouteMonitoringPacket routeMonitoring,
@@ -619,7 +618,7 @@ public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
 
     private void handleRouteMonitoringMessage(final Transport.Message message,
                                               final Transport.RouteMonitoringPacket routeMonitoring,
-                                              final Context context, String location) {
+                                              final Context context) {
         final List<Record> unicastPrefixRecords = new ArrayList<>(routeMonitoring.getWithdrawsCount() + routeMonitoring.getReachablesCount());
 
         // Handle withdraws
@@ -665,10 +664,10 @@ public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
 
         // Forward the messages to the handler
         if (baseAttr != null) {
-            this.messageHandler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)), location);
+            this.messageHandler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)), context);
         }
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.UNICAST_PREFIX, unicastPrefixRecords), location);
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.UNICAST_PREFIX, unicastPrefixRecords), context);
     }
 
     @Override
@@ -689,29 +688,29 @@ public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
                 routerHashId,
                 Instant.ofEpochMilli(messageLogEntry.getTimestamp()),
                 InetAddressUtils.addr(messageLog.getSourceAddress()),
-                messageLog.getSourcePort());
+                messageLog.getSourcePort(), messageLog.getLocation());
 
         switch(message.getPacketCase()) {
             case HEARTBEAT:
-                handleHeartbeatMessage(message, message.getHeartbeat(), context, messageLog.getLocation());
+                handleHeartbeatMessage(message, message.getHeartbeat(), context);
                 break;
             case INITIATION:
-                handleInitiationMessage(message, message.getInitiation(), context, messageLog.getLocation());
+                handleInitiationMessage(message, message.getInitiation(), context);
                 break;
             case TERMINATION:
-                handleTerminationMessage(message, message.getTermination(), context, messageLog.getLocation());
+                handleTerminationMessage(message, message.getTermination(), context);
                 break;
             case PEER_UP:
-                handlePeerUpNotification(message, message.getPeerUp(), context, messageLog.getLocation());
+                handlePeerUpNotification(message, message.getPeerUp(), context);
                 break;
             case PEER_DOWN:
-                handlePeerDownNotification(message, message.getPeerDown(), context, messageLog.getLocation());
+                handlePeerDownNotification(message, message.getPeerDown(), context);
                 break;
             case STATISTICS_REPORT:
-                handleStatisticReport(message, message.getStatisticsReport(), context, messageLog.getLocation());
+                handleStatisticReport(message, message.getStatisticsReport(), context);
                 break;
             case ROUTE_MONITORING:
-                handleRouteMonitoringMessage(message, message.getRouteMonitoring(), context, messageLog.getLocation());
+                handleRouteMonitoringMessage(message, message.getRouteMonitoring(), context);
                 break;
             case PACKET_NOT_SET:
                 break;
@@ -726,35 +725,6 @@ public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
         super.destroy();
     }
 
-    private static class Context {
-        public final String adminId;
-
-        public final String collectorHashId;
-        public final String routerHashId;
-
-        public final Instant timestamp;
-
-        public final InetAddress sourceAddress;
-        public final int sourcePort;
-
-        private Context(final String adminId,
-                        final String collectorHashId,
-                        final String routerHashId,
-                        final Instant timestamp,
-                        final InetAddress sourceAddress,
-                        final int sourcePort) {
-            this.adminId = Objects.requireNonNull(adminId);
-            this.collectorHashId = Objects.requireNonNull(collectorHashId);
-            this.routerHashId = Objects.requireNonNull(routerHashId);
-            this.timestamp = Objects.requireNonNull(timestamp);
-            this.sourceAddress = Objects.requireNonNull(sourceAddress);
-            this.sourcePort = sourcePort;
-        }
-
-        public String getRouterHash() {
-            return Record.hash(sourceAddress.getHostAddress(), collectorHashId);
-        }
-    }
 
     private String generateCapabilityMessage(final int code, final ByteString byteString) {
         final ByteBuf value = Unpooled.wrappedBuffer(byteString.toByteArray());

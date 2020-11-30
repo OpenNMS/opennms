@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -253,5 +254,58 @@ public class BmpUnicastPrefix implements Serializable {
 
     public void setPrevWithDrawnState(boolean prevWithDrawnState) {
         this.prevWithDrawnState = prevWithDrawnState;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BmpUnicastPrefix that = (BmpUnicastPrefix) o;
+        return isIpv4 == that.isIpv4 &&
+                isWithDrawn == that.isWithDrawn &&
+                isPrePolicy == that.isPrePolicy &&
+                isAdjRibIn == that.isAdjRibIn &&
+                prevWithDrawnState == that.prevWithDrawnState &&
+                Objects.equals(hashId, that.hashId) &&
+                Objects.equals(bmpPeer, that.bmpPeer) &&
+                Objects.equals(baseAttrHashId, that.baseAttrHashId) &&
+                Objects.equals(originAs, that.originAs) &&
+                Objects.equals(prefix, that.prefix) &&
+                Objects.equals(prefixLen, that.prefixLen) &&
+                Objects.equals(timestamp, that.timestamp) &&
+                Objects.equals(firstAddedTimestamp, that.firstAddedTimestamp) &&
+                Objects.equals(prefixBits, that.prefixBits) &&
+                Objects.equals(pathId, that.pathId) &&
+                Objects.equals(labels, that.labels) &&
+                Objects.equals(prevBaseAttrHashId, that.prevBaseAttrHashId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, bmpPeer, baseAttrHashId, isIpv4, originAs, prefix, prefixLen, timestamp, firstAddedTimestamp, isWithDrawn, prefixBits, pathId, labels, isPrePolicy, isAdjRibIn, prevBaseAttrHashId, prevWithDrawnState);
+    }
+
+    @Override
+    public String toString() {
+        return "BmpUnicastPrefix{" +
+                "id=" + id +
+                ", hashId='" + hashId + '\'' +
+                ", bmpPeer=" + bmpPeer +
+                ", baseAttrHashId='" + baseAttrHashId + '\'' +
+                ", isIpv4=" + isIpv4 +
+                ", originAs=" + originAs +
+                ", prefix='" + prefix + '\'' +
+                ", prefixLen=" + prefixLen +
+                ", timestamp=" + timestamp +
+                ", firstAddedTimestamp=" + firstAddedTimestamp +
+                ", isWithDrawn=" + isWithDrawn +
+                ", prefixBits='" + prefixBits + '\'' +
+                ", pathId=" + pathId +
+                ", labels='" + labels + '\'' +
+                ", isPrePolicy=" + isPrePolicy +
+                ", isAdjRibIn=" + isAdjRibIn +
+                ", prevBaseAttrHashId='" + prevBaseAttrHashId + '\'' +
+                ", prevWithDrawnState=" + prevWithDrawnState +
+                '}';
     }
 }

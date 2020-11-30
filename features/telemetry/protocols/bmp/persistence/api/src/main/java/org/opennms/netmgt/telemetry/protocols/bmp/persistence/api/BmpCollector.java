@@ -31,10 +31,13 @@ package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -60,8 +63,9 @@ public class BmpCollector implements Serializable {
     @Column(name = "hash_id", nullable = false)
     private String hashId;
 
-    @Column(name = "state")
-    private boolean state;
+    @Column(name = "state", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private State state;
 
     @Column(name = "admin_id", nullable = false)
     private String adminId;
@@ -104,11 +108,11 @@ public class BmpCollector implements Serializable {
         this.hashId = hashId;
     }
 
-    public boolean isState() {
+    public State getState() {
         return state;
     }
 
-    public void setState(boolean state) {
+    public void setState(State state) {
         this.state = state;
     }
 
@@ -176,16 +180,42 @@ public class BmpCollector implements Serializable {
         this.action = action;
     }
 
+
     @Override
     public String toString() {
         return "BmpCollector{" +
-                "hashId=" + hashId +
+                "id=" + id +
+                ", hashId='" + hashId + '\'' +
                 ", state=" + state +
                 ", adminId='" + adminId + '\'' +
                 ", routersCount=" + routersCount +
                 ", timestamp=" + timestamp +
                 ", name='" + name + '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
+                ", routers='" + routers + '\'' +
+                ", bmpRouters=" + bmpRouters +
+                ", action='" + action + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BmpCollector that = (BmpCollector) o;
+        return Objects.equals(hashId, that.hashId) &&
+                state == that.state &&
+                Objects.equals(adminId, that.adminId) &&
+                Objects.equals(routersCount, that.routersCount) &&
+                Objects.equals(timestamp, that.timestamp) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(ipAddress, that.ipAddress) &&
+                Objects.equals(routers, that.routers) &&
+                Objects.equals(action, that.action);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashId, state, adminId, routersCount, timestamp, name, ipAddress, routers, action);
     }
 }

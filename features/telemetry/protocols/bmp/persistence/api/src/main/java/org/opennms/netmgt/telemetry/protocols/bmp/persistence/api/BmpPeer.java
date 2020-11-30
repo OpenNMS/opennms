@@ -31,11 +31,14 @@ package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -83,7 +86,8 @@ public class BmpPeer implements Serializable {
     private String peerBgpId;
 
     @Column(name = "state", nullable = false)
-    private boolean state;
+    @Enumerated(EnumType.STRING)
+    private State state;
 
     @Column(name = "is_l3vpn_peer", nullable = false)
     private boolean isL3VPNPeer;
@@ -210,11 +214,11 @@ public class BmpPeer implements Serializable {
         this.peerBgpId = peerBgpId;
     }
 
-    public boolean isState() {
+    public State getState() {
         return state;
     }
 
-    public void setState(boolean state) {
+    public void setState(State state) {
         this.state = state;
     }
 
@@ -377,6 +381,80 @@ public class BmpPeer implements Serializable {
     public void setBmpUnicastPrefixes(Set<BmpUnicastPrefix> bmpUnicastPrefixes) {
         this.bmpUnicastPrefixes.clear();
         this.bmpUnicastPrefixes.addAll(bmpUnicastPrefixes);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BmpPeer bmpPeer = (BmpPeer) o;
+        return isIpv4 == bmpPeer.isIpv4 &&
+                isL3VPNPeer == bmpPeer.isL3VPNPeer &&
+                isPrePolicy == bmpPeer.isPrePolicy &&
+                isLocRib == bmpPeer.isLocRib &&
+                isLocRibFiltered == bmpPeer.isLocRibFiltered &&
+                Objects.equals(hashId, bmpPeer.hashId) &&
+                Objects.equals(bmpRouter, bmpPeer.bmpRouter) &&
+                Objects.equals(peerRd, bmpPeer.peerRd) &&
+                Objects.equals(peerAddr, bmpPeer.peerAddr) &&
+                Objects.equals(name, bmpPeer.name) &&
+                Objects.equals(peerBgpId, bmpPeer.peerBgpId) &&
+                state == bmpPeer.state &&
+                Objects.equals(timestamp, bmpPeer.timestamp) &&
+                Objects.equals(geoIpStart, bmpPeer.geoIpStart) &&
+                Objects.equals(localIp, bmpPeer.localIp) &&
+                Objects.equals(localBgpId, bmpPeer.localBgpId) &&
+                Objects.equals(localPort, bmpPeer.localPort) &&
+                Objects.equals(localHoldTime, bmpPeer.localHoldTime) &&
+                Objects.equals(localAsn, bmpPeer.localAsn) &&
+                Objects.equals(remotePort, bmpPeer.remotePort) &&
+                Objects.equals(remoteHoldTime, bmpPeer.remoteHoldTime) &&
+                Objects.equals(sentCapabilities, bmpPeer.sentCapabilities) &&
+                Objects.equals(receivedCapabilities, bmpPeer.receivedCapabilities) &&
+                Objects.equals(bmpReason, bmpPeer.bmpReason) &&
+                Objects.equals(bgpErrCode, bmpPeer.bgpErrCode) &&
+                Objects.equals(errorText, bmpPeer.errorText) &&
+                Objects.equals(tableName, bmpPeer.tableName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashId, bmpRouter, peerRd, isIpv4, peerAddr, name, peerBgpId, state, isL3VPNPeer, timestamp, isPrePolicy, geoIpStart, localIp, localBgpId, localPort, localHoldTime, localAsn, remotePort, remoteHoldTime, sentCapabilities, receivedCapabilities, bmpReason, bgpErrCode, errorText, isLocRib, isLocRibFiltered, tableName);
+    }
+
+    @Override
+    public String toString() {
+        return "BmpPeer{" +
+                "id=" + id +
+                ", hashId='" + hashId + '\'' +
+                ", bmpRouter=" + bmpRouter +
+                ", peerRd='" + peerRd + '\'' +
+                ", isIpv4=" + isIpv4 +
+                ", peerAddr='" + peerAddr + '\'' +
+                ", name='" + name + '\'' +
+                ", peerBgpId='" + peerBgpId + '\'' +
+                ", state=" + state +
+                ", isL3VPNPeer=" + isL3VPNPeer +
+                ", timestamp=" + timestamp +
+                ", isPrePolicy=" + isPrePolicy +
+                ", geoIpStart='" + geoIpStart + '\'' +
+                ", localIp='" + localIp + '\'' +
+                ", localBgpId='" + localBgpId + '\'' +
+                ", localPort=" + localPort +
+                ", localHoldTime=" + localHoldTime +
+                ", localAsn=" + localAsn +
+                ", remotePort=" + remotePort +
+                ", remoteHoldTime=" + remoteHoldTime +
+                ", sentCapabilities='" + sentCapabilities + '\'' +
+                ", receivedCapabilities='" + receivedCapabilities + '\'' +
+                ", bmpReason=" + bmpReason +
+                ", bgpErrCode=" + bgpErrCode +
+                ", errorText='" + errorText + '\'' +
+                ", isLocRib=" + isLocRib +
+                ", isLocRibFiltered=" + isLocRibFiltered +
+                ", tableName='" + tableName + '\'' +
+                ", bmpUnicastPrefixes=" + bmpUnicastPrefixes +
+                '}';
     }
 }
 

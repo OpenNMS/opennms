@@ -54,13 +54,13 @@ import org.opennms.netmgt.collection.support.builder.DeferredGenericTypeResource
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.SessionUtils;
+import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.Context;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Type;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.BaseAttribute;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Collector;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Peer;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Router;
-import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Stat;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.UnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttribute;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttributeDao;
@@ -72,10 +72,10 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeer;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatReports;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.PrefixByAS;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.State;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,7 +132,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
 
 
     @Override
-    public void handle(Message message, String location) {
+    public void handle(Message message, Context context) {
         sessionUtils.withTransaction(() -> {
             switch (message.getType()) {
                 case COLLECTOR:
@@ -143,7 +143,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                                 collector.getAction().equals(Collector.Action.STOPPED.value)) {
                             collector.getBmpRouters().forEach(bmpRouter -> {
                                 // Set down state for routers.
-                                bmpRouter.setState(false);
+                                bmpRouter.setState(State.DOWN);
                             });
                         }
                         try {
@@ -164,7 +164,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                             if (connections == 0 && state) {
                                 router.getBmpPeers().forEach(bmpPeer -> {
                                     if (bmpPeer.getTimestamp().getTime() < router.getTimestamp().getTime()) {
-                                        bmpPeer.setState(false);
+                                        bmpPeer.setState(State.DOWN);
                                     }
                                 });
                             }
@@ -208,7 +208,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                     List<BmpUnicastPrefix> bmpUnicastPrefixes = buildBmpUnicastPrefix(message);
                     bmpUnicastPrefixes.forEach(unicastPrefix -> {
                         try {
-                            updateStats(unicastPrefix, location);
+                            updateStats(unicastPrefix, context.location);
                             bmpUnicastPrefixDao.saveOrUpdate(unicastPrefix);
                         } catch (Exception e) {
                             LOG.error("Exception while persisting BMP unicast prefix {}", unicastPrefix, e);
@@ -224,7 +224,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
     }
 
     void updateGlobalRibs() {
-        List<PrefixByAS> prefixByASList = bmpUnicastPrefixDao.getPrefixesGroupedbyAS();
+        List<PrefixByAS> prefixByASList = bmpUnicastPrefixDao.getPrefixesGroupedByAS();
         prefixByASList.forEach(prefixByAS -> {
             BmpGlobalIpRib bmpGlobalIpRib = buildGlobalIpRib(prefixByAS);
             if (bmpGlobalIpRib != null) {
@@ -271,33 +271,46 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
             final CollectionAgent agent = this.collectionAgentFactory.createCollectionAgent(Integer.toString(nodeId.get()), sourceAddr);
             // Build resource for the peer
             final NodeLevelResource nodeResource = new NodeLevelResource(agent.getNodeId());
-            final DeferredGenericTypeResource peerResource = new DeferredGenericTypeResource(nodeResource, "bmp", peerAddr);
+            final DeferredGenericTypeResource peerResource = new DeferredGenericTypeResource(nodeResource, "bmp-stats-peer", peerAddr);
 
             // Build the collection set for the peer
             final CollectionSetBuilder builder = new CollectionSetBuilder(agent);
             builder.withTimestamp(unicastPrefix.getTimestamp());
 
-            final String peerUpdates = String.format("bmp_%s_%s", peerAddr, "updates_by_peer");
-            builder.withIdentifiedNumericAttribute(peerResource, "bmp", "updates_by_peer", updatesByPeer.get(peerHashId),
-                    AttributeType.COUNTER, peerUpdates);
-            final String peerWithdraws = String.format("bmp_%s_%s", peerAddr, "withdraws_by_peer");
-            builder.withIdentifiedNumericAttribute(peerResource, "bmp", "withdraws_by_peer", withdrawsByPeer.get(peerHashId),
-                    AttributeType.COUNTER, peerWithdraws);
+            if (updatesByPeer.get(peerHashId) != null) {
+                builder.withNumericAttribute(peerResource, "bmp-stats-peer", "updates_by_peer", updatesByPeer.get(peerHashId),
+                        AttributeType.COUNTER);
+            }
+            if (withdrawsByPeer.get(peerHashId) != null) {
+                builder.withNumericAttribute(peerResource, "bmp-stats-peer", "withdraws_by_peer", withdrawsByPeer.get(peerHashId),
+                        AttributeType.COUNTER);
+            }
 
-            final String asnUpdates = String.format("bmp_%s_%s", peerAddr, "updates_by_asn");
-            builder.withIdentifiedNumericAttribute(peerResource, "bmp", "updates_by_asn", updatesByAsn.get(new AsnKey(peerHashId, originAsn)),
-                    AttributeType.COUNTER, asnUpdates);
-            final String asnWithdraws = String.format("bmp_%s_%s", peerAddr, "withdraws_by_asn");
-            builder.withIdentifiedNumericAttribute(peerResource, "bmp", "withdraws_by_asn", withdrawsByAsn.get(new AsnKey(peerHashId, originAsn)),
-                    AttributeType.COUNTER, asnWithdraws);
+            final DeferredGenericTypeResource asnResource = new DeferredGenericTypeResource(nodeResource, "bmp-stats-asn", peerAddr);
+            if (updatesByAsn.get(new AsnKey(peerHashId, originAsn)) != null) {
+                String name = "updates_by_asn" + "_" + originAsn;
+                builder.withNumericAttribute(asnResource, "bmp-stats-asn", name, updatesByAsn.get(new AsnKey(peerHashId, originAsn)),
+                        AttributeType.COUNTER);
+            }
+            if (withdrawsByAsn.get(new AsnKey(peerHashId, originAsn)) != null) {
+                String name = "withdraws_by_asn" + "_" + originAsn;
+                builder.withNumericAttribute(asnResource, "bmp-stats-asn", name, withdrawsByAsn.get(new AsnKey(peerHashId, originAsn)),
+                        AttributeType.COUNTER);
+            }
 
-            final String prefixUpdates = String.format("bmp_%s_%s", peerAddr, "updates_by_prefix");
-            builder.withIdentifiedNumericAttribute(peerResource, "bmp", "updates_by_prefix", updatesByPrefix.get(new PrefixKey(peerHashId, prefix, prefixLen)),
-                    AttributeType.COUNTER, prefixUpdates);
+            final DeferredGenericTypeResource prefixResource = new DeferredGenericTypeResource(nodeResource, "bmp-stats-prefix", peerAddr);
+            if (updatesByPrefix.get(new PrefixKey(peerHashId, prefix, prefixLen)) != null) {
+                String name = "updates_by_prefix" + "_" + prefix + "_" + prefixLen;
 
-            final String prefixWithdraws = String.format("bmp_%s_%s", peerAddr, "withdraws_by_prefix");
-            builder.withIdentifiedNumericAttribute(peerResource, "bmp", "withdraws_by_prefix", withdrawsByPrefix.get(new PrefixKey(peerHashId, prefix, prefixLen)),
-                    AttributeType.COUNTER, prefixWithdraws);
+                builder.withNumericAttribute(prefixResource, "bmp-stats-prefix", name, updatesByPrefix.get(new PrefixKey(peerHashId, prefix, prefixLen)),
+                        AttributeType.COUNTER);
+            }
+
+            if (withdrawsByPrefix.get(new PrefixKey(peerHashId, prefix, prefixLen)) != null) {
+                String name = "withdraws_by_prefix" + "_" + prefix + "_" + prefixLen;
+                builder.withNumericAttribute(prefixResource, "bmp-stats-prefix", name, withdrawsByPrefix.get(new PrefixKey(peerHashId, prefix, prefixLen)),
+                        AttributeType.COUNTER);
+            }
 
             CollectionSetWithAgent collectionSetWithAgent = new CollectionSetWithAgent(agent, builder.build());
             collectionSetQueue.add(collectionSetWithAgent);
@@ -330,7 +343,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                     int routerCount = collector.routers != null ? collector.routers.size() : 0;
                     collectorEntity.setRoutersCount(routerCount);
                     // Boolean to represent Up/Down, Any state other than stopped is Up
-                    boolean state = !(collector.action.equals(Collector.Action.STOPPED));
+                    State state = !(collector.action.equals(Collector.Action.STOPPED)) ? State.UP : State.DOWN;
                     collectorEntity.setState(state);
                     collectorEntity.setTimestamp(Date.from(collector.timestamp));
                     bmpCollectors.add(collectorEntity);
@@ -362,7 +375,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                     bmpRouterEntity.setBgpId(InetAddressUtils.str(router.bgpId));
                     bmpRouterEntity.setDescription(router.description);
                     bmpRouterEntity.setInitData(router.initData);
-                    boolean state = !(router.action.equals(Router.Action.TERM));
+                    State state = !(router.action.equals(Router.Action.TERM)) ? State.UP : State.DOWN;
                     bmpRouterEntity.setAction(router.action.value);
                     bmpRouterEntity.setState(state);
                     bmpRouterEntity.setBmpCollector(bmpCollector);
@@ -398,7 +411,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                     peerEntity.setPeerAddr(InetAddressUtils.str(peer.remoteIp));
                     peerEntity.setName(peer.name);
                     peerEntity.setPeerBgpId(InetAddressUtils.str(peer.remoteBgpId));
-                    boolean state = !peer.action.equals(Peer.Action.DOWN);
+                    State state = !peer.action.equals(Peer.Action.DOWN) ? State.UP : State.DOWN;
                     peerEntity.setState(state);
                     peerEntity.setL3VPNPeer(peer.l3vpn);
                     peerEntity.setTimestamp(Date.from(peer.timestamp));
@@ -507,30 +520,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
             }
         });
         return bmpUnicastPrefixes;
-    }
-
-    private static List<BmpStatReports> buildBmpStatReports(Message message) {
-        List<BmpStatReports> bmpStatReportsList = new ArrayList<>();
-        message.getRecords().forEach(record -> {
-            if (record.getType().equals(Type.BMP_STAT)) {
-                Stat statreports = (Stat) record;
-                BmpStatReports bmpStatReports = new BmpStatReports();
-                bmpStatReports.setPeerHashId(statreports.peerHash);
-                bmpStatReports.setPrefixesRejected(statreports.prefixesRejected);
-                bmpStatReports.setKnownDupPrefixes(statreports.knownDupPrefixes);
-                bmpStatReports.setKnownDupWithdraws(statreports.knownDupWithdraws);
-                bmpStatReports.setUpdatesInvalidByClusterList(statreports.invalidClusterList);
-                bmpStatReports.setUpdatesInvalidByAsPathLoop(statreports.invalidAsPath);
-                bmpStatReports.setUpdatesInvalidByOriginatorId(statreports.invalidOriginatorId);
-                bmpStatReports.setUpdatesInvalidByAsConfedLoop(statreports.invalidAsConfed);
-                bmpStatReports.setNumRoutesAdjRibIn(statreports.prefixesPrePolicy);
-                bmpStatReports.setNumROutesLocalRib(statreports.prefixesPostPolicy);
-                bmpStatReports.setTimestamp(Date.from(statreports.timestamp));
-                bmpStatReportsList.add(bmpStatReports);
-            }
-        });
-        return bmpStatReportsList;
-
     }
 
     private BmpGlobalIpRib buildGlobalIpRib(PrefixByAS prefixByAS) {

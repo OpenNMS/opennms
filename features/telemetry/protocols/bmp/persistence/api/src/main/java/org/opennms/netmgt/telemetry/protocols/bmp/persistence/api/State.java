@@ -26,14 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
+package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
-import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatReports;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpStatReportsDao;
-
-public class BmpStatReportsDaoImpl extends AbstractDaoHibernate<BmpStatReports, Long> implements BmpStatReportsDao {
-    public BmpStatReportsDaoImpl() {
-        super(BmpStatReports.class);
-    }
+public enum State {
+    DOWN,
+    UP
 }

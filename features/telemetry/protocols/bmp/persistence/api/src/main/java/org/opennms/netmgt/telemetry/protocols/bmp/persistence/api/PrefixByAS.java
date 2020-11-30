@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 public class PrefixByAS implements Serializable {
 
@@ -91,5 +92,22 @@ public class PrefixByAS implements Serializable {
 
     public void setCount(Long count) {
         this.count = count;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PrefixByAS that = (PrefixByAS) o;
+        return Objects.equals(prefix, that.prefix) &&
+                Objects.equals(prefixLen, that.prefixLen) &&
+                Objects.equals(originAs, that.originAs) &&
+                Objects.equals(timeStamp, that.timeStamp) &&
+                Objects.equals(count, that.count);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(prefix, prefixLen, originAs, timeStamp, count);
     }
 }

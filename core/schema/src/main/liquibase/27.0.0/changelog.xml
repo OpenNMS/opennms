@@ -161,17 +161,14 @@
         <column name="hash_id" type="varchar(36)">
           <constraints nullable="false"/>
         </column>
-        <!-- Represents state Up/Down, default is Down -->
-        <column name="state" type="boolean" defaultValue="false">
+        <column name="state" type="varchar(8)">
           <constraints nullable="false"/>
         </column>
         <column name="admin_id" type="varchar(64)">
           <constraints nullable="false" />
         </column>
         <column name="routers" type="varchar(4096)"/>
-        <column name="routers_count" type="smallint" defaultValue="0">
-          <constraints nullable="false" />
-        </column>
+        <column name="routers_count" type="smallint" defaultValue="0"/>
         <column name="last_updated" type="timestamp">
           <constraints nullable="false" />
         </column>
@@ -213,8 +210,9 @@
           <constraints nullable="false" />
         </column>
         <column name="description" type="varchar(255)"/>
-        <!-- Represents state Up/Down, default is Down -->
-        <column name="state" type="boolean" defaultValue="false"/>
+        <column name="state" type="varchar(8)">
+          <constraints nullable="false" />
+        </column>
         <column name="is_passive" type="boolean" defaultValue="false"/>
         <column name="term_reason_code" type="int"/>
         <column name="term_reason_text" type="varchar(255)"/>
@@ -265,7 +263,7 @@
       </column>
       <column name="name" type="varchar(200)"/>
       <column name="peer_bgp_id" type="varchar(40)"/>
-      <column name="state" type="boolean" defaultValue="false">
+      <column name="state" type="varchar(8)">
         <constraints nullable="false" />
       </column>
       <column name="is_l3vpn_peer" type="boolean" defaultValue="false">

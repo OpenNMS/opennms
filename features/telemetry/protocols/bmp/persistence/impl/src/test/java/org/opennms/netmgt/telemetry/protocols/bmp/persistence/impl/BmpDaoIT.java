@@ -49,6 +49,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpPeerDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouter;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpRouterDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpUnicastPrefixDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.State;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -89,7 +90,7 @@ public class BmpDaoIT {
 
         BmpCollector bmpCollector = new BmpCollector();
         bmpCollector.setHashId("91e3a7ff9f5676ed6ae6fcd8a6b455ec");
-        bmpCollector.setState(true);
+        bmpCollector.setState(State.UP);
         bmpCollector.setAdminId("admin1");
         bmpCollector.setName("collector1");
         bmpCollector.setRoutersCount(2);
@@ -100,7 +101,7 @@ public class BmpDaoIT {
         Assert.assertEquals(bmpCollector.getName(), retrieved.getName());
         Assert.assertEquals(bmpCollector.getHashId(), retrieved.getHashId());
         BmpRouter bmpRouter = new BmpRouter();
-        bmpRouter.setState(true);
+        bmpRouter.setState(State.UP);
         bmpRouter.setHashId("81e4a7ff8f5673ed6ae6fcd9a3b452bg");
         bmpRouter.setName("router-1");
         bmpRouter.setIpAddress("10.1.4.10");

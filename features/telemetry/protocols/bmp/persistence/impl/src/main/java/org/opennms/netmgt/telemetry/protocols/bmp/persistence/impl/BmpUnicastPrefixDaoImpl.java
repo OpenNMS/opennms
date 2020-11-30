@@ -72,14 +72,14 @@ public class BmpUnicastPrefixDaoImpl extends AbstractDaoHibernate<BmpUnicastPref
     }
 
     @Override
-    public List<PrefixByAS> getPrefixesGroupedbyAS() {
-        final StringBuilder sql = new StringBuilder();
-        sql.append("SELECT DISTINCT new org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.PrefixByAS( " +
-                "prefix.prefix, prefix.prefixLen, prefix.originAs, max(prefix.timestamp), count(prefix.bmpPeer)) ");
-        sql.append("FROM BmpUnicastPrefix AS prefix ");
-        sql.append("WHERE prefix.originAs != 0 AND prefix.originAs !=23456 AND prefix.isWithDrawn = false ");
-        sql.append("GROUP BY prefix.prefix,  prefix.prefixLen, prefix.originAs");
+    public List<PrefixByAS> getPrefixesGroupedByAS() {
 
-        return findObjects(PrefixByAS.class, sql.toString());
+        String query = "SELECT DISTINCT new org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.PrefixByAS( " +
+                "prefix.prefix, prefix.prefixLen, prefix.originAs, max(prefix.timestamp), count(prefix.bmpPeer)) " +
+                "FROM BmpUnicastPrefix AS prefix " +
+                "WHERE prefix.originAs != 0 AND prefix.originAs !=23456 AND prefix.isWithDrawn = false " +
+                "GROUP BY prefix.prefix,  prefix.prefixLen, prefix.originAs";
+
+        return findObjects(PrefixByAS.class, query);
     }
 }

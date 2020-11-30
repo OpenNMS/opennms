@@ -32,6 +32,6 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.Message;
 
 public interface BmpMessageHandler {
 
-    void handle(Message message, String location);
+    void handle(Message message, Context context);
     void close();
 }

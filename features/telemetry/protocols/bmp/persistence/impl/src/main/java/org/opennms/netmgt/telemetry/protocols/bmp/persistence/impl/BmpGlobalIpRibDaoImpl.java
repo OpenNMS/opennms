@@ -36,7 +36,7 @@ import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRib;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpGlobalIpRibDao;
 
-public class BmpGlobalIpRibDaoImpl extends AbstractDaoHibernate<BmpGlobalIpRib, Long> implements BmpGlobalIpRibDao {
+public class    BmpGlobalIpRibDaoImpl extends AbstractDaoHibernate<BmpGlobalIpRib, Long> implements BmpGlobalIpRibDao {
 
     public BmpGlobalIpRibDaoImpl() {
         super(BmpGlobalIpRib.class);

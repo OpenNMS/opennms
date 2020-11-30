@@ -31,10 +31,13 @@ package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -79,7 +82,8 @@ public class BmpRouter implements Serializable {
     private String description;
 
     @Column(name = "state")
-    private boolean state;
+    @Enumerated(EnumType.STRING)
+    private State state;
 
     @Column(name = "is_passive")
     private boolean isPassive;
@@ -171,11 +175,11 @@ public class BmpRouter implements Serializable {
         this.description = description;
     }
 
-    public boolean isState() {
+    public State getState() {
         return state;
     }
 
-    public void setState(boolean state) {
+    public void setState(State state) {
         this.state = state;
     }
 
@@ -274,9 +278,39 @@ public class BmpRouter implements Serializable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BmpRouter bmpRouter = (BmpRouter) o;
+        return isPassive == bmpRouter.isPassive &&
+                Objects.equals(hashId, bmpRouter.hashId) &&
+                Objects.equals(name, bmpRouter.name) &&
+                Objects.equals(ipAddress, bmpRouter.ipAddress) &&
+                Objects.equals(routerAS, bmpRouter.routerAS) &&
+                Objects.equals(timestamp, bmpRouter.timestamp) &&
+                Objects.equals(description, bmpRouter.description) &&
+                state == bmpRouter.state &&
+                Objects.equals(termReasonCode, bmpRouter.termReasonCode) &&
+                Objects.equals(termReasonText, bmpRouter.termReasonText) &&
+                Objects.equals(termData, bmpRouter.termData) &&
+                Objects.equals(initData, bmpRouter.initData) &&
+                Objects.equals(geoIpStart, bmpRouter.geoIpStart) &&
+                Objects.equals(bmpCollector, bmpRouter.bmpCollector) &&
+                Objects.equals(bgpId, bmpRouter.bgpId) &&
+                Objects.equals(connectionCount, bmpRouter.connectionCount) &&
+                Objects.equals(action, bmpRouter.action);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashId, name, ipAddress, routerAS, timestamp, description, state, isPassive, termReasonCode, termReasonText, termData, initData, geoIpStart, bmpCollector, bgpId, connectionCount, action);
+    }
+
+    @Override
     public String toString() {
         return "BmpRouter{" +
-                "hashId=" + hashId +
+                "id=" + id +
+                ", hashId='" + hashId + '\'' +
                 ", name='" + name + '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
                 ", routerAS=" + routerAS +
@@ -289,8 +323,11 @@ public class BmpRouter implements Serializable {
                 ", termData='" + termData + '\'' +
                 ", initData='" + initData + '\'' +
                 ", geoIpStart='" + geoIpStart + '\'' +
-                ", bmpCollector='" + bmpCollector + '\'' +
+                ", bmpCollector=" + bmpCollector +
                 ", bgpId='" + bgpId + '\'' +
+                ", connectionCount=" + connectionCount +
+                ", bmpPeers=" + bmpPeers +
+                ", action='" + action + '\'' +
                 '}';
     }
 }

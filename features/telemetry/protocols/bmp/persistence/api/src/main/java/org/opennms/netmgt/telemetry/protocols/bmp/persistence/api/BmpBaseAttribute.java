@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -260,5 +261,60 @@ public class BmpBaseAttribute implements Serializable {
 
     public void setOriginatorId(String originatorId) {
         this.originatorId = originatorId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BmpBaseAttribute that = (BmpBaseAttribute) o;
+        return isAtomicAgg == that.isAtomicAgg &&
+                isNextHopIpv4 == that.isNextHopIpv4 &&
+                Objects.equals(hashId, that.hashId) &&
+                Objects.equals(peerHashId, that.peerHashId) &&
+                Objects.equals(origin, that.origin) &&
+                Objects.equals(asPath, that.asPath) &&
+                Objects.equals(asPathCount, that.asPathCount) &&
+                Objects.equals(originAs, that.originAs) &&
+                Objects.equals(nextHop, that.nextHop) &&
+                Objects.equals(med, that.med) &&
+                Objects.equals(localPref, that.localPref) &&
+                Objects.equals(aggregator, that.aggregator) &&
+                Objects.equals(communityList, that.communityList) &&
+                Objects.equals(extCommunityList, that.extCommunityList) &&
+                Objects.equals(largeCommunityList, that.largeCommunityList) &&
+                Objects.equals(clusterList, that.clusterList) &&
+                Objects.equals(timestamp, that.timestamp) &&
+                Objects.equals(originatorId, that.originatorId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hashId, peerHashId, origin, asPath, asPathCount, originAs, nextHop, med, localPref, aggregator, communityList, extCommunityList, largeCommunityList, clusterList, isAtomicAgg, isNextHopIpv4, timestamp, originatorId);
+    }
+
+    @Override
+    public String toString() {
+        return "BmpBaseAttribute{" +
+                "id=" + id +
+                ", hashId='" + hashId + '\'' +
+                ", peerHashId='" + peerHashId + '\'' +
+                ", origin='" + origin + '\'' +
+                ", asPath='" + asPath + '\'' +
+                ", asPathCount=" + asPathCount +
+                ", originAs=" + originAs +
+                ", nextHop='" + nextHop + '\'' +
+                ", med=" + med +
+                ", localPref=" + localPref +
+                ", aggregator='" + aggregator + '\'' +
+                ", communityList='" + communityList + '\'' +
+                ", extCommunityList='" + extCommunityList + '\'' +
+                ", largeCommunityList='" + largeCommunityList + '\'' +
+                ", clusterList='" + clusterList + '\'' +
+                ", isAtomicAgg=" + isAtomicAgg +
+                ", isNextHopIpv4=" + isNextHopIpv4 +
+                ", timestamp=" + timestamp +
+                ", originatorId='" + originatorId + '\'' +
+                '}';
     }
 }

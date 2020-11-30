@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -160,5 +161,43 @@ public class BmpGlobalIpRib implements Serializable {
 
     public void setNumPeers(Integer numPeers) {
         this.numPeers = numPeers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BmpGlobalIpRib that = (BmpGlobalIpRib) o;
+        return shouldDelete == that.shouldDelete &&
+                Objects.equals(id, that.id) &&
+                Objects.equals(prefix, that.prefix) &&
+                Objects.equals(prefixLen, that.prefixLen) &&
+                Objects.equals(recvOriginAs, that.recvOriginAs) &&
+                Objects.equals(rpkiOriginAs, that.rpkiOriginAs) &&
+                Objects.equals(irrOriginAs, that.irrOriginAs) &&
+                Objects.equals(irrSource, that.irrSource) &&
+                Objects.equals(timeStamp, that.timeStamp) &&
+                Objects.equals(numPeers, that.numPeers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, prefix, shouldDelete, prefixLen, recvOriginAs, rpkiOriginAs, irrOriginAs, irrSource, timeStamp, numPeers);
+    }
+
+    @Override
+    public String toString() {
+        return "BmpGlobalIpRib{" +
+                "id=" + id +
+                ", prefix='" + prefix + '\'' +
+                ", shouldDelete=" + shouldDelete +
+                ", prefixLen=" + prefixLen +
+                ", recvOriginAs=" + recvOriginAs +
+                ", rpkiOriginAs=" + rpkiOriginAs +
+                ", irrOriginAs=" + irrOriginAs +
+                ", irrSource='" + irrSource + '\'' +
+                ", timeStamp=" + timeStamp +
+                ", numPeers=" + numPeers +
+                '}';
     }
 }
