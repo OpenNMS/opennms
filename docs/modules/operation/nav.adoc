@@ -142,6 +142,18 @@
 **** xref:performance-data-collection/shell/measurements.adoc[]
 **** xref:performance-data-collection/shell/stress-testing.adoc[]
 
+* xref:events/anatomy-events.adoc[]
+** xref:events/event-sources.adoc[]
+*** xref:events/sources/snmp-traps.adoc[]
+*** xref:events/sources/syslog.adoc[]
+*** xref:events/sources/rest.adoc[]
+*** xref:events/sources/xml-tcp.adoc[]
+*** xref:events/sources/eif-adapter.adoc[]
+*** xref:events/sources/tl1.adoc[]
+*** xref:events/sources/sink-api.adoc[]
+** xref:events/eventbus.adoc[]
+** xref:events/event-configuration.adoc[]
+
 * xref:alarms/introduction.adoc[]
 ** xref:alarms/alarmd.adoc[]
 ** xref:alarms/configuring-alarms.adoc[]
