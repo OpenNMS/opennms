@@ -305,11 +305,6 @@ include::text/enlinkd/layer-3-discovery.adoc[]
 include::text/enlinkd/layer-3/ospf-discovery.adoc[]
 include::text/enlinkd/layer-3/is-is-discovery.adoc[]
 
-
-[[ga-opennms-opentracing]]
-== OpenTracing
-include::text/opentracing/setup.adoc[]
-
 [[ga-opennms-operation]]
 == Operation
 include::text/operation/ssl/ssl.adoc[]

@@ -14,4 +14,4 @@
 *** xref:system-scalability/time-series-storage/rrdtool.adoc[]
 *** xref:system-scalability/time-series-storage/newts.adoc[]
 ** xref:system-scalability/tuning-kafka.adoc[]
-
+* xref:opentracing/jaeger-tracing.adoc[]
