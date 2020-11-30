@@ -25,3 +25,20 @@ opennms:
 ```
 
 Config specified will be written to `etc/opennms.properties.d/_confd.slack.properties`. Check the docs for detailed information about the Slack configuration parameters.
+
+### Mattermost
+
+```
+---
+opennms:
+  notifd:
+    mattermost:
+      webhookURL: https://url.com
+      channel: alerting
+      userName: username
+      iconEmoji: :metal:
+      iconURL: https://url.com/picture
+      useSystemProxy: false
+```
+
+Config specified will be written to `etc/opennms.properties.d/_confd.mattermost.properties`. Check the docs for detailed information about the Mattermost configuration parameters.
