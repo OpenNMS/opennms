@@ -64,6 +64,10 @@
       <artifactId>org.opennms.features.dnsresolver.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.swrve</groupId>
+      <artifactId>rate-limited-logger</artifactId>
+    </dependency>
 
     <!-- Test -->
     <dependency>
