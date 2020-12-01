@@ -200,6 +200,11 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         }
     }
 
+    @Override
+    public OperationType getOperationType() {
+        return OperationType.UPDATE;
+    }
+
     public void foundNodeMetaData(String context, String key, String value) {
         m_node.addMetaData(context, key, value);
     }
