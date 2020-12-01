@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>org.opennms.checkstyle</artifactId>
-  <version>2019.1.13</version>
+  <version>2019.1.14-SNAPSHOT</version>
   <name>OpenNMS :: Checkstyle</name>
   <build>
     <plugins>
