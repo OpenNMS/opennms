@@ -215,6 +215,25 @@ Since Meridian 2020 is based on Horizon 26.1, it contains all the fixes and upda
 
 For a more complete list of major changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.1.3.
 
+[releasenotes-changelog-Meridian-2020.1.2]
+
+==== Release Meridian-2020.1.2
+
+Release 2020.1.2 is the third release in the Meridian 2020 series.
+
+It contains a number of bug fixes including a fix for a critical Jetty CVE.
+
+The codename for 2020.1.2 is _link:$$https://wikipedia.org/wiki/Skerry$$[Skerry]_.
+
+===== Bug
+
+* Timezone inconsistency when generating PDF reports from Grafana dashboards (Issue http://issues.opennms.org/browse/NMS-12930[NMS-12930])
+* RRD files for SNMP data are not created until a Service Restart (Issue http://issues.opennms.org/browse/NMS-12974[NMS-12974])
+* Unable to enable Jaeger tracing in Sentinel (Issue http://issues.opennms.org/browse/NMS-12998[NMS-12998])
+* Update typo in BMP docs (Issue http://issues.opennms.org/browse/NMS-13002[NMS-13002])
+* CVE-2020-27216: Jetty webserver vulnerability (Issue http://issues.opennms.org/browse/NMS-13009[NMS-13009])
+* Null pointer exception whe minion receives traps (Issue http://issues.opennms.org/browse/NMS-13015[NMS-13015])
+
 [releasenotes-changelog-Meridian-2020.1.1]
 
 ==== Release Meridian-2020.1.1
