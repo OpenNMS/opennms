@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -167,6 +167,10 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
     }
 
     public static String mapValue(Number num) {
+        return mapValue(num, AttributeType.GAUGE);
+        }
+	
+    public static String mapValue(Number num, AttributeType type) {
         if (num == null) {
             return "U";
         }
@@ -179,6 +183,12 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
         nf.setGroupingUsed(false);
         nf.setMinimumFractionDigits(0);
         nf.setMaximumFractionDigits(Integer.MAX_VALUE);
+        if (AttributeType.COUNTER.equals(type)) {
+            // No decimals allowed for counters
+            nf.setMaximumFractionDigits(0);
+        } else {
+            nf.setMaximumFractionDigits(Integer.MAX_VALUE);
+        }
         nf.setMinimumIntegerDigits(0);
         nf.setMaximumIntegerDigits(Integer.MAX_VALUE);
         return nf.format(num);
@@ -225,7 +235,7 @@ public class RrdPersistOperationBuilder implements PersistOperationBuilder {
             } else {
                 first = false;
             }
-            values.append(mapValue(value));
+            values.append(mapValue(value, attrDef.getType()));
         }
         return values.toString();
     }
