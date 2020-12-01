@@ -364,13 +364,13 @@ The codename for 2019.1.12 is link:$$https://wikipedia.org/wiki/55701_Ukalegon$$
 * sort custom reports (Issue http://issues.opennms.org/browse/NMS-12931[NMS-12931])
 * Update Copyright notice for 2020 (Issue http://issues.opennms.org/browse/NMS-12933[NMS-12933])
 
-[releasenotes-changelog-Meridian-2019.1.14-SNAPSHOT]
+[releasenotes-changelog-Meridian-2019.1.11]
 
-==== Release Meridian-2019.1.14-SNAPSHOT
+==== Release Meridian-2019.1.11
 
-Release 2019.1.14-SNAPSHOT contains a bunch of bug fixes and a few handy enhancements.
+Release 2019.1.11 contains a bunch of bug fixes and a few handy enhancements.
 
-The codename for 2019.1.14-SNAPSHOT is link:$$https://en.wikipedia.org/wiki/Haumea$$[_Haumea_].
+The codename for 2019.1.11 is link:$$https://en.wikipedia.org/wiki/Haumea$$[_Haumea_].
 
 ===== Bug
 
