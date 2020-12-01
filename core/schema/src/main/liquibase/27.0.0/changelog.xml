@@ -161,7 +161,7 @@
         <column name="hash_id" type="varchar(36)">
           <constraints nullable="false"/>
         </column>
-        <column name="state" type="varchar(8)">
+        <column name="state" type="varchar(8)" defaultValue="DOWN">
           <constraints nullable="false"/>
         </column>
         <column name="admin_id" type="varchar(64)">
@@ -210,7 +210,7 @@
           <constraints nullable="false" />
         </column>
         <column name="description" type="varchar(255)"/>
-        <column name="state" type="varchar(8)">
+        <column name="state" type="varchar(8)" defaultValue="DOWN">
           <constraints nullable="false" />
         </column>
         <column name="is_passive" type="boolean" defaultValue="false"/>
@@ -263,7 +263,7 @@
       </column>
       <column name="name" type="varchar(200)"/>
       <column name="peer_bgp_id" type="varchar(40)"/>
-      <column name="state" type="varchar(8)">
+      <column name="state" type="varchar(8)" defaultValue="DOWN">
         <constraints nullable="false" />
       </column>
       <column name="is_l3vpn_peer" type="boolean" defaultValue="false">
