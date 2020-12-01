@@ -1,0 +1,47 @@
+.Create a configuration file for AWS SQS settings
+[source, console]
+----
+sudo vi etc/opennms.properties.d/aws-sqs.properties
+----
+
+.Configure AWS SQS
+[source, aws-sqs.properties]
+----
+org.opennms.core.ipc.rpc.strategy=sqs<1>
+org.opennms.core.ipc.sink.strategy=sqs<2>
+org.opennms.core.ipc.sink.initialSleepTime=60000<3>
+org.opennms.core.ipc.aws.sqs.sink.FifoQueue=false<4>
+
+org.opennms.core.ipc.aws.sqs.aws_region=us-east-1<5>
+org.opennms.core.ipc.aws.sqs.aws_access_key_id=my-access-key<6>
+org.opennms.core.ipc.aws.sqs.aws_secret_access_key=my-secret-access-key<7>
+----
+
+<1> Use AWS SQS for Remote Producer Calls (RPC)
+<2> Use AWS SQS as message sink
+<3> Ensure that messages are not consumed from Kafka until the system has fully initialized. 60 seconds is here used a default
+<4> If consistent ordering of incoming messages is required, FIFO queues can be used, the default is false and **must** match with the Minion setting
+<5> Set AWS SQS region
+<6> The AWS SQS access key
+<7> The AWS SQS secret for the access key
+
+TIP: The default credential provider chain looks for credentials in the following order:
+
+1. Environment Variables (i.e. `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`)
+2. Java system properties (i.e. `aws.accessKeyId` and `aws.secretKey`. These keys can be added to `$OPENNMS_HOME/etc/opennms.conf`)
+3. Default credential profiles file (i.e. `~/.aws/credentials`)
+4. Amazon ECS container credentials (i.e. `AWS_CONTAINER_CREDENTIALS_RELATIVE_URI`)
+5. Instance profile credentials (i.e. through the metadata service when running on EC2)
+
+.Apply the changes with restarting {page-component-title} Core instance
+[source, console]
+----
+sudo systemctl restart opennms
+----
+
+TIP: When running OpenNMS {page-component-title} inside AWS, it is possible to use the default provider chain with an IAM Role to avoid hard coding the AWS Credentials on a configuration file.
+     The following shows an example of the role that should be associated with the EC2 instance on which OpenNMS is going to run.
+
+image::deployment/core/message-broker/aws-iam-role.png[]
+
+TIP: You can find available configuration parameters in the xref:reference:configuration/aws-sqs.adoc[Amazon Simple Queueing Services reference] section.

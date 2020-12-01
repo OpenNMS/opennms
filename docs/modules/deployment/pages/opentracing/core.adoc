@@ -28,18 +28,17 @@ sudo vi etc/opennms.properties.d/jaeger.properties
 [source, jaeger.properties]
 ----
 org.opennms.core.tracer=jaeger<1>
-JAEGER_SERVICE_NAME=core-instance<2>
-JAEGER_AGENT_HOST=my-jaeger-host<3>
+JAEGER_AGENT_HOST=my-jaeger-host<2>
 ----
 
 <1> Set Jaeger as the tracing implementation
-<2> Set a name for this service which identifies the {page-component-title} Core server in Jaeger
-<3> Replace the `my-jaeger-host` with your Jaeger instance where you collect the tracing information
+<2> Replace the `my-jaeger-host` with your Jaeger instance where you collect the tracing information
 
 TIP: Available configuration options are listed in the link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[Jaeger Core Readme].
 
-Restart _{page-component-title}_ Core server to apply the changes.
+NOTE: The Jaeger service name is the `Instance-ID` of the Core server.
 
+.Restart _{page-component-title}_ Core server to apply the changes
 [source, console]
 ----
 sudo systemctl restart opennms

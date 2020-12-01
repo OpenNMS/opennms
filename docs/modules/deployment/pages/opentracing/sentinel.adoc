@@ -27,17 +27,16 @@ sudo vi etc/custom.system.properties
 .Add configuration properties for tracing with Jaeger
 [source, jaeger.properties]
 ----
-JAEGER_SERVICE_NAME=my-sentinel-id<1>
-JAEGER_AGENT_HOST=my-jaeger-host<2>
+JAEGER_AGENT_HOST=my-jaeger-host<1>
 ----
 
-<1> Set a name for this service which identifies this specific Sentinel in Jaeger
-<2> Replace the `my-jaeger-host` with your Jaeger instance where you collect the tracing information
+<1> Replace the `my-jaeger-host` with your Jaeger instance where you collect the tracing information
 
 TIP: Available configuration options are listed in the link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[Jaeger Core Readme].
 
-Restart Minion to apply the changes.
+NOTE: The Jaeger service name is the `Instance-ID` from Sentinel.
 
+.Restart Sentinel to apply the changes
 [source, console]
 ----
 sudo systemctl restart sentinel

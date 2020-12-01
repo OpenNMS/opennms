@@ -71,4 +71,10 @@ gRPC::
 --
 include::message-broker/grpc.adoc[]
 --
+
+AWS SQS::
++
+--
+include::message-broker/aws-sqs.adoc[]
+--
 ====

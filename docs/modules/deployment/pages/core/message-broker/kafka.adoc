@@ -4,7 +4,7 @@
 sudo vi etc/opennms.properties.d/kafka.properties
 ----
 
-.Configure Kafka 
+.Configure Kafka
 [source, kafka.properties]
 ----
 org.opennms.core.ipc.rpc.strategy=kafka<1>

@@ -3,3 +3,4 @@
 * Configuration
 ** xref:configuration/core-docker.adoc[]
 ** xref:configuration/minion-docker.adoc[]
+** xref:configuration/aws-sqs.adoc[]
