@@ -62,6 +62,12 @@ public class FlowDocument {
     private long timestamp;
 
     /**
+     * Applied clock correction im milliseconds.
+     */
+    @SerializedName("@clock_correction")
+    private long clockCorrection;
+
+    /**
      * Schema version.
      */
     @SerializedName("@version")
@@ -351,6 +357,14 @@ public class FlowDocument {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public long getClockCorrection() {
+        return this.clockCorrection;
+    }
+
+    public void setClockCorrection(final long clockCorrection) {
+        this.clockCorrection = clockCorrection;
     }
 
     public Integer getVersion() {
@@ -759,6 +773,7 @@ public class FlowDocument {
         enrichedFlow.setDstNodeInfo(buildNodeInfo(flowDocument.getNodeDst()));
         enrichedFlow.setExporterNodeInfo(buildNodeInfo(flowDocument.getNodeExporter()));
         enrichedFlow.setConvoKey(flowDocument.getConvoKey());
+        enrichedFlow.setClockCorrection(flowDocument.getClockCorrection());
         return enrichedFlow;
 
     }

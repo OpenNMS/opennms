@@ -104,6 +104,7 @@ public class FlowDocumentBuilder {
         buildNodeInfo(enrichedFlow.getSrcNodeInfo()).ifPresent(builder::setSrcNode);
         buildNodeInfo(enrichedFlow.getExporterNodeInfo()).ifPresent(builder::setExporterNode);
         buildNodeInfo(enrichedFlow.getDstNodeInfo()).ifPresent(builder::setDestNode);
+        builder.setClockCorrection(enrichedFlow.getClockCorrection());
 
         return builder.build();
     }

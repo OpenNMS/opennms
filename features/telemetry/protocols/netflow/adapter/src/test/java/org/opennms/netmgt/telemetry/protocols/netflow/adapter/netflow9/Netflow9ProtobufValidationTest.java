@@ -39,6 +39,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +83,7 @@ public class Netflow9ProtobufValidationTest {
         Utils.JsonConverter jsonConverter = new Utils.JsonConverter();
         List<String> jsonStrings = jsonConverter.getJsonStringFromResources("/flows/netflow9.json",
                 "/flows/netflow9_1.json");
-        List<Flow> jsonFlows = jsonConverter.convert(jsonStrings);
+        List<Flow> jsonFlows = jsonConverter.convert(jsonStrings, Instant.now());
         assertThat(jsonFlows, hasSize(12));
         for (int i = 0; i < 12; i++) {
             Assert.assertEquals(flows.get(i).getFlowSeqNum(), jsonFlows.get(i).getFlowSeqNum());
@@ -157,7 +158,7 @@ public class Netflow9ProtobufValidationTest {
                     }
                     try {
                         FlowMessage flowMessage = FlowMessage.parseFrom(message);
-                        flows.addAll(nf9Converter.convert(flowMessage));
+                        flows.addAll(nf9Converter.convert(flowMessage, Instant.now()));
                     } catch (InvalidProtocolBufferException e) {
                         throw new RuntimeException(e);
 

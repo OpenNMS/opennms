@@ -90,4 +90,5 @@ message FlowDocument {
     Locality dst_locality = 42;
     Locality flow_locality = 43;
     string convo_key = 44;
+    uint64 clock_correction = 45; // Applied clock correction im milliseconds.
 }

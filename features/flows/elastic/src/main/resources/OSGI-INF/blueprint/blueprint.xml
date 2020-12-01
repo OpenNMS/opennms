@@ -63,6 +63,9 @@
             <cm:property name="alwaysUseRawForQueries" value="true" />
             <cm:property name="timeRangeDurationAggregateThresholdMs" value="120000" /> <!-- 2 minutes -->
             <cm:property name="timeRangeEndpointAggregateThresholdMs" value="604800000" /> <!-- 7 days -->
+
+            <!-- Enrichment settings -->
+            <cm:property name="clockSkewCorrectionThreshold" value="0" />
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -144,6 +147,7 @@
         <argument ref="interfaceToNodeCache" />
         <argument ref="sessionUtils" />
         <argument ref="nodeCacheConfig" />
+        <argument value="${clockSkewCorrectionThreshold}" />
     </bean>
 
     <!-- Metrics -->
