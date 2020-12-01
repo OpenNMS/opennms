@@ -309,13 +309,26 @@ For a more complete list of changes included in this release, see the "What's Ne
 * link:https://docs.opennms.org/opennms/releases/24.1.3/releasenotes/releasenotes.html[Horizon 24]
 * link:https://docs.opennms.org/opennms/releases/25.1.0/releasenotes/releasenotes.html[Horizon 25]
 
+[releasenotes-changelog-Meridian-2019.1.14]
+
+==== Release Meridian-2019.1.14
+
+Release 2019.1.14 contains a couple of critical bug fixes.
+
+The codename for 2019.1.14 is link:$$https://wikipedia.org/wiki/755_Quintilla$$[_Quintilla_].
+
+===== Bug
+
+* RRD files for SNMP data are not created until a Service Restart (Issue http://issues.opennms.org/browse/NMS-12974[NMS-12974])
+* CVE-2020-27216: Jetty webserver vulnerability (Issue http://issues.opennms.org/browse/NMS-13009[NMS-13009])
+
 [releasenotes-changelog-Meridian-2019.1.13]
 
 ==== Release Meridian-2019.1.13
 
 Release 2019.1.13 contains a few bug fixes and one enhancement.
 
-The codename for 2019.1.13 is link:$$https://en.wikipedia.org/wiki/Meanings_of_minor_planet_names:_184001%E2%80%93185000#096$$[_Kazlauskas_].
+The codename for 2019.1.13 is link:$$https://wikipedia.org/wiki/Meanings_of_minor_planet_names:_184001%E2%80%93185000#096$$[_Kazlauskas_].
 
 ===== Bug
 
@@ -332,7 +345,7 @@ The codename for 2019.1.13 is link:$$https://en.wikipedia.org/wiki/Meanings_of_m
 
 Release 2019.1.12 contains a number of small bug fixes and a few enhancements.
 
-The codename for 2019.1.12 is link:$$https://en.wikipedia.org/wiki/55701_Ukalegon$$[_Ukalegon_].
+The codename for 2019.1.12 is link:$$https://wikipedia.org/wiki/55701_Ukalegon$$[_Ukalegon_].
 
 ===== Bug
 
@@ -351,13 +364,13 @@ The codename for 2019.1.12 is link:$$https://en.wikipedia.org/wiki/55701_Ukalego
 * sort custom reports (Issue http://issues.opennms.org/browse/NMS-12931[NMS-12931])
 * Update Copyright notice for 2020 (Issue http://issues.opennms.org/browse/NMS-12933[NMS-12933])
 
-[releasenotes-changelog-Meridian-2019.1.13-SNAPSHOT]
+[releasenotes-changelog-Meridian-2019.1.14-SNAPSHOT]
 
-==== Release Meridian-2019.1.13-SNAPSHOT
+==== Release Meridian-2019.1.14-SNAPSHOT
 
-Release 2019.1.13-SNAPSHOT contains a bunch of bug fixes and a few handy enhancements.
+Release 2019.1.14-SNAPSHOT contains a bunch of bug fixes and a few handy enhancements.
 
-The codename for 2019.1.13-SNAPSHOT is link:$$https://en.wikipedia.org/wiki/Haumea$$[_Haumea_].
+The codename for 2019.1.14-SNAPSHOT is link:$$https://en.wikipedia.org/wiki/Haumea$$[_Haumea_].
 
 ===== Bug
 
@@ -387,7 +400,7 @@ The codename for 2019.1.13-SNAPSHOT is link:$$https://en.wikipedia.org/wiki/Haum
 
 Release 2019.1.10 contains a few enhancements and a number of bugfixes.
 
-The codename for 2019.1.10 is link:$$https://en.wikipedia.org/wiki/Ceres_(dwarf_planet)$$[_Ceres_].
+The codename for 2019.1.10 is link:$$https://wikipedia.org/wiki/Ceres_(dwarf_planet)$$[_Ceres_].
 
 ===== Bug
 
@@ -415,7 +428,7 @@ WARNING: This release changes the Systemd service name back from `meridian` to `
 previous releases.  You may need to run `systemctl disable meridian` and/or `systemctl enable opennms`
 to make sure OpenNMS starts on reboot.
 
-The codename for 2019.1.9 is link:$$https://en.wikipedia.org/wiki/Pluto$$[_Pluto_].
+The codename for 2019.1.9 is link:$$https://wikipedia.org/wiki/Pluto$$[_Pluto_].
 
 ===== Bug
 
@@ -439,7 +452,7 @@ Release 2019.1.8 is the ninth release in the Meridian 2019 series.
 
 It contains a number of bug and documentation fixes as well as a few small enhancements.
 
-The codename for 2019.1.8 is link:$$https://en.wikipedia.org/wiki/Neptune$$[_Neptune_].
+The codename for 2019.1.8 is link:$$https://wikipedia.org/wiki/Neptune$$[_Neptune_].
 
 ===== Bug
 
@@ -462,7 +475,7 @@ Release 2019.1.7 is the eighth release in the Meridian 2019 series.
 
 It contains a few bug fixes as well as a number of enhancements to the documentation.
 
-The codename for 2019.1.7 is link:$$https://en.wikipedia.org/wiki/Uranus$$[_Uranus_].
+The codename for 2019.1.7 is link:$$https://wikipedia.org/wiki/Uranus$$[_Uranus_].
 
 ===== Bug
 
@@ -487,7 +500,7 @@ Release 2019.1.6 is the seventh release in the Meridian 2019 series.
 It is an off-schedule release to fix a vulnerability in ActiveMQ and the Minion.
 Thanks to Florian Hauser of Code White for catching this one.
 
-The codename for 2019.1.6 is link:$$https://en.wikipedia.org/wiki/Europa$$[_Europa_].
+The codename for 2019.1.6 is link:$$https://wikipedia.org/wiki/Europa$$[_Europa_].
 
 ===== Bug
 
@@ -503,7 +516,7 @@ It fixes a few more security issues, as well as a number of other bugs
 and a couple of enhancements.
 Hat tip to Johannes Moritz for the security report.
 
-The codename for 2019.1.5 is link:$$https://en.wikipedia.org/wiki/Saturn$$[_Saturn_].
+The codename for 2019.1.5 is link:$$https://wikipedia.org/wiki/Saturn$$[_Saturn_].
 
 ===== Bug
 
@@ -530,7 +543,7 @@ Release 2019.1.4 is the fifth release in the Meridian 2019 series.
 It fixes an HQL injection bug, as well as a few other issues.
 Hat tip to Johannes Moritz for the security report.
 
-The codename for 2019.1.4 is link:$$https://en.wikipedia.org/wiki/Jupiter$$[_Jupiter_].
+The codename for 2019.1.4 is link:$$https://wikipedia.org/wiki/Jupiter$$[_Jupiter_].
 
 ===== Bug
 
@@ -550,7 +563,7 @@ Release 2019.1.3 is the fourth release in the Meridian 2019 series.
 
 It contains a few bug fixes, most notably a fix for some NPEs as well as a performance issue in topology processing.
 
-The codename for 2019.1.3 is link:$$https://en.wikipedia.org/wiki/Mars$$[_Mars_].
+The codename for 2019.1.3 is link:$$https://wikipedia.org/wiki/Mars$$[_Mars_].
 
 ===== Bug
 
@@ -568,7 +581,7 @@ Release 2019.1.2 is the third release in the Meridian 2019 series.
 
 It contains a number of alarm classification bug fixes and performance improvements, flow enhancements, and more.
 
-The link:https://i.ytimg.com/vi/psiq5imRIj8/maxresdefault.jpg[c]odename for 2019.1.2 is _link:$$https://en.wikipedia.org/wiki/Earth$$[Earth]_
+The link:https://i.ytimg.com/vi/psiq5imRIj8/maxresdefault.jpg[c]odename for 2019.1.2 is _link:$$https://wikipedia.org/wiki/Earth$$[Earth]_
 
 ===== Bug
 
@@ -597,7 +610,7 @@ Release 2019.1.1 is the second release in the Meridian 2019 series.
 
 It contains a number of bug fixes mostly related to alarm and event processing and potential resource leaks, as well as provisioning enhancements to SNMP profiles.
 
-The codename for 2019.1.1 is link:$$https://en.wikipedia.org/wiki/Venus_(planet)$$[_Venus_].
+The codename for 2019.1.1 is link:$$https://wikipedia.org/wiki/Venus_(planet)$$[_Venus_].
 
 ===== Bug
 
@@ -628,7 +641,7 @@ The codename for 2019.1.1 is link:$$https://en.wikipedia.org/wiki/Venus_(planet)
 
 Release 2019.1.0 is the first release in the Meridian 2019 series.
 
-The codename for 2019.1.0 is link:$$https://en.wikipedia.org/wiki/Mercury_(planet)$$[_Mercury_].
+The codename for 2019.1.0 is link:$$https://wikipedia.org/wiki/Mercury_(planet)$$[_Mercury_].
 
 ===== Bug
 

@@ -85,6 +85,19 @@ New or updated trap definitions have been added for the following classes of dev
   It should be backwards compatible with existing 6.x-based Drools configurations.
 * Many other small enhancements and fixes for the topology UI.
 
+[releasenotes-changelog-Meridian-2018.1.24]
+
+==== Release Meridian-2018.1.24
+
+Release 2018.1.24 is a small update to 2018.1.23 with a couple of critical bug fixes.
+
+The codename for 2018.1.24 is _https://wikipedia.org/wiki/Tsunami[Tsunami]_.
+
+===== Bug
+
+* RRD files for SNMP data are not created until a Service Restart (Issue http://issues.opennms.org/browse/NMS-12974[NMS-12974])
+* CVE-2020-27216: Jetty webserver vulnerability (Issue http://issues.opennms.org/browse/NMS-13009[NMS-13009])
+
 [releasenotes-changelog-Meridian-2018.1.23]
 
 Release 2018.1.23 is a small update to 2018.1.22 that fixes an SNMP interface poller bug.

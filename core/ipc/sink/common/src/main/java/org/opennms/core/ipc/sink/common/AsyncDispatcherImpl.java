@@ -224,8 +224,10 @@ public class AsyncDispatcherImpl<W, S extends Message, T extends Message> implem
             if (messageEntry.getKey() == null) {
                 return messageEntry;
             }
-
-            resultRecordedMap.remove(messageEntry.getKey()).await();
+            CountDownLatch resultRecorded = resultRecordedMap.remove(messageEntry.getKey());
+            if(resultRecorded != null) {
+                resultRecorded.await();
+            }
 
             return messageEntry;
         }
