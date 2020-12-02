@@ -170,6 +170,17 @@
         <adapter name="BMP-OpenBMP-Integration-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.BmpIntegrationAdapter" enabled="false">
             <parameter key="kafka.bootstrap.servers" value="localhost:9092" />
         </adapter>
+        <adapter name="BMP-Persisting-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPersistingAdapter" enabled="false">
+            <package name="BMP-Persisting-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
     </queue>
 
     <!-- Graphite listener and adapter -->

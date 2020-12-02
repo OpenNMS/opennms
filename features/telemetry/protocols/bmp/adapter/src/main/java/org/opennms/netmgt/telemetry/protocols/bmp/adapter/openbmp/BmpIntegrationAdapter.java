@@ -41,7 +41,6 @@ import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.timestamp;
 import static org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpAdapterTools.uint32;
 
-import java.net.InetAddress;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +66,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.Stat;
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.UnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.transport.Transport;
-import org.opennms.netmgt.telemetry.protocols.collection.AbstractAdapter;
+import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapter;
+import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +82,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-public class BmpIntegrationAdapter extends AbstractAdapter {
+public class BmpIntegrationAdapter extends AbstractCollectionAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(BmpIntegrationAdapter.class);
 
@@ -224,7 +224,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         collector.routers = Lists.transform(heartbeat.getRoutersList(), BmpAdapterTools::address);
         collector.timestamp = context.timestamp;
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.COLLECTOR, ImmutableList.of(collector)), context);
     }
 
     private void handleInitiationMessage(final Transport.Message message,
@@ -246,7 +246,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.timestamp = context.timestamp;
         router.bgpId = initiation.hasBgpId() ? BmpAdapterTools.address(initiation.getBgpId()) : null;
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)), context);
     }
 
     private void handleTerminationMessage(final Transport.Message message,
@@ -286,7 +286,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         router.timestamp = context.timestamp;
         router.bgpId = null;
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.ROUTER, ImmutableList.of(router)), context);
     }
 
     private void handlePeerUpNotification(final Transport.Message message,
@@ -331,7 +331,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.locRibFiltered = bgpPeer.hasLocRibFlags() && bgpPeer.getLocRibFlags().getFiltered();
         peer.tableName = peerUp.getTableName();
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)), context);
     }
 
     private void handlePeerDownNotification(final Transport.Message message,
@@ -392,7 +392,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         peer.locRibFiltered = bgpPeer.hasLocRibFlags() && bgpPeer.getLocRibFlags().getFiltered();
         peer.tableName = "";
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.PEER, ImmutableList.of(peer)), context);
     }
 
     private void handleStatisticReport(final Transport.Message message,
@@ -403,7 +403,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         final Stat stat = new Stat();
         stat.action = Stat.Action.ADD;
         stat.sequence = sequence.getAndIncrement();
-        stat.routerHash = Record.hash(context.sourceAddress.getHostAddress(), Integer.toString(context.sourcePort), context.collectorHashId);
+        stat.routerHash = Record.hash(context.sourceAddress.getHostAddress(), context.collectorHashId);
         stat.routerIp = context.sourceAddress;
         stat.peerHash = Record.hash(peer.getAddress(), peer.getDistinguisher(), stat.routerHash);
         stat.peerIp = address(peer.getAddress());
@@ -419,7 +419,7 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         stat.prefixesPrePolicy = statisticsReport.getAdjRibIn().getValue();
         stat.prefixesPostPolicy = statisticsReport.getLocalRib().getValue();
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.BMP_STAT, ImmutableList.of(stat)), context);
     }
 
     private BaseAttribute toBaseAttributeRecord(final Transport.RouteMonitoringPacket routeMonitoring,
@@ -664,32 +664,31 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
 
         // Forward the messages to the handler
         if (baseAttr != null) {
-            this.messageHandler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)));
+            this.messageHandler.handle(new Message(context.collectorHashId, Type.BASE_ATTRIBUTE, ImmutableList.of(baseAttr)), context);
         }
 
-        this.messageHandler.handle(new Message(context.collectorHashId, Type.UNICAST_PREFIX, unicastPrefixRecords));
+        this.messageHandler.handle(new Message(context.collectorHashId, Type.UNICAST_PREFIX, unicastPrefixRecords), context);
     }
 
     @Override
-    public void handleMessage(final TelemetryMessageLogEntry messageLogEntry,
-                              final TelemetryMessageLog messageLog) {
+    public Stream<CollectionSetWithAgent> handleCollectionMessage(TelemetryMessageLogEntry messageLogEntry, TelemetryMessageLog messageLog) {
         LOG.trace("Parsing packet: {}", messageLogEntry);
         final Transport.Message message;
         try {
             message = Transport.Message.parseFrom(messageLogEntry.getByteArray());
         } catch (final InvalidProtocolBufferException e) {
             LOG.error("Invalid message", e);
-            return;
+            return Stream.empty();
         }
 
         final String collectorHashId = Record.hash(messageLog.getSystemId());
-        final String routerHashId = Record.hash(messageLog.getSourceAddress(), Integer.toString(messageLog.getSourcePort()), collectorHashId);
+        final String routerHashId = Record.hash(messageLog.getSourceAddress(), collectorHashId);
         final Context context = new Context(messageLog.getSystemId(),
-                                            collectorHashId,
-                                            routerHashId,
-                                            Instant.ofEpochMilli(messageLogEntry.getTimestamp()),
-                                            InetAddressUtils.addr(messageLog.getSourceAddress()),
-                                            messageLog.getSourcePort());
+                collectorHashId,
+                routerHashId,
+                Instant.ofEpochMilli(messageLogEntry.getTimestamp()),
+                InetAddressUtils.addr(messageLog.getSourceAddress()),
+                messageLog.getSourcePort(), messageLog.getLocation());
 
         switch(message.getPacketCase()) {
             case HEARTBEAT:
@@ -716,7 +715,9 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
             case PACKET_NOT_SET:
                 break;
         }
+        return Stream.empty();
     }
+
 
     @Override
     public void destroy() {
@@ -724,35 +725,6 @@ public class BmpIntegrationAdapter extends AbstractAdapter {
         super.destroy();
     }
 
-    private static class Context {
-        public final String adminId;
-
-        public final String collectorHashId;
-        public final String routerHashId;
-
-        public final Instant timestamp;
-
-        public final InetAddress sourceAddress;
-        public final int sourcePort;
-
-        private Context(final String adminId,
-                        final String collectorHashId,
-                        final String routerHashId,
-                        final Instant timestamp,
-                        final InetAddress sourceAddress,
-                        final int sourcePort) {
-            this.adminId = Objects.requireNonNull(adminId);
-            this.collectorHashId = Objects.requireNonNull(collectorHashId);
-            this.routerHashId = Objects.requireNonNull(routerHashId);
-            this.timestamp = Objects.requireNonNull(timestamp);
-            this.sourceAddress = Objects.requireNonNull(sourceAddress);
-            this.sourcePort = sourcePort;
-        }
-
-        public String getRouterHash() {
-            return Record.hash(sourceAddress.getHostAddress(), Integer.toString(sourcePort), collectorHashId);
-        }
-    }
 
     private String generateCapabilityMessage(final int code, final ByteString byteString) {
         final ByteBuf value = Unpooled.wrappedBuffer(byteString.toByteArray());
