@@ -1,0 +1,36 @@
+
+= Business Service Definition
+
+The status of Service Monitors and any kind of alarm can be used to drive the operational status of a BS.
+A BS is defined with the following components:
+
+* Business Service Name: A unique name used to identify the BS
+* Edges: A set of elements on which this BS relies which can include other BS, or reduction keys.
+* Reduce Function: Function used to aggregate the operational status from all the edges.
+   Specific functions may take additional parameters.
+* Attributes: Optional key/value pairs that you can use to tag or enrich the busines service with additional information.
+
+Each business service can contain a list of optional key/value attributes.
+Use these to identify or tag the BS, and may be referenced in other workflows.
+These attributes do not affect the dependencies or the status calculation of the BS.
+
+TIP: You can use attributes to filter BS in Ops Board dashlets.
+
+Use the Business Service Editor to manage and model the business services and their hierarchy.
+You must have administrative permissions, available in "Login Name -> Configure OpenNMS -> Manage Business Services" in the Service Monitoring section.
+
+[[ga-bsm-editor]]
+.Managing Business Services with the Business Service Editor
+image:bsm/01_bsm-editor.png[]
+
+<1> Create a new Business Service definition
+<2> Collapse tree view for all Business Services in the view
+<3> Expand tree view for all Business Services in the view
+<4> Reload all Business Services in the view with current Business Services from the system
+<5> Reload the Business Service Monitoring Daemon to use the Business Service definition as configured
+<6> Business Service dependency hierarchy as tree view
+<7> Show the current Business Service with dependencies in the Topology UI
+<8> Edit and delete existing Business Service defintions
+
+As shown in figure <<ga-bsm-editor, Managing Business Services with the Business Service Editor>> the Business Services can be created or changed.
+The hierarchy is created by assigning an existing Business Service as Child Service.

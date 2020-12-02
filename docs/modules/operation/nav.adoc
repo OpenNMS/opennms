@@ -168,6 +168,20 @@
 *** xref:notifications/strategies/mattermost.adoc[]
 *** xref:notifications/strategies/slack.adoc[]
 
+* xref:bsm/introduction.adoc[]
+** xref:bsm/business-service-hierarchy.adoc[]
+** xref:bsm/operational-status.adoc[]
+** xref:bsm/root-cause-impact-analysis.adoc[]
+** xref:bsm/simulation-mode.adoc[]
+** xref:bsm/share-bsm-view.adoc[]
+** xref:bsm/change-icons.adoc[]
+** xref:bsm/business-service-definition.adoc[]
+** xref:bsm/edges.adoc[]
+** xref:bsm/map-functions.adoc[]
+** xref:bsm/reduce-functions.adoc[]
+** xref:bsm/bsmd.adoc[]
+
+
 * xref:topology/topology.adoc[] 
 * xref:system-properties/introduction.adoc[]
 ** xref:system-properties/system-proxies.adoc[]

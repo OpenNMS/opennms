@@ -1,8 +1,5 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
-=== Edges
+= Edges
 
 _Edges_ map the _Alarm_ status monitoring with _OpenNMS_
 
@@ -27,12 +24,12 @@ The editor changing the _Edge_ attributes is shown in figure <<ga-bsm-edge-edit,
 .Editor to add Business Service Edges
 image:bsm/02_bsm-edge-edit.png[Business Service Edge edit,400,199]
 
-==== Child Services
+== Child Services
 
 To create a hierarchy of _Business Services_ they need to be created first.
 The hierarchy is build by selecting the _Business Service_ as_Child Service_ as dependency.
 
-==== IP Services
+== IP Services
 
 The _IP Service_ is a predefined set of _Reduction Keys_ which allows easily to assign a specific _Monitored Service_ to the given _BS_.
 As an example you have multiple Servers with a _Monitored Service_ _SMTP_ and you want to model a _BS_ named _Mail Communication_.
@@ -44,7 +41,7 @@ To make it easier to model this use case the _IP Service_ generates the followin
 * `uei.opennms.org/nodes/interfaceDown:%nodeId%:%ipAddress%`: Matches _Alarms_ when the given _IP Interface_ of the _Monitored Service_ goes down
 * `uei.opennms.org/nodes/nodeDown:%nodeId%`: Matches _Alarms_ when the given _Node_ of the _Monitored Service_ goes down
 
-==== Custom Reduction Key
+== Custom Reduction Key
 
 The _Reduction Key_ edge is used to refer to specific instance of alarms.
 When an alarm with the given _Reduction Key_ is present, the alarms' severity will be used to calculate the _Operational Status_ of the _BS_.
@@ -57,7 +54,7 @@ The format of the _Reduction Key_ is build by a set of attributes as a key separ
 %uei.opennms.org/nodes/nodeLostService%:%nodeId%:%ipAddress%:%serviceName%
 ----
 
-==== Application
+== Application
 
 Already defined _Applications_ can be used in _Business Service_ topologies.
 An _Application_ itself defines a set of _Monitored Services_ - each of these generate _nodeLostService_, _interfaceDown_ and _nodeDown_ reduction keys automatically.
