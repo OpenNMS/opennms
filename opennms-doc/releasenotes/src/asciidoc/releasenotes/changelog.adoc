@@ -2,6 +2,47 @@
 
 === Changelog
 
+[releasenotes-changelog-27.0.1]
+
+==== Release 27.0.1
+
+Release 27.0.1 is the second release in the Horizon 27 series.
+
+It contains a number of bugfixes including a critical CVE fix for Jetty,
+as well as a number of other smaller changes and improvements.
+
+The codename for 27.0.1 is _link:$$https://en.wikipedia.org/wiki/Zaphod_Beeblebrox#Pan-Galactic_Gargle_Blaster$$[Pan-Galactic Gargle Blaster]_.
+
+===== Bug
+
+* No support for TLS v1.3 in MailTransportMonitor (Issue http://issues.opennms.org/browse/NMS-12733[NMS-12733])
+* Timezone inconsistency when generating PDF reports from Grafana dashboards (Issue http://issues.opennms.org/browse/NMS-12930[NMS-12930])
+* RRD files for SNMP data are not created until a Service Restart (Issue http://issues.opennms.org/browse/NMS-12974[NMS-12974])
+* Nephron Stability Issues at Scale (Issue http://issues.opennms.org/browse/NMS-12975[NMS-12975])
+* typo in BMP sample (Issue http://issues.opennms.org/browse/NMS-12984[NMS-12984])
+* Upgrade script does not migrate VMware metadata (Issue http://issues.opennms.org/browse/NMS-12985[NMS-12985])
+* VMware datacollection failed (Issue http://issues.opennms.org/browse/NMS-12986[NMS-12986])
+* Monitoring VMware VMs and hosts stopped working in 27.0.0 (Issue http://issues.opennms.org/browse/NMS-12988[NMS-12988])
+* Unable to enable Jaeger tracing in Sentinel (Issue http://issues.opennms.org/browse/NMS-12998[NMS-12998])
+* Update typo in BMP docs (Issue http://issues.opennms.org/browse/NMS-13002[NMS-13002])
+* CVE-2020-27216: Jetty webserver vulnerability (Issue http://issues.opennms.org/browse/NMS-13009[NMS-13009])
+* JCifs leaks memory after upgrade (Issue http://issues.opennms.org/browse/NMS-13011[NMS-13011])
+* When using a custom prefix, the Elasticsearch Forwarder for events and situation-feedback creates a wrong template. (Issue http://issues.opennms.org/browse/NMS-13017[NMS-13017])
+* Check flow sequence numbers to detect missing packets (Issue http://issues.opennms.org/browse/NMS-13024[NMS-13024])
+
+===== Enhancement
+
+* Add gNMI support for OpenConfig (Issue http://issues.opennms.org/browse/NMS-12915[NMS-12915])
+* TSS: Cortex Plugin: Use REST API for reading timeseries (Issue http://issues.opennms.org/browse/NMS-12938[NMS-12938])
+* sFlow Ingress / Egress (Issue http://issues.opennms.org/browse/NMS-12955[NMS-12955])
+* Provisioning introduction (Issue http://issues.opennms.org/browse/NMS-12994[NMS-12994])
+* Document Configure Discovery process (Issue http://issues.opennms.org/browse/NMS-12995[NMS-12995])
+* Document requisition process (Issue http://issues.opennms.org/browse/NMS-12996[NMS-12996])
+* backport Minion certificate management to Horizon 27 (Issue http://issues.opennms.org/browse/NMS-13000[NMS-13000])
+* flowStartMilliseconds/flowEndMilliseconds for NetFlow v9 (Issue http://issues.opennms.org/browse/NMS-13006[NMS-13006])
+* Add clock skew correction mechanism (Issue http://issues.opennms.org/browse/NMS-13023[NMS-13023])
+
+
 [releasenotes-changelog-27.0.0]
 
 ==== Release 27.0.0

@@ -1,3 +1,13 @@
+opennms-minion (27.0.1-1) stable; urgency=high
+
+  * New minor release.  It contains a number of bugfixes including a critical CVE
+    fix for Jetty, as well as a number of other smaller changes and improvements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.org/opennms/releases/27.0.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 01 Dec 2020 12:08:00 -0400
+ 
 opennms-minion (27.0.0-1) stable; urgency=high
 
   * New major release.  It contains many bug fixes and a ton of new features, most
