@@ -1062,6 +1062,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.bmp.persistence</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.bmp.persistence.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.bmp.persistence</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.bmp.persistence.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.netflow.adapter</artifactId>
       <version>${project.version}</version>
