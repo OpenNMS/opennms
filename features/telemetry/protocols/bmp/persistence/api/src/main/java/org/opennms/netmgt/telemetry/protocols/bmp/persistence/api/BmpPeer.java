@@ -85,6 +85,9 @@ public class BmpPeer implements Serializable {
     @Column(name = "peer_bgp_id")
     private String peerBgpId;
 
+    @Column(name = "peer_asn")
+    private Long peerAsn;
+
     @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private State state;
@@ -134,6 +137,9 @@ public class BmpPeer implements Serializable {
 
     @Column(name = "bgp_err_code")
     private Integer bgpErrCode;
+
+    @Column(name = "bgp_err_subcode")
+    private Integer bgpErrSubCode;
 
     @Column(name = "error_text")
     private String errorText;
@@ -212,6 +218,14 @@ public class BmpPeer implements Serializable {
 
     public void setPeerBgpId(String peerBgpId) {
         this.peerBgpId = peerBgpId;
+    }
+
+    public Long getPeerAsn() {
+        return peerAsn;
+    }
+
+    public void setPeerAsn(Long peerAsn) {
+        this.peerAsn = peerAsn;
     }
 
     public State getState() {
@@ -340,6 +354,14 @@ public class BmpPeer implements Serializable {
 
     public void setBgpErrCode(Integer bgpErrCode) {
         this.bgpErrCode = bgpErrCode;
+    }
+
+    public Integer getBgpErrSubCode() {
+        return bgpErrSubCode;
+    }
+
+    public void setBgpErrSubCode(Integer bgpErrSubCode) {
+        this.bgpErrSubCode = bgpErrSubCode;
     }
 
     public String getErrorText() {
