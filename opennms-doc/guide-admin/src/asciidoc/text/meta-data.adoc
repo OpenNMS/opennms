@@ -50,6 +50,7 @@ The following keys are available under this context:
 | `node:sys-description` | The system description of the node
 | `node:location`        | The node's monitoring location name
 | `node:area`            | The node's monitoring location area
+| `node:geohash`         | A xref:https://en.wikipedia.org/wiki/Geohash[Geohash] of the node's latitude/longitude
 |===
 
 ==== Interface context
