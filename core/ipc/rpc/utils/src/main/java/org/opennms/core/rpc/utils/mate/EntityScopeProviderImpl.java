@@ -49,6 +49,8 @@ import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -57,6 +59,8 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
+
+import ch.hsr.geohash.GeoHash;
 
 public class EntityScopeProviderImpl implements EntityScopeProvider {
 
@@ -104,7 +108,8 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                     .map(NODE, "sys-description", (n) -> Optional.ofNullable(n.getSysDescription()))
                     .map(NODE, "sys-object-id", (n) -> Optional.ofNullable(n.getSysObjectId()))
                     .map(NODE, "location", (n) -> Optional.ofNullable(n.getLocation().getLocationName()))
-                    .map(NODE, "area", (n) -> Optional.ofNullable(n.getLocation().getMonitoringArea()));
+                    .map(NODE, "area", (n) -> Optional.ofNullable(n.getLocation().getMonitoringArea()))
+                    .map(NODE, "geohash", this::getNodeGeoHash);
             scopes.add(nodeScope);
 
             if (node.getAssetRecord() != null) {
@@ -182,6 +187,43 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
         } else {
             return Optional.of(Integer.toString(node.getId()));
         }
+    }
+
+    /**
+     * Computes a geohash from the lat/lon associated with the node.
+     *
+     * This function is expected to be called in the context of a transaction.
+     *
+     * @param node node from which to derive the geohash
+     * @return geohash
+     */
+    private Optional<String> getNodeGeoHash(final OnmsNode node) {
+        double latitude = Double.NaN;
+        double longitude = Double.NaN;
+
+        // Safely retrieve the geo-location from the node's asset record
+        final OnmsAssetRecord assetRecord = node.getAssetRecord();
+        if (assetRecord == null) {
+            return Optional.empty();
+        }
+        final OnmsGeolocation geolocation = assetRecord.getGeolocation();
+        if (geolocation == null) {
+            return Optional.empty();
+        }
+
+        // Safely retrieve the lat/lon value from the geo-location
+        if (geolocation.getLatitude() != null) {
+            latitude = geolocation.getLatitude();
+        }
+        if (geolocation.getLongitude() != null) {
+            longitude = geolocation.getLongitude();
+        }
+        if (!Double.isFinite(latitude) || !Double.isFinite(longitude)) {
+            return Optional.empty();
+        }
+
+        // We have a finite lat/lon, compute the geohash using maximum precision
+        return Optional.of(GeoHash.withCharacterPrecision(latitude, longitude, 12).toBase32());
     }
 
     @Override
