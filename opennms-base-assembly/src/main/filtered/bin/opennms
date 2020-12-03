@@ -150,6 +150,7 @@ Usage: $0 [-f] [-n] [-t] [-p] [-o] [-c timeout] [-v] [-Q] <command> [<service>]
       -f  Foreground mode. Don't fork & execute.
       -n  "No execute" mode.  Don't call Java to do anything.
       -t  Test mode.  Enable JPDA on port 8001.
+      -T  Test mode.  Enable JPDA on port 8001 and suspend until a debugger is attached.
       -p  Enable TIJMP profiling
       -o  Enable OProfile profiling
       -c  Controller HTTP connection timeout in seconds.
@@ -410,7 +411,7 @@ doStart(){
 	###########################################################################
 	if [ "$TEST" -gt 0 ]; then
 		echo "- enabling JPDA debugging on port 8001" >&2
-		JPDA=("-agentlib:jdwp=transport=dt_socket,server=y,address=${JPDA_ADDRESS},suspend=n")
+		JPDA=("-agentlib:jdwp=transport=dt_socket,server=y,address=${JPDA_ADDRESS},suspend=${JPDA_SUSPEND}")
 	fi
 
 	# See: http://www.khelekore.org/jmp/tijmp/
@@ -731,6 +732,7 @@ JAVA_MODULES=(
 )
 
 JPDA_ADDRESS="*:8001"
+JPDA_SUSPEND="n"
 if [ "$JAVA_SHORT_VERSION" -lt 9 ]; then
 	# Java 8, use the endorsed directory
 	JAVA_CMD=("${JAVA_CMD[@]}" "-Djava.endorsed.dirs=$OPENNMS_HOME/lib/endorsed")
@@ -822,7 +824,7 @@ SYSTEMD=0
 
 NAME="opennms"
 
-while getopts c:fsntvpoQ c; do
+while getopts c:fsntTvpoQ c; do
 	case $c in
 		c)
 			APP_PARMS_CONTROLLER+=("-t" "$OPTARG")
@@ -841,6 +843,10 @@ while getopts c:fsntvpoQ c; do
 			;;
 		t)
 			TEST=1
+			;;
+		T)
+			TEST=1
+			JPDA_SUSPEND=y
 			;;
 		p)
 			TPROFILE=1
