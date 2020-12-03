@@ -19,7 +19,6 @@ The codename for 27.0.2 is _link:$$https://wikipedia.org/wiki/List_of_The_Hitchh
 
 ===== Bug
 
-* OpenNMS fails to start, when more than one active listener is referencing the same parser (Issue http://issues.opennms.org/browse/NMS-13034[NMS-13034])
 * Bouncycastle JAR version 1.67 breaks CIFS Monitor (Issue http://issues.opennms.org/browse/NMS-13035[NMS-13035])
 * report timezone changes break reading pre-existing reports from Quartz (Issue http://issues.opennms.org/browse/NMS-13037[NMS-13037])
 
