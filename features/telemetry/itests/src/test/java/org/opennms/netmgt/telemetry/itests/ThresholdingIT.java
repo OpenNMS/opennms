@@ -237,7 +237,7 @@ public class ThresholdingIT {
         EventBuilder threshBldr = new EventBuilder(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "Test");
         threshBldr.setNodeid(1);
         threshBldr.setInterface(addr("192.0.2.1"));
-        threshBldr.setService("JTI-GPB");
+        threshBldr.setService("JTI.JTI-GPB");
         eventAnticipator.anticipateEvent(threshBldr.getEvent());
 
         // Wait one second before sending the next message (RRDs require at least a one second step)
