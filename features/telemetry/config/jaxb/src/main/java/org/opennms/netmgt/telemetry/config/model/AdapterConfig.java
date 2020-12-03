@@ -99,6 +99,7 @@ public class AdapterConfig implements AdapterDefinition {
     }
 
     @Override
+    @XmlTransient
     public String getFullName() {
         return String.format("%s.%s", this.queue.getName(), this.getName());
     }
