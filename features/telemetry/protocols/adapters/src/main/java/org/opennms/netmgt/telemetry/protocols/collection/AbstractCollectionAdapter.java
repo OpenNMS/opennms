@@ -176,7 +176,7 @@ public abstract class AbstractCollectionAdapter extends AbstractAdapter {
         // Map of sessions keyed by agent
         int nodeId = agent.getNodeId();
         String hostAddress = agent.getHostAddress();
-        String serviceName = adapterConfig.getFullName();
+        String serviceName = adapterConfig.getName();
         String sessionKey = getSessionKey(nodeId, hostAddress, serviceName);
 
         ThresholdingSession session = agentThresholdingSessions.getIfPresent(sessionKey);
