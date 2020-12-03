@@ -215,6 +215,24 @@ Since Meridian 2020 is based on Horizon 26.1, it contains all the fixes and upda
 
 For a more complete list of major changes included in this release, see the link:https://docs.opennms.org/opennms/releases/26.1.3/releasenotes/releasenotes.html["What's New" documentation] for Horizon 26.1.3.
 
+[releasenotes-changelog-Meridian-2020.1.3]
+
+==== Release Meridian-2020.1.3
+
+Release 2020.1.3 is the fourth release in the Meridian 2020 series.
+
+It contains a critical fix to a reporting API bug that could cause
+OpenNMS to fail to start.
+
+BREAKING: If you created reports in 2020.1.2, they will need to be
+recreated in 2020.1.3.
+
+The codename for 2020.1.3 is _link:$$https://wikipedia.org/wiki/Fjord$$[Fjord]_.
+
+===== Bug
+
+* report timezone changes break reading pre-existing reports from Quartz (Issue https://issues.opennms.org/browse/NMS-13037[NMS-13037])
+
 [releasenotes-changelog-Meridian-2020.1.2]
 
 ==== Release Meridian-2020.1.2
