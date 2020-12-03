@@ -1,3 +1,14 @@
+opennms (27.0.2-1) stable; urgency=high
+
+  * New minor release.  It contains a few bug fixes including a critical fix to a
+    regression in 27.0.1 that would keep OpenNMS from starting if you had existing
+    reports in the database.
+    
+    For details on what has changed, see:
+    https://docs.opennms.org/opennms/releases/27.0.2/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 03 Dec 2020 13:52:00 -0400
+ 
 opennms (27.0.1-1) stable; urgency=high
 
   * New minor release.  It contains a number of bugfixes including a critical CVE
