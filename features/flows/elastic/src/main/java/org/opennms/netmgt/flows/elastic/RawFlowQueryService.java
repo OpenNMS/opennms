@@ -209,7 +209,9 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 .thenCompose((res) -> mapTable(res, host -> this.resolveHostnameForHost(host, filters)));
     }
 
-    /** Constructs a GPath that select the values of the given key in a composite aggregation. */
+    /**
+     * Constructs a GPath that select the values of the given key in a composite aggregation.
+     */
     private static <X> GPath<List<X>> compositeKeyValuesPath(String field, GPath<X> fieldValueAccess) {
         return fieldValueAccess
                 .field(field)
@@ -223,7 +225,10 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
     public CompletableFuture<List<String>> getFieldValues(LimitedCardinalityField field, List<Filter> filters) {
         final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
         return searchAsync(searchQueryProvider.getAllValues(field.fieldName, filters), timeRangeFilter)
-                .thenApply(res -> compositeKeyValuesPath(field.fieldName, GPath.string()).eval(res.getJsonObject()));
+                .thenApply(res -> {
+                    List<String> fieldValues = compositeKeyValuesPath(field.fieldName, GPath.string()).eval(res.getJsonObject());
+                    return fieldValues != null ? fieldValues : Collections.emptyList();
+                });
     }
 
     @Override
@@ -360,7 +365,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
             final String seriesFromMissingQuery = searchQueryProvider.getSeriesFromMissingQuery(step,
                     timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, keyForMissingTerm, filters);
             seriesFuture = seriesFuture
-                    .thenCombine(searchAsync(seriesFromMissingQuery, extractTimeRangeFilter(filters)), (builder,res) -> {
+                    .thenCombine(searchAsync(seriesFromMissingQuery, extractTimeRangeFilter(filters)), (builder, res) -> {
                         toTable(builder, res);
                         return builder;
                     });
@@ -371,7 +376,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
             final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(topN, step,
                     timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, missingTermIncludedInTopN, filters);
             seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter),
-                    (builder,res) -> processOthersResult(res, builder));
+                    (builder, res) -> processOthersResult(res, builder));
         }
 
         // Sort the table to ensure that the rows as in the same order as the Top N
@@ -442,7 +447,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
             // We also need to query for items with a missing term, this will require a separate query
             final String bytesFromMissingQuery = searchQueryProvider.getSeriesFromMissingQuery(step, start, end,
                     groupByTerm, keyForMissingTerm, filters);
-            summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromMissingQuery, timeRangeFilter), (summaries,results) -> {
+            summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromMissingQuery, timeRangeFilter), (summaries, results) -> {
                 summaries.putAll(toTrafficSummaries(results));
                 return summaries;
             });
@@ -452,7 +457,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
             // We also want to tally up traffic from other elements not part of the Top N
             final String bytesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(from, step, start, end,
                     groupByTerm, missingTermIncluded, filters);
-            summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromOthersQuery, timeRangeFilter), (summaries,results) -> {
+            summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromOthersQuery, timeRangeFilter), (summaries, results) -> {
                 final MetricAggregation aggs = results.getAggregations();
                 if (aggs == null) {
                     // No results
