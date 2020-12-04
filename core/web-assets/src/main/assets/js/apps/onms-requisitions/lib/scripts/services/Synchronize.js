@@ -53,15 +53,15 @@ require('./Requisitions');
           );
         };
         bootbox.dialog({
-          message: 'Rescan options:<br/><hr/>' +
-                   '<b>Full</b>: synchronize and scan all nodes (new and existing).<br/>' +
-                   '<b>Partial</b>: synchronize only new and deleted nodes. Run the scan phase only for new nodes.<br/>' +
+          message: 'Do you want to rescan existing nodes?<br/><hr/>' +
+                   '<b>Yes</b>: synchronize and scan all nodes (new and existing).<br/>' +
+                   '<b>No</b>: synchronize only new and deleted nodes. Run the scan phase only for new nodes.<br/>' +
                    '<b>DB Only</b>: synchronize all nodes, skip the scan phase.<br/>' ,
           
           title: 'Synchronize Requisition ' + requisition.foreignSource,
           buttons: {
             fullSync: {
-              label: 'Full',
+              label: 'Yes',
               className: 'btn-primary',
               callback: function() {
                 doSynchronize(requisition, 'true');
@@ -75,7 +75,7 @@ require('./Requisitions');
               }
             },
             ignoreExistingSync: {
-              label: 'Partial',
+              label: 'No',
               className: 'btn-secondary',
               callback: function() {
                 doSynchronize(requisition, 'false');
