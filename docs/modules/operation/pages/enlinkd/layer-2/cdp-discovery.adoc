@@ -1,0 +1,78 @@
+
+= CDP Discovery
+
+The Cisco Discovery Protocol (CDP) is a proprietary link layer protocol from Cisco.
+It is used by network devices to advertise identity, capabilities and neighbors.
+CDP performs functions similar to several proprietary protocols, such as the Link Layer Discovery Protocol (LLDP), Extreme Discovery Protocol, Foundry Discovery Protocol (FDP), Nortel Discovery Protocol (also known as SONMP), and Microsoft's Link Layer Topology Discovery (LLTD).
+The CDP discovery uses information provided by the #link:http://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?local=en&step=2&mibName=CISCO-CDP-MIB[CISCO-CDP-MIB]# and #link:http://tools.cisco.com/Support/SNMP/do/BrowseMIB.do?local=en&step=2&mibName=CISCO-VTP-MIB[CISCO-VTP-MIB]#.
+
+NOTE: Only nodes with a running CDP process can be part of the link discovery.
+      The data is similar to running a `show cdp neighbor` command on the IOS CLI of the device.
+      Linux and Windows servers don't have a CDP process running by default and will not be part of the link discovery.
+
+The following OIDs are supported to discover and build the CDP network topology and are collected by the CDP Discovery Collector.
+
+.Supported OIDS from the IF-MIB
+[options="header, autowidth"]
+|===
+| Name                      | OID                             | Description
+| _ifDescr_                 | `.1.3.6.1.2.1.2.2.1.2`          | A textual string containing information about the interface.
+                                                                This string should include the name of the manufacturer, the product name and the version of the interface hardware/software.
+|===
+
+.Supported OIDS from the CISCO-CDP-MIB to discover links
+[options="header, autowidth"]
+|===
+| Name                      | OID                             | Description
+| _cdpInterfaceName_        | `.1.3.6.1.4.1.9.9.23.1.1.1.1.6` | The name of the local interface as advertised by _CDP_ in the _Port-ID TLV_.
+| _cdpCacheEntry_           | `.1.3.6.1.4.1.9.9.23.1.2.1.1`   | An entry (conceptual row) in the _cdpCacheTable_, containing the information received via _CDP_ on one interface from one device.
+                                                                Entries appear when a CDP advertisement is received from a neighbor device.
+                                                                Entries disappear when CDP is disabled on the interface, or globally.
+| _cdpCacheAddressType_     | `.1.3.6.1.4.1.9.9.23.1.2.1.1.3` | An indication of the type of address contained in the corresponding instance of _cdpCacheAddress_.
+| _cdpCacheAddress_         | `.1.3.6.1.4.1.9.9.23.1.2.1.1.4` | The (first) network-layer address of the device's SNMP-agent as reported in the Address TLV of the most recently received CDP message.
+                                                                For example, if the corresponding instance of _cacheAddressType_ had the value `ip(1)`, then this object would be an IP-address.
+| _cdpCacheVersion_         | `.1.3.6.1.4.1.9.9.23.1.2.1.1.5` | The Version string as reported in the most recent CDP message.
+                                                                The zero-length string indicates no Version field (TLV) was reported in the most recent CDP message.
+| _cdpCacheDeviceId_        | `.1.3.6.1.4.1.9.9.23.1.2.1.1.6` | The Device-ID string as reported in the most recent CDP message.
+                                                                The zero-length string indicates no Device-ID field (TLV) was reported in the most recent CDP message.
+| _cdpCacheDevicePort_      | `.1.3.6.1.4.1.9.9.23.1.2.1.1.7` | The Port-ID string as reported in the most recent CDP message.
+                                                                This will typically be the value of the _ifName_ object (e.g., `Ethernet0`).
+                                                                The zero-length string indicates no Port-ID field (TLV) was reported in the most recent CDP message.
+| _cdpCachePlatform_        | `.1.3.6.1.4.1.9.9.23.1.2.1.1.8` | The device's hardware platform as reported in the most recent CDP message.
+                                                                The zero-length string indicates that no Platform field (TLV) was reported in the most recent CDP message.
+| _cdpGlobalRun_            | `.1.3.6.1.4.1.9.9.23.1.3.1.0`   | An indication of whether the Cisco Discovery Protocol is currently running.
+                                                                Entries in _cdpCacheTable_ are deleted when CDP is disabled.
+| _cdpGlobalDeviceId_       | `.1.3.6.1.4.1.9.9.23.1.3.4.0`   | The device ID advertised by this device.
+                                                                The format of this device id is characterized by the value of _cdpGlobalDeviceIdFormat_ object.
+| _cdpGlobalDeviceIdFormat_ | `.1.3.6.1.4.1.9.9.23.1.3.7.0`   | An indication of the format of Device-Id contained in the corresponding instance of _cdpGlobalDeviceId_.
+                                                                User can only specify the formats that the device is capable of as denoted in _cdpGlobalDeviceIdFormatCpb_ object. +
+                                                                *_serialNumber(1):_* indicates that the value of _cdpGlobalDeviceId_ object is in the form of an ASCII string contain the device serial number. +
+                                                                *_macAddress(2):_* indicates that the value of _cdpGlobalDeviceId_ object is in the form of Layer 2 MAC address. +
+                                                                *_other(3):_* indicates that the value of _cdpGlobalDeviceId_ object is in the form of a platform specific ASCII string contain info that identifies the device.
+                                                                For example: ASCII string contains _serialNumber_ appended/prepened with system name.
+|===
+
+.Supported OIDS from the CISCO-VTP-MIB.
+[options="header, autowidth"]
+|===
+| _vtpVersion_              | `.1.3.6.1.4.1.9.9.46.1.1.1.0`   | The version of VTP in use on the local system.
+                                                                A device will report its version capability and not any particular version in use on the device.
+                                                                If the device does not support VTP, the version is none(3).
+| _ciscoVtpVlanState_       | `.1.3.6.1.4.1.9.9.46.1.3.1.1.2` | The state of this VLAN.
+                                                                The state _mtuTooBigForDevice_ indicates that this device cannot participate in this VLAN because the VLAN's MTU is larger than the device can support. +
+                                                                The state _mtuTooBigForTrunk_ indicates that while this VLAN's MTU is supported by this device, it is too large for one or more of the device's trunk ports. +
+                                                                _operational(1)_, _suspended(2)_, _mtuTooBigForDevice(3)_, _mtuTooBigForTrunk(4)_
+| _ciscoVtpVlanType_        | `.1.3.6.1.4.1.9.9.46.1.3.1.1.3` | The type of this VLAN. +
+                                                                _ethernet(1)_, _fddi(2)_, _tokenRing(3)_, _fddiNet(4)_, _trNet(5)_, _deprecated(6)_
+| _ciscoVtpVlanName_        | `.1.3.6.1.4.1.9.9.46.1.3.1.1.4` | The name of this VLAN.
+                                                                This name is used as the _ELAN-name_ for an _ATM LAN-Emulation_ segment of this VLAN.
+|===
+
+Generic information about the CDP process can be found in the CDP Information box on the Node Detail Page of the device.
+Information gathered from these OIDs will be stored in the following database table:
+
+.Database tables related to CDP discovery
+image::enlinkd/cdp-database.png[]
+
+CDP Topology Updater provides CDP OnmsTopology consolidating CDP data collected by CDP Collector only full bidirectional connections between two CDP supported devices become edges.
+Node A and Node B are connected by an CDP edge if and only if there is a CDP MIB port connection in Node A to Node B and vice versa.

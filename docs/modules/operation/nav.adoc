@@ -186,6 +186,15 @@
 * xref:asset-topology/graphml-asset-topology-provider.adoc[]
 * xref:database-reports/database.adoc[]
 
+* xref:enlinkd/introduction.adoc[]
+** xref:enlinkd/layer-2-discovery.adoc[]
+*** xref:enlinkd/layer-2/lldp-discovery.adoc[]
+*** xref:enlinkd/layer-2/cdp-discovery.adoc[]
+*** xref:enlinkd/layer-2/bridge-discovery.adoc[]
+** xref:enlinkd/layer-3-discovery.adoc[]
+*** xref:enlinkd/layer-3/ospf-discovery.adoc[]
+*** xref:enlinkd/layer-3/is-is-discovery.adoc[]
+
 * xref:system-properties/introduction.adoc[]
 ** xref:system-properties/system-proxies.adoc[]
 * xref:meta-data.adoc[]
