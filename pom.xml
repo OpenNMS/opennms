@@ -1349,7 +1349,7 @@
     <awsSqsMessagingVersion>1.0.4</awsSqsMessagingVersion>
     <awsSdkVersion>1.11.218</awsSdkVersion>
     <batikVersion>1.7</batikVersion>
-    <bouncyCastleVersion>1.67</bouncyCastleVersion>
+    <bouncyCastleVersion>1.66</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
@@ -1390,6 +1390,7 @@
     <fopVersion>1.0</fopVersion>
     <freemarkerVersion>2.3.23</freemarkerVersion>
     <fstVersion>2.47</fstVersion>
+    <geohashVersion>1.4.0</geohashVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.4.5</groovyVersion>
     <grpcVersion>1.30.0</grpcVersion>

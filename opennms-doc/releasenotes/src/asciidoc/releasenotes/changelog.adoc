@@ -2,6 +2,30 @@
 
 === Changelog
 
+[releasenotes-changelog-27.0.2]
+
+==== Release 27.0.2
+
+Release 27.0.2 is the third release in the Horizon 27 series.
+
+It contains a few bug fixes including a critical fix to a regression
+in 27.0.1 that would keep OpenNMS from starting if you had existing
+reports in the database.
+
+BREAKING: If you created any reports with 27.0.1, they will need to be
+recreated.
+
+The codename for 27.0.2 is _link:$$https://wikipedia.org/wiki/List_of_The_Hitchhiker%27s_Guide_to_the_Galaxy_characters#Deep_Thought$$[Deep Thought]_.
+
+===== Bug
+
+* Bouncycastle JAR version 1.67 breaks CIFS Monitor (Issue http://issues.opennms.org/browse/NMS-13035[NMS-13035])
+* report timezone changes break reading pre-existing reports from Quartz (Issue http://issues.opennms.org/browse/NMS-13037[NMS-13037])
+
+===== Enhancement
+
+* Add "geohash" support to the meta-data DSL (Issue http://issues.opennms.org/browse/NMS-13036[NMS-13036])
+
 [releasenotes-changelog-27.0.1]
 
 ==== Release 27.0.1
@@ -11,7 +35,7 @@ Release 27.0.1 is the second release in the Horizon 27 series.
 It contains a number of bugfixes including a critical CVE fix for Jetty,
 as well as a number of other smaller changes and improvements.
 
-The codename for 27.0.1 is _link:$$https://en.wikipedia.org/wiki/Zaphod_Beeblebrox#Pan-Galactic_Gargle_Blaster$$[Pan-Galactic Gargle Blaster]_.
+The codename for 27.0.1 is _link:$$https://wikipedia.org/wiki/Zaphod_Beeblebrox#Pan-Galactic_Gargle_Blaster$$[Pan-Galactic Gargle Blaster]_.
 
 ===== Bug
 
