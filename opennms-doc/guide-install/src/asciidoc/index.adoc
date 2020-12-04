@@ -51,24 +51,15 @@ include::text/_general/nextsteps.adoc[]
 // Enable section numbers
 :sectnums:
 
-// Basic Setup OpenNMS - Windows
-include::text/basic-setup-opennms/windows/installing-on-windows.adoc[]
+// Run OpenNMS in Docker
+include::text/basic-setup-opennms/docker/opennms-docker.adoc[]
+include::text/basic-setup-opennms/docker/opennms-config.adoc[]
 
-// No section numbers for step-by-step guide
-:!sectnums:
-
-include::text/basic-setup-opennms/windows/step-1-postgresql.adoc[]
-include::text/basic-setup-opennms/windows/step-2-graphical-installer.adoc[]
-include::text/basic-setup-opennms/windows/step-3-configure-postgres-opennms.adoc[]
-include::text/basic-setup-opennms/windows/step-4-change-admin-password.adoc[]
-include::text/_general/nextsteps.adoc[]
 endif::opennms-prime[]
-
-// Enable section numbers
-:sectnums:
 
 // Basic Setup Minion
 include::text/monitor-location-minion/setting-up-minion.adoc[]
+include::text/monitor-location-minion/setup-opennms.adoc[]
 
 // Basic Setup Minion - RHEL
 include::text/monitor-location-minion/rhel/installing-on-rhel.adoc[]
@@ -76,11 +67,9 @@ include::text/monitor-location-minion/rhel/installing-on-rhel.adoc[]
 // No section numbers for step-by-step guide
 :!sectnums:
 
-include::text/monitor-location-minion/rhel/step-1-setup-opennms.adoc[]
-include::text/monitor-location-minion/rhel/step-2-install-minion.adoc[]
-include::text/monitor-location-minion/rhel/step-3-starting-minion.adoc[]
-include::text/monitor-location-minion/rhel/step-4-configure-minion.adoc[]
-include::text/monitor-location-minion/rhel/step-5-verify-connectivity.adoc[]
+include::text/monitor-location-minion/rhel/step-1-install-minion.adoc[]
+include::text/monitor-location-minion/rhel/step-2-starting-minion.adoc[]
+include::text/monitor-location-minion/rhel/step-3-verify-connectivity.adoc[]
 
 ifndef::opennms-prime[]
 // Enable section numbers
@@ -92,28 +81,28 @@ include::text/monitor-location-minion/debian/installing-on-debian.adoc[]
 // No section numbers for step-by-step guide
 :!sectnums:
 
-include::text/monitor-location-minion/debian/step-1-setup-opennms.adoc[]
-include::text/monitor-location-minion/debian/step-2-install-minion.adoc[]
-include::text/monitor-location-minion/debian/step-3-starting-minion.adoc[]
-include::text/monitor-location-minion/debian/step-4-configure-minion.adoc[]
-include::text/monitor-location-minion/debian/step-5-verify-connectivity.adoc[]
-endif::opennms-prime[]
+include::text/monitor-location-minion/debian/step-1-install-minion.adoc[]
+include::text/monitor-location-minion/debian/step-2-starting-minion.adoc[]
+include::text/monitor-location-minion/debian/step-3-verify-connectivity.adoc[]
 
 // Enable section numbers
 :sectnums:
+
+// Miscellaneous Minion configuration
+include::text/monitor-location-minion/misc-config.adoc[]
+
+// Run Minion in Docker
+include::text/monitor-location-minion/docker/minion-docker.adoc[]
+include::text/monitor-location-minion/docker/minion-config.adoc[]
+
+endif::opennms-prime[]
 
 // Sentinel
 include::text/sentinel/setting-up-sentinel.adoc[]
 include::text/sentinel/rhel/rhel.adoc[]
 ifndef::opennms-prime[]
 include::text/sentinel/debian/debian.adoc[]
-endif::opennms-prime[]
 
-ifndef::opennms-prime[]
-include::text/run-with-docker/introduction.adoc[]
-include::text/run-with-docker/opennms-config.adoc[]
-include::text/run-with-docker/minion-config.adoc[]
-include::text/run-with-docker/sentinel-config.adoc[]
 endif::opennms-prime[]
 
 // Alternate ways of doing it
@@ -122,6 +111,11 @@ include::text/minion-custom-messaging-system/setup-kafka/introduction.adoc[]
 include::text/minion-custom-messaging-system/setup-kafka/steps-horizon.adoc[]
 include::text/minion-custom-messaging-system/setup-kafka/steps-minion.adoc[]
 include::text/minion-custom-messaging-system/setup-kafka/tuning-kafka.adoc[]
+
+include::text/minion-custom-messaging-system/minion-grpc/grpc-introduction.adoc[]
+include::text/minion-custom-messaging-system/minion-grpc/steps-opennms.adoc[]
+include::text/minion-custom-messaging-system/minion-grpc/steps-minion.adoc[]
+
 
 include::text/install-opennms-versions.adoc[]
 include::text/minion-config-file.adoc[]

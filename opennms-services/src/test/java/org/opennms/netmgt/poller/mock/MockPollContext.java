@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,16 +39,19 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.test.mock.MockUtil;
 
 
@@ -106,7 +109,7 @@ public class MockPollContext implements PollContext, EventListener {
     }
     @Override
     public PollEvent sendEvent(Event event) {
-        PendingPollEvent pollEvent = new PendingPollEvent(event);
+        PendingPollEvent pollEvent = new PendingPollEvent(ImmutableMapper.fromMutableEvent(event));
         synchronized (this) {
             m_pendingPollEvents.add(pollEvent);
         }
@@ -184,10 +187,10 @@ public class MockPollContext implements PollContext, EventListener {
     }
 
     @Override
-    public synchronized void onEvent(Event e) {
+    public synchronized void onEvent(IEvent e) {
         synchronized (m_pendingPollEvents) {
             for (PendingPollEvent pollEvent : m_pendingPollEvents) {
-                if (e.equals(pollEvent.getEvent())) {
+                if (EventUtils.eventsMatch(e, pollEvent.getEvent())) {
                     pollEvent.complete(e);
                 }
             }

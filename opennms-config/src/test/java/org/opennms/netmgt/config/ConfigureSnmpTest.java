@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,7 @@ import junit.framework.TestCase;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.Resource;
@@ -70,7 +71,7 @@ public class ConfigureSnmpTest extends TestCase {
     }
 
     /**
-     * Test method for {@link org.opennms.netmgt.config.SnmpPeerFactory#createSnmpEventInfo(org.opennms.netmgt.xml.event.Event)}.
+     * Test method for {@link org.opennms.netmgt.config.SnmpPeerFactory#createSnmpEventInfo(org.opennms.netmgt.events.api.model.IEvent)}.
      * Tests creating an SNMP config definition from a configureSNMP event.
      * 
      * @throws UnknownHostException 
@@ -79,7 +80,7 @@ public class ConfigureSnmpTest extends TestCase {
         EventBuilder bldr = createConfigureSnmpEventBuilder("192.168.1.1", null);
         addCommunityStringToEvent(bldr, "seemore");
         
-        SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
+        SnmpEventInfo info = new SnmpEventInfo(ImmutableMapper.fromMutableEvent(bldr.getEvent()));
         
         assertNotNull(info);
         assertEquals("192.168.1.1", info.getFirstIPAddress());
@@ -95,7 +96,7 @@ public class ConfigureSnmpTest extends TestCase {
         final String addr = "192.168.0.5";
         EventBuilder bldr = createConfigureSnmpEventBuilder(addr, null);
         addCommunityStringToEvent(bldr, "abc");
-        SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
+        SnmpEventInfo info = new SnmpEventInfo(ImmutableMapper.fromMutableEvent(bldr.getEvent()));
         
         SnmpPeerFactory.getInstance().define(info);
 
@@ -118,7 +119,7 @@ public class ConfigureSnmpTest extends TestCase {
         assertEquals(SnmpAgentConfig.VERSION2C, agent.getVersion());
         
         EventBuilder bldr = createConfigureSnmpEventBuilder(addr1, addr2);
-        SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
+        SnmpEventInfo info = new SnmpEventInfo(ImmutableMapper.fromMutableEvent(bldr.getEvent()));
         info.setVersion("v2c");
         
         SnmpPeerFactory.getInstance().define(info);
@@ -142,7 +143,7 @@ public class ConfigureSnmpTest extends TestCase {
         assertEquals(SnmpAgentConfig.VERSION1, agent.getVersion());
         
         EventBuilder bldr = createConfigureSnmpEventBuilder(addr1, addr2);
-        SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
+        SnmpEventInfo info = new SnmpEventInfo(ImmutableMapper.fromMutableEvent(bldr.getEvent()));
         info.setReadCommunityString("opennmsrules");
         
         SnmpPeerFactory.getInstance().define(info);
@@ -165,7 +166,7 @@ public class ConfigureSnmpTest extends TestCase {
         
         final String specificAddr = "10.1.1.7";
         final EventBuilder bldr = createConfigureSnmpEventBuilder(specificAddr, null);
-        final SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
+        final SnmpEventInfo info = new SnmpEventInfo(ImmutableMapper.fromMutableEvent(bldr.getEvent()));
         info.setReadCommunityString("splice-test");
         info.setVersion("v2c");
         
@@ -192,7 +193,7 @@ public class ConfigureSnmpTest extends TestCase {
         
         final String specificAddr = "10.1.1.7";
         final EventBuilder bldr = createConfigureSnmpEventBuilder(specificAddr, null);
-        final SnmpEventInfo info = new SnmpEventInfo(bldr.getEvent());
+        final SnmpEventInfo info = new SnmpEventInfo(ImmutableMapper.fromMutableEvent(bldr.getEvent()));
         info.setReadCommunityString("splice2-test");
 
         SnmpPeerFactory.getInstance().define(info);

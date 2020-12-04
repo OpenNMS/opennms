@@ -22,11 +22,11 @@ from being published to the broker.
 
 ==== Monitoring the ActiveMQ broker using the Karaf shell
 
-The `opennms-activemq:stats` command available via the _Karaf shell_ can be used to show statistics about the embedded broker:
+The `opennms:activemq-stats` command available via the _Karaf shell_ can be used to show statistics about the embedded broker:
 
 [source]
 ----
-opennms-activemq:stats
+opennms:activemq-stats
 ----
 
 TIP: If the command is not available, try installing the feature using `feature:install opennms-activemq-shell`
@@ -35,11 +35,11 @@ This command reports some high level broker statistics as well as message, enque
 Pay close attention to the memory usage that is reported.
 If the usage is high, use the queue statistics to help isolate which queue is consuming most of the memory.
 
-The `opennms-activemq:purge-queue` command can be used to delete all of the available messages in a particular queue:
+The `opennms:activemq-purge-queue` command can be used to delete all of the available messages in a particular queue:
 
 [source]
 ----
-opennms-activemq:purge-queue OpenNMS.Sink.Trap
+opennms:activemq-purge-queue OpenNMS.Sink.Trap
 ----
 
 ==== Authentication and authorization with ActiveMQ
@@ -69,7 +69,7 @@ CAUTION: If you change the instance id setting when using the embedded broker, y
 
 The following system properties can be used to tune the thread pool used to issue RPCs:
 
-====== General
+===== General
 [options="header, autowidth"]
 |===
 | Name                              | Default  | Description
@@ -78,7 +78,7 @@ The following system properties can be used to tune the thread pool used to issu
 | `org.opennms.ipc.rpc.queue.max`   | `1000`   | Maximum number of requests to queue. Set to `-1` to be unlimited.
 |===
 
-TIP: Use the `opennms-rpc:stress` _Karaf shell_ command to help evaluate and tune performance.
+TIP: Use the `opennms:stress-rpc` _Karaf shell_ command to help evaluate and tune performance.
 
 ==== Diagnosing RPC failures
 
@@ -94,11 +94,11 @@ If you want to verify that a specific location is operating correctly make sure 
   * Values should typically be under 100ms but may vary based on network latency
 4. Resource graphs for the `JMX-Minion` service are populated and reasonable values
 
-To interactively test RPC communication with a remote location use the `opennms-poller:poll` command from the _Karaf shell_:
+To interactively test RPC communication with a remote location use the `opennms:poll` command from the _Karaf shell_:
 
 [source]
 ----
-opennms-poller:poll -l LOCATION IcmpMonitor 127.0.0.1
+opennms:poll -l LOCATION -c org.opennms.netmgt.poller.monitors.IcmpMonitor 127.0.0.1
 ----
 
 TIP: Replace `LOCATION` in the command above with the name of the location you want to test.

@@ -29,11 +29,13 @@
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.UpdatePacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerHeader;
 
 import com.google.common.base.MoreObjects;
@@ -44,18 +46,23 @@ public class RouteMonitoringPacket implements Packet {
     public final Header header;
     public final PeerHeader peerHeader;
 
-    public final UpdatePacket updateMessage;
+    public final Optional<UpdatePacket> updateMessage;
 
-    public RouteMonitoringPacket(final Header header, final ByteBuf buffer) throws InvalidPacketException {
+    public RouteMonitoringPacket(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 
-        this.updateMessage = UpdatePacket.parse(buffer, this.peerHeader.flags);
+        this.updateMessage = UpdatePacket.parse(buffer, this.peerHeader.flags, peerAccessor.getPeerInfo(peerHeader));
     }
 
     @Override
     public void accept(final Visitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public <R> R map(final Mapper<R> mapper) {
+        return mapper.map(this);
     }
 
     @Override

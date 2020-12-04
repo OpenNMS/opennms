@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.model;
 
-import org.junit.Test;
-import org.opennms.core.test.xml.XmlTest;
-import org.opennms.core.test.xml.JsonTest;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-
 import java.io.IOException;
 import java.util.Date;
+
+import org.junit.Test;
+import org.opennms.core.test.xml.JsonTest;
+import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 public class OnmsOutageTest {
 
@@ -67,6 +67,7 @@ public class OnmsOutageTest {
                 "   </monitoredService>\n" +
                 "   <nodeId>1</nodeId>\n" +
                 "   <nodeLabel>Dummy Node 1</nodeLabel>\n" +
+                "   <perspective>Fulda</perspective>\n" +
                 "</outage>", outageString);
     }
 
@@ -80,10 +81,12 @@ public class OnmsOutageTest {
                 "  \"monitoredService\" : {\n" +
                 "    \"applications\" : [ {\n" +
                 "      \"name\" : \"Dummy\",\n" +
-                "      \"id\" : 100\n" +
+                "      \"perspectiveLocations\" : [ ],\n" +
+                "      \"id\" : 100\n," +
                 "    }, {\n" +
                 "      \"name\" : \"Another Dummy\",\n" +
-                "      \"id\" : 102\n" +
+                "      \"perspectiveLocations\" : [ ],\n" +
+                "      \"id\" : 102,\n" +
                 "    } ],\n" +
                 "    \"serviceType\" : {\n" +
                 "      \"name\" : \"Webservices\",\n" +
@@ -96,7 +99,9 @@ public class OnmsOutageTest {
                 "    \"statusLong\" : null,\n" +
                 "    \"source\" : null,\n" +
                 "    \"notify\" : null,\n" +
-                "    \"down\" : false\n" +
+                "    \"down\" : false,\n" +
+                "    \"ipInterfaceId\" : 1,\n" +
+                "    \"id\" : 1\n" +
                 "  },\n" +
                 "  \"ifLostService\" : null,\n" +
                 "  \"serviceLostEvent\" : null,\n" +
@@ -108,11 +113,15 @@ public class OnmsOutageTest {
                 "  \"nodeId\" : 1,\n" +
                 "  \"nodeLabel\" : \"Dummy Node 1\",\n" +
                 "  \"ipAddress\" : \"127.0.0.1\",\n" +
-                "  \"serviceId\" : 1\n" +
+                "  \"serviceId\" : 1,\n" +
+                "  \"perspective\" : \"Fulda\"\n" +
                 "}\n", outageString);
     }
 
     private static OnmsOutage createOutage() {
+        OnmsMonitoringLocation monitoringLocation = new OnmsMonitoringLocation();
+        monitoringLocation.setLocationName("Fulda");
+
         OnmsNode node1 = createNode(1, "Dummy Node 1");
 
         OnmsSnmpInterface snmpInterface1 = createSnmpInterface(10, 1000);
@@ -146,6 +155,7 @@ public class OnmsOutageTest {
         OnmsOutage outage = new OnmsOutage();
         outage.setId(1);
         outage.setMonitoredService(service1);
+        outage.setPerspective(monitoringLocation);
         return outage;
     }
 

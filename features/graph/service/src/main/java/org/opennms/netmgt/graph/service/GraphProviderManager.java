@@ -61,7 +61,7 @@ public class GraphProviderManager {
     public void onBind(GraphProvider graphProvider, Map<String, String> properties) {
         // Determine optional defined label, description and container id.
         // Otherwise default to the ones defined in the GraphInfo.
-        final GraphInfo<?> graphInfo = graphProvider.getGraphInfo();
+        final GraphInfo graphInfo = graphProvider.getGraphInfo();
         final String label = properties.getOrDefault(LABEL_KEY, graphInfo.getLabel());
         final String description = properties.getOrDefault(DESCRIPTION_KEY, graphInfo.getDescription());
         final String containerId = properties.getOrDefault(CONTAINER_ID_KEY, graphInfo.getNamespace());
@@ -85,7 +85,7 @@ public class GraphProviderManager {
         }
     }
 
-    private static Map<String, String> getActualProperties(Map<String, String> properties) {
+    public static Map<String, String> getActualProperties(Map<String, String> properties) {
         final Map<String, String> actualProperties = new HashMap<>();
         properties.keySet().stream()
                 .filter(key -> !key.startsWith("service") && !key.startsWith("osgi") && !key.equals("objectClass"))

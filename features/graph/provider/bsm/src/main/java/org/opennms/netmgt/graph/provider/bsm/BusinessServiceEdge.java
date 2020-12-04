@@ -27,9 +27,15 @@
  *******************************************************************************/
 
 package org.opennms.netmgt.graph.provider.bsm;
+
+import static org.opennms.netmgt.graph.provider.bsm.BusinessServiceVertex.convert;
+
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
+import org.opennms.netmgt.graph.api.enrichment.EnrichedProperties;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
+import org.opennms.netmgt.graph.api.info.Severity;
 import org.opennms.netmgt.graph.domain.AbstractDomainEdge;
 
 public final class BusinessServiceEdge extends AbstractDomainEdge {
@@ -66,16 +72,23 @@ public final class BusinessServiceEdge extends AbstractDomainEdge {
         BusinessServiceEdgeBuilder graphEdge(GraphEdge graphEdge) {
             mapFunction(graphEdge.getMapFunction());
             weight(graphEdge.getWeight());
+            status(graphEdge.getStatus());
             return this;
         }
         
         BusinessServiceEdgeBuilder weight(float weight) {
-            this.properties.put(Properties.WEIGHT, weight);
+            property(Properties.WEIGHT, weight);
             return this;
         }
        
         BusinessServiceEdgeBuilder mapFunction(MapFunction mapFunction) {
-            this.properties.put(Properties.MAP_FUNCTION, mapFunction);
+            property(Properties.MAP_FUNCTION, mapFunction);
+            return this;
+        }
+
+        BusinessServiceEdgeBuilder status(final Status status) {
+            final Severity severity = convert(status);
+            property(EnrichedProperties.STATUS, severity);
             return this;
         }
         

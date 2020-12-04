@@ -401,7 +401,13 @@ public class Events implements Serializable {
         });
 
         // Remove UEIs for which there are many event definitions
-        ueisWithManyEventDefinitions.forEach(m_eventsByUei::remove);
+        ueisWithManyEventDefinitions.forEach(uei -> {
+            m_eventsByUei.remove(uei);
+            // Also do this recursively
+            for (final Events events : m_loadedEventFiles.values()) {
+                events.m_eventsByUei.remove(uei);
+            }
+        });
 
         // Now remove event definitions from the index if any
         // mask elements from any other event definitions match

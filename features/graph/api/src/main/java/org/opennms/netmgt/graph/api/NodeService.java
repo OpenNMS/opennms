@@ -29,9 +29,12 @@
 package org.opennms.netmgt.graph.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.graph.api.info.NodeInfo;
+import org.opennms.netmgt.graph.api.info.StatusInfo;
 
 public interface NodeService {
     List<NodeInfo> resolveNodes(List<NodeRef> nodeRefs);
+    Map<NodeRef, StatusInfo> resolveStatus(List<NodeRef> nodeRefs);
 }

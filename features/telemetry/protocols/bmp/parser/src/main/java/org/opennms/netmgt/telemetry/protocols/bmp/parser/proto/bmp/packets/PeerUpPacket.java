@@ -33,12 +33,14 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
 import java.net.InetAddress;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.OpenPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.InformationElement;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerHeader;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.TLV;
 
@@ -54,12 +56,12 @@ public class PeerUpPacket implements Packet {
     public final int localPort;  // uint16
     public final int remotePort; // uint16
 
-    public final OpenPacket sendOpenMessage;
-    public final OpenPacket recvOpenMessage;
+    public final Optional<OpenPacket> sendOpenMessage;
+    public final Optional<OpenPacket> recvOpenMessage;
 
     public final TLV.List<InformationElement, InformationElement.Type, String> information;
 
-    public PeerUpPacket(final Header header, final ByteBuf buffer) throws InvalidPacketException {
+    public PeerUpPacket(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 
@@ -67,15 +69,20 @@ public class PeerUpPacket implements Packet {
         this.localPort = uint16(buffer);
         this.remotePort = uint16(buffer);
 
-        this.sendOpenMessage = OpenPacket.parse(buffer, this.peerHeader.flags);
-        this.recvOpenMessage = OpenPacket.parse(buffer, this.peerHeader.flags);
+        this.sendOpenMessage = OpenPacket.parse(buffer, this.peerHeader.flags, peerAccessor.getPeerInfo(peerHeader));
+        this.recvOpenMessage = OpenPacket.parse(buffer, this.peerHeader.flags, peerAccessor.getPeerInfo(peerHeader));
 
-        this.information = TLV.List.wrap(repeatRemaining(buffer, InformationElement::new));
+        this.information = TLV.List.wrap(repeatRemaining(buffer, b -> new InformationElement(b, peerAccessor.getPeerInfo(peerHeader))));
     }
 
     @Override
     public void accept(final Visitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public <R> R map(final Mapper<R> mapper) {
+        return mapper.map(this);
     }
 
     @Override

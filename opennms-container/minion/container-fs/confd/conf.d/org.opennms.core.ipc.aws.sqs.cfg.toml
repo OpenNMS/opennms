@@ -1,0 +1,8 @@
+[template]
+src = "org.opennms.core.ipc.aws.sqs.cfg.tmpl"
+dest = "/opt/minion/etc/org.opennms.core.ipc.aws.sqs.cfg"
+keys = [
+    "/aws",
+    "/ipc/sqs"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/org.opennms.core.ipc.aws.sqs.cfg"

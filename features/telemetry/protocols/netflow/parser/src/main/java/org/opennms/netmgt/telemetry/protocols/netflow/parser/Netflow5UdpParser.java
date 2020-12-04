@@ -41,8 +41,10 @@ import org.opennms.netmgt.telemetry.listeners.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Packet;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow5MessageBuilder;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -76,4 +78,9 @@ public class Netflow5UdpParser extends ParserBase implements UdpParser, Dispatch
         return this.transmit(packet, remoteAddress);
     }
 
+    @Override
+    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException {
+        Netflow5MessageBuilder builder = new Netflow5MessageBuilder(record, enrichment);
+        return builder.buildData();
+    }
 }

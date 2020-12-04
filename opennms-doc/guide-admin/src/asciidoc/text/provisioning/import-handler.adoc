@@ -31,11 +31,11 @@ In addition to the type specific parameters, the following parameters are suppor
 
 See the relevant sections bellow for additional details on the support types.
 
-The `opennms-provision:show-import` command available via the _Karaf Shell_ can be used to show the results of an import (without persisting or triggering the import):
+The `opennms:show-import` command available via the _Karaf Shell_ can be used to show the results of an import (without persisting or triggering the import):
 
 [source]
 ----
-opennms-provision:show-import -l MINION http url=http://127.0.0.1:8000/req.xml
+opennms:show-import -l MINION http url=http://127.0.0.1:8000/req.xml
 ----
 
 ==== File Handler

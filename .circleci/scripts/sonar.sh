@@ -13,7 +13,7 @@ generate_report_names()
 
 generate_jacoco_report_names()
 {
-  echo "$(generate_report_names 'target/jacoco-surefire-' '/jacoco.xml'),$(generate_report_names 'target/jacoco-failsafe-' '/jacoco.xml')"
+  generate_report_names 'target/jacoco-merged-report-' '/jacoco.xml'
 }
 
 generate_junit_report_names()
@@ -23,7 +23,7 @@ generate_junit_report_names()
 
 echo "#### Executing Sonar"
 cd ~/project
-mvn sonar:sonar \
+./compile.pl sonar:sonar \
   -Dsonar.projectKey="$SONARCLOUD_PROJECTKEY" \
   -Dsonar.organization="$SONARCLOUD_ORG" \
   -Dsonar.host.url="https://sonarcloud.io" \

@@ -32,6 +32,10 @@
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
+%define _source_filedigest_algorithm 0
+%define _binary_filedigest_algorithm 0
+%define _source_payload w0.bzdio
+%define _binary_payload w0.bzdio
 %global _binaries_in_noarch_packages_terminate_build 0
 AutoReq: no
 AutoProv: no
@@ -109,7 +113,11 @@ This package is obsolete, it only exists to ease upgrades.
 
 %prep
 
-tar zxf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+$TAR -xzf %{_sourcedir}/%{_name}-source-%{version}-%{release}.tar.gz -C "%{_builddir}"
 %define setupdir %{packagedir}
 
 %setup -D -T -n %setupdir
@@ -131,9 +139,14 @@ fi
 
 tools/packages/minion/create-minion-assembly.sh $EXTRA_ARGS
 
+TAR="$(command -v gtar || which gtar || command -v tar || which tar)"
+if "$TAR" --uid=0 --gid=0 -cf /dev/null "$TAR" 2>/dev/null; then
+  TAR="$TAR --uid=0 --gid=0"
+fi
+
 # Extract the minion assembly
 mkdir -p %{buildroot}%{minioninstprefix}
-tar zxf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz -C %{buildroot}%{minioninstprefix} --strip-components=1
+$TAR -xzf %{_builddir}/%{_name}-%{version}-%{release}/opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz -C %{buildroot}%{minioninstprefix} --strip-components=1
 
 # Remove extraneous directories that start with "d"
 rm -rf %{buildroot}%{minioninstprefix}/{data,debian,demos}

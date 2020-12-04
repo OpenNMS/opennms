@@ -55,8 +55,4 @@ public class LegacyGraph extends AbstractDomainGraph<LegacyVertex, LegacyEdge> {
         return new LegacyEdge(edge);
     }
 
-    @Override
-    public Class<LegacyVertex> getVertexType() {
-        return LegacyVertex.class;
-    }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -240,7 +241,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                 @Override
                 public Boolean apply(final WebDriver input) {
                     try {
-                        Thread.sleep(200);
+                        sleepQuietly(200);
                         final List<WebElement> elements = input.findElements(selector);
                         if (elements.size() == 0) {
                             return true;
@@ -330,20 +331,12 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     public void focusElement(final By by) {
-        try {
-            Thread.sleep(200);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        sleepQuietly(200);
         waitForElement(by).click();
     }
 
     public void clearElement(final By by) {
-        try {
-            Thread.sleep(200);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        sleepQuietly(200);
         waitForElement(by).clear();
     }
 
@@ -447,12 +440,20 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected void clickMenuItem(final String menuItemText, final String submenuItemText, final String submenuItemHref) {
-        LOG.debug("clickMenuItem: itemText={}, submenuItemText={}, submenuHref={}", menuItemText, submenuItemText, submenuItemHref);
+        clickMenuItem(menuItemText, submenuItemText, submenuItemHref, 30);
+    }
+
+    protected void clickMenuItem(final String menuItemText, final String submenuItemText, final String submenuItemHref, int timeout) {
+        LOG.debug("clickMenuItem: itemText={}, submenuItemText={}, submenuHref={}, timeout={}", menuItemText, submenuItemText, submenuItemHref, timeout);
+
+        if (timeout == 0) {
+            timeout = 30;
+        }
 
         // Repeat the process altering the offset slightly everytime
         final AtomicInteger offset = new AtomicInteger(10);
         final WebDriverWait shortWait = new WebDriverWait(getDriver(), 1);
-        Unreliables.retryUntilSuccess(30, TimeUnit.SECONDS, () -> {
+        Unreliables.retryUntilSuccess(timeout, TimeUnit.SECONDS, () -> {
             final Actions action = new Actions(getDriver());
 
             final WebElement menuElement;
@@ -523,11 +524,6 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         LOG.debug("navigating to the provisioning page");
         getDriver().get(getBaseUrlInternal() + "opennms/admin/index.jsp");
         getDriver().findElement(By.linkText("Manage Provisioning Requisitions")).click();
-    }
-
-    protected void remotingPage() {
-        LOG.debug("navigating to the remoting page");
-        getDriver().get(getBaseUrlInternal() + "opennms-remoting/index.html");
     }
 
     protected void reportsPage() {
@@ -602,12 +598,12 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                         final WebElement el = getElementImmediately(by);
                         if (el == null) {
                             LOG.debug("clickUntilVaadinPopupAppears: element not found: {}", by);
-                            Thread.sleep(50);
+                            sleepQuietly(50);
                             return false;
                         } else {
                             LOG.debug("clickUntilVaadinPopupAppears: clicking element: {}", el);
                             el.click();
-                            Thread.sleep(50);
+                            sleepQuietly(50);
                         }
                     } catch (final Throwable t) {
                         LOG.debug("clickUntilVaadinPopupAppears: exception raised while attempting to click {}", by, t);
@@ -641,12 +637,12 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                         final WebElement el = getElementImmediately(by);
                         if (el == null) {
                             LOG.debug("clickIdUntilVaadinPopupDisappears: element not found: {}", by);
-                            Thread.sleep(50);
+                            sleepQuietly(50);
                             return false;
                         } else {
                             LOG.debug("clickIdUntilVaadinPopupDisappears: clicking element: {}", el);
                             el.click();
-                            Thread.sleep(50);
+                            sleepQuietly(50);
                         }
                     } catch (final Throwable t) {
                         LOG.debug("clickUntilVaadinPopupDisappears: exception raised while attempting to click {}", by, t);
@@ -851,6 +847,15 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             throw new OpenNMSTestException(e);
         }
     }
+
+    protected void sleepQuietly(final int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     protected void waitForValue(final By selector, final String expectedValue) {
         LOG.debug("waitForValue({}, \"{}\")", selector, expectedValue);
         wait.until((ExpectedCondition<Boolean>) driver -> {
@@ -1005,7 +1010,6 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                 try {
                     if (refresh) {
                         getDriver().navigate().refresh();
-                        //Thread.sleep(2000);
                     }
                     wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(id)));
                     wait.until(ExpectedConditions.elementToBeClickable(By.id(id)));
@@ -1014,7 +1018,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                     LOG.warn("Failed to locate id=" + id, t);
                 }
             }
-            Thread.sleep(1000);
+            sleepQuietly(50);
             element.click();
         } finally {
             setImplicitWait();
@@ -1173,7 +1177,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                     sendDelete("/rest/foreignSources/" + foreignSourceUrlFragment);
                     sendDelete("/rest/foreignSources/deployed/" + foreignSourceUrlFragment);
                 }
-                Thread.sleep(1000);
+                sleepQuietly(500);
             } catch (final Exception e) {
                 throw new OpenNMSTestException(e);
             }
@@ -1243,8 +1247,13 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         try {
             sendPost("/rest/foreignSources", xml);
             // make sure it gets written to disk
-            doRequest(new HttpGet(getBaseUrlExternal() + "/rest/foreignSources"));
-            Thread.sleep(2000);
+            doRequest(new HttpGet(getBaseUrlExternal() + "opennms/rest/foreignSources"));
+            waitUntil(new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws Exception {
+                    return 200 == doRequest(new HttpGet(getBaseUrlExternal() + "opennms/rest/foreignSources/" + URLEncoder.encode(foreignSource, Charset.defaultCharset().toString())));
+                }
+            });
         } catch (final Exception e) {
             throw new OpenNMSTestException(e);
         }

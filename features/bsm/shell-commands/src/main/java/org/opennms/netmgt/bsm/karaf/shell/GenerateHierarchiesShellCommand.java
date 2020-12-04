@@ -42,7 +42,7 @@ import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 
-@Command(scope = "opennms-bsm", name = "generate-hierarchies", description="Generates hierarchies.")
+@Command(scope = "opennms", name = "bsm-generate-hierarchies", description="Generates hierarchies.")
 @Service
 public class GenerateHierarchiesShellCommand implements Action {
 

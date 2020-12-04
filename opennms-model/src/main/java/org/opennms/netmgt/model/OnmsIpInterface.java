@@ -110,6 +110,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private List<OnmsMetaData> m_metaData = new ArrayList<>();
 
+    private List<OnmsMetaData> m_requisitionedMetaData = new ArrayList<>();
+
     /**
      * <p>Constructor for OnmsIpInterface.</p>
      */
@@ -180,13 +182,23 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
 
     @Transient
-    @XmlAttribute(name="hasFlows")
-    public boolean getHasFlows() {
+    @XmlAttribute(name="lastIngressFlow")
+    public Date getLastIngressFlow() {
         if (m_snmpInterface == null) {
-            return false;
+            return null;
         }
 
-        return m_snmpInterface.getHasFlows();
+        return m_snmpInterface.getLastIngressFlow();
+    }
+
+    @Transient
+    @XmlAttribute(name="lastEgressFlow")
+    public Date getLastEgressFlow() {
+        if (m_snmpInterface == null) {
+            return null;
+        }
+
+        return m_snmpInterface.getLastEgressFlow();
     }
 
     /**
@@ -350,6 +362,20 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     @XmlTransient
     public boolean isPrimary(){
         return m_isSnmpPrimary.equals(PrimaryType.PRIMARY);
+    }
+
+    @Transient
+    @XmlTransient
+    public List<OnmsMetaData> getRequisitionedMetaData() {
+        return m_requisitionedMetaData;
+    }
+
+    public void setRequisionedMetaData(final List<OnmsMetaData> requisitionedMetaData) {
+        m_requisitionedMetaData = requisitionedMetaData;
+    }
+
+    public void addRequisionedMetaData(final OnmsMetaData onmsMetaData) {
+        m_requisitionedMetaData.add(onmsMetaData);
     }
 
     @JsonIgnore

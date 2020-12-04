@@ -51,31 +51,31 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
     private static final Pattern SANITIZE_PATH_PATTERN = Pattern.compile("[^a-zA-Z0-9.-]");
     private static final String SANITIZE_PATH_PLACEHOLDER = "_";
 
-    private final List<String> m_elements = new ArrayList<>();
+    private final List<String> elements = new ArrayList<>();
 
     public ResourcePath(String... path) {
         for (String el : path) {
-            m_elements.add(el);
+            elements.add(el);
         }
     }
 
     public ResourcePath(Iterable<String> pathElements) {
         for (String el : pathElements) {
-            m_elements.add(el);
+            elements.add(el);
         }
     }
 
     public ResourcePath(ResourcePath parent, String... path) {
-        m_elements.addAll(parent.m_elements);
+        elements.addAll(parent.elements);
         for (String el : path) {
-            m_elements.add(el);
+            elements.add(el);
         }
     }
 
     public ResourcePath(ResourcePath parent, Iterable<String> path) {
-        m_elements.addAll(parent.m_elements);
+        elements.addAll(parent.elements);
         for (String el : path) {
-            m_elements.add(el);
+            elements.add(el);
         }
     }
 
@@ -108,12 +108,12 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
     }
 
     public String getName() {
-        final int k = m_elements.size() - 1;
-        return k < 0 ? null : m_elements.get(k);
+        final int k = elements.size() - 1;
+        return k < 0 ? null : elements.get(k);
     }
 
     public String[] elements() {
-        return m_elements.toArray(new String[m_elements.size()]);
+        return elements.toArray(new String[elements.size()]);
     }
 
     /**
@@ -122,9 +122,9 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
      * @return the relative depth >= 0, or -1 if the given child is not actually a child
      */
     public int relativeDepth(ResourcePath child) {
-        final List<String> childEls = child.m_elements;
+        final List<String> childEls = child.elements;
         final int numChildEls = childEls.size();
-        final int numParentEls = m_elements.size();
+        final int numParentEls = elements.size();
 
         if (numChildEls < numParentEls) {
             // Definitely not a child
@@ -133,7 +133,7 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
 
         // Verify the path elements up to the parents
         for (int i = 0; i < numParentEls; i++) {
-            if (!m_elements.get(i).equals(childEls.get(i))) {
+            if (!elements.get(i).equals(childEls.get(i))) {
                 return -1;
             }
         }
@@ -141,9 +141,20 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
         return numChildEls - numParentEls;
     }
 
+    public ResourcePath getParent() {
+        if(!hasParent()){
+            throw new UnsupportedOperationException("I am on the root level already");
+        }
+        return new ResourcePath(this.elements.subList(0, this.elements.size()-1));
+    }
+
+    public boolean hasParent() {
+        return this.elements.size()>1;
+    }
+
     @Override
     public Iterator<String> iterator() {
-        return m_elements.iterator();
+        return elements.iterator();
     }
 
     @Override
@@ -156,7 +167,7 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
         final int prime = 31;
         int result = 1;
         result = prime * result
-                + ((m_elements == null) ? 0 : m_elements.hashCode());
+                + ((elements == null) ? 0 : elements.hashCode());
         return result;
     }
 
@@ -169,10 +180,10 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
         if (!(obj instanceof ResourcePath))
             return false;
         ResourcePath other = (ResourcePath) obj;
-        if (m_elements == null) {
-            if (other.m_elements != null)
+        if (elements == null) {
+            if (other.elements != null)
                 return false;
-        } else if (!m_elements.equals(other.m_elements))
+        } else if (!elements.equals(other.elements))
             return false;
         return true;
     }
@@ -217,6 +228,6 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
     }
 
     public static String toString(final ResourcePath path) {
-        return path.m_elements.stream().collect(Collectors.joining(File.separator));
+        return path.elements.stream().collect(Collectors.joining(File.separator));
     }
 }

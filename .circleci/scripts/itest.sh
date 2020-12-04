@@ -22,11 +22,11 @@ find_tests()
       .
 }
 
+echo "#### Making sure git is up-to-date"
+git fetch --all
+
 echo "#### Generate project structure .json"
-(cd /tmp && mvn -llr org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get \
-      -DremoteRepositories=http://maven.opennms.org/content/groups/opennms.org-release/ \
-      -Dartifact=org.opennms.maven.plugins:structure-maven-plugin:1.0)
-mvn org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+./compile.pl --batch-mode --fail-at-end --legacy-local-repository --offline -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
 
 echo "#### Determining tests to run"
 cd ~/project
@@ -54,10 +54,28 @@ deb-src http://archive.ubuntu.com/ubuntu/ trusty main restricted' | sudo tee /et
 # kill other apt-gets first to avoid problems locking /var/lib/apt/lists/lock - see https://discuss.circleci.com/t/could-not-get-lock-var-lib-apt-lists-lock/28337/6
 sudo killall -9 apt-get || true && \
             sudo apt-get update && \
-            sudo apt-get install -f R-base rrdtool
+	    sudo apt-get -y install debconf-utils && \
+	    echo '* libraries/restart-without-asking boolean true' | sudo debconf-set-selections && \
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -f nsis R-base rrdtool
+
+echo "#### Building Assembly Dependencies"
+./compile.pl install -P'!checkstyle' \
+           -Pbuild-bamboo \
+           -DupdatePolicy=never \
+           -Dbuild.skip.tarball=true \
+           -Dmaven.test.skip.exec=true \
+           -DskipTests=true \
+           -DskipITs=true \
+           -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
+           -Dnsis.makensis.bin="$(which makensis)" \
+           --batch-mode \
+           "${CCI_FAILURE_OPTION:--fae}" \
+           --also-make \
+           --projects "$(< /tmp/this_node_projects paste -s -d, -)"
 
 echo "#### Executing tests"
-mvn verify -P'!checkstyle' \
+./compile.pl install -P'!checkstyle' \
+           -Pbuild-bamboo \
            -DupdatePolicy=never \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
@@ -65,9 +83,13 @@ mvn verify -P'!checkstyle' \
            -Dci.instance="${CIRCLE_NODE_INDEX:-0}" \
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            -Dcode.coverage="${CCI_CODE_COVERAGE:-false}" \
-           -B \
+           -Dnsis.makensis.bin="$(which makensis)" \
+           --batch-mode \
            "${CCI_FAILURE_OPTION:--fae}" \
+           -Dorg.opennms.core.test-api.dbCreateThreads=1 \
+           -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
+           -Djava.security.egd=file:/dev/./urandom \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
            -Dit.test="$(< /tmp/this_node_it_tests paste -s -d, -)" \
-           -pl "$(< /tmp/this_node_projects paste -s -d, -)"
+           --projects "$(< /tmp/this_node_projects paste -s -d, -)"
 

@@ -28,26 +28,18 @@
 
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5;
 
-import org.bson.BsonDocument;
-import org.bson.RawBsonDocument;
 import org.opennms.netmgt.flows.api.FlowRepository;
-import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
-import org.opennms.netmgt.telemetry.protocols.flows.AbstractFlowAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowAdapter;
 
 import com.codahale.metrics.MetricRegistry;
 
-public class Netflow5Adapter extends AbstractFlowAdapter<BsonDocument> {
+public class Netflow5Adapter extends NetflowAdapter {
 
-    public Netflow5Adapter(final String name,
+    public Netflow5Adapter(final AdapterDefinition adapterConfig,
                            final MetricRegistry metricRegistry,
                            final FlowRepository flowRepository) {
-        super(name, metricRegistry, flowRepository, new Netflow5Converter());
+        super(adapterConfig, metricRegistry, flowRepository);
     }
 
-    @Override
-    protected BsonDocument parse(TelemetryMessageLogEntry message) {
-        return new RawBsonDocument(message.getByteArray());
-    }
 }

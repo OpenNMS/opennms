@@ -104,7 +104,8 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
     </service>
     
     <bean id="metaTopologySelector" class="org.opennms.features.topology.app.internal.operations.MetaTopologySelector">
-    	<property name="bundleContext" ref="blueprintBundleContext" />
+    	<argument ref="blueprintBundleContext" />
+    	<argument ref="topologyService" />
     </bean>
 
     <reference-list interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" availability="mandatory">
@@ -131,6 +132,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
     <reference-list interface="org.opennms.features.topology.api.IconRepository" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
     </reference-list>
+    <service ref="iconRepoManager" interface="org.opennms.features.topology.api.IconManager" />
 
     <!-- Topology Service -->
     <bean id="topologyService" class="org.opennms.features.topology.app.internal.service.DefaultTopologyService" >
@@ -139,6 +141,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache
         <property name="topologyEntityCache" ref="topologyEntityCache"/>
     </bean>
     <service ref="topologyService" interface="org.opennms.features.topology.api.TopologyService" />
+    <service ref="topologyService" interface="org.opennms.features.topology.api.TopologyCache" />
 
     <!-- Listener to invalidate the Topology Service Cache -->
     <bean id="topologyEventListener"

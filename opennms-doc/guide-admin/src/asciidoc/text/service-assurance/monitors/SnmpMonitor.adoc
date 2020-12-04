@@ -27,9 +27,6 @@ See the ``Operating mode selection'' and ``Monitor specific parameters for the S
     | `count`    | tabular, between `minimum` and `maximum` values must match
 |===
 
-WARNING: This monitor can't be used on the {opennms-product-name} Remote Poller.
-It is currently not possible for the Remote Poller to have access to the SNMP configuration of a central {opennms-product-name}.
-
 ===== Monitor facts
 
 [options="autowidth"]

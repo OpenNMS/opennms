@@ -99,7 +99,7 @@ public class DefaultGraphRepository implements GraphRepository {
                 containerEntity.getGraphs().forEach(graphEntity -> {
                     // We don't know the vertex type anymore. When loading the container, the type of the vertex will be GenericVertex
                     // If another type is required, the loading instance should wrap the info accordingly
-                    final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graphEntity.getNamespace(), GenericVertex.class);
+                    final DefaultGraphInfo graphInfo = new DefaultGraphInfo(graphEntity.getNamespace());
                     graphInfo.setLabel(graphEntity.getLabel());
                     graphInfo.setDescription(graphEntity.getDescription());
                     containerInfo.getGraphInfos().add(graphInfo);

@@ -542,6 +542,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureOpennmsSnmp() {
+		installFeature("opennms-core"); // System classpath
 		installFeature("opennms-snmp");
 		System.out.println(executeCommand("feature:list -i"));
 	}
@@ -586,6 +587,12 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	public void testInstallFeatureOpennmsTelemetryJti() {
 		installFeature("opennms-dao-api"); // System classpath
 		installFeature("opennms-telemetry-jti");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+	@Test
+	public void testInstallFeatureOpennmsTelemetryGraphite() {
+		installFeature("opennms-dao-api"); // System classpath
+		installFeature("opennms-telemetry-graphite");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test

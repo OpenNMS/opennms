@@ -45,10 +45,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
@@ -65,7 +64,6 @@ import com.vmware.vim25.mo.HostSystem;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-@Distributable(DistributionContext.DAEMON)
 public class VmwareCimMonitor extends AbstractVmwareMonitor {
 
     /**
@@ -113,10 +111,10 @@ public class VmwareCimMonitor extends AbstractVmwareMonitor {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         final boolean ignoreStandBy = getKeyedBoolean(parameters, "ignoreStandBy", false);
-        final String vmwareManagementServer = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_KEY, null);
-        final String vmwareManagedObjectId = getKeyedString(parameters, VMWARE_MANAGED_OBJECT_ID_KEY, null);
-        final String vmwareMangementServerUsername = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
-        final String vmwareMangementServerPassword = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
+        final String vmwareManagementServer = getKeyedString(parameters, VmwareImporter.METADATA_MANAGEMENT_SERVER, null);
+        final String vmwareManagedObjectId = getKeyedString(parameters, VmwareImporter.METADATA_MANAGED_OBJECT_ID, null);
+        final String vmwareMangementServerUsername = getKeyedString(parameters, VmwareImporter.VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
+        final String vmwareMangementServerPassword = getKeyedString(parameters, VmwareImporter.VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
 
         TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 

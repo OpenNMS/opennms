@@ -34,8 +34,6 @@ import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.RowCallback;
@@ -55,7 +53,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-@Distributable(DistributionContext.DAEMON)
 public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
     private static final String SVC_GRP_MEMBER_STATE = ".1.3.6.1.4.1.5951.4.1.2.7.1.6";
     private static final Logger LOG = LoggerFactory.getLogger(NetScalerGroupHealthMonitor.class);

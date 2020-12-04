@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,8 +33,8 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -65,7 +65,7 @@ public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
 
     @EventHandler(uei=EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
     @Transactional
-    public void handleNodeGainedInterface(Event event) {
+    public void handleNodeGainedInterface(IEvent event) {
         LOG.debug("Received event: {}", event.getUei());
         Long nodeId = event.getNodeid();
         if (nodeId == null) {
@@ -83,7 +83,7 @@ public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
 
     @EventHandler(uei=EventConstants.INTERFACE_DELETED_EVENT_UEI)
     @Transactional
-    public void handleInterfaceDeleted(Event event) {
+    public void handleInterfaceDeleted(IEvent event) {
         LOG.debug("Received event: {}", event.getUei());
         Long nodeId = event.getNodeid();
         if (nodeId == null) {
@@ -101,7 +101,7 @@ public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
 
     @EventHandler(uei=EventConstants.INTERFACE_REPARENTED_EVENT_UEI)
     @Transactional
-    public void handleInterfaceReparented(Event event) {
+    public void handleInterfaceReparented(IEvent event) {
         LOG.debug("Received event: {}", event.getUei());
 
         final String oldNodeId = event.getParm(EventConstants.PARM_OLD_NODEID).getValue().getContent();
@@ -136,7 +136,7 @@ public class InterfaceToNodeCacheEventProcessor implements InitializingBean {
 
     @EventHandler(uei = EventConstants.NODE_DELETED_EVENT_UEI)
     @Transactional
-    public void handleNodeDeleted(Event event) {
+    public void handleNodeDeleted(IEvent event) {
         Long nodeId = event.getNodeid();
         LOG.debug("Received event: {} with nodeId = {}", event.getUei(), nodeId);
         if (nodeId == null) {

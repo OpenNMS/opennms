@@ -53,15 +53,13 @@ import org.opennms.netmgt.graph.api.generic.GenericGraph.GenericGraphBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer;
 import org.opennms.netmgt.graph.api.generic.GenericGraphContainer.GenericGraphContainerBuilder;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
-import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.persistence.GraphRepository;
-import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
-import org.opennms.netmgt.graph.provider.application.ApplicationVertex;
 import org.opennms.netmgt.graph.domain.AbstractDomainGraphContainer;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainEdge;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraph;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainGraphContainer;
 import org.opennms.netmgt.graph.domain.simple.SimpleDomainVertex;
+import org.opennms.netmgt.graph.provider.application.ApplicationGraph;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -268,33 +266,6 @@ public class DefaultGraphRepositoryIT {
         assertThat(persistenceAccessor.findAll(AbstractGraphEntity.class), Matchers.hasSize(0));
         assertThat(persistenceAccessor.findAll(FocusEntity.class), Matchers.hasSize(0));
         assertThat(persistenceAccessor.findAll(PropertyEntity.class), Matchers.hasSize(0));
-    }
-
-    @Test
-    public void verifyVertexTypePersistence() {
-        final ApplicationGraph applicationGraph = ApplicationGraph.builder()
-                .label("Application Graph")
-                .description("The Application Graph")
-                .build();
-        final ApplicationGraphContainer applicationGraphContainer= ApplicationGraphContainer.builder()
-                .id("test")
-                .description("Test Container")
-                .addGraph(applicationGraph)
-                .build();
-        graphRepository.save(applicationGraphContainer);
-
-        // Verify that generic info contains proper domain vertex type
-        final GenericGraphContainer genericGraphContainer = graphRepository.findContainerById("test");
-        final GraphInfo genericGraphInfo = genericGraphContainer.getGraphInfo(ApplicationGraph.NAMESPACE);
-        assertEquals(GenericVertex.class, genericGraphInfo.getVertexType());
-
-        // Convert to domain container and verify types again
-        final ApplicationGraphContainer readContainer = new ApplicationGraphContainer(genericGraphContainer);
-        assertEquals(readContainer.getGraph(ApplicationGraph.NAMESPACE).getVertexType(), ApplicationVertex.class);
-
-        // Verify that reading only the container info contains the generic vertex types for the graph
-        final GraphInfo readGraphInfo = graphRepository.findContainerInfoById("test").getGraphInfo(ApplicationGraph.NAMESPACE);
-        assertEquals(GenericVertex.class, readGraphInfo.getVertexType());
     }
 
     @Test

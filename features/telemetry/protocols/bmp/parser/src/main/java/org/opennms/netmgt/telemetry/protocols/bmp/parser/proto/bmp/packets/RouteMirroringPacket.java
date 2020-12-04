@@ -31,16 +31,21 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.repeatRemaining;
 
 import java.util.Objects;
+import java.util.Optional;
 
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerHeader;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.TLV;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.mirroring.BgpMessage;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.mirroring.Information;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.mirroring.Mirroring;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.mirroring.Unknown;
 
 import com.google.common.base.MoreObjects;
 
@@ -52,11 +57,11 @@ public class RouteMirroringPacket implements Packet {
     public final PeerHeader peerHeader;
     public final TLV.List<Element, Element.Type, Mirroring> elements;
 
-    public RouteMirroringPacket(final Header header, final ByteBuf buffer) throws InvalidPacketException {
+    public RouteMirroringPacket(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 
-        this.elements = TLV.List.wrap(repeatRemaining(buffer, elementBuffer -> new Element(elementBuffer, this.peerHeader.flags)));
+        this.elements = TLV.List.wrap(repeatRemaining(buffer, elementBuffer -> new Element(elementBuffer, this.peerHeader.flags, peerAccessor.getPeerInfo(peerHeader))));
     }
 
     @Override
@@ -64,34 +69,44 @@ public class RouteMirroringPacket implements Packet {
         visitor.visit(this);
     }
 
+    @Override
+    public <R> R map(final Mapper<R> mapper) {
+        return mapper.map(this);
+    }
+
     public static class Element extends TLV<Element.Type, Mirroring, PeerFlags> {
 
-        public Element(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-            super(buffer, Element.Type::from, flags);
+        public Element(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+            super(buffer, Element.Type::from, flags, peerInfo);
         }
 
         public enum Type implements TLV.Type<Mirroring, PeerFlags> {
             BGP_MESSAGE{
                 @Override
-                public Mirroring parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                    return new BgpMessage(buffer, flags);
+                public Mirroring parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+                    return new BgpMessage(buffer, flags, peerInfo);
                 }
             },
             INFORMATION{
                 @Override
-                public Mirroring parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                    return new Information(buffer, flags);
+                public Mirroring parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+                    return new Information(buffer, flags, peerInfo);
+                }
+            },
+            UNKNOWN{
+                @Override
+                public Mirroring parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+                    return new Unknown(buffer, flags, peerInfo);
                 }
             };
 
             private static Type from(final int type) {
                 switch (type) {
-                    case 0:
-                        return BGP_MESSAGE;
-                    case 1:
-                        return INFORMATION;
+                    case 0: return BGP_MESSAGE;
+                    case 1: return INFORMATION;
                     default:
-                        throw new IllegalArgumentException("Unknown message type");
+                        BmpParser.RATE_LIMITED_LOG.debug("Unknown Route Mirroring Packet Type: {}", type);
+                        return UNKNOWN;
                 }
             }
         }

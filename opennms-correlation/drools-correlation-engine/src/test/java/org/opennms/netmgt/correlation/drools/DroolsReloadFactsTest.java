@@ -34,6 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
@@ -73,13 +74,13 @@ public class DroolsReloadFactsTest {
         // save facts.
         droolsCorrelationEngine.saveFacts();
         // Verify that it should have atleast 4 objects from the rule
-        List<Object> factObjects = droolsCorrelationEngine.getFactObjects();
+        Map<byte[], Class<?>> factObjects = droolsCorrelationEngine.getFactObjects();
         assertThat(factObjects.size(), Matchers.greaterThanOrEqualTo(4));
         // Now initialize again.
         droolsCorrelationEngine.initialize();
         // Now that facts are loaded and there shouldn't be any facts in factObjects.
         factObjects = droolsCorrelationEngine.getFactObjects();
-        assertThat(factObjects, Matchers.hasSize(0));
+        assertThat(factObjects.size(), Matchers.is(0));
         // Save facts from engine and Verify that all saved facts are loaded properly.
         droolsCorrelationEngine.saveFacts();
         factObjects = droolsCorrelationEngine.getFactObjects();

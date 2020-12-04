@@ -1,0 +1,3 @@
+{{range gets "/ipc/rpc/kafka/*" -}}
+{{base .Key}} = {{.Value}}
+{{end -}}

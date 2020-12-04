@@ -28,6 +28,7 @@
 
 package org.opennms.features.apilayer.utils;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.hibernate.ObjectNotFoundException;
@@ -37,6 +38,7 @@ import org.opennms.features.apilayer.model.mappers.DatabaseEventMapper;
 import org.opennms.features.apilayer.model.mappers.InMemoryEventMapper;
 import org.opennms.features.apilayer.model.mappers.NodeMapper;
 import org.opennms.features.apilayer.model.mappers.SnmpInterfaceMapper;
+import org.opennms.integration.api.v1.config.events.AlarmType;
 import org.opennms.integration.api.v1.model.Alarm;
 import org.opennms.integration.api.v1.model.AlarmFeedback;
 import org.opennms.integration.api.v1.model.DatabaseEvent;
@@ -58,6 +60,10 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 /**
  * Utility functions for mapping to/from API types to OpenNMS types
  */
@@ -69,7 +75,19 @@ public class ModelMappers {
     private static final NodeMapper nodeMapper = Mappers.getMapper(NodeMapper.class);
     private static final SnmpInterfaceMapper snmpInterfaceMapper = Mappers.getMapper(SnmpInterfaceMapper.class);
     private static final AlarmFeedbackMapper alarmFeedbackMapper = Mappers.getMapper(AlarmFeedbackMapper.class);
-    
+
+    // Cache the node objects. Use these in alarms, since they may be a high volume, and nodes are expensive to create.
+    // We can accept the fact that the node in the alarm is not always up-to-date
+    private static final String nodeCacheSpec = System.getProperty("org.opennms.features.apilayer.mapping.nodeCacheSpec",
+            "maximumSize=10000,expireAfterWrite=15m");
+    private static final LoadingCache<NodeKey, Node> nodeCache = CacheBuilder.from(nodeCacheSpec)
+            .build(new CacheLoader<NodeKey, Node>() {
+                        @Override
+                        public Node load(NodeKey nodeKey)  {
+                            return nodeMapper.map(nodeKey.node);
+                        }
+                    });
+
     public static Alarm toAlarm(OnmsAlarm alarm) {
         if (alarm == null) {
             return null;
@@ -77,9 +95,9 @@ public class ModelMappers {
         final ImmutableAlarm.Builder builder = ImmutableAlarm.newBuilder()
                 .setReductionKey(alarm.getReductionKey())
                 .setId(alarm.getId())
-                .setNode(toNode(alarm.getNode()))
                 .setManagedObjectInstance(alarm.getManagedObjectInstance())
                 .setManagedObjectType(alarm.getManagedObjectType())
+                .setType(AlarmType.fromId(alarm.getAlarmType()))
                 .setAttributes(alarm.getDetails())
                 .setSeverity(toSeverity(alarm.getSeverity()))
                 .setRelatedAlarms(alarm.getRelatedAlarms()
@@ -89,7 +107,17 @@ public class ModelMappers {
                 .setLogMessage(alarm.getLogMsg())
                 .setDescription(alarm.getDescription())
                 .setLastEventTime(alarm.getLastEventTime())
-                .setFirstEventTime(alarm.getFirstEventTime());
+                .setFirstEventTime(alarm.getFirstEventTime())
+                .setAcknowledged(alarm.isAcknowledged());
+
+        try {
+            if (alarm.getNode() != null) {
+                builder.setNode(nodeCache.get(new NodeKey(alarm.getNode())));
+            }
+        } catch (Exception e) {
+            LOG.warn("Failed to load node for alarm with id: {}", alarm.getId(), e);
+        }
+
         try {
             builder.setLastEvent(toEvent(alarm.getLastEvent()));
         } catch (RuntimeException e) {
@@ -130,7 +158,12 @@ public class ModelMappers {
     }
 
     public static Node toNode(OnmsNode node) {
-        return node == null ? null : nodeMapper.map(node);
+        if (node == null) {
+            return null;
+        }
+        final Node apiNode = nodeMapper.map(node);
+        nodeCache.put(new NodeKey(node.getId()), apiNode);
+        return apiNode;
     }
 
     public static SnmpInterface toSnmpInterface(OnmsSnmpInterface snmpInterface) {
@@ -174,6 +207,11 @@ public class ModelMappers {
                 .withUser(feedback.getUser())
                 .build();
     }
+
+    public static OnmsSeverity fromSeverity(Severity severity) {
+        Objects.requireNonNull(severity);
+        return OnmsSeverity.get(severity.getId());
+    }
     
     public static OnmsTopologyProtocol toOnmsTopologyProtocol(TopologyProtocol protocol) {
         return OnmsTopologyProtocol.create(protocol.name());
@@ -181,5 +219,39 @@ public class ModelMappers {
     
     public static TopologyProtocol toTopologyProtocol(OnmsTopologyProtocol protocol) {
         return TopologyProtocol.valueOf(protocol.getId());
+    }
+
+    /**
+     * Key for the node cache.
+     *
+     * Use the node id for equals/hashCode checks, but store the actual
+     * node object in order to perform the actual map operations.
+     */
+    private static final class NodeKey {
+        private final OnmsNode node;
+        private final int nodeId;
+
+        public NodeKey(OnmsNode node) {
+            this.node = node;
+            this.nodeId = node.getId();
+        }
+
+        public NodeKey(int nodeId) {
+            this.node = null;
+            this.nodeId = nodeId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof NodeKey)) return false;
+            NodeKey nodeKey = (NodeKey) o;
+            return nodeId == nodeKey.nodeId;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(nodeId);
+        }
     }
 }

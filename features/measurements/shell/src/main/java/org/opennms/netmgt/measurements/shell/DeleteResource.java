@@ -36,7 +36,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.ResourceId;
 
-@Command(scope = "opennms-measurements", name = "delete-resource", description = "Delete the measurements and meta-data for a given resource ID")
+@Command(scope = "opennms", name = "delete-measurement-resource", description = "Delete the measurements and meta-data for a given resource ID")
 @Service
 public class DeleteResource implements Action {
 

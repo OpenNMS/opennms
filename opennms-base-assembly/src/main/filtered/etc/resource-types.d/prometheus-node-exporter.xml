@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<resource-types>
+    <resourceType name="nodeExporterFilesystem" label="Filesystem"
+                  resourceLabel="Filesystem (${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="nodeExporterDisk" label="Disk"
+                  resourceLabel="Disk (${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+</resource-types>

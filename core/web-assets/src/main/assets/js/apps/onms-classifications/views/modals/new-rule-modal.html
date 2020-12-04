@@ -35,7 +35,7 @@
       <div class="form-row">
         <div class="form-group col-md-8">
           <label class="col-form-label" for="rule.srcAddress">Source IP Address</label>
-          <input class="form-control" type="text" id="rule.srcAddress" name="srcAddress" placeholder="127.0.0.1" ng-model="classification.srcAddress"
+          <input class="form-control" type="text" id="rule.srcAddress" name="srcAddress" placeholder="127.0.0.1,10.0.0.0/24,10.0.0.0-10.255.255.255" ng-model="classification.srcAddress"
                  ng-class="{ 'is-invalid' : ruleForm.srcAddress.$invalid || error.srcAddress}"/>
           <div ng-show="error.srcAddress" class="invalid-feedback">{{error.srcAddress}}</div>
         </div>
@@ -49,7 +49,7 @@
       <div class="form-row">
         <div class="form-group col-md-8">
           <label class="col-form-label" for="rule.dstAddress">Destination IP Address</label>
-          <input class="form-control" type="text" id="rule.dstAddress" name="dstAddress" placeholder="127.0.0.1" ng-model="classification.dstAddress"
+          <input class="form-control" type="text" id="rule.dstAddress" name="dstAddress" placeholder="127.0.0.1,10.0.0.0/24,10.0.0.0-10.255.255.255" ng-model="classification.dstAddress"
                  ng-class="{ 'is-invalid' : ruleForm.dstAddress.$invalid || error.dstAddress}"/>
           <div ng-show="error.dstAddress" class="invalid-feedback">{{error.dstAddress}}</div>
         </div>

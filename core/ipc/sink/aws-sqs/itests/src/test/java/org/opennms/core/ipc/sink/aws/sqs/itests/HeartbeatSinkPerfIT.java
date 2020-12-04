@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -56,11 +56,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -150,7 +151,7 @@ public class HeartbeatSinkPerfIT {
         when(sqsManager.sendMessage(anyString(), anyString())).thenAnswer(new Answer<String>() {
             @Override
             public String answer(InvocationOnMock invocation) throws Throwable {
-                String body = invocation.getArgumentAt(1, String.class);
+                String body = invocation.getArgument(1);
                 bodies.add(body);
                 return null;
             }
@@ -211,7 +212,7 @@ public class HeartbeatSinkPerfIT {
     @Test(timeout=30000)
     public void quickRun() throws Exception {
         configureGenerators();
-        await().until(() -> Long.valueOf(receivedMeter.getCount()), greaterThan(100L)); 
+        await().atMost(30, TimeUnit.SECONDS).until(() -> Long.valueOf(receivedMeter.getCount()), greaterThan(100L)); 
     }
 
 }

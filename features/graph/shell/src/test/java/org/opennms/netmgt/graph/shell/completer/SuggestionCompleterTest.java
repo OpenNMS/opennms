@@ -39,8 +39,8 @@ public class SuggestionCompleterTest {
 
     @Test
     public void shouldExtractNamespace() {
-        extract("application", "opennms-graph:search --namespace application Blah");
-        extract("", "opennms-graph:search Blah");
+        extract("application", "opennms:graph-search --namespace application Blah");
+        extract("", "opennms:graph-search Blah");
     }
 
     private void extract(String expectation, String input) {

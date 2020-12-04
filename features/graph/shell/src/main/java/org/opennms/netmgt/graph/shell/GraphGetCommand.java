@@ -43,7 +43,7 @@ import org.opennms.netmgt.graph.shell.completer.ContainerNamespaceCompleter;
 import com.google.common.base.Strings;
 
 @Service
-@Command(scope = "opennms-graph", name = "get", description="Gets a graph identified by its namespace")
+@Command(scope = "opennms", name = "graph-get", description="Gets a graph identified by its namespace")
 public class GraphGetCommand implements Action {
 
     @Reference

@@ -42,11 +42,14 @@ public interface Metric {
         void visit(final InvalidUpdateDueToClusterListLoop invalidUpdateDueToClusterListLoop);
         void visit(final InvalidUpdateDueToOriginatorId invalidUpdateDueToOriginatorId);
         void visit(final PerAfiAdjRibIn perAfiAdjRibIn);
-        void visit(final PerAfiLocRib perAfiLocRib);
+        void visit(final PerAfiLocalRib perAfiLocalRib);
         void visit(final PrefixTreatAsWithdraw prefixTreatAsWithdraw);
         void visit(final UpdateTreatAsWithdraw updateTreatAsWithdraw);
-        void visit(final LocRib locRib);
+        void visit(final LocalRib localRib);
         void visit(final DuplicateUpdate duplicateUpdate);
         void visit(final Rejected rejected);
+        void visit(final PerAfiAdjRibOut perAfiAdjRibOut);
+        void visit(final PerAfiExportRib perAfiExportRib);
+        void visit(final Unknown unknown);
     }
 }

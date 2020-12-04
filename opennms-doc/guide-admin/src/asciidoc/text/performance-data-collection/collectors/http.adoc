@@ -4,7 +4,7 @@
 
 ==== HttpCollector
 
-The _HttpCollector_ is used to collect performance data via _HTTP_ and _HTTPS_.
+The _HttpCollector_ collects performance data via _HTTP_ and _HTTPS_.
 Attributes are extracted from the _HTTP_ responses using a regular expression.
 
 ===== Collector Facts
@@ -18,25 +18,29 @@ Attributes are extracted from the _HTTP_ responses using a regular expression.
 
 ===== Collector Parameters
 
-.Collector specific parameters for the HttpCollector
+Use these parameters in the <<collection-packages.adoc,_collectd-configuration.xml_ file>>.
+
+.Collector-specific parameters for the HttpCollector
 [options="header, autowidth"]
 |===
 | Parameter              | Description                                                                    | Required | Default value
 | `collection`           | The name of the _HTTP Collection_ to use.                                      | required | (none)
-| `thresholding-enabled` | Whether collected performance data shall be tested against thresholds.         | optional | `true`
-| `port`                 | Override the default port in the all of the URIs                               | optional | 80
+| `thresholding-enabled` | Whether collected performance data should be tested against thresholds.         | optional | `true`
+| `port`                 | Override the default port in all of the URIs                               | optional | 80
 | `timeout`              | Connection and socket timeout in milliseconds                                  | optional | 3000
 | `retry`                | Number of retries                                                              | optional | 2
-| `use-system-proxy`     | Should the system wide proxy settings be used? The system proxy settings can
-                           be configured via link:#ga-opennms-system-properties[system properties]        | optional | `false`
+| `use-system-proxy`     | Should the system-wide proxy settings be used? Configure system proxy settings
+                          via link:#ga-opennms-system-properties[system properties]        | optional | `false`
 |===
 
 
 ===== HTTP Collection Configuration
 
-_HTTP Collections_ are defined in the `etc/http-datacollection-config.xml`.
+NOTE: Understanding <<resource-types.adoc, resource types>> helps when editing collector-specific configuration files. 
 
-Here is a snippet providing a collection definition named `opennms-copyright`:
+Define _HTTP Collections_ in `etc/http-datacollection-config.xml`.
+
+This snippet provides a collection definition named `opennms-copyright`:
 
 [source, xml]
 ----
@@ -65,5 +69,5 @@ Once added to `etc/http-datacollection-config.xml` you can test it using the `co
 
 [source]
 ----
-opennms-collection:collect org.opennms.netmgt.collectd.HttpCollector 127.0.0.1 collection=opennms-copyright port=8980
+opennms:collect org.opennms.netmgt.collectd.HttpCollector 127.0.0.1 collection=opennms-copyright port=8980
 ----

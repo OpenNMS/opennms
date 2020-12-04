@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,11 +54,11 @@ import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
+import org.opennms.netmgt.events.api.model.IValue;
 import org.opennms.netmgt.rtc.datablock.HttpPostInfo;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Value;
 import org.opennms.netmgt.xml.rtc.EuiLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -412,9 +412,9 @@ public class DataSender implements Fiber {
      * Inform the data sender of the new listener
      */
     @EventHandler(uei=EventConstants.RTC_SUBSCRIBE_EVENT_UEI)
-    public void handleRtcSubscribe(Event event) {
+    public void handleRtcSubscribe(IEvent event) {
 
-        List<Parm> list = event.getParmCollection();
+        List<IParm> list = event.getParmCollection();
         if (list == null) {
             LOG.warn("{} ignored - info incomplete (null event parms)", event.getUei());
             return;
@@ -426,10 +426,10 @@ public class DataSender implements Fiber {
         String passwd = null;
 
         String parmName = null;
-        Value parmValue = null;
+        IValue parmValue = null;
         String parmContent = null;
 
-        for (Parm parm : list) {
+        for (IParm parm : list) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null)
@@ -471,9 +471,9 @@ public class DataSender implements Fiber {
      * Inform the data sender of the listener unsubscribing
      */
     @EventHandler(uei=EventConstants.RTC_UNSUBSCRIBE_EVENT_UEI)
-    public void handleRtcUnsubscribe(Event event) {
+    public void handleRtcUnsubscribe(IEvent event) {
 
-        List<Parm> list = event.getParmCollection();
+        List<IParm> list = event.getParmCollection();
         if (list == null) {
             LOG.warn("{} ignored - info incomplete (null event parms)", event.getUei());
             return;
@@ -482,10 +482,10 @@ public class DataSender implements Fiber {
         String url = null;
 
         String parmName = null;
-        Value parmValue = null;
+        IValue parmValue = null;
         String parmContent = null;
 
-        for (Parm parm : list) {
+        for (IParm parm : list) {
             parmName = parm.getParmName();
             parmValue = parm.getValue();
             if (parmValue == null)

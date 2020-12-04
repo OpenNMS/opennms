@@ -126,11 +126,11 @@ public class AlarmData implements Serializable {
 
         AlarmData alarmData = new AlarmData();
         alarmData.setReductionKey(source.getReductionKey());
-        alarmData.setAlarmType(source.getAlarmType());
+        alarmData.setAlarmType(source.hasAlarmType() ? source.getAlarmType() : null);
         alarmData.setClearKey(source.getClearKey());
-        alarmData.setAutoClean(source.getAutoClean());
+        alarmData.setAutoClean(source.hasAutoClean() ? source.getAutoClean() : null);
         alarmData.setX733AlarmType(source.getX733AlarmType());
-        alarmData.setX733ProbableCause(source.getX733ProbableCause());
+        alarmData.setX733ProbableCause(source.hasX733ProbableCause() ? source.getX733ProbableCause() : null);
         alarmData.getUpdateFieldList().addAll(
                 source.getUpdateFieldList().stream().map(UpdateField::copyFrom).collect(Collectors.toList()));
         alarmData.setManagedObject(ManagedObject.copyFrom(source.getManagedObject()));

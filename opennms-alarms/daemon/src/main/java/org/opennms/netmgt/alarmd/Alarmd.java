@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,7 @@ import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.events.api.ThreadAwareEventListener;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,18 +76,18 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
      *
      * This method is thread-safe.
      *
-     * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
     @EventHandler(uei = EventHandler.ALL_UEIS)
-    public void onEvent(Event e) {
+    public void onEvent(IEvent e) {
     	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
            handleReloadEvent(e);
            return;
     	}
-    	m_persister.persist(e);
+    	m_persister.persist(Event.copyFrom(e));
     }
 
-    private synchronized void handleReloadEvent(Event e) {
+    private synchronized void handleReloadEvent(IEvent e) {
         m_northbounderManager.handleReloadEvent(e);
         DaemonTools.handleReloadEvent(e, Alarmd.NAME, (event) -> onAlarmReload());
     }

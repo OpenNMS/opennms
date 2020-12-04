@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,6 +40,7 @@ import java.util.Set;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.dao.mock.EventWrapper;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.MockUtil;
 import org.slf4j.Logger;
@@ -256,10 +257,11 @@ public class OutageAnticipator implements EventListener {
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.xml.event.Event)
+     * @see org.opennms.netmgt.eventd.EventListener#onEvent(org.opennms.netmgt.events.api.model.IEvent)
      */
     @Override
-    public synchronized void onEvent(Event e) {
+    public synchronized void onEvent(IEvent ie) {
+        Event e = Event.copyFrom(ie);
         for (Outage outage : getOutageList(m_pendingOpens, e)) {
             outage.setLostEvent(e.getDbid(), new Timestamp(e.getTime().getTime()));
             m_expectedOutages.add(outage);

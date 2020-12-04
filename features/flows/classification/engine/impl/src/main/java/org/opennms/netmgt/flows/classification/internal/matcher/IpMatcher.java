@@ -30,9 +30,8 @@ package org.opennms.netmgt.flows.classification.internal.matcher;
 
 import java.util.Objects;
 
-import org.opennms.core.utils.IPLike;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.internal.value.StringValue;
+import org.opennms.netmgt.flows.classification.internal.value.IpValue;
 
 import com.google.common.base.Function;
 
@@ -40,22 +39,17 @@ class IpMatcher implements Matcher {
 
     // Extracts the value from the ClassificationRequest. Allows to easily distinguish between srcAddress and dstAddress
     private final Function<ClassificationRequest, String> valueExtractor;
-    private final StringValue value;
+    private final IpValue value;
 
     protected IpMatcher(String input, Function<ClassificationRequest, String> valueExtractor) {
-        this.value = new StringValue(input);
+        this.value = new IpValue(input);
         this.valueExtractor = Objects.requireNonNull(valueExtractor);
     }
 
     @Override
     public boolean matches(ClassificationRequest request) {
-        if (value.isWildcard()) {
-            return true;
-        }
         final String currentAddressValue = valueExtractor.apply(request);
-        if (value.hasWildcard()) {
-            return IPLike.matches(currentAddressValue, value.getValue());
-        }
-        return value.getValue().equals(currentAddressValue);
+        final boolean matches = value.isInRange(currentAddressValue);
+        return matches;
     }
 }

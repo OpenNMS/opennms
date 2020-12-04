@@ -28,6 +28,17 @@
 
 package org.opennms.web.rest.v2;
 
+import static org.junit.Assert.assertTrue;
+
+import java.io.ByteArrayInputStream;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.MediaType;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -39,9 +50,13 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -62,6 +77,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(IfServicesRestServiceIT.class);
 
+    @Autowired
+    private ServletContext m_context;
+
     public IfServicesRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
@@ -75,14 +93,44 @@ public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_databasePopulator.populateDatabase();
     }
 
-    // TODO Need some work
     @Test
-    @JUnitTemporaryDatabase
     @Transactional
-    public void testEvents() throws Exception {
-        String url = "/ifservices";
-
-        LOG.warn(sendRequest(GET, url, 200));
+    public void testJsonIds() throws Exception {
+        final MockHttpServletRequest mockHttpServletRequest = createRequest(m_context, GET, "/ifservices");
+        mockHttpServletRequest.addHeader("Accept", MediaType.APPLICATION_JSON);
+        mockHttpServletRequest.addParameter("limit", "0");
+        final JSONObject responseObject = new JSONObject(sendRequest(mockHttpServletRequest, 200));
+        final JSONArray serviceArray = responseObject.getJSONArray("service");
+        for (final Object jsonObject : serviceArray) {
+            assertTrue(((JSONObject) jsonObject).getInt("ipInterfaceId") != 0);
+            assertTrue(((JSONObject) jsonObject).getInt("id") != 0);
+        }
     }
 
+    @Test
+    @Transactional
+    public void testXmlIds() throws Exception {
+        final MockHttpServletRequest mockHttpServletRequest = createRequest(m_context, GET, "/ifservices");
+        mockHttpServletRequest.addHeader("Accept", MediaType.APPLICATION_XML);
+        mockHttpServletRequest.addParameter("limit", "0");
+
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        final DocumentBuilder builder = factory.newDocumentBuilder();
+        final Document document = builder.parse(new ByteArrayInputStream(sendRequest(mockHttpServletRequest, 200).getBytes("UTF-8")));
+
+        final NodeList serviceList = document.getElementsByTagName("service");
+        assertTrue(serviceList.getLength() > 0);
+
+        for (int i = 0; i < serviceList.getLength(); i++) {
+            final Node node = serviceList.item(i).getAttributes().getNamedItem("id");
+            assertTrue(Integer.valueOf(node.getTextContent()) != 0);
+        }
+
+        final NodeList ipInterfaceIdList = document.getElementsByTagName("ipInterfaceId");
+        assertTrue(ipInterfaceIdList.getLength() > 0);
+
+        for (int i = 0; i < ipInterfaceIdList.getLength(); i++) {
+            assertTrue(Integer.valueOf(ipInterfaceIdList.item(i).getTextContent()) != 0);
+        }
+    }
 }

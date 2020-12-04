@@ -164,7 +164,7 @@ angular.module('onms-interfaces', [
 
   $scope.updateFlowUrlsForSnmpInterfaces = function() {
     angular.forEach($scope.snmpInterfaces, function(intf) {
-      if (!intf.hasFlows) {
+      if (!intf.hasIngressFlows && !intf.hasEgressFlows) {
         // No flows - nothing to do
         return;
       }

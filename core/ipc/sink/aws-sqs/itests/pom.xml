@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core.ipc.sink</groupId>
     <artifactId>org.opennms.core.ipc.sink.aws.sqs</artifactId>
-    <version>26.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
@@ -79,8 +79,7 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <scope>test</scope>
+      <artifactId>mockito-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

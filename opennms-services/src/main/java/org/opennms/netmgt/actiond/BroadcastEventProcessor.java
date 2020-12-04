@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,8 +33,8 @@ import java.util.Queue;
 
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
-import org.opennms.netmgt.xml.event.Autoaction;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.events.api.model.IAutoAction;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +83,7 @@ final class BroadcastEventProcessor implements EventListener {
      * are queued to be run
      */
     @Override
-    public void onEvent(Event event) {
+    public void onEvent(IEvent event) {
 
         if (event == null) {
             return;
@@ -91,9 +91,9 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Handle autoactions
         //
-        Enumeration<Autoaction> walker = event.enumerateAutoaction();
+        Enumeration<IAutoAction> walker = event.enumerateAutoaction();
         while (walker.hasMoreElements()) {
-            Autoaction aact = walker.nextElement();
+            IAutoAction aact = walker.nextElement();
             if ("on".equalsIgnoreCase(aact.getState())) {
                 m_execQ.add(aact.getContent()); // java.lang.String
             }

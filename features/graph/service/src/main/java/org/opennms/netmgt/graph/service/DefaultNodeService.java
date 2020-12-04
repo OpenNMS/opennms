@@ -28,27 +28,36 @@
 
 package org.opennms.netmgt.graph.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.graph.api.NodeRef;
 import org.opennms.netmgt.graph.api.NodeService;
 import org.opennms.netmgt.graph.api.info.IpInfo;
 import org.opennms.netmgt.graph.api.info.NodeInfo;
+import org.opennms.netmgt.graph.api.info.StatusInfo;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class DefaultNodeService implements NodeService {
 
     private final GenericPersistenceAccessor accessor;
+    private final AlarmDao alarmDao;
 
-    public DefaultNodeService(final GenericPersistenceAccessor accessor) {
+    public DefaultNodeService(final GenericPersistenceAccessor accessor, final AlarmDao alarmDao) {
         this.accessor = Objects.requireNonNull(accessor);
+        this.alarmDao = Objects.requireNonNull(alarmDao);
     }
 
     @Override
@@ -69,6 +78,46 @@ public class DefaultNodeService implements NodeService {
                     .build();
         }).collect(Collectors.toList());
         return nodeInfoList;
+    }
+
+    @Override
+    public Map<NodeRef, StatusInfo> resolveStatus(List<NodeRef> nodeRefs) {
+        final Map<Integer, NodeRef> nodeIdNodeRefMap = new HashMap<>();
+        nodeRefs.stream()
+                .filter(nodeRef -> nodeRef.getNodeId() != null)
+                .forEach(nr -> nodeIdNodeRefMap.put(nr.getNodeId(), nr));
+
+        final List<NodeRef> foreignIdNodeRefs = nodeRefs.stream()
+                .filter(nodeRef -> nodeRef.getNodeId() == null)
+                .collect(Collectors.toList());
+        final List<OnmsNode> nodes = loadNodes(foreignIdNodeRefs);
+        for (OnmsNode eachNode : nodes) {
+            for (NodeRef eachRef : nodeRefs) {
+                if (eachRef.matches(eachNode)) {
+                    nodeIdNodeRefMap.put(eachNode.getId(), eachRef);
+                }
+            }
+        }
+        // Alarm summary for each node id
+        final Map<Integer, AlarmSummary> nodeIdToAlarmSummaryMap = getAlarmSummaries(nodeIdNodeRefMap.keySet());
+
+        // Set the result
+        final Map<NodeRef, StatusInfo> resultMap = Maps.newHashMap();
+        for (Integer nodeId : nodeIdNodeRefMap.keySet()) {
+            final AlarmSummary alarmSummary = nodeIdToAlarmSummaryMap.get(nodeId);
+            final StatusInfo status = alarmSummary == null
+                    ? StatusInfo.defaultStatus().build()
+                    : StatusInfo.builder(alarmSummary.getMaxSeverity()).count(alarmSummary.getAlarmCount()).build();
+            final NodeRef nodeRef = nodeIdNodeRefMap.get(nodeId);
+            resultMap.put(nodeRef, status);
+        }
+        return resultMap;
+    }
+
+    private Map<Integer, AlarmSummary> getAlarmSummaries(Set<Integer> nodeIds) {
+        return alarmDao.getNodeAlarmSummariesIncludeAcknowledgedOnes(Lists.newArrayList(nodeIds))
+                .stream()
+                .collect(Collectors.toMap(AlarmSummary::getNodeId, Function.identity()));
     }
 
     private List<OnmsNode> loadNodes(final List<NodeRef> nodeRefs) {

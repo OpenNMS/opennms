@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 public class Interpolator {
@@ -60,6 +61,10 @@ public class Interpolator {
     }
 
     public static String interpolate(final String raw, final Scope scope) {
+        if (Strings.isNullOrEmpty(raw)) {
+            return raw;
+        }
+
         final StringBuffer stringBuffer = new StringBuffer();
         final Matcher outerMatcher = OUTER_PATTERN.matcher(raw);
         while (outerMatcher.find()) {
@@ -88,7 +93,24 @@ public class Interpolator {
         outerMatcher.appendTail(stringBuffer);
         return stringBuffer.toString();
     }
-    
+
+    public static Optional<ContextKey> getContextKeyFromMateData(final String raw) {
+        final Matcher outerMatcher = OUTER_PATTERN.matcher(raw);
+        ContextKey contextKey = null;
+        while (outerMatcher.find()) {
+            final Matcher innerMatcher = INNER_PATTERN.matcher(outerMatcher.group(1));
+
+            String result = "";
+            while (innerMatcher.find()) {
+                if (innerMatcher.group(1) != null) {
+                    final String[] arr = innerMatcher.group(1).split(":", 2);
+                    contextKey = new ContextKey(arr[0], arr[1]);
+                }
+            }
+        }
+        return Optional.ofNullable(contextKey);
+    }
+
     public static boolean containsMateData(String toCheck) {
         return toCheck != null && OUTER_PATTERN.matcher(toCheck).find();
     }

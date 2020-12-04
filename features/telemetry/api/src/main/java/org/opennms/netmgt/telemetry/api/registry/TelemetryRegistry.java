@@ -32,10 +32,12 @@ import java.util.Collection;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
+import org.opennms.netmgt.telemetry.api.receiver.Connector;
 import org.opennms.netmgt.telemetry.api.receiver.Listener;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.config.api.ConnectorDefinition;
 import org.opennms.netmgt.telemetry.config.api.ListenerDefinition;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
 
@@ -44,6 +46,7 @@ import com.codahale.metrics.MetricRegistry;
 public interface TelemetryRegistry {
     Adapter getAdapter(AdapterDefinition adapterDefinition);
     Listener getListener(ListenerDefinition listenerDefinition);
+    Connector getConnector(ConnectorDefinition connectorDefinition);
     Parser getParser(ParserDefinition parserDefinition);
 
     void registerDispatcher(String queueName, AsyncDispatcher<TelemetryMessage> dispatcher);

@@ -33,10 +33,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.collections.LazyList;
 import org.opennms.core.collections.LazySet;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
+import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -166,7 +168,7 @@ public final class ResponseTimeResourceType implements OnmsResourceType {
         return resource;
     }
 
-    private static ResourcePath getInterfacePath(final String location, final String ipAddr) {
+    public static ResourcePath getInterfacePath(final String location, final String ipAddr) {
         if (location == null) {
             return new ResourcePath(ResourceTypeUtils.RESPONSE_DIRECTORY, ipAddr);
         } else {

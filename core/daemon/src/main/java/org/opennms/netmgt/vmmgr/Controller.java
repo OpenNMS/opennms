@@ -307,10 +307,9 @@ public class Controller {
         try {
             // Check to see if the com.sun.tools.attach classes are loadable in
             // this JVM
-            Class<?> clazz;
-            clazz = Class.forName("com.sun.tools.attach.VirtualMachine");
-            clazz = Class.forName("com.sun.tools.attach.VirtualMachineDescriptor");
-            clazz = Class.forName("com.sun.tools.attach.AttachNotSupportedException");
+            Class.forName("com.sun.tools.attach.VirtualMachine");
+            Class.forName("com.sun.tools.attach.VirtualMachineDescriptor");
+            Class.forName("com.sun.tools.attach.AttachNotSupportedException");
         } catch (ClassNotFoundException e) {
             LOG.info("The Attach API is not available in this JVM, falling back to JMX over RMI");
             return m_jmxUrl;

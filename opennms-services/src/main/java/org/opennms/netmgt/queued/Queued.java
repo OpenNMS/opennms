@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,9 +34,9 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -111,7 +111,7 @@ public class Queued extends AbstractServiceDaemon implements EventListener {
 
     /** {@inheritDoc} */
     @Override
-    public void onEvent(Event e) {
+    public void onEvent(IEvent e) {
         String fileList = EventUtils.getParm(e, EventConstants.PARM_FILES_TO_PROMOTE);
         Set<String> files = commaDelimitedListToSet(fileList);
 

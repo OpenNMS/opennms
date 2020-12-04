@@ -306,6 +306,17 @@ public class DefaultClassificationService implements ClassificationService {
         });
     }
 
+    @Override
+    public List<Rule> getInvalidRules() {
+        return classificationEngine.getInvalidRules();
+    }
+
+    @Override
+    public void validateRule(final Rule validateMe) {
+        Objects.requireNonNull(validateMe);
+        ruleValidator.validate(validateMe);
+    }
+
     private <T> T runInTransaction(Supplier<T> supplier) {
         Objects.requireNonNull(supplier);
         return sessionUtils.withTransaction(supplier);

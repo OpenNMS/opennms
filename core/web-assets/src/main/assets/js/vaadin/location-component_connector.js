@@ -2,6 +2,13 @@
 
 const L = require('vendor/leaflet-js');
 
+// Do not remove unused as they are not included in the assets directory otherwise
+import MarkerIcon from '../../static/legacy/leaflet/dist/images/marker-icon.png';
+import MarkerRetinaIcon from '../../static/legacy/leaflet/dist/images/marker-icon-2x.png';
+import MarkerShadowIcon from '../../static/legacy/leaflet/dist/images/marker-shadow.png';
+import NotMarkedIcon from './not-marked-icon.png';
+import NotMarkedRetinaIcon from './not-marked-icon-2x.png';
+
 if (!window.org_opennms_features_topology_app_internal_ui_geographical_LocationComponent) {
     var __onms_getImagePath = function getImagePath() {
         var el = L.DomUtil.create('div',  'leaflet-default-icon-path', document.body);
@@ -10,8 +17,10 @@ if (!window.org_opennms_features_topology_app_internal_ui_geographical_LocationC
 
         document.body.removeChild(el);
 
+        console.log("__onms_getImagePath", el, path);
+
         return path.indexOf('url') === 0 ?
-                path.replace(/^url\(["']?/, '').replace(/marker-icon\.png["']?\)$/, '') : '';
+            path.replace(/^url\(["']?/, '').replace(/marker-icon\.png\?v=.+["']?\)$/, '') : '';
     };
 
     window.org_opennms_features_topology_app_internal_ui_geographical_LocationComponent = function LocationComponent() {
@@ -49,6 +58,18 @@ if (!window.org_opennms_features_topology_app_internal_ui_geographical_LocationC
             shadowSize:  [41, 41]
         });
 
+        var markerIcon = L.icon({
+            iconUrl: imagePath + 'marker-icon.png',
+            iconRetinaUrl: imagePath + 'marker-icon-2x.png',
+            iconSize:    [25, 41],
+            iconAnchor:  [12, 41],
+            popupAnchor: [1, -34],
+            tooltipAnchor: [16, -28],
+            shadowUrl: imagePath + 'marker-shadow.png',
+            shadowRetinaUrl: imagePath + 'marker-shadow.png',
+            shadowSize:  [41, 41]
+        });
+
         var markers = state.markers;
         var coordinates = [];
         var markerArray = [];
@@ -62,6 +83,8 @@ if (!window.org_opennms_features_topology_app_internal_ui_geographical_LocationC
             }
             if (!markers[i].marked) {
                 marker.setIcon(notMarkedIcon);
+            } else {
+                marker.setIcon(markerIcon);
             }
             marker.addTo(theMap);
             coordinates.push([latitude, longitude]);

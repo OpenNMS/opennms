@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
@@ -50,8 +52,6 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.springframework.beans.PropertyEditorRegistrySupport;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -277,7 +277,7 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
     }
 
     @Override
-    public void onEvent(Event e) {
+    public void onEvent(IEvent e) {
         if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
             final String daemonName = getDaemonNameFromReloadDaemonEvent(e);
             if (daemonName != null && daemonName.equals(getName())) {
@@ -302,9 +302,9 @@ public class DroolsCorrelationEngineBuilder extends PropertyEditorRegistrySuppor
         }
     }
 
-    private String getDaemonNameFromReloadDaemonEvent(Event e) {
-        List<Parm> parmCollection = e.getParmCollection();
-        for (Parm parm : parmCollection) {
+    private String getDaemonNameFromReloadDaemonEvent(IEvent e) {
+        List<IParm> parmCollection = e.getParmCollection();
+        for (IParm parm : parmCollection) {
             String parmName = parm.getParmName();
             if (EventConstants.PARM_DAEMON_NAME.equals(parmName)) {
                 if (parm.getValue() == null || parm.getValue().getContent() == null) {

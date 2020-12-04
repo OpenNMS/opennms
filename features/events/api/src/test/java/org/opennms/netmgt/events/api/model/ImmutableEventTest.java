@@ -97,9 +97,6 @@ public class ImmutableEventTest {
         Event event = new Event();
 
         // The following must have values due to the implementation of their getters.
-        event.setDbid(0);
-        event.setIfIndex(0);
-        event.setNodeid(0L);
         event.setParmCollection(Collections.emptyList());
 
         // Mutable to Immutable

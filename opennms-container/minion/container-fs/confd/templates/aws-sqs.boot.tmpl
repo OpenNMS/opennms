@@ -1,0 +1,8 @@
+{{- /* The following check implies if aws is configured then SQS will be used */ -}}
+{{if exists "/aws/aws_region" -}}
+!minion-jms
+!opennms-core-ipc-rpc-jms
+!opennms-core-ipc-sink-camel
+opennms-core-ipc-rpc-aws-sqs
+opennms-core-ipc-sink-aws-sqs
+{{end -}}

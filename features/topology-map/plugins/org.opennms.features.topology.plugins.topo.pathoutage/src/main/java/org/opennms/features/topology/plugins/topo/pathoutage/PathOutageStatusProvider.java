@@ -79,6 +79,7 @@ public class PathOutageStatusProvider implements StatusProvider {
 		hql.append("LEFT JOIN ipinterface.node as node ");
 		hql.append("LEFT JOIN outage.serviceLostEvent as event ");
 		hql.append("WHERE node.id in (:nodeIds) ");
+		hql.append("AND outage.perspective is null ");
 		hql.append("AND outage.serviceRegainedEvent is null ");
 		hql.append("GROUP BY node.id");
 

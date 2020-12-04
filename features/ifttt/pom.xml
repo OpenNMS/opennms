@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.features</artifactId>
-        <version>26.0.0-SNAPSHOT</version>
+        <version>27.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features</groupId>
@@ -32,6 +32,9 @@
                     <descriptors>
                         <descriptor>src/assembly/xsds.xml</descriptor>
                     </descriptors>
+                    <overrideUid>0</overrideUid>
+                    <overrideGid>0</overrideGid>
+                    <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
                 <executions>
                     <execution>
@@ -103,18 +106,16 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermockVersion}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>${powermockVersion}</version>
+            <artifactId>powermock-api-mockito2</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
+            <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

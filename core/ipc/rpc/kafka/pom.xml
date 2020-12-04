@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.core.ipc</groupId>
         <artifactId>org.opennms.core.ipc.rpc</artifactId>
-        <version>26.0.0-SNAPSHOT</version>
+        <version>27.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core.ipc.rpc</groupId>
@@ -11,6 +11,15 @@
     <name>OpenNMS :: Core :: IPC :: RPC :: Kafka</name>
     <packaging>bundle</packaging>
     <build>
+      <!-- Enable below extension and plugin when you need to generate java source files from proto -->
+
+<!--      <extensions>
+        <extension>
+          <groupId>kr.motd.maven</groupId>
+          <artifactId>os-maven-plugin</artifactId>
+          <version>1.6.2</version>
+        </extension>
+      </extensions>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -24,6 +33,24 @@
                     </instructions>
                 </configuration>
             </plugin>
+<!--            <plugin>
+              <groupId>org.xolstice.maven.plugins</groupId>
+              <artifactId>protobuf-maven-plugin</artifactId>
+              <version>0.6.1</version>
+              <configuration>
+                <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
+                <pluginId>grpc-java</pluginId>
+                <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.24.0:exe:${os.detected.classifier}</pluginArtifact>
+              </configuration>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>compile</goal>
+                    <goal>compile-custom</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>-->
         </plugins>
     </build>
 
@@ -75,6 +102,11 @@
         <artifactId>org.opennms.core.tracing.api</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-bulkhead</artifactId>
+        <version>${resilience4jVersion}</version>
+      </dependency>
      <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.lib</artifactId>
@@ -109,7 +141,7 @@
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
+        <artifactId>mockito-core</artifactId>
         <scope>test</scope>
       </dependency>
       <dependency>

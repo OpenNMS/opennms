@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,14 +28,21 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.adapter;
 
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
 import org.osgi.framework.BundleContext;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class BmpTelemetryAdapterFactory extends AbstractCollectionAdapterFactory {
+
+    @Autowired
+    private NodeDao nodeDao;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
 
     public BmpTelemetryAdapterFactory() {
         super(null);
@@ -52,8 +59,7 @@ public class BmpTelemetryAdapterFactory extends AbstractCollectionAdapterFactory
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        final BmpTelemetryAdapter adapter = new BmpTelemetryAdapter(adapterConfig.getName(), this.getTelemetryRegistry().getMetricRegistry());
-        adapter.setConfig(adapterConfig);
+        final BmpTelemetryAdapter adapter = new BmpTelemetryAdapter(adapterConfig, this.getTelemetryRegistry().getMetricRegistry(), nodeDao, transactionTemplate);
         adapter.setCollectionAgentFactory(this.getCollectionAgentFactory());
         adapter.setPersisterFactory(this.getPersisterFactory());
         adapter.setFilterDao(this.getFilterDao());
@@ -61,9 +67,6 @@ public class BmpTelemetryAdapterFactory extends AbstractCollectionAdapterFactory
         adapter.setInterfaceToNodeCache(this.getInterfaceToNodeCache());
         adapter.setThresholdingService(this.getThresholdingService());
         adapter.setBundleContext(this.getBundleContext());
-
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
-        wrapper.setPropertyValues(adapterConfig.getParameterMap());
 
         return adapter;
     }

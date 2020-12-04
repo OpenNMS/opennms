@@ -114,7 +114,9 @@ angular.module('onms-resources', [
           typeLabel: obj.typeLabel,
           checked: false,
           ifIndex: parseInt(obj.externalValueAttributes.ifIndex, 10), // will return NaN if not set
-          hasFlows: typeof obj.externalValueAttributes.hasFlows === 'undefined' ? false : JSON.parse(obj.externalValueAttributes.hasFlows)
+          hasFlows: typeof obj.externalValueAttributes.hasFlows === 'undefined' ? false : JSON.parse(obj.externalValueAttributes.hasFlows),
+          hasIngressFlows: typeof obj.externalValueAttributes.hasIngressFlows === 'undefined' ? false : JSON.parse(obj.externalValueAttributes.hasIngressFlows),
+          hasEgressFlows: typeof obj.externalValueAttributes.hasEgressFlows === 'undefined' ? false : JSON.parse(obj.externalValueAttributes.hasEgressFlows)
         };
         $scope.updateFlowUrlForResource(nodeCriteria, resource);
         return resource;
@@ -138,7 +140,7 @@ angular.module('onms-resources', [
   };
 
   $scope.updateFlowUrlForResource = function(nodeCriteria, resource) {
-    if (!resource.hasFlows || isNaN(resource.ifIndex)) {
+    if ((!resource.hasIngressFlows && !resource.hasEgressFlows) || isNaN(resource.ifIndex)) {
       // No flows, or not an interface, nothing to do
       return;
     }
@@ -192,6 +194,11 @@ angular.module('onms-resources', [
   };
 
   $scope.doGraph = function (selected) {
+    // Custom report graphs doesn't support generatedId
+    if(($scope.url === "graph/adhoc2.jsp")) {
+       $scope.setResourceIds(selected);
+       return;
+    }
     // Save resources with an ID and form url with generatedId.
     if (selected.length > 0) {
       $http.post('rest/resources/generateId', selected)

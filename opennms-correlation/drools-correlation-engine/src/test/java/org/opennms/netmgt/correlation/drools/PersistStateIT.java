@@ -32,10 +32,10 @@ import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.camel.Consume;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -86,9 +86,49 @@ public class PersistStateIT extends CorrelationRulesTestCase {
         engine.tearDown();
     }
 
+    @Test
+    public void persistedDroolsFactsAccessibleInNewSession() throws Exception {
+        String factClass = "org.opennms.netmgt.correlation.drools.PersistedTestFact";
+        DroolsCorrelationEngine engine = findEngineByName("persistStateTest");
+        assertThat(engine, notNullValue());
+        engine.initialize();
+        // Make sure working memory is clean
+        engine.getKieSession().getFactHandles().forEach(fh -> engine.getKieSession().delete(fh));
+
+        // Insert a test fact to be persisted
+        engine.correlate(createFactPersistenceTestEvent("insertPersistenceTestFact", "PersistStateIT-42"));
+        assertEquals(inventoryWorkingMemory(engine), 1, engine.getKieSessionObjects().stream().filter(fh ->
+                fh.getClass().getCanonicalName().equals(factClass)).count());
+        assertThat(inventoryWorkingMemory(engine), engine.getKieSessionObjects(), hasSize(1));
+
+        // Re-initialize and verify
+        engine.reloadConfig(true);
+        assertThat(inventoryWorkingMemory(engine), engine.getKieSessionObjects(), hasSize(1));
+
+        // Insert another test fact to ensure the query finds facts from before and after reload
+        engine.correlate(createFactPersistenceTestEvent("insertPersistenceTestFact", "PersistStateIT-42"));
+
+        // Activate the query-and-delete rule
+        engine.correlate(createFactPersistenceTestEvent("deletePersistenceTestFact", "PersistStateIT-42"));
+        assertEquals("There should be no objects in working memory\n" + inventoryWorkingMemory(engine), 0,
+            engine.getKieSessionObjects().size());
+    }
+
     private Event createNodeLostServiceEvent(int nodeid, String serviceName) {
         return new EventBuilder(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, serviceName)
                 .setNodeid(nodeid)
                 .getEvent();
+    }
+
+    private Event createFactPersistenceTestEvent(String ueiSuffix, String source) {
+        return new EventBuilder("uei.opennms.org/junit/" + ueiSuffix, source).getEvent();
+    }
+
+    private String inventoryWorkingMemory(DroolsCorrelationEngine engine) {
+        StringBuilder wmInventory = new StringBuilder("Working Memory Inventory:");
+        for (Object o : engine.getKieSessionObjects()) {
+            wmInventory.append("\n\t" + o.toString());
+        }
+        return wmInventory.toString();
     }
 }

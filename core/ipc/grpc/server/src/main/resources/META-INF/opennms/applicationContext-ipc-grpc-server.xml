@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+  <context:annotation-config />
+
+  <bean id="identity" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="distPollerDao"/>
+    <property name="targetMethod" value="whoami"/>
+  </bean>
+
+  <bean id="location" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="identity"/>
+    <property name="targetMethod" value="getLocation"/>
+  </bean>
+
+
+  <bean id="grpcServer" class="org.opennms.core.ipc.grpc.server.OpennmsGrpcServer" primary="true"
+        init-method="start" destroy-method="shutdown">
+    <property name="location" ref="location"/>
+  </bean>
+
+
+  <bean id="grpcLocalDispatcherFactory" class="org.opennms.core.ipc.grpc.server.GrpcLocalDispatcherFactory" >
+    <property name="metrics" ref="grpcLocalSinkMetricRegistry"/>
+  </bean>
+
+  <onmsgi:service ref="grpcLocalDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory" />
+
+  <onmsgi:service ref="grpcServer" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager">
+    <onmsgi:service-properties>
+      <entry>
+        <key><value>strategy</value></key>
+        <value>grpc</value>
+      </entry>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <onmsgi:service ref="grpcServer" interface="org.opennms.core.rpc.api.RpcClientFactory">
+    <onmsgi:service-properties>
+      <entry>
+        <key><value>strategy</value></key>
+        <value>grpc</value>
+      </entry>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+  <!-- Sink Metrics -->
+  <bean id="grpcLocalSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+  <onmsgi:service ref="grpcLocalSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
+    <onmsgi:service-properties>
+      <entry>
+        <key><value>name</value></key>
+        <value>gRPC Sink Producer</value>
+      </entry>
+      <entry>
+        <key><value>description</value></key>
+        <value>Sink Producer Metrics on OpenNMS</value>
+      </entry>
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
+</beans>

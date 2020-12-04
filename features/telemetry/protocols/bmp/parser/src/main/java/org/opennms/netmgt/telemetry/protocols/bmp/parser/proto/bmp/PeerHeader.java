@@ -28,13 +28,16 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp;
 
+import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.bytes;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint64;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.net.InetAddress;
 import java.time.Instant;
+import java.util.function.Function;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
@@ -46,27 +49,34 @@ public class PeerHeader {
     public final Type type;   // uint8
 
     public final PeerFlags flags; // uint8
+    public final LocRibFlags locRibFlags; // unint8
 
-    public final UnsignedLong distinguisher; // uint32
+    public final UnsignedLong distinguisher; // uint64
 
     public final InetAddress address; // 16 bytes
 
     public final long as; // uint32
-    public final long id; // uint32
+    public final InetAddress id; // uint32
 
     public final Instant timestamp; // uint32 (seconds) + uint32(microseconds)
 
     public PeerHeader(final ByteBuf buffer) throws InvalidPacketException {
         this.type = Type.from(buffer);
 
-        this.flags = new PeerFlags(uint8(buffer));
+        if (this.type == Type.LOC_RIB_INSTANCE) {
+            this.flags = null;
+            this.locRibFlags = new LocRibFlags(uint8(buffer));
+        } else {
+            this.flags = new PeerFlags(uint8(buffer));
+            this.locRibFlags = null;
+        }
 
         this.distinguisher = uint64(buffer);
 
         this.address = this.flags.parsePaddedAddress(buffer);
 
         this.as = uint32(buffer);
-        this.id = uint32(buffer);
+        this.id = InetAddressUtils.getInetAddress(bytes(buffer, 4));
 
         this.timestamp = Instant.ofEpochSecond(uint32(buffer), uint32(buffer) * 1000);
     }
@@ -74,7 +84,8 @@ public class PeerHeader {
     public enum Type {
         GLOBAL_INSTANCE,
         RD_INSTANCE,
-        LOCAL_INSTANCE;
+        LOCAL_INSTANCE,
+        LOC_RIB_INSTANCE;
 
         private static Type from(final ByteBuf buffer) throws InvalidPacketException {
             final int type = uint8(buffer);
@@ -85,9 +96,15 @@ public class PeerHeader {
                     return RD_INSTANCE;
                 case 2:
                     return LOCAL_INSTANCE;
+                case 3:
+                    return LOC_RIB_INSTANCE;
                 default:
                     throw new InvalidPacketException(buffer, "Unknown peer type: %d", type);
             }
+        }
+
+        public <R> R map(final Function<Type, R> mapper) {
+            return mapper.apply(this);
         }
     }
 

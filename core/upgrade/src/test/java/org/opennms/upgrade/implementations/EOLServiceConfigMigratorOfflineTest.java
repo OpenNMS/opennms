@@ -66,7 +66,8 @@ public class EOLServiceConfigMigratorOfflineTest {
             "OpenNMS:Name=Linkd",
             "OpenNMS:Name=Xmlrpcd",
             "OpenNMS:Name=XmlrpcProvisioner",
-            "OpenNMS:Name=AccessPointMonitor"
+            "OpenNMS:Name=AccessPointMonitor",
+            "OpenNMS:Name=PollerBackEnd"
     );
 
     public EOLServiceConfigMigratorOfflineTest(final String testFile, final int totalBefore, final int totalAfter, final int enabledAfter) {
@@ -102,12 +103,12 @@ public class EOLServiceConfigMigratorOfflineTest {
     public static Collection<Object[]> params() {
         return Arrays.asList(new Object[][] {
             // service config, total, enabled
-            { "target/home/etc/service-configuration-1.8.17.xml",  38, 38, 35 },
-            { "target/home/etc/service-configuration-1.10.14.xml", 38, 38, 35 },
-            { "target/home/etc/service-configuration-1.12.9.xml",  39, 39, 35 },
-            { "target/home/etc/service-configuration-14.0.3.xml",  38, 38, 27 },
-            { "target/home/etc/service-configuration-15.0.2.xml",  38, 38, 27 },
-            { "target/home/etc/service-configuration-16.0.4.xml",  37, 37, 27 }
+            { "target/home/etc/service-configuration-1.8.17.xml",  38, 38, 34 },
+            { "target/home/etc/service-configuration-1.10.14.xml", 38, 38, 34 },
+            { "target/home/etc/service-configuration-1.12.9.xml",  39, 39, 34 },
+            { "target/home/etc/service-configuration-14.0.3.xml",  38, 38, 26 },
+            { "target/home/etc/service-configuration-15.0.2.xml",  38, 38, 26 },
+            { "target/home/etc/service-configuration-16.0.4.xml",  37, 37, 26 }
         });
     }
 

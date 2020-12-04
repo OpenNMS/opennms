@@ -310,15 +310,15 @@ public class Event implements Message,Serializable {
 
 		Event event = new Event();
 		event.setUuid(source.getUuid());
-		event.setDbid(source.getDbid());
+		event.setDbid(source.hasDbid() ? source.getDbid() : null);
 		event.setDistPoller(source.getDistPoller());
-		event.setCreationTime(source.getCreationTime());
+		event.setCreationTime(source.getCreationTime() == null ? null : new Date(source.getCreationTime().getTime()));
 		event.setMasterStation(source.getMasterStation());
 		event.setMask(Mask.copyFrom(source.getMask()));
 		event.setUei(source.getUei());
 		event.setSource(source.getSource());
-		event.setNodeid(source.getNodeid());
-		event.setTime(source.getTime());
+		event.setNodeid(source.hasNodeid() ? source.getNodeid() : null);
+		event.setTime(source.getTime() == null ? null : new Date(source.getTime().getTime()));
 		event.setHost(source.getHost());
 		event.setInterface(source.getInterface());
 		event.setInterfaceAddress(source.getInterfaceAddress());
@@ -344,7 +344,7 @@ public class Event implements Message,Serializable {
 				source.getForwardCollection().stream().map(Forward::copyFrom).collect(Collectors.toList()));
 		event.getScriptCollection().addAll(
 				source.getScriptCollection().stream().map(Script::copyFrom).collect(Collectors.toList()));
-		event.setIfIndex(source.getIfIndex());
+		event.setIfIndex(source.hasIfIndex() ? source.getIfIndex() : null);
 		event.setIfAlias(source.getIfAlias());
 		event.setMouseovertext(source.getMouseovertext());
 		event.setAlarmData(AlarmData.copyFrom(source.getAlarmData()));

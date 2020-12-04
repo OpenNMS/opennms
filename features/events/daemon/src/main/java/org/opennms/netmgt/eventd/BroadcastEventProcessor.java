@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,9 +32,9 @@ import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -119,7 +119,7 @@ public class BroadcastEventProcessor implements EventListener {
      * Event Identifier and the appropriate action is taking based on each UEI.
      */
     @Override
-    public void onEvent(Event event) {
+    public void onEvent(IEvent event) {
         
         LOG.debug("onEvent: received event, UEI = {}", event.getUei());
         EventBuilder ebldr = null;
@@ -144,11 +144,11 @@ public class BroadcastEventProcessor implements EventListener {
         }
     }
 
-    private boolean isReloadConfigEvent(Event event) {
+    private boolean isReloadConfigEvent(IEvent event) {
         boolean isTarget = false;
         
         if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            final Parm target = event.getParm(EventConstants.PARM_DAEMON_NAME);
+            final IParm target = event.getParm(EventConstants.PARM_DAEMON_NAME);
             if (target != null && "Eventd".equalsIgnoreCase(target.getValue().getContent())) {
                 isTarget = true;
             }

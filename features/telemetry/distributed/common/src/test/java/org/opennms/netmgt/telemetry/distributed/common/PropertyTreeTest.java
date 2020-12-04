@@ -49,7 +49,9 @@ public class PropertyTreeTest {
                 .put("b.b.b", "5")
                 .put("b.c.a", "6")
                 .put("b.c.b", "7")
-                .put("x.y.z.a.b.c", "0")
+                .put("x.y.z.a.b", "0")
+                .put("x.y.z.a.b.c", "1")
+                .put("x.y.z.a.b.d", "2")
                 .build());
 
         assertEquals(Optional.of("1"), props.find("a").flatMap(PropertyTree.Node::getValue));
@@ -65,7 +67,7 @@ public class PropertyTreeTest {
         assertEquals(Optional.of("6"), props.find("b", "c", "a").flatMap(PropertyTree.Node::getValue));
         assertEquals(Optional.of("7"), props.find("b", "c", "b").flatMap(PropertyTree.Node::getValue));
         assertEquals(Optional.empty(), props.find("b", "c", "c").flatMap(PropertyTree.Node::getValue));
-        assertEquals(Optional.of("0"), props.find("x", "y", "z", "a", "b", "c").flatMap(PropertyTree.Node::getValue));
+        assertEquals(Optional.of("1"), props.find("x", "y", "z", "a", "b", "c").flatMap(PropertyTree.Node::getValue));
 
         assertEquals("1", props.getRequiredString("a"));
         assertEquals("7", props.getRequiredString("b", "c", "b"));
@@ -75,6 +77,7 @@ public class PropertyTreeTest {
         assertEquals(Optional.empty(), props.getOptionalInteger("b", "b", "y", "z"));
 
         assertEquals(ImmutableMap.of("a", "6", "b", "7"), props.getMap("b", "c"));
+        assertEquals(ImmutableMap.of("a.b", "0", "a.b.c", "1", "a.b.d", "2"), props.getFlatMap("x", "y", "z"));
         assertEquals(Collections.emptyMap(), props.getMap("b", "x"));
         assertEquals(Collections.emptyMap(), props.getMap("b", "y", "z"));
 

@@ -49,7 +49,7 @@ import org.opennms.distributed.core.api.Identity;
 import org.opennms.distributed.core.api.SystemType;
 import org.osgi.service.cm.ConfigurationAdmin;
 
-@Command(scope = "opennms-kafka-rpc", name = "topics", description = "List RPC topics used by current system.")
+@Command(scope = "opennms", name = "kafka-rpc-topics", description = "List RPC topics used by current system.")
 @Service
 public class KafkaRpcTopics implements Action {
 

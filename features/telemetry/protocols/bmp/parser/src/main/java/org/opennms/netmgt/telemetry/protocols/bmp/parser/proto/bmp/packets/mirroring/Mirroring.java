@@ -34,5 +34,6 @@ public interface Mirroring {
     interface Visitor {
         void visit(final BgpMessage bgpMessage);
         void visit(final Information information);
+        void visit(final Unknown unknown);
     }
 }

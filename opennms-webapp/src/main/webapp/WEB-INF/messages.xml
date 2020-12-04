@@ -14,7 +14,7 @@
    </entry>
    
    <entry key="location.no-monitors">
-     No remote pollers have reported for applications in "{0}" from
+     No perspective pollers have reported for applications in "{0}" from
      location "{1}".
    </entry>
    
@@ -27,11 +27,11 @@
    </entry>
    
    <entry key="distributed.pollerStatus.title">
-     Remote Poller Status
+     Perspective Poller Status
    </entry>
    
    <entry key="distributed.locationMonitorDetails.title">
-     Remote Poller Details
+     Perspective Poller Details
    </entry>
    
    <entry key="distributed.locationMonitorDetails.additionalTitle">
@@ -118,11 +118,11 @@
    </entry>
    
    <entry key="monitorId.notSpecified">
-     Remote Poller ID not specified or a type mismatch occurred (should be passed as an integer with "{0}" parameter).
+     Perspective Poller ID not specified or a type mismatch occurred (should be passed as an integer with "{0}" parameter).
    </entry>
    
    <entry key="monitorId.notFound">
-     Remote poller ID "{1}" not found.
+     Perspective poller ID "{1}" not found.
    </entry>
    
    <entry key="distributed.detail.os.arch">

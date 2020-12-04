@@ -10,11 +10,14 @@
 ">
     <reference id="graphContainerDao" interface="org.opennms.netmgt.graph.dao.api.GraphContainerDao" availability="mandatory" />
     <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory" />
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
 
     <!-- Listen for GraphContainerProviders -->
-    <bean id="defaultGraphService" class="org.opennms.netmgt.graph.service.DefaultGraphService" />
+    <bean id="defaultGraphService" class="org.opennms.netmgt.graph.service.DefaultGraphService">
+        <argument ref="blueprintBundleContext" />
+    </bean>
     <reference-list interface="org.opennms.netmgt.graph.api.service.GraphContainerProvider" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="defaultGraphService" />
     </reference-list>
@@ -62,6 +65,7 @@
     <!-- Node Service -->
     <bean id="defaultNodeService" class="org.opennms.netmgt.graph.service.DefaultNodeService">
         <argument ref="genericPersistenceAccessor" />
+        <argument ref="alarmDao" />
     </bean>
     <service interface="org.opennms.netmgt.graph.api.NodeService" ref="defaultNodeService" />
 
@@ -79,6 +83,10 @@
         <argument ref="defaultNodeService" />
     </bean>
     <service interface="org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor" ref="nodeEnrichmentProcessor" />
+    <bean id="statusEnrichmentProcessor" class="org.opennms.netmgt.graph.enrichment.StatusEnrichmentProcessor">
+        <argument ref="defaultNodeService" />
+    </bean>
+    <service interface="org.opennms.netmgt.graph.api.enrichment.EnrichmentProcessor" ref="statusEnrichmentProcessor" />
 
     <!-- Notification Service -->
     <bean id="notificationService" class="org.opennms.netmgt.graph.updates.DefaultGraphNotificationService" />

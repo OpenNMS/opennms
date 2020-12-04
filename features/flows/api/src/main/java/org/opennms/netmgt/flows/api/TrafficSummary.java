@@ -59,6 +59,11 @@ public class TrafficSummary<T> {
         return bytesOut;
     }
 
+    public BytesInOut getBytesInOut() {
+        // BytesInOut objects are mutable so we create a new one every get
+        return new BytesInOut(bytesIn, bytesOut);
+    }
+
     public static class Builder<T> {
         private T entity;
         private long bytesIn;

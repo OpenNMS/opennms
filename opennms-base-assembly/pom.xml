@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>26.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -82,25 +82,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>unpack-remote-poller</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.assemblies</groupId>
-                  <artifactId>org.opennms.assemblies.remote-poller-standalone</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>remote-poller</classifier>
-                  <type>tar.gz</type>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <execution>
             <id>copy-jmx-config-generator</id>
             <phase>process-resources</phase>
             <goals><goal>copy</goal></goals>
@@ -133,6 +114,8 @@
             <descriptor>src/assembly/daemon.xml</descriptor>
             <descriptor>src/assembly/log4j2.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
           <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
@@ -560,6 +543,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.prometheus-collector</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.wsman</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
@@ -572,11 +561,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.poller</groupId>
-      <artifactId>org.opennms.features.poller.remote</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.ticketing</groupId>
@@ -635,6 +619,10 @@
       <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
     </dependency>
@@ -645,6 +633,12 @@
     <dependency>
       <groupId>commons-configuration</groupId>
       <artifactId>commons-configuration</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -832,6 +826,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.timeseries</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.timeseries-evaluate</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -888,6 +887,16 @@
     <dependency>
       <groupId>org.opennms.core.ipc.sink</groupId>
       <artifactId>org.opennms.core.ipc.sink.offheap</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.grpc</groupId>
+      <artifactId>org.opennms.core.ipc.grpc.server</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc</groupId>
+      <artifactId>org.opennms.core.ipc.osgi</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -1026,12 +1035,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.assemblies</groupId>
-      <artifactId>org.opennms.assemblies.remote-poller-standalone</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.rest</groupId>
       <artifactId>org.opennms.features.rest.mapper</artifactId>
       <version>${project.version}</version>
@@ -1059,6 +1062,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.bmp.persistence</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.bmp.persistence.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.bmp.persistence</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.bmp.persistence.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.netflow.adapter</artifactId>
       <version>${project.version}</version>
@@ -1081,6 +1094,26 @@
     <dependency>
       <groupId>org.opennms.features.telemetry.protocols.jti</groupId>
       <artifactId>org.opennms.features.telemetry.protocols.jti.adapter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.graphite</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.graphite.adapter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.openconfig</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.openconfig.adapter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.openconfig</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.openconfig.connector</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.openconfig</groupId>
+      <artifactId>org.opennms.features.openconfig.api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -1130,6 +1163,12 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.karaf-health</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- Perspective Poller -->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.perspectivepoller</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

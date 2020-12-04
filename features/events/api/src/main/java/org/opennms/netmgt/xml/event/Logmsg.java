@@ -109,7 +109,7 @@ public class Logmsg implements Serializable {
         Logmsg logmsg = new Logmsg();
         logmsg.setContent(source.getContent());
         logmsg.setDest(source.getDest());
-        logmsg.setNotify(source.getNotify());
+        logmsg.setNotify(source.hasNotify() ? source.getNotify() : null);
         return logmsg;
     }
 

@@ -49,16 +49,16 @@ public class TLV<T extends TLV.Type<V, P>, V, P> {
     public final int length; // uint16
     public final V value;    // byte[length]
 
-    public TLV(final ByteBuf buffer, final IntFunction<T> typer, final P parameter) throws InvalidPacketException {
+    public TLV(final ByteBuf buffer, final IntFunction<T> typer, final P parameter, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         final int type = uint16(buffer);
 
         this.type = typer.apply(type);
         this.length = uint16(buffer);
 
         if (this.type != null) {
-            this.value = this.type.parse(slice(buffer, this.length), parameter);
+            this.value = this.type.parse(slice(buffer, this.length), parameter, peerInfo);
         } else {
-            BmpParser.LOG.debug("Unknown type: {}", type);
+            BmpParser.RATE_LIMITED_LOG.debug("Unknown type: {}", type);
             this.value = null;
             skip(buffer, this.length);
         }
@@ -70,7 +70,7 @@ public class TLV<T extends TLV.Type<V, P>, V, P> {
 
     @FunctionalInterface
     public interface Type<V, P> {
-        V parse(final ByteBuf buffer, final P parameter) throws InvalidPacketException;
+        V parse(final ByteBuf buffer, final P parameter, final Optional<PeerInfo> peerInfo) throws InvalidPacketException;
     }
 
     @Override

@@ -54,6 +54,10 @@ public interface Errors {
     ErrorTemplate RULE_EXPORTER_FILTER_INVALID = new ErrorTemplate("rule.filter.invalid", "The provided filter ''{0}'' is invalid: {1}");
 
     ErrorTemplate RULE_IP_ADDRESS_INVALID = new ErrorTemplate("rule.ipaddress.invalid", "The provided IP Address ''{0}'' is not valid.");
+    ErrorTemplate RULE_IP_ADDRESS_RANGE_INVALID = new ErrorTemplate("rule.ipaddress.range.invalid", "The provided IP Address range ''{0}'' is not valid. A valid range expression may be: 10.0.0.0-10.0.0.255");
+    ErrorTemplate RULE_IP_ADDRESS_RANGE_BEGIN_END_INVALID = new ErrorTemplate("rule.ipaddress.range.begin-end.invalid", "The beginning of IP Address range ''{0}'' must come before end of IP Address range ''{1}''");
+    ErrorTemplate RULE_IP_ADDRESS_RANGE_CIDR_NOT_SUPPORTED = new ErrorTemplate("rule.ipaddress.range.cidr.not-support", "Ranged values may not contain a CIDR expression");
+    ErrorTemplate RULE_IP_ADDRESS_INVALID_CIDR_EXPRESSION = new ErrorTemplate("rule.ipaddress.cidr-expression.invalid", "The provided input ''{0}'' is not a valid CIDR expression: ''{1}''");
 
     ErrorTemplate CSV_TOO_FEW_COLUMNS = new ErrorTemplate("csv.toofewcolumns", "The provided rule ''{0}'' cannot be parsed. Expected columns {2} but received {3}.");
     ErrorTemplate CSV_IMPORT_FAILED = new ErrorTemplate( "csv.unknown.error", "An unexpected ErrorTemplate occurred while parsing the CSV: {0}.");

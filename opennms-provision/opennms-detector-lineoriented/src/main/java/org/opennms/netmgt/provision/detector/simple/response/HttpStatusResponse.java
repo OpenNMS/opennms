@@ -32,7 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HttpStatusResponse extends LineOrientedResponse {
-    private static final Pattern HTTP_RESPONSE_REGEX = Pattern.compile("([H][T][T][P+]/[1].[0-1]) ([0-9][0-9][0-9]) ([a-zA-Z ]+)");
+    private static final Pattern HTTP_RESPONSE_REGEX = Pattern.compile("([H][T][T][P+]/[1].[0-1]) ([0-9][0-9][0-9])(?: ([\\p{Alnum} ]*))?");
 
     public HttpStatusResponse(final String response) {
         super(response);

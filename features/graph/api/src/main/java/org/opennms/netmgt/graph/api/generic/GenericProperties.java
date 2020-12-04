@@ -55,6 +55,14 @@ public interface GenericProperties {
     String FOREIGN_SOURCE = "foreignSource";
     String FOREIGN_ID = "foreignID";
 
-    /** Determines if vertices containing a node ref should be enriched with the node information. */
-    String ENRICHMENT_RESOLVE_NODES = "enrichment.resolveNodes";
+    interface Enrichment {
+        /** Determines if vertices containing a node ref should be enriched with the node information. */
+        String RESOLVE_NODES = "enrichment.resolveNodes";
+
+        /**
+         * Determines if vertices containing a node ref should be enriched with
+         * status information (based on their associated alarms)
+         */
+        String DEFAULT_STATUS = "enrichment.defaultStatus";
+    }
 }

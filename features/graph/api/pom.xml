@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.graph</artifactId>
-        <version>26.0.0-SNAPSHOT</version>
+        <version>27.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.graph</groupId>
@@ -31,6 +31,10 @@
             <groupId>org.opennms.features.graph</groupId>
             <artifactId>org.opennms.features.graph.jung</artifactId>
             <version>${jungVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-model</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms.core.test-api</groupId>

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.graph.enrichment;
 
+import static org.opennms.netmgt.graph.enrichment.EnrichmentUtils.*;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -50,20 +52,13 @@ public class NodeEnrichmentProcessor implements EnrichmentProcessor {
     }
 
     @Override
-    public boolean canEnrich(GenericGraph graph) {
-        final Object value = graph.getProperties().get(GenericProperties.ENRICHMENT_RESOLVE_NODES);
-        if (value instanceof Boolean) {
-            return (Boolean) value;
-        }
-        if (value instanceof String) {
-            return Boolean.parseBoolean((String) value);
-        }
-        return false;
+    public boolean canEnrich(final GenericGraph graph) {
+        return parseBoolean(graph.getProperties(), GenericProperties.Enrichment.RESOLVE_NODES);
     }
 
     @Override
     public void enrich(EnrichmentGraphBuilder graphBuilder) {
-        final List<NodeRef> nodeRefs = graphBuilder.getVertices().stream().map(v -> v.getNodeRef()).filter(ref -> ref != null).collect(Collectors.toList());
+        final List<NodeRef> nodeRefs = graphBuilder.getVertices().stream().map(GenericVertex::getNodeRef).filter(Objects::nonNull).collect(Collectors.toList());
         final List<NodeInfo> nodeInfos = nodeService.resolveNodes(nodeRefs);
         nodeInfos.forEach(ni -> {
             final List<GenericVertex> vertices = graphBuilder.resolveVertices(ni.getNodeRef());

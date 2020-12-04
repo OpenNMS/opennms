@@ -32,6 +32,7 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
@@ -39,11 +40,15 @@ import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.TcpParser;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
 
 import com.codahale.metrics.MetricRegistry;
+
+import io.netty.buffer.ByteBuf;
 
 public class IpfixTcpParser extends ParserBase implements TcpParser {
 
@@ -61,28 +66,43 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
                           final InetSocketAddress localAddress) {
         final TcpSession session = new TcpSession(remoteAddress.getAddress());
 
-        return buffer -> {
-            buffer.markReaderIndex();
+        return new Handler() {
+            @Override
+            public Optional<CompletableFuture<?>> parse(final ByteBuf buffer) throws Exception {
+                buffer.markReaderIndex();
 
-            final Header header;
-            if (buffer.isReadable(Header.SIZE)) {
-                header = new Header(slice(buffer, Header.SIZE));
-            } else {
-                buffer.resetReaderIndex();
-                return Optional.empty();
+                final Header header;
+                if (buffer.isReadable(Header.SIZE)) {
+                    header = new Header(slice(buffer, Header.SIZE));
+                } else {
+                    buffer.resetReaderIndex();
+                    return Optional.empty();
+                }
+
+                final Packet packet;
+                if (buffer.isReadable(header.payloadLength())) {
+                    packet = new Packet(session, header, slice(buffer, header.payloadLength()));
+                } else {
+                    buffer.resetReaderIndex();
+                    return Optional.empty();
+                }
+
+                detectClockSkew(header.exportTime * 1000L, session.getRemoteAddress());
+
+                return Optional.of(IpfixTcpParser.this.transmit(packet, remoteAddress));
             }
 
-            final Packet packet;
-            if (buffer.isReadable(header.payloadLength())) {
-                packet = new Packet(session, header, slice(buffer, header.payloadLength()));
-            } else {
-                buffer.resetReaderIndex();
-                return Optional.empty();
-            }
+            @Override
+            public void active() {}
 
-            detectClockSkew(header.exportTime * 1000L, session.getRemoteAddress());
-
-            return Optional.of(this.transmit(packet, remoteAddress));
+            @Override
+            public void inactive() {}
         };
+    }
+
+    @Override
+    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException {
+        IpFixMessageBuilder builder = new IpFixMessageBuilder(record, enrichment);
+        return builder.buildData();
     }
 }

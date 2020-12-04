@@ -14,12 +14,6 @@ SPECFILE="$1"
 # shellcheck disable=SC1090
 . "${MYDIR}/lib.sh"
 
-if [ -n "$GPG_SECRET_KEY" ] && [ -n "$GPG_PASSPHRASE" ]; then
-	echo "PGP key found... signing RPMs"
-	# shellcheck disable=SC1090
-	. "$MYDIR/configure-signing.sh"
-	./makerpm.sh -a -d -s '***REDACTED***' -M "${ONMS_MAJOR_REVISION}" -m "${ONMS_MINOR_REVISION}" -u "${ONMS_MICRO_REVISION}" -S "$SPECFILE" || exit 1
-else
-	echo "PGP key not found... skipping RPM signing"
-	./makerpm.sh -a -d -M "${ONMS_MAJOR_REVISION}" -m "${ONMS_MINOR_REVISION}" -u "${ONMS_MICRO_REVISION}" -S "$SPECFILE" || exit 1
-fi
+"$MYDIR/configure-signing.sh"
+
+./makerpm.sh -a -d -M "${ONMS_MAJOR_REVISION}" -m "${ONMS_MINOR_REVISION}" -u "${ONMS_MICRO_REVISION}" -S "$SPECFILE" || exit 1

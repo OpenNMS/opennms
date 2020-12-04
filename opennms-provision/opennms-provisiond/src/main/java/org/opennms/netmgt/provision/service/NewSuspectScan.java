@@ -29,6 +29,12 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
+import static org.opennms.netmgt.provision.service.ProvisionService.ABORT;
+import static org.opennms.netmgt.provision.service.ProvisionService.ERROR;
+import static org.opennms.netmgt.provision.service.ProvisionService.FOREIGN_ID;
+import static org.opennms.netmgt.provision.service.ProvisionService.FOREIGN_SOURCE;
+import static org.opennms.netmgt.provision.service.ProvisionService.LOCATION;
+import static org.opennms.netmgt.provision.service.ProvisionService.NODE_ID;
 
 import java.net.InetAddress;
 
@@ -41,6 +47,8 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.opentracing.Span;
 
 /**
  * <p>NewSuspectScan class.</p>
@@ -57,6 +65,7 @@ public class NewSuspectScan implements Scan {
     private SnmpAgentConfigFactory m_agentConfigFactory;
     private TaskCoordinator m_taskCoordinator;
 	private String m_foreignSource;
+    private Span m_span;
 	
     /**
      * <p>Constructor for NewSuspectScan.</p>
@@ -85,6 +94,7 @@ public class NewSuspectScan implements Scan {
     /** {@inheritDoc} */
     @Override
     public void run(final BatchTask phase) {
+        m_span = m_provisionService.buildAndStartSpan("NewSuspectScan", null);
         scanUndiscoveredNode(phase);
     }
 
@@ -99,15 +109,21 @@ public class NewSuspectScan implements Scan {
 		
         final OnmsNode node = m_provisionService.createUndiscoveredNode(addrString, m_foreignSource, m_location);
         if (node != null) {
-
+            if(node.getId() != null && node.getId() > 0) {
+                m_span.setTag(NODE_ID, node.getId());
+                m_span.setTag(LOCATION, m_location);
+            }
         	phase.getBuilder().addSequence(
-        			new NodeInfoScan(node, m_ipAddress, null, node.getLocation(), createScanProgress(), m_agentConfigFactory, m_provisionService, null),
-        			new IpInterfaceScan(node.getId(), m_ipAddress, null, node.getLocation(), m_provisionService),
-				new NodeScan(node.getId(), null, null, node.getLocation(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator),
+        			new NodeInfoScan(node, m_ipAddress, null, node.getLocation(), createScanProgress(), m_agentConfigFactory, m_provisionService, null, m_span),
+        			new IpInterfaceScan(node.getId(), m_ipAddress, m_foreignSource, node.getLocation(), m_provisionService, m_span),
+				new NodeScan(node.getId(), m_foreignSource, node.getForeignId(), node.getLocation(), m_provisionService, m_eventForwarder, m_agentConfigFactory, m_taskCoordinator, m_span),
 				new RunInBatch() {
 					@Override
 					public void run(BatchTask batch) {
 						LOG.info("Done scanning scan new suspect address {} for foreign source {}", addrString, m_foreignSource);
+                        DefaultProvisionService.setTag(m_span, FOREIGN_ID, node.getForeignId());
+                        DefaultProvisionService.setTag(m_span, FOREIGN_SOURCE, node.getForeignSource());
+                        m_span.finish();
 					}
 				});
         } else {
@@ -121,6 +137,9 @@ public class NewSuspectScan implements Scan {
             @Override
             public void abort(final String message) {
                 m_aborted = true;
+                m_span.setTag(ERROR, true);
+                m_span.setTag(ABORT, true);
+                m_span.log(message);
                 LOG.info(message);
             }
 

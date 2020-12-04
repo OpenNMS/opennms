@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,10 +53,10 @@ import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
-import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -145,7 +145,7 @@ public class MinionStatusTracker implements InitializingBean {
     }
 
     @EventHandler(uei=EventConstants.MONITORING_SYSTEM_ADDED_UEI)
-    public void onMonitoringSystemAdded(final Event e) {
+    public void onMonitoringSystemAdded(final IEvent e) {
         runInLoggingTransaction(() -> {
             final String id = e.getParm(EventConstants.PARAM_MONITORING_SYSTEM_ID).toString();
             LOG.debug("Monitoring system added: {}", id);
@@ -156,7 +156,7 @@ public class MinionStatusTracker implements InitializingBean {
     }
 
     @EventHandler(uei=EventConstants.MONITORING_SYSTEM_DELETED_UEI)
-    public void onMonitoringSystemDeleted(final Event e) {
+    public void onMonitoringSystemDeleted(final IEvent e) {
         runInLoggingTransaction(() -> {
             final String id = e.getParm(EventConstants.PARAM_MONITORING_SYSTEM_ID).toString();
             if (id != null) {
@@ -181,7 +181,7 @@ public class MinionStatusTracker implements InitializingBean {
     }
 
     @EventHandler(uei=EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
-    public void onNodeGainedService(final Event e) {
+    public void onNodeGainedService(final IEvent e) {
         if (!MINION_HEARTBEAT.equals(e.getService()) && !MINION_RPC.equals(e.getService())) {
             return;
         }
@@ -216,7 +216,7 @@ public class MinionStatusTracker implements InitializingBean {
     }
 
     @EventHandler(uei=EventConstants.NODE_DELETED_EVENT_UEI)
-    public void onNodeDeleted(final Event e) {
+    public void onNodeDeleted(final IEvent e) {
         runInLoggingTransaction(() -> {
             assertHasNodeId(e);
             final Integer nodeId = e.getNodeid().intValue();
@@ -235,11 +235,12 @@ public class MinionStatusTracker implements InitializingBean {
             OUTAGE_CREATED_EVENT_UEI,
             OUTAGE_RESOLVED_EVENT_UEI
     })
-    public void onOutageEvent(final Event e) {
+    public void onOutageEvent(final IEvent e) {
         final boolean isHeartbeat = MINION_HEARTBEAT.equals(e.getService());
         final boolean isRpc = MINION_RPC.equals(e.getService());
+        final boolean isPerspectiveNull = e.getParm("perspective") == null ? true : e.getParm("perspective").getValue() == null;
 
-        if (!isHeartbeat && !isRpc) {
+        if (!isHeartbeat && !isRpc || !isPerspectiveNull) {
             return;
         }
 
@@ -439,7 +440,7 @@ public class MinionStatusTracker implements InitializingBean {
         return minion;
     }
 
-    private void assertHasNodeId(final Event e) {
+    private void assertHasNodeId(final IEvent e) {
         if (e.getNodeid() == null || e.getNodeid() == 0) {
             final IllegalStateException ex = new IllegalStateException("Received a nodeGainedService event, but there is no node ID!");
             LOG.warn(ex.getMessage() + " {}", e, ex);

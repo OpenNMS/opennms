@@ -17,7 +17,9 @@ One or more reviewers should be assigned to each PR.
 
 If you know that a particular person is subject matter expert in the area your PR affects, feel free to assign one or more reviewers when you create this PR, otherwise reviewers will be assigned for you.
 
-Once the reviewer(s) accept the PR and the branch passes continuous integration in Bamboo, the PR is eligible for merge.
+If you have made additions or changes to the documentation, or if you _need_ documentation for these code changes, please make sure a technical writer has looked it over.
+
+Once the reviewer(s) accept the PR and the branch passes continuous integration, the PR is eligible for merge.
 
 At that time, if you have commit access (are an OpenNMS Group employee or a member of the Order of the Green Polo) you are welcome to merge the PR.
 Otherwise, a reviewer can merge it for you.
@@ -27,5 +29,4 @@ Thanks for taking time to contribute!
 ### External References
 
 * JIRA (Issue Tracker): http://issues.opennms.org/browse/${JIRA-ISSUE-NUMBER}
-* Bamboo (Continuous Integration): https://bamboo.opennms.org/
 

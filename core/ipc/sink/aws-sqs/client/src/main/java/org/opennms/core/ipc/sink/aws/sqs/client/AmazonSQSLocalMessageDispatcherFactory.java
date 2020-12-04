@@ -39,6 +39,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codahale.metrics.MetricRegistry;
+
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 
@@ -52,6 +54,8 @@ public class AmazonSQSLocalMessageDispatcherFactory extends AbstractMessageDispa
     /** The message consumer manager. */
     @Autowired
     private AmazonSQSMessageConsumerManager messageConsumerManager;
+
+    private MetricRegistry metrics;
 
     /* (non-Javadoc)
      * @see org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory#dispatch(org.opennms.core.ipc.sink.api.SinkModule, java.lang.Object, org.opennms.core.ipc.sink.api.Message)
@@ -88,4 +92,12 @@ public class AmazonSQSLocalMessageDispatcherFactory extends AbstractMessageDispa
         return GlobalTracer.get();
     }
 
+    @Override
+    public MetricRegistry getMetrics() {
+        return new MetricRegistry();
+    }
+
+    public void setMetrics(MetricRegistry metrics) {
+        this.metrics = metrics;
+    }
 }

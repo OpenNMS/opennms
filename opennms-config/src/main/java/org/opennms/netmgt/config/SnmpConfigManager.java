@@ -159,7 +159,6 @@ public class SnmpConfigManager {
 	 * @return true when definition is removed else false.
 	 */
 	public boolean removeDefinition(final Definition definition) {
-		removeDefaults(definition);
 		MergeableDefinition removableDefinition = new MergeableDefinition(definition);
 
 		removeDefinitionsthatDontMatchLocation(definition);

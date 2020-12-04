@@ -36,12 +36,8 @@ import java.io.InputStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
-import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.config.collectd.Package;
-import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.OpenNMSConfigurationExecutionListener;
 import org.springframework.test.context.TestExecutionListeners;
@@ -53,21 +49,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 })
 @JUnitConfigurationEnvironment
 public class CollectdConfigFactoryIT {
-
     private CollectdConfigFactory m_factory;
 
     @Before
     public void setUp() throws Exception {
-
-        MockNetwork network = new MockNetwork();
-
-        MockDatabase db = new MockDatabase();
-        db.populate(network);
-
-        DataSourceFactory.setInstance(db);
-        
-        FilterDaoFactory.getInstance();
-
         try (InputStream in = ConfigurationTestUtils.getInputStreamForResource(this, "collectd-testdata.xml")) {
             m_factory = new CollectdConfigFactory(in);
         }

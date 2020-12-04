@@ -1,0 +1,119 @@
+
+=== Run with Docker
+
+Modern infrastructure allows you to deploy and run workloads in containers.
+_{opennms-product-name}_ provides and publishes container images on link:https://hub.docker.com/u/opennms[DockerHub].
+
+NOTE: We don't install all available plugins in our published Docker image.
+      If you want to customize and maintain your own image, you can find the _Dockerfiles_ in our link:https://github.com/OpenNMS/opennms/tree/develop/opennms-container[source repository].
+
+==== Objectives
+
+* Run _{opennms-product-name}_ using _Docker Compose_ with a basic setup and _PostgreSQL_ on your local system as a quickstart
+* Persist RRD files from _{opennms-product-name}_ and _PostgreSQL_ in a volume
+* Introduce a reference with all available configuration and mount conventions for more advanced setups
+
+==== Before you begin
+
+You must have at least the following components installed:
+
+* Current stable _Docker_ release installed, e.g., installed from link:https://docs.docker.com/[Docker Documentation]
+* Current stable _Docker Compose_ installed, e.g., installed from link:https://docs.docker.com/compose/install/[Docker Compose instructions]
+You should have a basic knowledge of _Docker_, _Docker Compose_ with networking, persisting files and mounting directories
+
+==== Quickstart service stack
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+===== Step 1: Create service stack for PostgreSQL and _{opennms-product-name}_
+
+The first section describes how to set up _{opennms-product-name}_ service stack in a `docker-compose.yml` file.
+Create a project directory with `mkdir opennms-horizon` and create a `docker-compose.yml` file in that directory with the following content:
+
+[source]
+[subs="verbatim,attributes"]
+----
+---
+version: '3'
+
+volumes:
+  data-postgres: {}<1>
+  data-opennms: {}<2>
+
+services:
+  database:<3>
+    image: postgres:12<4>
+    container_name: database<5>
+    environment:<6>
+      - TZ=Europe/Berlin
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:<7>
+      - data-postgres:/var/lib/postgresql/data
+    healthcheck:<8>
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 30s
+      retries: 3
+
+  horizon:
+    image: opennms/horizon:{opennms-version}<9>
+    container_name: horizon
+    environment:<10>
+      - TZ=Europe/Berlin
+      - POSTGRES_HOST=database
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - OPENNMS_DBNAME=opennms
+      - OPENNMS_DBUSER=opennms
+      - OPENNMS_DBPASS=opennms
+    volumes:
+      - data-opennms:/opt/opennms/share/rrd<11>
+      - ./overlay:/opt/opennms-overlay<12>
+    command: ["-s"]
+    ports:<13>
+      - "8980:8980/tcp"
+      - "8101:8101/tcp"
+      - "61616:61616/tcp"
+    healthcheck:<14>
+      test: [ "CMD", "curl", "-f", "-I", "http://localhost:8980/opennms/login.jsp" ]
+      interval: 1m
+      timeout: 5s
+      retries: 3
+----
+<1> Volume definition to persist  the _PostgreSQL_ database permanently 
+<2> Volume definition to persist the _RRD_ files from _{opennms-product-name}_ permanently 
+<3> Service name `database` for the _PostgreSQL_ instance
+<4> Image reference for the vanilla _PostgreSQL_ Docker image with a fixed version
+<5> Friendly container name
+<6> Environment variables to initialize a postgres user with a password
+<7> Assign volume to persist the _PostgreSQL_ database
+<8> Create a health check for the _PostgreSQL_ database
+<9> Image reference for the _{opennms-product-name}_ container image using the latest stable version
+<10> Set up a database connection using the `postgres` root user and initialize an `opennms` database with user and credentials
+<11> Assign the volume to persist the _RRD_ files permanently
+<12> Mount the configuration files to make them accessible in a local directory
+<13> Publish ports for the web user interface, _Karaf Shell_ and _ActiveMQ_
+<14> Create a health check against the login page from _{opennms-product-name}_
+
+===== Step 2: Start the service stack
+
+[source,shell]
+----
+cd opennms-horizon
+docker-compose up -d
+----
+
+NOTE: The startup and download can take a while; you can use the `docker-compose ps` command and wait until the health check for the `horizon` service is `up (healthy)`.
+      
+===== Step 3: Log in to the Web UI
+
+After download and startup, verify that you can access the web user interface by going to http://localhost:8980.
+The default login is `admin` with password `admin`.
+
+IMPORTANT: Please immediately change your admin account and set a strong password.
+
+// Enable section numbers
+:sectnums:

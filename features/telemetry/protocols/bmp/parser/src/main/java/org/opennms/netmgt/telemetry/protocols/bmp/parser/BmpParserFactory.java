@@ -28,22 +28,39 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.parser;
 
+import java.time.Duration;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.api.ParserDefinition;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
+
+import io.github.resilience4j.bulkhead.Bulkhead;
+import io.github.resilience4j.bulkhead.BulkheadConfig;
 
 public class BmpParserFactory implements ParserFactory {
+    public static final String MAX_CONCURRENT_CALLS_KEY = "bulkhead.maxConcurrentCalls";
+    public static final long DEFAULT_MAX_CONCURRENT_CALLS = 1000;
+
+    public static final String MAX_WAIT_DURATION_MS_KEY = "bulkhead.maxWaitDurationMs";
+    public static final long DEFAULT_MAX_WAIT_DURATION_MS = TimeUnit.MINUTES.toMillis(5);
+
     private final TelemetryRegistry telemetryRegistry;
 
-    public BmpParserFactory(final TelemetryRegistry telemetryRegistry) {
+    private final DnsResolver dnsResolver;
+
+    public BmpParserFactory(final TelemetryRegistry telemetryRegistry,
+                            final DnsResolver dnsResolver) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
+        this.dnsResolver = Objects.requireNonNull(dnsResolver);
     }
 
     @Override
@@ -53,10 +70,31 @@ public class BmpParserFactory implements ParserFactory {
 
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
-        final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        final BmpParser parser = new BmpParser(parserDefinition.getName(), dispatcher, telemetryRegistry.getMetricRegistry());
-        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(parser);
-        wrapper.setPropertyValues(parserDefinition.getParameterMap());
-        return parser;
+        final AsyncDispatcher<TelemetryMessage> dispatcher = this.telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
+        final Bulkhead bulkhead = createBulkhead(parserDefinition);
+
+        return new BmpParser(parserDefinition.getName(),
+                             dispatcher,
+                             this.dnsResolver,
+                             bulkhead,
+                             this.telemetryRegistry.getMetricRegistry());
+    }
+
+    private static Bulkhead createBulkhead(ParserDefinition parserDefinition) {
+        // Build the bulkhead configuration from the parameter map
+        final Map<String, String> parameters = parserDefinition.getParameterMap();
+        final long maxConcurrentCalls = Optional.ofNullable(parameters.remove(MAX_CONCURRENT_CALLS_KEY))
+                                                .map(Long::parseLong)
+                                                .orElse(DEFAULT_MAX_CONCURRENT_CALLS);
+        final long maxWaitDurationMs = Optional.ofNullable(parameters.remove(MAX_WAIT_DURATION_MS_KEY))
+                                                .map(Long::parseLong)
+                                                .orElse(DEFAULT_MAX_WAIT_DURATION_MS);
+
+        final BulkheadConfig bulkheadConfig = BulkheadConfig.custom()
+                .maxConcurrentCalls((int) maxConcurrentCalls)
+                .maxWaitDuration(Duration.ofMillis(maxWaitDurationMs))
+                .build();
+
+        return Bulkhead.of("BmpParser-" + parserDefinition.getName(), bulkheadConfig);
     }
 }

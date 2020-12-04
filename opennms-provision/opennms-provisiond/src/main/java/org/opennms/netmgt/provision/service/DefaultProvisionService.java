@@ -67,6 +67,7 @@ import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
@@ -112,6 +113,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.google.common.base.Strings;
+
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 
 /**
  * DefaultProvisionService
@@ -197,6 +203,8 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     @Autowired
     private SnmpProfileMapper m_snmpProfileMapper;
+
+    private Tracer m_tracer;
 
     private final ThreadLocal<Map<String, OnmsServiceType>> m_typeCache = new ThreadLocal<Map<String, OnmsServiceType>>();
     private final ThreadLocal<Map<String, OnmsCategory>> m_categoryCache = new ThreadLocal<Map<String, OnmsCategory>>();
@@ -441,6 +449,12 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
                 dbIface.updateSnmpInterface(scannedIface);
                 dbIface.mergeInterfaceAttributes(scannedIface);
+
+                // handle metadata that was added using policies
+                for(final OnmsMetaData onmsMetaData : scannedIface.getRequisitionedMetaData()) {
+                    dbIface.addMetaData(onmsMetaData.getContext(), onmsMetaData.getKey(), onmsMetaData.getValue());
+                }
+
                 LOG.info("Updating IpInterface {}", dbIface);
                 m_ipInterfaceDao.update(dbIface);
                 m_ipInterfaceDao.flush();
@@ -1042,6 +1056,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
                 final boolean changed = handleCategoryChanges(dbNode);
 
+                // handle metadata that was added using policies
+                for (final OnmsMetaData onmsMetaData : node.getRequisitionedMetaData()) {
+                    dbNode.addMetaData(onmsMetaData.getContext(), onmsMetaData.getKey(), onmsMetaData.getValue());
+                }
+
                 dbNode.mergeNodeAttributes(node, accumulator);
                 node.getAssetRecord().setId(dbNode.getAssetRecord().getId());
                 node.setId(dbNode.getId());
@@ -1422,6 +1441,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
 
     @Override
+    public void setTracer(Tracer tracer) {
+        m_tracer = tracer;
+    }
+    
+    @Override
     public LocationAwareDnsLookupClient getLocationAwareDnsLookupClient() {
         return m_locationAwareDnsLookuClient;
     }
@@ -1452,5 +1476,23 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     public void setEventForwarder(final EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
+    }
+
+    public Span buildAndStartSpan(String name, SpanContext spanContext) {
+        if(m_tracer == null) {
+            m_tracer = GlobalTracer.get();
+        }
+        if (spanContext == null) {
+            return m_tracer.buildSpan("Provisiond-" + name).start();
+        } else {
+            return m_tracer.buildSpan("Provisiond-" + name).asChildOf(spanContext).start();
+        }
+    }
+
+    public static void setTag(Span span, String name, String value) {
+        if ((!Strings.isNullOrEmpty(name)) && (!Strings.isNullOrEmpty(value))) {
+            span.setTag(name, value);
+        }
+
     }
 }

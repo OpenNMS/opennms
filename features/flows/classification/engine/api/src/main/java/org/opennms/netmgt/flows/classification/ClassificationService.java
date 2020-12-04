@@ -69,4 +69,8 @@ public interface ClassificationService {
     String exportRules(int groupId);
 
     String classify(ClassificationRequest classificationRequest);
+
+    List<Rule> getInvalidRules();
+
+    void validateRule(Rule validateMe);
 }

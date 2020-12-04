@@ -32,6 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
@@ -39,7 +40,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import org.joda.time.Duration;
 import org.nustaq.serialization.FSTConfiguration;
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.InetAddressUtils;
@@ -68,7 +68,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     private static final Logger LOG = LoggerFactory.getLogger(AbstractThresholdEvaluatorState.class);
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
 
     private static final String UNKNOWN = "Unknown";
@@ -128,6 +128,8 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
     static abstract class AbstractState implements Serializable {
         String interpolatedExpression = null;
+        boolean cached = false;
+        ThresholdValues thresholdValues = null;
 
         Optional<String> getInterpolatedExpression() {
             return Optional.ofNullable(interpolatedExpression);
@@ -136,6 +138,23 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
         void setInterpolatedExpression(String expression) {
             interpolatedExpression = Objects.requireNonNull(expression);
         }
+
+        public void setCached(boolean cached) {
+            this.cached = cached;
+        }
+
+        public boolean isCached() {
+            return cached;
+        }
+
+        public ThresholdValues getThresholdValues() {
+            return thresholdValues;
+        }
+
+        public void setThresholdValues(ThresholdValues thresholdValues) {
+            this.thresholdValues = thresholdValues;
+        }
+
 
         @Override
         public String toString() {
@@ -234,7 +253,12 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     }
 
     @Override
-    public synchronized Status evaluate(double dsValue, Long sequenceNumber) {
+    public Status evaluate(double dsValue, Long sequenceNumber) {
+       return evaluate(dsValue, null, sequenceNumber);
+    }
+
+    @Override
+    public synchronized Status evaluate(double dsValue, ThresholdValues thresholdValues, Long sequenceNumber) {
         if (sequenceNumber != null) {
             // If a sequence number was provided, only fetch the state if this is the first sequence number we have seen
             // or if this was not the next sequence number (indicating someone else processed the last one)
@@ -247,7 +271,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
             fetchState();
         }
 
-        Status status = evaluateAfterFetch(dsValue);
+        Status status = evaluateAfterFetch(dsValue, thresholdValues);
         if (firstEvaluation) {
             firstEvaluation = false;
             // We don't bother advertising ourselves until the first time we perform an evaluation since we will have
@@ -261,23 +285,53 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
     }
 
     @Override
-    public ValueStatus evaluate(ExpressionThresholdValue valueSupplier, Long sequenceNumber)
+    public ValueStatus evaluate(ExpressionThresholdValueSupplier valueSupplier, Long sequenceNumber)
             throws ThresholdExpressionException {
-        double dsValue = getValueForExpressionThreshold(valueSupplier);
-        Status status = evaluate(dsValue, sequenceNumber);
+        ExpressionConfigWrapper.ExpressionThresholdValues expressionThresholdValues = getValueForExpressionThreshold(valueSupplier);
+        Status status = evaluate(expressionThresholdValues.value, expressionThresholdValues.getThresholdValues(), sequenceNumber);
 
-        return new ValueStatus(dsValue, status);
+        return new ValueStatus(expressionThresholdValues.value, status, expressionThresholdValues.getThresholdValues());
     }
 
-    private double getValueForExpressionThreshold(ExpressionThresholdValue valueSupplier)
+    @Override
+    public ValueStatus evaluate(ThresholdValuesSupplier thresholdValuesSupplier, Long sequenceNumber)
             throws ThresholdExpressionException {
-        if (!state.getInterpolatedExpression().isPresent()) {
+        ThresholdValues thresholdValues = getThresholdValues(thresholdValuesSupplier);
+        Status status = evaluate(thresholdValues.getDsValue(), thresholdValues, sequenceNumber);
+        return new ValueStatus(thresholdValues.getDsValue(), status, thresholdValues);
+    }
+
+    private ThresholdValues getThresholdValues(ThresholdValuesSupplier thresholdValuesSupplier) {
+
+        if (!state.isCached()) {
+            ThresholdValues thresholdValues = thresholdValuesSupplier.get();
+            state.setThresholdValues(thresholdValues);
+            state.setCached(true);
+            return thresholdValues;
+        } else {
+            Double dsvalue = thresholdValuesSupplier.getDsValue();
+            ThresholdValues thresholdValues = state.getThresholdValues();
+            thresholdValues.setDsValue(dsvalue);
+            return thresholdValues;
+        }
+    }
+
+    private ExpressionConfigWrapper.ExpressionThresholdValues getValueForExpressionThreshold(ExpressionThresholdValueSupplier valueSupplier)
+            throws ThresholdExpressionException {
+        if (!state.isCached()) {
             LOG.debug("Interpolating the expression for state {} for the first time", state);
-            return valueSupplier.get(expr -> state.setInterpolatedExpression(expr));
+            ExpressionConfigWrapper.ExpressionThresholdValues expressionThresholdValues = valueSupplier.get();
+            state.setInterpolatedExpression(expressionThresholdValues.expression);
+            state.setThresholdValues(expressionThresholdValues.getThresholdValues());
+            state.setCached(true);
+            return expressionThresholdValues;
         } else {
             String interpolatedExpression = state.getInterpolatedExpression().get();
-            LOG.debug("Using already interpolated expression {}", interpolatedExpression);
-            return valueSupplier.get(interpolatedExpression);
+            LOG.debug("Using already cached expression {}", interpolatedExpression);
+            ExpressionConfigWrapper.ExpressionThresholdValues expressionThresholdValues =
+                    new ExpressionConfigWrapper.ExpressionThresholdValues(interpolatedExpression, valueSupplier.get(interpolatedExpression));
+            expressionThresholdValues.setThresholdValues(state.getThresholdValues());
+            return expressionThresholdValues;
         }
     }
 
@@ -295,7 +349,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
     protected abstract void clearStateBeforePersist();
 
-    protected abstract Status evaluateAfterFetch(double dsValue);
+    protected abstract Status evaluateAfterFetch(double dsValue, ThresholdValues thresholdValues);
 
     /**
      * <p>createBasicEvent</p>
@@ -351,7 +405,7 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
         // Add datasource name
         bldr.addParam("ds", getThresholdConfig().getDatasourceExpression());
 
-        // Add threshold description using the interpolated expression if available
+        // Add threshold description using the cached expression if available
         final String descr = getThresholdConfig()
                 .getBasethresholddef()
                 .getDescription()

@@ -38,7 +38,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
 
-@Command(scope = "opennms-kv-blob", name = "get", description = "Get a record from the blob store decoded as a string")
+@Command(scope = "opennms", name = "kv-get-blob", description = "Get a record from the blob store decoded as a string")
 @Service
 public class BlobStoreGet implements Action {
     @Reference

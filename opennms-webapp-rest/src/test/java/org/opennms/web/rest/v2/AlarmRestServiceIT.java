@@ -158,6 +158,8 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         createAlarm(node3, "uei.opennms.org/test/somethingIsStillOk", OnmsSeverity.NORMAL, 20);
 
+        createAlarm(node3, "uei.opennms.org/test/something,WithAnComma", OnmsSeverity.MAJOR, 30);
+
         createSituation(node1, "uei.opennms.org/test/situation", OnmsSeverity.WARNING, 20, 
                         getReductionKey("uei.opennms.org/test/somethingIsStillHappening", node2, NODE_2_IP, ICMP_SERVICE),
                         getReductionKey("uei.opennms.org/test/somethingWentWrong", node2, NODE_2_IP, ICMP_SERVICE));
@@ -172,7 +174,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testAlarms() throws Exception {
         String url = "/alarms";
 
-        executeQueryAndVerify("limit=0", 9);
+        executeQueryAndVerify("limit=0", 10);
 
         executeQueryAndVerify("limit=0&_s=alarm.severity==NORMAL", 4);
 
@@ -180,7 +182,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         sendRequest(GET, url, parseParamData("limit=0&_s=alarm.severity==CRITICAL"), 204);
 
-        executeQueryAndVerify("limit=0&_s=alarm.severity=gt=NORMAL", 5);
+        executeQueryAndVerify("limit=0&_s=alarm.severity=gt=NORMAL", 6);
 
         executeQueryAndVerify("limit=0&_s=alarm.severity=gt=NORMAL;node.label==server01", 3);
     }
@@ -197,35 +199,35 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         int categoryId;
         categoryId = m_databasePopulator.getCategoryDao().findByName("Linux").getId();
         executeQueryAndVerify("_s=category.id==" + categoryId, 4);
-        executeQueryAndVerify("_s=category.id!=" + categoryId, 5);
+        executeQueryAndVerify("_s=category.id!=" + categoryId, 6);
 
         categoryId = m_databasePopulator.getCategoryDao().findByName("LinuxServers").getId();
         executeQueryAndVerify("_s=category.id==" + categoryId, 4);
-        executeQueryAndVerify("_s=category.id!=" + categoryId, 5);
+        executeQueryAndVerify("_s=category.id!=" + categoryId, 6);
 
         categoryId = m_databasePopulator.getCategoryDao().findByName("macOS").getId();
         executeQueryAndVerify("_s=category.id==" + categoryId, 4);
-        executeQueryAndVerify("_s=category.id!=" + categoryId, 5);
+        executeQueryAndVerify("_s=category.id!=" + categoryId, 6);
 
         // Category that doesn't exist
         categoryId = Integer.MAX_VALUE;
         executeQueryAndVerify("_s=category.id==" + categoryId, 0);
-        executeQueryAndVerify("_s=category.id!=" + categoryId, 9);
+        executeQueryAndVerify("_s=category.id!=" + categoryId, 10);
 
         executeQueryAndVerify("_s=category.name==Linux", 4);
-        executeQueryAndVerify("_s=category.name!=Linux", 5);
+        executeQueryAndVerify("_s=category.name!=Linux", 6);
         executeQueryAndVerify("_s=category.name==LinuxServers", 4);
-        executeQueryAndVerify("_s=category.name!=LinuxServers", 5);
+        executeQueryAndVerify("_s=category.name!=LinuxServers", 6);
         executeQueryAndVerify("_s=category.name==Linux*", 4);
-        executeQueryAndVerify("_s=category.name!=Linux*", 5);
+        executeQueryAndVerify("_s=category.name!=Linux*", 6);
         executeQueryAndVerify("_s=category.name==macOS", 4);
-        executeQueryAndVerify("_s=category.name!=macOS", 5);
+        executeQueryAndVerify("_s=category.name!=macOS", 6);
         executeQueryAndVerify("_s=category.name==mac*", 4);
-        executeQueryAndVerify("_s=category.name!=mac*", 5);
+        executeQueryAndVerify("_s=category.name!=mac*", 6);
         executeQueryAndVerify("_s=category.name==ma*S", 4);
-        executeQueryAndVerify("_s=category.name!=ma*S", 5);
+        executeQueryAndVerify("_s=category.name!=ma*S", 6);
         executeQueryAndVerify("_s=category.name==DoesntExist", 0);
-        executeQueryAndVerify("_s=category.name!=DoesntExist", 9);
+        executeQueryAndVerify("_s=category.name!=DoesntExist", 10);
     }
 
     /**
@@ -238,71 +240,71 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testEventParameterFiltering() throws Exception {
         executeQueryAndVerify("_s=eventParameter.name==testParm1", 5);
-        executeQueryAndVerify("_s=eventParameter.name!=testParm1", 4);
+        executeQueryAndVerify("_s=eventParameter.name!=testParm1", 5);
 
-        executeQueryAndVerify("_s=eventParameter.name==testParm2", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm2", 5);
         executeQueryAndVerify("_s=eventParameter.name!=testParm2", 5);
 
         executeQueryAndVerify("_s=eventParameter.name==doesntExist", 0);
-        executeQueryAndVerify("_s=eventParameter.name!=doesntExist", 9);
+        executeQueryAndVerify("_s=eventParameter.name!=doesntExist", 10);
 
         executeQueryAndVerify("_s=eventParameter.value==This is an awesome parm%21", 5);
-        executeQueryAndVerify("_s=eventParameter.value!=This is an awesome parm%21", 4);
-        executeQueryAndVerify("_s=eventParameter.value!=This is an awesome parm%21;eventParameter.value==This is a weird parm", 4);
+        executeQueryAndVerify("_s=eventParameter.value!=This is an awesome parm%21", 5);
+        executeQueryAndVerify("_s=eventParameter.value!=This is an awesome parm%21;eventParameter.value==This is a weird parm", 5);
 
-        executeQueryAndVerify("_s=eventParameter.value==This is a weird parm", 4);
+        executeQueryAndVerify("_s=eventParameter.value==This is a weird parm", 5);
         executeQueryAndVerify("_s=eventParameter.value!=This is a weird parm", 5);
         executeQueryAndVerify("_s=eventParameter.value!=This is a weird parm;eventParameter.value==This is an awesome parm%21", 5);
 
         executeQueryAndVerify("_s=eventParameter.value!=This is an awesome parm%21;eventParameter.value!=This is a weird parm", 0);
 
         executeQueryAndVerify("_s=eventParameter.value==doesntExist", 0);
-        executeQueryAndVerify("_s=eventParameter.value!=doesntExist", 9);
+        executeQueryAndVerify("_s=eventParameter.value!=doesntExist", 10);
 
         // This doesn't work because eventParameter.type is a non-unique field
         //executeQueryAndVerify("_s=eventParameter.type==string", 8);
         executeQueryAndVerify("_s=eventParameter.type!=string", 0);
 
         executeQueryAndVerify("_s=eventParameter.type==doesntExist", 0);
-        executeQueryAndVerify("_s=eventParameter.type!=doesntExist", 9);
+        executeQueryAndVerify("_s=eventParameter.type!=doesntExist", 10);
 
         // Query with every property of eventParameter
         executeQueryAndVerify("_s=eventParameter.name==testParm1;eventParameter.value==This is an awesome parm%21;eventParameter.type==string", 5);
-        executeQueryAndVerify("_s=eventParameter.name==testParm2;eventParameter.value==This is a weird parm;eventParameter.type==string", 4);
-        executeQueryAndVerify("_s=eventParameter.name==testParm3;eventParameter.value==Here's another parm;eventParameter.type==string", 9);
+        executeQueryAndVerify("_s=eventParameter.name==testParm2;eventParameter.value==This is a weird parm;eventParameter.type==string", 5);
+        executeQueryAndVerify("_s=eventParameter.name==testParm3;eventParameter.value==Here's another parm;eventParameter.type==string", 10);
 
         executeQueryAndVerify("_s=eventParameter.name==testParm1;eventParameter.value==This is an awesome parm%21", 5);
         executeQueryAndVerify("_s=eventParameter.name==testParm1;eventParameter.value==This is a weird parm", 0);
         executeQueryAndVerify("_s=eventParameter.name==testParm1;eventParameter.value==Here's another parm", 0);
 
         executeQueryAndVerify("_s=eventParameter.name==testParm2;eventParameter.value==This is an awesome parm%21", 0);
-        executeQueryAndVerify("_s=eventParameter.name==testParm2;eventParameter.value==This is a weird parm", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm2;eventParameter.value==This is a weird parm", 5);
         executeQueryAndVerify("_s=eventParameter.name==testParm2;eventParameter.value==Here's another parm", 0);
 
         executeQueryAndVerify("_s=eventParameter.name==testParm3;eventParameter.value==This is an awesome parm%21", 0);
         executeQueryAndVerify("_s=eventParameter.name==testParm3;eventParameter.value==This is a weird parm", 0);
-        executeQueryAndVerify("_s=eventParameter.name==testParm3;eventParameter.value==Here's another parm", 9);
+        executeQueryAndVerify("_s=eventParameter.name==testParm3;eventParameter.value==Here's another parm", 10);
 
         executeQueryAndVerify("_s=eventParameter.type==string;eventParameter.value==This is an awesome parm%21", 5);
-        executeQueryAndVerify("_s=eventParameter.type==string;eventParameter.value==This is a weird parm", 4);
-        executeQueryAndVerify("_s=eventParameter.type==string;eventParameter.value==Here's another parm", 9);
+        executeQueryAndVerify("_s=eventParameter.type==string;eventParameter.value==This is a weird parm", 5);
+        executeQueryAndVerify("_s=eventParameter.type==string;eventParameter.value==Here's another parm", 10);
 
-        executeQueryAndVerify("_s=eventParameter.name==testParm*", 9);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*", 10);
 
         executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==*awesome*", 5);
         // Negative filter eliminates half of the results
-        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value!=*awesome*", 4);
-        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==*weird*", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value!=*awesome*", 5);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==*weird*", 5);
         // Negative filter eliminates half of the results
         executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value!=*weird*", 5);
-        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==*another*", 9);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==*another*", 10);
         // All events have testParm3 so the negative filter will eliminate all results
         executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value!=*another*", 0);
 
         // Wildcard value paired with specific non-unique value
         executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==This is an awesome parm%21", 5);
-        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==This is a weird parm", 4);
-        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==Here's another parm", 9);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==This is a weird parm", 5);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==Here's another parm", 10);
 
 
         executeQueryAndVerify("_s=eventParameter.type==*ring*;eventParameter.value==*awesome*", 5);
@@ -318,17 +320,17 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // A workaround is to use a wildcard value instead so that the query doesn't use the alias
         executeQueryAndVerify("_s=eventParameter.type==string*;eventParameter.value!=*weird*", 5);
-        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.type==string*", 9);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.type==string*", 10);
 
         // Many parenthetical queries will work
-        executeQueryAndVerify("_s=(eventParameter.name==testParm2*),(eventParameter.name==testParm1*)", 9);
-        executeQueryAndVerify("_s=(eventParameter.name==testParm2*),(eventParameter.value!=*awesome*)", 4);
-        executeQueryAndVerify("_s=(eventParameter.name==testParm1),(eventParameter.value==*weird*)", 9);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm2*),(eventParameter.name==testParm1*)", 10);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm2*),(eventParameter.value!=*awesome*)", 5);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm1),(eventParameter.value==*weird*)", 10);
         executeQueryAndVerify("_s=(eventParameter.name==testParm1),(eventParameter.value!=*weird*)", 5);
-        executeQueryAndVerify("_s=(eventParameter.name==testParm2),(eventParameter.value==*weird*)", 4);
-        executeQueryAndVerify("_s=(eventParameter.name==testParm2),(eventParameter.value!=*weird*)", 9);
-        executeQueryAndVerify("_s=(eventParameter.name==testParm3),(eventParameter.value==*weird*)", 9);
-        executeQueryAndVerify("_s=(eventParameter.name==testParm3),(eventParameter.value!=*weird*)", 9);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm2),(eventParameter.value==*weird*)", 5);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm2),(eventParameter.value!=*weird*)", 10);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm3),(eventParameter.value==*weird*)", 10);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm3),(eventParameter.value!=*weird*)", 10);
 
         // Doesn't work because join conditions for each search property combine spuriously with each other
         // across the FIQL OR restriction (',')
@@ -336,9 +338,9 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         //executeQueryAndVerify("_s=(eventParameter.name==testParm1),(eventParameter.name==testParm3)", 8);
 
         // Workaround by using wildcards for the values
-        executeQueryAndVerify("_s=(eventParameter.name==testParm1*),(eventParameter.name==testParm2*)", 9);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm1*),(eventParameter.name==testParm2*)", 10);
         executeQueryAndVerify("_s=(eventParameter.name==testParm1*);(eventParameter.name==testParm2*)", 0);
-        executeQueryAndVerify("_s=(eventParameter.name==testParm1*),(eventParameter.name==testParm3*)", 9);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm1*),(eventParameter.name==testParm3*)", 10);
         executeQueryAndVerify("_s=(eventParameter.name==testParm1*);(eventParameter.name==testParm3*)", 5);
     }
 
@@ -347,9 +349,9 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=uei==*somethingWentWrong", 2);
         executeQueryAndVerify("_s=uei==*somethingWentWrong;category.name==Linux", 1);
 
-        executeQueryAndVerify("_s=uei==*something*", 8);
+        executeQueryAndVerify("_s=uei==*something*", 9);
         executeQueryAndVerify("_s=uei==*somethingIs*", 6);
-        executeQueryAndVerify("_s=uei!=*somethingIs*", 3);
+        executeQueryAndVerify("_s=uei!=*somethingIs*", 4);
 
         // Verify IP address queries including iplike queries
         executeQueryAndVerify("_s=ipAddr==192.168.1.1", 4);
@@ -357,7 +359,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=ipAddr==192.*.*.2", 4);
         executeQueryAndVerify("_s=ipAddr==192.168.1.1-2", 8);
         executeQueryAndVerify("_s=ipAddr==127.0.0.1", 0);
-        executeQueryAndVerify("_s=ipAddr!=127.0.0.1", 9);
+        executeQueryAndVerify("_s=ipAddr!=127.0.0.1", 10);
     }
 
     /**
@@ -370,9 +372,9 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=alarm.uei==*somethingWentWrong", 2);
         executeQueryAndVerify("_s=alarm.uei==*somethingWentWrong;category.name==Linux", 1);
 
-        executeQueryAndVerify("_s=alarm.uei==*something*", 8);
+        executeQueryAndVerify("_s=alarm.uei==*something*", 9);
         executeQueryAndVerify("_s=alarm.uei==*somethingIs*", 6);
-        executeQueryAndVerify("_s=alarm.uei!=*somethingIs*", 3);
+        executeQueryAndVerify("_s=alarm.uei!=*somethingIs*", 4);
 
         // Verify IP address queries including iplike queries
         executeQueryAndVerify("_s=alarm.ipAddr==192.168.1.1", 4);
@@ -380,7 +382,18 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=alarm.ipAddr==192.*.*.2", 4);
         executeQueryAndVerify("_s=alarm.ipAddr==192.168.1.1-2", 8);
         executeQueryAndVerify("_s=alarm.ipAddr==127.0.0.1", 0);
-        executeQueryAndVerify("_s=alarm.ipAddr!=127.0.0.1", 9);
+        executeQueryAndVerify("_s=alarm.ipAddr!=127.0.0.1", 10);
+    }
+
+    @Test
+    public void testRequestFiqlReservedCharacters() throws Exception {
+        sendRequest(GET, "/alarms", parseParamData("_s=alarm.reductionKey==*something%2CWithAnComma*"), 500); // this comma is treated as the FIQL operator and is therefore Not Correct Syntax
+        sendRequest(GET, "/alarms", parseParamData("_s=alarm.reductionKey==*something%252CWithAnComma*"), 200); // this should be treated as a literal comma and return a good code
+    }
+
+    @Test
+    public void testQueryFiqlReservedCharacters() throws Exception {
+        executeQueryAndVerify("_s=alarm.reductionKey==*something%252CWithAnComma*", 1); // escapes and works
     }
 
     @Test
@@ -388,18 +401,18 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, "/alarms", parseParamData("_s=alarm.lastEventTime==1970-01-01T00:00:00.000+0000"), 500); // + turns to space
         sendRequest(GET, "/alarms", parseParamData("_s=alarm.lastEventTime==1970-01-01T00:00:00.000%2B0000"), 500); // %2B turns to space in the servlet handler
         executeQueryAndVerify("_s=alarm.lastEventTime==1970-01-01T00:00:00.000%252B0000", 0);
-        executeQueryAndVerify("_s=alarm.lastEventTime=ge=1970-01-01T00:00:00.000%252B0000", 9);
+        executeQueryAndVerify("_s=alarm.lastEventTime=ge=1970-01-01T00:00:00.000%252B0000", 10);
         executeQueryAndVerify("_s=alarm.lastEventTime=lt=1970-01-01T00:00:00.003%252B0000", 3);
-        executeQueryAndVerify("_s=node.label==*%C3%AA*", 1); // "ê" url-encoded
-        executeQueryAndVerify("_s=node.label==*ê*", 1);
+        executeQueryAndVerify("_s=node.label==*%C3%AA*", 2); // "ê" url-encoded
+        executeQueryAndVerify("_s=node.label==*ê*", 2);
         executeQueryAndVerify("_s=node.label==*%20*", 0); // this will turn to space in the servlet handler
         executeQueryAndVerify("_s=node.label==*%2520*", 0); // this will turn to space in CXF
-        executeQueryAndVerify("_s=node.label==*%252520*", 1); // the string "%20"
+        executeQueryAndVerify("_s=node.label==*%252520*", 2); // the string "%20"
         executeQueryAndVerify("_s=node.label==*+*", 0); // this will turn to space in the servlet handler
-        executeQueryAndVerify("_s=node.label==*%252B*", 1); // this will turn to +
-        executeQueryAndVerify("_s=node.label!=%00", 9); // null is url-encoded
+        executeQueryAndVerify("_s=node.label==*%252B*", 2); // this will turn to +
+        executeQueryAndVerify("_s=node.label!=%00", 10); // null is url-encoded
                                                         // as %00
-        executeQueryAndVerify("_s=id!=%00", 9); // null is url-encoded as %00
+        executeQueryAndVerify("_s=id!=%00", 10); // null is url-encoded as %00
     }
 
     /**
@@ -410,10 +423,10 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Test
     public void testServiceFiltering() throws Exception {
         // Verify service queries
-        executeQueryAndVerify("_s=serviceType.name==ICMP", 9);
+        executeQueryAndVerify("_s=serviceType.name==ICMP", 10);
         executeQueryAndVerify("_s=serviceType.name!=ICMP", 0);
         executeQueryAndVerify("_s=serviceType.name==SNMP", 0);
-        executeQueryAndVerify("_s=serviceType.name==*MP", 9);
+        executeQueryAndVerify("_s=serviceType.name==*MP", 10);
     }
 
     /**
@@ -426,7 +439,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=ipInterface.ipAddress==192.168.1.1", 4);
         executeQueryAndVerify("_s=ipInterface.ipAddress==192.168.1.2", 4);
         executeQueryAndVerify("_s=ipInterface.ipAddress==127.0.0.1", 0);
-        executeQueryAndVerify("_s=ipInterface.ipAddress!=127.0.0.1", 9);
+        executeQueryAndVerify("_s=ipInterface.ipAddress!=127.0.0.1", 10);
     }
 
     /**
@@ -440,11 +453,11 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=node.id==" + node2.getId(), 4);
 
         executeQueryAndVerify("_s=node.label==server01", 4);
-        executeQueryAndVerify("_s=node.label!=server01", 5);
+        executeQueryAndVerify("_s=node.label!=server01", 6);
         executeQueryAndVerify("_s=node.label==server02", 4);
-        executeQueryAndVerify("_s=node.label!=server02", 5);
+        executeQueryAndVerify("_s=node.label!=server02", 6);
         executeQueryAndVerify("_s=(node.label==server01,node.label==server02)", 8);
-        executeQueryAndVerify("_s=node.label!=\u0000", 9);
+        executeQueryAndVerify("_s=node.label!=\u0000", 10);
     }
 
     /**
@@ -464,7 +477,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
      */
     @Test
     public void testNetmaskFiltering() throws Exception {
-        executeQueryAndVerify("_s=ipInterface.netMask==255.255.255.0", 9);
+        executeQueryAndVerify("_s=ipInterface.netMask==255.255.255.0", 10);
         executeQueryAndVerify("_s=ipInterface.netMask==\u0000", 0);
         executeQueryAndVerify("_s=ipInterface.netMask!=255.255.255.0", 0);
         executeQueryAndVerify("_s=ipInterface.netMask==255.255.127.0", 0);
@@ -477,13 +490,13 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
      */
     @Test
     public void testSnmpFiltering() throws Exception {
-        executeQueryAndVerify("_s=snmpInterface.ifSpeed==10000000", 9);
+        executeQueryAndVerify("_s=snmpInterface.ifSpeed==10000000", 10);
         executeQueryAndVerify("_s=snmpInterface.ifSpeed==\u0000", 0);
-        executeQueryAndVerify("_s=snmpInterface.ifSpeed!=500", 9);
+        executeQueryAndVerify("_s=snmpInterface.ifSpeed!=500", 10);
         executeQueryAndVerify("_s=snmpInterface.ifSpeed==500", 0);
-        executeQueryAndVerify("_s=snmpInterface.ifName==eth0", 9);
+        executeQueryAndVerify("_s=snmpInterface.ifName==eth0", 10);
         executeQueryAndVerify("_s=snmpInterface.ifName==\u0000", 0);
-        executeQueryAndVerify("_s=snmpInterface.ifName!=eth1", 9);
+        executeQueryAndVerify("_s=snmpInterface.ifName!=eth1", 10);
         executeQueryAndVerify("_s=snmpInterface.ifName==eth1", 0);
     }
 
@@ -494,7 +507,7 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
      */
     @Test
     public void testLocationFiltering() throws Exception {
-        executeQueryAndVerify("_s=location.locationName==Default", 9);
+        executeQueryAndVerify("_s=location.locationName==Default", 10);
         executeQueryAndVerify("_s=location.locationName!=Default", 0);
     }
 
@@ -635,31 +648,31 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarmDao.saveOrUpdate(alarm);
         alarmDao.flush();
         executeQueryAndVerify("_s=isAcknowledged==true", 1);
-        executeQueryAndVerify("_s=isAcknowledged==false", 8);
+        executeQueryAndVerify("_s=isAcknowledged==false", 9);
     }
 
     @Test
     public void testIsSituation() throws Exception {
         executeQueryAndVerify("_s=isSituation==true", 1);
-        executeQueryAndVerify("_s=isSituation==false", 8);
+        executeQueryAndVerify("_s=isSituation==false", 9);
     }
 
     @Test
     public void testIsInSituation() throws Exception {
         executeQueryAndVerify("_s=isInSituation==true", 2);
-        executeQueryAndVerify("_s=isInSituation==false", 7);
+        executeQueryAndVerify("_s=isInSituation==false", 8);
     }
 
     @Test
     public void testAffectedNodeCount() throws Exception {
         executeQueryAndVerify("_s=alarm.affectedNodeCount==0", 0);
-        executeQueryAndVerify("_s=alarm.affectedNodeCount!=0", 9);
+        executeQueryAndVerify("_s=alarm.affectedNodeCount!=0", 10);
         executeQueryAndVerify("_s=alarm.affectedNodeCount==2", 1);
     }
 
     @Test
     public void testSituationAlarmCount() throws Exception {
-        executeQueryAndVerify("_s=alarm.situationAlarmCount==0", 8);
+        executeQueryAndVerify("_s=alarm.situationAlarmCount==0", 9);
         executeQueryAndVerify("_s=alarm.situationAlarmCount!=0", 1);
         executeQueryAndVerify("_s=alarm.situationAlarmCount==2", 1);
     }

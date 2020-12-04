@@ -74,11 +74,11 @@ public class GraphMLGraphProviderIT extends OpenNMSSeleniumIT {
 
     @Test
     public void canExposeGraphML() throws InterruptedException {
-        karafShell.runCommand("opennms-graph:list", output -> output.contains("4 registered Graph Container(s)"));
+        karafShell.runCommand("opennms:graph-list", output -> output.contains("4 registered Graph Container(s)"));
 
         importGraph();
 
-        karafShell.runCommand("opennms-graph:list -a", output -> output.contains("5 registered Graph Container(s)")
+        karafShell.runCommand("opennms:graph-list -a", output -> output.contains("5 registered Graph Container(s)")
                 && output.contains("6 registered Graph(s)")
                 && output.contains(LABEL));
     }

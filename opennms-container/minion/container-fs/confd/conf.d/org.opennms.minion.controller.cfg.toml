@@ -1,0 +1,10 @@
+[template]
+src = "org.opennms.minion.controller.cfg.tmpl"
+dest = "/opt/minion/etc/org.opennms.minion.controller.cfg"
+keys = [
+    "/location",
+    "/id",
+    "/broker-url",
+    "/http-url"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/org.opennms.minion.controller.cfg"

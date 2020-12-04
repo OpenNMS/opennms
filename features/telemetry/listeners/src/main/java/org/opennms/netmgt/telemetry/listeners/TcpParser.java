@@ -38,6 +38,9 @@ import io.netty.buffer.ByteBuf;
 
 public interface TcpParser extends Parser {
     interface Handler {
+        void inactive();
+        void active();
+
         Optional<CompletableFuture<?>> parse(final ByteBuf buffer) throws Exception;
     }
 

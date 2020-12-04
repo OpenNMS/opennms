@@ -31,12 +31,16 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.util.Objects;
+import java.util.Optional;
 
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Header;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.Packet;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerAccessor;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerHeader;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down.LocalBgpNotification;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down.LocalNoNotification;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down.Reason;
@@ -55,47 +59,47 @@ public class PeerDownPacket implements Packet {
     public final Type type;     // uint8
     public final Reason reason; // variable
 
-    public PeerDownPacket(final Header header, final ByteBuf buffer) throws InvalidPacketException {
+    public PeerDownPacket(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
         this.peerHeader = new PeerHeader(buffer);
 
         this.type = Type.from(uint8(buffer));
-        this.reason = this.type.parse(buffer, this.peerHeader.flags);
+        this.reason = this.type.parse(buffer, this.peerHeader.flags, peerAccessor.getPeerInfo(peerHeader));
     }
 
     public enum Type {
         LOCAL_BGP_NOTIFICATION {
             @Override
-            public Reason parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                return new LocalBgpNotification(buffer, flags);
+            public Reason parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+                return new LocalBgpNotification(buffer, flags, peerInfo);
             }
         },
         LOCAL_NO_NOTIFICATION {
             @Override
-            public Reason parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                return new LocalNoNotification(buffer, flags);
+            public Reason parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+                return new LocalNoNotification(buffer, flags, peerInfo);
             }
         },
         REMOTE_BGP_NOTIFICATION {
             @Override
-            public Reason parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                return new RemoteBgpNotification(buffer, flags);
+            public Reason parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+                return new RemoteBgpNotification(buffer, flags, peerInfo);
             }
         },
         REMOTE_NO_NOTIFICATION {
             @Override
-            public Reason parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                return new RemoteNoNotification(buffer, flags);
+            public Reason parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+                return new RemoteNoNotification(buffer, flags, peerInfo);
             }
         },
         UNKNOWN {
             @Override
-            public Reason parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
-                return new Unknown(buffer, flags);
+            public Reason parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
+                return new Unknown(buffer, flags, peerInfo);
             }
         };
 
-        public abstract Reason parse(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException;
+        public abstract Reason parse(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException;
 
         private static Type from(final int type) {
             switch (type) {
@@ -103,10 +107,9 @@ public class PeerDownPacket implements Packet {
                 case 2: return LOCAL_NO_NOTIFICATION;
                 case 3: return REMOTE_BGP_NOTIFICATION;
                 case 4: return REMOTE_NO_NOTIFICATION;
-                case 5: return UNKNOWN;
-
                 default:
-                    throw new IllegalArgumentException("Unknown statistic type");
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown Peer Down Type: {}", type);
+                    return UNKNOWN;
             }
         }
     }
@@ -114,6 +117,11 @@ public class PeerDownPacket implements Packet {
     @Override
     public void accept(final Visitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public <R> R map(final Mapper<R> mapper) {
+        return mapper.map(this);
     }
 
     @Override

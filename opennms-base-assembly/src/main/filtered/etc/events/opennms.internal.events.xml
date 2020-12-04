@@ -81,7 +81,7 @@
       <event-label>OpenNMS-defined internal event: rtc subscribe</event-label>
       <descr>&lt;p>This event is generated to RTC by any process that
             wishes to receive POSTs of RTC data.&lt;/p></descr>
-      <logmsg dest="logonly">
+      <logmsg dest="donotpersist">
             A subscription to RTC for the %parm[viewname]% for
             %parm[url]% has been generated.
         </logmsg>
@@ -93,7 +93,7 @@
       <descr>&lt;p>This event is generated to RTC by any subscribed
             process that wishes to discontinue receipt of POSTs of RTC
             data.&lt;/p></descr>
-      <logmsg dest="logonly">
+      <logmsg dest="donotpersist">
             Unsubscribe request received from %parm[url]%.
         </logmsg>
       <severity>Warning</severity>
@@ -250,6 +250,13 @@
       <event-label>OpenNMS-defined application event: applicationDeleted</event-label>
       <descr>&lt;p>Application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been deleted.&lt;/p></descr>
       <logmsg dest="logndisplay">Application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been deleted.</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/telemetry/illegalFlowDetected</uei>
+      <event-label>Illegal flow detected</event-label>
+      <descr>A flow was dropped due to the following reason: '%parm[cause]%'</descr>
+      <logmsg dest="logndisplay">A flow (protocol '%parm[protocol]%') from exporter '%interface%' in location '%parm[monitoringSystemLocation]%' was detected and dropped by '%parm[monitoringSystemId]%' due to the following reason: '%parm[cause]%'.</logmsg>
       <severity>Warning</severity>
    </event>
 </events>

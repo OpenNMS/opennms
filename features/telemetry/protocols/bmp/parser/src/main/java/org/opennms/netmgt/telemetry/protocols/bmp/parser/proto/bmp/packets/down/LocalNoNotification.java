@@ -30,8 +30,11 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.down
 
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
+import java.util.Optional;
+
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerInfo;
 
 import com.google.common.base.MoreObjects;
 
@@ -40,7 +43,7 @@ import io.netty.buffer.ByteBuf;
 public class LocalNoNotification implements Reason {
     public final int code; // uint16
 
-    public LocalNoNotification(final ByteBuf buffer, final PeerFlags flags) throws InvalidPacketException {
+    public LocalNoNotification(final ByteBuf buffer, final PeerFlags flags, final Optional<PeerInfo> peerInfo) throws InvalidPacketException {
         // See https://tools.ietf.org/html/rfc4271#section-8.1
         this.code = uint16(buffer);
     }

@@ -29,10 +29,9 @@
         <property name="brokerMaxConnections" value="[[broker-max-connections]]"/>
         <property name="brokerConcurrentConsumers" value="[[broker-concurrent-consumers]]"/>
         <property name="brokerIdleTimeout" value="[[broker-idle-timeout]]"/>
+        <property name="httpUrl" value="[[http-url]]"/>
     </bean>
     <service ref="controllerConfig" interface="org.opennms.distributed.core.api.ControllerConfig"/>
-
-    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
 
     <!-- A canonical source for this Minion's identity -->
     <bean id="minionIdentity" class="org.opennms.minion.core.impl.MinionIdentityImpl">
@@ -44,20 +43,5 @@
         <service-properties>
             <entry key="systemType" value="Minion"/>
         </service-properties>
-    </service>
-
-    <!-- REST Client used to communicate with the OpenNMS controller -->
-    <bean id="restClient" class="org.opennms.distributed.core.impl.ScvEnabledRestClientImpl">
-        <argument value="[[http-url]]"/>
-        <argument ref="secureCredentialsVault"/>
-        <argument value="opennms.http"/>
-    </bean>
-    <service ref="restClient" interface="org.opennms.distributed.core.api.RestClient"/>
-
-    <!-- ReST Health Check -->
-    <service interface="org.opennms.core.health.api.HealthCheck">
-        <bean class="org.opennms.distributed.core.impl.RestConnectionHealthCheck" >
-            <argument ref="restClient"/>
-        </bean>
     </service>
 </blueprint>

@@ -55,5 +55,5 @@ public interface GraphProvider {
      * graph itself may change (e.g. different vertices/edges and properties (besides the ones defining the info)).
      * @return the meta information of the graph
      */
-    GraphInfo<?> getGraphInfo();
+    GraphInfo getGraphInfo();
 }

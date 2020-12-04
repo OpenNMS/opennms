@@ -67,6 +67,7 @@
         <!-- <entry key="otrs.properties" value="otrsConfigDaoCheck"/> --> <!-- Not part of standard build -->
         <entry key="poll-outages.xml" value="pollOutagesDao"/>
         <entry key="poller-configuration.xml" value="pollerConfigFactory"/>
+        <entry key="prometheus-datacollection-config.xml" value="prometheusDataCollectionConfigDao"/>
         <entry key="provisiond-configuration.xml" value="provisiondConfigurationDao"/>
         <!-- <entry key="rancid-configuration.xml" value="rancidAdapterConfigFactory"/> --><!-- Not part of standard build -->
         <entry key="reportd-configuration.xml" value="reportdConfigurationDao"/>
@@ -346,6 +347,8 @@
 
   <bean id="pollerConfigFactory" class="org.opennms.netmgt.config.PollerConfigFactory" depends-on="pollerConfigFactory-init" factory-method="getInstance"/>
   
+  <bean id="prometheusDataCollectionConfigDao" class="org.opennms.netmgt.dao.prometheus.PrometheusDataCollectionConfigDaoJaxb" />
+
   <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/provisiond-configuration.xml"/>
   </bean>

@@ -98,17 +98,19 @@ public class RpcKafkaLargeBufferIT {
         rpcClient = new KafkaRpcClientFactory();
         rpcClient.setTracerRegistry(tracerRegistry);
         snmpClient = new MockSnmpClient(rpcClient, mockSnmpModule);
-        rpcClient.start();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         kafkaConfig.put(KafkaRpcConstants.MAX_BUFFER_SIZE_PROPERTY, MAX_BUFFER_SIZE);
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
-        when(configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_CONFIG_PID).getProperties())
+        when(configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_RPC_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
-        kafkaRpcServer = new RpcTestServer(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_CONFIG_PID, configAdmin), minionIdentity, RpcKafkaIT.tracerRegistry);
+        kafkaRpcServer = new RpcTestServer(new OsgiKafkaConfigProvider(KafkaRpcConstants.KAFKA_RPC_CONFIG_PID, configAdmin),
+                minionIdentity,tracerRegistry);
+
         kafkaRpcServer.init();
         kafkaRpcServer.bind(mockSnmpModule);
+        rpcClient.start();
     }
 
     /**
@@ -118,7 +120,7 @@ public class RpcKafkaLargeBufferIT {
     public void testLargeBufferWithDuplicateChunks() throws ExecutionException, InterruptedException {
         SnmpRequestDTO requestDTO = new SnmpRequestDTO();
         requestDTO.setLocation(REMOTE_LOCATION_NAME);
-        requestDTO.setTimeToLive(5000L);
+        requestDTO.setTimeToLive(10000L);
         String xmlFile = MockSnmpClient.class.getResource("/snmp-response.xml").getFile();
         SnmpMultiResponseDTO expectedResponseDTO = JaxbUtils.unmarshal(SnmpMultiResponseDTO.class, new File(xmlFile));
         SnmpMultiResponseDTO responseDTO = snmpClient.execute(requestDTO).get();
@@ -134,7 +136,7 @@ public class RpcKafkaLargeBufferIT {
     public void testLargeBufferBySkippingChunks() throws ExecutionException, InterruptedException {
         kafkaRpcServer.setSkipChunks(true);
         SnmpRequestDTO requestDTO = new SnmpRequestDTO();
-        requestDTO.setTimeToLive(5000L);
+        requestDTO.setTimeToLive(10000L);
         requestDTO.setLocation(REMOTE_LOCATION_NAME);
         String xmlFile = MockSnmpClient.class.getResource("/snmp-response.xml").getFile();
         SnmpMultiResponseDTO expectedResponseDTO = JaxbUtils.unmarshal(SnmpMultiResponseDTO.class, new File(xmlFile));
@@ -150,6 +152,8 @@ public class RpcKafkaLargeBufferIT {
     @After
     public void destroy() throws Exception {
         kafkaRpcServer.unbind(mockSnmpModule);
+        kafkaRpcServer.destroy();
         rpcClient.stop();
     }
+
 }

@@ -62,9 +62,6 @@
         	<th>Expression</th>
         	<th>Datasource type</th>
         	<th>Datasource label</th>
-        	<th>Value</th>
-        	<th>Re-arm</th>
-        	<th>Trigger</th>
         </tr>
         	<tr>
                 <td>
@@ -98,10 +95,19 @@
         				</c:forEach>
         			</select></td>
                 <td><input type="text" name="dsLabel" class="form-control" size="30" value="${expression.dsLabel.orElse(null)}"/></td>
-                <td><input type="text" name="value" class="form-control" size="10" value="${expression.value}"/></td>
-                <td><input type="text" name="rearm" class="form-control" size="10" value="${expression.rearm}"/></td>
-                <td><input type="text" name="trigger" class="form-control" size="10" value="${expression.trigger}"/></td>
         	</tr>
+        </table>
+        <table class="table table-sm">
+            <tr>
+                <th>Value</th>
+                <th>Re-arm</th>
+                <th>Trigger</th>
+            </tr>
+            <tr>
+                <td><input type="text" name="value" class="form-control" size="60" value="${expression.value}"/></td>
+                <td><input type="text" name="rearm" class="form-control" size="60" value="${expression.rearm}"/></td>
+                <td><input type="text" name="trigger" class="form-control" size="60" value="${expression.trigger}"/></td>
+            </tr>
         </table>
         <table class="table table-sm">
              <tr>

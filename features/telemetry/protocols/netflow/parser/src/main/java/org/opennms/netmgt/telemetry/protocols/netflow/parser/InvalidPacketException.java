@@ -39,7 +39,7 @@ public class InvalidPacketException extends Exception {
     public InvalidPacketException(final ByteBuf buffer, final String message, final Throwable cause) {
         super(appendPosition(message, buffer), cause);
     }
-
+    
     private static String appendPosition(final String message, final ByteBuf buffer) {
         if (buffer.hasArray()) {
             return String.format("%s [0x%04X]", message, buffer.arrayOffset() + buffer.readerIndex());

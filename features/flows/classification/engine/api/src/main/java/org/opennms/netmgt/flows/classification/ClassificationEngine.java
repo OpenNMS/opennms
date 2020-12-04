@@ -28,8 +28,14 @@
 
 package org.opennms.netmgt.flows.classification;
 
+import java.util.List;
+
+import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+
 public interface ClassificationEngine {
     String classify(ClassificationRequest classificationRequest);
+
+    List<Rule> getInvalidRules();
 
     void reload();
 }

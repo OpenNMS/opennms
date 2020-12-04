@@ -71,7 +71,7 @@ public class PersistenceGraphContainerProvider implements GraphContainerProvider
         defaultGraphContainerInfo.setLabel(containerInfoById.getLabel());
         containerInfoById.getGraphInfos().forEach(gi -> {
             // Override vertex type
-            final DefaultGraphInfo defaultGraphInfo = new DefaultGraphInfo(gi, CustomVertex.class);
+            final DefaultGraphInfo defaultGraphInfo = new DefaultGraphInfo(gi);
             defaultGraphContainerInfo.addGraphInfo(defaultGraphInfo);
         });
         return defaultGraphContainerInfo;
@@ -90,7 +90,7 @@ public class PersistenceGraphContainerProvider implements GraphContainerProvider
         info.setDescription("Example container which uses the GraphRepository for persistence");
         info.setLabel("Example Persistence Graph Container");
 
-        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(CONTAINER_ID + ".graph", CustomVertex.class);
+        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(CONTAINER_ID + ".graph");
         graphInfo.setDescription("The only graph of the container");
         graphInfo.setLabel("Graph");
         info.getGraphInfos().add(graphInfo);

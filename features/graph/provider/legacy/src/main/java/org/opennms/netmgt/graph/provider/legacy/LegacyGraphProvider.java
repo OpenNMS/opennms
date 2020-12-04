@@ -41,6 +41,7 @@ import org.opennms.netmgt.graph.api.focus.Focus;
 import org.opennms.netmgt.graph.api.focus.FocusStrategy;
 import org.opennms.netmgt.graph.api.generic.GenericEdge;
 import org.opennms.netmgt.graph.api.generic.GenericGraph;
+import org.opennms.netmgt.graph.api.generic.GenericProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
 import org.opennms.netmgt.graph.api.info.DefaultGraphInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
@@ -61,7 +62,10 @@ public class LegacyGraphProvider implements GraphProvider {
         final GraphInfo graphInfo = getGraphInfo();
         final BackendGraph currentGraph = delegate.getDefaultGraphProvider().getCurrentGraph();
         final GenericGraph.GenericGraphBuilder builder = GenericGraph.builder();
-        builder.graphInfo(graphInfo).id(currentGraph.getNamespace());
+        builder.graphInfo(graphInfo)
+                .id(currentGraph.getNamespace())
+                .property(GenericProperties.Enrichment.RESOLVE_NODES, true)
+                .property(GenericProperties.Enrichment.DEFAULT_STATUS, true);
 
         currentGraph.getVertices().forEach(legacyVertex -> {
             final LegacyVertex domainVertex = new LegacyVertex(legacyVertex);
@@ -88,10 +92,10 @@ public class LegacyGraphProvider implements GraphProvider {
     }
 
     @Override
-    public GraphInfo<?> getGraphInfo() {
+    public GraphInfo getGraphInfo() {
         final org.opennms.features.topology.api.topo.GraphProvider defaultGraphProvider = delegate.getDefaultGraphProvider();
         final TopologyProviderInfo delegateInfo = defaultGraphProvider.getTopologyProviderInfo();
-        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(defaultGraphProvider.getNamespace(), LegacyVertex.class);
+        final DefaultGraphInfo graphInfo = new DefaultGraphInfo(defaultGraphProvider.getNamespace());
         graphInfo.setDescription(delegateInfo.getDescription());
         graphInfo.setLabel(delegateInfo.getName());
         return graphInfo;

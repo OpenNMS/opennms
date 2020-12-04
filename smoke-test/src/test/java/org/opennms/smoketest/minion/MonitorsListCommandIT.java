@@ -135,14 +135,14 @@ public class MonitorsListCommandIT {
         try (final SshClient sshClient = new SshClient(sshAddr, "admin", "admin")) {
             // List the monitors
             PrintStream pipe = sshClient.openShell();
-            pipe.println("opennms-poller:list-monitors");
+            pipe.println("opennms:list-monitors");
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
 
             // Parse the output
             String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
 
-            shellOutput = StringUtils.substringAfter(shellOutput, "opennms-poller:list-monitors");
+            shellOutput = StringUtils.substringAfter(shellOutput, "opennms:list-monitors");
             LOG.info("Monitors output: {}", shellOutput);
             Set<String> monitors = new HashSet<>();
             for (String monitor : shellOutput.split("\\r?\\n")) {

@@ -37,7 +37,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
 
-@Command(scope = "opennms-kv-blob", name = "put", description = "Insert a string record into the blob store")
+@Command(scope = "opennms", name = "kv-put-blob", description = "Insert a string record into the blob store")
 @Service
 public class BlobStorePut implements Action {
     @Reference

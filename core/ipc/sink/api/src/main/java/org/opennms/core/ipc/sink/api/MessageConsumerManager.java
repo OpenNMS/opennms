@@ -28,6 +28,10 @@
 
 package org.opennms.core.ipc.sink.api;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+
 /**
  * Handles dispatching of messages to the registered consumer(s).
  *
@@ -45,5 +49,14 @@ public interface MessageConsumerManager {
     <S extends Message, T extends Message> void registerConsumer(MessageConsumer<S, T> consumer) throws Exception;
 
     <S extends Message, T extends Message> void unregisterConsumer(MessageConsumer<S, T> consumer) throws Exception;
+
+    static void updateMessageSize(MetricRegistry metricRegistry, String location, String moduleId, int messageSize) {
+        Histogram messageSizeHistogram = metricRegistry.histogram(MetricRegistry.name(location, moduleId, METRIC_MESSAGE_SIZE));
+        messageSizeHistogram.update(messageSize);
+    }
+
+    static Timer getDispatchTimerMetric(MetricRegistry metricRegistry, String location, String moduleId) {
+        return metricRegistry.timer(MetricRegistry.name(location, moduleId, METRIC_DISPATCH_TIME));
+    }
 
 }

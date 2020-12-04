@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,6 +43,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -76,6 +77,7 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-provisiond.xml",
         "classpath:/META-INF/opennms/applicationContext-snmp-profile-mapper.xml",
+        "classpath:/META-INF/opennms/applicationContext-tracer-registry.xml",
         "classpath*:/META-INF/opennms/provisiond-extensions.xml",
         "classpath*:/META-INF/opennms/detectors.xml",
         "classpath:/mockForeignSourceContext.xml",
@@ -127,6 +129,7 @@ public class ImportSchedulerIT implements InitializingBean {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void createJobAndVerifyImportJobFactoryIsRegistered() throws SchedulerException, InterruptedException {
         
         RequisitionDef def = m_dao.getDefs().get(0);
@@ -211,6 +214,7 @@ public class ImportSchedulerIT implements InitializingBean {
     }
 
     @Test
+    @JUnitTemporaryDatabase
     public void buildImportSchedule() throws SchedulerException, InterruptedException {
         // Add a simple definition to the configuration that attempts
         // to import a non existent file every 5 seconds

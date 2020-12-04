@@ -29,10 +29,13 @@
 package org.opennms.netmgt.flows.elastic;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.opennms.netmgt.flows.api.EnrichedFlow;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.flows.api.NodeInfo;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -41,6 +44,16 @@ import com.google.gson.annotations.SerializedName;
  */
 public class FlowDocument {
     private static final int DOCUMENT_VERSION = 1;
+
+
+    public FlowDocument(Flow flow) {
+        this.flow = flow;
+    }
+
+    public FlowDocument() {
+    }
+
+    private transient Flow flow;
 
     /**
      * Flow timestamp in milliseconds.
@@ -318,10 +331,18 @@ public class FlowDocument {
      */
     @SerializedName("node_src")
     private NodeDocument nodeSrc;
-    
+
     public void addHost(String host) {
         Objects.requireNonNull(host);
         hosts.add(host);
+    }
+
+    public Flow getFlow() {
+        return flow;
+    }
+
+    public void setFlow(Flow flow) {
+        this.flow = flow;
     }
 
     public long getTimestamp() {
@@ -687,7 +708,7 @@ public class FlowDocument {
     }
 
     public static FlowDocument from(final Flow flow) {
-        final FlowDocument doc = new FlowDocument();
+        final FlowDocument doc = new FlowDocument(flow);
         doc.setTimestamp(flow.getTimestamp());
         doc.setBytes(flow.getBytes());
         doc.setDirection(Direction.from(flow.getDirection()));
@@ -724,4 +745,60 @@ public class FlowDocument {
 
         return doc;
     }
+
+    public static EnrichedFlow buildEnrichedFlow(FlowDocument flowDocument) {
+
+        EnrichedFlow enrichedFlow = new EnrichedFlow(flowDocument.getFlow());
+        enrichedFlow.setApplication(flowDocument.getApplication());
+        enrichedFlow.setHost(flowDocument.getHost());
+        enrichedFlow.setLocation(flowDocument.getLocation());
+        enrichedFlow.setDstLocality(matchLocality(flowDocument.getDstLocality()));
+        enrichedFlow.setSrcLocality(matchLocality(flowDocument.getSrcLocality()));
+        enrichedFlow.setFlowLocality(matchLocality(flowDocument.getFlowLocality()));
+        enrichedFlow.setSrcNodeInfo(buildNodeInfo(flowDocument.getNodeSrc()));
+        enrichedFlow.setDstNodeInfo(buildNodeInfo(flowDocument.getNodeDst()));
+        enrichedFlow.setExporterNodeInfo(buildNodeInfo(flowDocument.getNodeExporter()));
+        enrichedFlow.setConvoKey(flowDocument.getConvoKey());
+        return enrichedFlow;
+
+    }
+
+    private static EnrichedFlow.Locality matchLocality(Locality locality) {
+        switch (locality) {
+            case PUBLIC:
+                return EnrichedFlow.Locality.PUBLIC;
+            case PRIVATE:
+                return EnrichedFlow.Locality.PRIVATE;
+        }
+        return EnrichedFlow.Locality.PUBLIC;
+    }
+
+
+    private static NodeInfo buildNodeInfo(NodeDocument nodeDocument) {
+        if (nodeDocument == null) {
+            return null;
+        }
+        return new NodeInfo() {
+            @Override
+            public Integer getNodeId() {
+                return nodeDocument.getNodeId();
+            }
+
+            @Override
+            public String getForeignId() {
+                return nodeDocument.getForeignId();
+            }
+
+            @Override
+            public String getForeignSource() {
+                return nodeDocument.getForeignSource();
+            }
+
+            @Override
+            public List<String> getCategories() {
+                return nodeDocument.getCategories();
+            }
+        };
+    }
+
 }

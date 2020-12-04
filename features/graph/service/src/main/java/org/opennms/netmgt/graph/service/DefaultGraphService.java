@@ -28,9 +28,13 @@
 
 package org.opennms.netmgt.graph.service;
 
+import static org.opennms.netmgt.graph.service.GraphProviderManager.getActualProperties;
+
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -42,10 +46,23 @@ import org.opennms.netmgt.graph.api.info.GraphContainerInfo;
 import org.opennms.netmgt.graph.api.info.GraphInfo;
 import org.opennms.netmgt.graph.api.service.GraphContainerProvider;
 import org.opennms.netmgt.graph.api.service.GraphService;
+import org.opennms.netmgt.graph.api.service.osgi.GraphContainerProviderRegistration;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 public class DefaultGraphService implements GraphService {
 
     private List<GraphContainerProvider> graphContainerProviders = new CopyOnWriteArrayList<>();
+    private final BundleContext bundleContext;
+    private final Map<GraphContainerProvider, ServiceRegistration<GraphContainerProviderRegistration>> serviceRegistrationMap = new ConcurrentHashMap<>();
+
+    public DefaultGraphService() {
+        this(null);
+    }
+
+    public DefaultGraphService(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
 
     @Override
     public List<GraphContainerInfo> getGraphContainerInfos() {
@@ -106,9 +123,23 @@ public class DefaultGraphService implements GraphService {
             }
         }
         graphContainerProviders.add(graphContainerProvider);
+
+        // Allow other services to listen for GraphContainerProvider.
+        // That way it is ensured that the service is already known by the GraphProvider
+        if (bundleContext != null) {
+            final ServiceRegistration<GraphContainerProviderRegistration> serviceRegistration = bundleContext.registerService(GraphContainerProviderRegistration.class, () -> graphContainerProvider, new Hashtable<>(getActualProperties(props)));
+            serviceRegistrationMap.put(graphContainerProvider, serviceRegistration);
+        }
     }
 
     public void onUnbind(GraphContainerProvider graphContainerProvider, Map<String, String> props) {
+        if(graphContainerProvider == null) {
+            return;
+        }
         graphContainerProviders.remove(graphContainerProvider);
+        final ServiceRegistration<GraphContainerProviderRegistration> serviceRegistration = serviceRegistrationMap.remove(graphContainerProvider);
+        if (serviceRegistration != null) {
+            serviceRegistration.unregister();
+        }
     }
 }

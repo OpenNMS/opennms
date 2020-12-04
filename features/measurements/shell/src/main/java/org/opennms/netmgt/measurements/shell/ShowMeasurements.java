@@ -51,7 +51,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 
-@Command(scope = "opennms-measurements", name = "show-measurements", description = "Measurements")
+@Command(scope = "opennms", name = "show-measurements", description = "Measurements")
 @Service
 public class ShowMeasurements implements Action {
 

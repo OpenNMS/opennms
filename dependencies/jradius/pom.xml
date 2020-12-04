@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>26.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -39,10 +39,6 @@
       <artifactId>commons-beanutils</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils-core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-chain</groupId>
       <artifactId>commons-chain</artifactId>
     </dependency>
@@ -55,6 +51,10 @@
       <artifactId>jradius-core</artifactId>
       <version>1.1.5</version>
       <exclusions>
+        <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils-core</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>
@@ -74,6 +74,10 @@
       <artifactId>jradius-dictionary</artifactId>
       <version>1.1.5</version>
       <exclusions>
+        <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils-core</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>

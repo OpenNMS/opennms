@@ -45,7 +45,7 @@ import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 
-@Command(scope = "opennms-measurements", name = "show-resources", description = "Displays the resource tree. Optionally filter by node or resource ID.")
+@Command(scope = "opennms", name = "show-measurement-resources", description = "Displays the resource tree. Optionally filter by node or resource ID.")
 @Service
 public class ShowResources implements Action {
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,6 +44,8 @@ import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.annotations.EventPostProcessor;
 import org.opennms.netmgt.events.api.annotations.EventPreProcessor;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
 
@@ -73,37 +75,37 @@ public class AnnotationBasedEventListenerAdapterTest {
         public int genExceptionsHandled = 0;
         
         @EventHandler(uei=EventConstants.NODE_DOWN_EVENT_UEI)
-        public void handleAnEvent(Event e) {
+        public void handleAnEvent(IEvent e) {
             receivedEventCount++;
         }
         
         @EventHandler(uei=EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
-        public void handleAnotherEvent(Event e) {
+        public void handleAnotherEvent(IEvent e) {
             throw new IllegalArgumentException("test generated exception");
         }
         
         @EventHandler(uei=EventConstants.ADD_NODE_EVENT_UEI)
-        public void handleYetAnotherEvent(Event e) {
+        public void handleYetAnotherEvent(IEvent e) {
             throw new IllegalStateException("test generated state exception");
         }
         
         @EventPreProcessor()
-        public void preProcess(Event e) {
+        public void preProcess(IEvent e) {
             preProcessedEvents++;
         }
         
         @EventPostProcessor
-        public void postProcess(Event e) {
+        public void postProcess(IEvent e) {
             postProcessedEvents++;
         }
         
         @EventExceptionHandler
-        public void handleException(Event e, IllegalArgumentException ex) {
+        public void handleException(IEvent e, IllegalArgumentException ex) {
             illegalArgsHandled++;
         }
         
         @EventExceptionHandler
-        public void handleException(Event e, Exception ex) {
+        public void handleException(IEvent e, Exception ex) {
             genExceptionsHandled++;
         }
         
@@ -165,7 +167,7 @@ public class AnnotationBasedEventListenerAdapterTest {
         assertEquals(0, derivedListener.receivedEventCount);
         assertEquals(0, derivedListener.postProcessedEvents);
         
-        adapter.onEvent(createEvent(EventConstants.NODE_DOWN_EVENT_UEI));
+        adapter.onEvent(ImmutableMapper.fromMutableEvent(createEvent(EventConstants.NODE_DOWN_EVENT_UEI)));
         
         assertEquals(1, derivedListener.preProcessedEvents);
         assertEquals(1, derivedListener.receivedEventCount);
@@ -207,7 +209,7 @@ public class AnnotationBasedEventListenerAdapterTest {
         assertEquals(0, m_annotatedListener.receivedEventCount);
         assertEquals(0, m_annotatedListener.postProcessedEvents);
         
-        m_adapter.onEvent(createEvent(EventConstants.NODE_DOWN_EVENT_UEI));
+        m_adapter.onEvent(ImmutableMapper.fromMutableEvent(createEvent(EventConstants.NODE_DOWN_EVENT_UEI)));
         
         assertEquals(1, m_annotatedListener.preProcessedEvents);
         assertEquals(1, m_annotatedListener.receivedEventCount);
@@ -227,12 +229,12 @@ public class AnnotationBasedEventListenerAdapterTest {
         assertEquals(0, m_annotatedListener.illegalArgsHandled);
         assertEquals(0, m_annotatedListener.genExceptionsHandled);
 
-        m_adapter.onEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI));
+        m_adapter.onEvent(ImmutableMapper.fromMutableEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)));
         
         assertEquals(1, m_annotatedListener.illegalArgsHandled);
         assertEquals(0, m_annotatedListener.genExceptionsHandled);
         
-        m_adapter.onEvent(createEvent(EventConstants.ADD_NODE_EVENT_UEI));
+        m_adapter.onEvent(ImmutableMapper.fromMutableEvent(createEvent(EventConstants.ADD_NODE_EVENT_UEI)));
         
         assertEquals(1, m_annotatedListener.illegalArgsHandled);
         assertEquals(1, m_annotatedListener.genExceptionsHandled);

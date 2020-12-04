@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -82,7 +83,7 @@ public class CollectdEventHandlingTest {
         Event e = new EventBuilder(EventConstants.NODE_DELETED_EVENT_UEI, "test")
                 .setNodeid(svc1.getNodeId())
                 .getEvent();
-        collectd.onEvent(e);
+        collectd.onEvent(ImmutableMapper.fromMutableEvent(e));
 
         // The delete flag should be set (and only set) on svc1
         assertTrue("deletion flag was not set on svc1!", svc1.getCollectorUpdates().isDeletionFlagSet());
@@ -103,7 +104,7 @@ public class CollectdEventHandlingTest {
         Event e = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, "test")
                 .setIpInterface(iface)
                 .getEvent();
-        collectd.onEvent(e);
+        collectd.onEvent(ImmutableMapper.fromMutableEvent(e));
 
         // The delete flag should be set (and only set) on svc1
         assertTrue("deletion flag was not set on svc1!", svc1.getCollectorUpdates().isDeletionFlagSet());
@@ -125,7 +126,7 @@ public class CollectdEventHandlingTest {
                 .setIpInterface(iface)
                 .setService(svc2.getServiceName())
                 .getEvent();
-        collectd.onEvent(e);
+        collectd.onEvent(ImmutableMapper.fromMutableEvent(e));
 
         // The delete flag should be set (and only set) on svc2
         assertFalse("deletion flag was set on svc1!", svc1.getCollectorUpdates().isDeletionFlagSet());

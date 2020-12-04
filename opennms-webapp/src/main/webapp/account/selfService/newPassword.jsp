@@ -48,7 +48,6 @@
     {
       document.goForm.currentPassword.value=document.goForm.oldpass.value;
       document.goForm.newPassword.value=document.goForm.pass1.value;
-      document.goForm.action="account/selfService/newPasswordAction";
       return true;
     } 
     else
@@ -66,7 +65,7 @@
         <span>Please enter the old and new passwords and confirm.</span>
       </div>
       <div class="card-body">
-        <form role="form" method="post" name="goForm" onSubmit="verifyGoForm()">
+        <form role="form" method="post" name="goForm" onSubmit="return verifyGoForm();" action="account/selfService/newPasswordAction">
           <input type="hidden" name="currentPassword" value="">
           <input type="hidden" name="newPassword" value="">
           <div class="form-group">

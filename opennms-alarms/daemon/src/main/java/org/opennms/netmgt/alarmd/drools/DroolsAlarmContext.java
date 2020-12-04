@@ -30,6 +30,7 @@ package org.opennms.netmgt.alarmd.drools;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
@@ -48,7 +49,6 @@ import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.hibernate.ObjectNotFoundException;
-import org.joda.time.Duration;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.opennms.core.sysprops.SystemProperties;
@@ -93,7 +93,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
             .maxRate(5)
-            .every(Duration.standardSeconds(30))
+            .every(Duration.ofSeconds(30))
             .build();
 
     private static final long MAX_NUM_ACTIONS_IN_FLIGHT = SystemProperties.getLong(

@@ -518,15 +518,42 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     @Override
-    public void markHavingFlows(final Collection<Integer> ids) {
-        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update node set hasFlows = true where nodeid in (:ids)")
-                .setParameterList("ids", ids)
-                .executeUpdate());
+    public void markHavingFlows(final Collection<Integer> ingressIds, final Collection<Integer> egressIds) {
+        getHibernateTemplate().executeWithNativeSession(session -> {
+            int results = 0;
+
+            if (!ingressIds.isEmpty()) {
+                results += session.createSQLQuery("update node set last_ingress_flow = NOW() where nodeid in (:ids)")
+                        .setParameterList("ids", ingressIds)
+                        .executeUpdate();
+            }
+            if (!egressIds.isEmpty()) {
+                results += session.createSQLQuery("update node set last_egress_flow = NOW() where nodeid in (:ids)")
+                        .setParameterList("ids", egressIds)
+                        .executeUpdate();
+            }
+
+            return results;
+        });
     }
 
     @Override
     public List<OnmsNode> findAllHavingFlows() {
-        return find("from OnmsNode as n where n.hasFlows = true");
+        if (OnmsSnmpInterface.INGRESS_AND_EGRESS_REQUIRED) {
+            return find("from OnmsNode as n where (EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" AND EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE + ")");
+        } else {
+            return find("from OnmsNode as n where (EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" OR EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE + ")");
+        }
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingIngressFlows() {
+        return find("from OnmsNode as n where EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE);
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingEgressFlows() {
+        return find("from OnmsNode as n where EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE);
     }
 
     @Override

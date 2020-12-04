@@ -38,6 +38,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileSystemView;
@@ -51,6 +52,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 public abstract class StringUtils {
 
@@ -435,4 +438,44 @@ public abstract class StringUtils {
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
+
+    /**
+     * Removes a prefix from the input but returns the input only if the prefix was present.
+     *
+     * @param input the {@link String to remove the prefix from}
+     * @param prefix the prefix to remove
+     *
+     * @return an present {@link Optional} containing the string without the prefix iff the string was prefixed,
+     *         {@link Optional#empty()} otherwise.
+     */
+    public static Optional<String> truncatePrefix(final String input, final String prefix) {
+        if (input.startsWith(prefix)) {
+            return Optional.of(input.substring(prefix.length()));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public static Integer parseInt(String value, Integer defaultValue) {
+        if(Strings.isNullOrEmpty(value)) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    public static Double parseDouble(String value, Double defaultValue) {
+        if(Strings.isNullOrEmpty(value)) {
+            return defaultValue;
+        }
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
 }

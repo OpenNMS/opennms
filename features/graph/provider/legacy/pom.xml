@@ -4,13 +4,13 @@
     <parent>
         <groupId>org.opennms.features.graph</groupId>
         <artifactId>org.opennms.features.graph.provider</artifactId>
-        <version>26.0.0-SNAPSHOT</version>
+        <version>27.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.graph.provider</groupId>
     <artifactId>org.opennms.features.graph.provider.legacy</artifactId>
     <name>OpenNMS :: Features :: Graph :: Provider :: Legacy</name>
-    <description>Adapter for the (legacy) TopologyProvider API</description>
+    <description>Adapter for the (legacy) TopologyProvider API (Topology API -> Graph API)</description>
     <packaging>bundle</packaging>
     <build>
         <plugins>

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>minion-parent</artifactId>
-        <version>26.0.0-SNAPSHOT</version>
+        <version>27.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -51,6 +51,7 @@
                                 <feature>opennms-trapd-listener</feature>
                                 <feature>opennms-send-event-command</feature>
                                 <feature>opennms-events-sink-dispatcher</feature>
+                                <feature>minion-rest-client</feature>
                                 <feature>minion-shell</feature>
                                 <feature>minion-heartbeat-producer</feature>
                                 <feature>minion-snmp-proxy</feature>
@@ -65,6 +66,13 @@
                                 <feature>opennms-core-tracing-jaeger</feature>
                                 <feature>opennms-dnsresolver-shell</feature>
                                 <feature>opennms-dnsresolver-netty</feature>
+                                <feature>opennms-core-ipc-grpc-client</feature>
+                                <feature>opennms-distributed-core-impl</feature>
+                                <feature>scv-api</feature>
+                                <feature>scv-shell</feature>
+                                <feature>scv-jceks-impl</feature>
+                                <feature>dominion-grpc-client</feature>
+                                <feature>dominion-secure-credentials-vault</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -99,6 +107,8 @@
                     <descriptors>
                         <descriptor>src/assembly/repo.xml</descriptor>
                     </descriptors>
+                    <overrideUid>0</overrideUid>
+                    <overrideGid>0</overrideGid>
                     <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
                 <executions>
@@ -140,6 +150,11 @@
             <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>minion-rest-client</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.minion</groupId>
@@ -366,6 +381,41 @@
             <artifactId>org.opennms.features.dnsresolver.shell</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.grpc</groupId>
+            <artifactId>org.opennms.core.ipc.grpc.client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.grpc</groupId>
+            <artifactId>org.opennms.core.ipc.grpc.common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.grpc</groupId>
+            <artifactId>org.opennms.core.grpc.osgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>dominion-grpc-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.dominion-grpc-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -386,19 +436,6 @@
             <id>sonatype-public-repo</id>
             <name>Sonatype Public Maven Repository</name>
             <url>http://maven.opennms.org/content/repositories/sonatype-public-repo/</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-                <updatePolicy>${updatePolicy}</updatePolicy>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>${updatePolicy}</updatePolicy>
-            </releases>
-            <id>oosnmp-repo</id>
-            <name>OOSNMP Repository</name>
-            <url>http://maven.opennms.org/content/repositories/oosnmp-repo</url>
         </repository>
         <repository>
             <snapshots>

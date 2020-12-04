@@ -103,7 +103,7 @@ The following list contains some features which may be installed manually:
 
 | sentinel-core
 | true
-| Base feature, installing all required bundles such as `opennms-health:check` and service requirements for other bundles, e.g. `sentinel-persistence`.
+| Base feature, installing all required bundles such as `opennms:health-check` and service requirements for other bundles, e.g. `sentinel-persistence`.
 
 | sentinel-jms
 | false
@@ -163,7 +163,7 @@ featuresBoot = \
       instance/4.2.2, \
       package/4.2.2, \
       log/4.2.2, \
-      scv/26.0.0-SNAPSHOT, \
+      scv/27.0.0-SNAPSHOT, \
       ssh/4.2.2, \
       framework/4.2.2, \
       system/4.2.2, \
@@ -195,11 +195,11 @@ featuresBoot = \
 
 ==== Health Check / Troubleshooting
 
-The `opennms-health:check` command allows to verify the health of the _Sentinel_ container.
+The `opennms:health-check` command allows to verify the health of the _Sentinel_ container.
 It performs various health checks depending on the installed features to calculate the overall container health.
-For more information please try `opennms-health:check --help`.
+For more information please try `opennms:health-check --help`.
 
-NOTE: In order to run the `opennms-health:check` command, the feature `sentinel-core` must be installed.
+NOTE: In order to run the `opennms:health-check` command, the feature `sentinel-core` must be installed.
 
 NOTE: This is also available in _Minion_ Containers and will replace the now deprecated command `minion:ping`.
 
@@ -242,10 +242,10 @@ admin@sentinel> feature:install sentinel-flows
 
 NOTE:   Only processing of `Netflow5` flows has been tested.
 
-To check everything is working as expected, run the `opennms-health:check` command, e.g.:
+To check everything is working as expected, run the `opennms:health-check` command, e.g.:
 
 ----
-admin@sentinel> opennms-health:check
+admin@sentinel> opennms:health-check
 Verifying the health of the container
 
 Verifying installed bundles                    [ Success  ]

@@ -42,12 +42,6 @@ import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 
 public class DefaultServiceMonitorLocator implements ServiceMonitorLocator, Serializable {
 
-    /**
-     * DO NOT CHANGE!
-     * This class is serialized by remote poller communications.
-     */
-    private static final long serialVersionUID = 1L;
-
     String m_serviceName;
     Class<? extends ServiceMonitor> m_serviceClass;
     

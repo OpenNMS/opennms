@@ -1,0 +1,8 @@
+[template]
+src = "disable-jms.boot.tmpl"
+dest = "/opt/minion/etc/featuresBoot.d/disable-jms.boot"
+keys = [
+    "/ipc/rpc/kafka",
+    "/ipc/sink/kafka"
+]
+reload_cmd = "/opt/minion/confd/scripts/remove-if-empty /opt/minion/etc/featuresBoot.d/disable-jms.boot"

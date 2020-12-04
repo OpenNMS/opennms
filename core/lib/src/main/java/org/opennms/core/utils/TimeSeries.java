@@ -42,11 +42,14 @@ public abstract class TimeSeries {
 
     private static final String TCP_TIME_SERIES_STRATEGY_NAME = "tcp";
 
+    private static final String INTEGRATION_LAYER_TIME_SERIES_STRATEGY_NAME = "integration";
+
     public static enum Strategy {
         RRD(RRD_TIME_SERIES_STRATEGY_NAME, "RRDTool or JRobin"),
         NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME, "Newts"),
         EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME, "Evaluate (Sizing mode, all data discarded)"),
-        TCP(TCP_TIME_SERIES_STRATEGY_NAME, "TCP (protobuf)");
+        TCP(TCP_TIME_SERIES_STRATEGY_NAME, "TCP (protobuf)"),
+        INTEGRATION(INTEGRATION_LAYER_TIME_SERIES_STRATEGY_NAME, "Integration (the timeseries integration layer, to be used for TimeseriesStorage implementations)");
 
         private final String m_name;
         private final String m_descr;

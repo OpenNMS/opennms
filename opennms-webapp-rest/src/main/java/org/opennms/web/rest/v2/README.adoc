@@ -151,11 +151,6 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | assetRecord.vendorAssetNumber | String | Vendor Asset Number
 | assetRecord.vendorFax | String | Vendor Fax
 | assetRecord.vendorPhone | String | Vendor Phone
-| assetRecord.vmwareManagedEntityType | String | VMware Managed Entity Type
-| assetRecord.vmwareManagedObjectId | String | VMware Managed Object ID
-| assetRecord.vmwareManagementServer | String | VMware Management Server
-| assetRecord.vmwareState | String | VMware State
-| assetRecord.vmwareTopologyInfo | String | VMware Topology Information
 |===
 
 [[categoryProperties]]
@@ -397,17 +392,6 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | outage.suppressedBy | String | Suppressed By User
 |===
 
-[[scanReportProperties]]
-.Scan Report Properties
-[options="header",width="99%",cols="2m,1,3"]
-|===
-| Name | Type | Description
-| id | String | ID
-| locale | String | Locale
-| location | String | Monitoring Location
-| timestamp | Timestamp | Timestamp
-|===
-
 [[serviceTypeProperties]]
 .Service Type Properties
 [options="header",width="99%",cols="2m,1,3"]
@@ -571,14 +555,3 @@ Supported search/order properties:
 * `serviceRegainedEvent.\*` (with the same properties as <<eventProperties,`event.*`>>)
 * <<serviceTypeProperties,`serviceType.*`>>
 * <<snmpInterfaceProperties,`snmpInterface.*`>>
-
-=== Scan Reports Interface
-
-Interface: `/api/v2/scanreports`
-
-Supported search/order properties:
-
-* `id`
-* `locale`
-* `location`
-* `timestamp`

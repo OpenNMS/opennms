@@ -238,7 +238,6 @@
         <ul class="list-unstyled mb-0">
             <li><a href="locations/index.jsp">Manage Monitoring Locations</a></li>
             <li><a href="admin/applications.htm">Manage Applications</a></li>
-            <li><a href="distributed/locationMonitorList.htm">Manage Remote Pollers</a></li>
             <li><a href="minion/index.jsp">Manage Minions</a></li>
         </ul>
       </div> <!-- card-body -->
@@ -355,8 +354,8 @@
         <p><b>Configure thresholds</b>: Allows you to add, remove, or modify thresholds.</p>
 
 
-        <p><b>Manage Applications</b> and <b>Manage Remote Pollers</b>: Configure and administer 
-        the operation of remote pollers that report back to this OpenNMS server to provide distributed
+        <p><b>Manage Applications</b>: Configure and administer 
+        the operation of perspective pollers that report back to this OpenNMS server to provide distributed
         status information.
         </p>
 

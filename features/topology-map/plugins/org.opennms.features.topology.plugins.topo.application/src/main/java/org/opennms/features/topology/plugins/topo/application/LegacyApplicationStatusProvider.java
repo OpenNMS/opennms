@@ -41,7 +41,7 @@ import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
+import org.opennms.netmgt.dao.api.MonitoredServiceStatusEntity;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 import com.google.common.collect.Collections2;
@@ -57,12 +57,12 @@ public class LegacyApplicationStatusProvider implements StatusProvider {
     @Override
     public Map<VertexRef, Status> getStatusForVertices(BackendGraph graph, Collection<VertexRef> vertices, Criteria[] criteria) {
         Map<VertexRef, Status> returnMap = new HashMap<>();
-        Map<ApplicationStatusEntity.Key, Status> statusMap = new HashMap<>();
+        Map<Integer, Status> statusMap = new HashMap<>();
 
-        List<ApplicationStatusEntity> result = applicationDao.getAlarmStatus();
-        for (ApplicationStatusEntity eachRow : result) {
+        List<MonitoredServiceStatusEntity> result = applicationDao.getAlarmStatus();
+        for (MonitoredServiceStatusEntity eachRow : result) {
             DefaultStatus status = createStatus(eachRow.getSeverity(), eachRow.getCount());
-            statusMap.put(eachRow.getKey(), status);
+            statusMap.put(eachRow.getNodeId(), status);
         }
 
         // status for all known node ids
@@ -74,7 +74,7 @@ public class LegacyApplicationStatusProvider implements StatusProvider {
         // calculate status for children
         for (VertexRef eachVertex : vertexRefs) {
             LegacyApplicationVertex applicationVertex = (LegacyApplicationVertex) eachVertex;
-            Status alarmStatus = statusMap.get(createKey(applicationVertex));
+            Status alarmStatus = statusMap.get(applicationVertex.getNodeID());
             if (alarmStatus == null) {
                 alarmStatus = createStatus(OnmsSeverity.NORMAL, 0);
             }
@@ -88,7 +88,7 @@ public class LegacyApplicationStatusProvider implements StatusProvider {
             int count = 0;
             for (VertexRef eachChild : eachRootApplication.getChildren()) {
                 LegacyApplicationVertex eachChildApplication = (LegacyApplicationVertex) eachChild;
-                ApplicationStatusEntity.Key childKey = createKey(eachChildApplication);
+                Integer childKey = eachChildApplication.getNodeID();
                 Status childStatus = statusMap.get(childKey);
                 if (childStatus != null && maxSeverity.isLessThan(createSeverity(childStatus.computeStatus()))) {
                     maxSeverity = createSeverity(childStatus.computeStatus());
@@ -108,10 +108,6 @@ public class LegacyApplicationStatusProvider implements StatusProvider {
             }
         }
         return null;
-    }
-
-    private ApplicationStatusEntity.Key createKey(LegacyApplicationVertex vertex) {
-        return new ApplicationStatusEntity.Key(String.valueOf(vertex.getNodeID()), String.valueOf(vertex.getServiceTypeId()), vertex.getIpAddress());
     }
 
     @Override
@@ -140,7 +136,7 @@ public class LegacyApplicationStatusProvider implements StatusProvider {
         return returnList;
     }
 
-    private static DefaultStatus createStatus(OnmsSeverity severity, int count) {
+    private static DefaultStatus createStatus(OnmsSeverity severity, long count) {
         return new DefaultStatus(severity.getLabel(), count);
     }
 }

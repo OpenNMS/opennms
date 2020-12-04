@@ -42,10 +42,12 @@ import org.opennms.netmgt.telemetry.listeners.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.UdpSessionManager;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.MoreObjects;
@@ -83,6 +85,12 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
     @Override
     protected UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
         return new SessionKey(remoteAddress, localAddress);
+    }
+
+    @Override
+    protected byte[] buildMessage(Iterable<Value<?>> record, RecordEnrichment enrichment) throws IllegalFlowException {
+        IpFixMessageBuilder builder = new IpFixMessageBuilder(record, enrichment);
+        return builder.buildData();
     }
 
     public static class SessionKey implements UdpSessionManager.SessionKey {

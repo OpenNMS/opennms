@@ -82,7 +82,7 @@ public class FilterSearchProvider implements SearchProvider {
                     .collect(Collectors.toList());
             return new SearchResult(Contexts.Node).withResults(searchResultItems).withMore(nodeMap.size() > matchingNodes.size());
         } catch (FilterParseException ex) {
-            LoggerFactory.getLogger(getClass()).error("Cannot parse expression: {}: {}", query.getInput(), ex.getMessage(), ex);
+            LoggerFactory.getLogger(getClass()).debug("Cannot parse expression: {}: {}", query.getInput(), ex.getMessage());
         }
         return SearchResult.EMPTY;
     }

@@ -265,7 +265,7 @@ class Notifications extends XMLConfigurationFile {
             'numeric-message'('111-%noticeid%')
         }
         xml.notification(name:"Wide Spread Outage for $svc.serviceName", status:"off") {
-            uei('uei.opennms.org/correlation/remote/wideSpreadOutage')
+            uei('uei.opennms.org/correlation/perspective/wideSpreadOutage')
             rule(filterRule(svc))
             destinationPath(svc.serviceName)
             'text-message'('A wide spread outage has occurred for the %service% on interface %interfaceresolve% (%interface%) on node %nodelabel% at %time%.')
@@ -669,7 +669,7 @@ class ResponseGraphProperties extends PropertiesConfigurationFile {
         
         put("report.${svc.reportName}.name", "${svc.serviceName} Latency")
      	put("report.${svc.reportName}.columns", "${svc.dsName}")
-     	put("report.${svc.reportName}.type", "responseTime, distributedStatus")
+     	put("report.${svc.reportName}.type", "responseTime, perspectiveResponseTime")
      	def prop = put("report.${svc.reportName}.command")
      	prop << "--title=\"${svc.serviceName} Response Time\" " 
      	prop << " --vertical-label=\"Seconds\" "

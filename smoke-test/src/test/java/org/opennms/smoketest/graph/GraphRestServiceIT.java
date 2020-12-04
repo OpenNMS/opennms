@@ -34,6 +34,9 @@ import static io.restassured.RestAssured.preemptive;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
@@ -43,20 +46,37 @@ import org.json.JSONTokener;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.hibernate.ApplicationDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.smoketest.OpenNMSSeleniumIT;
 import org.opennms.smoketest.graphml.GraphmlDocument;
 import org.opennms.smoketest.topo.GraphMLTopologyIT;
+import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.smoketest.utils.KarafShell;
 import org.opennms.smoketest.utils.RestClient;
+import org.springframework.orm.hibernate3.HibernateTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import com.google.common.collect.Lists;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 
 public class GraphRestServiceIT extends OpenNMSSeleniumIT {
 
     private static final String CONTAINER_ID = "test";
 
     private final RestClient restClient = stack.opennms().getRestClient();
+    private final KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
     private GraphmlDocument graphmlDocument;
 
     @Before
@@ -362,6 +382,134 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    public void verifyStatusExposureBsm() {
+        try {
+            karafShell.runCommand("opennms:bsm-generate-hierarchies 5 2");
+
+            // Fetch data
+            final JSONObject query = new JSONObject().put("semanticZoomLevel", 1);
+            given().log().ifValidationFails()
+                    .body(query.toString())
+                    .contentType(ContentType.JSON)
+                    .post("{container_id}/{namespace}", "bsm", "bsm")
+                    .then()
+                    .log().ifValidationFails()
+                    .statusCode(200)
+                    .contentType(ContentType.JSON)
+                    .content("vertices", Matchers.hasSize(1))
+                    .content("vertices[0].status", Matchers.is("Normal"));
+        } finally {
+            karafShell.runCommand("opennms:bsm-delete-generated-hierarchies");
+        }
+    }
+
+    @Test
+    public void verifyStatusEnrichmentApplication() {
+        final HibernateDaoFactory daoFactory = stack.postgres().getDaoFactory();
+        final ApplicationDaoHibernate applicationDao = daoFactory.getDao(ApplicationDaoHibernate.class);
+        final MonitoredServiceDao monitoredServiceDao = daoFactory.getDao(MonitoredServiceDaoHibernate.class);
+        final PlatformTransactionManager transactionManager = new HibernateTransactionManager(applicationDao.getSessionFactory());
+        final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+
+        // Clean up
+        applicationDao.findAll().forEach(applicationDao::delete);
+
+        // Set up test data
+        createRequisition();
+        final OnmsApplication tmpApplication = transactionTemplate.execute(transactionStatus -> {
+            final OnmsApplication theApplication = new OnmsApplication();
+            theApplication.setName("OpenNMS Application");
+            monitoredServiceDao.findAllServices().stream()
+                    .filter(ms -> ms.getIpAddress().toString().contains("127.0.0.1"))
+                    .forEach(service -> service.addApplication(theApplication));
+            applicationDao.save(theApplication);
+            return theApplication;
+        });
+
+        // Force fully initialized to prevent LazyLoad-Exceptions
+        final OnmsApplication application = transactionTemplate.execute(status -> {
+            final OnmsApplication initializedApplication = applicationDao.get(tmpApplication.getId());
+            initializedApplication.getMonitoredServices().stream().forEach(OnmsMonitoredService::getNodeId);
+            return initializedApplication;
+        });
+
+        // Force application provider to reload (otherwise we have to wait until cache is invalidated)
+        karafShell.runCommand("opennms:graph-force-reload --container application");
+
+        // Fetch data nothing down
+        final JSONObject query = new JSONObject()
+                .put("semanticZoomLevel", 1)
+                .put("verticesInFocus", Lists.newArrayList(String.format("Application:%s", application.getId())));
+        given().log().ifValidationFails()
+                .body(query.toString())
+                .contentType(ContentType.JSON)
+                .post("{container_id}/{namespace}", "application", "application")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .content("vertices", Matchers.hasSize(3))
+                .content("vertices[0].status.severity", Matchers.is("Normal"))
+                .content("vertices[1].status.severity", Matchers.is("Normal"))
+                .content("vertices[2].status.severity", Matchers.is("Normal"))
+                .content("vertices[0].status.count", Matchers.is(0))
+                .content("vertices[1].status.count", Matchers.is(0))
+                .content("vertices[2].status.count", Matchers.is(0));
+
+        // Prepare simulated outages
+        final List<OnmsMonitoredService> services = Lists.newArrayList(application.getMonitoredServices());
+        final int nodeId1 = services.get(0).getNodeId();
+        final int nodeId2 = services.get(1).getNodeId();
+        final Event nodeLostServiceEvent = new EventBuilder(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, getClass().getSimpleName())
+                .setNodeid(nodeId1)
+                .setInterface(InetAddressUtils.getInetAddress("127.0.0.1"))
+                .setService("ICMP")
+                .getEvent();
+        final Event nodeDownEvent = new EventBuilder(EventConstants.NODE_DOWN_EVENT_UEI, getClass().getSimpleName())
+                .setNodeid(nodeId2)
+                .getEvent();
+
+        // Take service down, reload graph and verify
+        restClient.sendEvent(nodeLostServiceEvent);
+        karafShell.runCommand("opennms:graph-force-reload --container application");
+        final Response response = given().log().ifValidationFails()
+                .body(query.toString())
+                .contentType(ContentType.JSON)
+                .post("{container_id}/{namespace}", "application", "application")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().response();
+        final ApplicationViewResponse applicationViewResponse = new ApplicationViewResponse(response);
+        assertThat(applicationViewResponse.length(), Matchers.is(3));
+        verifyStatus(applicationViewResponse.getVertexByApplicationId(application.getId()), "Minor", 1);
+        verifyStatus(applicationViewResponse.getVertexByNodeId(nodeId1), "Minor", 1);
+        verifyStatus(applicationViewResponse.getVertexByNodeId(nodeId2), "Normal", 0);
+
+        // Take node down, reload graph and verify
+        restClient.sendEvent(nodeDownEvent);
+        karafShell.runCommand("opennms:graph-force-reload --container application");
+        final Response response2 = given().log().ifValidationFails()
+                .body(query.toString())
+                .contentType(ContentType.JSON)
+                .post("{container_id}/{namespace}", "application", "application")
+                .then()
+                .log().ifValidationFails()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().response();
+        final ApplicationViewResponse applicationViewResponse2 = new ApplicationViewResponse(response2);
+        assertThat(applicationViewResponse2.length(), Matchers.is(3));
+        verifyStatus(applicationViewResponse2.getVertexByApplicationId(application.getId()), "Major", 1);
+        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId1), "Minor", 1);
+        verifyStatus(applicationViewResponse2.getVertexByNodeId(nodeId2), "Major", 1);
+
+        // Finally clean up
+        applicationDao.delete(application);
+    }
+
+    @Test
     // Here we test, that the name of the file and the container id may be different
     public void verifyContainerId() {
         final String graphmlName = "test-graph";
@@ -405,9 +553,8 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
     // If the reduceFunction is exposed properly, it means bsm provider is exposing custom json renderers
     @Test
     public void verifyCustomJsonRenderer() {
-        final KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
         try {
-            karafShell.runCommand("opennms-bsm:generate-hierarchies 5 2");
+            karafShell.runCommand("opennms:bsm-generate-hierarchies 5 2");
             given().log().ifValidationFails()
                 .get("{container_id}/{namespace}", "bsm", "bsm")
                 .then()
@@ -421,7 +568,7 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .content("vertices[3].reduceFunction.type", Matchers.is("highestseverity"))
                 .content("vertices[4].reduceFunction.type", Matchers.is("highestseverity"));
         } finally {
-            karafShell.runCommand("opennms-bsm:delete-generated-hierarchies");
+            karafShell.runCommand("opennms:bsm-delete-generated-hierarchies");
         }
     }
 
@@ -469,5 +616,49 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 "   </node>" +
                 "</model-import>";
         createRequisition(REQUISITION_NAME, requisitionXML, 2);
+    }
+
+    private static void verifyStatus(JSONObject vertex, String expectedStatus, int expectedCount) {
+        final JSONObject status = vertex.getJSONObject("status");
+        assertThat(status.getString("severity"), Matchers.is(expectedStatus));
+        assertThat(status.getInt("count"), Matchers.is(expectedCount));
+    }
+
+    private static class ApplicationViewResponse {
+        private final JSONArray vertices;
+
+        private ApplicationViewResponse(final Response response) {
+            Objects.requireNonNull(response);
+            final JSONTokener jsonTokener = new JSONTokener(response.getBody().asString());
+            final JSONObject jsonObject = new JSONObject(jsonTokener);
+            this.vertices = jsonObject.getJSONArray("vertices");
+        }
+
+        public int length() {
+            return vertices.length();
+        }
+
+        public JSONObject getVertexByApplicationId(int applicationId) {
+            for (int i=0; i<vertices.length(); i++) {
+                final JSONObject eachVertex = vertices.getJSONObject(i);
+                if (eachVertex.has("applicationId")
+                        && Objects.equals(eachVertex.getString("applicationId"), Integer.toString(applicationId))) {
+                    return eachVertex;
+                }
+            }
+            throw new NoSuchElementException("No Vertex with applicationId '" + applicationId + "' found");
+        }
+
+        public JSONObject getVertexByNodeId(int nodeId) {
+            for (int i=0; i<vertices.length(); i++) {
+                final JSONObject eachVertex = vertices.getJSONObject(i);
+                if (eachVertex.has("nodeCriteria")
+                        && Objects.equals(eachVertex.getString("nodeCriteria"), Integer.toString(nodeId))) {
+                    return eachVertex;
+                }
+            }
+            throw new NoSuchElementException("No Vertex with nodeCriteria '" + nodeId + "' found");
+        }
+
     }
 }

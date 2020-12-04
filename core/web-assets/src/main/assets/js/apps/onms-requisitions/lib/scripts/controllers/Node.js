@@ -316,6 +316,27 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
       $scope.node.metaData.removeEntriesForMissingScopedEntities();
     };
 
+    $scope.deleteNode = function(node) {
+      bootbox.confirm('Are you sure you want to delete the current node?', function(ok) {
+      if (ok) {
+        RequisitionsService.startTiming();
+        RequisitionsService.deleteNode(node)
+            .then(function() {
+              $scope.nodeForm.$setPristine(); // Ignore dirty state
+              $scope.goBack();
+              // If node was just created, it has no label yet
+              if (node.nodeLabel) {
+                growl.success('The node ' + node.nodeLabel + ' has been deleted.');
+              } else {
+                growl.success('The node has been deleted.');
+              }
+            },
+            $scope.errorHandler
+        );
+      }
+      });
+    };
+
     /**
      * @description Shows the dialog for add/edit an metaData entry
      *
@@ -400,7 +421,8 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
           foreignId: function() { return foreignId; },
           foreignSource: function() { return foreignSource; },
           requisitionInterface: function() { return angular.copy(intfToEdit); },
-          ipBlackList: function() { return ipBlackList; }
+          ipBlackList: function() { return ipBlackList; },
+          primaryInterface : function() { return $scope.getPrimaryAddress();}
         }
       });
 
@@ -533,8 +555,8 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     * @returns {string} the primary IP address or 'N/A' if it doesn't exist.
     */
     $scope.getPrimaryAddress = function() {
-      var ip = $scope.node.getPrimaryIpAddress();
-      return ip ? ip : 'N/A';
+      const ip = $scope.node.getPrimaryIpAddress();
+      return ip ? ip : null;
     };
 
     // Initialization of the node's page for either adding a new node or editing an existing node

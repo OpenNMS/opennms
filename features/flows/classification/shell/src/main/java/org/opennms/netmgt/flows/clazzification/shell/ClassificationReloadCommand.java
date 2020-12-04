@@ -34,7 +34,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 
-@Command(scope="opennms-classification", name="reload-engine", description = "Reloads the rules of the classification engine")
+@Command(scope="opennms", name="reload-classification-engine", description = "Reloads the rules of the classification engine")
 @Service
 public class ClassificationReloadCommand implements Action {
 

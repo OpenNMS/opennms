@@ -40,6 +40,7 @@ import org.opennms.netmgt.graph.rest.impl.converter.json.FallbackConverter;
 import org.opennms.netmgt.graph.rest.impl.converter.json.IpInfoConverter;
 import org.opennms.netmgt.graph.rest.impl.converter.json.NodeInfoConverter;
 import org.opennms.netmgt.graph.rest.impl.converter.json.PrimitiveConverter;
+import org.opennms.netmgt.graph.rest.impl.converter.json.StatusInfoConverter;
 import org.opennms.netmgt.graph.rest.impl.converter.json.VertexRefConverter;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -83,6 +84,7 @@ public class JsonPropertyConverterService {
         propertyConverters.add(new NodeInfoConverter());
         propertyConverters.add(new IpInfoConverter());
         propertyConverters.add(new VertexRefConverter());
+        propertyConverters.add(new StatusInfoConverter());
         try {
             final Collection<ServiceReference<PropertyConverter>> serviceReferences = bundleContext.getServiceReferences(PropertyConverter.class, null);
             if (serviceReferences != null) {

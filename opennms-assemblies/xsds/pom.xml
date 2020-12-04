@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>26.0.0-SNAPSHOT</version>
+    <version>27.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -18,6 +18,8 @@
           <descriptors>
             <descriptor>src/assembly/xsds.xml</descriptor>
           </descriptors>
+          <overrideUid>0</overrideUid>
+          <overrideGid>0</overrideGid>
           <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
@@ -81,6 +83,12 @@
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>org.opennms.features.reporting.model</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>drools-correlation-engine</artifactId>
       <version>${project.version}</version>
@@ -129,6 +137,12 @@
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.ifttt</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.telemetry.config</groupId>
       <artifactId>org.opennms.features.telemetry.config.jaxb</artifactId>
       <version>${project.version}</version>
@@ -143,6 +157,18 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-alarm-api</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-northbounder-bsf</artifactId>
+      <version>${project.version}</version>
+      <classifier>xsds</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-northbounder-drools</artifactId>
       <version>${project.version}</version>
       <classifier>xsds</classifier>
     </dependency>

@@ -47,11 +47,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.opennms.netmgt.model.OnmsUser;
 
 import io.restassured.http.ContentType;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ReportRestIT extends AbstractRestIT {
 
     private final static String REPORT_ID = "local_Early-Morning-Report";

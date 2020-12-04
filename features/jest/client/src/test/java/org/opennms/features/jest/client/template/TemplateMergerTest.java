@@ -61,7 +61,7 @@ public class TemplateMergerTest {
             "      routing_partition_size: 20" +
             "    }" +
             "  }," +
-            "  template: prefix" +
+            "  \"index_patterns\":[\"prefix*\"]" +
             "}";
 
         // Configure settings
@@ -80,7 +80,7 @@ public class TemplateMergerTest {
 
     @Test
     public void verifyIndexPrefixHandling() {
-        final String expectedJson = "{\"template\":\"prefix-test\",\"settings\":{\"index\":{}}}";
+        final String expectedJson = "{\"index_patterns\":[\"prefix-test-*\"],\"settings\":{\"index\":{}}}";
 
         // Configure settings
         final IndexSettings settings = new IndexSettings();
@@ -88,6 +88,6 @@ public class TemplateMergerTest {
 
         // Verify
         final JsonElement expectedJsonObject = new JsonParser().parse(expectedJson);
-        assertEquals(new Gson().toJson(expectedJsonObject), new TemplateMerger().merge("{\"template\": \"test\"}", settings));
+        assertEquals(new Gson().toJson(expectedJsonObject), new TemplateMerger().merge("{\"index_patterns\":[\"test-*\"]}", settings));
     }
 }

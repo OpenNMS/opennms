@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -81,7 +82,8 @@ public class AspectJTest implements InitializingBean {
         assertEquals(0, m_interceptor.getPreEventCount());
         assertEquals(0, m_interceptor.getPostEventCount());
         
-        m_handler.handleAnEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI));
+        m_handler.handleAnEvent(ImmutableMapper.fromMutableEvent(
+                createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)));
         
         assertEquals(1, m_handler.getHandlerCallCount());
         assertEquals(1, m_interceptor.getPreEventCount());

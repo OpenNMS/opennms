@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2003-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2003-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -51,10 +51,10 @@ import org.opennms.netmgt.config.scriptd.Uei;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
+import org.opennms.netmgt.events.api.model.IScript;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,15 +162,15 @@ public class Executor {
         }
     }
 
-    public void addTask(Event event) {
+    public void addTask(IEvent event) {
         m_executorService.execute(new ScriptdRunnable(event));
     }
 
     private class ScriptdRunnable implements Runnable {
 
-        private final Event m_event;
+        private final IEvent m_event;
 
-        public ScriptdRunnable(Event event) {
+        public ScriptdRunnable(IEvent event) {
             m_event = event;
         }
 
@@ -221,9 +221,9 @@ public class Executor {
         } // end run
     }
 
-    private void executeEventScripts(Event m_event) {
+    private void executeEventScripts(IEvent m_event) {
 
-        Script[] attachedScripts = m_event.getScript();
+        IScript[] attachedScripts = m_event.getScript();
 
         Set<EventScript> mapScripts = null;
 
@@ -252,7 +252,7 @@ public class Executor {
 
             LOG.debug("Executing attached scripts");
             if (attachedScripts.length > 0) {
-                for (final Script script : attachedScripts) {
+                for (final IScript script : attachedScripts) {
                     try {
                         m_scriptManager.exec(script.getLanguage(), "", 0, 0, script.getContent());
                     } catch (BSFException e) {
@@ -305,13 +305,13 @@ public class Executor {
     }
 
 
-    private static boolean isReloadConfigEvent(Event event) {
+    private static boolean isReloadConfigEvent(IEvent event) {
         boolean isTarget = false;
         
         if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            List<Parm> parmCollection = event.getParmCollection();
+            List<IParm> parmCollection = event.getParmCollection();
             
-            for (Parm parm : parmCollection) {
+            for (IParm parm : parmCollection) {
                 if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && "Scriptd".equalsIgnoreCase(parm.getValue().getContent())) {
                     isTarget = true;
                     break;

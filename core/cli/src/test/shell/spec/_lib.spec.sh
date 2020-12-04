@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # shellcheck disable=SC2034
 OVERRIDEABLE_ARRAYS=(TEST_FOO TEST_BAR TEST_BAZ TEST_ADDITIONAL_OPTIONS)
@@ -67,7 +67,8 @@ setUp() {
   unset TEST_BAR
   unset TEST_BAZ
   unset TEST_ADDITIONAL_OPTIONS
-  cd "$TESTDIR" || exit 1
+  cd "${TESTDIR:?}" || exit 1
+  rm -rf "${TESTDIR:?}/${_shunit_test_:?}"
 }
 
 testShellcheck() {

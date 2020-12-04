@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+. "/opt/minion/confd/scripts/confd_lib.sh"
+
+if removeIfEmpty "$1"; then
+  echo "Removed file '$1' since it was empty after rendering"
+fi

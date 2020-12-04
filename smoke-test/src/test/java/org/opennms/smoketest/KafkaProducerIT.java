@@ -103,11 +103,11 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
         String shellOutput;
         try (final SshClient sshClient = stack.opennms().ssh()) {
             PrintStream pipe = sshClient.openShell();
-            pipe.println("opennms-kafka-producer:list-alarms");
+            pipe.println("opennms:kafka-list-alarms");
             pipe.println("logout");
             await().atMost(30, SECONDS).until(sshClient.isShellClosedCallable());
             shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
-            shellOutput = StringUtils.substringAfter(shellOutput, "opennms-kafka-producer:list-alarms");
+            shellOutput = StringUtils.substringAfter(shellOutput, "opennms:kafka-list-alarms");
         }
         return shellOutput;
     }
@@ -142,8 +142,8 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
         String shellOutput;
         try (final SshClient sshClient = stack.opennms().ssh()) {
             PrintStream pipe = sshClient.openShell();
-            //opennms-collection:collect --node #nodeId --persist org.opennms.netmgt.collectd.SnmpCollector #host
-            pipe.println("opennms-collection:collect --node " + nodeId + " --persist org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 port=18980");
+            //opennms:collect --node #nodeId --persist org.opennms.netmgt.collectd.SnmpCollector #host
+            pipe.println("opennms:collect --node " + nodeId + " --persist org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 port=18980");
             pipe.println("logout");
             await().atMost(30, SECONDS).until(sshClient.isShellClosedCallable());
             shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());

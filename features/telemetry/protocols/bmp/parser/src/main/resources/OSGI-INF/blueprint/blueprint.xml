@@ -4,10 +4,12 @@
 		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 ">
     <reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" availability="mandatory" />
+    <reference id="dnsResolver" interface="org.opennms.netmgt.dnsresolver.api.DnsResolver" availability="mandatory" />
 
     <!-- BMP Parser Factory -->
     <bean id="bmpParserFactory" class="org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParserFactory">
         <argument ref="telemetryRegistry" />
+        <argument ref="dnsResolver" />
     </bean>
     <service ref="bmpParserFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
         <service-properties>

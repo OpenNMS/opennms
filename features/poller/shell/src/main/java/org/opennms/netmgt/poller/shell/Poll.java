@@ -64,7 +64,7 @@ import org.opennms.netmgt.poller.PollerResponse;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 
-@Command(scope = "opennms-poller", name = "poll", description = "Used to invoke a monitor against a host at a specific location, or to test a service monitor definition from a given poller package.")
+@Command(scope = "opennms", name = "poll", description = "Used to invoke a monitor against a host at a specific location, or to test a service monitor definition from a given poller package.")
 @Service
 public class Poll implements Action {
 

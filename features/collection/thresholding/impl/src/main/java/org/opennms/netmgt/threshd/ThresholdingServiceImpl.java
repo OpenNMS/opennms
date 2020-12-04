@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,6 +50,8 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.threshd.api.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.api.ThresholdStateMonitor;
@@ -58,8 +60,6 @@ import org.opennms.netmgt.threshd.api.ThresholdingService;
 import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.opennms.netmgt.threshd.api.ThresholdingSessionKey;
 import org.opennms.netmgt.threshd.api.ThresholdingSetPersister;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,7 +142,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
     }
 
     @Override
-    public void onEvent(Event e) {
+    public void onEvent(IEvent e) {
         switch (e.getUei()) {
         case EventConstants.NODE_GAINED_SERVICE_EVENT_UEI:
             nodeGainedService(e);
@@ -162,14 +162,14 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         }
     }
 
-    public void nodeGainedService(Event event) {
+    public void nodeGainedService(IEvent event) {
         LOG.debug(event.toString());
         // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
         threshdDao.rebuildPackageIpListMap();
         reinitializeThresholdingSets(event);
     }
 
-    public void handleNodeCategoryChanged(Event event) {
+    public void handleNodeCategoryChanged(IEvent event) {
         LOG.debug(event.toString());
         // Trigger re-evaluation of Threshold Packages, re-evaluating Filters.
         threshdDao.rebuildPackageIpListMap();
@@ -229,10 +229,10 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         thresholdingSetPersister.clear(session);
     }
 
-    private void daemonReload(Event event) {
+    private void daemonReload(IEvent event) {
         final String thresholdsDaemonName = "Threshd";
         boolean isThresholds = false;
-        for (Parm parm : event.getParmCollection()) {
+        for (IParm parm : event.getParmCollection()) {
             if (EventConstants.PARM_DAEMON_NAME.equals(parm.getParmName()) && thresholdsDaemonName.equalsIgnoreCase(parm.getValue().getContent())) {
                 isThresholds = true;
                 break;
@@ -249,7 +249,7 @@ public class ThresholdingServiceImpl implements ThresholdingService, EventListen
         }
     }
 
-    private void reinitializeThresholdingSets(Event e) {
+    private void reinitializeThresholdingSets(IEvent e) {
         thresholdingSetPersister.reinitializeThresholdingSets();
     }
 

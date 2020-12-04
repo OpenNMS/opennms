@@ -49,6 +49,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.io.ByteSink;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -69,6 +71,9 @@ import com.hubspot.jinjava.Jinjava;
  */
 public class OverlayUtils {
 
+    public static final ObjectMapper jsonMapper = new ObjectMapper();
+    private static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+    
     public static void copyFiles(List<OverlayFile> files, Path overlayRoot) {
         try {
             for (OverlayFile file : files) {
@@ -190,5 +195,27 @@ public class OverlayUtils {
         perms.add(PosixFilePermission.OTHERS_EXECUTE);
         perms.add(PosixFilePermission.OWNER_WRITE);
         java.nio.file.Files.setPosixFilePermissions(temp, perms);
+    }
+
+    public static void writeYaml(Path path, Map<String, Object> values) throws IOException {
+        File file = path.toFile();
+        Map<String, Object> yamlMap = yamlMapper.readValue(file, Map.class);
+        mergeMaps(yamlMap, values);
+        yamlMapper.writeValue(file, yamlMap);
+    }
+
+    static void mergeMaps(Map<String, Object> originalMap, Map<String, Object> newMap) {
+        newMap.forEach((key, value) -> {
+            if (value instanceof Map) {
+                Object subMap = originalMap.get(key);
+                if (subMap == null) {
+                    originalMap.put(key, value);
+                } else {
+                    mergeMaps((Map<String, Object>) subMap, (Map<String, Object>) value);
+                }
+            } else {
+                originalMap.put(key, value);
+            }
+        });
     }
 }

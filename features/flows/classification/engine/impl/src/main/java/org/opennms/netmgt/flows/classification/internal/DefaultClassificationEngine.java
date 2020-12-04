@@ -52,11 +52,13 @@ import org.opennms.netmgt.flows.classification.persistence.api.DefaultRuleDefini
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
 import org.opennms.netmgt.flows.classification.persistence.api.RulePositionComparator;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
 
@@ -68,6 +70,8 @@ public class DefaultClassificationEngine implements ClassificationEngine {
     private final LoadingCache<Integer, List<Classifier>> portClassifiersCache;
     private final Comparator<RuleDefinition> ruleComparator = new RulePositionComparator();
     private final ClassificationRuleProvider ruleProvider;
+    private final List<Rule> invalidRules = Lists.newArrayList();
+    private final FilterService filterService;
 
     public DefaultClassificationEngine(final ClassificationRuleProvider ruleProvider, final FilterService filterService) {
         this(ruleProvider, filterService, true);
@@ -75,6 +79,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
 
     public DefaultClassificationEngine(final ClassificationRuleProvider ruleProvider, final FilterService filterService, final boolean initialize) {
         this.ruleProvider = Objects.requireNonNull(ruleProvider);
+        this.filterService = Objects.requireNonNull(filterService);
         this.portClassifiersCache = CacheBuilder.newBuilder().build(new CacheLoader<Integer, List<Classifier>>() {
             @Override
             public List<Classifier> load(Integer port) throws Exception {
@@ -129,10 +134,23 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         // Reset existing data
         ruleClassifierMap.clear();
         rulePortList.clear();
+        invalidRules.clear();
         portClassifiersCache.invalidateAll();
 
-        // Load rules and expand omnidirectional rules to reversed ones
-        final List<RuleDefinition> rules = ruleProvider.getRules().stream()
+        // Load all rules and validate them
+        final List<Rule> validRules = Lists.newArrayList();
+        ruleProvider.getRules().forEach(rule -> {
+            try {
+                new CombinedClassifier(rule, filterService);
+                validRules.add(rule);
+            } catch (Exception ex) {
+                LoggerFactory.getLogger(getClass()).error("Rule {} is not valid. Ignoring rule.", rule, ex);
+                invalidRules.add(rule);
+            }
+        });
+
+        // Expand omnidirectional rules to reversed ones
+        final List<RuleDefinition> rules = validRules.stream()
                 .flatMap(rule -> rule.isOmnidirectional() && (rule.hasSrcPortDefinition() || rule.hasSrcAddressDefinition() || rule.hasDstPortDefinition() || rule.hasDstAddressDefinition())
                         ? Stream.of(rule, reverseRule(rule))
                         : Stream.of(rule))
@@ -192,6 +210,11 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         for (int i=0; i<rulePortList.size(); i++) {
             getClassifiers(i);
         }
+    }
+
+    @Override
+    public List<Rule> getInvalidRules() {
+        return Collections.unmodifiableList(invalidRules);
     }
 
     @Override

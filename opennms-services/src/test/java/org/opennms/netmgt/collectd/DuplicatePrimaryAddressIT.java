@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,7 @@ import static org.easymock.EasyMock.eq;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -64,6 +65,7 @@ import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockPersisterFactory;
@@ -163,14 +165,14 @@ public class DuplicatePrimaryAddressIT {
         // Emulate Provisiond events for node1
         nodeGained.setNodeid(1);
         reinitialize.setNodeid(1);
-        m_collectd.onEvent(nodeGained.getEvent());
-        m_collectd.onEvent(reinitialize.getEvent());
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(nodeGained.getEvent()));
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinitialize.getEvent()));
 
         // Emulate Provisiond events for node3
         nodeGained.setNodeid(3);
         reinitialize.setNodeid(3);
-        m_collectd.onEvent(nodeGained.getEvent());
-        m_collectd.onEvent(reinitialize.getEvent());
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(nodeGained.getEvent()));
+        m_collectd.onEvent(ImmutableMapper.fromMutableEvent(reinitialize.getEvent()));
 
         verify();
     }
@@ -253,6 +255,7 @@ public class DuplicatePrimaryAddressIT {
         EasyMock.expect(m_ifaceDao.load(2)).andReturn(ip1).anyTimes();
         EasyMock.expect(m_ifaceDao.load(4)).andReturn(ip2).anyTimes();
 
+        EasyMock.expect(m_filterDao.getActiveIPAddressList(anyObject())).andReturn(Arrays.asList(InetAddressUtils.addr("192.168.1.1"))).anyTimes();
         m_mockUtils.replayAll();
 
         final MockTransactionTemplate transTemplate = new MockTransactionTemplate();

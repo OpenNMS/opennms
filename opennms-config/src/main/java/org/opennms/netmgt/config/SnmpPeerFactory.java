@@ -49,12 +49,15 @@ import java.util.concurrent.locks.Lock;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.core.spring.FileReloadContainer;
+import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmp.AddressSnmpConfigVisitor;
 import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.Range;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -449,12 +452,17 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         boolean succeeded = false;
         getWriteLock().lock();
         try {
-            Definition definition = new Definition();
-            definition.setLocation(location);
-            SnmpAgentConfig agentConfig = getAgentConfig(inetAddress, location);
-            setDefinitionFromAgentConfig(definition, agentConfig);
-            final SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
-            succeeded = mgr.removeDefinition(definition);
+            // Check if there is a matching definition from the config itself instead of doing getAgentConfig.
+            Definition matchingDefinition = findMatchingDefinition(inetAddress, location);
+            if(matchingDefinition !=  null) {
+                // Form a definition just with this IP Address.
+                Definition definition = createDefinition(matchingDefinition);
+                List<String> specifics = new ArrayList<>();
+                specifics.add(InetAddressUtils.toIpAddrString(inetAddress));
+                definition.setSpecifics(specifics);
+                final SnmpConfigManager mgr = new SnmpConfigManager(getSnmpConfig());
+                succeeded = mgr.removeDefinition(definition);
+            }
         } finally {
             getWriteLock().unlock();
         }
@@ -469,6 +477,74 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
         return succeeded;
     }
+
+    private Definition findMatchingDefinition(InetAddress inetAddress, String location) {
+        SnmpConfig config = getSnmpConfig();
+        List<Definition> definitions = config.getDefinitions();
+        return definitions.stream().filter(definition -> matchDefinition(definition, inetAddress, location)).findFirst().orElse(null);
+    }
+
+    private  static Definition createDefinition(Definition matchingDefinition) {
+        Definition definition = new Definition();
+        definition.setProfileLabel(matchingDefinition.getProfileLabel());
+        definition.setLocation(matchingDefinition.getLocation());
+        // Fill configuration
+        definition.setProxyHost(matchingDefinition.getProxyHost());
+        definition.setMaxVarsPerPdu(matchingDefinition.getMaxVarsPerPdu());
+        definition.setMaxRepetitions(matchingDefinition.getMaxRepetitions());
+        definition.setMaxRequestSize(matchingDefinition.getMaxRequestSize());
+
+        definition.setSecurityName(matchingDefinition.getSecurityName());
+        definition.setSecurityLevel(matchingDefinition.getSecurityLevel());
+        definition.setAuthPassphrase(matchingDefinition.getAuthPassphrase());
+        definition.setAuthProtocol(matchingDefinition.getAuthProtocol());
+        definition.setEngineId(matchingDefinition.getEngineId());
+        definition.setContextEngineId(matchingDefinition.getContextEngineId());
+        definition.setContextName(matchingDefinition.getContextName());
+        definition.setEnterpriseId(matchingDefinition.getEnterpriseId());
+        definition.setPrivacyPassphrase(matchingDefinition.getPrivacyPassphrase());
+        definition.setPrivacyProtocol(matchingDefinition.getPrivacyProtocol());
+        definition.setVersion(matchingDefinition.getVersion());
+        definition.setReadCommunity(matchingDefinition.getReadCommunity());
+        definition.setWriteCommunity(matchingDefinition.getWriteCommunity());
+        definition.setPort(matchingDefinition.getPort());
+        definition.setTimeout(matchingDefinition.getTimeout());
+        definition.setTTL(matchingDefinition.getTTL());
+        definition.setRetry(matchingDefinition.getRetry());
+        return definition;
+    }
+
+    private boolean matchDefinition(Definition definition, InetAddress inetAddress, String location) {
+        boolean locationMatched =  LocationUtils.doesLocationsMatch(location, definition.getLocation());
+        return locationMatched && matchingIpAddress(inetAddress, definition);
+    }
+
+    private static boolean matchingIpAddress(InetAddress inetAddress, Definition definition) {
+
+         boolean matchingIpAddress = definition.getSpecifics().stream()
+                 .anyMatch(saddr -> saddr.equals(inetAddress.getHostAddress()));
+         if(!matchingIpAddress) {
+             return definition.getRanges().stream().anyMatch(range -> matchingRanges(inetAddress, range));
+         }
+         return true;
+    }
+
+    private static boolean matchingRanges(InetAddress inetAddress, Range range) {
+        final byte[] addr = inetAddress.getAddress();
+        final byte[] begin = InetAddressUtils.toIpAddrBytes(range.getBegin());
+        final byte[] end = InetAddressUtils.toIpAddrBytes(range.getEnd());
+
+        final boolean inRange;
+        final ByteArrayComparator BYTE_ARRAY_COMPARATOR = new ByteArrayComparator();
+        if (BYTE_ARRAY_COMPARATOR.compare(begin, end) <= 0) {
+            inRange = InetAddressUtils.isInetAddressInRange(addr, begin, end);
+        } else {
+            inRange = InetAddressUtils.isInetAddressInRange(addr, end, begin);
+        }
+        return inRange;
+    }
+
+
 
     @Override
     public void saveAgentConfigAsDefinition(SnmpAgentConfig snmpAgentConfig, String location, String module) {

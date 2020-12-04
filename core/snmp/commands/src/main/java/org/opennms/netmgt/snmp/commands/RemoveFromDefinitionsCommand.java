@@ -40,7 +40,7 @@ import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 
 import com.google.common.base.Strings;
 
-@Command(scope = "opennms-snmp", name = "remove-from-definition", description = "Remove an IP address from a definition")
+@Command(scope = "opennms", name = "snmp-remove-from-definition", description = "Remove an IP address from a definition")
 @Service
 public class RemoveFromDefinitionsCommand implements Action {
 

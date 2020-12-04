@@ -101,7 +101,7 @@ public class DefaultClassificationEngineTest {
                 new RuleBuilder().withName("SSH").withDstPort("22").withPosition(1).build(),
                 new RuleBuilder().withName("HTTP_CUSTOM").withDstAddress("192.168.0.1").withDstPort("80").withPosition(2).build(),
                 new RuleBuilder().withName("HTTP").withDstPort("80").withPosition(3).build(),
-                new RuleBuilder().withName("DUMMY").withDstAddress("192.168.1.*").withDstPort("8000-9000,80,8080").withPosition(4).build(),
+                new RuleBuilder().withName("DUMMY").withDstAddress("192.168.1.0-192.168.1.255,10.10.5.3,192.168.0.0/24").withDstPort("8000-9000,80,8080").withPosition(4).build(),
                 new RuleBuilder().withName("RANGE-TEST").withDstPort("7000-8000").withPosition(5).build(),
                 new RuleBuilder().withName("OpenNMS").withDstPort("8980").withPosition(6).build(),
                 new RuleBuilder().withName("OpenNMS Monitor").withDstPort("1077").withSrcPort("5347").withSrcAddress("10.0.0.5").withPosition(7).build()
@@ -138,6 +138,13 @@ public class DefaultClassificationEngineTest {
                         .withDstPort(80)
                         .withDstAddress("192.168.0.2")
                         .withProtocol(ProtocolType.TCP).build()));
+        assertEquals("DUMMY", engine.classify(new ClassificationRequestBuilder()
+                .withLocation("Default")
+                .withSrcAddress("127.0.0.1")
+                .withDstAddress("10.10.5.3")
+                .withSrcPort(5213)
+                .withDstPort(8080)
+                .withProtocol(ProtocolType.TCP).build()));
 
         // Verify IP Range
         final IPAddressRange ipAddresses = new IPAddressRange("192.168.1.0", "192.168.1.255");
@@ -148,6 +155,12 @@ public class DefaultClassificationEngineTest {
             // Populate src address and port. Result must be the same
             classificationRequest.setSrcAddress("10.0.0.1");
             classificationRequest.setSrcPort(5123);
+            assertEquals("DUMMY", engine.classify(classificationRequest));
+        }
+
+        // Verify CIDR expression
+        for (IPAddress ipAddress : new IPAddressRange("192.168.0.0", "192.168.0.255")) {
+            final ClassificationRequest classificationRequest = new ClassificationRequest("Default", 0, null, 8080, ipAddress.toString(), ProtocolType.TCP);
             assertEquals("DUMMY", engine.classify(classificationRequest));
         }
 

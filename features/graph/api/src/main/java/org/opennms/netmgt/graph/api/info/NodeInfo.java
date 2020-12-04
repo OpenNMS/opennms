@@ -89,7 +89,11 @@ public class NodeInfo {
     }
 
     public NodeRef getNodeRef() {
-        return NodeRef.from(id, foreignSource, foreignId);
+        if (foreignId != null && foreignSource != null) {
+            return NodeRef.from(id, foreignSource, foreignId);
+        } else {
+            return NodeRef.from(id);
+        }
     }
 
     public static NodeInfoBuilder builder() {

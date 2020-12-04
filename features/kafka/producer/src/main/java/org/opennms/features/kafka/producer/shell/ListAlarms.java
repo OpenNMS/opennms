@@ -39,7 +39,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.kafka.producer.datasync.AlarmDataStore;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 
-@Command(scope = "opennms-kafka-producer", name = "list-alarms", description = "Enumerates the alarms that are currently in the Kafka data store.")
+@Command(scope = "opennms", name = "kafka-list-alarms", description = "Enumerates the alarms that are currently in the Kafka data store.")
 @Service
 public class ListAlarms implements Action {
 

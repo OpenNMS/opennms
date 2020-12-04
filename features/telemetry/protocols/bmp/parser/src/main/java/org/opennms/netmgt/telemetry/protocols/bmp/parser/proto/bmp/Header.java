@@ -32,7 +32,9 @@ import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint32;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint8;
 
 import java.util.Objects;
+import java.util.function.Function;
 
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.InitiationPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.PeerDownPacket;
@@ -41,6 +43,7 @@ import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.Route
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.RouteMonitoringPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.StatisticsReportPacket;
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.TerminationPacket;
+import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.packets.UnknownPacket;
 
 import com.google.common.base.MoreObjects;
 
@@ -73,8 +76,8 @@ public class Header {
         return this.length - Header.SIZE;
     }
 
-    public Packet parsePayload(final ByteBuf buffer) throws InvalidPacketException {
-        return this.type.parse(this, buffer);
+    public Packet parsePayload(final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
+        return this.type.parse(this, buffer, peerAccessor);
     }
 
     public enum Type {
@@ -85,6 +88,7 @@ public class Header {
         INITIATION_MESSAGE(InitiationPacket::new),
         TERMINATION_MESSAGE(TerminationPacket::new),
         ROUTE_MIRRORING_MESSAGE(RouteMirroringPacket::new),
+        UNKNOWN(UnknownPacket::new),
         ;
 
         private final Packet.Parser parser;
@@ -93,8 +97,8 @@ public class Header {
             this.parser = Objects.requireNonNull(parser);
         }
 
-        private Packet parse(final Header header, final ByteBuf buffer) throws InvalidPacketException {
-            return this.parser.parse(header, buffer);
+        private Packet parse(final Header header, final ByteBuf buffer, final PeerAccessor peerAccessor) throws InvalidPacketException {
+            return this.parser.parse(header, buffer, peerAccessor);
         }
 
         private static Type from(final ByteBuf buffer) throws InvalidPacketException {
@@ -115,8 +119,13 @@ public class Header {
                 case 6:
                     return ROUTE_MIRRORING_MESSAGE;
                 default:
-                    throw new InvalidPacketException(buffer, "Unknown type: %d", type);
+                    BmpParser.RATE_LIMITED_LOG.debug("Unknown BMP Packet Type: {}", type);
+                    return UNKNOWN;
             }
+        }
+
+        public <R> R map(final Function<Type, R> mapper) {
+            return mapper.apply(this);
         }
     }
 

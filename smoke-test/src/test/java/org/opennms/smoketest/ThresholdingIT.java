@@ -129,7 +129,7 @@ public class ThresholdingIT {
         assertThat(getAlarmsUeisForNode(testNode.getId()), not(hasItem(HIGH_THRESHOLD_EVENT_UEI)));
 
         // Increase the service delay above the threshold limit
-        setServiceDelay(6, TimeUnit.SECONDS);
+        setServiceDelay(7, TimeUnit.SECONDS);
 
         // Wait for the high threshold to appear
         LOG.info("Waiting for high threshold alarm...");

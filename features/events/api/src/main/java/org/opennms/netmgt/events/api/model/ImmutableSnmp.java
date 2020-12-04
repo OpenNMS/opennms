@@ -146,12 +146,12 @@ public final class ImmutableSnmp implements ISnmp {
 
     @Override
     public Integer getSpecific() {
-        return specific;
+        return specific == null ? 0 : specific;
     }
 
     @Override
     public Integer getGeneric() {
-        return generic;
+        return generic == null ? 0 : generic;
     }
 
     @Override
@@ -161,7 +161,7 @@ public final class ImmutableSnmp implements ISnmp {
 
     @Override
     public Long getTimeStamp() {
-        return timeStamp;
+        return timeStamp == null ? 0 : timeStamp;
     }
 
     @Override

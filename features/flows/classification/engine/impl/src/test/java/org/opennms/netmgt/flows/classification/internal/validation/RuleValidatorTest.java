@@ -104,15 +104,16 @@ public class RuleValidatorTest {
         // Note: The errorContext can either be srcAddress or dstAddress.
 
         // Fail
+        verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "*"), Errors.RULE_IP_ADDRESS_INVALID);
         verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, ""), Errors.RULE_IP_ADDRESS_INVALID);
         verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, null), Errors.RULE_IP_ADDRESS_INVALID);
         verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "8.8"), Errors.RULE_IP_ADDRESS_INVALID);
+        verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "8.8.8.*"), Errors.RULE_IP_ADDRESS_INVALID);
 
         // Succeed
-        verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "*"));
         verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "ff01::1"));
         verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "127.0.0.1"));
-        verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "8.8.8.*"));
+        verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "10.0.0.0-10.255.255.255"));
     }
 
     @Test

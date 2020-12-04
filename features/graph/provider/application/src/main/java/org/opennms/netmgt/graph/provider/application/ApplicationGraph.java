@@ -56,11 +56,6 @@ public final class ApplicationGraph extends AbstractDomainGraph<ApplicationVerte
         return new ApplicationGraph(graph);
     }
 
-    @Override
-    public Class<ApplicationVertex> getVertexType() {
-        return ApplicationVertex.class;
-    }
-    
     public static ApplicationGraphBuilder builder() {
         return new ApplicationGraphBuilder();
     }

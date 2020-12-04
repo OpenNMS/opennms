@@ -38,8 +38,11 @@ import java.util.regex.Pattern;
 import org.opennms.netmgt.bsm.service.model.Application;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
+import org.opennms.netmgt.graph.api.enrichment.EnrichedProperties;
 import org.opennms.netmgt.graph.api.generic.GenericVertex;
+import org.opennms.netmgt.graph.api.info.Severity;
 import org.opennms.netmgt.graph.domain.AbstractDomainVertex;
 
 import com.google.common.collect.ImmutableSet;
@@ -129,42 +132,50 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
         private BusinessServiceVertexBuilder() {}
 
         public BusinessServiceVertexBuilder reductionKeys(Set<String> reductionKeys) {
-            this.properties.put(Properties.REDUCTION_KEYS, ImmutableSet.copyOf(reductionKeys));
+            property(Properties.REDUCTION_KEYS, ImmutableSet.copyOf(reductionKeys));
             return this;
         }
 
         public BusinessServiceVertexBuilder type(Type type) {
-            this.properties.put(Properties.TYPE, type);
+            property(Properties.TYPE, type);
             return this;
         }
 
         public BusinessServiceVertexBuilder isLeaf(boolean isLeaf){
-            this.properties.put(Properties.IS_LEAF, isLeaf);
+            property(Properties.IS_LEAF, isLeaf);
             return this;
         }
 
         /** level the level of the vertex in the Business Service Hierarchy. The root element is level 0. */
         public BusinessServiceVertexBuilder level(int level){
-            this.properties.put(Properties.LEVEL, level);
+            property(Properties.LEVEL, level);
             return this;
         }
 
         public BusinessServiceVertexBuilder graphVertex(GraphVertex graphVertex) {
             if (graphVertex.getBusinessService() != null) {
-                return businessService(graphVertex.getBusinessService()).level(graphVertex.getLevel());
+                businessService(graphVertex.getBusinessService());
+            } else if (graphVertex.getIpService() != null) {
+                ipService(graphVertex.getIpService());
+            } else if (graphVertex.getReductionKey() != null) {
+                reductionKey(graphVertex.getReductionKey());
+            } else if (graphVertex.getApplication() != null) {
+                application(graphVertex.getApplication());
+            } else {
+                throw new IllegalArgumentException("Cannot convert GraphVertex to BusinessServiceVertex: " + graphVertex);
             }
-            if (graphVertex.getIpService() != null) {
-                return ipService(graphVertex.getIpService()).level(graphVertex.getLevel());
-            }
-            if (graphVertex.getReductionKey() != null) {
-                return reductionKey(graphVertex.getReductionKey()).level(graphVertex.getLevel());
-            }
-            if (graphVertex.getApplication() != null) {
-                return application(graphVertex.getApplication()).level(graphVertex.getLevel());
-            }
-            throw new IllegalArgumentException("Cannot convert GraphVertex to BusinessServiceVertex: " + graphVertex);
+            level(graphVertex.getLevel());
+            status(graphVertex.getStatus());
+            return this;
         }
-        
+
+        private BusinessServiceVertexBuilder status(final Status status) {
+            Objects.requireNonNull(status);
+            final Severity severity = convert(status);
+            property(EnrichedProperties.STATUS, severity);
+            return this;
+        }
+
         public BusinessServiceVertexBuilder businessService(BusinessService businessService) {
             properties.clear();
             // First add attributes, so it is not overriding any other data
@@ -176,8 +187,8 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
             label(businessService.getName());
             isLeaf(false);
             reductionKeys(ImmutableSet.of());
-            properties.put("reduceFunction", businessService.getReduceFunction());
-            properties.put(Properties.BusinessService.id, businessService.getId());
+            property("reduceFunction", businessService.getReduceFunction());
+            property(Properties.BusinessService.id, businessService.getId());
             return this;
         }
 
@@ -191,7 +202,7 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
             nodeRef(ipService.getNodeId());
             property("ipAddr", ipService.getIpAddress());
             property("ipAddress", ipService.getIpAddress());
-            properties.put(Properties.IpService.id, ipService.getId());
+            property(Properties.IpService.id, ipService.getId());
             return this;
         }
 
@@ -212,7 +223,7 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
             label(application.getApplicationName());
             reductionKeys(application.getReductionKeys());
             isLeaf(true);
-            properties.put(Properties.Application.id, application.getId());
+            property(Properties.Application.id, application.getId());
             return this;
         }
 
@@ -236,5 +247,12 @@ public final class BusinessServiceVertex extends AbstractDomainVertex {
         }
         return label;
     }
-    
+
+    static Severity convert(final Status status) {
+        Objects.requireNonNull(status);
+        if (status == Status.INDETERMINATE) {
+            return Severity.Unknown;
+        }
+        return Severity.valueOf(status.getLabel());
+    }
 }

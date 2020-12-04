@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,9 +53,9 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.events.api.ThreadAwareEventListener;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Events;
-import org.opennms.netmgt.xml.event.Log;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.ImmutableMapper;
+import org.opennms.netmgt.xml.event.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -176,7 +176,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             );
         }
 
-        public CompletableFuture<Void> addEvent(final Event event) {
+        public CompletableFuture<Void> addEvent(final IEvent event) {
             return CompletableFuture.runAsync(new Runnable() {
                 @Override
                 public void run() {
@@ -302,14 +302,16 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
         List<CompletableFuture<Void>> listenerFutures = new ArrayList<>();
 
+        IEvent immutableEvent = ImmutableMapper.fromMutableEvent(event);
+
         // Send to listeners interested in receiving all events
         for (EventListener listener : m_listeners) {
-            listenerFutures.add(queueEventToListener(event, listener));
+            listenerFutures.add(queueEventToListener(immutableEvent, listener));
         }
 
         if (event.getUei() == null) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Event ID {} does not have a UEI, so skipping UEI matching", event.getDbid());
+                LOG.debug("Event ID {} does not have a UEI, so skipping UEI matching", immutableEvent.getDbid());
             }
             return;
         }
@@ -323,7 +325,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             if (m_ueiListeners.containsKey(uei)) {
                 for (EventListener listener : m_ueiListeners.get(uei)) {
                     if (!sentToListeners.contains(listener)) {
-                        listenerFutures.add(queueEventToListener(event, listener));
+                        listenerFutures.add(queueEventToListener(immutableEvent, listener));
                         sentToListeners.add(listener);
                     }
                 }
@@ -353,7 +355,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         }
     }
 
-    private CompletableFuture<Void> queueEventToListener(Event event, EventListener listener) {
+    private CompletableFuture<Void> queueEventToListener(IEvent event, EventListener listener) {
         return m_listenerThreads.get(listener.getName()).addEvent(event);
     }
 

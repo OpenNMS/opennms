@@ -38,14 +38,16 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true" import="
+	org.opennms.core.utils.WebSecurityUtils,
 	org.opennms.web.filter.Filter,
-	org.opennms.web.notification.*,
-	org.opennms.web.notification.filter.*,
-	org.opennms.netmgt.config.NotifdConfigFactory,
-	org.springframework.web.context.WebApplicationContext,
-	org.springframework.web.context.support.WebApplicationContextUtils
+	org.opennms.web.notification.AcknowledgeType,
+	org.opennms.web.notification.WebNotificationRepository,
+	org.opennms.web.notification.filter.NotificationCriteria,
+	org.opennms.web.notification.filter.UserFilter
 "
 %>
+<%@ page import="org.springframework.web.context.WebApplicationContext" %>
+<%@ page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
 
 <%!
 	protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#no outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
@@ -60,7 +62,7 @@
     String nodeFilter = "";
 
     if( nodeIdString != null ) {
-        nodeFilter = "&amp;filter=node%3D" + nodeIdString;
+        nodeFilter = "&amp;filter=node%3D" + WebSecurityUtils.sanitizeString(nodeIdString);
     }
 %>
 

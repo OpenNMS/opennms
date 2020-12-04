@@ -30,6 +30,7 @@ function createController() {
     foreignSource: foreignSource,
     foreignId: foreignId,
     requisitionInterface: node.interfaces[0],
+    primaryInterface: '10.0.0.1',
     ipBlackList: []
   });
 }

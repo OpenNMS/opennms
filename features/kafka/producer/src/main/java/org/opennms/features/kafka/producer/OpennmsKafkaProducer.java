@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,6 +29,7 @@
 package org.opennms.features.kafka.producer;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -50,7 +51,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
-import org.joda.time.Duration;
 import org.opennms.core.ipc.common.kafka.Utils;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
@@ -60,6 +60,7 @@ import org.opennms.netmgt.alarmd.api.AlarmCallbackStateTracker;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyConsumer;
 import org.opennms.netmgt.topologies.service.api.OnmsTopologyDao;
@@ -85,7 +86,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private static final Logger LOG = LoggerFactory.getLogger(OpennmsKafkaProducer.class);
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
             .withRateLimit(LOG)
-            .maxRate(5).every(Duration.standardSeconds(30))
+            .maxRate(5).every(Duration.ofSeconds(30))
             .build();
 
     public static final String KAFKA_CLIENT_PID = "org.opennms.features.kafka.producer.client";
@@ -251,7 +252,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         sendRecord(() -> {
             final OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
             LOG.debug("Sending event with UEI: {}", mappedEvent.getUei());
-            return new ProducerRecord<>(eventTopic, mappedEvent.getUei().getBytes(encoding), mappedEvent.toByteArray());
+            return new ProducerRecord<>(eventTopic, mappedEvent.toByteArray());
         }, recordMetadata -> {
             // We've got an ACK from the server that the event was forwarded
             // Let other threads know when we've successfully forwarded an event
@@ -472,8 +473,8 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     @Override
-    public void onEvent(Event event) {
-        forwardEvent(event);
+    public void onEvent(IEvent event) {
+        forwardEvent(Event.copyFrom(event));
     }
 
     @Override

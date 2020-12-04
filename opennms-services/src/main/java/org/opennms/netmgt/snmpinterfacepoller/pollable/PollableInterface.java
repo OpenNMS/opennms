@@ -140,8 +140,10 @@ public class PollableInterface {
   /**
    * <p>createPollableSnmpInterface</p>
    *
-   * @param name a {@link java.lang.String} object.
-   * @param criteria a {@link java.lang.String} object.
+   *
+   * @param location
+   * @param name a {@link String} object.
+   * @param criteria a {@link String} object.
    * @param hasPort a boolean.
    * @param port a int.
    * @param hasTimeout a boolean.
@@ -152,16 +154,16 @@ public class PollableInterface {
    * @param maxVarsPerPdu a int.
    * @return a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface} object.
    */
-  public PollableSnmpInterface createPollableSnmpInterface(String name, String criteria, boolean hasPort, 
-          int port, boolean hasTimeout, int timeout, boolean hasRetries, int retries, 
-          boolean hasMaxVarsPerPdu,int maxVarsPerPdu) {
+  public PollableSnmpInterface createPollableSnmpInterface(String location, String name, String criteria, boolean hasPort,
+                                                           int port, boolean hasTimeout, int timeout, boolean hasRetries, int retries,
+                                                           boolean hasMaxVarsPerPdu, int maxVarsPerPdu) {
 
         PollableSnmpInterface iface = new PollableSnmpInterface(this);
         iface.setName(name);
         iface.setCriteria(criteria);
         InetAddress ipAddr = null;
         ipAddr = InetAddressUtils.addr(getIpaddress());
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr);
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr, location);
         if (hasPort) agentConfig.setPort(port);
         if (hasTimeout) agentConfig.setTimeout(timeout);
         if (hasRetries) agentConfig.setRetries(retries);

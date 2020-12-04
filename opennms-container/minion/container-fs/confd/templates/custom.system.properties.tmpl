@@ -1,0 +1,3 @@
+{{range gets "/system/properties/*" -}}
+{{base .Key}} = {{.Value}}
+{{end -}}

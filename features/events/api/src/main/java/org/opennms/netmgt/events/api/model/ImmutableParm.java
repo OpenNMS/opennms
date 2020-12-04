@@ -96,6 +96,11 @@ public final class ImmutableParm implements IParm {
     }
 
     @Override
+    public boolean isValid() {
+        return getParmName() != null && getValue() != null;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

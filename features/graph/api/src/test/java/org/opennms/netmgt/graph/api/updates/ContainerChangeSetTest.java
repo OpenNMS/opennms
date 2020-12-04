@@ -133,7 +133,7 @@ public class ContainerChangeSetTest {
         assertEquals("1", graphChangeSet.getVerticesRemoved().get(0).getId());
         assertEquals("2", graphChangeSet.getVerticesRemoved().get(1).getId());
         assertEquals("3", graphChangeSet.getVerticesUpdated().get(0).getId());
-        assertEquals(new DefaultGraphInfo(NAMESPACE, GenericVertex.class)
+        assertEquals(new DefaultGraphInfo(NAMESPACE)
                 .withDescription("Some Description")
                 .withLabel("Some Label"), graphChangeSet.getGraphInfo());
     }

@@ -48,16 +48,16 @@ public class KarafShellUtils {
 
     public static boolean testHealthCheck(InetSocketAddress sshAddr, AtomicReference<String> lastOutput) {
         try (final SshClient sshClient = new SshClient(sshAddr, OpenNMSContainer.ADMIN_USER, OpenNMSContainer.ADMIN_PASSWORD)) {
-            // Issue the 'health:check' command
+            // Issue the 'opennms:health-check' command
             PrintStream pipe = sshClient.openShell();
-            pipe.println("opennms-health:check");
+            pipe.println("opennms:health-check");
             pipe.println("logout");
 
             await().atMost(2, TimeUnit.MINUTES).until(sshClient.isShellClosedCallable());
 
             // Grab the output
             String shellOutput = sshClient.getStdout();
-            LOG.info("opennms-health:check output: {}", shellOutput);
+            LOG.info("opennms:health-check output: {}", shellOutput);
             lastOutput.set(shellOutput);
 
             // Verify

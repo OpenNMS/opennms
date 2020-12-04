@@ -31,14 +31,17 @@ package org.opennms.web.element;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
@@ -53,14 +56,18 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.support.ApplicationStatusUtil;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -68,22 +75,26 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsRestrictions;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.perspectivepolling.ApplicationServiceStatus;
+import org.opennms.netmgt.model.perspectivepolling.ApplicationStatus;
+import org.opennms.netmgt.model.perspectivepolling.Location;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.web.svclayer.model.AggregateStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 
 /**
@@ -120,7 +131,13 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     @Autowired
     private MonitoringSystemDao m_monitoringSystemDao;
-    
+
+    @Autowired
+    private OutageDao m_outageDao;
+
+    @Autowired
+    private ApplicationDao m_applicatioDao;
+
 	@Autowired
 	private PlatformTransactionManager m_transactionManager;
 
@@ -997,5 +1014,52 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     public List<String> getCategories() {
         return m_categoryDao.findAll().stream().map(c -> c.getName()).sorted().collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service){
+        return m_outageDao.currentOutagesForServiceFromPerspectivePoller(service);
+    }
+
+    @Override
+    public List<OnmsApplication> getAllApplications() {
+        return m_applicatioDao.findMatching(new CriteriaBuilder(OnmsApplication.class).orderBy("name").toCriteria());
+    }
+
+    @Override
+    public ApplicationStatus getApplicationStatus(final OnmsApplication onmsApplication, final long start, final long end) {
+        return ApplicationStatusUtil.buildApplicationStatus(
+                onmsApplication,
+                m_outageDao.getStatusChangesForApplicationIdBetween(new Date(start), new Date(end), onmsApplication.getId()),
+                start,
+                end
+        );
+    }
+
+    @Override
+    public Map<OnmsMonitoredService, Map<String, Double>> getApplicationServiceStatus(final OnmsApplication onmsApplication, final long start, final long end) {
+        final Map<OnmsMonitoredService, Map<String, Double>> status = new TreeMap<>();
+        final Collection<OnmsOutage> outages = m_outageDao.getStatusChangesForApplicationIdBetween(new Date(start), new Date(end), onmsApplication.getId());
+
+        for(final OnmsMonitoredService onmsMonitoredService : onmsApplication.getMonitoredServices()) {
+            final Map<String, Double> serviceStatus = new TreeMap<>();
+
+            final ApplicationServiceStatus applicationServiceStatus = ApplicationStatusUtil.buildApplicationServiceStatus(
+                    m_monSvcDao,
+                    onmsApplication,
+                    onmsMonitoredService.getId(),
+                    outages,
+                    start,
+                    end
+            );
+
+            for(final Location location : applicationServiceStatus.getLocations()) {
+                serviceStatus.put(location.getName(), location.getAggregatedStatus());
+            }
+
+            status.put(onmsMonitoredService, serviceStatus);
+        }
+
+        return status;
     }
 }

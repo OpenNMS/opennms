@@ -29,6 +29,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.File;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -136,4 +137,19 @@ public class RrdGraphAttribute implements OnmsAttribute {
     	return ""+m_resource + '.' + m_name;
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RrdGraphAttribute that = (RrdGraphAttribute) o;
+        return Objects.equals(this.m_name, that.m_name) &&
+                Objects.equals(this.m_relativePath, that.m_relativePath) &&
+                Objects.equals(this.m_rrdFile, that.m_rrdFile) &&
+                Objects.equals(this.m_resource, that.m_resource);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_name, m_relativePath, m_rrdFile, m_resource);
+    }
 }

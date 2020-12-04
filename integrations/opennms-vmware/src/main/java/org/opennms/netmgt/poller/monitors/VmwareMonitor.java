@@ -31,28 +31,23 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.TimeoutTracker;
-import org.opennms.netmgt.poller.Distributable;
-import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
 import org.opennms.protocols.vmware.VmwareViJavaAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
-import com.vmware.vim25.AlarmState;
 import com.vmware.vim25.HostRuntimeInfo;
 import com.vmware.vim25.HostSystemPowerState;
-import com.vmware.vim25.ManagedEntityStatus;
 import com.vmware.vim25.VirtualMachinePowerState;
 import com.vmware.vim25.VirtualMachineRuntimeInfo;
 import com.vmware.vim25.mo.HostSystem;
@@ -66,7 +61,6 @@ import com.vmware.vim25.mo.VirtualMachine;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-@Distributable(DistributionContext.DAEMON)
 public class VmwareMonitor extends AbstractVmwareMonitor {
     /**
      * valid states for vSphere alarms
@@ -108,11 +102,11 @@ public class VmwareMonitor extends AbstractVmwareMonitor {
                     .filter(e -> VALID_VSPHERE_ALARM_STATES.contains(e))
                     .collect(Collectors.toList());
 
-        final String vmwareManagementServer = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_KEY, null);
-        final String vmwareManagedEntityType = getKeyedString(parameters, VMWARE_MANAGED_ENTITY_TYPE_KEY, null);
-        final String vmwareManagedObjectId = getKeyedString(parameters, VMWARE_MANAGED_OBJECT_ID_KEY, null);
-        final String vmwareMangementServerUsername = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
-        final String vmwareMangementServerPassword = getKeyedString(parameters, VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
+        final String vmwareManagementServer = getKeyedString(parameters, VmwareImporter.METADATA_MANAGEMENT_SERVER, null);
+        final String vmwareManagedEntityType = getKeyedString(parameters, VmwareImporter.METADATA_MANAGED_ENTITY_TYPE, null);
+        final String vmwareManagedObjectId = getKeyedString(parameters, VmwareImporter.METADATA_MANAGED_OBJECT_ID, null);
+        final String vmwareMangementServerUsername = getKeyedString(parameters, VmwareImporter.VMWARE_MANAGEMENT_SERVER_USERNAME_KEY, null);
+        final String vmwareMangementServerPassword = getKeyedString(parameters, VmwareImporter.VMWARE_MANAGEMENT_SERVER_PASSWORD_KEY, null);
 
         final TimeoutTracker tracker = new TimeoutTracker(parameters, DEFAULT_RETRY, DEFAULT_TIMEOUT);
 

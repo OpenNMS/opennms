@@ -60,11 +60,6 @@ public final class SimpleDomainGraph extends AbstractDomainGraph<SimpleDomainVer
         return new SimpleDomainGraph(graph);
     }
 
-    @Override
-    public Class getVertexType() {
-        return SimpleDomainVertex.class;
-    }
-    
     public static SimpleDomainGraphBuilder builder() {
         return new SimpleDomainGraphBuilder();
     }
