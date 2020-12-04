@@ -1,25 +1,24 @@
 
-// Allow image rendering
-:imagesdir: ../../images
+= Database Reports
 
-Reporting on information from the _{page-component-title}_ monitoring system is important for strategical or operational decisions.
-Database reports give access to the embedded _JasperReports_ engine and allow users to create and customize report templates.
-Run these reports on demand or on a predefined schedule within _{page-component-title}_.
+Reporting on information from the {page-component-title} monitoring system is important for strategical or operational decisions.
+Database reports give access to the embedded JasperReports engine and allow users to create and customize report templates.
+Run these reports on demand or on a predefined schedule within {page-component-title}.
 
-NOTE: Originally database reports created reports working on data stored in the _{page-component-title}_ database only.
-      This is no longer mandatory, performance data can also be used.
-      Theoretically the reports do not need to be _{page-component-title}_ related.
+NOTE: Originally database reports created reports working on data stored in the {page-component-title} database only.
+      This is no longer mandatory, you can also use performance data.
+      Theoretically, the reports do not need to be {page-component-title} related.
 
-NOTE: The _{page-component-title} Report Engine_ allows the creation of various kinds of reports and also supports distributed report repositories.
+NOTE: The {page-component-title} Report Engine allows the creation of various reports and also supports distributed report repositories.
          These features are not covered by this documentation.
-         Only reports using _JasperReports_ and Grafana dashboards are described here.
+         It describes only reports using JasperReports and Grafana dashboards.
 
 [[ga-database-reports-overview]]
-=== Overview
+== Overview
 
-The _{page-component-title} Report Engine_ uses the _JasperReport_ library to create reports in various output formats.
+The {page-component-title} Report Engine uses the JasperReport library to create reports in various output formats.
 Each report template must be a `*.jrxml` file.
-The _{page-component-title} Report Engine_ passes a _JDBC_ Connection to the _{page-component-title} Database_ to each report on execution.
+The {page-component-title} Report Engine passes a JDBC connection to the {page-component-title} database to each report on execution.
 
 .feature overview
 |===
@@ -27,24 +26,24 @@ The _{page-component-title} Report Engine_ passes a _JDBC_ Connection to the _{p
 |`JasperReport` Version   | {jasperReportsVersion}
 |===
 
-For more details on how _JasperReports_ works, please refer to the link:http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation] of _Jaspersoft Studio_.
+For more details on how JasperReports works, please refer to the Jaspersoft Studio link:http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation].
 
 [[ga-database-report-add-custom-report]]
 
-=== Modify existing reports
+== Modify Existing Reports
 
-All default _{page-component-title}_ reports are located in `$OPENNMS_HOME/etc/report-templates`.
-Each `.jrxml` file located there can be modified; the changes are applied the next time _{page-component-title}_ creates a report.
+All default {page-component-title} reports are located in `$OPENNMS_HOME/etc/report-templates`.
+Each `.jrxml` file located there can be modified; the changes are applied the next time {page-component-title} creates a report.
 
-When a subreport has been modified, _{page-component-title}_ will detect a change based on the report's `lastModified` time and will recompile the report.
+When a subreport has been modified, {page-component-title} will detect a change based on the report's `lastModified` time and will recompile the report.
 A compiled version of the report is represented by a `.jasper` file with the same name as the `.jrxml` file.
 Subreports are located in `$OPENNMS_HOME/etc/report-templates/subreports`.
 
-TIP: If unsure, simply delete all `.jasper` files and _{page-component-title}_ will automatically compile the subreports if needed.
+TIP: If unsure, simply delete all `.jasper` files and {page-component-title} will automatically compile the subreports if needed.
 
-=== Add a custom report
+== Add a Custom Report
 
-To add a new _JasperReport_ report to the _Local {page-component-title} Report Repository_, do the following:
+To add a new JasperReport report to the local {page-component-title} report repository, do the following:
 
 Create a new entry in the `$OPENNMS_HOME/etc/database-reports.xml` file.
 
@@ -79,24 +78,24 @@ In addition, create a new entry in the `$OPENNMS_HOME/etc/jasper-reports.xml` fi
 <3> The engine to use. It is either `jdbc` or `null`.
 
 [[ga-database-reports-usage-jaspersoft-studio]]
-=== Usage of Jaspersoft Studio
+== Jaspersoft Studio Use
 
-When developing new reports, we recommended using the _Jaspersoft Studio_ application.
+When developing new reports, we recommended using the Jaspersoft Studio application.
 Download it link:http://community.jaspersoft.com/project/jaspersoft-studio[here].
 
-TIP: We recommend always using the same _Jaspersoft Studio_ version that the {page-component-title} _JasperReport_ library uses.
+TIP: We recommend always using the same Jaspersoft Studio version that the {page-component-title} JasperReport library uses.
      Currently {page-component-title} uses version {jasperReportsVersion}.
 
 [[ga-database-reports-connect-database]]
-==== Connect to the {page-component-title} Database
+=== Connect to the {page-component-title} Database
 
-To actually create SQL statements against the _{page-component-title}_ database you must create a `database Data Adapter`.
-The official _Jaspersoft Studio_ documentation and wiki cover how to do this.
+To actually create SQL statements against the {page-component-title} database you must create a `database Data Adapter`.
+The official Jaspersoft Studio documentation and wiki cover how to do this.
 
 [[ga-database-reports-measurement-ds-helpers]]
-==== Use Measurements Datasource and Helpers
+=== Use Measurements Datasource and Helpers
 
-To use the _Measurements API_ you must add the _Measurements Datasource_ library to the build path of _JasperStudio_.
+To use the Measurements API you must add the Measurements Datasource library to the build path of JasperStudio.
 To do so, right click in the `Project Explorer` and select `Configure Buildpath`.
 
 image::database-reports/1_configure-build-path-1.png[]
@@ -108,27 +107,27 @@ image::database-reports/1_configure-build-path-1.png[]
 +
 image::database-reports/2_configure-build-path-2.png[]
 
-. The _Measurements Datasource and Helpers_ should now be available.
-. Go to the `Dataset and Query Dialog` in _Jaspersoft Studio_ and select a language called `measurement`.
+. The Measurements Datasource and Helpers should now be available.
+. Go to the `Dataset and Query Dialog` in Jaspersoft Studio and select a language called `measurement`.
 
 image::database-reports/3_dataset-query-dialog.png[]
 
 NOTE: If the `Read Fields` functionality is not available, use the `Data preview`.
-      Access to the _Measurements API_ is possible using the connection parameters `MEASUREMENT_URL`, `MEASUREMENT_USERNAME` and `MEASUREMENT_PASSWORD`.
+      Access to the Measurements API is possible using the connection parameters `MEASUREMENT_URL`, `MEASUREMENT_USERNAME` and `MEASUREMENT_PASSWORD`.
       The <<ga-database-reports-fields, Supported Fields>> section gives more details. 
 
 [[ga-database-reports-access-performance-data]]
-=== Accessing Performance Data
+== Accessing Performance Data
 
-WARNING: Before _OpenNMS Horizon 17_ and _OpenNMS Meridian 2016_, it was possible to access the performance data stored in `.rrd` or `.jrobin` files directly by using the `jrobin` language extension provided by the `RrdDataSource`.
-         This is no longer possible; you must use the _Measurements Datasource_.
+WARNING: Before OpenNMS Horizon 17 and OpenNMS Meridian 2016, it was possible to access the performance data stored in `.rrd` or `.jrobin` files directly by using the `jrobin` language extension provided by the `RrdDataSource`.
+         This is no longer possible; you must use the Measurements Datasource.
 
-To access performance data within reports, we created a custom _Measurement Datasource_ that allows you to query the _Measurements API_ and process the returned data in your reports.
-Please refer to the link:http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurements API documentation] on how to use the _Measurements API_.
+To access performance data within reports, we created a custom Measurement Datasource that allows you to query the Measurements API and process the returned data in your reports.
+Please refer to the link:http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurements API documentation] on how to use the Measurements API.
 
-NOTE:  When using the _Measurements Datasource_ within a report a `HTTP` connection to the _Measurements API_ is only established if the report is NOT running within {page-component-title}, e.g. when used with _Jaspersoft Studio_.
+NOTE:  When using the Measurements Datasource within a report, an `HTTP` connection to the Measurements API is only established if the report is NOT running within {page-component-title}, e.g., when used with Jaspersoft Studio.
 
-To receive data from the _Measurements API_ simply create a query as follows:
+To receive data from the Measurements API simply create a query as follows:
 
 .Sample queryString to receive data from the `Measurements API`
 [source, xml]
@@ -141,16 +140,16 @@ To receive data from the _Measurements API_ simply create a query as follows:
 <1> The query language. In our case, `measurement`, but `JasperReports` supports a lot out of the box, such as `sql`, `xpath`, etc.
 
 [[ga-database-reports-fields]]
-==== Fields
+=== Fields
 
 Each datasource should return a number of fields, which can be used in the report.
-The _Measurement Datasource_ supports the following fields:
+The Measurement Datasource supports the following fields:
 
 [options="header"]
 |===
 | Field name  | Field type         | Field description
 | `<label>`   | `java.lang.Double` | Each `Source` defined as `transient=false` can be used as a field.
-                                                        The name of the field is the `label`, e.g. `IfInOctets`
+                                                        The name of the field is the `label`, e.g., `IfInOctets`
 | `timestamp` | `java.util.Date`   | The timestamp of the sample.
 | `step`      | `java.lang.Long`   | The `Step` size of the `Response`. Returns the same value for all rows.
 | `start`     | `java.lang.Long`   | The `Start` timestamp in milliseconds of the `Resopnse`. Returns the same value for all rows.
@@ -160,30 +159,30 @@ The _Measurement Datasource_ supports the following fields:
 For more details about the `Response`, please refer to the link:http://docs.opennms.org/opennms/branches/develop/guide-development/guide-development.html#_measurements_api[official Measurement API documentation].
 
 [[ga-database-reports-parameters]]
-==== Parameters
+=== Parameters
 
-In addition to the `queryString`, the following _JasperReports_ parameters are supported.
+In addition to the `queryString`, the following JasperReports parameters are supported.
 
 [options="header"]
 |===
 | Parameter name       | Required  | Description
-| MEASUREMENT_URL      | `yes`     | The URL of the _Measurements API_, e.g. `http://localhost:8980/opennms/rest/measurements`
-| MEASUREMENT_USERNAME | `no`      | If authentication is required, specify the username, e.g. `admin`
-| MEASUREMENT_PASSWORD | `no`      | If authentication is required, specify the password, e.g. `admin`
+| MEASUREMENTURL      | `yes`     | The URL of the Measurements API, e.g., `\http://localhost:8980/opennms/rest/measurements`
+| MEASUREMENT_USERNAME | `no`      | If authentication is required, specify the username, e.g., `admin`
+| MEASUREMENT_PASSWORD | `no`      | If authentication is required, specify the password, e.g., `admin`
 |===
 
 [[ga-database-reports-disable-scheduler]]
-=== Disable Scheduler
+== Disable Scheduler
 
 In cases where the scheduler executing the reports must be disabled, set the system property `opennms.report.scheduler.enabled` to `false`.
 You can set this in `$\{opennms_home}/etc/opennms.properties` or `$\{opennms_home}/etc/opennms.properties.d/<my-properties-file>.properties`.
 
 [[ga-database-reports-helper-methods]]
-=== Helper methods
+== Helper Methods
 
-There are a few helper methods to help create reports in _{page-component-title}_.
+There are a few helper methods to help create reports in {page-component-title}.
 
-These helpers come with the _Measurement Datasource_.
+These helpers come with the Measurement Datasource.
 
 .Supported helper methods
 [options="header"]
@@ -197,7 +196,7 @@ These helpers come with the _Measurement Datasource_.
                                                                                                                               `foreignSource`: String, the foreign source of the node. May be null +
                                                                                                                               `foreignId`: String, the foreign ID of the node. May be null. +
                                                                                                                               +
-                                                                                                                              For more details see <<ga-database-reports-node-source-descriptor, Usage of the node source descriptor>>.
+                                                                                                                              For more details see <<ga-database-reports-node-source-descriptor, Node source descriptor use>>.
 | `org.opennms.netmgt.jasper.helper.MeasurementsHelper` | `getInterfaceDescriptor(snmpifname, snmpifdescr, snmphysaddr)`    | Returns the `interface descriptor` of a given interface, e.g., `en0-005e607e9e00`.
                                                                                                                               The input paramaters are prioritized. If a `snmpifdescr` is specified, it is used instead of the `snmpifname`.
                                                                                                                               It a `snmpifdescr` is defined, it will be appended to `snmpifname`/`snmpifdescr`. +
@@ -207,11 +206,11 @@ These helpers come with the _Measurement Datasource_.
                                                                                                                               `snmphyaddr`: String, the MAC address of the interface, e.g., `005e607e9e00`. May be null. +
                                                                                                                               As each input parameter may be null, not all of them can be null at the same time. At least one input parameter has to be defined. +
                                                                                                                               +
-                                                                                                                              For more details see <<ga-database-reports-interface-descriptor, Usage of the interface descriptor>>.
+                                                                                                                              For more details see <<ga-database-reports-interface-descriptor, Interface descriptor use>>.
 |===
 
 [[ga-database-reports-node-source-descriptor]]
-==== Usage of the node source descriptor
+=== Node source descriptor use
 
 A node is addressed by a `node source descriptor`.
 The `node source descriptor` references the node either via the `foreign source` and `foreign id` or by the `node id`.
@@ -220,9 +219,9 @@ If `store by foreign source` is enabled addressing the node only via `foreign so
 
 To make report creation easier, there is a helper method to create the `node source descriptor`.
 
-NOTE: For more information about `store by foreign source`, please see link:http://www.opennms.org/wiki/ForeignSource/foreignId_Data_Storage_How-To[our Wiki].
+NOTE: For more information about `store by foreign source`, please see link:https://wiki.opennms.org/wiki/ForeignSource/foreignId_Data_Storage_How-To[our Wiki].
 
-The following example shows the usage of that helper.
+The following example shows the use of that helper.
 
 .jrxml report snippet to visualize the use of the `node source descriptor`.
 [source, xml]
@@ -239,11 +238,11 @@ The following example shows the usage of that helper.
 Depending on the input parameters, you either get a `node resource descriptor` or a `foreign source/foreign id resource descriptor`.
 
 [[ga-database-reports-interface-descriptor]]
-==== Usage of the interface descriptor
+=== Interface descriptor use
 
 An `interfaceSnmp` is addressed with the exact `interface descriptor`.
 To allow easy access to the `interface descriptor` we provide a helper tool.
-The following example shows the usage of that helper.
+The following example shows the use of that helper.
 
 .jrxml report snippet to visualize the use of the `interface descriptor`
 [source, xml]
@@ -262,24 +261,24 @@ The following example shows the usage of that helper.
 To get the appropriate `interface descriptor` depends on the input parameter.
 
 [[ga-database-reports-https]]
-==== Use HTTPS
+=== HTTPS use
 
-To establish a secure connection to the _Measurements API_, you must import the public certificate of the running _{page-component-title}_ to the _Java Trust Store_.
-In addition, _{page-component-title}_ must be configured to use that _Java Trust Store_.
-Please follow the instructions in this <<ga-operation-ssl-opennms-trust-store,chapter>> to setup the _Java Trust Store_ correctly.
+To establish a secure connection to the Measurements API, you must import the public certificate of the running {page-component-title} to the Java Truststore.
+In addition, {page-component-title} must be configured to use that Java Truststore.
+Please follow the instructions in this <<operation/ssl/ssl.adoc#ga-operation-ssl-opennms-trust-store,chapter>> to set up the Java Truststore correctly.
 
 In addition please also set the property `org.opennms.netmgt.jasper.measurement.ssl.enable` in `$OPENNMS_HOME\etc\opennms.properties` to `true` to ensure that only secure connections are established.
 
-WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false` an accidentally insecure connection can be established to the _Measurements API_ location.
-         An SSL secured connection can be established even if `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false`.
+WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false` an accidentally insecure connection can be established to the Measurements API location.
+         An SSL-secured connection can be established even if `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false`.
 
 [[ga-database-reports-limitations]]
-=== Limitations
+== Limitations
 
- * Only a _JDBC Datasource_ to the _{page-component-title} Database connection_ can be passed to a report, or no datasource at all.
+ * Only a JDBC Datasource to the {page-component-title} database connection can be passed to a report, or no datasource at all.
    One does not have to use the datasource, though.
 
-=== Creating PDF Reports from Grafana Dashboards Using {page-component-title}
+== Creating PDF Reports from Grafana Dashboards Using {page-component-title}
 
 {page-component-title} provides three templates to create a PDF report from an existing Grafana dashboard. 
 You can also schedule and email these PDF reports to anyone:
@@ -293,14 +292,15 @@ Dashboard to PDF:
 
 image:database-reports/Dashboard-pdf.png[PDF report]
 
-==== Before You Begin
+=== Before You Begin
 
-This feature requires {page-component-title} and an instance of Grafana with at least one dashboard and panel. OpenNMS allows you to create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
+This feature requires {page-component-title} and an instance of Grafana with at least one dashboard and panel. 
+OpenNMS allows you to create a report for any Grafana dashboard, not just those created using link:http://docs.opennms.org/helm/branches/master/helm/latest/welcome/index.html[OpenNMS Helm].
 
-You must set up Grafana as a datasource by xref:grafana-ednpoint[configuring the Grafana endpoint] in {page-component-title}. 
+You must set up Grafana as a datasource by xref:grafana-endpoint[configuring the Grafana endpoint] in {page-component-title}. 
 
 [[grafana-endpoint]]
-==== Configure the Grafana Endpoint
+=== Configure the Grafana Endpoint
 
 Configuring the Grafana endpoint sets up Grafana as the datasource for the dashboards from which you create PDFs. 
 
@@ -324,7 +324,7 @@ image:database-reports/grafana-endpoint.png[Endpoint, 400]
 
 You can now use {page-component-title} to create PDF reports of Grafana dashboards. 
 
-==== Creating a PDF of a Grafana Dashboard
+=== Creating a PDF of a Grafana Dashboard
 
 . In the {page-component-title} UI, choose `Reports>Database Reports`.
 . In the `Report Templates` area, click `Grafana Dashboard Report <Xppp>`, where `<Xppp>` represents the number of panels per page you want to display. 

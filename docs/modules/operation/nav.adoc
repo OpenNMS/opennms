@@ -184,6 +184,7 @@
 
 * xref:topology/topology.adoc[] 
 * xref:asset-topology/graphml-asset-topology-provider.adoc[]
+* xref:database-reports/database.adoc[]
 
 * xref:system-properties/introduction.adoc[]
 ** xref:system-properties/system-proxies.adoc[]
