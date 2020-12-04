@@ -21,7 +21,7 @@
 	<bean id="googleGeocoderConfig" class="org.opennms.features.geocoder.google.GoogleConfiguration">
 		<property name="clientId" value="${clientId}"/>
 		<property name="signature" value="${signature}"/>
-		<property name="apiKey" value="${apiKey}"/>
+		<property name="apiKey" value="${\apikey}"/>
 		<property name="useEnterpriseCredentials" value="${useEnterpriseCredentials}"/>
 		<property name="useSystemProxy" value="${useSystemProxy}"/>
 		<property name="timeout" value="$\{timeout}"/>

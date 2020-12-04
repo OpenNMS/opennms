@@ -1,18 +1,16 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-==== Configuration
+= Configuration
 
-===== Enabling Time Series Integration Layer
+== Enabling Time Series Integration Layer
 
-_{page-component-title}_ can be configured to use the Time Series Integration Layer by setting the following property in `$\{opennms_home}/etc/opennms.properties`:
+{page-component-title} can be configured to use the Time Series Integration Layer by setting the following property in `$\{opennms_home}/etc/opennms.properties`:
 
 [source]
 ----
 org.opennms.timeseries.strategy=integration
 ----
 
-After activating the _Time Series Integration Layer_, you need to start an actual implementation.
+After activating the Time Series Integration Layer, you need to start an actual implementation.
 Do this via Karaf.
 Here is an example of how to activate the _in memory time series_ plugin:
 
@@ -28,7 +26,7 @@ bundle:install -s mvn:org.opennms.plugins.timeseries.inmemory/timeseries-inmemor
 
 For specific instructions, check your plugin description.
 
-We also highly recommend that you reference resources stored in the _Time Series Integration Layer_ by their foreign source and foreign ID, as opposed to their database ID.
+We also highly recommend that you reference resources stored in the Time Series Integration Layer by their foreign source and foreign ID, as opposed to their database ID.
 To this end, set the following property in the same file:
 
 [source]
@@ -36,16 +34,16 @@ To this end, set the following property in the same file:
 org.opennms.rrd.storeByForeignSource=true
 ----
 
-With these set, _{page-component-title}_ will begin persisting metrics using the _Time Series Integration Layer_ when restarted.
+With these set, {page-component-title} will begin persisting metrics using the Time Series Integration Layer when restarted.
 
 Additional configuration options are presented in the next section.
 
-===== Configuration Reference
+== Configuration Reference
 
-The following properties, found in `$\{opennms_home}/etc/opennms.properties`, can be used to configure and tune the _Time Series Integration Layer_.
+The following properties, found in `$\{opennms_home}/etc/opennms.properties`, can be used to configure and tune the Time Series Integration Layer.
 
 [[ga-opennms-operation-timeseries-properties-general]]
-====== General
+=== General
 [options="header, autowidth"]
 |===
 | Name                                            | Default              | Description
@@ -70,30 +68,30 @@ The following properties, found in `$\{opennms_home}/etc/opennms.properties`, ca
 |===
 
 [[ga-opennms-operation-timeseries-properties-recommendations]]
-===== Recommendations
+== Recommendations
 Caches have been introduced to improve performance.
 You might need to tune the cache settings to suit your needs. See parameters above.
 
 [options="header, autowidth"]
 |===
 | Name                             | Description
-| TimeseriesMetaDataCache          | Caches metadata that uses _{page-component-title}_  internally.
+| TimeseriesMetaDataCache          | Caches metadata that uses {page-component-title}  internally.
 | TimeseriesSearcherCache          | Caches metrics by tag to improve the resource lookup.
 | TimeseriesPersisterMetaTagCache  | Caches all additionally configured and resolved meta-tag values by resource.
 |===
 
-The samples gathered by the collectors are temporarily stored in a ring buffer before they are persisted to the _Time Series Integration Layer_.
+The samples gathered by the collectors are temporarily stored in a ring buffer before they are persisted to the Time Series Integration Layer.
 The value of the `ring_buffer_size` should be increased if you expect large peaks of collectors returning at once or latency in persisting these.
 However, note that the memory used by the ring buffer is reserved, and larger values may require an increased heap size.
 
 [[ga-opennms-operation-timeseries-properties-meta-tags]]
-===== Expose additional meta tags
-Metrics that are stored via the time series plugin contain the minimal set of tags for _{page-component-title}_ to work.
-This might not be sufficient if the data is used outside of _{page-component-title}_ as well.
+== Expose additional meta tags
+Metrics that are stored via the time series plugin contain the minimal set of tags for {page-component-title} to work.
+This might not be sufficient if the data is used outside of {page-component-title} as well.
 Configure additional meta tags via `$\{opennms_home}/etc/opennms.properties`.
 
 The configuration of the tags has the following form:
-`prefix.tagKey=${query expression}`
+`prefix.tagKey=${\query expression}`
 
 * The prefix is: `org.opennms.timeseries.tin.metatags.tag`
 * The tagKey can by an arbitrary string as long as it doesn't break the java property file https://en.wikipedia.org/wiki/.properties[syntax].

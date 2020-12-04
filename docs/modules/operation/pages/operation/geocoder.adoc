@@ -1,26 +1,23 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
+= Geocoder Service
 
-=== Geocoder Service
-
-The _Geocoder Service_ is used to resolve geolocation information within _{page-component-title}_.
-_{page-component-title}_ supports several _Geocoder Services_.
+The Geocoder Service is used to resolve geolocation information within {page-component-title}.
+{page-component-title} supports several Geocoder Services.
 By default geolocation resolution is disabled.
 
-NOTE:   To enable or configure the _Geocoder Service_ please use the web based configuration tool.
-        This can be found in the administration section: _Admin -> Configure Geocoder Service_
+NOTE:   To enable or configure the Geocoder Service please use the web based configuration tool.
+        This can be found in the administration section: Admin -> Configure Geocoder Service
 
-The currently used _Geocoder Service_ is configured via the property `activeGeocoderId` in `etc/org.opennms.features.geocoder.cfg`.
+The currently used Geocoder Service is configured via the property `activeGeocoderId` in `etc/org.opennms.features.geocoder.cfg`.
 
-==== Google
+== Google
 
 The Google Geocoder API requires at least an `apiKey` or a `clientId` and `signature`.
 For more details please refer to the link:https://developers.google.com/maps/documentation/javascript/get-api-key[official documentation].
 
 The following properties in `etc/org.opennms.features.geocoder.google.cfg` are supported:
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Property       | Type         | Required  | Default             | Description
 
@@ -56,7 +53,7 @@ The following properties in `etc/org.opennms.features.geocoder.google.cfg` are s
 | `no`
 | `false`
 | Should the system wide proxy settings be used?
-  The system proxy settings can be configured in link:#ga-opennms-system-properties[opennms.conf]
+  The system proxy settings can be configured in <<system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>
 
 | `timeout`
 | `Integer`
@@ -67,13 +64,13 @@ The following properties in `etc/org.opennms.features.geocoder.google.cfg` are s
 |===
 
 
-==== Mapquest
+== MapQuest
 
 For more details please refer to the link:https://developer.mapquest.com/documentation/geocoding-api/[official documentation].
 
 The following properties in `etc/org.opennms.features.geocoder.mapquest.cfg` are supported:
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Property       | Type         | Required  | Default             | Description
 
@@ -86,19 +83,19 @@ The following properties in `etc/org.opennms.features.geocoder.mapquest.cfg` are
 | `url`
 | `String`
 | `yes`
-| `http://www.mapquestapi.com/geocoding/v1/address?format=json&key={apiKey}&amp;maxResults=1&location={query}`
-| The url template for the Mapquest Geocoder API.
-  The `{apiKey}` and `{query}` strings are substituted before making the request.
+| `\http://www.mapquestapi.com/geocoding/v1/address?format=json&key={\apikey}&amp;maxResults=1&location={\query}`
+| The url template for the MapQuest Geocoder API.
+  The `{\apikey}` and `{\query}` strings are substituted before making the request.
 
 | `useSystemProxy`
 | `Boolean`
 | `no`
 | `false`
 | Should the system wide proxy settings be used?
-  The system proxy settings can be configured in link:#ga-opennms-system-properties[opennms.conf]
+  The system proxy settings can be configured in <<system-properties/introduction.adoc#ga-opennms-system-properties, opennms.conf>>
 |===
 
-==== Nominatim
+== Nominatim
 
 For more details please refer to the link:https://wiki.openstreetmap.org/wiki/Nominatim[official documentation]
 and ensure to check out the link:https://operations.osmfoundation.org/policies/nominatim/[Nominatim Usage Policy] before using
@@ -106,7 +103,7 @@ the Geocoder Service.
 
 The following properties in `etc/org.opennms.features.geocoder.nominatim.cfg` are supported:
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Property          | Type         | Required | Default             | Description
 
@@ -121,9 +118,9 @@ The following properties in `etc/org.opennms.features.geocoder.nominatim.cfg` ar
 | `url`
 | `String`
 | `yes`
-| `https://nominatim.openstreetmap.org/search?format=json&amp;email={email}&limit=1&q={query}`
+| `\https://nominatim.openstreetmap.org/search?format=json&amp;email={\email}&limit=1&q={\query}`
 | The url template for the Nominatim Geocoder API.
-  The `{email}` and `{query}` strings are substituted before making the request.
+  The `{\email}` and `{\query}` strings are substituted before making the request.
 
 | `email`
 | `String`
@@ -151,5 +148,5 @@ The following properties in `etc/org.opennms.features.geocoder.nominatim.cfg` ar
 | `no`
 | false
 | Should the system wide proxy settings be used?
-  The system proxy settings can be configured in link:#ga-opennms-system-properties[system properties]
+  The system proxy settings can be configured in <<system-properties/introduction.adoc#ga-opennms-system-properties, system properties>>
 |===

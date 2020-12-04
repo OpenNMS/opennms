@@ -1,11 +1,8 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[ga-operation-request-logging]]
-=== Request Logging
+= Request Logging
 
-HTTP requests logs for _Jetty_ can be enabled by uncommenting the following snippet in `etc/jetty.xml`:
+HTTP requests logs for Jetty can be enabled by uncommenting the following snippet in `etc/jetty.xml`:
 
 [source,xml]
 ----
@@ -40,7 +37,7 @@ If you would like the include the usernames associated with the requests in the 
 -->
 ----
 
-After restarting _{page-component-title}_, requests logs of the following form should be available in `logs/jetty-requests-*.log`:
+After restarting {page-component-title}, requests logs of the following form should be available in `logs/jetty-requests-*.log`:
 
 [source]
 ----

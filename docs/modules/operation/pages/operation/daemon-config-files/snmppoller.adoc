@@ -1,14 +1,11 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[ga-opennms-operation-daemon-config-files-snmppoller]]
-==== SNMP Interface Poller
+= SNMP Interface Poller
 
 [options="header, autowidth"]
 |===
 | Internal Daemon Name | Reload Event
-| _SnmpPoller_            | `uei.opennms.org/internal/reloadSnmpPollerConfig`
+| SnmpPoller            | `uei.opennms.org/internal/reloadSnmpPollerConfig`
 |===
 
 .SNMP Interface Poller configuration file overview

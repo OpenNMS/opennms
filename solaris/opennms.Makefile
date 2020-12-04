@@ -163,7 +163,7 @@ ${DESTDIR}/install/pkginfo: ${DESTDIR}/install
 	@echo "VERSION=\"${VERSION}\"" >> $@
 	@echo "CATEGORY=\"${CATEGORY}\"" >> $@
 	@echo "VENDOR=\"${VENDOR}\"" >> $@
-	@echo "EMAIL=\"${EMAIL}\"" >> $@
+	@echo "EMAIL=\"${\email}\"" >> $@
 	@echo "BASEDIR=\"/\"" >> $@
 	@echo "CLASSES=\"${CLASSES}\"" >> $@
 

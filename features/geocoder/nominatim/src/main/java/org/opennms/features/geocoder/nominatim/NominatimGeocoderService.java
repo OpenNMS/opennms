@@ -130,8 +130,8 @@ public class NominatimGeocoderService implements GeocoderService {
         Objects.requireNonNull(emailAddress);
         Objects.requireNonNull(addressToResolve);
         final String url = configuration.getUrlTemplate()
-                                .replaceAll("\\{email\\}", URLEncoder.encode(emailAddress, "UTF-8"))
-                                .replaceAll("\\{query\\}", URLEncoder.encode(addressToResolve, "UTF-8"));
+                                .replaceAll("\\{\email\\}", URLEncoder.encode(emailAddress, "UTF-8"))
+                                .replaceAll("\\{\query\\}", URLEncoder.encode(addressToResolve, "UTF-8"));
         return url;
     }
 

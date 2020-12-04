@@ -1,18 +1,16 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-==== Configuration
+= Configuration
 
-===== Enabling Newts
+== Enabling Newts
 
-_{page-component-title}_ can be configured to use Newts by setting the following property in in `$\{opennms_home}/etc/opennms.properties`:
+{page-component-title} can be configured to use Newts by setting the following property in in `$\{opennms_home}/etc/opennms.properties`:
 
 [source]
 ----
 org.opennms.timeseries.strategy=newts
 ----
 
-It is also highly recommended that resources stored in _Newts_ are referenced by their foreign source and foreign ID, as opposed to their database ID.
+It is also highly recommended that resources stored in Newts are referenced by their foreign source and foreign ID, as opposed to their database ID.
 To this end, the following property should also be set in the same file:
 
 [source]
@@ -20,16 +18,16 @@ To this end, the following property should also be set in the same file:
 org.opennms.rrd.storeByForeignSource=true
 ----
 
-With these set, _{page-component-title}_ will begin persisting metrics using the _Newts_ engine when restarted.
+With these set, {page-component-title} will begin persisting metrics using the Newts engine when restarted.
 
 Additional configuration options are presented in the next section.
 
-===== Configuration Reference
+== Configuration Reference
 
-The following properties, found in `$\{opennms_home}/etc/opennms.properties`, can be used to configure and tune _Newts_.
+The following properties, found in `$\{opennms_home}/etc/opennms.properties`, can be used to configure and tune Newts.
 
 [[ga-opennms-operation-newts-properties-general]]
-====== General
+=== General
 [options="header, autowidth"]
 |===
 | Name                                            | Default              | Description
@@ -42,9 +40,9 @@ The following properties, found in `$\{opennms_home}/etc/opennms.properties`, ca
 | `org.opennms.newts.config.core-connections-per-host`   | Driver default | Core number of connections per host.
 | `org.opennms.newts.config.max-connections-per-host`    | Driver default | Maximum number of connections per host.
 | `org.opennms.newts.config.max-requests-per-connection` | Driver default | Maximum amount of requests that can be in-flight on a single connection at the same time.
-| `org.opennms.newts.config.read_consistency`     | `ONE`                | Consistency level used for _read_ operations.
+| `org.opennms.newts.config.read_consistency`     | `ONE`                | Consistency level used for read operations.
                                                                            See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring data consistency] for a list of available options.
-| `org.opennms.newts.config.write_consistency`    | `ANY`                | Consistency level used for _write_ operations.
+| `org.opennms.newts.config.write_consistency`    | `ANY`                | Consistency level used for the write operations.
                                                                            See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring data consistency] for a list of available options.
 | `org.opennms.newts.config.max_batch_size`       | `16`                 | Maximum number of records to insert in a single transaction. Limited by the size of the Cassandra cluster's batch_size_fail_threshold_in_kb property.
 | `org.opennms.newts.config.ring_buffer_size`     | `8192`               | Maximum number of records that can be held in the ring buffer. Must be a power of two.
@@ -74,28 +72,28 @@ Available caching strategies include:
 |===
 
 [[ga-opennms-operation-newts-properties-redis-cache]]
-====== Redis Cache
+=== Redis Cache
 
 When enabled, the following options can be used to configure the Redis-based cache.
 
 [options="header, autowidth"]
 |===
 | Name                                            | Default              | Description
-| `org.opennms.newts.config.cache.redis_hostname` | `localhost`          | IP address of hostname of the _Redis_ server.
-| `org.opennms.newts.config.cache.redis_port`     | `6379`               | TCP port used to connect to the _Redis_ server.
+| `org.opennms.newts.config.cache.redis_hostname` | `localhost`          | IP address of hostname of the Redis server.
+| `org.opennms.newts.config.cache.redis_port`     | `6379`               | TCP port used to connect to the Redis server.
 |===
 
-===== Recommendations
+== Recommendations
 
 You will likely want to change the values of `cache.max_entries` and the `ring_buffer_size` to suit your installation.
 
-Metadata related to resources are cached in order to avoid writing redundant records in _Cassandra_.
+Metadata related to resources are cached in order to avoid writing redundant records in Cassandra.
 If you are collecting data from a large number of resources, you should increase the `cache.max_entries` to reflect the number of resources you are collecting from, with a suitable buffer.
 
-The samples gathered by the collectors are temporarily stored in a ring buffer before they are persisted to _Cassandra_ using _Newts_.
-The value of the `ring_buffer_size` should be increased if you expect large peaks of collectors returning at once or latency in persisting these to _Cassandra_.
+The samples gathered by the collectors are temporarily stored in a ring buffer before they are persisted to Cassandra using Newts.
+The value of the `ring_buffer_size` should be increased if you expect large peaks of collectors returning at once or latency in persisting these to Cassandra.
 However, note that the memory used by the ring buffer is reserved, and larger values may require an increased heap size.
 
-Cache priming is used to help reduce the number of records that need to be indexed after restarting _{page-component-title}_.
+Cache priming is used to help reduce the number of records that need to be indexed after restarting {page-component-title}.
 This works by rebuilding the cache using the index data that has already been persisted in Cassandra.
 If you continue to see large spikes of index related inserts after rebooting you may want to consider increasing the amount of time spent priming the cache.

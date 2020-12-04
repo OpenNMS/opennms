@@ -152,7 +152,7 @@
           <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>${jasperreportsVersion}</version>
+            <version>${\jasperreportsversion}</version>
             <exclusions>
               <exclusion>
                 <groupId>eclipse</groupId>

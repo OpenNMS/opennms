@@ -1,14 +1,12 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
 
 [[ga-opennms-operation-daemon-config-files-syslogd]]
-==== Syslogd
+= Syslogd
 
 [options="header, autowidth"]
 |===
 | Internal Daemon Name | Reload Event
-| _Syslogd_            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Syslogd'`
+| Syslogd            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Syslogd'`
 |===
 
 Syslogd reload event stops and starts daemon and loads all the syslogd configuration changes.

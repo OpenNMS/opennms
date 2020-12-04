@@ -1,14 +1,11 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[ga-opennms-operation-daemon-config-files-pollerd]]
-==== Pollerd
+= Pollerd
 
 [options="header, autowidth"]
 |===
 | Internal Daemon Name | Reload Event
-| _Pollerd_            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Pollerd'`
+| Pollerd            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Pollerd'`
 |===
 
 .Pollerd configuration file overview

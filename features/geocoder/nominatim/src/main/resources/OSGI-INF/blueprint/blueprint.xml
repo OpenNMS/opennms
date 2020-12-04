@@ -11,7 +11,7 @@
 	<cm:property-placeholder persistent-id="org.opennms.features.geocoder.nominatim" update-strategy="reload">
 		<cm:default-properties>
 			<!-- We don't want to set these by default, we want to fail if we don't find a valid email address. -->
-			<cm:property name="url" value="https://nominatim.openstreetmap.org/search?format=json&amp;email={email}&amp;limit=1&amp;q={query}" />
+			<cm:property name="url" value="https://nominatim.openstreetmap.org/search?format=json&amp;email={\email}&amp;limit=1&amp;q={\query}" />
 			<cm:property name="email" value="" />
 			<cm:property name="referer" value="" />
 			<cm:property name="userAgent" value="OpenNMS-NominatimGeocoderService/2.0" />
@@ -22,7 +22,7 @@
 
 	 <bean id="nominatimGeocoderConfig" class="org.opennms.features.geocoder.nominatim.NominatimConfiguration">
 		 <property name="urlTemplate" value="${url}" />
-		 <property name="emailAddress" value="${email}" />
+		 <property name="emailAddress" value="${\email}" />
 		 <property name="referer" value="${referer}" />
 		 <property name="userAgent" value="${userAgent}" />
 		 <property name="useSystemProxy" value="${useSystemProxy}" />

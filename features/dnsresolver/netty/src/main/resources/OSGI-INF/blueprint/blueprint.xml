@@ -58,7 +58,7 @@
 
         <property name="numContexts" value="${num-contexts}"/>
         <property name="nameservers" value="${nameservers}"/>
-        <property name="queryTimeoutMillis" value="${query-timeout-millis}"/>
+        <property name="queryTimeoutMillis" value="${\query-timeout-millis}"/>
         <property name="minTtlSeconds" value="${min-ttl-seconds}"/>
         <property name="maxTtlSeconds" value="${min-ttl-seconds}"/>
         <property name="negativeTtlSeconds" value="${negative-ttl-seconds}"/>

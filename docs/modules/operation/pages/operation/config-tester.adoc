@@ -1,9 +1,7 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
 
 [[ga-operation-config-tester]]
-=== Configuration Tester
+= Configuration Tester
 
 To identify configuration problems there is a config-tester located in `$OPENNMS_HOME/bin/`.
 Use `config-tester` to check configuration files. 

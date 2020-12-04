@@ -112,7 +112,7 @@
 					{{(query.offset/query.limit) - 1}}
 				</a>
 				<a class="btn btn-secondary" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:5em;">
-					{{query.offset/query.limit}}
+					{{\query.offset/query.limit}}
 				</a>
 				<a class="btn btn-secondary active" ng-show="query.maxOffset &gt; 0" style="width:5em;">
 					{{(query.offset/query.limit) + 1}}
@@ -149,7 +149,7 @@
 			</div>
 
 			<h5 class="pull-right col-form-label" ng-show="query.maxOffset &lt; 0">No items found.</h5>
-			<h5 class="pull-right col-form-label" ng-show="query.maxOffset &gt;= 0">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</h5>
+			<h5 class="pull-right col-form-label" ng-show="query.maxOffset &gt;= 0">{{\query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{\query.maxOffset + 1}} total)</h5>
 		</div>
 	</div>
 

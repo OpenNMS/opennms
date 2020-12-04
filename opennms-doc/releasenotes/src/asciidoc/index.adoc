@@ -9,7 +9,7 @@
 
 = OpenNMS Release Notes
 :author: Copyright (c) 2016-2019 The OpenNMS Group, Inc.
-:revnumber: {page-component-title} v{opennms-version}
+:revnumber: {page-component-title} v{\opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 

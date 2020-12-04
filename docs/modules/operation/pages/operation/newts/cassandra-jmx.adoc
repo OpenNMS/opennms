@@ -1,17 +1,15 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-==== Cassandra Monitoring
+= Cassandra Monitoring
 
-This section describes some of the metrics _{page-component-title}_ collects from a _Cassandra_ cluster.
+This section describes some of the metrics {page-component-title} collects from a Cassandra cluster.
 
-TIP: JMX must be enabled on the _Cassandra_ nodes and made accessible from __{page-component-title}_ in order to collect these metrics.
+TIP: JMX must be enabled on the Cassandra nodes and made accessible from {page-component-title} in order to collect these metrics.
      See link:https://docs.datastax.com/en/cassandra/3.0/cassandra/configuration/secureJmxAuthentication.html[Enabling JMX authentication] for details.
 
-TIP: The data collection is bound to the agent IP interface with the service name _JMX-Cassandra_.
-     The _JMXCollector_ is used to retrieve the _MBean_ entities from the _Cassandra_ node.
+TIP: The data collection is bound to the agent IP interface with the service name JMX-Cassandra.
+     The JMXCollector is used to retrieve the MBean entities from the Cassandra node.
 
-===== Client Connections
+== Client Connections
 
 The number of active client connections from `org.apache.cassandra.metrics.Client` are collected:
 
@@ -22,7 +20,7 @@ The number of active client connections from `org.apache.cassandra.metrics.Clien
 | `connectedThriftClients` | Metrics for connected thrift clients
 |===
 
-===== Compaction Bytes
+== Compaction Bytes
 
 The following compaction manager metrics from `org.apache.cassandra.metrics.Compaction` are collected:
 
@@ -32,7 +30,7 @@ The following compaction manager metrics from `org.apache.cassandra.metrics.Comp
 | `BytesCompacted` | Number of bytes compacted since node started
 |===
 
-===== Compaction Tasks
+== Compaction Tasks
 
 The following compaction manager metrics from `org.apache.cassandra.metrics.Compaction` are collected:
 
@@ -43,7 +41,7 @@ The following compaction manager metrics from `org.apache.cassandra.metrics.Comp
 | `PendingTasks`   | Estimated number of pending compaction tasks
 |===
 
-===== Storage Load
+== Storage Load
 
 The following storage load metrics from `org.apache.cassandra.metrics.Storage` are collected:
 
@@ -53,42 +51,42 @@ The following storage load metrics from `org.apache.cassandra.metrics.Storage` a
 | `Load` | Total disk space (in bytes) used by this node
 |===
 
-===== Storage Exceptions
+== Storage Exceptions
 
 The following storage exception metrics from `org.apache.cassandra.metrics.Storage` are collected:
 
 [options="header, autowidth"]
 |===
 | Name         | Description
-| `Exceptions` | Number of unhandled exceptions since start of this _Cassandra_ instance
+| `Exceptions` | Number of unhandled exceptions since start of this Cassandra instance
 |===
 
-===== Dropped Messages
+== Dropped Messages
 
-Measurement of messages that were _DROPPABLE_.
+Measurement of messages that were DROPPABLE.
 These ran after a given timeout set per message type so was thrown away.
-In _JMX_ these are accessible via `org.apache.cassandra.metrics.DroppedMessage`.
+In JMX these are accessible via `org.apache.cassandra.metrics.DroppedMessage`.
 The number of dropped messages in the different message queues are good indicators whether a cluster can handle its load.
 
 [options="header, autowidth"]
 |===
 | Name               | Stage                  | Description
-| `Mutation`         | _MutationStage_        | If a write message is processed after its timeout (write_request_timeout_in_ms) it either sent a failure to the client or it met its requested consistency level and will relay on hinted handoff and read repairs to do the mutation if it succeeded.
-| `Counter_Mutation` | _MutationStage_        | If a write message is processed after its timeout (write_request_timeout_in_ms) it either sent a failure to the client or it met its requested consistency level and will relay on hinted handoff and read repairs to do the mutation if it succeeded.
-| `Read_Repair`      | _MutationStage_        | Times out after write_request_timeout_in_ms.
-| `Read`             | _ReadStage_            | Times out after read_request_timeout_in_ms.
+| `Mutation`         | MutationStage        | If a write message is processed after its timeout (write_request_timeout_in_ms) it either sent a failure to the client or it met its requested consistency level and will relay on hinted handoff and read repairs to do the mutation if it succeeded.
+| `Counter_Mutation` | MutationStage        | If a write message is processed after its timeout (write_request_timeout_in_ms) it either sent a failure to the client or it met its requested consistency level and will relay on hinted handoff and read repairs to do the mutation if it succeeded.
+| `Read_Repair`      | MutationStage        | Times out after write_request_timeout_in_ms.
+| `Read`             | ReadStage            | Times out after read_request_timeout_in_ms.
                                                 No point in servicing reads after that point since it would of returned error to client.
-| `Range_Slice`      | _ReadStage_            | Times out after range_request_timeout_in_ms.
-| `Request_Response` | _RequestResponseStage_ | Times out after request_timeout_in_ms.
+| `Range_Slice`      | ReadStage            | Times out after range_request_timeout_in_ms.
+| `Request_Response` | RequestResponseStage | Times out after request_timeout_in_ms.
                                                 Response was completed and sent back but not before the timeout
 |===
 
-===== Thread pools
+== Thread pools
 
-_Apache Cassandra_ is based on a so called _Staged Event Driven Architecture_ (SEDA).
+Apache Cassandra is based on a so called Staged Event Driven Architecture (SEDA).
 This seperates different operations in stages and these stages are loosely coupled using a messaging service.
 Each of these components use queues and thread pools to group and execute their tasks.
-The documentation for _Cassandra_ Thread pool monitoring is originated from link:http://www.pythian.com/blog/guide-to-cassandra-thread-pools[Pythian Guide to Cassandra Thread Pools].
+The documentation for Cassandra Thread pool monitoring is originated from link:http://www.pythian.com/blog/guide-to-cassandra-thread-pools[Pythian Guide to Cassandra Thread Pools].
 
 .Collected metrics for Thread Pools
 [options="header, autowidth"]
@@ -100,33 +98,33 @@ The documentation for _Cassandra_ Thread pool monitoring is originated from link
 | `PendingTasks`          | Tasks queued for execution
 |===
 
-====== Memtable FlushWriter
+=== Memtable FlushWriter
 
-Sort and write _memtables_ to disk from `org.apache.cassandra.metrics.ThreadPools`.
+Sort and write memtables to disk from `org.apache.cassandra.metrics.ThreadPools`.
 A vast majority of time this backing up is from over running disk capability.
 The sorting can cause issues as well however.
 In the case of sorting being a problem, it is usually accompanied with high load but a small amount of actual flushes (seen in cfstats).
-Can be from huge rows with large column names, i.e. something inserting many large values into a _CQL_ collection.
+Can be from huge rows with large column names, i.e. something inserting many large values into a CQL collection.
 If overrunning disk capabilities, it is recommended to add nodes or tune the configuration.
 
 TIP: Alerts: pending > 15 || blocked > 0
 
-====== Memtable Post Flusher
+=== Memtable Post Flusher
 
-Operations after flushing the _memtable_.
-Discard commit log files that have had all data in them in _sstables_.
+Operations after flushing the memtable.
+Discard commit log files that have had all data in them in sstables.
 Flushing non-cf backed secondary indexes.
 
 TIP: Alerts: pending > 15 || blocked > 0
 
-====== Anti Entropy Stage
+=== Anti Entropy Stage
 
 Repairing consistency.
 Handle repair messages like merkle tree transfer (from Validation compaction) and streaming.
 
 TIP: Alerts: pending > 15 || blocked > 0
 
-====== Gossip Stage
+=== Gossip Stage
 
 Post 2.0.3 there should no longer be issue with pending tasks.
 Instead monitor logs for a message:
@@ -138,23 +136,23 @@ Gossip stage has {} pending tasks; skipping status check ...
 
 Before that change, in particular older versions of 1.2, with a lot of nodes (100+) while using vnodes can cause a lot of CPU intensive work that caused the stage to get behind.
 Been known to of been caused with out of sync schemas.
-Check _NTP_ working correctly and attempt `nodetool resetlocalschema` or the more drastic deleting of system column family folder.
+Check NTP working correctly and attempt `nodetool resetlocalschema` or the more drastic deleting of system column family folder.
 
 TIP: Alerts: pending > 15 || blocked > 0
 
-====== Migration Stage
+=== Migration Stage
 
 Making schema changes
 
 TIP: Alerts: pending > 15 || blocked > 0
 
-====== MiscStage
+=== MiscStage
 
 Snapshotting, replicating data after node remove completed.
 
 TIP: Alerts: pending > 15 || blocked > 0
 
-====== Mutation Stage
+=== Mutation Stage
 
 Performing a local including:
 
@@ -167,7 +165,7 @@ Similar to ReadStage, an increase in pending tasks here can be caused by disk is
 
 TIP: Alerts: pending > 15 || blocked > 0
 
-====== Read Stage
+=== Read Stage
 
 Performing a local read.
 Also includes deserializing data from row cache.
@@ -177,13 +175,13 @@ In many cases (not disk failure) this is resolved by adding nodes or tuning the 
 
 TIP: Alerts: pending > 15 || blocked > 0
 
-====== Request Response Stage
+=== Request Response Stage
 
 When a response to a request is received this is the stage used to execute any callbacks that were created with the original request.
 
 TIP: Alerts: pending > 15 || blocked > 0
 
-====== Read Repair Stage
+=== Read Repair Stage
 
 Performing read repairs.
 Chance of them occurring is configurable per column family with `read_repair_chance`.
@@ -195,7 +193,7 @@ If pending grows attempt to lower the rate for high read `CFs`.
 
 TIP: Alerts: pending > 15 || blocked > 0
 
-===== JVM Metrics
+== JVM Metrics
 
 Some key metrics from the running Java virtual machine are also collected:
 
@@ -204,4 +202,4 @@ java.lang:type=Memory::
 java.lang:type=GarbageCollector,name=ConcurrentMarkSweep::
   Metrics for the garbage collection process of the Java virtual machine
 
-TIP: If you use _Apache Cassandra_ for running _Newts_ you can also enable additional metrics for the _Newts_ keyspace.
+TIP: If you use Apache Cassandra for running Newts you can also enable additional metrics for the Newts keyspace.

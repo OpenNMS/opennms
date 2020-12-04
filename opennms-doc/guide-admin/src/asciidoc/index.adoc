@@ -11,7 +11,7 @@
 [[ga]]
 = Administrators Guide
 :author: Copyright (c) 2015-{docyear} The OpenNMS Group, Inc.
-:revnumber: {page-component-title} {opennms-version}
+:revnumber: {page-component-title} {\opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 

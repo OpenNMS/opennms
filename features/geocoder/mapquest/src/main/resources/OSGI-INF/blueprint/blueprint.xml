@@ -11,7 +11,7 @@
 	 <cm:property-placeholder id="geocoderConfig" persistent-id="org.opennms.features.geocoder.mapquest" update-strategy="reload">
 		 <cm:default-properties>
 			 <!-- We don't want to set these by default, we want to fail if we don't find a valid email address. -->
-			 <cm:property name="url" value="http://www.mapquestapi.com/geocoding/v1/address?format=json&amp;key={apiKey}&amp;maxResults=1&amp;location={query}" />
+			 <cm:property name="url" value="http://www.mapquestapi.com/geocoding/v1/address?format=json&amp;key={\apikey}&amp;maxResults=1&amp;location={\query}" />
 			 <cm:property name="apiKey" value="" />
 			 <cm:property name="useSystemProxy" value="false" />
 		 </cm:default-properties>
@@ -19,7 +19,7 @@
 
 	 <bean id="mapquestGeocoderConfig" class="org.opennms.features.geocoder.mapquest.MapquestConfiguration">
 		 <property name="urlTemplate" value="${url}"></property>
-		 <property name="apiKey" value="${apiKey}"></property>
+		 <property name="apiKey" value="${\apikey}"></property>
 		 <property name="useSystemProxy" value="${useSystemProxy}"></property>
 	 </bean>
 	 <bean id="mapquestGeocoderService" class="org.opennms.features.geocoder.mapquest.MapquestGeocoderService">

@@ -1,14 +1,11 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[ga-opennms-operation-daemon-config-files-notifd]]
-==== Notifd
+= Notifd
 
 [options="header, autowidth"]
 |===
 | Internal Daemon Name | Reload Event
-| _Notifd_            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Notifd'`
+| Notifd            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Notifd'`
 |===
 
 .Notifd configuration file overview

@@ -127,8 +127,8 @@ public class MapquestGeocoderService implements GeocoderService {
         Objects.requireNonNull(urlTemplate);
         Objects.requireNonNull(apiKey);
         Objects.requireNonNull(addressToResolve);
-        final String url = urlTemplate.replaceAll("\\{apiKey\\}", apiKey)
-                .replaceAll("\\{query\\}", URLEncoder.encode(addressToResolve, "UTF-8"));
+        final String url = urlTemplate.replaceAll("\\{\apikey\\}", apiKey)
+                .replaceAll("\\{\query\\}", URLEncoder.encode(addressToResolve, "UTF-8"));
         return url;
     }
 

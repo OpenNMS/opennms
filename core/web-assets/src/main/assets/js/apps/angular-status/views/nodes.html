@@ -2,8 +2,8 @@
     <filter-controls>
         <!-- Additional strategy controls -->
         <div class="btn-group ml-2">
-            <button type="button" ng-click="setStrategy('alarms')" class="btn btn-secondary {{query.strategy === 'alarms' ? 'active' : ''}}" title="Calculate status based on unacknowledged alarms">Alarms</button>
-            <button type="button" ng-click="setStrategy('outages')" class="btn btn-secondary {{query.strategy === 'outages' ? 'active' : ''}}" title="Calculate status base on current outages">Outages</button>
+            <button type="button" ng-click="setStrategy('alarms')" class="btn btn-secondary {{\query.strategy === 'alarms' ? 'active' : ''}}" title="Calculate status based on unacknowledged alarms">Alarms</button>
+            <button type="button" ng-click="setStrategy('outages')" class="btn btn-secondary {{\query.strategy === 'outages' ? 'active' : ''}}" title="Calculate status base on current outages">Outages</button>
         </div>
     </filter-controls>
     <pagination model="query" class="mt-4">

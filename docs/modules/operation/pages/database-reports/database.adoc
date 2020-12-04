@@ -23,7 +23,7 @@ The {page-component-title} Report Engine passes a JDBC connection to the {page-c
 .feature overview
 |===
 |Supported Output Formats | `PDF`, `CSV`
-|`JasperReport` Version   | {jasperReportsVersion}
+|`JasperReport` Version   | {\jasperreportsversion}
 |===
 
 For more details on how JasperReports works, please refer to the Jaspersoft Studio link:http://community.jaspersoft.com/documentation/tibco-jaspersoft-studio-user-guide/v610/getting-started-jaspersoft-studio[official documentation].
@@ -84,7 +84,7 @@ When developing new reports, we recommended using the Jaspersoft Studio applicat
 Download it link:http://community.jaspersoft.com/project/jaspersoft-studio[here].
 
 TIP: We recommend always using the same Jaspersoft Studio version that the {page-component-title} JasperReport library uses.
-     Currently {page-component-title} uses version {jasperReportsVersion}.
+     Currently {page-component-title} uses version {\jasperreportsversion}.
 
 [[ga-database-reports-connect-database]]
 === Connect to the {page-component-title} Database
@@ -101,7 +101,7 @@ To do so, right click in the `Project Explorer` and select `Configure Buildpath`
 image::database-reports/1_configure-build-path-1.png[]
 
 . Switch to the `Libraries` tab.
-. Click `Add External JARs` and select the `opennms-jasperstudio-extension-{opennms-version}-jar-with-dependencies.jar` file located in `$OPENNMS_HOME/contrib/jasperstudio-extension`.
+. Click `Add External JARs` and select the `opennms-jasperstudio-extension-{\opennms-version}-jar-with-dependencies.jar` file located in `$OPENNMS_HOME/contrib/jasperstudio-extension`.
 . Close the file selection dialog.
 
 +

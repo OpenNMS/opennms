@@ -1,14 +1,11 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[ga-opennms-operation-daemon-config-files-trapd]]
-==== Trapd
+= Trapd
 
 [options="header, autowidth"]
 |===
 | Internal Daemon Name | Reload Event
-| _Trapd_            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Trapd'`
+| Trapd            | `uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Trapd'`
 |===
 
 Trapd reload event stops and starts daemon and loads all the trapd configuration changes.

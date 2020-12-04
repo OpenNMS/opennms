@@ -1,18 +1,15 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
+= resourcecli: simple resource management tool
 
-=== resourcecli: simple resource management tool
-
-Sometimes a user want to list or manually delete collected data (resources) of an _{page-component-title}_ instance.
-When using _RRDTool-_ or _JRobin_-based storage this can easily be achieved by traversing the `share/rrd` directory and its subdirectories.
+Sometimes a user want to list or manually delete collected data (resources) of an {page-component-title} instance.
+When using RRDTool- or JRobin-based storage this can easily be achieved by traversing the `share/rrd` directory and its subdirectories.
 The several `.rrd` or `.jrb` files can be listed or deleted for individual nodes.
-When _Newts_-based storage is used the data is stored and indexed remotely on a _Cassandra_ cluster.
+When Newts-based storage is used the data is stored and indexed remotely on a Cassandra cluster.
 In this case the cluster must be queried for available resources.
 For the deletion of resources the data and all generated indexes must be gathered and removed.
-The _resourcecli_ tool simplifies this process and works with _Newts_-based storage as well as with _RRDTool_ and _JRobin_ files.
+The _resourcecli_ tool simplifies this process and works with Newts-based storage as well as with RRDTool and JRobin files.
 
-==== Usage
+== Use
 The utility is installed by default and its wrapper script is located in the `$\{opennms_home}/bin` directory.
 
 [source, shell]
@@ -30,7 +27,7 @@ The command line tool accepts the following sub-commands.
 [options="header, autowidth"]
 |===
 | Sub-command     | Description
-| `list`          | Queries an _{page-component-title}_ server for available resources.
+| `list`          | Queries an {page-component-title} server for available resources.
 | `show`          | Displays details for a given resource.
 | `delete`        | Deletes a given resource and all of its child resources.
 |===
@@ -41,15 +38,15 @@ The following global options are available in each of the sub-commands of the to
 |===
 | Option/Argument    | Description                                                 | Default
 | `--help`           | Displays help and exit                                      | false
-| `--username VALUE` | Username for connecting to _{page-component-title}_         | admin
-| `--password VALUE` | Password for connecting to _{page-component-title}_         | admin
-| `--url VALUE`      | URL of the _{page-component-title}_ instance to connect to  | http://localhost:8980/opennms
+| `--username VALUE` | Username for connecting to {page-component-title}         | admin
+| `--password VALUE` | Password for connecting to {page-component-title}         | admin
+| `--url VALUE`      | URL of the {page-component-title} instance to connect to  | http://localhost:8980/opennms
 |===
 
-==== Sub-command: list
+== Sub-command: list
 
-This sub-command is used to query an _{page-component-title}_ instance for its available resources.
-The following example queries the local _{page-component-title}_ instance with the credentials `admin/secret`.
+This sub-command is used to query an {page-component-title} instance for its available resources.
+The following example queries the local {page-component-title} instance with the credentials `admin/secret`.
 
 [source, shell]
 ----
@@ -68,7 +65,7 @@ node[70]
 <output omitted>
 ----
 
-==== Sub-command: show
+== Sub-command: show
 
 This sub-command can be used to show details for a given resource.
 The following example display details for the resource identified by resourceId `node[70]`.
@@ -103,7 +100,7 @@ The following options are available for the _show_ sub-command.
 | `<resource>`            | The resourceId of the resource to display.    | -
 |===
 
-==== Sub-command: delete
+== Sub-command: delete
 
 This sub-command can be used to delete a given resource and its child resources.
 The following example deletes the resource identified by resourceId `node[70]`.

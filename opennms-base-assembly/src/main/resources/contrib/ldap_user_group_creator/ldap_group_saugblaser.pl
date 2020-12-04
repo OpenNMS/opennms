@@ -40,7 +40,7 @@ foreach my $entry ($mesg->entries) {
             <full-name>${givenname} ${surname}</full-name>
             <user-comments>Do not edit. Provisioned automatically via LDAP.</user-comments>
             <password>this user record is not used for authentication</password>
-            <contact type="email" info="${email}"/>
+            <contact type="email" info="${\email}"/>
             <contact type="pagerEmail" info="${pager}"/>
         </user>
 EOR

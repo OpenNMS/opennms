@@ -1,16 +1,15 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
+= Timeseries Integration Layer
 
-This section describes how to configure _{page-component-title}_ to use the _Time Series Integration Layer_.
+This section describes how to configure {page-component-title} to use the Time Series Integration Layer.
 
-Traditionally _{page-component-title}_ supports storing time series data in _RRD_ files on disk or via _Newts_ in _Cassandra_.
+Traditionally {page-component-title} supports storing time series data in RRD files on disk or via Newts in Cassandra.
 These implementations require a deep knowledge of OpenNMS. It is hard to add another time series database.
 
 With the rise of many new time series databases, we want to provide an easy way to support other time series databases with minimal effort.
-This lead to the development of the _Time Series Integration Layer_.
+This lead to the development of the Time Series Integration Layer.
 
-The  _Time Series Integration Layer_ allows users to integrate a new time series database via OSGi plugin.
+The  Time Series Integration Layer allows users to integrate a new time series database via OSGi plugin.
 
 Examples of time series plugins:
 
