@@ -34,7 +34,7 @@ import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 public class AdapterHealthCheck extends SimpleHealthCheck {
 
     public AdapterHealthCheck(AdapterDefinition adapterDef) {
-        this(adapterDef.getName(), adapterDef.getClassName());
+        this(adapterDef.getFullName(), adapterDef.getClassName());
     }
 
     private AdapterHealthCheck(final String adapterName, final String adapterType) {
