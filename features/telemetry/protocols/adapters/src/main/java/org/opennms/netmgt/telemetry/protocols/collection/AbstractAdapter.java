@@ -69,8 +69,8 @@ public abstract class AbstractAdapter implements Adapter {
 
         Objects.requireNonNull(metricRegistry);
 
-        this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getName(), "logParsing"));
-        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getName(), "packetsPerLog"));
+        this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getFullName(), "logParsing"));
+        this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getFullName(), "packetsPerLog"));
     }
 
     public abstract void handleMessage(TelemetryMessageLogEntry message, TelemetryMessageLog messageLog);

@@ -35,7 +35,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.ParserFactory;
@@ -73,7 +72,7 @@ public class BmpParserFactory implements ParserFactory {
         final AsyncDispatcher<TelemetryMessage> dispatcher = this.telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
         final Bulkhead bulkhead = createBulkhead(parserDefinition);
 
-        return new BmpParser(parserDefinition.getName(),
+        return new BmpParser(parserDefinition.getFullName(),
                              dispatcher,
                              this.dnsResolver,
                              bulkhead,
@@ -95,6 +94,6 @@ public class BmpParserFactory implements ParserFactory {
                 .maxWaitDuration(Duration.ofMillis(maxWaitDurationMs))
                 .build();
 
-        return Bulkhead.of("BmpParser-" + parserDefinition.getName(), bulkheadConfig);
+        return Bulkhead.of("BmpParser-" + parserDefinition.getFullName(), bulkheadConfig);
     }
 }
