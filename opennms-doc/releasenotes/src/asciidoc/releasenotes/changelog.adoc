@@ -2,6 +2,36 @@
 
 === Changelog
 
+[releasenotes-changelog-26.2.2]
+
+==== Release 26.2.2
+
+Release 26.2.2 is the ninth release in the Horizon 26 series.
+
+It contains a number of bug fixes and enhancements, including doc
+improvements, time series updates, and a fix for UEI processing.
+
+The codename for 26.2.2 is _link:$$https://en.wikipedia.org/wiki/Darth_Vader$$[Vader]_.
+
+===== Bug
+
+* HTTP Detector does not accept a response without a reason as valid (Issue http://issues.opennms.org/browse/NMS-10351[NMS-10351])
+* Eventconf with same UEI but differing masks does not follow first-found-wins rule when some events have alarm-data elements and some do not (Issue http://issues.opennms.org/browse/NMS-12755[NMS-12755])
+* make allowing legacy MD5 passwords configurable (Issue http://issues.opennms.org/browse/NMS-12817[NMS-12817])
+* Install guide RHEL instructions are invalid on RHEL 7 (Issue http://issues.opennms.org/browse/NMS-12891[NMS-12891])
+* Nullpointer in Time Series Integration Layer when query leads to no data. (Issue http://issues.opennms.org/browse/NMS-12914[NMS-12914])
+* Integration API: Alarm.type is unset (Issue http://issues.opennms.org/browse/NMS-12923[NMS-12923])
+
+===== Enhancement
+
+* SNMP special configs are missing in the docs (Issue http://issues.opennms.org/browse/NMS-10382[NMS-10382])
+* Update collectors chapter (Issue http://issues.opennms.org/browse/NMS-12682[NMS-12682])
+* Include XML schema for wsman-datacollection-config.xml in assemblies (Issue http://issues.opennms.org/browse/NMS-12813[NMS-12813])
+* Update Minion installation documentation (Issue http://issues.opennms.org/browse/NMS-12917[NMS-12917])
+* Improvements to Timescale Plugin (Issue http://issues.opennms.org/browse/NMS-12929[NMS-12929])
+* sort custom reports (Issue http://issues.opennms.org/browse/NMS-12931[NMS-12931])
+* TSS: TimescalePlugin: Create KAR (Issue http://issues.opennms.org/browse/NMS-12932[NMS-12932])
+
 [releasenotes-changelog-26.2.1]
 
 ==== Release 26.2.1

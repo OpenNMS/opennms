@@ -419,6 +419,7 @@ public class BmpPeer implements Serializable {
                 Objects.equals(bmpRouter, bmpPeer.bmpRouter) &&
                 Objects.equals(peerRd, bmpPeer.peerRd) &&
                 Objects.equals(peerAddr, bmpPeer.peerAddr) &&
+                Objects.equals(peerAsn, bmpPeer.peerAsn) &&
                 Objects.equals(name, bmpPeer.name) &&
                 Objects.equals(peerBgpId, bmpPeer.peerBgpId) &&
                 state == bmpPeer.state &&
@@ -441,7 +442,7 @@ public class BmpPeer implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(hashId, bmpRouter, peerRd, isIpv4, peerAddr, name, peerBgpId, state, isL3VPNPeer, timestamp, isPrePolicy, geoIpStart, localIp, localBgpId, localPort, localHoldTime, localAsn, remotePort, remoteHoldTime, sentCapabilities, receivedCapabilities, bmpReason, bgpErrCode, errorText, isLocRib, isLocRibFiltered, tableName);
+        return Objects.hash(hashId, bmpRouter, peerRd, isIpv4, peerAddr, peerAsn, name, peerBgpId, state, isL3VPNPeer, timestamp, isPrePolicy, geoIpStart, localIp, localBgpId, localPort, localHoldTime, localAsn, remotePort, remoteHoldTime, sentCapabilities, receivedCapabilities, bmpReason, bgpErrCode, errorText, isLocRib, isLocRibFiltered, tableName);
     }
 
     @Override
@@ -453,6 +454,7 @@ public class BmpPeer implements Serializable {
                 ", peerRd='" + peerRd + '\'' +
                 ", isIpv4=" + isIpv4 +
                 ", peerAddr='" + peerAddr + '\'' +
+                ", peerAsn='" + peerAsn + '\'' +
                 ", name='" + name + '\'' +
                 ", peerBgpId='" + peerBgpId + '\'' +
                 ", state=" + state +

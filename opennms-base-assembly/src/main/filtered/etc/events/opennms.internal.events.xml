@@ -252,4 +252,11 @@
       <logmsg dest="logndisplay">Application '%parm[applicationName]%' with ID '%parm[applicationId]%' has been deleted.</logmsg>
       <severity>Warning</severity>
    </event>
+   <event>
+      <uei>uei.opennms.org/internal/telemetry/illegalFlowDetected</uei>
+      <event-label>Illegal flow detected</event-label>
+      <descr>A flow was dropped due to the following reason: '%parm[cause]%'</descr>
+      <logmsg dest="logndisplay">A flow (protocol '%parm[protocol]%') from exporter '%interface%' in location '%parm[monitoringSystemLocation]%' was detected and dropped by '%parm[monitoringSystemId]%' due to the following reason: '%parm[cause]%'.</logmsg>
+      <severity>Warning</severity>
+   </event>
 </events>

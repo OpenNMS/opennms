@@ -124,7 +124,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
     @Autowired
     private SessionUtils sessionUtils;
 
-
     private CollectionAgentFactory collectionAgentFactory;
 
     @Autowired
@@ -270,6 +269,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                         }
                     }
                 }
+
             }
         });
     }
@@ -666,7 +666,6 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
         return bmpAsnPaths;
     }
 
-
     public BmpCollectorDao getBmpCollectorDao() {
         return bmpCollectorDao;
     }
@@ -721,6 +720,14 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
 
     public void setBmpAsnInfoDao(BmpAsnInfoDao bmpAsnInfoDao) {
         this.bmpAsnInfoDao = bmpAsnInfoDao;
+    }
+
+    public BmpAsnPathDao getBmpAsnPathDao() {
+        return bmpAsnPathDao;
+    }
+
+    public void setBmpAsnPathDao(BmpAsnPathDao bmpAsnPathDao) {
+        this.bmpAsnPathDao = bmpAsnPathDao;
     }
 
     public SessionUtils getSessionUtils() {

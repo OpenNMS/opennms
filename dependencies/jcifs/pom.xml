@@ -16,9 +16,14 @@
   </description>
   <dependencies>
     <dependency>
-      <groupId>org.samba.jcifs</groupId>
-      <artifactId>jcifs</artifactId>
+      <groupId>eu.agno3.jcifs</groupId>
+      <artifactId>jcifs-ng</artifactId>
       <version>${jcifsVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>${bcprovVersion}</version>
     </dependency>
   </dependencies>
   <repositories>
