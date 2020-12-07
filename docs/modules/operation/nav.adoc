@@ -224,6 +224,8 @@
 ** xref:ticketing/remedy.adoc[]
 ** xref:ticketing/tsrm.adoc[]
 
+* xref:rmi.adoc[]
+
 
 
 * xref:admin/introduction.adoc[]
