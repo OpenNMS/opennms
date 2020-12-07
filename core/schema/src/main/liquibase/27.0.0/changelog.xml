@@ -507,9 +507,9 @@
     </rollback>
   </changeSet>
 
-  <changeSet  author="cgorantla" id="27.0.0-bmp-asn-path">
+  <changeSet  author="cgorantla" id="27.0.0-bmp-asn-path-analysis">
 
-    <createTable tableName="bmp_asn_path" remarks="bmp asn path analysis">
+    <createTable tableName="bmp_asn_path_analysis" remarks="bmp asn path analysis">
       <column name="id" type="bigint">
         <constraints nullable="false"/>
       </column>
@@ -521,7 +521,7 @@
       <column name="asn_left_is_peering" type="boolean"/>
       <column name="last_updated" type="timestamp"/>
     </createTable>
-    <addPrimaryKey tableName="bmp_asn_path" constraintName="pk_bmp_asn_path" columnNames="asn, asn_left, asn_right"/>
+    <addPrimaryKey tableName="bmp_asn_path_analysis" constraintName="pk_bmp_asn_path" columnNames="asn, asn_left, asn_right, asn_left_is_peering"/>
   </changeSet>
 
   <changeSet id="27.0.0-bmp-view-peer" author="cgorantla">

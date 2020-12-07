@@ -68,8 +68,8 @@ import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.
 import org.opennms.netmgt.telemetry.protocols.bmp.adapter.openbmp.proto.records.UnicastPrefix;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfo;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfoDao;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPath;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathDao;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathAnalysis;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathAnalysisDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttribute;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpBaseAttributeDao;
 import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpCollector;
@@ -119,7 +119,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
     private BmpAsnInfoDao bmpAsnInfoDao;
 
     @Autowired
-    private BmpAsnPathDao bmpAsnPathDao;
+    private BmpAsnPathAnalysisDao bmpAsnPathAnalysisDao;
 
     @Autowired
     private SessionUtils sessionUtils;
@@ -217,10 +217,10 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                             LOG.error("Exception while persisting BMP base attribute {}", bmpBaseAttribute, e);
                         }
                         String asPath = bmpBaseAttribute.getAsPath();
-                        List<BmpAsnPath> asnPaths = buildBmpAsnPath(asPath);
+                        List<BmpAsnPathAnalysis> asnPaths = buildBmpAsnPath(asPath);
                         asnPaths.forEach(asnPath -> {
                             try {
-                                bmpAsnPathDao.saveOrUpdate(asnPath);
+                                bmpAsnPathAnalysisDao.saveOrUpdate(asnPath);
                             } catch (Exception e) {
                                 LOG.error("Exception while persisting BMP asn path {}", asnPath, e);
                             }
@@ -601,9 +601,9 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
         return null;
     }
 
-    static List<BmpAsnPath> buildBmpAsnPath(String asnPath) {
+    List<BmpAsnPathAnalysis> buildBmpAsnPath(String asnPath) {
 
-        List<BmpAsnPath> bmpAsnPaths = new ArrayList<>();
+        List<BmpAsnPathAnalysis> bmpAsnPathAnalyses = new ArrayList<>();
         String[] asnArray = asnPath.split(" ");
 
         Long leftAsn = 0L;
@@ -639,23 +639,29 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
                     }
 
                     Boolean isPeeringAsn = (i == 0 || i == 1) ? TRUE : FALSE;
-                    BmpAsnPath bmpAsnPath = new BmpAsnPath();
-                    bmpAsnPath.setAsn(asn);
-                    bmpAsnPath.setAsnLeft(leftAsn);
-                    bmpAsnPath.setAsnRight(rightAsn);
-                    bmpAsnPath.setAsnLeftPeering(isPeeringAsn);
-                    bmpAsnPath.setLastUpdated(Date.from(Instant.now()));
-                    bmpAsnPaths.add(bmpAsnPath);
+                    BmpAsnPathAnalysis bmpAsnPathAnalysis = bmpAsnPathAnalysisDao.findByAsnPath(asn, leftAsn, rightAsn, isPeeringAsn);
+                    if(bmpAsnPathAnalysis == null) {
+                        bmpAsnPathAnalysis = new BmpAsnPathAnalysis();
+                        bmpAsnPathAnalysis.setAsn(asn);
+                        bmpAsnPathAnalysis.setAsnLeft(leftAsn);
+                        bmpAsnPathAnalysis.setAsnRight(rightAsn);
+                        bmpAsnPathAnalysis.setAsnLeftPeering(isPeeringAsn);
+                    }
+                    bmpAsnPathAnalysis.setLastUpdated(Date.from(Instant.now()));
+                    bmpAsnPathAnalyses.add(bmpAsnPathAnalysis);
 
                 } else {
                     // No more left in path - Origin ASN
-                    BmpAsnPath bmpAsnPath = new BmpAsnPath();
-                    bmpAsnPath.setAsn(asn);
-                    bmpAsnPath.setAsnLeft(leftAsn);
-                    bmpAsnPath.setAsnRight(0L);
-                    bmpAsnPath.setAsnLeftPeering(false);
-                    bmpAsnPath.setLastUpdated(Date.from(Instant.now()));
-                    bmpAsnPaths.add(bmpAsnPath);
+                    BmpAsnPathAnalysis bmpAsnPathAnalysis = bmpAsnPathAnalysisDao.findByAsnPath(asn, leftAsn, 0L, false);
+                    if(bmpAsnPathAnalysis == null) {
+                        bmpAsnPathAnalysis = new BmpAsnPathAnalysis();
+                        bmpAsnPathAnalysis.setAsn(asn);
+                        bmpAsnPathAnalysis.setAsnLeft(leftAsn);
+                        bmpAsnPathAnalysis.setAsnRight(0L);
+                        bmpAsnPathAnalysis.setAsnLeftPeering(false);
+                    }
+                    bmpAsnPathAnalysis.setLastUpdated(Date.from(Instant.now()));
+                    bmpAsnPathAnalyses.add(bmpAsnPathAnalysis);
                     break;
                 }
 
@@ -663,7 +669,7 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
             }
         }
 
-        return bmpAsnPaths;
+        return bmpAsnPathAnalyses;
     }
 
     public BmpCollectorDao getBmpCollectorDao() {
@@ -722,12 +728,12 @@ public class BmpMessagePersister implements BmpPersistenceMessageHandler {
         this.bmpAsnInfoDao = bmpAsnInfoDao;
     }
 
-    public BmpAsnPathDao getBmpAsnPathDao() {
-        return bmpAsnPathDao;
+    public BmpAsnPathAnalysisDao getBmpAsnPathAnalysisDao() {
+        return bmpAsnPathAnalysisDao;
     }
 
-    public void setBmpAsnPathDao(BmpAsnPathDao bmpAsnPathDao) {
-        this.bmpAsnPathDao = bmpAsnPathDao;
+    public void setBmpAsnPathAnalysisDao(BmpAsnPathAnalysisDao bmpAsnPathAnalysisDao) {
+        this.bmpAsnPathAnalysisDao = bmpAsnPathAnalysisDao;
     }
 
     public SessionUtils getSessionUtils() {

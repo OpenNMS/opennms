@@ -30,6 +30,8 @@ package org.opennms.netmgt.telemetry.protocols.bmp.persistence.api;
 
 import org.opennms.netmgt.dao.api.OnmsDao;
 
-public interface BmpAsnPathDao extends OnmsDao<BmpAsnPath, Long> {
+public interface BmpAsnPathAnalysisDao extends OnmsDao<BmpAsnPathAnalysis, Long> {
+
+    BmpAsnPathAnalysis findByAsnPath(Long asn, Long asnLeft, Long asnRight, boolean asnLeftPeering);
 
 }

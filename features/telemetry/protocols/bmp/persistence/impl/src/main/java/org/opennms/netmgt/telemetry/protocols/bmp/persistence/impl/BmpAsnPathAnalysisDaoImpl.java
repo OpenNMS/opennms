@@ -28,12 +28,30 @@
 
 package org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl;
 
-import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPath;
-import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathDao;
+import java.util.List;
 
-public class BmpAsnPathDaoImpl extends AbstractDaoHibernate<BmpAsnPath, Long> implements BmpAsnPathDao {
-    public BmpAsnPathDaoImpl() {
-        super(BmpAsnPath.class);
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathAnalysis;
+import org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathAnalysisDao;
+
+public class BmpAsnPathAnalysisDaoImpl extends AbstractDaoHibernate<BmpAsnPathAnalysis, Long> implements BmpAsnPathAnalysisDao {
+    public BmpAsnPathAnalysisDaoImpl() {
+        super(BmpAsnPathAnalysis.class);
+    }
+
+    @Override
+    public BmpAsnPathAnalysis findByAsnPath(Long asn, Long asnLeft, Long asnRight, boolean asnLeftPeering) {
+        Criteria criteria = new Criteria(BmpAsnPathAnalysis.class);
+        criteria.addRestriction(new EqRestriction("asn", asn));
+        criteria.addRestriction(new EqRestriction("asnLeft", asnLeft));
+        criteria.addRestriction(new EqRestriction("asnRight", asnRight));
+        criteria.addRestriction(new EqRestriction("asnLeftPeering", asnLeftPeering));
+        List<BmpAsnPathAnalysis> bmpAsnPathAnalyses = findMatching(criteria);
+        if (bmpAsnPathAnalyses != null && bmpAsnPathAnalyses.size() > 0) {
+            return bmpAsnPathAnalyses.get(0);
+        }
+        return null;
     }
 }

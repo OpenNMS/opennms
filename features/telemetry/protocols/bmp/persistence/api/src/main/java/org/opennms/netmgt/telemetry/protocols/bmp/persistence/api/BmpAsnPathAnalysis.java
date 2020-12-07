@@ -42,9 +42,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-@Table(name = "bmp_asn_path")
+@Table(name = "bmp_asn_path_analysis")
 @Entity
-public class BmpAsnPath implements Serializable {
+public class BmpAsnPathAnalysis implements Serializable {
 
     private static final long serialVersionUID = 1675259022257268986L;
 
@@ -123,7 +123,7 @@ public class BmpAsnPath implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BmpAsnPath that = (BmpAsnPath) o;
+        BmpAsnPathAnalysis that = (BmpAsnPathAnalysis) o;
         return asnLeftPeering == that.asnLeftPeering &&
                 Objects.equals(id, that.id) &&
                 Objects.equals(asn, that.asn) &&

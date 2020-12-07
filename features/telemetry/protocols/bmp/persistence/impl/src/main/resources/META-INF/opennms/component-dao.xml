@@ -49,9 +49,9 @@
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnInfoDao" ref="bmpAsnInfoDao" />
 
-  <bean id="bmpAsnPathDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpAsnPathDaoImpl">
+  <bean id="bmpAsnPathDao" class="org.opennms.netmgt.telemetry.protocols.bmp.persistence.impl.BmpAsnPathAnalysisDaoImpl">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
-  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathDao" ref="bmpAsnPathDao" />
+  <onmsgi:service interface="org.opennms.netmgt.telemetry.protocols.bmp.persistence.api.BmpAsnPathAnalysisDao" ref="bmpAsnPathDao" />
 
 </beans>
