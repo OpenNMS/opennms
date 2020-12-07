@@ -55,8 +55,6 @@ opennms:
     port: 9042
     username: cassandra
     password: cassandra
-  replication:
-    factor: factor
 ```
 
 Config specified will be written to `etc/opennms.properties.d/_confd.newts.properties`. 
