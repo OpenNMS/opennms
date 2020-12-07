@@ -225,6 +225,9 @@
 ** xref:ticketing/tsrm.adoc[]
 
 * xref:rmi.adoc[]
+* xref:workarounds/snmp.adoc[]
+* xref:ifttt/ifttt-integration.adoc[]
+* xref:dnsresolver/introduction.adoc[]
 
 
 

@@ -1,7 +1,10 @@
 
-=== Overriding SNMP Client Behavior
+= Overriding SNMP Client Behavior
 
-By default, the SNMP subsystem in {page-component-title} does not treat _any_ link:https://tools.ietf.org/html/rfc3416[RFC 3416] `error-status` as fatal.  Instead, it will attempt to continue the request, if possible.  However, only a subset of errors will cause {page-component-title}'s SNMP client to attempt retries.  The default SNMP `error-status` handling behavior is as follows:
+By default, the SNMP subsystem in {page-component-title} does not treat any link:https://tools.ietf.org/html/rfc3416[RFC 3416] `error-status` as fatal.  
+Instead, it will attempt to continue the request, if possible.  
+However, only a subset of errors will cause {page-component-title}'s SNMP client to attempt retries.
+The default SNMP `error-status` handling behavior is as follows:
 
 .Default SNMP Error Status Behavior
 [options="header, autowidth"]
