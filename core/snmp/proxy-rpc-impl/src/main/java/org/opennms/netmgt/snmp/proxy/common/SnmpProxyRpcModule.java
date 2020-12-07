@@ -85,14 +85,14 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
                 .completedFuture(new SnmpMultiResponseDTO());
         for (SnmpGetRequestDTO getRequest : request.getGetRequests()) {
             CompletableFuture<SnmpResponseDTO> future = get(request, getRequest);
-            combinedFuture = combinedFuture.thenCombine(future, (m,s) -> {
+            combinedFuture = combinedFuture.thenCombine(future, (m, s) -> {
                 m.getResponses().add(s);
                 return m;
             });
         }
         if (request.getWalkRequest().size() > 0) {
             CompletableFuture<Collection<SnmpResponseDTO>> future = walk(request, request.getWalkRequest());
-            combinedFuture = combinedFuture.thenCombine(future, (m,s) -> {
+            combinedFuture = combinedFuture.thenCombine(future, (m, s) -> {
                 m.getResponses().addAll(s);
                 return m;
             });
@@ -180,7 +180,7 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
         final CompletableFuture<SnmpValue[]> future = SnmpUtils.getAsync(request.getAgent(), oids);
         return future.thenApply(values -> {
             final List<SnmpResult> results = new ArrayList<>(oids.length);
-            if (values.length == 0) {
+            if (values.length < oids.length) {
                 // Should never reach here, should have thrown exception in SnmpUtils.
                 LOG.warn("Received error response from SNMP for the agent {} for oids = {}", request.getAgent(), oids);
                 final SnmpResponseDTO responseDTO = new SnmpResponseDTO();

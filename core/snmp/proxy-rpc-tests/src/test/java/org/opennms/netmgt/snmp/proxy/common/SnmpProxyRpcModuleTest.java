@@ -84,6 +84,8 @@ public class SnmpProxyRpcModuleTest {
     public void testBehaviorWhenSnmpValueIsNullArray() throws InterruptedException, ExecutionException {
         // Mock the strategy class
         System.setProperty("org.opennms.snmp.strategyClass", MockSnmpStrategy.class.getName());
+        // Reset first call.
+        MockSnmpStrategy.setFirstCall(true);
         // Add some random oids.
         SnmpRequestDTO request = new SnmpRequestDTO();
         SnmpObjId snmpObjId1 = SnmpObjId.get(".1.3.6.1.2.1.1.2.0");
@@ -97,7 +99,8 @@ public class SnmpProxyRpcModuleTest {
 
         // MockSnmpStrategy returns the null array
         SnmpValue[] retvalues = { null };
-        failedFuture.complete(retvalues);
+        completedFuture = new CompletableFuture<>();
+        completedFuture.complete(retvalues);
 
         // Now "execute" the request and verify that resulting future doesn't throw exception.
         CompletableFuture<SnmpMultiResponseDTO> future = SnmpProxyRpcModule.INSTANCE.execute(request);
