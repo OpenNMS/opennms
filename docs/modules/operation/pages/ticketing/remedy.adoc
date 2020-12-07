@@ -1,24 +1,21 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[ga-ticketing-remedy]]
-=== Remedy Ticketing Plugin
+= Remedy Ticketing Plugin
 
-The _Remedy Ticketing Plugin_ is used to create requests in the BMC Remedy ARS Help Desk Module in response to _{page-component-title}_ alarms.
+The Remedy ticketing plugin creates requests in the BMC Remedy ARS Help Desk Module in response to {page-component-title} alarms.
 
-==== Remedy Product Overview
+== Remedy Product Overview
 It's important to be specific when discussing Remedy, because BMC Remedy is a suite of products.
-The _{page-component-title}_ Remedy Ticketing Plugin requires the core Remedy ARS and the Help Desk Module.
+The {page-component-title} Remedy ticketing plugin requires the core Remedy ARS and the Help Desk Module.
 The Help Desk Module contains a Help Desk Interface Web Service, which serves as the endpoint for creating, updating, and fetching tickets.
 
-The Help Desk Interface (HDI) Web Service requires extensive configuration for its basic operation, and may need additional customization to interoperate with the _{page-component-title}_ Remedy Ticketing Plugin.
+The Help Desk Interface (HDI) Web Service requires extensive configuration for its basic operation, and may need additional customization to interoperate with the {page-component-title} Remedy ticketing plugin.
 Contact your Remedy administrator for help with required configuration tasks.
 
-==== Supported Remedy Product Versions
+== Supported Remedy Product Versions
 Currently supported Remedy product versions are listed below:
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Product            | Version
 | Remedy ARS         | 7.6.04 Service Pack 2
@@ -27,11 +24,11 @@ Currently supported Remedy product versions are listed below:
 |===
 
 [[ga-ticketing-remedy-setup]]
-==== Setup
+== Setup
 
-The Remedy Ticketing Plugin and its dependencies are part of the _{page-component-title}_ core packages.
+The Remedy ticketing plugin and its dependencies are part of the {page-component-title} core packages.
 
-Start by enabling the plugin and the ticket controls in the _{page-component-title}_ web interface, by setting the following properties in `$\{opennms_home}/etc/opennms.properties`:
+Start by enabling the plugin and the ticket controls in the {page-component-title} web interface, by setting the following properties in `$\{opennms_home}/etc/opennms.properties`:
 
 [source]
 ----
@@ -40,11 +37,11 @@ opennms.alarmTroubleTicketEnabled = true
 ----
 
 In the same file, set the property `opennms.alarmTroubleTicketLinkTemplate` to a value appropriate for constructing a link to tickets in the Remedy web interface.
-A sample value is provided but must be customized for your site; the token `${id}` will be replaced with the Remedy ticket ID when the link is rendered.
+You must customize the sample value for your site; the token `${\id}` will be replaced with the Remedy ticket ID when the link is rendered.
 
 Now configure the plugin itself by setting the following properties in `$\{opennms_home}/etc/remedy.properties`:
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Name                                         | Required | Description
 | `remedy.username`                            | required | Username for authenticating to Remedy
@@ -56,10 +53,10 @@ Now configure the plugin itself by setting the following properties in `$\{openn
 | `remedy.portname`                            | required | The Port name of the HPD web service
 | `remedy.createendpoint`                      | required | The endpoint location of the Create-HPD web service
 | `remedy.createportname`                      | required | The Port name of the Create-HPD web service
-| `remedy.targetgroups`                        | optional | Colon-separated list of Remedy groups to which created tickets may be assigned (`{group}` below refers to values from this list)
-| `remedy.assignedgroup.{group}`               | optional | Assigned group for the target group `{group}`
-| `remedy.assignedsupportcompany.{group}`      | optional | Assigned support company for the target group `{group}`
-| `remedy.assignedsupportorganization.{group}` | optional | Assigned support organization for the target group `{group}`
+| `remedy.targetgroups`                        | optional | Colon-separated list of Remedy groups to which created tickets may be assigned (`{\groupp}` below refers to values from this list)
+| `remedy.assignedgroup.{\groupp}`               | optional | Assigned group for the target group `{\groupp}`
+| `remedy.assignedsupportcompany.{\groupp}`      | optional | Assigned support company for the target group `{\groupp}`
+| `remedy.assignedsupportorganization.{\groupp}` | optional | Assigned support organization for the target group `{\groupp}`
 | `remedy.assignedgroup`                       | required | Default group to assign the ticket in case the ticket itself lacks information about a target assigned group
 | `remedy.firstname`                           | required | First name for ticket creation and updating. Must exist in Remedy.
 | `remedy.lastname`                            | required | Last name for ticket creation and updating. Must exist in Remedy.
@@ -71,18 +68,19 @@ Now configure the plugin itself by setting the following properties in `$\{openn
 | `remedy.categorizationtier2`                 | required | A valid categorization tier (secondary) for ticket creation
 | `remedy.categorizationtier3`                 | required | A valid categorization tier (tertiary) for ticket creation
 | `remedy.serviceType`                         | required | A valid service type for ticket creation
-| `remedy.reportedSource`                      | required | A valid Reported Source for ticket creation
-| `remedy.impact`                              | required | A valid value for Impact, used in ticket creation
-| `remedy.urgency`                             | required | A valid value for Urgency, used in ticket creation
-| `remedy.reason.reopen`                       | required | The reason code set in Remedy when the ticket is reopened in _{page-component-title}_
-| `remedy.resolution`                          | required | The reason code set in Remedy when the ticket is closed in _{page-component-title}_
-| `remedy.reason.cancelled`                    | required | The reason code set in Remedy when the ticket is cancelled in _{page-component-title}_
+| `remedy.reportedSource`                      | required | A valid reported source for ticket creation
+| `remedy.impact`                              | required | A valid value for impact, used in ticket creation
+| `remedy.urgency`                             | required | A valid value for urgency, used in ticket creation
+| `remedy.reason.reopen`                       | required | The reason code set in Remedy when the ticket is reopened in {page-component-title}
+| `remedy.resolution`                          | required | The reason code set in Remedy when the ticket is closed in {page-component-title}
+| `remedy.reason.cancelled`                    | required | The reason code set in Remedy when the ticket is canceled in {page-component-title}
 |===
 
-NOTE: The values for many of the required properties are site-specific; contact your Remedy administrator for assistance.
+NOTE: The values for many of the required properties are site specific; contact your Remedy administrator for assistance.
 
-Restart _{page-component-title}_.
+Restart {page-component-title}.
 
-The plugin should be ready to use. When troubleshooting, consult the following log files:
+The plugin should be ready to use. 
+When troubleshooting, consult the following log files:
 
 * $\{opennms_home}/logs/trouble-ticketer.log

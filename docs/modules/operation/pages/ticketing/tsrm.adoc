@@ -1,16 +1,14 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
 
 [[ga-ticketing-tsrm]]
-=== TSRM Ticketing Plugin
+= TSRM Ticketing Plugin
 
-The _TSRM Ticketing Plugin_ is used to create TSRM incidents in response to _{page-component-title}_ alarms.
+The TSRM ticketing plugin creates TSRM incidents in response to {page-component-title} alarms.
 
 [[ga-ticketing-tsrm-setup]]
-==== Setup
+== Setup
 
-In order to enable the plugin start by setting following property in `$\{opennms_home}/etc/opennms.properties`:
+To enable the plugin start by setting following property in `$\{opennms_home}/etc/opennms.properties`:
 
 [source]
 ----
@@ -30,23 +28,24 @@ Configure the plugin options by setting the following properties in `$\{opennms_
 
 Next, add `tsrm-troubleticketer` to the `featuresBoot` property in the `$\{opennms_home}/etc/org.apache.karaf.features.cfg`
 
-Restart _OpenNMS_.
+Restart OpenNMS.
 
-When _OpenNMS_ has started again, login to the _Karaf Shell_ and install the feature:
+When OpenNMS has started again, login to the Karaf Shell and install the feature:
 
 [source]
 ----
 feature:install tsrm-troubleticketer
 ----
 
-The plugin should be ready to use. When troubleshooting, consult the following log files:
+The plugin should be ready to use. 
+When troubleshooting, consult the following log files:
 
 * $\{opennms_home}/data/log/karaf.log
 * $\{opennms_home}/logs/trouble-ticketer.log
 
-==== Mapping OpenNMS Ticket with TSRM Incident
+== Mapping OpenNMS Ticket with TSRM Incident
 
-Following tables shows mapping between OpenNMS ticket and TSRM Incident
+The following tables show mapping between OpenNMS ticket and TSRM incident
 
 [options="header, autowidth"]
 |===
@@ -58,7 +57,7 @@ Following tables shows mapping between OpenNMS ticket and TSRM Incident
 | `user`                  | `REPORTEDBY`
 |===
 
-Below fields are not part of Ticket, they have to be added as attributes.
+The fields below are not part of ticket; you need to add them as attributes.
 [options="header, autowidth"]
 |===
 |  Ticket Field           | TSRM Incident Field
