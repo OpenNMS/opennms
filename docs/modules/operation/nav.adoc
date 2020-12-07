@@ -229,7 +229,18 @@
 * xref:ifttt/ifttt-integration.adoc[]
 * xref:dnsresolver/introduction.adoc[]
 
-
+* xref:telemetryd/introduction.adoc[]
+** xref:telemetryd/listener/tcp.adoc[]
+** xref:telemetryd/listener/udp.adoc[]
+** xref:telemetryd/protocols/bmp.adoc[]
+** xref:telemetryd/protocols/ipfix.adoc[]
+** xref:telemetryd/protocols/jti.adoc[]
+** xref:telemetryd/protocols/netflow5.adoc[]
+** xref:telemetryd/protocols/netflow9.adoc[]
+** xref:telemetryd/protocols/nxos.adoc[]
+** xref:telemetryd/protocols/sflow.adoc[]
+** xref:telemetryd/protocols/graphite.adoc[]
+** xref:telemetryd/protocols/openconfig.adoc[]
 
 * xref:admin/introduction.adoc[]
 ** xref:admin/restart.adoc[]

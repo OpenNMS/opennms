@@ -1,16 +1,16 @@
 
 [[telemetryd-listener-udp]]
-==== UDP Listener
+= UDP Listener
 
-The _UDP Listener_ can be used to open a UDP socket and forward the received packets to a _Parser_.
+The UDP Listener can be used to open a UDP socket and forward the received packets to a parser.
 
-The _UDP Listener_ can support multiple _Parsers_ if all of these _Parsers_ support protocol detection.
-If this is the case, each _Parser_ defined for the _Listener_ will be asked if it can handle the incoming packet.
-The first _Parser_ that accepts the packet is then used to parse the packet and dispatch it to its _Queue_.
+The UDP Listener can support multiple parsers if all of these parsers support protocol detection.
+If this is the case, each parser defined for the Listener will be asked if it can handle the incoming packet.
+The first parser that accepts the packet is then used to parse the packet and dispatch it to its Queue.
 
-If only a single _Parser_ is defined in the _Listener_, the packet is directly handed over for parsing.
+If only a single parser is defined in the Listener, the packet is directly handed over for parsing.
 
-===== Facts
+== Facts
 
 [options="autowidth"]
 |===
@@ -18,7 +18,7 @@ If only a single _Parser_ is defined in the _Listener_, the packet is directly h
 | Supported on Minion | `Yes`
 |===
 
-===== Parameters
+== Parameters
 
 .Listener-specific parameters for the UdpListener
 [options="header, autowidth"]

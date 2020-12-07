@@ -1,5 +1,5 @@
 
-==== OpenConfig Telemetry
+= OpenConfig Telemetry
 
 https://www.openconfig.net/[OpenConfig] is an open-source initiative by network operators to develop vendor-neutral data models, programmatic interfaces, and tools for managing networks.   
 
@@ -48,14 +48,14 @@ Apply the changes without restarting by sending a `reloadDaemonConfig` event in 
 $\{opennms_home}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
-===== OpenConfig Connector
+== OpenConfig Connector
 
 OpenConfig Connector initiates a connection with an agent via gRPC and subscribes to one or more OpenConfig data paths (strings), then collects and forwards the data to a queue.
 The data contains metadata and is structured as a list of `key:value` pairs.
 
 {page-component-title} creates a new connector for each agent it is responsible for connecting to. 
 
-====== Connector Config
+=== Connector Config
 
 [source, xml]
 ----
@@ -83,23 +83,23 @@ The data contains metadata and is structured as a list of `key:value` pairs.
 
 ----
 
-====== Packages
+=== Packages
 At least one package must be present for the connector to function.
 Use multiple packages to customize the parameter's subsets of nodes.
 
 The `filter` element is optional; if missing, all services with the given name will be considered.
 
 Use the `group` element to group parameters into multiple groups when you need to stream different paths at different frequencies.
-Global parameters like port, and connection-specific parameters, don't need any group.
+Global parameters like port, and connection-specific parameters, do not need any group.
 
 Parameters are passed to the connector and are interpolated for node/interface and service-level metadata.
 
 .Connector-specific parameters for the OpenConfigConnector
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Parameter        | Description                                                       | Required | Default value
 | `port`           | Port that OpenConfig client can connect to                        | required | (none)
-| `paths`          | Paths that needs to subscribed to                                 | required | (empty)
+| `paths`          | Paths that need to be subscribed to                                 | required | (empty)
 | `frequency`      | Frequency at which OpenConfig data can be streamed                | required | (300000)(5mins)
 | `retries`        | Number of retries to attempt to make a connection when failed     | optional | (0)(unlimited)
 | `interval`       | Interval at which client tries to make a connection when failed   | optional | (300)(5mins)
@@ -108,37 +108,37 @@ Parameters are passed to the connector and are interpolated for node/interface a
 |===
 
 
-===== OpenConfig Adapter
+== OpenConfig Adapter
 
 The OpenConfig adapter handles OpenConfig payloads.
 Messages are decoded and forwarded to a JSR-223 compatible script (e.g., BeanShell or Groovy) for further processing.
 Use the script extension to extract the desired metrics from the OpenConfig stream data and persist the results as time series data.
 
-====== Facts
+=== Facts
 
 [options="autowidth"]
 |===
 | Class Name          | `org.opennms.netmgt.telemetry.protocols.openconfig.adapter.OpenConfigAdapter`
 |===
 
-====== Parameters
+=== Parameters
 
 .Adapter-specific parameters for the OpenConfigAdapter
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Parameter        | Description                                                       | Required | Default value
 | `script`         | Full path to the script that handles the OpenConfig data        | required | (none)
-| `mode`           | Specify Mode for stream format, gnmi or jti                     | optional | gnmi
+| `mode`           | Specify mode for stream format, gNMI or JTI                    | optional | gnmi
 |===
 
-====== Scripting
+=== Scripting
 
 The script will be invoked for every OpenConfig stream data that is received and succesfully decoded.
 
 The following globals will be passed to the script:
 
 .Globals passed to the script for gNMI (default) mode.
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Parameter  | Description                                                    | Type
 | `agent`    | The agent (node) against which the metrics will be associated  | `org.opennms.netmgt.collection.api.CollectionAgent`
@@ -147,7 +147,7 @@ The following globals will be passed to the script:
 |===
 
 .Globals passed to the script for JTI mode.
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Parameter  | Description                                                    | Type
 | `agent`    | The agent (node) against which the metrics will be associated  | `org.opennms.netmgt.collection.api.CollectionAgent`
@@ -155,4 +155,4 @@ The following globals will be passed to the script:
 | `msg`      | Decoded message from which the metrics should be extracted     | `org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData`
 |===
 
-NOTE: OpenConfig protocol is not supported on Minion.
+NOTE: The OpenConfig protocol is not supported on Minion.

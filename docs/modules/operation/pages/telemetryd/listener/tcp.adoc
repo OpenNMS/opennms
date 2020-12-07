@@ -1,10 +1,10 @@
 
 [[telemetryd-listener-tcp]]
-==== TCP Listener
+= TCP Listener
 
-The _TCP Listener_ accepts incoming TCP connections and forwards the TCP stream to a single _Parser_.
+The TCP Listener accepts incoming TCP connections and forwards the TCP stream to a single parser.
 
-===== Facts
+== Facts
 
 [options="autowidth"]
 |===
@@ -12,7 +12,7 @@ The _TCP Listener_ accepts incoming TCP connections and forwards the TCP stream 
 | Supported on Minion | `Yes`
 |===
 
-===== Parameters
+== Parameters
 
 .Listener-specific parameters for the TcpListener
 [options="header, autowidth"]
