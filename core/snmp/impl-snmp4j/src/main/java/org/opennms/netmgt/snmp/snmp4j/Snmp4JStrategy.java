@@ -54,6 +54,7 @@ import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpAgentTimeoutException;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.opennms.netmgt.snmp.SnmpException;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -405,19 +406,28 @@ public class Snmp4JStrategy implements SnmpStrategy {
     /**
      * TODO: Merge this logic with {@link Snmp4JWalker.Snmp4JResponseListener} #processResponse(PDU response)
      */
-    static SnmpValue[] processResponse(Snmp4JAgentConfig agentConfig, ResponseEvent responseEvent, PDU requestPdu) throws IOException {
+    static SnmpValue[] processResponse(Snmp4JAgentConfig agentConfig, ResponseEvent responseEvent, PDU requestPdu) throws IOException, SnmpAgentTimeoutException, SnmpException {
         SnmpValue[] retvalues = { null };
 
         if (responseEvent.getResponse() == null) {
             LOG.warn("processResponse: Timeout.  Agent: {}, requestID={}", agentConfig, responseEvent.getRequest().getRequestID());
+            throw new SnmpAgentTimeoutException(agentConfig.getInetAddress());
         } else if (responseEvent.getError() != null) {
             LOG.warn("processResponse: Error during get operation.  Error: {}, requestID={}", responseEvent.getError().getLocalizedMessage(), responseEvent.getError(), responseEvent.getRequest().getRequestID());
+            String errorMsg = "SNMP Internal error for: " + agentConfig.getInetAddress() + " Error : " + responseEvent.getError();
+            throw new SnmpException(errorMsg);
         } else if (responseEvent.getResponse().getType() == PDU.REPORT) {
             LOG.warn("processResponse: Error during get operation.  Report returned with varbinds: {}, requestID={}", responseEvent.getResponse().getVariableBindings(), responseEvent.getRequest().getRequestID());
+            String errorMsg = "Error during get operation.  Report returned with varbinds: " + responseEvent.getResponse().getVariableBindings() + " , requestID=" + responseEvent.getRequest().getRequestID();
+            throw new SnmpException(errorMsg);
         } else if (responseEvent.getResponse().getVariableBindings().size() < 1) {
             LOG.warn("processResponse: Received PDU with 0 varbinds. Agent: {}, requestID={}", agentConfig, responseEvent.getRequest().getRequestID());
+            String errorMsg =  "Received PDU with 0 varbinds. Agent: " + agentConfig + ", requestID= " + responseEvent.getRequest().getRequestID();
+            throw new SnmpException(errorMsg);
         } else if (responseEvent.getResponse().get(0).getSyntax() == SMIConstants.SYNTAX_NULL) {
             LOG.info("processResponse: Null value returned in varbind: {}. Agent: {}, requestID={}", responseEvent.getResponse().get(0), agentConfig, responseEvent.getRequest().getRequestID());
+            String errorMsg = "Null value returned in varbind: " + responseEvent.getResponse().get(0) + " Agent: " + agentConfig + " requestID = " + responseEvent.getRequest().getRequestID();
+            throw new SnmpException(errorMsg);
         } else {
             retvalues = convertResponseToValues(agentConfig, responseEvent, requestPdu);
 

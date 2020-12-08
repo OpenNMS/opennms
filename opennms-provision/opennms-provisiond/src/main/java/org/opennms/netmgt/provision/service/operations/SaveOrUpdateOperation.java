@@ -212,4 +212,9 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_currentService.addMetaData(context, key, value);
     }
 
+    @Override
+    public OperationType getOperationType() {
+        return OperationType.UPDATE;
+    }
+
 }
