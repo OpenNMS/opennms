@@ -261,5 +261,7 @@
 ** xref:kafka-producer/configure-kafka.adoc[]
 ** xref:kafka-producer/shell-commands.adoc[]
 
+* xref:alarm-correlation/situation-feedback.adoc[]
+
 * xref:admin/introduction.adoc[]
 ** xref:admin/restart.adoc[]
