@@ -31,11 +31,14 @@ package org.opennms.netmgt.snmp.proxy.common;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.After;
 import org.junit.Test;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
@@ -74,6 +77,37 @@ public class SnmpProxyRpcModuleTest {
             fail("did not throw!");
         } catch (ExecutionException e) {
             assertEquals("Oups", e.getCause().getMessage());
+        }
+    }
+
+    @Test      // See NMS-12818
+    public void testBehaviorWhenSnmpValueIsNullArray() throws InterruptedException, ExecutionException {
+        // Mock the strategy class
+        System.setProperty("org.opennms.snmp.strategyClass", MockSnmpStrategy.class.getName());
+        // Reset first call.
+        MockSnmpStrategy.setFirstCall(true);
+        // Add some random oids.
+        SnmpRequestDTO request = new SnmpRequestDTO();
+        SnmpObjId snmpObjId1 = SnmpObjId.get(".1.3.6.1.2.1.1.2.0");
+        SnmpObjId snmpObjId2 = SnmpObjId.get(".1.3.6.1.2.1.1.2.1");
+        SnmpGetRequestDTO get1 = new SnmpGetRequestDTO();
+        List<SnmpObjId> snmpObjIds = new ArrayList<>();
+        snmpObjIds.add(snmpObjId1);
+        snmpObjIds.add(snmpObjId2);
+        get1.setOids(snmpObjIds);
+        request.getGetRequests().add(get1);
+
+        // MockSnmpStrategy returns the null array
+        SnmpValue[] retvalues = { null };
+        completedFuture = new CompletableFuture<>();
+        completedFuture.complete(retvalues);
+
+        // Now "execute" the request and verify that resulting future doesn't throw exception.
+        CompletableFuture<SnmpMultiResponseDTO> future = SnmpProxyRpcModule.INSTANCE.execute(request);
+        try {
+            future.get();
+        } catch (ExecutionException e) {
+            fail();
         }
     }
 }
