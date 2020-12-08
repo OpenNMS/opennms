@@ -1,13 +1,10 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
+= Table of Index Mapping
 
-====== Table of Index Mapping
-
-The following table describes the mapping of simple _{page-component-title}_ events to the Raw Events Index.
+The following table describes the mapping of simple {page-component-title} events to the Raw Events Index.
 Note that fields that begin with an underscore (_) are internal to Elasticsearch.
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 2+|Event Index Fields 2+|Description
 
@@ -51,9 +48,9 @@ href=\"/opennms/alarm/detail.htm?id=30\">30</a> Cleared<p>...", |string
 
 |"logmsg": | "logmsg": "<p>Alarm <a href=\"/opennms/alarm/detail.htm?id=30\">30</a> Cleared<p>", |string | Log message of the event.
 
-|"logmsgdest": | "logmsgdest": "logndisplay", |string | Log Destination of the Event.
+|"logmsgdest": | "logmsgdest": "logndisplay", |string | Log destination of the event.
 
-|"asset-category": | "asset-category": "Power", |string | All `asset_` entries correspond to fields in the Asset Table of the node referenced in the event. These fields are only present if populated in the asset table.
+|"asset-category": | "asset-category": "Power", |string | All `asset_` entries correspond to fields in the asset table of the node referenced in the event. These fields are present only if populated in the asset table.
 
 |"asset-building": | "asset-building": "55", |string |
 
@@ -63,7 +60,7 @@ href=\"/opennms/alarm/detail.htm?id=30\">30</a> Cleared<p>...", |string
 
 |"asset-rack": | "asset-rack": "2101", |string |
 
-|"categories": | "categories": "", | string | `categories` corresponds to node categories table. This is a comma-separated list of categories associated with this node ID. This field is indexed so separate values can be searched.
+|"categories": | "categories": "", | string |`categories` corresponds to the node categories table. This is a comma-separated list of categories associated with this node ID. This field is indexed, so separate values can be searched.
 
 |"foreignid": | "foreignid": "1488375237814", |string | Foreign ID of the node associated with the event.
 

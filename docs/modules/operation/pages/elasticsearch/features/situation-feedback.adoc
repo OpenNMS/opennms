@@ -1,19 +1,17 @@
-// Allow GitHub image rendering
-:imagesdir: ../../../images
 
 [[ga-elasticsearch-integration-situation-feedback]]
-==== Situation Feedback
+= Situation Feedback
 
-NOTE: Full documentation on _Situation Feedback_ is available  <<ga-situation-feedback, here>>.
+NOTE: Full documentation on situation feedback is available  <<alarm-correlation/situation-feedback.adoc#ga-situation-feedback, here>>.
 
-When persisting `Situation Feedback`, feedback on each related alarm  is represented by a document as follows:
+When persisting `Situation Feedback`, feedback on each related alarm is represented by a document as follows:
 
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
 | Field | Description
 
 |`@timestamp`
-| Timestamp in milliseconds when the feedback was submitted.
+| Timestamp, in milliseconds, when the feedback was submitted.
 
 |`situation_key`
 | The reduction key of the situation.
@@ -31,6 +29,6 @@ When persisting `Situation Feedback`, feedback on each related alarm  is represe
 | A text string provided with the feedback.
 
 |`user`
-| The user that submitted the feedback.
+| The user who submitted the feedback.
 
 |===
