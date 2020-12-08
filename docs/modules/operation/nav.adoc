@@ -256,5 +256,10 @@
 ** xref:flows/classification-engine.adoc[]
 ** xref:flows/aggregation.adoc[]
 
+* xref:kafka-producer/kafka-producer.adoc[]
+** xref:kafka-producer/enable-kafka.adoc[]
+** xref:kafka-producer/configure-kafka.adoc[]
+** xref:kafka-producer/shell-commands.adoc[]
+
 * xref:admin/introduction.adoc[]
 ** xref:admin/restart.adoc[]
