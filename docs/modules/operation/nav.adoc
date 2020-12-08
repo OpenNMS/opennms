@@ -230,8 +230,9 @@
 * xref:dnsresolver/introduction.adoc[]
 
 * xref:telemetryd/introduction.adoc[]
-** xref:telemetryd/listener/tcp.adoc[]
-** xref:telemetryd/listener/udp.adoc[]
+** xref:telemetryd/listener/introduction.adoc[]
+*** xref:telemetryd/listener/tcp.adoc[]
+*** xref:telemetryd/listener/udp.adoc[]
 ** xref:telemetryd/protocols/bmp.adoc[]
 ** xref:telemetryd/protocols/ipfix.adoc[]
 ** xref:telemetryd/protocols/jti.adoc[]
@@ -250,6 +251,10 @@
 ** xref:elasticsearch/features/situation-feedback.adoc[]
 ** xref:elasticsearch/features/alarm-history.adoc[]
 
+* xref:flows/introduction.adoc[]
+** xref:flows/setup.adoc[]
+** xref:flows/classification-engine.adoc[]
+** xref:flows/aggregation.adoc[]
 
 * xref:admin/introduction.adoc[]
 ** xref:admin/restart.adoc[]

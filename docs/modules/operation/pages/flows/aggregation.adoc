@@ -1,23 +1,19 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 [[ga-flow-support-aggregation]]
-=== Aggregation
+= Aggregation
 
 The flow query engine supports rendering Top-N metrics from pre-aggregated documents stored in Elasticsearch.
-These can be used to help alleviate compute load on the Elasticsearch cluster, particularly for environments with large volumes of flows (>10,000 flows/sec).
+Use these to help alleviate compute load on the Elasticsearch cluster, particularly for environments with large volumes of flows (>10,000 flows/sec).
 
-In order to use this functionality you must enable the Kafka forwarder as described in <<ga-flow-support-kafka-forwarder>> and setup link:https://github.com/OpenNMS/nephron[Nephron] to process the flows.
+To use this functionality you must enable the Kafka forwarder as described in <<flows/setup.adoc#kafka-forwarder-config, Configure Kafka forwarder>> and set up link:https://github.com/OpenNMS/nephron[Nephron] to process the flows.
 
 NOTE: Nephron currently requires an link:https://flink.apache.org/[Apache Flink] cluster to deploy the job.
 
+YOu can set the following properties in `${OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
 
-The following properties can bet set in `${OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg` to control the query engine to use aggregated flows:
-
-[options="header, autowidth"]
+[options="header, %autowidth"]
 |===
-| Property | Description | Required | default
+| Property | Description | Required | Default
 
 | `alwaysUseRawForQueries`
 | Set to `true` to use raw flow documents to respond to all queries and effectively disable the use of aggregated flows.
